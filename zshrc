@@ -489,14 +489,24 @@ case ${OSTYPE} in
             fi
             alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
             alias brewup="cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && cd -;brew update;brew upgrade --all;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
-            alias brew-cask-update="brew untap caskroom/homebrew-cask; \
-                rm -rf $(brew --prefix)/Library/Taps/phinze-cask; \
-                rm $(brew --prefix)/Library/Formula/brew-cask.rb; \
-                rm -rf $(brew --prefix)/Library/Taps/caskroom; \
-                brew uninstall --force brew-cask; brew update; brew cleanup; brew cask cleanup; \
-                for c in `brew cask list`; \
-                do! brew cask info $c | grep -qF 'Not installed' || brew cask uninstall $c --force && brew cask install $c; \
-                done;brew cask cleanup";
+            
+            brewcaskup(){
+                brew untap caskroom/homebrew-cask;
+                rm -rf $(brew --prefix)/Library/Taps/phinze-cask;
+                rm $(brew --prefix)/Library/Formula/brew-cask.rb;
+                rm -rf $(brew --prefix)/Library/Taps/caskroom;
+                brew uninstall --force brew-cask;
+                brew update;
+                brew cleanup;
+                brew cask cleanup;
+                for c in $(brew cask list)
+                do
+                    ! brew cask info $c | grep -qF 'Not installed' || brew cask uninstall $c --force && brew cask install $c
+                done
+                brew cask cleanup;
+            }
+            alias brew-cask-update=brewcaskup
+            
             alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;brewup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup";
         else
             alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup"
