@@ -130,7 +130,6 @@ fi
 reload_anyenv
 $HOME/.anyenv/bin/anyenv install -l
 
-    
 if type pip3 > /dev/null 2>&1; then
     echo 'pip3 found'
 else
