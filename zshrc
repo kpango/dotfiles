@@ -415,7 +415,7 @@ if type nvim >/dev/null 2>&1; then
 fi
 
 if type rustc >/dev/null 2>&1; then
-    alias rust="rustc --opt-level 1"
+    alias rust="rustc -O"
 fi
 
 if type javac >/dev/null 2>&1; then
