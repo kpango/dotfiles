@@ -488,7 +488,7 @@ case ${OSTYPE} in
                 export OSXENV_LOADED=1
             fi
             alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
-            alias brewup="brew update;brew upgrade --all;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
+            alias brewup="cd $(brew --repo)" && git fetch && git reset --hard origin/master && brew update;brew update;brew upgrade --all;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
             alias brew-cask-update="brew untap caskroom/homebrew-cask; \
                 rm -rf $(brew --prefix)/Library/Taps/phinze-cask; \
                 rm $(brew --prefix)/Library/Formula/brew-cask.rb; \
