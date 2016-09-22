@@ -1,0 +1,30 @@
+#
+# .gitattributes
+#
+
+*.c diff=cpp
+*.h diff=cpp
+*.cpp diff=cpp
+*.hpp diff=cpp
+*.cs diff=csharp
+*.m diff=objc
+*.go diff=go
+*.java diff=java
+*.xhtml diff=html
+*.html diff=html
+*.xml diff=html
+*.pl diff=perl
+*.pm diff=perl
+*.t diff=perl
+*.php diff=php
+*.ptml diff=php
+*.py diff=python
+*.rb diff=ruby
+*.js diff=javascript
+*.jsx diff=javascript
+*.csv encoding=utf-8
+*.json diff=json
+*.ex diff=elixir
+*.exs diff=elixir
+*.nim diff=nim
+*.rs diff=rust
