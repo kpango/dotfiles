@@ -75,7 +75,7 @@ if [ -z $DOTENV_LOADED ]; then
     export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
 
     if [ -z $TMUX ]; then
-        export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$GOBIN:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH;
+        export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$GOBIN:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH;
         #anyenv init
         if [ -d "$HOME/.anyenv" ] ; then
             export PATH="$HOME/.anyenv/bin:$PATH"
