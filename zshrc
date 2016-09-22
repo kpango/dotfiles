@@ -100,6 +100,10 @@ if [ -z $DOTENV_LOADED ]; then
         export NODE_PATH=$(npm root -g);
     fi
 
+    if type vagrant > /dev/null 2>&1; then
+        export VAGRANT_HOME=$HOME/Documents/vagrant;
+    fi
+
     export DOTENV_LOADED=1
 fi
 
@@ -153,7 +157,7 @@ else
         fi
     fi
     zplug load --verbose
-    alias zsup="zcompinit;rm $HOME/.zshrc.zwc;zplug update;zplug clean;zplug clear;zplug status;zplug info"
+    alias zsup="zcompinit;rm $HOME/.zshrc.zwc;zplug update;zplug clean;zplug clear;zplug status;zplug info;rm $HOME/.bashrc;rm $HOME/.fzf.bash;"
 fi
 
 # 色を使用出来るようにする
@@ -265,7 +269,7 @@ if type anyenv >/dev/null 2>&1; then
 fi
 
 if type nim >/dev/null 2>&1; then
-    alias nimup="cd $NIMPATH;git -C $NIMPATH pull;nim c $NIMPATH/koch;$NIMPATH/koch boot -d:release;cd $HOME;"
+    alias nimup="cd $NIMPATH;git -C $NIMPATH pull;nim c $NIMPATH/koch;$NIMPATH/koch boot -d:release;cd $HOME"
 fi
 
 go-update(){
@@ -318,7 +322,7 @@ if type go >/dev/null 2>&1; then
 fi
 
 if type apm >/dev/null 2>&1; then
-    alias atomup="npmup;sudo apm update;sudo apm upgrade;sudo apm rebuild;sudo apm clean;sudo apm dedupe;"
+    alias atomup="sudo apm update;sudo apm upgrade;sudo apm rebuild;sudo apm clean"
 fi
 
 alias gemup="sudo chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;sudo chmod -R 777 /Library/Ruby/;gem update --system;gem update"
@@ -407,7 +411,7 @@ if type nvim >/dev/null 2>&1; then
     alias v="nvim"
     alias vedit="nvim $HOME/.config/nvim/init.vim"
     alias vspdchk="rm -rf /tmp/starup.log && nvim --startuptime /tmp/startup.log +q && less /tmp/startup.log"
-    alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall"
+    alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;rm $HOME/.nvimlog;rm $HOME/.viminfo"
 fi
 
 if type rustc >/dev/null 2>&1; then
@@ -425,7 +429,8 @@ rsagen(){
 
 alias rsagen=rsagen
 
-alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts"
+alias sedit="nvim $HOME/.ssh/config"
+alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
 
 alias zedit="nvim $HOME/.zshrc"
 alias zcompinit="sudo rm -rf $HOME/.zcompd*;sudo rm -rf $HOME/.zplug/zcompd*;compinit"
@@ -442,10 +447,13 @@ greptext(){
         find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
         -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
         -prune -o -type f -print0 | xargs -0 -P $CPUCORES jvgrep -I -R $2 /dev/null
+        #sudo find $1 -type d -name .git -prune -o -type f -print0 | \sudo xargs -0 -P $CPUCORES jvgrep -R $2 /dev/null
+        #sudo jvgrep -R $2 $1
     else
         find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
         -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
         -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 /dev/null
+        #sudo find $1 -type d -name .git -prune -o -type f -print0 | \sudo xargs -0 -P $CPUCORES grep -rnwe $2
     fi
 }
 
@@ -469,6 +477,7 @@ alias gcp=gitcompush
 
 alias :q=exit
 
+
 ########################################
 # OS 別の設定
 case ${OSTYPE} in
@@ -489,7 +498,7 @@ case ${OSTYPE} in
             fi
             alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
             alias brewup="cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && cd -;brew update;brew upgrade --all;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
-            
+
             brewcaskup(){
                 brew untap caskroom/homebrew-cask;
                 rm -rf $(brew --prefix)/Library/Taps/phinze-cask;
@@ -506,8 +515,8 @@ case ${OSTYPE} in
                 brew cask cleanup;
             }
             alias brew-cask-update=brewcaskup
-            
-            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;brewup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup";
+
+            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;brewup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;";
         else
             alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup"
         fi
