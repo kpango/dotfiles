@@ -1,0 +1,17 @@
+Host {Config Name}
+    HostName {hostname}
+    User {user}
+    Port {ssh port}
+    IdentitiesOnly yes
+    IdentityFile {rsa key}
+    StrictHostKeyChecking no
+    ServerAliveInterval 60
+    ServerAliveCountMax 120
+    TCPKeepAlive yes
+    Protocol 2
+    GatewayPorts yes
+    ForwardAgent yes
+    ForwardX11 yes
+    ForwardX11Trusted yes
+    XAuthLocation /usr/bin/xauth
+
