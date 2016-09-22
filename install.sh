@@ -54,8 +54,15 @@ else
             brew upgrade --all
             brew cleanup
         fi
-        brew install zsh --HEAD
-        brew install neovim/neovim/neovim
+        
+        if !type zsh > /dev/null 2>&1; then
+            brew install zsh --HEAD
+        fi
+        
+        if !type nvim > /dev/null 2>&1; then
+            brew install neovim/neovim/neovim
+        fi
+
     elif [ "$(expr substr $(uname -s) 1 5)" == 'Linux' ]; then
         OS='Linux'
         if   [ -e /etc/debian_version ] || [ -e /etc/debian_release ]; then
