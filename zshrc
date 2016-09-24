@@ -430,7 +430,7 @@ rsagen(){
 alias rsagen=rsagen
 
 alias sedit="nvim $HOME/.ssh/config"
-alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 ~/.ssh/config"
+alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
 
 alias zedit="nvim $HOME/.zshrc"
 alias zcompinit="sudo rm -rf $HOME/.zcompd*;sudo rm -rf $HOME/.zplug/zcompd*;compinit"
