@@ -26,7 +26,8 @@ if [ -z $DOTENV_LOADED ]; then
     #プログラミング環境構築
     export PROGRAMMING=$HOME/Documents/Programming;
     export XDG_CONFIG_HOME=$HOME/.config;
-    export XDG_DATA_HOME=$XDG_CONFIG_HOME/nvim/log;
+    export NVIM_HOME=$XDG_CONFIG_HOME/nvim;
+    export XDG_DATA_HOME=$NVIM_HOME/log;
     export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME;
 
     #LLVM
@@ -44,11 +45,13 @@ if [ -z $DOTENV_LOADED ]; then
     export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
 
     #JAVA
-    export JDK_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk;
-    export STUDIO_JDK=$JDK_HOME;
-    export JAVA_HOME=$JDK_HOME/Contents/Home;
-    export JRE_HOME=$JAVA_HOME/jre/bin;
-    export ANDROID_HOME=/usr/local/opt/android-sdk;
+    if type java >/dev/null 2>&1; then
+        export JDK_HOME=/Library/Java/JavaVirtualMachines/jdk$(java -version 2>&1 >/dev/null | grep 'java version' | sed -e 's/java\ version\ \"//g' -e 's/\"//g').jdk;
+        export STUDIO_JDK=$JDK_HOME;
+        export JAVA_HOME=$JDK_HOME/Contents/Home;
+        export JRE_HOME=$JAVA_HOME/jre/bin;
+        export ANDROID_HOME=/usr/local/opt/android-sdk;
+    fi
 
     #GO
     export GOPATH=$PROGRAMMING/go;
@@ -87,6 +90,8 @@ if [ -z $DOTENV_LOADED ]; then
 
     if type go >/dev/null 2>&1; then
         export GOROOT="$(go env GOROOT)";
+        export GOOS="$(go env GOOS)";
+        export GOARCH="$(go env GOARCH)";
     fi
 
     export ZPLUG_HOME=$HOME/.zplug;
@@ -419,8 +424,8 @@ if type rustc >/dev/null 2>&1; then
 fi
 
 if type javac >/dev/null 2>&1; then
-    alias java="\javac -d64 -Dfile.encoding=UTF8"
-    alias javac="\javac -d64 -J-Dfile.encoding=UTF8"
+    alias javad="\javac -d64 -Dfile.encoding=UTF8"
+    alias javacd="\javac -d64 -J-Dfile.encoding=UTF8"
 fi
 
 rsagen(){
@@ -479,7 +484,6 @@ alias gcp=gitcompush
 
 alias :q=exit
 
-
 ########################################
 # OS 別の設定
 case ${OSTYPE} in
@@ -491,7 +495,7 @@ case ${OSTYPE} in
         if type brew >/dev/null 2>&1; then
             if [ -z $OSXENV_LOADED ]; then
                 export CLICOLOR=1
-                export HOMEBREW_GITHUB_API_TOKEN="Please Input your GitHub API Token"
+                export HOMEBREW_GITHUB_API_TOKEN="Please Insert Your GitHub API Token"
                 export HOMEBREW_EDITOR=$EDITOR
                 export HOMEBREW_MAKE_JOBS=6
                 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
