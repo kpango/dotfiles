@@ -25,27 +25,26 @@ if has('vim_starting')
 
     set rtp+=~/.config/nvim/plugged/vim-plug
 
-    if !isdirectory(expand('$HOME') . '/.config/nvim/plugged/vim-plug')
+    if !isdirectory(expand('$NVIM_HOME') . '/plugged/vim-plug')
         call system('mkdir -p ~/.config/nvim/plugged/vim-plug')
         call system('git clone https://github.com/junegunn/vim-plug.git ~/.config/nvim/plugged/vim-plug/autoload')
     end
 endif
 
-call plug#begin(expand('$HOME') . '/.config/nvim/plugged')
-    Plug 'junegunn/vim-plug', {'dir': expand('$HOME') . '/.config/nvim/plugged/vim-plug/autoload'}
+call plug#begin(expand('$NVIM_HOME') . '/plugged')
+    Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
 " ---- common plugins
     Plug 'Chiel92/vim-autoformat'
     Plug 'LeafCage/yankround.vim'
     Plug 'Shougo/context_filetype.vim'
     Plug 'Shougo/denite.nvim', {'on':['Denite'], 'do': ':UpdateRemotePlugins' }
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/neco-syntax'
     Plug 'Shougo/neoinclude.vim'
     Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/unite.vim', {'on': ['Unite', 'UniteWithBufferDir','VimFiler']}
     Plug 'Shougo/vimfiler.vim', {'on': 'VimFiler'}
-    Plug 'Shougo/vimproc.vim', {'dir': expand('$HOME') . '/.config/nvim/plugged/vimproc.vim', 'do': 'make' }
+    Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Shougo/vimshell.vim', {'on': 'VimShell'}
     Plug 'Townk/vim-autoclose'
     Plug 'airblade/vim-gitgutter'
@@ -57,7 +56,7 @@ call plug#begin(expand('$HOME') . '/.config/nvim/plugged')
     Plug 'itchyny/lightline.vim'
     Plug 'janko-m/vim-test', {'for': ['go','rust','elixir','python','ruby','javascript','sh','lua','php','perl','java']}
     Plug 'jceb/vim-hier'
-    Plug 'junegunn/fzf', { 'dir': expand('$HOME') . '/.config/nvim/plugged/fzf', 'do': expand('$HOME') . '/.config/nvim/plugged/fzf/install --all' }
+    Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
     Plug 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
     Plug 'kassio/neoterm'
     Plug 'lilydjwg/colorizer', {'do': 'make'}
@@ -78,13 +77,14 @@ call plug#begin(expand('$HOME') . '/.config/nvim/plugged')
     Plug 'vim-scripts/sudo.vim'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
+    Plug 'Shougo/neco-syntax', {'for': 'vim'}
 " ---- Yaml Setting
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Golang Setting
     Plug 'dgryski/vim-godef', { 'for': 'go' }
     Plug 'fatih/vim-go', { 'for': 'go', 'on': ['GoFmt','GoInstallBinaries', 'GoUpdateBinaries','GoImports']}
     Plug 'garyburd/go-explorer', {'for': 'go', 'on': 'GeDoc'}
-    Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$HOME') . '/.config/nvim/plugged/gocode/nvim/symlink.sh'}
+    Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
     Plug 'rhysd/vim-go-impl', {'for': 'go', 'on': 'GoImpl'}
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
     Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
@@ -121,12 +121,14 @@ call plug#begin(expand('$HOME') . '/.config/nvim/plugged')
 " ---- JavaScript
     Plug '1995eaton/vim-better-javascript-completion', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'bigfish/vim-js-context-coloring', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'elzr/vim-json', {'for': ['javascript', 'json']}
     Plug 'heavenshell/vim-jsdoc', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
     Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
+    Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
     Plug 'marijnh/tern_for_vim', {'for': 'javascript', 'do': 'npm -g install'}
     Plug 'mattn/jscomplete-vim', {'for': 'javascript'}
     Plug 'moll/vim-node', {'for': 'javascript'}
@@ -143,6 +145,7 @@ call plug#begin(expand('$HOME') . '/.config/nvim/plugged')
     Plug 'evidens/vim-twig', {'for': 'php'}
     Plug 'h1mesuke/vim-alignta', {'for': 'php'}
     Plug 'm2mdas/phpcomplete-extended', {'for': 'php'}
+    Plug 'pbogut/deoplete-padawan', {'for': 'php'}
     Plug 'stephpy/vim-php-cs-fixer', {'for': 'php', 'on': 'PhpCsFixerFixFile'}
     Plug 'thinca/vim-ref', {'for': 'php'}
 " ---- Ruby
@@ -156,7 +159,7 @@ call plug#begin(expand('$HOME') . '/.config/nvim/plugged')
 " ---- Crystal
     Plug 'rhysd/vim-crystal', {'for': ['crystal'] }
 " ---- Java Scala
-    "Plug 'Shougo/javacomplete', {'for': 'java', 'dir': expand('$HOME') . '/.config/nvim/plugged/javacomplete', 'do': 'javac autoload/Reflection.java'}
+    Plug 'Shougo/javacomplete', {'for': 'java', 'dir': expand('$NVIM_HOME') . '/plugged/javacomplete', 'do': 'javac autoload/Reflection.java'}
     Plug 'artur-shaik/vim-javacomplete2', {'for': 'java'}
     Plug 'derekwyatt/vim-scala', {'for': 'scala'}
     Plug 'ensime/ensime-vim', {'for': ['scala'], 'do': ':UpdateRemotePlugins'}
@@ -205,6 +208,8 @@ call plug#begin(expand('$HOME') . '/.config/nvim/plugged')
     Plug 'cespare/vim-toml', {'for': 'toml'}
 " ---- LLVM
     Plug 'qnighy/llvm.vim', {'for': 'llvm'}
+" ---- ZSH
+    Plug 'zchee/deoplete-zsh', {'for': 'zsh'}
 
 call plug#end()
 
@@ -215,10 +220,7 @@ if !has("python") && !has("pip")
     call system('pip install --upgrade pip')
     call system('pip install neovim --upgrade')
 endif
-if !has("python2") && !has("pip2")
-    call system('pip2 install --upgrade pip')
-    call system('pip2 install neovim --upgrade')
-endif
+
 if !has("python3") && !has("pip3")
     call system('pip3 install --upgrade pip')
     call system('pip3 install neovim --upgrade')
@@ -234,8 +236,6 @@ let g:deoplete#enable_ignore_case = 1
 let g:deoplete#enable_refresh_always = 1
 let g:deoplete#enable_smart_case = 1
 let g:deoplete#ignore_sources = {}
-let g:deoplete#sources = {}
-let g:deoplete#sources._ = ['buffer', 'vim', 'member', 'tag', 'file', 'ultisnips', 'neosnippet', 'javacomplete2', 'omni']
 let g:deoplete#omni#input_patterns = {}
 let g:deoplete#omni#input_patterns.html = '<[^>]*'
 let g:deoplete#omni#input_patterns.php = '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
@@ -257,22 +257,20 @@ let g:deoplete#omni#input_patterns.java = [
             \'[^. \t0-9]\::\w*',
             \]
 let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '\h\w*::']
+let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
-let g:python_host_skip_check = 1
 
 if executable('python')
     let g:python_host_prog = system('which python')
 endif
-if executable('python2')
-    let g:python2_host_prog = system('which python2')
-endif
+
 if executable('python3')
     let g:python3_host_prog = system('which python3')
 endif
 
-let g:neosnippet#snippets_directory=expand('$HOME') . '/.config/nvim/plugged/neosnippet-snippets/neosnippets/'
-set rtp+=$HOME/.config/nvim/plugged/lldb.nvim
+let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
+set rtp+=$NVIM_HOME/plugged/lldb.nvim
 " ---- syntastic
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -346,7 +344,7 @@ augroup GolangSettings
     autocmd FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
     autocmd FileType go let g:deoplete#sources#go#package_dot = 1
     autocmd FileType go let g:deoplete#sources#go#use_cache = 1
-    autocmd FileType go let g:deoplete#sources#go#json_directory = $GOPATH."/cache/deoplete/go/$GOOS_$GOARCH"
+    autocmd FileType go let g:deoplete#sources#go#json_directory = expand("$NVIM_HOME")."/plugged/deoplete-go/data/json/1.7/".expand("$GOOS")."_".expand("$GOARCH")
     autocmd FileType go let g:deoplete#sources#go#cgo = 1
     autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= "/Library/Developer/CommandLineTools/usr/lib/libclang.dylib"
 "    autocmd FileType go let s:goargs = go#package#ImportPath(expand('%:p:h'))
@@ -593,7 +591,7 @@ let g:yankround_max_history = 100
 nnoremap <silent><SID>(ctrlp) :<C-u>CtrlP<CR>
 nmap <expr><C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "<SID>(ctrlp)"
 nnoremap <silent>g<C-p> :<C-u>CtrlPYankRound<CR>
-let g:yankround_dir = expand('$HOME') . '/.config/nvim/tmp'
+let g:yankround_dir = expand('$NVIM_HOME') . '/tmp'
 
 " ---- emmet-vim
 let g:user_emmet_expandabbr_key = '<c-E>'
