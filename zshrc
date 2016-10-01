@@ -11,6 +11,8 @@ if [ -z $DOTENV_LOADED ]; then
     export MANLANG=ja_JP.UTF-8
     export LC_TIME=en_US.UTF-8
 
+    export PASSWORD="your password"
+
     [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
     if type nvim >/dev/null 2>&1; then
@@ -108,6 +110,12 @@ if [ -z $DOTENV_LOADED ]; then
     if type vagrant > /dev/null 2>&1; then
         export VAGRANT_HOME=$HOME/Documents/vagrant;
     fi
+
+    export HTTP_PROXY_HOST="proxy host"
+    export HTTP_PROXY_PORT="http port"
+    export HTTP_PROXY_PASSWORD="proxy passowrd"
+    export HTTPS_PROXY_HOST="proxy host"
+    export HTTPS_PROXY_PORT="https port"
 
     export DOTENV_LOADED=1
 fi
@@ -263,7 +271,7 @@ alias wget='wget --no-cookies --no-check-certificate --no-dns-cache -4'
 alias mkdir='mkdir -p'
 
 # sudo の後のコマンドでエイリアスを有効にする
-alias sudo='sudo '
+alias sudo='echo $PASSWORD | sudo -S '
 
 # グローバルエイリアス
 alias -g L='| less'
@@ -492,6 +500,37 @@ case ${OSTYPE} in
         alias ls='ls -G -F'
         alias -g C='| pbcopy'
         alias xcodeUUIDFix='sudo find -L $HOME/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins -name Info.plist -maxdepth 3 | xargs -P $CPUCORES -I{} defaults write {} DVTPlugInCompatibilityUUIDs -array-add `defaults read /Applications/Xcode.app/Contents/Info DVTPlugInCompatibilityUUID`;sudo xcode-select --reset'
+        proxy(){
+            if [ $1 = "start" ]; then
+                export http_proxy="http://$HTTP_PROXY_HOST:$HTTP_PROXY_PORT";
+                export HTTP_PROXY="http://$HTTP_PROXY_HOST:$HTTP_PROXY_PORT";
+                sudo networksetup -setwebproxy Wi-Fi $HTTP_PROXY_HOST $HTTP_PROXY_PORT
+                sudo networksetup -setwebproxystate Wi-Fi on
+            elif [ $1 = "stop" ]; then
+                export http_proxy="";
+                export HTTP_PROXY="";
+                unset http_proxy;
+                unset HTTP_PROXY;
+                sudo networksetup -setwebproxystate Wi-Fi off
+            elif [ $1 = "status" ]; then
+                echo $http_proxy;
+            fi
+        
+            ssh proxyhost "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
+        }
+        alias proxy=proxy
+        
+        dns(){
+            if [ $1 = "start" ]; then
+                sudo networksetup -setdnsservers Wi-Fi  106.186.17.181 129.250.35.250 129.250.35.251 8.8.8.8 8.8.4.4
+            elif [ $1 = "stop" ]; then
+                sudo networksetup -setdnsservers Wi-Fi Empty
+            elif [ $1 = "status" ]; then
+                networksetup -getdnsservers Wi-Fi
+            fi
+        }
+        alias dns=dns
+
         if type brew >/dev/null 2>&1; then
             if [ -z $OSXENV_LOADED ]; then
                 export CLICOLOR=1
@@ -525,6 +564,7 @@ case ${OSTYPE} in
             alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;brewup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;";
         else
             alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup"
+
         fi
         ;;
     linux*)
