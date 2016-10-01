@@ -229,34 +229,34 @@ endif
 " ---- Deoplete
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 let g:deoplete#auto_completion_start_length = 1
-let g:deoplete#delimiters = ['/', '.', '::', ':', '#', '->', ' ', '>>', '|>']
+"let g:deoplete#delimiters = ['/', '.', '::', ':', '#', '->', ' ', '>>', '|>']
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_camel_case = 1
 let g:deoplete#enable_ignore_case = 1
 let g:deoplete#enable_refresh_always = 1
 let g:deoplete#enable_smart_case = 1
-let g:deoplete#ignore_sources = {}
-let g:deoplete#omni#input_patterns = {}
-let g:deoplete#omni#input_patterns.html = '<[^>]*'
-let g:deoplete#omni#input_patterns.php = '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
-let g:deoplete#omni#input_patterns.xml  = '<[^>]*'
-let g:deoplete#omni#input_patterns.md   = '<[^>]*'
-let g:deoplete#omni#input_patterns.css   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-let g:deoplete#omni#input_patterns.scss   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-let g:deoplete#omni#input_patterns.sass   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-let g:deoplete#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-let g:deoplete#omni#input_patterns.cpp = ['[^. *\t]\.\w*', '[^. *\t]\::\w*', '[^. *\t]\->\w*', '[<"].*/']
-let g:deoplete#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-let g:deoplete#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-let g:deoplete#omni#input_patterns.javascript = '[^. \t]\.\%(\h\w*\)\?'
-let g:deoplete#omni#input_patterns.go = '[^.[:digit:] *\t]\.\w*'
-let g:deoplete#omni#input_patterns.jsp = ['[^. \t0-9]\.\w*']
-let g:deoplete#omni#input_patterns.java = [
-            \'[^. \t0-9]\.\w*',
-            \'[^. \t0-9]\->\w*',
-            \'[^. \t0-9]\::\w*',
-            \]
-let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '\h\w*::']
+"let g:deoplete#ignore_sources = {}
+"let g:deoplete#omni#input_patterns = {}
+"let g:deoplete#omni#input_patterns.html = '<[^>]*'
+"let g:deoplete#omni#input_patterns.php = '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
+"let g:deoplete#omni#input_patterns.xml  = '<[^>]*'
+"let g:deoplete#omni#input_patterns.md   = '<[^>]*'
+"let g:deoplete#omni#input_patterns.css   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+"let g:deoplete#omni#input_patterns.scss   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+"let g:deoplete#omni#input_patterns.sass   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
+"let g:deoplete#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+"let g:deoplete#omni#input_patterns.cpp = ['[^. *\t]\.\w*', '[^. *\t]\::\w*', '[^. *\t]\->\w*', '[<"].*/']
+"let g:deoplete#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+"let g:deoplete#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+"let g:deoplete#omni#input_patterns.javascript = '[^. \t]\.\%(\h\w*\)\?'
+"let g:deoplete#omni#input_patterns.go = '[^.[:digit:] *\t]\.\w*'
+"let g:deoplete#omni#input_patterns.jsp = ['[^. \t0-9]\.\w*']
+"let g:deoplete#omni#input_patterns.java = [
+"            \'[^. \t0-9]\.\w*',
+"            \'[^. \t0-9]\->\w*',
+"            \'[^. \t0-9]\::\w*',
+"            \]
+"let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '\h\w*::']
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
@@ -933,8 +933,6 @@ let g:vimshell_force_overwrite_statusline = 0
 " ---- Default Setting ----
 " -------------------------
 colorscheme monokai
-" ---- enable line number
-set number
 
 " ---- Enable Word Wrap
 set wrap
@@ -950,10 +948,11 @@ set list listchars=tab:>\ ,trail:_,eol:↲,extends:»,precedes:«,nbsp:%
 set ambiwidth=double
 
 " ---- incremental steps
-set nrformats-=octal
+set nf=""
 
 " ---- Blockwise
 set virtualedit=block
+
 " ---- Filename Suggestion
 set wildmenu
 set wildmode=list:longest,full
@@ -977,9 +976,6 @@ set clipboard+=unnamedplus
 set splitright
 set splitbelow
 
-" ---- Highlight search words
-"set hlsearch
-
 " ---- Enable Incremental Search
 set incsearch
 
@@ -999,8 +995,8 @@ set novisualbell
 set noerrorbells
 
 " ---- \+p to paste mode
-imap <F5> <nop>
-set pastetoggle=<F5>
+"imap <F5> <nop>
+"set pastetoggle=<F5>
 
 " ---- convert to soft tab
 set expandtab
@@ -1027,7 +1023,7 @@ set scrolloff=5
 set backspace=indent,eol,start
 
 " ---- Add <> pairs to bracket
-set matchpairs& matchpairs+=<:>
+set matchpairs+=<:>
 
 " ---- Disable Search Result Distinction
 set infercase
@@ -1043,10 +1039,10 @@ set mouse=a
 
 set lazyredraw
 set ttyfast
-set viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!
+"set viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!
 set shortmess+=I
 set fileformats=unix,dos,mac
-"set foldmethod=manual
+set foldmethod=manual
 if executable('zsh')
     set shell=zsh
 endif
