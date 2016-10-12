@@ -404,6 +404,13 @@ if type git >/dev/null 2>&1; then
     alias gbra="git branch"
     alias gpull="git pull origin"
     alias gpush="git push origin"
+    gitcompush(){
+        git add -A;
+        git commit -m $1;
+        git push -u origin $2;
+    }
+    alias gcp=gitcompush
+    alias gfix="gcp fix master"
 fi
 
 if type tmux >/dev/null 2>&1; then
@@ -482,14 +489,6 @@ chword(){
 
 alias chword=chword;
 
-gitcompush(){
-    git add -A;
-    git commit -m $1;
-    git push -u origin $2;
-}
-
-alias gcp=gitcompush
-
 alias :q=exit
 
 ########################################
@@ -531,6 +530,13 @@ case ${OSTYPE} in
         }
         alias dns=dns
 
+        dock(){
+                defaults write com.apple.dock orientation -string $1
+                killall Dock
+        }
+
+        alias dock=dock
+
         if type brew >/dev/null 2>&1; then
             if [ -z $OSXENV_LOADED ]; then
                 export CLICOLOR=1
@@ -542,7 +548,7 @@ case ${OSTYPE} in
                 export OSXENV_LOADED=1
             fi
             alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
-            alias brewup="cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && cd -;brew update;brew upgrade --all;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
+            alias brewup="brew upgrade;cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && cd -;brew update;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
 
             brewcaskup(){
                 brew untap caskroom/homebrew-cask;
