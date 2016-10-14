@@ -139,7 +139,7 @@ else
     zplug "zplug/zplug"
     zplug "Tarrasch/zsh-colors"
     zplug "ascii-soup/zsh-url-highlighter"
-    zplug "b4b4r07/enhancd", use:enhancd.sh
+    zplug "b4b4r07/enhancd", use:init.sh
     zplug "b4b4r07/zspec", as:command, use:bin/zspec
     zplug "chrissicool/zsh-256color"
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
@@ -155,6 +155,9 @@ else
 
     if zplug check b4b4r07/enhancd; then
         export ENHANCD_FILTER=fzf-tmux
+        export ENHANCD_COMMAND=ccd
+        export ENHANCD_FILTER=fzf:peco:gof
+        export ENHANCD_DOT_SHOW_FULLPATH=1
     fi
 
     if zplug check supercrabtree/k; then
@@ -271,7 +274,7 @@ alias wget='wget --no-cookies --no-check-certificate --no-dns-cache -4'
 alias mkdir='mkdir -p'
 
 # sudo の後のコマンドでエイリアスを有効にする
-alias sudo='echo $PASSWORD | sudo -S '
+alias sudo="echo $PASSWORD | sudo -S "
 
 # グローバルエイリアス
 alias -g L='| less'
@@ -356,16 +359,16 @@ function mkcd() {
 }
 
 alias mkcd=mkcd
-alias ..='\cd ..'
-alias ...='\cd ../..'
-alias ....='\cd ../../..'
-alias ,,='\cd ..'
-alias ,,,='\cd ../..'
-alias ,,,,='\cd ../../..'
+alias ..='\cd ../'
+alias ...='\cd ../../'
+alias ....='\cd ../../../'
+alias ,,='\cd ../'
+alias ,,,='\cd ../../'
+alias ,,,,='\cd ../../../'
 alias cdlc='cd /usr/local/'
 alias cddl='cd $HOME/Downloads'
 alias cddc='cd $HOME/Documents'
-alias cdmd='cd $HOME/Documents/Programming/markdown/'
+alias cdmd='cd $HOME/Documents/Programming/Markdown/'
 alias cdpg='cd $HOME/Documents/Programming/'
 alias cdpy='cd $HOME/Documents/Programming/Python'
 alias cdrb='cd $HOME/Documents/Programming/Ruby'
