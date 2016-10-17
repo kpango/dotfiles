@@ -167,10 +167,7 @@ else
     fi
 
     if ! zplug check --verbose; then
-        printf "Install? [y/N]: "
-        if read -q; then
-            echo; zplug install
-        fi
+        zplug install
     fi
     zplug load --verbose
     alias zsup="zcompinit;rm $HOME/.zshrc.zwc;zplug update;zplug clean;zplug clear;zplug status;zplug info;rm $HOME/.bashrc;rm $HOME/.fzf.bash;"
@@ -285,7 +282,7 @@ if type anyenv >/dev/null 2>&1; then
 fi
 
 if type nim >/dev/null 2>&1; then
-    alias nimup="cd $NIMPATH;git -C $NIMPATH pull;nim c $NIMPATH/koch;$NIMPATH/koch boot -d:release;cd $HOME"
+    alias nimup="\cd $NIMPATH;git -C $NIMPATH pull;nim c $NIMPATH/koch;$NIMPATH/koch boot -d:release;\cd $HOME"
 fi
 
 go-update(){
@@ -350,11 +347,12 @@ alias pip3up="sudo pip3 install --upgrade pip;pip3 freeze --local | grep -v '^\-
 
 function mkcd() {
     if [[ -d $1 ]]; then
-        echo "It already exsits! Cd to the directory."
         \cd $1
     else
-        echo "Created the directory and cd to it."
-        mkdir -p $1 && \cd $1
+        printf "Confirm to Make Directory? $1 [y/N]: "
+        if read -q; then
+            echo; sudo \mkdir -p $1 && \cd $1
+        fi
     fi
 }
 
@@ -365,26 +363,26 @@ alias ....='\cd ../../../'
 alias ,,='\cd ../'
 alias ,,,='\cd ../../'
 alias ,,,,='\cd ../../../'
-alias cdlc='cd /usr/local/'
-alias cddl='cd $HOME/Downloads'
-alias cddc='cd $HOME/Documents'
-alias cdmd='cd $HOME/Documents/Programming/Markdown/'
-alias cdpg='cd $HOME/Documents/Programming/'
-alias cdpy='cd $HOME/Documents/Programming/Python'
-alias cdrb='cd $HOME/Documents/Programming/Ruby'
-alias cdph='cd $HOME/Documents/Programming/PHP'
-alias cdjava='cd $HOME/Documents/Programming/Java'
-alias cdjavaee='cd $HOME/Documents/Programming/JavaEE'
-alias cdjavafx='cd $HOME/Documents/Programming/JavaFX'
-alias cdgo='cd $HOME/Documents/Programming/go/src'
-alias cdex='cd $HOME/Documents/Programming/elixir'
-alias cdjs='cd $HOME/Documents/Programming/JavaScript'
-alias cdnode='cd $HOME/Documents/Programming/Node'
-alias cdnim='cd $HOME/Documents/Programming/Nim'
-alias cdv='cd $HOME/Documents/vagrant'
-alias cdvf='cd $HOME/Documents/vagrant/ForceVM'
-alias cdcent='cd $HOME/Documents/vagrant/CentOS7'
-alias cdarch='cd $HOME/Documents/vagrant/ArchLinux'
+alias cdlc='mkcd /usr/local/'
+alias cddl='mkcd $HOME/Downloads'
+alias cddc='mkcd $HOME/Documents'
+alias cdmd='mkcd $HOME/Documents/Programming/Markdown/'
+alias cdpg='mkcd $HOME/Documents/Programming/'
+alias cdpy='mkcd $HOME/Documents/Programming/Python'
+alias cdrb='mkcd $HOME/Documents/Programming/Ruby'
+alias cdph='mkcd $HOME/Documents/Programming/PHP'
+alias cdjava='mkcd $HOME/Documents/Programming/Java'
+alias cdjavaee='mkcd $HOME/Documents/Programming/JavaEE'
+alias cdjavafx='mkcd $HOME/Documents/Programming/JavaFX'
+alias cdgo='mkcd $HOME/Documents/Programming/go/src'
+alias cdex='mkcd $HOME/Documents/Programming/elixir'
+alias cdjs='mkcd $HOME/Documents/Programming/JavaScript'
+alias cdnode='mkcd $HOME/Documents/Programming/Node'
+alias cdnim='mkcd $HOME/Documents/Programming/Nim'
+alias cdv='mkcd $HOME/Documents/vagrant'
+alias cdvf='mkcd $HOME/Documents/vagrant/ForceVM'
+alias cdcent='mkcd $HOME/Documents/vagrant/CentOS7'
+alias cdarch='mkcd $HOME/Documents/vagrant/ArchLinux'
 
 if type rails >/dev/null 2>&1; then
     alias railskill="kill -9 `ps aux | grep rails | awk '{print $2}'`"
@@ -517,8 +515,7 @@ case ${OSTYPE} in
             elif [ $1 = "status" ]; then
                 echo $http_proxy;
             fi
-        
-            ssh proxyhost "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
+            ssh $HTTP_PROXY_HOST "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
         }
         alias proxy=proxy
         
@@ -551,7 +548,7 @@ case ${OSTYPE} in
                 export OSXENV_LOADED=1
             fi
             alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
-            alias brewup="brew upgrade;cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && cd -;brew update;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
+            alias brewup="brew upgrade;\cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && \cd -;brew update;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
 
             brewcaskup(){
                 brew untap caskroom/homebrew-cask;
