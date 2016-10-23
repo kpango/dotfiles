@@ -345,7 +345,7 @@ alias pipup="sudo pip install --upgrade pip;pip freeze --local | grep -v '^\-e' 
 alias pip2up="sudo pip2 install --upgrade pip;pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | \sudo xargs -P $CPUCORES pip2 install -U --upgrade"
 alias pip3up="sudo pip3 install --upgrade pip;pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | \sudo xargs -P $CPUCORES pip3 install -U --upgrade"
 
-function mkcd() {
+mkcd() {
     if [[ -d $1 ]]; then
         \cd $1
     else
@@ -531,8 +531,15 @@ case ${OSTYPE} in
         alias dns=dns
 
         dock(){
-                defaults write com.apple.dock orientation -string $1
-                killall Dock
+            if [ $1 = "l" ] || [ $1 = "left" ];then
+                defaults write com.apple.dock orientation -string left
+            elif [ $1 = "r" ] || [ $1 = "right" ];then
+                defaults write com.apple.dock orientation -string right
+            else
+                defaults write com.apple.dock orientation -string bottom
+            fi
+
+            killall Dock
         }
 
         alias dock=dock
@@ -567,7 +574,7 @@ case ${OSTYPE} in
             }
             alias brew-cask-update=brewcaskup
 
-            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;brewup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;";
+            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;";
         else
             alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup"
 
