@@ -33,7 +33,7 @@ my dotfiles
 
 ## Install
 ```shell
-git clone https://github.com/Y-Kato-Badminton/dotfiles
+git clone https://github.com/kpango/dotfiles
 cd dotfiles
 sh ./install.sh
 cd ../
@@ -41,7 +41,7 @@ rm -rf dotfiles
 ```
 
 ## Contribution
-1. Fork it ( http://github.com/Y-Kato-Badminton/dotfiles/fork )
+1. Fork it ( http://github.com/kpango/dotfiles/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
@@ -49,4 +49,4 @@ rm -rf dotfiles
 
 ## Author
 
-[Y-Kato-Badminton](https://github.com/Y-Kato-Badminton)
+[kpango](https://github.com/kpango)
