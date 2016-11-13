@@ -13,8 +13,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     export PASSWORD="your password"
 
-    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh 
     if type nvim >/dev/null 2>&1; then
         export EDITOR=$(which nvim)
     else
@@ -53,12 +52,18 @@ if [ -z $DOTENV_LOADED ]; then
         export JAVA_HOME=$JDK_HOME/Contents/Home;
         export JRE_HOME=$JAVA_HOME/jre/bin;
         export ANDROID_HOME=/usr/local/opt/android-sdk;
+        if type jetty >/dev/null 2>&1; then
+            export JETTY_HOME=/usr/local/opt/jetty;
+        fi
     fi
+
+    export PHP_BUILD_CONFIGURE_OPTS="--with-openssl=/usr/local/opt/openssl"
 
     #GO
     export GOPATH=$PROGRAMMING/go;
     export GOBIN=$GOPATH/bin;
     export GO15VENDOREXPERIMENT=1;
+    export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go;
 
     #Nim
     export NIMPATH=/usr/local/bin/Nim;
@@ -80,14 +85,19 @@ if [ -z $DOTENV_LOADED ]; then
     export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
 
     if [ -z $TMUX ]; then
-        export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$GOBIN:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH;
+        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
         #anyenv init
         if [ -d "$HOME/.anyenv" ] ; then
             export PATH="$HOME/.anyenv/bin:$PATH"
             if type anyenv >/dev/null 2>&1; then
-                eval "$(anyenv init - --no-rehash zsh)"
+                eval "$(anyenv init - --no-rehash)"
             fi
         fi
+    fi
+
+    if type ndenv > /dev/null 2>&1; then
+        export NODE_BIN="$(ndenv prefix)/bin"
+        export PATH="$NODE_BIN:$PATH"
     fi
 
     if type go >/dev/null 2>&1; then
@@ -139,7 +149,7 @@ else
     zplug "zplug/zplug"
     zplug "Tarrasch/zsh-colors"
     zplug "ascii-soup/zsh-url-highlighter"
-    zplug "b4b4r07/enhancd", use:init.sh
+    zplug "b4b4r07/enhancd", use:enhancd.sh
     zplug "b4b4r07/zspec", as:command, use:bin/zspec
     zplug "chrissicool/zsh-256color"
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
@@ -286,43 +296,46 @@ if type nim >/dev/null 2>&1; then
 fi
 
 go-update(){
-    go get -u -v golang.org/x/tools/cmd/godoc
-    go get -u -v golang.org/x/tools/cmd/vet
-    go get -u -v golang.org/x/tools/cmd/goimports
-    go get -u -v golang.org/x/tools/cmd/cover
-    go get -u -v golang.org/x/tools/cmd/godef
-    go get -u -v golang.org/x/tools/cmd/oracle
-    go get -u -v golang.org/x/tools/cmd/gorename
-    go get -u -v github.com/golang/lint/golint
-    go get -u -v github.com/alecthomas/gometalinter
-    go get -u -v github.com/jstemmer/gotags
-    go get -u -v github.com/kisielk/gotool
-    go get -u -v github.com/zmb3/gogetdoc
-    go get -u -v github.com/nsf/gocode
-    go get -u -v github.com/Masterminds/glide
-    go get -u -v github.com/mattn/jvgrep
-    go get -u -v github.com/mattn/files
-    go get -u -v github.com/peco/peco/cmd/peco
-    go get -u -v github.com/motemen/go-iferr/cmd/goiferr
-    go get -u -v sourcegraph.com/sqs/goreturns
 
-    go install golang.org/x/tools/cmd/godoc
-    go install golang.org/x/tools/cmd/vet
-    go install golang.org/x/tools/cmd/goimports
-    go install golang.org/x/tools/cmd/cover
-    go install golang.org/x/tools/cmd/godef
-    go install golang.org/x/tools/cmd/oracle
-    go install golang.org/x/tools/cmd/gorename
-    go install github.com/golang/lint/golint
+    go get -u github.com/Masterminds/glide
+    go get -u github.com/alecthomas/gometalinter
+    go get -u github.com/constabulary/gb/...
+    go get -u github.com/cweill/gotests/...
+    go get -u github.com/garyburd/go-explorer/src/getool
+    go get -u github.com/golang/lint/golint
+    go get -u github.com/jstemmer/gotags
+    go get -u github.com/kisielk/gotool
+    go get -u github.com/mattn/files
+    go get -u github.com/mattn/jvgrep
+    go get -u github.com/motemen/go-iferr/cmd/goiferr
+    go get -u github.com/nsf/gocode
+    go get -u github.com/peco/peco/cmd/peco
+    go get -u github.com/rogpeppe/godef
+    go get -u github.com/zmb3/gogetdoc
+    go get -u golang.org/x/tools/cmd/cover
+    go get -u golang.org/x/tools/cmd/godoc
+    go get -u golang.org/x/tools/cmd/goimports
+    go get -u golang.org/x/tools/cmd/gorename
+    go get -u sourcegraph.com/sqs/goreturns
+
+    go install github.com/Masterminds/glide
     go install github.com/alecthomas/gometalinter
+    go install github.com/constabulary/gb/...
+    go install github.com/cweill/gotests
+    go install github.com/garyburd/go-explorer/src/getool
+    go install github.com/golang/lint/golint
     go install github.com/jstemmer/gotags
     go install github.com/kisielk/gotool
-    go install github.com/zmb3/gogetdoc
-    go install github.com/nsf/gocode
-    go install github.com/Masterminds/glide
     go install github.com/mattn/jvgrep
-    go install github.com/peco/peco/cmd/peco
     go install github.com/motemen/go-iferr/cmd/goiferr
+    go install github.com/nsf/gocode
+    go install github.com/peco/peco/cmd/peco
+    go install github.com/rogpeppe/godef
+    go install github.com/zmb3/gogetdoc
+    go install golang.org/x/tools/cmd/cover
+    go install golang.org/x/tools/cmd/godoc
+    go install golang.org/x/tools/cmd/goimports
+    go install golang.org/x/tools/cmd/gorename
     go install sourcegraph.com/sqs/goreturns
 
     $GOPATH/bin/gocode set autobuild true
@@ -341,9 +354,9 @@ fi
 alias gemup="sudo chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;sudo chmod -R 777 /Library/Ruby/;gem update --system;gem update"
 alias haskellup="stack upgrade;stack update;cabal update"
 alias npmup="npm update -g npm;npm update -g;npm upgrade -g"
-alias pipup="sudo pip install --upgrade pip;pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | \sudo xargs -P $CPUCORES pip install -U --upgrade"
-alias pip2up="sudo pip2 install --upgrade pip;pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | \sudo xargs -P $CPUCORES pip2 install -U --upgrade"
-alias pip3up="sudo pip3 install --upgrade pip;pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | \sudo xargs -P $CPUCORES pip3 install -U --upgrade"
+alias pipup="pip install --upgrade pip;pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip install -U --upgrade"
+alias pip2up="pip2 install --upgrade pip;pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip2 install -U --upgrade"
+alias pip3up="pip3 install --upgrade pip;pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip3 install -U --upgrade"
 
 mkcd() {
     if [[ -d $1 ]]; then
@@ -378,6 +391,7 @@ alias cdgo='mkcd $HOME/Documents/Programming/go/src'
 alias cdex='mkcd $HOME/Documents/Programming/elixir'
 alias cdjs='mkcd $HOME/Documents/Programming/JavaScript'
 alias cdnode='mkcd $HOME/Documents/Programming/Node'
+alias cdsh='mkcd $HOME/Documents/Programming/shells'
 alias cdnim='mkcd $HOME/Documents/Programming/Nim'
 alias cdv='mkcd $HOME/Documents/vagrant'
 alias cdvf='mkcd $HOME/Documents/vagrant/ForceVM'
@@ -454,7 +468,7 @@ alias sedit="nvim $HOME/.ssh/config"
 alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
 
 alias zedit="nvim $HOME/.zshrc"
-alias zcompinit="sudo rm -rf $HOME/.zcompd*;sudo rm -rf $HOME/.zplug/zcompd*;compinit"
+alias zcompinit="sudo rm -rf $HOME/.zcompd*;sudo rm -rf $HOME/.zplug/zcompd*;"
 alias zsinit="zcompinit;sudo rm -rf $HOME/.zplug;sudo rm -rf $HOME/.zshrc.zwc;zsup"
 
 findfile(){
@@ -465,8 +479,8 @@ alias findfile=findfile
 
 greptext(){
     if type jvgrep >/dev/null 2>&1; then
-        if [ $# -eq 3 ] && [ $3 = "-l" ]; then
-            jvgrep -I -R -l $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$'
+        if [ $# -eq 3 ] && [ $3 = "-f" ]; then
+            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)Application\ Support|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$'
         else
             jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$'
         fi
@@ -504,8 +518,8 @@ case ${OSTYPE} in
             if [ $1 = "start" ]; then
                 export http_proxy="http://$HTTP_PROXY_HOST:$HTTP_PROXY_PORT";
                 export HTTP_PROXY="http://$HTTP_PROXY_HOST:$HTTP_PROXY_PORT";
-                sudo networksetup -setwebproxy Wi-Fi $HTTP_PROXY_HOST $HTTP_PROXY_PORT
-                sudo networksetup -setwebproxystate Wi-Fi on
+                sudo networksetup -setwebproxy Wi-Fi $HTTP_PROXY_HOST $HTTP_PROXY_PORT;
+                sudo networksetup -setwebproxystate Wi-Fi on;
             elif [ $1 = "stop" ]; then
                 export http_proxy="";
                 export HTTP_PROXY="";
@@ -515,7 +529,8 @@ case ${OSTYPE} in
             elif [ $1 = "status" ]; then
                 echo $http_proxy;
             fi
-            ssh $HTTP_PROXY_HOST "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
+
+            ssh ci "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
         }
         alias proxy=proxy
         
@@ -541,7 +556,6 @@ case ${OSTYPE} in
 
             killall Dock
         }
-
         alias dock=dock
 
         if type brew >/dev/null 2>&1; then
@@ -555,7 +569,7 @@ case ${OSTYPE} in
                 export OSXENV_LOADED=1
             fi
             alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
-            alias brewup="brew upgrade;\cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && \cd -;brew update;brew-cask-update;brew cleanup;brew cask cleanup;brew prune;brew doctor";
+            alias brewup="brew upgrade;\cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && \cd -;brew-cask-update;brew prune;brew doctor";
 
             brewcaskup(){
                 brew untap caskroom/homebrew-cask;
@@ -564,12 +578,8 @@ case ${OSTYPE} in
                 rm -rf $(brew --prefix)/Library/Taps/caskroom;
                 brew uninstall --force brew-cask;
                 brew update;
+                brew cask update;
                 brew cleanup;
-                brew cask cleanup;
-                for c in $(brew cask list)
-                do
-                    ! brew cask info $c | grep -qF 'Not installed' || brew cask uninstall $c --force && brew cask install $c
-                done
                 brew cask cleanup;
             }
             alias brew-cask-update=brewcaskup
