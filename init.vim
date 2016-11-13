@@ -2,7 +2,6 @@
 " ---- Encoding Setting ----
 " --------------------------
 set encoding=utf-8
-set fenc=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8
 set termencoding=utf-8
@@ -23,7 +22,7 @@ if has('vim_starting')
         set nocompatible
     endif
 
-    set rtp+=~/.config/nvim/plugged/vim-plug
+    set runtimepath+=~/.config/nvim/plugged/vim-plug
 
     if !isdirectory(expand('$NVIM_HOME') . '/plugged/vim-plug')
         call system('mkdir -p ~/.config/nvim/plugged/vim-plug')
@@ -49,8 +48,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Townk/vim-autoclose'
     Plug 'airblade/vim-gitgutter'
     Plug 'bronson/vim-trailing-whitespace', {'on': 'FixWhitespace'}
-    Plug 'critiqjo/lldb.nvim', { 'do': ':UpdateRemotePlugins'}
-    Plug 'ctrlpvim/ctrlp.vim'
     Plug 'h1mesuke/unite-outline'
     Plug 'honza/vim-snippets'
     Plug 'itchyny/lightline.vim'
@@ -66,8 +63,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'osyo-manga/vim-precious'
     Plug 'osyo-manga/vim-watchdogs'
     Plug 'rizzatti/dash.vim', {'on': 'Dash'}
-    Plug 'scrooloose/syntastic'
-    "Plug 'neomake/neomake'
+    Plug 'neomake/neomake'
     Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
     Plug 'thinca/vim-quickrun'
     Plug 'tpope/vim-surround'
@@ -82,12 +78,11 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Golang Setting
     Plug 'dgryski/vim-godef', { 'for': 'go' }
-    Plug 'fatih/vim-go', { 'for': 'go', 'on': ['GoFmt','GoInstallBinaries', 'GoUpdateBinaries','GoImports']}
-    Plug 'garyburd/go-explorer', {'for': 'go', 'on': 'GeDoc'}
+    Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'gb build'}
     Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
-    Plug 'rhysd/vim-go-impl', {'for': 'go', 'on': 'GoImpl'}
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
     Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
+    Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'}
 " ---- Elixir Setting
     Plug 'archSeer/elixir.nvim', {'for': 'elixir'}
     Plug 'c-brenn/phoenix.vim', {'for': 'elixir'}
@@ -119,27 +114,27 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'hail2u/vim-css3-syntax', {'for': ['css','less','sass','scss','stylus'] }
     Plug 'wavded/vim-stylus', {'for': ['stylus']}
 " ---- JavaScript
-    Plug '1995eaton/vim-better-javascript-completion', {'for': ['javascript', 'javascript.jsx', 'json']}
-    Plug 'bigfish/vim-js-context-coloring', { 'for': ['javascript', 'javascript.jsx'] }
-    Plug 'carlitux/deoplete-ternjs', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json'], 'do': 'npm install -g tern' }
     Plug 'elzr/vim-json', {'for': ['javascript', 'json']}
     Plug 'heavenshell/vim-jsdoc', {'for': ['javascript', 'javascript.jsx', 'json']}
-    Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'json']}
-    Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
+    Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
     Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
     Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
     Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
-    Plug 'marijnh/tern_for_vim', {'for': 'javascript', 'do': 'npm -g install'}
-    Plug 'mattn/jscomplete-vim', {'for': 'javascript'}
     Plug 'moll/vim-node', {'for': 'javascript'}
-    Plug 'mxw/vim-jsx', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
     Plug 'myhere/vim-nodejs-complete', {'for': 'javascript'}
     Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'othree/javascript-libraries-syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'othree/jsdoc-syntax.vim', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'ramitos/jsctags', {'for': ['javascript', 'javascript.jsx', 'json']}
+" ---- Dart
+    Plug 'dart-lang/dart-vim-plugin', {'for': 'dart'}
+    Plug 'miyakogi/vim-dartanalyzer', {'for': 'dart'}
 " ---- PHP
     Plug 'arnaud-lb/vim-php-namespace', {'for': 'php'}
     Plug 'evidens/vim-twig', {'for': 'php'}
@@ -159,7 +154,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Crystal
     Plug 'rhysd/vim-crystal', {'for': ['crystal'] }
 " ---- Java Scala
-    Plug 'Shougo/javacomplete', {'for': 'java', 'dir': expand('$NVIM_HOME') . '/plugged/javacomplete', 'do': 'javac autoload/Reflection.java'}
     Plug 'artur-shaik/vim-javacomplete2', {'for': 'java'}
     Plug 'derekwyatt/vim-scala', {'for': 'scala'}
     Plug 'ensime/ensime-vim', {'for': ['scala'], 'do': ':UpdateRemotePlugins'}
@@ -216,47 +210,22 @@ call plug#end()
 " -------------------------
 " ---- Plugin Settings ----
 " -------------------------
-if !has("python") && !has("pip")
+if !has('python') && !has('pip')
     call system('pip install --upgrade pip')
     call system('pip install neovim --upgrade')
 endif
 
-if !has("python3") && !has("pip3")
+if !has('python3') && !has('pip3')
     call system('pip3 install --upgrade pip')
     call system('pip3 install neovim --upgrade')
 endif
 
+if !has('gb') && has('go')
+    call system('go get -u -v github.com/constabulary/gb/...')
+endif
+
 " ---- Deoplete
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-let g:deoplete#auto_completion_start_length = 1
-"let g:deoplete#delimiters = ['/', '.', '::', ':', '#', '->', ' ', '>>', '|>']
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#enable_camel_case = 1
-let g:deoplete#enable_ignore_case = 1
-let g:deoplete#enable_refresh_always = 1
-let g:deoplete#enable_smart_case = 1
-"let g:deoplete#ignore_sources = {}
-"let g:deoplete#omni#input_patterns = {}
-"let g:deoplete#omni#input_patterns.html = '<[^>]*'
-"let g:deoplete#omni#input_patterns.php = '\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
-"let g:deoplete#omni#input_patterns.xml  = '<[^>]*'
-"let g:deoplete#omni#input_patterns.md   = '<[^>]*'
-"let g:deoplete#omni#input_patterns.css   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-"let g:deoplete#omni#input_patterns.scss   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-"let g:deoplete#omni#input_patterns.sass   = '^\s\+\w\+\|\w\+[):;]\?\s\+\w*\|[@!]'
-"let g:deoplete#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-"let g:deoplete#omni#input_patterns.cpp = ['[^. *\t]\.\w*', '[^. *\t]\::\w*', '[^. *\t]\->\w*', '[<"].*/']
-"let g:deoplete#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-"let g:deoplete#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-"let g:deoplete#omni#input_patterns.javascript = '[^. \t]\.\%(\h\w*\)\?'
-"let g:deoplete#omni#input_patterns.go = '[^.[:digit:] *\t]\.\w*'
-"let g:deoplete#omni#input_patterns.jsp = ['[^. \t0-9]\.\w*']
-"let g:deoplete#omni#input_patterns.java = [
-"            \'[^. \t0-9]\.\w*',
-"            \'[^. \t0-9]\->\w*',
-"            \'[^. \t0-9]\::\w*',
-"            \]
-"let g:deoplete#omni#input_patterns.ruby = ['[^. *\t]\.\w*', '\h\w*::']
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
@@ -270,24 +239,18 @@ if executable('python3')
 endif
 
 let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
-set rtp+=$NVIM_HOME/plugged/lldb.nvim
-" ---- syntastic
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_enable_signs=1
-let g:syntastic_always_populate_loc_list = 2
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_save=1
-let g:syntastic_check_on_open=1
-let g:syntastic_loc_list_height=5
-let g:syntastic_error_symbol='✗'
-let g:syntastic_warning_symbol='⚠'
-let g:syntastic_style_error_symbol = '✗'
-let g:syntastic_style_warning_symbol = '⚠'
-let g:syntastic_check_on_wq = 0
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['go','php','ruby','javascript','java','rust','nim','python','elixir','erlang','sh','sql'] }
 
+let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_camel_case = 1
+let g:deoplete#enable_ignore_case = 1
+let g:deoplete#enable_refresh_always = 1
+let g:deoplete#enable_smart_case = 1
+
+
+set statusline+=%#warningmsg#
+set statusline+=%{neomake#utils#ErrorMessage()}
+set statusline+=%*
 let g:indent_guides_enable_on_vim_startup=1
 let g:indent_guides_start_level=2
 let g:indent_guides_auto_colors=0
@@ -296,13 +259,126 @@ autocmd VimEnter,Colorscheme * :hi IndentGuidesEven ctermbg=234
 let g:indent_guides_color_change_percent = 30
 let g:indent_guides_guide_size = 1
 
+augroup FileTypeSetting
+    autocmd!
+    autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+    autocmd BufNewFile,BufRead *.es6 set filetype=javascript
+    autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
+    autocmd BufNewFile,BufRead *.rs set filetype=rust
+    autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+    autocmd BufNewFile,BufRead *.exs,*.ex set filetype=elixir
+    autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
+augroup END
+
+augroup NeomakeSetting
+    autocmd!
+    autocmd BufRead,BufWritePost * Neomake
+    autocmd QuitPre,VimLeavePre * lclose
+    autocmd BufRead * let g:neomake_open_list = 2
+    autocmd BufRead * let g:neomake_list_height = 6
+    autocmd FileType coffee,javascript,javascript.jsx,json let g:neomake_go_enabled_makers=['eslint']
+    autocmd FileType go let g:neomake_go_enabled_makers = ['go', 'golint', 'govet']
+    autocmd FileType html,xhtml let g:neomake_html_enabled_makers = ['tidy', 'jshint']
+    autocmd FileType nim let g:neomake_nim_enabled_makers = ['nim', 'nimsuggest']
+    autocmd FileType php let g:neomake_php_enabled_makers = ['php', 'phpcs', 'phpmd']
+    autocmd FileType php let g:neomake_php_phpcs_args_standard='psr4'
+    autocmd FileType python let g:neomake_python_enabled_makers = ['python', 'flake8']
+    autocmd FileType rust let g:neomake_rust_enabled_makers = ['rustc']
+    autocmd FileType sh let g:neomake_sh_enabled_makers = ['sh', 'shellcheck']
+    autocmd FileType vim let g:neomake_vim_enabled_makers = ['vint']
+    autocmd FileType zsh let g:neomake_zsh_enabled_makers = ['zsh', 'shellcheck']
+augroup END
+
+augroup DeopleteSetting
+    autocmd!
+    autocmd FileType go let g:deoplete#sources#go#align_class = 1
+    autocmd FileType go let g:deoplete#sources#go#cgo = 1
+    autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= "/Library/Developer/CommandLineTools/usr/lib/libclang.dylib"
+    autocmd FileType go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
+    autocmd FileType go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
+    autocmd FileType go let g:deoplete#sources#go#package_dot = 1
+    autocmd FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+    autocmd FileType go let g:deoplete#sources#go#use_cache = 1
+augroup END
+
+augroup IndentSetting
+    autocmd!
+    autocmd FileType coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS
+    autocmd FileType go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+    autocmd FileType html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+    autocmd FileType nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+    autocmd FileType php setlocal ts=4 sts=4 sw=4 expandtab omnifunc=phpcomplete_extended#CompletePHP
+    autocmd FileType python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
+    autocmd FileType rust setlocal sw=4 noexpandtab ts=4 completeopt=menu,preview
+    autocmd FileType ruby setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+    autocmd FileType scala setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+    autocmd FileType sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
+    autocmd FileType xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+augroup END
+
+augroup TagBarSetting
+    autocmd!
+    autocmd FileType go let g:tagbar_type_go = {
+        \ 'ctagstype' : 'go',
+        \ 'kinds'     : [
+        \ 'p:package',
+        \ 'i:imports',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+        \ ],
+        \ 'sro' : '.',
+        \ 'kind2scope' : {
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+        \ },
+        \ 'scope2kind' : {
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+        \ },
+        \ 'ctagsbin'  : 'gotags',
+        \ 'ctagsargs' : '-sort -silent'
+    \ }
+    autocmd FileType nim let g:tagbar_type_nim = {
+        \ 'ctagstype' : 'nim',
+        \ 'kinds' : [
+        \   'h:Headline',
+        \   't:class',
+        \   't:enum',
+        \   't:tuple',
+        \   't:subrange',
+        \   't:proctype',
+        \   'f:procedure',
+        \   'f:method',
+        \   'o:operator',
+        \   't:template',
+        \   'm:macro',
+        \ ],
+    \ }
+    autocmd FileType ruby let g:tagbar_type_ruby = {
+        \ 'ctagstype' : 'ruby',
+        \ 'kinds' : [
+        \   'm:modules',
+        \   'c:classes',
+        \   'd:describes',
+        \   'C:contexts',
+        \   'f:methods',
+        \   'F:singleton methods'
+        \ ]
+    \}
+augroup END
+
 " ---- Golang
-augroup GolangSettings
+augroup GolangSetting
     autocmd!
     " ---- GoFmtコマンドを保存時に走らせる
-    autocmd BufWritePre *.go GoImports
-    autocmd BufWritePre *.go GoFmt
-    autocmd BufNewFile,BufRead *.go set sw=4 noexpandtab ts=4 completeopt=menu,preview
+    autocmd BufWritePre *.go Gofmt
     autocmd FileType go compiler go
     autocmd FileType go nmap <leader>gr <Plug>(go-run)
     autocmd FileType go nmap <leader>gc <Plug>(go-coverage)
@@ -339,56 +415,27 @@ augroup GolangSettings
     autocmd FileType go let g:go_list_type = "quickfix"
     autocmd FileType go let g:go_term_mode = "split"
     autocmd FileType go let g:go_highlight_build_constraints = 1
-    autocmd FileType go let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
-    autocmd FileType go let g:deoplete#sources#go#align_class = 1
-    autocmd FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-    autocmd FileType go let g:deoplete#sources#go#package_dot = 1
-    autocmd FileType go let g:deoplete#sources#go#use_cache = 1
-    autocmd FileType go let g:deoplete#sources#go#json_directory = expand("$NVIM_HOME")."/plugged/deoplete-go/data/json/1.7/".expand("$GOOS")."_".expand("$GOARCH")
-    autocmd FileType go let g:deoplete#sources#go#cgo = 1
-    autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= "/Library/Developer/CommandLineTools/usr/lib/libclang.dylib"
-"    autocmd FileType go let s:goargs = go#package#ImportPath(expand('%:p:h'))
-"    autocmd FileType go let g:neomake_go_errcheck_maker = {
-"    \ 'args': ['-abspath', s:goargs],
-"    \ 'append_file': 0,
-"    \ 'errorformat': '%f:%l:%c:\ %m, %f:%l:%c\ %#%m',
-"    \ }
-"    autocmd FileType go let g:neomake_go_gobuild_maker = {
-"    \ 'exe': 'sh',
-"    \ 'args': ['-c', 'go build -o ' . neomake#utils#DevNull() . ' ./\$0', '%:h'],
-"    \ 'errorformat':
-"        \ '%W%f:%l: warning: %m,' .
-"        \ '%E%f:%l:%c:%m,' .
-"        \ '%E%f:%l:%m,' .
-"        \ '%C%\s%\+%m,' .
-"        \ '%-G#%.%#'
-"    \ }
-"    autocmd FileType go let g:neomake_go_enabled_makers = ['golint', 'govet', 'errcheck']
-"    autocmd BufWritePre,BufEnter *.go Neomake
-    "autocmd FileType go let g:neomake_verbose=3
-    "autocmd FileType go let g:neomake_open_list = 2
-    autocmd FileType go let g:syntastic_go_checkers = ['go', 'guru', 'golint', 'govet', 'errcheck']
-    autocmd FileType go set rtp+=$GOROOT/misc/vim
-    autocmd FileType go exe "set rtp+=".globpath($GOPATH, "src/github.com/nsf/gocode/vim")
-    autocmd FileType go exe "set rtp+=".globpath($GOPATH, "src/github.com/golang/lint/misc/vim")
-    autocmd FileType go set rtp+=$GOPATH/src/github.com/golang/lint/misc/vim
-    autocmd FileType go set rtp+=$GOPATH/src/github.com/nsf/gocode/vim
+    autocmd FileType go set rtp+=globpath($GOROOT, "/misc/vim")
+    autocmd FileType go set rtp+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
+    autocmd FileType go set rtp+=globpath($GOPATH, "src/github.com/golang/lint/misc/vim")
 augroup END
 
 " ---- Scala Settings
 augroup ScalaSettings
     autocmd!
-    autocmd FileType scala setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
     autocmd BufWritePost *.scala silent :EnTypeCheck
     autocmd FileType scala compiler sbt
+augroup END
+
+" ---- HTML Settings
+augroup HTMLSettings
+    autocmd!
+    autocmd FileType html,xhtml imap <buffer><expr><tab> emmet#isExpandable() ? "\<plug>(emmet-expand-abbr)" : "\<tab>"
 augroup END
 
 " ---- PHP Settings
 augroup PHPSettings
     autocmd!
-    autocmd FileType php setlocal ts=4 sts=4 sw=4 expandtab omnifunc=phpcomplete_extended#CompletePHP
-    autocmd FileType php let g:syntastic_php_checkers = ['phpcs', 'phpmd']
-    autocmd FileType php let g:syntastic_php_phpcs_args='--standard=psr4'
     autocmd FileType php let g:php_baselib       = 1
     autocmd FileType php let g:php_htmlInStrings = 1
     autocmd FileType php let g:php_noShortTags   = 1
@@ -401,32 +448,20 @@ augroup PHPSettings
     autocmd FileType php let g:php_cs_fixer_level                  = 'symfony'
     autocmd FileType php let g:php_cs_fixer_php_path               = 'php'
     autocmd FileType php let g:php_cs_fixer_verbose                = 0
-    autocmd FileType php let g:deoplete#omni#input_patterns.php = "\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?"
-
-augroup END
-
-" ---- Shell Settings
-augroup ShellSettings
-    autocmd!
-    autocmd FileType sh,zsh,markdown setlocal ts=4 sts=4 sw=4 expandtab completeopt=menu,preview
-    autocmd FileType sh let g:syntastic_sh_checkers = ['shellcheck']
-    autocmd FileType zsh let g:syntastic_zsh_checkers = ['shellcheck --shell=zsh']
 augroup END
 
 " ---- JavaScript Settings
-augroup JavascriptSettings
+augroup JavaScriptSettings
     autocmd!
-    autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
-    autocmd BufNewFile,BufRead *.es6 set filetype=javascript
     autocmd BufWritePre *.js,*.jsx,*.coffee EsFix
     autocmd BufWritePre *.js,*.jsx,*.coffee Autoformat
-    autocmd FileType coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview
-    autocmd FileType coffee,javascript,javascript.jsx,jsx,json let g:syntastic_javascript_checkers=['eslint']
-    autocmd FileType coffee,javascript,javascript.jsx,jsx,json let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
-    autocmd FileType coffee,javascript,javascript.jsx,jsx,json let g:jsx_pragma_required = 0     " @から始まるプラグマでは読み込まない．
-    autocmd FileType coffee,javascript,javascript.jsx,jsx,json let g:js_indent_typescript = 1
-    autocmd FileType coffee,javascript,javascript.jsx,jsx,json let g:tagbar_type_javascript = {'ctagsbin' : system('which jsctags')}
-    autocmd FileType coffee,javascript,javascript.jsx,jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
+    autocmd FileType coffee,javascript,javascript.jsx,json let g:node_usejscomplete = 1
+    autocmd FileType coffee,javascript,javascript.jsx,json let g:tern_request_timeout = 1
+    autocmd FileType coffee,javascript,javascript.jsx,json let g:tern_show_signature_in_pum = '0'
+    autocmd FileType coffee,javascript,javascript.jsx,json let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
+    autocmd FileType coffee,javascript,javascript.jsx,json let g:js_indent_typescript = 1
+    autocmd FileType coffee,javascript,javascript.jsx,json let g:tagbar_type_javascript = {'ctagsbin' : system('which jsctags')}
+    autocmd FileType coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
 augroup END
 
 " ---- Java Settings
@@ -443,58 +478,34 @@ augroup JavaSettings
     autocmd FileType java,jsp let b:javagetset_add_this=1
     autocmd FileType java,jsp let g:JavaComplete_MavenRepositoryDisable = 0
     autocmd FileType java,jsp let g:JavaComplete_UseFQN = 0
-    autocmd Filetype java,jsp nmap <F5> <Plug>(JavaComplete-Imports-Add)
-    autocmd Filetype java,jsp imap <F5> <Plug>(JavaComplete-Imports-Add)
-    autocmd Filetype java,jsp nmap <F4> <Plug>(JavaComplete-Imports-AddSmart)
-    autocmd Filetype java,jsp imap <F4> <Plug>(JavaComplete-Imports-AddSmart)
-    autocmd Filetype java,jsp no <F9> :make clean<CR>
-    autocmd Filetype java,jsp no <F10> :wa<CR> :make compile<CR>
-    autocmd Filetype java,jsp no <F11> :make exec:exec<CR>
-    autocmd Filetype java let g:deoplete#omni#input_patterns.java = ['[^. \t0-9]\.\w*','[^. \t0-9]\->\w*','[^. \t0-9]\::\w*']
-    autocmd Filetype jsp let g:deoplete#omni#input_patterns.jsp = ['[^. \t0-9]\.\w*']
+    autocmd FileType java,jsp nmap <F5> <Plug>(JavaComplete-Imports-Add)
+    autocmd FileType java,jsp imap <F5> <Plug>(JavaComplete-Imports-Add)
+    autocmd FileType java,jsp nmap <F4> <Plug>(JavaComplete-Imports-AddSmart)
+    autocmd FileType java,jsp imap <F4> <Plug>(JavaComplete-Imports-AddSmart)
+    autocmd FileType java,jsp no <F9> :make clean<CR>
+    autocmd FileType java,jsp no <F10> :wa<CR> :make compile<CR>
+    autocmd FileType java,jsp no <F11> :make exec:exec<CR>
 augroup END
 
 " ---- Nim Settings
 augroup NimSettings
     autocmd!
-    autocmd BufNewFile,BufRead *.nim set sw=4 noexpandtab ts=4 completeopt=menu,preview
     autocmd FileType nim let g:nvim_nim_enable_async = 0
-    autocmd FileType nim let g:syntastic_nim_checkers = ['nim', 'nimsuggest']
-    autocmd FileType nim let g:tagbar_type_nim = {
-        \ 'ctagstype' : 'nim',
-        \ 'kinds' : [
-        \   'h:Headline',
-        \   't:class',
-        \   't:enum',
-        \   't:tuple',
-        \   't:subrange',
-        \   't:proctype',
-        \   'f:procedure',
-        \   'f:method',
-        \   'o:operator',
-        \   't:template',
-        \   'm:macro',
-        \ ],
-    \ }
 augroup END
 
 " ---- Rust Settings
 augroup RustSettings
     autocmd!
     autocmd FileType BufWritePost *.rs QuickRun -type syntax/rust
-    autocmd BufNewFile,BufRead *.rs set filetype=rust
-    autocmd BufNewFile,BufRead *.rs set sw=4 noexpandtab ts=4 completeopt=menu,preview
     autocmd FileType rust let $RUST_SRC_PATH = expand('$RUST_SRC_PATH')
     autocmd FileType rust let g:rustfmt_autosave = 1
     autocmd FileType rust let g:rustfmt_command = system('which rustfmt')
     autocmd FileType rust let g:racer_cmd = system('which racer')
-    autocmd FileType rust let g:syntastic_rust_checkers = ['rustc']
 augroup END
 
 " ---- Erlang Settings
 augroup ErlangSettings
     autocmd!
-    autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
     autocmd FileType erlang let erlang_folding = 1
     autocmd FileType erlang let erlang_show_errors = 1
 augroup END
@@ -502,7 +513,6 @@ augroup END
 " ---- Elixir Settings
 augroup ElixirSettings
     autocmd!
-    autocmd BufNewFile,BufRead *.exs,*.ex set filetype=elixir
     autocmd FileType elixir imap >> \|><Space>
     autocmd FileType elixir let g:quickrun_config.mix_test = {
         \ 'command'     : 'mix',
@@ -517,9 +527,6 @@ augroup END
 " ---- Python Settings
 augroup PythonSettings
     autocmd!
-    autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=8 colorcolumn=79 completeopt=menu,preview
-        \ formatoptions+=croq softtabstop=4 smartindent
-        \ cinwords=if,elif,else,for,while,try,except,finally,def,class,with
     autocmd FileType python let g:jedi#popup_on_dot = 0
     autocmd FileType python let let g:jedi#goto_assignments_command = "<leader>g"
     autocmd FileType python let let g:jedi#goto_definitions_command = "<leader>d"
@@ -529,14 +536,11 @@ augroup PythonSettings
     autocmd FileType python let let g:jedi#show_call_signatures = "0"
     autocmd FileType python let let g:jedi#completions_command = "<C-Space>"
     autocmd FileType python let let g:jedi#smart_auto_mappings = 0
-    autocmd FileType python let let g:syntastic_python_checkers=['python', 'flake8']
 augroup END
 
 " ---- Ruby Setting
 augroup RubySettings
     autocmd!
-    autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
-    autocmd FileType ruby setlocal ts=2 sw=2 expandtab sts=2 smartindent completeopt=menu,preview
     autocmd FileType ruby let g:rubycomplete_buffer_loading = 1
     autocmd FileType ruby let g:rubycomplete_classes_in_global = 1
     autocmd FileType ruby let g:rubycomplete_rails = 1
@@ -553,22 +557,6 @@ augroup RubySettings
     autocmd FileType ruby vnoremap <leader>rrlv :RRenameLocalVariable<cr>
     autocmd FileType ruby vnoremap <leader>rriv :RRenameInstanceVariable<cr>
     autocmd FileType ruby vnoremap <leader>rem  :RExtractMethod<cr>
-    autocmd FileType ruby let g:tagbar_type_ruby = {
-            \ 'ctagstype' : 'ruby',
-            \ 'kinds' : [
-            \   'm:modules',
-            \   'c:classes',
-            \   'd:describes',
-            \   'C:contexts',
-            \   'f:methods',
-            \   'F:singleton methods'
-        \ ]
-    \}
-augroup END
-
-augroup MarkdownSetting
-	autocmd!
-    autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdow
 augroup END
 
 nmap <F8> :TagbarToggle<CR>
@@ -579,8 +567,8 @@ let g:tagbar_autofocus = 1
 
 let g:quickrun_config={'*': {'split': ''}}
 let g:quickrun_config._={ 'runner':'vimproc',
-            \       "runner/vimproc/updatetime" : 10,
-            \       "outputter/buffer/close_on_empty" : 1,
+            \       'runner/vimproc/updatetime' : 10,
+            \       'outputter/buffer/close_on_empty' : 1,
             \ }
 
 nmap p <Plug>(yankround-p)
@@ -588,9 +576,9 @@ nmap P <Plug>(yankround-P)
 nmap <C-p> <Plug>(yankround-prev)
 nmap <C-n> <Plug>(yankround-next)
 let g:yankround_max_history = 100
-nnoremap <silent><SID>(ctrlp) :<C-u>CtrlP<CR>
-nmap <expr><C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "<SID>(ctrlp)"
-nnoremap <silent>g<C-p> :<C-u>CtrlPYankRound<CR>
+"nnoremap <silent><SID>(ctrlp) :<C-u>CtrlP<CR>
+"nmap <expr><C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "<SID>(ctrlp)"
+"nnoremap <silent>g<C-p> :<C-u>CtrlPYankRound<CR>
 let g:yankround_dir = expand('$NVIM_HOME') . '/tmp'
 
 " ---- emmet-vim
@@ -598,7 +586,7 @@ let g:user_emmet_expandabbr_key = '<c-E>'
 let g:user_emmet_leader_key='<c-e>'
 let g:user_emmet_settings = {
             \    'variables': {
-            \       'lang': "ja"
+            \       'lang': 'ja'
             \    },
             \   'indentation': '  '
             \ }
@@ -611,13 +599,13 @@ function! s:dash(...)
     if len(a:000) == 1 && len(a:1) == 0
         echomsg 'No keyword'
     else
-        let ft = &filetype
-        if &filetype == 'python'
-            let ft = ft.'2'
+        let l:ft = &filetype
+        if &filetype ==# 'python'
+            let l:ft = l:ft.'2'
         endif
-        let ft = ft.':'
-        let word = len(a:000) == 0 ? input('Keyword: ', ft.expand('<cword>')) : ft.join(a:000, ' ')
-        call system(printf("open dash://'%s'", word))
+        let l:ft = l:ft.':'
+        let l:word = len(a:000) == 0 ? input('Keyword: ', l:ft.expand('<cword>')) : l:ft.join(a:000, ' ')
+        call system(printf("open dash://'%s'", l:word))
     endif
 endfunction
 
@@ -626,176 +614,6 @@ command! -nargs=* Dash call <SID>dash(<f-args>)
 nnoremap <Leader>d :call <SID>dash(expand('<cword>'))<CR>
 
 let g:gitgutter_max_signs = 10000
-
-"--------------------------------------------------------------------------------
-" lightline
-"--------------------------------------------------------------------------------
-" statuslineのファイル名を相対パスに変更
-let g:lightline = {
-            \ 'colorscheme': 'wombat',
-            \ 'active': {
-            \   'left': [ [ 'mode', 'paste' ],
-            \             [ 'fugitive', 'readonly', 'filename', 'modified' ] ],
-            \   'right': [ [ 'lineinfo' ],
-            \              [ 'percent' ],
-            \              [ 'fileformat', 'syntastic', 'fileencoding', 'filetype' ] ]
-            \   },
-            \ 'component': {
-            \   'readonly': '%{&filetype=="help"?"":&readonly?"x":""}',
-            \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}'
-            \   },
-            \ 'component_visible_condition': {
-            \   'readonly': '(&filetype!="help"&& &readonly)',
-            \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))'
-            \   },
-            \ 'separator': { 'left': '', 'right': '' },
-            \ 'subseparator': { 'left': '|', 'right': '|' },
-            \ 'component_function': {
-            \   'syntastic': 'SyntasticStatuslineFlag',
-            \   'modified': 'LightLineModified',
-            \   'readonly': 'LightLineReadonly',
-            \   'fugitive': 'LightLineFugitive',
-            \   'filename': 'LightLineFilename',
-            \   'fileformat': 'LightLineFileformat',
-            \   'filetype': 'LightLineFiletype',
-            \   'fileencoding': 'LightLineFileencoding',
-            \   'mode': 'LightLineMode',
-            \   },
-            \ 'component_expand': {
-            \   'syntastic': 'SyntasticStatuslineFlag',
-            \   },
-            \ 'component_type': {
-            \   'syntastic': 'error'
-            \   },
-            \ 'enable' : {
-            \   'statusline': 1,
-            \   'tabline': 0
-            \   }
-            \ }
-
-function! LightLineModified()
-    return &ft =~ 'help\|vimfiler\|gundo' ? '' : &modified ? '+' : &modifiable ? '' : '-'
-endfunction
-
-function! LightLineReadonly()
-    return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'RO' : ''
-endfunction
-
-function! LightLineFilename()
-    let fname = expand('%:t')
-    return fname == 'ControlP' && has_key(g:lightline, 'ctrlp_item') ? g:lightline.ctrlp_item :
-                \ fname == '__Tagbar__' ? g:lightline.fname :
-                \ fname =~ '__Gundo\|NERD_tree' ? '' :
-                \ &ft == 'vimfiler' ? vimfiler#get_status_string() :
-                \ &ft == 'unite' ? unite#get_status_string() :
-                \ &ft == 'vimshell' ? vimshell#get_status_string() :
-                \ ('' != LightLineReadonly() ? LightLineReadonly() . ' ' : '') .
-                \ ('' != fname ? fname : '[No Name]') .
-                \ ('' != LightLineModified() ? ' ' . LightLineModified() : '')
-endfunction
-
-function! LightLineFugitive()
-    try
-        if expand('%:t') !~? 'Tagbar\|Gundo' && &ft !~? 'vimfiler' && exists('*fugitive#head')
-            let mark = ' '  " edit here for cool mark
-            let branch = fugitive#head()
-            return branch !=# '' ? mark.branch : ''
-        endif
-    catch
-    endtry
-    return ''
-endfunction
-
-function! LightLineFileformat()
-    return winwidth(0) > 70 ? &fileformat : ''
-endfunction
-
-function! LightLineFiletype()
-    return winwidth(0) > 70 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
-endfunction
-
-function! LightLineFileencoding()
-    return winwidth(0) > 70 ? (&fenc !=# '' ? &fenc : &enc) : ''
-endfunction
-
-function! LightLineMode()
-    let fname = expand('%:t')
-    return fname == '__Tagbar__' ? 'Tagbar' :
-                \ fname == 'ControlP' ? 'CtrlP' :
-                \ fname == '__Gundo__' ? 'Gundo' :
-                \ fname == '__Gundo_Preview__' ? 'Gundo Preview' :
-                \ &ft == 'unite' ? 'Unite' :
-                \ &ft == 'vimfiler' ? 'VimFiler' :
-                \ &ft == 'vimshell' ? 'VimShell' :
-                \ winwidth(0) > 60 ? lightline#mode() : ''
-endfunction
-
-function! CtrlPMark()
-    if expand('%:t') =~ 'ControlP' && has_key(g:lightline, 'ctrlp_item')
-        call lightline#link('iR'[g:lightline.ctrlp_regex])
-        return lightline#concatenate([g:lightline.ctrlp_prev, g:lightline.ctrlp_item
-                    \ , g:lightline.ctrlp_next], 0)
-    else
-        return ''
-    endif
-endfunction
-
-let g:ctrlp_status_func = {
-            \ 'main': 'CtrlPStatusFunc_1',
-            \ 'prog': 'CtrlPStatusFunc_2',
-            \ }
-
-function! CtrlPStatusFunc_1(focus, byfname, regex, prev, item, next, marked)
-    let g:lightline.ctrlp_regex = a:regex
-    let g:lightline.ctrlp_prev = a:prev
-    let g:lightline.ctrlp_item = a:item
-    let g:lightline.ctrlp_next = a:next
-    return lightline#statusline(0)
-endfunction
-
-function! CtrlPStatusFunc_2(str)
-    return lightline#statusline(0)
-endfunction
-
-let g:tagbar_status_func = 'TagbarStatusFunc'
-
-function! TagbarStatusFunc(current, sort, fname, ...) abort
-    let g:lightline.fname = a:fname
-    return lightline#statusline(0)
-endfunction
-
-augroup AutoSyntastic
-    autocmd!
-    autocmd BufWritePost *.c,*.cpp call s:syntastic()
-augroup END
-function! s:syntastic()
-    SyntasticCheck
-    call lightline#update()
-endfunction
-
-" ---- Show ReadOnly like help menu
-function! VimrcLightLineReadOnly()
-    return &ft !~? 'help\|vimfiler\|gundo' && &readonly ? 'RO' : ''
-endfunction
-
-" ---- show status in VimFiler VimShell Unite
-function! VimrcLightLineFileName()
-    if &ft == 'vimfiler'
-        return vimfiler#get_status_string()
-    elseif &ft == 'unite'
-        return unite#get_status_string()
-    elseif &ft == 'vimshell'
-        return vimshell#get_status_string()
-    elseif expand('%') == ''
-        return '[No Name]'
-    else
-        return expand('%')
-    endif
-endfunction
-
-"if executable('file')
-"    let g:ctrlp_user_command = 'files -a %s'
-"endif
 
 " insert modeで開始
 let g:unite_enable_start_insert = 0
@@ -812,13 +630,6 @@ nnoremap <silent> ,cg :<C-u>Unite grep:. -buffer-name=search-buffer<CR><C-R><C-W
 
 " grep検索結果の再呼出
 nnoremap <silent> ,r  :<C-u>UniteResume search-buffer<CR>
-
-if executable('jvgrep')
-    set grepprg=jvgrep
-    "let g:unite_source_grep_command = 'jvgrep'
-    "let g:unite_source_grep_default_opts = ''
-    "let g:unite_source_grep_recursive_opt = '-R'
-endif
 
 if executable('ag')
     let g:ackprg = 'ag --vimgrep'
@@ -867,22 +678,22 @@ if executable('jq')
         if !v:shell_error || a:has_bang
             return
         endif
-        let error_lines = filter(getline('1', '$'), 'v:val =~# "^parse error: "')
+        let l:error_lines = filter(getline('1', '$'), 'v:val =~# "^parse error: "')
         " 範囲指定している場合のために，行番号を置き換える
-        let error_lines = map(error_lines, 'substitute(v:val, "line \\zs\\(\\d\\+\\)\\ze,", "\\=(submatch(1) + a:firstline - 1)", "")')
-        let winheight = len(error_lines) > 10 ? 10 : len(error_lines)
+        let l:error_lines = map(l:error_lines, 'substitute(v:val, "line \\zs\\(\\d\\+\\)\\ze,", "\\=(submatch(1) + a:firstline - 1)", "")')
+        let l:winheight = len(l:error_lines) > 10 ? 10 : len(l:error_lines)
         " カレントバッファがエラーメッセージになっているので，元に戻す
         undo
         " カレントバッファの下に新たにウィンドウを作り，エラーメッセージを表示するバッファを作成する
-        execute 'botright' winheight 'new'
+        execute 'botright' l:winheight 'new'
         setlocal nobuflisted bufhidden=unload buftype=nofile
-        call setline(1, error_lines)
+        call setline(1, l:error_lines)
         " エラーメッセージ用バッファのundo履歴を削除(エラーメッセージをundoで消去しないため)
-        let save_undolevels = &l:undolevels
+        let l:save_undolevels = &l:undolevels
         setlocal undolevels=-1
         execute "normal! a \<BS>\<Esc>"
         setlocal nomodified
-        let &l:undolevels = save_undolevels
+        let &l:undolevels = l:save_undolevels
         " エラーメッセージ用バッファは読み取り専用にしておく
         setlocal readonly
     endfunction
@@ -948,7 +759,7 @@ set list listchars=tab:>\ ,trail:_,eol:↲,extends:»,precedes:«,nbsp:%
 set ambiwidth=double
 
 " ---- incremental steps
-set nf=""
+set nrformats=""
 
 " ---- Blockwise
 set virtualedit=block
@@ -959,6 +770,7 @@ set wildmode=list:longest,full
 
 " ---- auto reload when edited
 set autoread
+set autowrite
 
 " ---- Disable Swap
 set noswapfile
@@ -1102,7 +914,7 @@ imap <C-j> <esc>
 " Tab補完
 function! s:completion_check_bs()
     let l:col = col('.') - 1
-    return !l:col || getline('.')[l:col - 1] =~ '\s'
+    return !l:col || getline('.')[l:col - 1] =~? '\s'
 endfunction
 
 inoremap <expr><silent><Tab> pumvisible() ? "\<C-n>" : (<sid>completion_check_bs() ? "\<Tab>" : deoplete#mappings#manual_complete())
