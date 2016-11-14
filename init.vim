@@ -273,7 +273,7 @@ augroup END
 augroup NeomakeSetting
     autocmd!
     autocmd BufRead,BufWritePost * Neomake
-    autocmd QuitPre,VimLeavePre * lclose
+    autocmd QuitPre * lclose
     autocmd BufRead * let g:neomake_open_list = 2
     autocmd BufRead * let g:neomake_list_height = 6
     autocmd FileType coffee,javascript,javascript.jsx,json let g:neomake_go_enabled_makers=['eslint']
@@ -415,9 +415,9 @@ augroup GolangSetting
     autocmd FileType go let g:go_list_type = "quickfix"
     autocmd FileType go let g:go_term_mode = "split"
     autocmd FileType go let g:go_highlight_build_constraints = 1
-    autocmd FileType go set rtp+=globpath($GOROOT, "/misc/vim")
-    autocmd FileType go set rtp+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
-    autocmd FileType go set rtp+=globpath($GOPATH, "src/github.com/golang/lint/misc/vim")
+    autocmd FileType go set runtimepath+=globpath($GOROOT, "/misc/vim")
+    autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
+    autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/golang/lint/misc/vim")
 augroup END
 
 " ---- Scala Settings
@@ -659,7 +659,11 @@ let g:vimfiler_safe_mode_by_default = 0
 " ---- Open Current Buffer Directory on Space+ff
 nnoremap <silent> [Unite]ff :<C-u>VimFilerBufferDir<CR>
 
-autocmd FileType vimfiler nmap <buffer> <CR> <Plug>(vimfiler_expand_or_edit)
+augroup VimFilerSetting
+    autocmd!
+    autocmd FileType vimfiler nmap <buffer> <CR> <Plug>(vimfiler_expand_or_edit)
+augroup END
+
 
 nnoremap <F10> :VimFilerTree<CR>
 
