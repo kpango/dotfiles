@@ -34,28 +34,25 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
 " ---- common plugins
     Plug 'Chiel92/vim-autoformat'
-    Plug 'LeafCage/yankround.vim'
     Plug 'Shougo/context_filetype.vim'
-    Plug 'Shougo/denite.nvim', {'on':['Denite'], 'do': ':UpdateRemotePlugins' }
+    Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'Shougo/neoinclude.vim'
     Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
+    Plug 'Shougo/neoyank.vim'
     Plug 'Shougo/unite.vim', {'on': ['Unite', 'UniteWithBufferDir','VimFiler']}
     Plug 'Shougo/vimfiler.vim', {'on': 'VimFiler'}
     Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
-    Plug 'Shougo/vimshell.vim', {'on': 'VimShell'}
     Plug 'Townk/vim-autoclose'
     Plug 'airblade/vim-gitgutter'
     Plug 'bronson/vim-trailing-whitespace', {'on': 'FixWhitespace'}
-    Plug 'h1mesuke/unite-outline'
     Plug 'honza/vim-snippets'
     Plug 'itchyny/lightline.vim'
     Plug 'janko-m/vim-test', {'for': ['go','rust','elixir','python','ruby','javascript','sh','lua','php','perl','java']}
-    Plug 'jceb/vim-hier'
-    Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
+    Plug 'nixprime/cpsm', {'do': expand('$NVIM_HOME') . '/plugged/cpsm/install.sh'}
+    "Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
     Plug 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
-    Plug 'kassio/neoterm'
     Plug 'lilydjwg/colorizer', {'do': 'make'}
     Plug 'majutsushi/tagbar'
     Plug 'nathanaelkane/vim-indent-guides'
@@ -68,7 +65,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'thinca/vim-quickrun'
     Plug 'tpope/vim-surround'
     Plug 'tyru/caw.vim'
-    Plug 'ujihisa/unite-colorscheme'
     Plug 'ujihisa/neco-look'
     Plug 'vim-scripts/sudo.vim'
 " ---- Vim Setting
@@ -190,7 +186,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Swift
     Plug 'keith/swift.vim', {'for': 'swift'}
     Plug 'kballard/vim-swift', {'for': 'swift'}
-    Plug 'landaire/deoplete-swift', {'for': 'swift'}
+    "Plug 'landaire/deoplete-swift', {'for': 'swift'}
+    Plug 'mitsuse/autocomplete-swift', {'for': 'swift'}
 " ---- Markdown
     Plug 'tyru/open-browser.vim', {'for': 'markdown'}
     Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
@@ -276,7 +273,7 @@ augroup NeomakeSetting
     autocmd QuitPre * lclose
     autocmd BufRead * let g:neomake_open_list = 2
     autocmd BufRead * let g:neomake_list_height = 6
-    autocmd FileType coffee,javascript,javascript.jsx,json let g:neomake_go_enabled_makers=['eslint']
+    autocmd FileType coffee,javascript,javascript.jsx,json let g:neomake_javascript_enabled_makers=['eslint_d']
     autocmd FileType go let g:neomake_go_enabled_makers = ['go', 'golint', 'govet']
     autocmd FileType html,xhtml let g:neomake_html_enabled_makers = ['tidy', 'jshint']
     autocmd FileType nim let g:neomake_nim_enabled_makers = ['nim', 'nimsuggest']
@@ -287,6 +284,7 @@ augroup NeomakeSetting
     autocmd FileType sh let g:neomake_sh_enabled_makers = ['sh', 'shellcheck']
     autocmd FileType vim let g:neomake_vim_enabled_makers = ['vint']
     autocmd FileType zsh let g:neomake_zsh_enabled_makers = ['zsh', 'shellcheck']
+    autocmd FileType swift let g:neomake_swift_enabled_makers = ['swiftc']
 augroup END
 
 augroup DeopleteSetting
@@ -299,6 +297,10 @@ augroup DeopleteSetting
     autocmd FileType go let g:deoplete#sources#go#package_dot = 1
     autocmd FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
     autocmd FileType go let g:deoplete#sources#go#use_cache = 1
+augroup END
+
+augroup DeniteSetting
+    autocmd!
 augroup END
 
 augroup IndentSetting
@@ -321,26 +323,26 @@ augroup TagBarSetting
     autocmd FileType go let g:tagbar_type_go = {
         \ 'ctagstype' : 'go',
         \ 'kinds'     : [
-        \ 'p:package',
-        \ 'i:imports',
-        \ 'c:constants',
-        \ 'v:variables',
-        \ 't:types',
-        \ 'n:interfaces',
-        \ 'w:fields',
-        \ 'e:embedded',
-        \ 'm:methods',
-        \ 'r:constructor',
-        \ 'f:functions'
+            \ 'p:package',
+            \ 'i:imports',
+            \ 'c:constants',
+            \ 'v:variables',
+            \ 't:types',
+            \ 'n:interfaces',
+            \ 'w:fields',
+            \ 'e:embedded',
+            \ 'm:methods',
+            \ 'r:constructor',
+            \ 'f:functions'
         \ ],
         \ 'sro' : '.',
         \ 'kind2scope' : {
-        \ 't' : 'ctype',
-        \ 'n' : 'ntype'
+            \ 't' : 'ctype',
+            \ 'n' : 'ntype'
         \ },
         \ 'scope2kind' : {
-        \ 'ctype' : 't',
-        \ 'ntype' : 'n'
+            \ 'ctype' : 't',
+            \ 'ntype' : 'n'
         \ },
         \ 'ctagsbin'  : 'gotags',
         \ 'ctagsargs' : '-sort -silent'
@@ -348,28 +350,28 @@ augroup TagBarSetting
     autocmd FileType nim let g:tagbar_type_nim = {
         \ 'ctagstype' : 'nim',
         \ 'kinds' : [
-        \   'h:Headline',
-        \   't:class',
-        \   't:enum',
-        \   't:tuple',
-        \   't:subrange',
-        \   't:proctype',
-        \   'f:procedure',
-        \   'f:method',
-        \   'o:operator',
-        \   't:template',
-        \   'm:macro',
+            \   'h:Headline',
+            \   't:class',
+            \   't:enum',
+            \   't:tuple',
+            \   't:subrange',
+            \   't:proctype',
+            \   'f:procedure',
+            \   'f:method',
+            \   'o:operator',
+            \   't:template',
+            \   'm:macro',
         \ ],
     \ }
     autocmd FileType ruby let g:tagbar_type_ruby = {
         \ 'ctagstype' : 'ruby',
         \ 'kinds' : [
-        \   'm:modules',
-        \   'c:classes',
-        \   'd:describes',
-        \   'C:contexts',
-        \   'f:methods',
-        \   'F:singleton methods'
+            \   'm:modules',
+            \   'c:classes',
+            \   'd:describes',
+            \   'C:contexts',
+            \   'f:methods',
+            \   'F:singleton methods'
         \ ]
     \}
 augroup END
@@ -421,20 +423,36 @@ augroup GolangSetting
 augroup END
 
 " ---- Scala Settings
-augroup ScalaSettings
+augroup ScalaSetting
     autocmd!
     autocmd BufWritePost *.scala silent :EnTypeCheck
     autocmd FileType scala compiler sbt
 augroup END
 
 " ---- HTML Settings
-augroup HTMLSettings
+augroup HTMLSetting
     autocmd!
     autocmd FileType html,xhtml imap <buffer><expr><tab> emmet#isExpandable() ? "\<plug>(emmet-expand-abbr)" : "\<tab>"
 augroup END
 
+" ---- Swift Settings
+augroup SwiftSetting
+    autocmd!
+    "autocmd FileType swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
+    autocmd FileType swift let g:neomake_swift_swiftc_maker = {
+        \ 'exe': 'swiftc',
+        \ 'args': ['-parse'],
+        \ 'errorformat': {
+            \ '%E%f:%l:%c: error: %m,' .
+            \ '%W%f:%l:%c: warning: %m,' .
+            \ '%Z%\s%#^~%#,' .
+            \ '%-G%.%#'
+        \ },
+    \ }
+augroup END
+
 " ---- PHP Settings
-augroup PHPSettings
+augroup PHPSetting
     autocmd!
     autocmd FileType php let g:php_baselib       = 1
     autocmd FileType php let g:php_htmlInStrings = 1
@@ -462,6 +480,7 @@ augroup JavaScriptSettings
     autocmd FileType coffee,javascript,javascript.jsx,json let g:js_indent_typescript = 1
     autocmd FileType coffee,javascript,javascript.jsx,json let g:tagbar_type_javascript = {'ctagsbin' : system('which jsctags')}
     autocmd FileType coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
+    autocmd! VimLeave *.js  !eslint_d stop
 augroup END
 
 " ---- Java Settings
@@ -571,16 +590,6 @@ let g:quickrun_config._={ 'runner':'vimproc',
             \       'outputter/buffer/close_on_empty' : 1,
             \ }
 
-nmap p <Plug>(yankround-p)
-nmap P <Plug>(yankround-P)
-nmap <C-p> <Plug>(yankround-prev)
-nmap <C-n> <Plug>(yankround-next)
-let g:yankround_max_history = 100
-"nnoremap <silent><SID>(ctrlp) :<C-u>CtrlP<CR>
-"nmap <expr><C-p> yankround#is_active() ? "\<Plug>(yankround-prev)" : "<SID>(ctrlp)"
-"nnoremap <silent>g<C-p> :<C-u>CtrlPYankRound<CR>
-let g:yankround_dir = expand('$NVIM_HOME') . '/tmp'
-
 " ---- emmet-vim
 let g:user_emmet_expandabbr_key = '<c-E>'
 let g:user_emmet_leader_key='<c-e>'
@@ -648,6 +657,8 @@ nnoremap <Space> [Unite]
 " ---- Original Status line on Unite
 let g:unite_force_overwrite_statusline = 0
 
+let g:ctrlp_match_func = {'match': 'cpsm#CtrlPMatch'}
+
 " --------------------------
 " ---- VimFiler Setting ----
 " --------------------------
@@ -703,46 +714,6 @@ if executable('jq')
     endfunction
     command! -bar -bang -range=% -nargs=? Jq  <line1>,<line2>call s:jq(<bang>0, <f-args>)
 endif
-
-" -------------------------
-" ---- Neoterm Setting ----
-" -------------------------
-let g:neoterm_position = 'horizontal'
-let g:neoterm_automap_keys = ',tt'
-
-nnoremap <silent> <f10> :TREPLSendFile<cr>
-nnoremap <silent> <f9> :TREPLSend<cr>
-vnoremap <silent> <f9> :TREPLSend<cr>
-
-" run set test lib
-nnoremap <silent> ,rt :call neoterm#test#run('all')<cr>
-nnoremap <silent> ,rf :call neoterm#test#run('file')<cr>
-nnoremap <silent> ,rn :call neoterm#test#run('current')<cr>
-nnoremap <silent> ,rr :call neoterm#test#rerun()<cr>
-
-" Useful maps
-" hide/close terminal
-nnoremap <silent> ,th :call neoterm#close()<cr>
-" clear terminal
-nnoremap <silent> ,tl :call neoterm#clear()<cr>
-" kills the current job (send a <c-c>)
-nnoremap <silent> ,tc :call neoterm#kill()<cr>
-
-" Rails commands
-command! Troutes :T rake routes
-command! -nargs=+ Troute :T rake routes | grep <args>
-command! Tmigrate :T rake db:migrate
-
-" Git commands
-command! -nargs=+ Tg :T git <args>
-
-" --------------------------
-" ---- VimShell Setting ----
-" --------------------------
-" ---- Show current Directory on Prompt
-let g:vimshell_prompt_expr = 'getcwd()." $ "'
-let g:vimshell_prompt_pattern = '^\f\+\$ '
-let g:vimshell_force_overwrite_statusline = 0
 
 " -------------------------
 " ---- Default Setting ----
@@ -933,8 +904,8 @@ set completeopt+=noinsert
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 
-nnoremap <Leader>c <Plug>(caw:prefix)
-vnoremap <Leader>c <Plug>(caw:prefix)
+nmap <C-C> <Plug>(caw:i:toggle)
+vmap <C-C> <Plug>(caw:i:toggle)
 
 " ------------------------
 " ---- Other settings ----
