@@ -57,7 +57,12 @@ if [ -z $DOTENV_LOADED ]; then
         fi
     fi
 
+    if type composer >/dev/null 2>&1; then
+        export COMPOSER_HOME="$HOME/.composer/vendor"
+    fi
+
     export PHP_BUILD_CONFIGURE_OPTS="--with-openssl=/usr/local/opt/openssl"
+    export PYTHON_CONFIGURE_OPTS="--enable-framework"
 
     #GO
     export GOPATH=$PROGRAMMING/go;
@@ -85,7 +90,7 @@ if [ -z $DOTENV_LOADED ]; then
     export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
 
     if [ -z $TMUX ]; then
-        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
+        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
         #anyenv init
         if [ -d "$HOME/.anyenv" ] ; then
             export PATH="$HOME/.anyenv/bin:$PATH"
@@ -124,7 +129,7 @@ if [ -z $DOTENV_LOADED ]; then
     export HTTP_PROXY_HOST="proxy host"
     export HTTP_PROXY_PORT="http port"
     export HTTP_PROXY_PASSWORD="proxy passowrd"
-    export HTTPS_PROXY_HOST="proxy host"
+    export HTTPS_PROXY_HOST=$HTTP_PROXY_HOST
     export HTTPS_PROXY_PORT="https port"
 
     export DOTENV_LOADED=1
@@ -152,6 +157,7 @@ else
     zplug "b4b4r07/enhancd", use:enhancd.sh
     zplug "b4b4r07/zspec", as:command, use:bin/zspec
     zplug "chrissicool/zsh-256color"
+    zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
     zplug "mollifier/anyframe"
     zplug "mollifier/cd-gitroot"
@@ -296,11 +302,12 @@ if type nim >/dev/null 2>&1; then
 fi
 
 go-update(){
-
     go get -u github.com/Masterminds/glide
+    go get -u github.com/aarzilli/gdlv
     go get -u github.com/alecthomas/gometalinter
     go get -u github.com/constabulary/gb/...
     go get -u github.com/cweill/gotests/...
+    go get -u github.com/derekparker/delve/cmd/dlv
     go get -u github.com/garyburd/go-explorer/src/getool
     go get -u github.com/golang/lint/golint
     go get -u github.com/jstemmer/gotags
@@ -319,9 +326,11 @@ go-update(){
     go get -u sourcegraph.com/sqs/goreturns
 
     go install github.com/Masterminds/glide
+    go install github.com/aarzilli/gdlv
     go install github.com/alecthomas/gometalinter
     go install github.com/constabulary/gb/...
     go install github.com/cweill/gotests
+    go install github.com/derekparker/delve/cmd/dlv
     go install github.com/garyburd/go-explorer/src/getool
     go install github.com/golang/lint/golint
     go install github.com/jstemmer/gotags
@@ -558,6 +567,20 @@ case ${OSTYPE} in
         }
         alias dock=dock
 
+        clean(){
+            sudo update_dyld_shared_cache -force
+            sudo kextcache -system-caches
+            sudo kextcache -system-prelinked-kernel
+
+            sudo rm -rf $HOME/Library/Developer/Xcode/DerivedData
+            sudo rm -rf $HOME/Library/Developer/Xcode/Archives
+            sudo rm -rf $HOME/Library/Caches
+
+            sudo purge
+            sudo du -sx / &
+        }
+        alias clean=clean
+
         if type brew >/dev/null 2>&1; then
             if [ -z $OSXENV_LOADED ]; then
                 export CLICOLOR=1
@@ -584,7 +607,7 @@ case ${OSTYPE} in
             }
             alias brew-cask-update=brewcaskup
 
-            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;";
+            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;pip install vim-vint --force-reinstall;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;clean;";
         else
             alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup"
 
