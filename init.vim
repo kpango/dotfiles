@@ -74,7 +74,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Golang Setting
     Plug 'dgryski/vim-godef', { 'for': 'go' }
-    Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'gb build'}
+    Plug 'zchee/nvim-go', { 'for': 'go', 'do': ['gb build', 'wget -P $HOME/.config/nvim/plugged/nvim-go/syntax/ https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim']}
     Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
     Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
