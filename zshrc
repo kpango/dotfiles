@@ -351,6 +351,7 @@ go-update(){
     $GOPATH/bin/gocode set lib-path $GOPATH/pkg/darwin_amd64/
     $GOPATH/bin/gocode set propose-builtins true
 }
+alias go-update=go-update
 
 if type go >/dev/null 2>&1; then
     alias goup="rm -rf $GOPATH/bin;rm -rf $GOPATH/pkg;go-update;nvim +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall"
@@ -377,8 +378,8 @@ mkcd() {
         fi
     fi
 }
-
 alias mkcd=mkcd
+
 alias ..='\cd ../'
 alias ...='\cd ../../'
 alias ....='\cd ../../../'
