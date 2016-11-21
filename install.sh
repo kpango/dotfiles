@@ -158,3 +158,4 @@ mkdir -p ~/.config/nvim/plugged/vim-plug
 git clone https://github.com/junegunn/vim-plug.git ~/.config/nvim/plugged/vim-plug/autoload
 
 nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall
+wget -P $HOME/.config/nvim/plugged/nvim-go/syntax/ https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim
