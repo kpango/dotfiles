@@ -161,7 +161,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'zah/nim.vim', {'for': 'nim'}
 "   Plug 'baabelfish/nvim-nim', {'for': 'nim'}
 " ---- Rust
-    Plug 'racer-rust/vim-racer', {'for': 'rust', 'do': 'cargo build --release'}
+    Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
     Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Unite']}
     Plug 'rust-lang/rust.vim', {'for': 'rust'}
 " ---- Haskell
@@ -513,13 +513,14 @@ augroup NimSettings
 augroup END
 
 " ---- Rust Settings
-augroup RustSettings
+augroup RustSetting
     autocmd!
     autocmd FileType BufWritePost *.rs QuickRun -type syntax/rust
-    autocmd FileType rust let $RUST_SRC_PATH = expand('$RUST_SRC_PATH')
     autocmd FileType rust let g:rustfmt_autosave = 1
     autocmd FileType rust let g:rustfmt_command = system('which rustfmt')
-    autocmd FileType rust let g:racer_cmd = system('which racer')
+    autocmd FileType rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
+    autocmd FileType rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
+    autocmd FileType rust let g:deoplete#sources#rust#documentation_max_height=20
 augroup END
 
 " ---- Erlang Settings
@@ -904,8 +905,8 @@ set completeopt+=noinsert
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
 
-nmap <C-C> <Plug>(caw:i:toggle)
-vmap <C-C> <Plug>(caw:i:toggle)
+nmap <C-C> <Plug>(caw:hatpos:toggle)
+vmap <C-C> <Plug>(caw:hatpos:toggle)
 
 " ------------------------
 " ---- Other settings ----
