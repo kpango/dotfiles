@@ -77,8 +77,8 @@ if [ -z $DOTENV_LOADED ]; then
     export REACT_EDITOR=$EDITOR;
 
     # Rust
-    export RUST_SRC_PATH=/usr/local/Cellar/rust/HEAD/src;
-    export CARGO_HOME=$HOME/.cargo/bin;
+    export RUST_SRC_PATH=/usr/local/src/rust/src;
+    export CARGO_HOME=$HOME/.cargo;
 
     #QT
     export QT_HOME=/usr/local/opt/qt;
@@ -378,8 +378,8 @@ mkcd() {
         fi
     fi
 }
-alias mkcd=mkcd
 
+alias mkcd=mkcd
 alias ..='\cd ../'
 alias ...='\cd ../../'
 alias ....='\cd ../../../'
@@ -398,6 +398,7 @@ alias cdjava='mkcd $HOME/Documents/Programming/Java'
 alias cdjavaee='mkcd $HOME/Documents/Programming/JavaEE'
 alias cdjavafx='mkcd $HOME/Documents/Programming/JavaFX'
 alias cdgo='mkcd $HOME/Documents/Programming/go/src'
+alias cdrs='mkcd $HOME/Documents/Programming/rust/src'
 alias cdex='mkcd $HOME/Documents/Programming/elixir'
 alias cdjs='mkcd $HOME/Documents/Programming/JavaScript'
 alias cdnode='mkcd $HOME/Documents/Programming/Node'
