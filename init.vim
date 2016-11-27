@@ -74,11 +74,12 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Golang Setting
     Plug 'dgryski/vim-godef', { 'for': 'go' }
-    Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'gb build'}
+    Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
     Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
     Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'}
+    Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'}
 " ---- Elixir Setting
     Plug 'archSeer/elixir.nvim', {'for': 'elixir'}
     Plug 'c-brenn/phoenix.vim', {'for': 'elixir'}
@@ -237,13 +238,16 @@ endif
 
 let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
 
+let g:deoplete#auto_complete_delay = 0
+let g:deoplete#auto_complete_start_length = 1
 let g:deoplete#auto_completion_start_length = 1
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_camel_case = 1
 let g:deoplete#enable_ignore_case = 1
 let g:deoplete#enable_refresh_always = 1
 let g:deoplete#enable_smart_case = 1
-
+let g:deoplete#file#enable_buffer_path = 1
+let g:deoplete#max_list = 10000
 
 set statusline+=%#warningmsg#
 set statusline+=%{neomake#utils#ErrorMessage()}
@@ -279,7 +283,7 @@ augroup NeomakeSetting
     autocmd FileType nim let g:neomake_nim_enabled_makers = ['nim', 'nimsuggest']
     autocmd FileType php let g:neomake_php_enabled_makers = ['php', 'phpcs', 'phpmd']
     autocmd FileType php let g:neomake_php_phpcs_args_standard='psr4'
-    autocmd FileType python let g:neomake_python_enabled_makers = ['python', 'flake8']
+    autocmd FileType python let g:neomake_python_enabled_makers = ['python', 'pyflakes', 'flake8']
     autocmd FileType rust let g:neomake_rust_enabled_makers = ['rustc']
     autocmd FileType sh let g:neomake_sh_enabled_makers = ['sh', 'shellcheck']
     autocmd FileType vim let g:neomake_vim_enabled_makers = ['vint']
@@ -289,18 +293,36 @@ augroup END
 
 augroup DeopleteSetting
     autocmd!
+    autocmd FileType go call deoplete#custom#set('go', 'matchers', ['matcher_full_fuzzy'])
+    autocmd FileType go call deoplete#custom#set('go', 'sorters', [])
     autocmd FileType go let g:deoplete#sources#go#align_class = 1
     autocmd FileType go let g:deoplete#sources#go#cgo = 1
     autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= "/Library/Developer/CommandLineTools/usr/lib/libclang.dylib"
+    autocmd FileType go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
     autocmd FileType go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
+    " autocmd FileType go let g:deoplete#sources#go#json_directory = "/Users/yusukato/.config/nvim/plugged/deoplete-go/data/json/1.7.3/darwin_amd64"
     autocmd FileType go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
     autocmd FileType go let g:deoplete#sources#go#package_dot = 1
+    autocmd FileType go let g:deoplete#sources#go#on_event = 1
+    autocmd FileType go let g:deoplete#sources#go#pointer = 1
     autocmd FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
     autocmd FileType go let g:deoplete#sources#go#use_cache = 1
+    " python
+    autocmd FileType python call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
+    autocmd FileType python call deoplete#custom#set('jedi', 'matchers', ['matcher_fuzzy'])
+    autocmd FileType python let g:deoplete#sources#jedi#statement_length = 0
+    autocmd FileType python let g:deoplete#sources#jedi#short_types = 0
+    autocmd FileType python let g:deoplete#sources#jedi#show_docstring = 1
+    autocmd FileType python let g:deoplete#sources#jedi#worker_threads = 2
+    autocmd FileType python let g:deoplete#sources#jedi#python_path = g:python3_host_prog
 augroup END
 
 augroup DeniteSetting
     autocmd!
+    call denite#custom#source('file_rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
+    call denite#custom#source('file_rec', 'matchers', ['matcher_cpsm'])
+    call denite#custom#source('grep', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
+    call denite#custom#source('line', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
 augroup END
 
 augroup IndentSetting
@@ -310,6 +332,7 @@ augroup IndentSetting
     autocmd FileType html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
     autocmd FileType nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
     autocmd FileType php setlocal ts=4 sts=4 sw=4 expandtab omnifunc=phpcomplete_extended#CompletePHP
+
     autocmd FileType python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
     autocmd FileType rust setlocal sw=4 noexpandtab ts=4 completeopt=menu,preview
     autocmd FileType ruby setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
@@ -321,59 +344,59 @@ augroup END
 augroup TagBarSetting
     autocmd!
     autocmd FileType go let g:tagbar_type_go = {
-        \ 'ctagstype' : 'go',
-        \ 'kinds'     : [
-            \ 'p:package',
-            \ 'i:imports',
-            \ 'c:constants',
-            \ 'v:variables',
-            \ 't:types',
-            \ 'n:interfaces',
-            \ 'w:fields',
-            \ 'e:embedded',
-            \ 'm:methods',
-            \ 'r:constructor',
-            \ 'f:functions'
-        \ ],
-        \ 'sro' : '.',
-        \ 'kind2scope' : {
-            \ 't' : 'ctype',
-            \ 'n' : 'ntype'
-        \ },
-        \ 'scope2kind' : {
-            \ 'ctype' : 't',
-            \ 'ntype' : 'n'
-        \ },
-        \ 'ctagsbin'  : 'gotags',
-        \ 'ctagsargs' : '-sort -silent'
-    \ }
+                \ 'ctagstype' : 'go',
+                \ 'kinds'     : [
+                \ 'p:package',
+                \ 'i:imports',
+                \ 'c:constants',
+                \ 'v:variables',
+                \ 't:types',
+                \ 'n:interfaces',
+                \ 'w:fields',
+                \ 'e:embedded',
+                \ 'm:methods',
+                \ 'r:constructor',
+                \ 'f:functions'
+                \ ],
+                \ 'sro' : '.',
+                \ 'kind2scope' : {
+                \ 't' : 'ctype',
+                \ 'n' : 'ntype'
+                \ },
+                \ 'scope2kind' : {
+                \ 'ctype' : 't',
+                \ 'ntype' : 'n'
+                \ },
+                \ 'ctagsbin'  : 'gotags',
+                \ 'ctagsargs' : '-sort -silent'
+                \ }
     autocmd FileType nim let g:tagbar_type_nim = {
-        \ 'ctagstype' : 'nim',
-        \ 'kinds' : [
-            \   'h:Headline',
-            \   't:class',
-            \   't:enum',
-            \   't:tuple',
-            \   't:subrange',
-            \   't:proctype',
-            \   'f:procedure',
-            \   'f:method',
-            \   'o:operator',
-            \   't:template',
-            \   'm:macro',
-        \ ],
-    \ }
+                \ 'ctagstype' : 'nim',
+                \ 'kinds' : [
+                \   'h:Headline',
+                \   't:class',
+                \   't:enum',
+                \   't:tuple',
+                \   't:subrange',
+                \   't:proctype',
+                \   'f:procedure',
+                \   'f:method',
+                \   'o:operator',
+                \   't:template',
+                \   'm:macro',
+                \ ],
+                \ }
     autocmd FileType ruby let g:tagbar_type_ruby = {
-        \ 'ctagstype' : 'ruby',
-        \ 'kinds' : [
-            \   'm:modules',
-            \   'c:classes',
-            \   'd:describes',
-            \   'C:contexts',
-            \   'f:methods',
-            \   'F:singleton methods'
-        \ ]
-    \}
+                \ 'ctagstype' : 'ruby',
+                \ 'kinds' : [
+                \   'm:modules',
+                \   'c:classes',
+                \   'd:describes',
+                \   'C:contexts',
+                \   'f:methods',
+                \   'F:singleton methods'
+                \ ]
+                \}
 augroup END
 
 " ---- Golang
@@ -382,41 +405,80 @@ augroup GolangSetting
     " ---- GoFmtコマンドを保存時に走らせる
     autocmd BufWritePre *.go Gofmt
     autocmd FileType go compiler go
-    autocmd FileType go nmap <leader>gr <Plug>(go-run)
-    autocmd FileType go nmap <leader>gc <Plug>(go-coverage)
-    autocmd FileType go nmap <leader>gi <Plug>(go-import)
-    autocmd FileType go nmap <Leader>gs <Plug>(go-implements)
-    autocmd FileType go nmap <Leader>ge <Plug>(go-rename)
-    autocmd FileType go nmap <Leader>gi <Plug>(go-info)
-    autocmd FileType go nmap <leader>gb <Plug>(go-build)
-    autocmd FileType go nmap <leader>gt <Plug>(go-test)
-    autocmd FileType go nmap <leader>gdf <Plug>(go-def-split)
-    autocmd FileType go nmap <leader>gdfv <Plug>(go-def-vertical)
-    autocmd FileType go nmap <leader>gdft <Plug>(go-def-tab)
-    autocmd FileType go nmap <leader>gd <Plug>(go-doc)
-    autocmd FileType go nmap <leader>gdv <Plug>(go-doc-vertical)
-    autocmd FileType go highlight goErr cterm=bold ctermfg=214
-    autocmd FileType go match goErr /\<err\>/
-    autocmd FileType go let g:go_fmt_autosave = 1
-    autocmd FileType go let g:go_play_open_browser = 0
-    autocmd FileType go let g:go_fmt_fail_silently = 1
-    autocmd FileType go let g:go_autodetect_gopath = 1
-    autocmd FileType go let g:go_fmt_command = 'goreturns'
-    autocmd FileType go let g:go_fmt_options = '-w'
+    " autocmd FileType go nmap  <silent><buffer>K                   <Plug>(go-doc)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>]      :<C-u>GoGeneDefinition<CR>
+    " autocmd FileType go nmap  <silent><buffer><C-]>               :<C-u>call GoGuru('definition')<CR>
+    " autocmd FileType go nmap  <silent><buffer><Leader>]           :<C-u>Godef<CR>
+    " autocmd FileType go nmap  <silent><buffer><Leader>a           <Plug>(nvim-go-analyze-buffer)
+    " autocmd FileType go nmap  <silent><buffer><Leader>e           <Plug>(nvim-go-rename)
+    " autocmd FileType go nmap  <silent><buffer><Leader>i           <Plug>(nvim-go-iferr)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>db     :<C-u>DlvBreakpoint<CR>
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>dc     :<C-u>DlvContinue<CR>
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>dd     :<C-u>DlvDebug<CR>
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>dn     :<C-u>DlvNext<CR>
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>dr     :<C-u>DlvBreakpoint<CR>
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gb      <Plug>(nvim-go-build)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gc     <Plug>(nvim-go-callers)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gcs    <Plug>(nvim-go-callstack)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>ge     <Plug>(nvim-go-callees)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gs     <Plug>(nvim-go-implements)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gml    <Plug>(nvim-go-metalinter)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gr     <Plug>(nvim-go-referrers)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gts    <Plug>(nvim-go-test-switch)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gl     <Plug>(nvim-go-lint)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gr     <Plug>(nvim-go-run)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>gt     <Plug>(nvim-go-test)
+    " autocmd FileType go nmap  <silent><buffer><LocalLeader>v      <Plug>(nvim-go-vet)
+    " autocmd FileType go nmap <leader>gc <Plug>(go-coverage)
+    " autocmd FileType go nmap <leader>gi <Plug>(go-import)
+    " autocmd FileType go nmap <Leader>ge <Plug>(go-rename)
+    " autocmd FileType go nmap <Leader>gi <Plug>(go-info)
+    " autocmd FileType go nmap <leader>gdf <Plug>(go-def-split)
+    " autocmd FileType go nmap <leader>gdfv <Plug>(go-def-vertical)
+    " autocmd FileType go nmap <leader>gdft <Plug>(go-def-tab)
+    " autocmd FileType go nmap <leader>gd <Plug>(go-doc)
+    " autocmd FileType go nmap <leader>gdv <Plug>(go-doc-vertical)
+    " autocmd FileType go highlight goErr cterm=bold ctermfg=214
+    " autocmd FileType go match goErr /\<err\>/
+    autocmd FileType go let g:go#highlight#cgo = 1
+    autocmd FileType go let g:go#build#autosave = 1
+    autocmd FileType go let g:go#build#force = 0
+    autocmd FileType go let g:go#fmt#autosave  = 1
+    " autocmd FileType go let g:go#fmt#mode = 'goreturns'
+    autocmd FileType go let g:go#fmt#mode = 'goimports'
+    autocmd FileType go let g:go#guru#keep_cursor = {
+                \       'callees'    : 0,
+                \       'callers'    : 0,
+                \       'callstack'  : 0,
+                \       'definition' : 1,
+                \       'describe'   : 0,
+                \       'freevars'   : 0,
+                \       'implements' : 0,
+                \       'peers'      : 0,
+                \       'pointsto'   : 0,
+                \       'referrers'  : 0,
+                \       'whicherrs'  : 0
+                \ }
+    autocmd FileType go let g:go#guru#reflection = 0
+    autocmd FileType go let g:go#iferr#autosave = 0
+    autocmd FileType go let g:go#lint#golint#autosave = 1
+    autocmd FileType go let g:go#lint#golint#ignore = ['internal']
+    autocmd FileType go let g:go#lint#golint#mode = 'root'
+    autocmd FileType go let g:go#lint#govet#autosave = 0
+    autocmd FileType go let g:go#lint#govet#flags = ['-v', '-lostcancel']
+    autocmd FileType go let g:go#lint#metalinter#autosave = 0
+    autocmd FileType go let g:go#lint#metalinter#autosave#tools = ['vet', 'golint']
+    autocmd FileType go let g:go#lint#metalinter#deadline = '20s'
+    autocmd FileType go let g:go#lint#metalinter#skip_dir = ['internal', 'vendor', 'testdata', '__*.go', '*_test.go']
+    autocmd FileType go let g:go#lint#metalinter#tools = ['vet', 'golint']
+    autocmd FileType go let g:go#rename#prefill = 1
+    autocmd FileType go let g:go#terminal#height = 120
+    autocmd FileType go let g:go#terminal#start_insert = 1
+    autocmd FileType go let g:go#terminal#width = 120
+    autocmd FileType go let g:go#test#args = ['-v']
+    autocmd FileType go let g:go#test#autosave = 0
     autocmd FileType go let g:go_highlight_functions = 1
-    autocmd FileType go let g:go_highlight_methods = 1
-    autocmd FileType go let g:go_highlight_structs = 1
-    autocmd FileType go let g:go_highlight_interfaces = 1
     autocmd FileType go let g:go_highlight_operators = 1
-    autocmd FileType go let g:go_highlight_space_tab_error = 0
-    autocmd FileType go let g:go_highlight_array_whitespace_error = 0
-    autocmd FileType go let g:go_highlight_trailing_whitespace_error = 0
-    autocmd FileType go let g:go_highlight_extra_types = 0
-    autocmd FileType go let g:go_snippet_case_type = 'snakecase'
-    autocmd FileType go let g:go_term_enabled = 1
-    autocmd FileType go let g:go_list_type = "quickfix"
-    autocmd FileType go let g:go_term_mode = "split"
-    autocmd FileType go let g:go_highlight_build_constraints = 1
     autocmd FileType go set runtimepath+=globpath($GOROOT, "/misc/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/golang/lint/misc/vim")
@@ -440,15 +502,15 @@ augroup SwiftSetting
     autocmd!
     "autocmd FileType swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
     autocmd FileType swift let g:neomake_swift_swiftc_maker = {
-        \ 'exe': 'swiftc',
-        \ 'args': ['-parse'],
-        \ 'errorformat': {
-            \ '%E%f:%l:%c: error: %m,' .
-            \ '%W%f:%l:%c: warning: %m,' .
-            \ '%Z%\s%#^~%#,' .
-            \ '%-G%.%#'
-        \ },
-    \ }
+                \ 'exe': 'swiftc',
+                \ 'args': ['-parse'],
+                \ 'errorformat': {
+                \ '%E%f:%l:%c: error: %m,' .
+                \ '%W%f:%l:%c: warning: %m,' .
+                \ '%Z%\s%#^~%#,' .
+                \ '%-G%.%#'
+                \ },
+                \ }
 augroup END
 
 " ---- PHP Settings
@@ -535,27 +597,34 @@ augroup ElixirSettings
     autocmd!
     autocmd FileType elixir imap >> \|><Space>
     autocmd FileType elixir let g:quickrun_config.mix_test = {
-        \ 'command'     : 'mix',
-        \ 'exec'        : 'mix test',
-        \ 'outputter'   : 'quickfix',
-        \ 'errorformat' : '%E\ %#%n)\ %.%#,%C\ %#%f:%l,%Z%.%#stacktrace:,%C%m,%.%#(%.%#Error)\ %f:%l:\ %m,%-G%.%#',
-        \ 'hook/cd/directory': yacd#get_root_dir(expand('%:p:h'))
-        \ }
+                \ 'command'     : 'mix',
+                \ 'exec'        : 'mix test',
+                \ 'outputter'   : 'quickfix',
+                \ 'errorformat' : '%E\ %#%n)\ %.%#,%C\ %#%f:%l,%Z%.%#stacktrace:,%C%m,%.%#(%.%#Error)\ %f:%l:\ %m,%-G%.%#',
+                \ 'hook/cd/directory': yacd#get_root_dir(expand('%:p:h'))
+                \ }
     autocmd FileType elixir nnoremap <Leader>t :QuickRun mix_test<CR>
 augroup END
 
 " ---- Python Settings
 augroup PythonSettings
     autocmd!
+    autocmd FileType python let g:jedi#auto_initialization = 0
+    autocmd FileType python let g:jedi#auto_vim_configuration = 0
+    autocmd FileType python let g:jedi#completions_command = "<C-Space>"
+    autocmd FileType python let g:jedi#completions_enabled = 0
+    autocmd FileType python let g:jedi#documentation_command = "K"
+    autocmd FileType python let g:jedi#force_py_version = 3
+    autocmd FileType python let g:jedi#goto_assignments_command = "<leader>g"
+    autocmd FileType python let g:jedi#goto_definitions_command = "<leader>d"
+    autocmd FileType python let g:jedi#max_doc_height = 150
     autocmd FileType python let g:jedi#popup_on_dot = 0
-    autocmd FileType python let let g:jedi#goto_assignments_command = "<leader>g"
-    autocmd FileType python let let g:jedi#goto_definitions_command = "<leader>d"
-    autocmd FileType python let let g:jedi#documentation_command = "K"
-    autocmd FileType python let let g:jedi#usages_command = "<leader>n"
-    autocmd FileType python let let g:jedi#rename_command = "<leader>r"
-    autocmd FileType python let let g:jedi#show_call_signatures = "0"
-    autocmd FileType python let let g:jedi#completions_command = "<C-Space>"
-    autocmd FileType python let let g:jedi#smart_auto_mappings = 0
+    autocmd FileType python let g:jedi#popup_select_first = 0
+    autocmd FileType python let g:jedi#rename_command = "<leader>r"
+    autocmd FileType python let g:jedi#show_call_signatures = 0
+    autocmd FileType python let g:jedi#smart_auto_mappings = 0
+    autocmd FileType python let g:jedi#usages_command = "<leader>n"
+    autocmd FileType python let g:jedi#use_splits_not_buffers = ''
 augroup END
 
 " ---- Ruby Setting
@@ -904,7 +973,9 @@ set completeopt+=noinsert
 
 inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
-
+let g:caw_hatpos_skip_blank_line = 0
+let g:caw_no_default_keymappings = 1
+let g:caw_operator_keymappings = 0
 nmap <C-C> <Plug>(caw:hatpos:toggle)
 vmap <C-C> <Plug>(caw:hatpos:toggle)
 
