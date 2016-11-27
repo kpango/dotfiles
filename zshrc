@@ -157,6 +157,7 @@ else
     zplug "b4b4r07/enhancd", use:enhancd.sh
     zplug "b4b4r07/zspec", as:command, use:bin/zspec
     zplug "chrissicool/zsh-256color"
+    zplug "zchee/go-zsh-completions"
     zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
     zplug "mollifier/anyframe"
@@ -398,6 +399,7 @@ alias cdjava='mkcd $HOME/Documents/Programming/Java'
 alias cdjavaee='mkcd $HOME/Documents/Programming/JavaEE'
 alias cdjavafx='mkcd $HOME/Documents/Programming/JavaFX'
 alias cdgo='mkcd $HOME/Documents/Programming/go/src'
+alias cdpl='mkcd $HOME/Documents/Programming/perl'
 alias cdrs='mkcd $HOME/Documents/Programming/rust/src'
 alias cdex='mkcd $HOME/Documents/Programming/elixir'
 alias cdjs='mkcd $HOME/Documents/Programming/JavaScript'
@@ -489,25 +491,35 @@ findfile(){
 alias findfile=findfile
 
 greptext(){
-    if type jvgrep >/dev/null 2>&1; then
-        if [ $# -eq 3 ] && [ $3 = "-f" ]; then
-            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)Application\ Support|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$'
+    if [ $# -eq 2 ]; then
+        if type rg >/dev/null 2>&1; then
+            rg $2 $1
+        elif type jvgrep >/dev/null 2>&1; then
+            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$'
         else
-            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$'
+            find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
+            -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
+            -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 /dev/null
         fi
     else
-        find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
-        -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
-        -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 /dev/null
+        echo "Not enough arguments"
     fi
 }
 
-alias greptext=greptext
+alias gt=greptext
 
 chword(){
     if [ $# -eq 3 ]; then
-        jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
-        | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+        if type rg >/dev/null 2>&1; then
+            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+        elif type jvgrep >/dev/null 2>&1; then
+            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
+            | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+        else
+            find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
+            -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
+            -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+        fi
     else
         echo "Not enough arguments"
     fi
