@@ -375,7 +375,7 @@ mkcd() {
     else
         printf "Confirm to Make Directory? $1 [y/N]: "
         if read -q; then
-            echo; sudo \mkdir -p $1 && \cd $1
+            echo; \mkdir -p $1 && \cd $1
         fi
     fi
 }
