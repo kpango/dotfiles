@@ -40,6 +40,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/neoinclude.vim'
     Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
+    Plug 'jiangmiao/auto-pairs'
     Plug 'Shougo/neoyank.vim'
     Plug 'Shougo/unite.vim', {'on': ['Unite', 'UniteWithBufferDir','VimFiler']}
     Plug 'Shougo/vimfiler.vim', {'on': 'VimFiler'}
