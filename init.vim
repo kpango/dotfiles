@@ -40,7 +40,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/neoinclude.vim'
     Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
-    Plug 'jiangmiao/auto-pairs'
     Plug 'Shougo/neoyank.vim'
     Plug 'Shougo/unite.vim', {'on': ['Unite', 'UniteWithBufferDir','VimFiler']}
     Plug 'Shougo/vimfiler.vim', {'on': 'VimFiler'}
@@ -51,17 +50,18 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'honza/vim-snippets'
     Plug 'itchyny/lightline.vim'
     Plug 'janko-m/vim-test', {'for': ['go','rust','elixir','python','ruby','javascript','sh','lua','php','perl','java']}
-    Plug 'nixprime/cpsm', {'do': expand('$NVIM_HOME') . '/plugged/cpsm/install.sh'}
+    Plug 'jiangmiao/auto-pairs'
     "Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
     Plug 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
     Plug 'lilydjwg/colorizer', {'do': 'make'}
     Plug 'majutsushi/tagbar'
     Plug 'nathanaelkane/vim-indent-guides'
+    Plug 'neomake/neomake'
+    Plug 'nixprime/cpsm', {'do': expand('$NVIM_HOME') . '/plugged/cpsm/install.sh'}
     Plug 'osyo-manga/shabadou.vim'
     Plug 'osyo-manga/vim-precious'
     Plug 'osyo-manga/vim-watchdogs'
     Plug 'rizzatti/dash.vim', {'on': 'Dash'}
-    Plug 'neomake/neomake'
     Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
     Plug 'thinca/vim-quickrun'
     Plug 'tpope/vim-surround'
@@ -73,23 +73,26 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
 " ---- Yaml Setting
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
+" ---- Yaml Setting
+    Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake']}
 " ---- Golang Setting
     Plug 'dgryski/vim-godef', { 'for': 'go' }
     Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
+    Plug 'fatih/vim-go', {'for': 'go', 'on': 'GoAddTags'}
     Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
     Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'}
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'}
 " ---- Elixir Setting
-    Plug 'archSeer/elixir.nvim', {'for': 'elixir'}
-    Plug 'c-brenn/phoenix.vim', {'for': 'elixir'}
-    Plug 'avdgaag/vim-phoenix', {'for': 'elixir'}
-    Plug 'carlosgaldino/elixir-snippets', {'for': 'elixir'}
-    Plug 'elixir-lang/vim-elixir',{'for': 'elixir'}
-    Plug 'mattreduce/vim-mix', {'for': 'elixir'}
-    Plug 'slashmili/alchemist.vim', {'for': 'elixir'}
-    Plug 'tpope/vim-projectionist', {'for': 'elixir'}
+    Plug 'archSeer/elixir.nvim', {'for': ['elixir', 'eelixir']}
+    Plug 'c-brenn/phoenix.vim', {'for': ['elixir', 'eelixir']}
+    Plug 'avdgaag/vim-phoenix', {'for': ['elixir', 'eelixir']}
+    Plug 'carlosgaldino/elixir-snippets', {'for': ['elixir', 'eelixir']}
+    Plug 'elixir-lang/vim-elixir',{'for': ['elixir', 'eelixir']}
+    Plug 'mattreduce/vim-mix', {'for': ['elixir', 'eelixir']}
+    Plug 'slashmili/alchemist.vim', {'for': ['elixir', 'eelixir']}
+    Plug 'tpope/vim-projectionist', {'for': ['elixir', 'eelixir']}
 " ---- Erlang Setting
     Plug 'edkolev/erlang-motions.vim', {'for': 'erlang'}
     Plug 'vim-erlang/vim-erlang-compiler', {'for': 'erlang'}
@@ -159,6 +162,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'vhakulinen/neovim-intellij-complete', {'for': ['java', 'scala']}
     Plug 'vhakulinen/neovim-intellij-complete-deoplete', {'for': ['java','scala']}
     Plug 'vim-scripts/java_getset.vim', {'for': 'java'}
+    Plug 'tfnico/vim-gradle', {'for': 'groovy' }
 " ---- Nim
     Plug 'zah/nim.vim', {'for': 'nim'}
 "   Plug 'baabelfish/nvim-nim', {'for': 'nim'}
@@ -188,7 +192,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Swift
     Plug 'keith/swift.vim', {'for': 'swift'}
     Plug 'kballard/vim-swift', {'for': 'swift'}
-    "Plug 'landaire/deoplete-swift', {'for': 'swift'}
+    " Plug 'landaire/deoplete-swift', {'for': 'swift'}
     Plug 'mitsuse/autocomplete-swift', {'for': 'swift'}
 " ---- Markdown
     Plug 'tyru/open-browser.vim', {'for': 'markdown'}
@@ -263,13 +267,16 @@ let g:indent_guides_guide_size = 1
 
 augroup FileTypeSetting
     autocmd!
-    autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+    autocmd BufNewFile,BufRead *.c,*.cpp,*.cxx,*.cmake set filetype=clang
+    autocmd BufNewFile,BufRead *.dart set filetype=dart
+    autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
     autocmd BufNewFile,BufRead *.es6 set filetype=javascript
+    autocmd BufNewFile,BufRead *.exs,*.ex set filetype=elixir
+    autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
     autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
     autocmd BufNewFile,BufRead *.rs set filetype=rust
+    autocmd BufNewFile,BufRead *.ts set filetype=typescript
     autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
-    autocmd BufNewFile,BufRead *.exs,*.ex set filetype=elixir
-    autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
 augroup END
 
 augroup NeomakeSetting
@@ -280,7 +287,8 @@ augroup NeomakeSetting
     autocmd BufRead * let g:neomake_list_height = 6
     autocmd FileType coffee,javascript,javascript.jsx,json let g:neomake_javascript_enabled_makers=['eslint_d']
     autocmd FileType go let g:neomake_go_enabled_makers = ['go', 'golint', 'govet']
-    autocmd FileType html,xhtml let g:neomake_html_enabled_makers = ['tidy', 'jshint']
+    autocmd FileType html,xhtml let g:neomake_html_enabled_makers = ['tidy', 'htmlhint']
+    autocmd FileType css let g:neomake_css_enabled_makers = ['csslint', 'stylelint']
     autocmd FileType nim let g:neomake_nim_enabled_makers = ['nim', 'nimsuggest']
     autocmd FileType php let g:neomake_php_enabled_makers = ['php', 'phpcs', 'phpmd']
     autocmd FileType php let g:neomake_php_phpcs_args_standard='psr4'
@@ -301,14 +309,16 @@ augroup DeopleteSetting
     autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= "/Library/Developer/CommandLineTools/usr/lib/libclang.dylib"
     autocmd FileType go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
     autocmd FileType go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
-    " autocmd FileType go let g:deoplete#sources#go#json_directory = "/Users/yusukato/.config/nvim/plugged/deoplete-go/data/json/1.7.3/darwin_amd64"
     autocmd FileType go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
     autocmd FileType go let g:deoplete#sources#go#package_dot = 1
     autocmd FileType go let g:deoplete#sources#go#on_event = 1
     autocmd FileType go let g:deoplete#sources#go#pointer = 1
     autocmd FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
     autocmd FileType go let g:deoplete#sources#go#use_cache = 1
-    " python
+    " clang
+    autocmd FileType clang let g:deoplete#sources#clang#libclang_path= expand("/usr/local/Cellar/llvm/*/Toolchains/*/usr/lib/libclang.dylib")
+    autocmd FileType clang let g:deoplete#sources#clang#clang_header = expand("/usr/local/Cellar/llvm/*/include/clang")
+    " Python
     autocmd FileType python call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
     autocmd FileType python call deoplete#custom#set('jedi', 'matchers', ['matcher_fuzzy'])
     autocmd FileType python let g:deoplete#sources#jedi#statement_length = 0
@@ -546,6 +556,26 @@ augroup JavaScriptSettings
     autocmd! VimLeave *.js  !eslint_d stop
 augroup END
 
+" ---- TypeScript Settings
+augroup TypeScriptSettings
+    autocmd!
+    autocmd BufWritePre *.ts EsFix
+    autocmd BufWritePre *.ts Autoformat
+    autocmd FileType typescript let g:neomake_typescript_tsc_maker = {
+        \ 'args': [
+            \ '--project', getcwd(), '--noEmit'
+        \ ],
+        \ 'append_file': 0,
+        \ 'errorformat':
+            \ '%E%f %#(%l\,%c): error %m,' .
+            \ '%E%f %#(%l\,%c): %m,' .
+            \ '%Eerror %m,' .
+            \ '%C%\s%\+%m'
+        \ }
+    autocmd FileType coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
+    autocmd! VimLeave *.js  !eslint_d stop
+augroup END
+
 " ---- Java Settings
 augroup JavaSettings
     autocmd!
@@ -660,7 +690,11 @@ let g:quickrun_config._={ 'runner':'vimproc',
             \       'runner/vimproc/updatetime' : 10,
             \       'outputter/buffer/close_on_empty' : 1,
             \ }
-
+let g:quickrun_config['swift'] = {
+            \ 'command': 'xcrun',
+            \ 'cmdopt': 'swift',
+            \ 'exec': '%c %o %s',
+            \}
 " ---- emmet-vim
 let g:user_emmet_expandabbr_key = '<c-E>'
 let g:user_emmet_leader_key='<c-e>'
@@ -783,7 +817,15 @@ if executable('jq')
         " エラーメッセージ用バッファは読み取り専用にしておく
         setlocal readonly
     endfunction
-    command! -bar -bang -range=% -nargs=? Jq  <line1>,<line2>call s:jq(<bang>0, <f-args>)
+    command! -bar -bang -range=% -nargs=? Jq <line1>,<line2>call s:jq(<bang>0, <f-args>)
+endif
+
+if executable('trans')
+    " translate-shellを使う
+    let s:trans_cmd = 'trans'
+    let s:trans_opt = '-b --no-ansi -e google'
+    command! -range=% -nargs=? Trans <line1>,<line2> s:trans_cmd s:trans_opt
+    nnoremap <silent> <F3> :Trans<CR>
 endif
 
 " -------------------------
@@ -964,7 +1006,7 @@ function! s:completion_check_bs()
 endfunction
 
 inoremap <expr><silent><Tab> pumvisible() ? "\<C-n>" : (<sid>completion_check_bs() ? "\<Tab>" : deoplete#mappings#manual_complete())
-
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
 imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 
 inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
