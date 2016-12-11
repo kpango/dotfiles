@@ -151,7 +151,6 @@ if ! type zplug >/dev/null 2>&1; then
     git clone https://github.com/zplug/zplug $ZPLUG_HOME
     source "$HOME/.zshrc"
 else
-    zplug "zplug/zplug"
     zplug "Tarrasch/zsh-colors"
     zplug "ascii-soup/zsh-url-highlighter"
     zplug "b4b4r07/enhancd", use:enhancd.sh
@@ -162,13 +161,13 @@ else
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
     zplug "mollifier/anyframe"
     zplug "mollifier/cd-gitroot"
-    zplug "oknowton/zsh-dwim"
     zplug "rupa/z", use:z.sh
     zplug "supercrabtree/k"
     zplug "zsh-users/zsh-autosuggestions"
     zplug "zsh-users/zsh-completions"
     zplug "zsh-users/zsh-history-substring-search"
-    zplug "zsh-users/zsh-syntax-highlighting", nice:10
+    zplug "zsh-users/zsh-syntax-highlighting", defer:2
+    zplug "soimort/translate-shell", at:stable, as:command, use:"build/*", hook-build:"make build &> /dev/null"
 
     if zplug check b4b4r07/enhancd; then
         export ENHANCD_FILTER=fzf-tmux
@@ -286,6 +285,7 @@ alias ln="sudo ln -Fsnfiv"
 alias mv='mv -i'
 alias wget='wget --no-cookies --no-check-certificate --no-dns-cache -4'
 alias mkdir='mkdir -p'
+alias gtrans='trans -b -e google'
 
 # sudo の後のコマンドでエイリアスを有効にする
 alias sudo="echo $PASSWORD | sudo -S "
@@ -302,59 +302,50 @@ if type nim >/dev/null 2>&1; then
     alias nimup="\cd $NIMPATH;git -C $NIMPATH pull;nim c $NIMPATH/koch;$NIMPATH/koch boot -d:release;\cd $HOME"
 fi
 
-go-update(){
-    go get -u github.com/Masterminds/glide
-    go get -u github.com/aarzilli/gdlv
-    go get -u github.com/alecthomas/gometalinter
-    go get -u github.com/constabulary/gb/...
-    go get -u github.com/cweill/gotests/...
-    go get -u github.com/derekparker/delve/cmd/dlv
-    go get -u github.com/garyburd/go-explorer/src/getool
-    go get -u github.com/golang/lint/golint
-    go get -u github.com/jstemmer/gotags
-    go get -u github.com/kisielk/gotool
-    go get -u github.com/mattn/files
-    go get -u github.com/mattn/jvgrep
-    go get -u github.com/motemen/go-iferr/cmd/goiferr
-    go get -u github.com/nsf/gocode
-    go get -u github.com/peco/peco/cmd/peco
-    go get -u github.com/rogpeppe/godef
-    go get -u github.com/zmb3/gogetdoc
-    go get -u golang.org/x/tools/cmd/cover
-    go get -u golang.org/x/tools/cmd/godoc
-    go get -u golang.org/x/tools/cmd/goimports
-    go get -u golang.org/x/tools/cmd/gorename
-    go get -u sourcegraph.com/sqs/goreturns
-
-    go install github.com/Masterminds/glide
-    go install github.com/aarzilli/gdlv
-    go install github.com/alecthomas/gometalinter
-    go install github.com/constabulary/gb/...
-    go install github.com/cweill/gotests
-    go install github.com/derekparker/delve/cmd/dlv
-    go install github.com/garyburd/go-explorer/src/getool
-    go install github.com/golang/lint/golint
-    go install github.com/jstemmer/gotags
-    go install github.com/kisielk/gotool
-    go install github.com/mattn/jvgrep
-    go install github.com/motemen/go-iferr/cmd/goiferr
-    go install github.com/nsf/gocode
-    go install github.com/peco/peco/cmd/peco
-    go install github.com/rogpeppe/godef
-    go install github.com/zmb3/gogetdoc
-    go install golang.org/x/tools/cmd/cover
-    go install golang.org/x/tools/cmd/godoc
-    go install golang.org/x/tools/cmd/goimports
-    go install golang.org/x/tools/cmd/gorename
-    go install sourcegraph.com/sqs/goreturns
-
-    $GOPATH/bin/gocode set autobuild true
-    $GOPATH/bin/gocode set lib-path $GOPATH/pkg/darwin_amd64/
-    $GOPATH/bin/gocode set propose-builtins true
-}
-alias go-update=go-update
-
 if type go >/dev/null 2>&1; then
+    go-update(){
+        go get -u github.com/Masterminds/glide
+        go get -u github.com/aarzilli/gdlv
+        go get -u github.com/alecthomas/gometalinter
+        go get -u github.com/constabulary/gb/...
+        go get -u github.com/cweill/gotests/...
+        go get -u github.com/derekparker/delve/cmd/dlv
+        go get -u github.com/garyburd/go-explorer/src/getool
+        go get -u github.com/golang/lint/golint
+        go get -u github.com/gopherjs/gopherjs
+        go get -u github.com/jstemmer/gotags
+        go get -u github.com/kardianos/govendor
+        go get -u github.com/kisielk/gotool
+        go get -u github.com/mattn/files
+        go get -u github.com/mattn/jvgrep
+        go get -u github.com/motemen/ghq
+        go get -u github.com/motemen/go-iferr/cmd/goiferr
+        go get -u github.com/nsf/gocode
+        go get -u github.com/peco/peco/cmd/peco
+        go get -u github.com/rogpeppe/godef
+        go get -u github.com/zmb3/gogetdoc
+        go get -u golang.org/x/tools/cmd/cover
+        go get -u golang.org/x/tools/cmd/godoc
+        go get -u golang.org/x/tools/cmd/goimports
+        go get -u golang.org/x/tools/cmd/gorename
+        go get -u sourcegraph.com/sqs/goreturns
+
+        gocode set autobuild true
+        gocode set lib-path $GOPATH/pkg/darwin_amd64/
+        gocode set propose-builtins true
+    }
+    alias go-update=go-update
+
+    cover () {
+        t=$(mktemp -t cover)
+        go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -func=$t && unlink $t
+    }
+
+    cover-web() {
+        t=$(mktemp -t cover)
+        go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -html=$t && unlink $t
+    }
+
     alias goup="rm -rf $GOPATH/bin;rm -rf $GOPATH/pkg;go-update;nvim +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall"
 fi
 
@@ -460,6 +451,19 @@ if type nvim >/dev/null 2>&1; then
     alias vedit="nvim $HOME/.config/nvim/init.vim"
     alias vspdchk="rm -rf /tmp/starup.log && nvim --startuptime /tmp/startup.log +q && less /tmp/startup.log"
     alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;rm $HOME/.nvimlog;rm $HOME/.viminfo"
+    nvim-init(){
+        rm -rf "$HOME/.config/gocode";
+        rm -rf "$HOME/.config/nvim/autoload";
+        rm -rf "$HOME/.config/nvim/ftplugin";
+        rm -rf "$HOME/.config/nvim/log";
+        rm -rf "$HOME/.config/nvim/plugged";
+        nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
+        rm "$HOME/.nvimlog";
+        rm "$HOME/.viminfo";
+        wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
+        mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-darwin-amd64" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
+    }
+    alias nvinit="nvim-init";
 fi
 
 if type rustc >/dev/null 2>&1; then
@@ -483,6 +487,27 @@ alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
 alias zedit="nvim $HOME/.zshrc"
 alias zcompinit="sudo rm -rf $HOME/.zcompd*;sudo rm -rf $HOME/.zplug/zcompd*;"
 alias zsinit="zcompinit;sudo rm -rf $HOME/.zplug;sudo rm -rf $HOME/.zshrc.zwc;zsup"
+
+peco-hostname() {
+    local selected_hosts=$(cat $HOME/.ssh/known_hosts | awk -F'[ ,]+' '{print $1}' | peco)
+    if [ -n "$selected_hosts" ]; then
+        BUFFER="$BUFFER${selected_hosts}"
+        CURSOR=$#BUFFER             # move cursor
+    fi
+}
+zle -N peco-hostname
+bindkey '^H' peco-hostname
+
+peco-ghq-cd () {
+    local selected_dir=$(ghq list | peco --query "$LBUFFER")
+    if [ -n "$selected_dir" ]; then
+        selected_dir="`ghq root`/$selected_dir"
+        BUFFER="cd ${selected_dir}"
+    fi
+    zle clear-screen
+}
+zle -N peco-ghq-cd
+bindkey '^f' peco-ghq-cd;
 
 findfile(){
     sudo find $1 -name $2
