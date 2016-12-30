@@ -8,10 +8,10 @@ Host {Config Name}
     ServerAliveInterval 60
     ServerAliveCountMax 120
     TCPKeepAlive yes
+    LogLevel FATAL
     Protocol 2
     GatewayPorts yes
     ForwardAgent yes
     ForwardX11 yes
     ForwardX11Trusted yes
     XAuthLocation /usr/bin/xauth
-
