@@ -30,7 +30,7 @@ if [ -z $DOTENV_LOADED ]; then
     export NVIM_HOME=$XDG_CONFIG_HOME/nvim;
     export XDG_DATA_HOME=$NVIM_HOME/log;
     export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME;
-    
+
     #LLVM
     if type llvm >/dev/null 2>&1; then
         export LLVM_HOME=/usr/local/opt/llvm;
