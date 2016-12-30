@@ -30,20 +30,22 @@ if [ -z $DOTENV_LOADED ]; then
     export NVIM_HOME=$XDG_CONFIG_HOME/nvim;
     export XDG_DATA_HOME=$NVIM_HOME/log;
     export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME;
-
+    
     #LLVM
-    export LLVM_HOME=/usr/local/opt/llvm;
-    export C=$LLVM_HOME/bin/clang;
-    export CXX=$LLVM_HOME/bin/clang++;
-    export LIBRARY_PATH=$LLVM_HOME/lib;
-    export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
+    if type llvm >/dev/null 2>&1; then
+        export LLVM_HOME=/usr/local/opt/llvm;
+        export C=$LLVM_HOME/bin/clang;
+        export CXX=$LLVM_HOME/bin/clang++;
+        export LIBRARY_PATH=$LLVM_HOME/lib;
+        export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
 
-    #CLANG
-    export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
-    export CPPFLAGS=$CFLAGS;
-    export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
-    export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
-    export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
+        #CLANG
+        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
+        export CPPFLAGS=$CFLAGS;
+        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
+        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
+        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
+    fi
 
     #JAVA
     if type java >/dev/null 2>&1; then
@@ -149,6 +151,7 @@ source "$HOME/.zplug/init.zsh";
 if ! type zplug >/dev/null 2>&1; then
     rm -rf $ZPLUG_HOME
     git clone https://github.com/zplug/zplug $ZPLUG_HOME
+    zsup
     source "$HOME/.zshrc"
 else
     zplug "Tarrasch/zsh-colors"
@@ -186,7 +189,7 @@ else
         zplug install
     fi
     zplug load --verbose
-    alias zsup="zcompinit;rm $HOME/.zshrc.zwc;zplug update;zplug clean;zplug clear;zplug status;zplug info;rm $HOME/.bashrc;rm $HOME/.fzf.bash;"
+
 fi
 
 # 色を使用出来るようにする
@@ -222,8 +225,8 @@ zstyle ':zle:*' word-style unspecified
 ########################################
 # 補完
 # 補完機能を有効にする
-autoload -Uz compinit -C
-compinit -C
+# autoload -Uz compinit -C
+# compinit -C
 
 zstyle ':completion:*' format '%B%d%b'
 zstyle ':completion:*' group-name ''
@@ -328,6 +331,7 @@ if type go >/dev/null 2>&1; then
         go get -u golang.org/x/tools/cmd/godoc
         go get -u golang.org/x/tools/cmd/goimports
         go get -u golang.org/x/tools/cmd/gorename
+        go get -u golang.org/x/tools/cmd/guru
         go get -u sourcegraph.com/sqs/goreturns
 
         gocode set autobuild true
@@ -356,9 +360,9 @@ fi
 alias gemup="sudo chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;sudo chmod -R 777 /Library/Ruby/;gem update --system;gem update"
 alias haskellup="stack upgrade;stack update;cabal update"
 alias npmup="npm update -g npm;npm update -g;npm upgrade -g"
-alias pipup="pip install --upgrade pip;pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip install -U --upgrade"
-alias pip2up="pip2 install --upgrade pip;pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip2 install -U --upgrade"
-alias pip3up="pip3 install --upgrade pip;pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip3 install -U --upgrade"
+alias pipup="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;pip install --upgrade pip;pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip install -U --upgrade"
+alias pip2up="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;pip2 install --upgrade pip;pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip2 install -U --upgrade"
+alias pip3up="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages;pip3 install --upgrade pip;pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip3 install -U --upgrade"
 
 mkcd() {
     if [[ -d $1 ]]; then
@@ -486,7 +490,22 @@ alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
 
 alias zedit="nvim $HOME/.zshrc"
 alias zcompinit="sudo rm -rf $HOME/.zcompd*;sudo rm -rf $HOME/.zplug/zcompd*;"
-alias zsinit="zcompinit;sudo rm -rf $HOME/.zplug;sudo rm -rf $HOME/.zshrc.zwc;zsup"
+zsup(){
+    zcompinit;
+    rm $HOME/.zshrc.zwc;
+    zplug update;
+    zplug clean;
+    zplug clear;
+    zplug status;
+    zplug info;
+    rm $HOME/.bashrc;
+    rm $HOME/.fzf.bash;
+    for f in $(find . -name "*.zsh");
+    do zcompile $f;
+    done;
+}
+alias zsup=zsup
+alias zsinit="zcompinit;sudo rm -rf $HOME/.zplug;sudo rm -rf $HOME/.zshrc.zwc;zsup;"
 
 peco-hostname() {
     local selected_hosts=$(cat $HOME/.ssh/known_hosts | awk -F'[ ,]+' '{print $1}' | peco)
