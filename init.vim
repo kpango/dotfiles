@@ -195,10 +195,11 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'landaire/deoplete-swift', {'for': 'swift'}
     Plug 'mitsuse/autocomplete-swift', {'for': 'swift'}
 " ---- Markdown
-    Plug 'tyru/open-browser.vim', {'for': 'markdown'}
-    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
     Plug 'kannokanno/previm', {'for': 'markdown'}
+    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
+    Plug 'shinespark/vim-list2tree', {'for': 'markdown', 'on': 'List2Tree'}
     Plug 'sotte/presenting.vim', {'for': 'markdown'}
+    Plug 'tyru/open-browser.vim', {'for': 'markdown'}
 " ---- SQL
     Plug 'SQLComplete.vim', { 'for': 'sql' }
 " ---- TOML
@@ -416,6 +417,8 @@ augroup GolangSetting
     " ---- GoFmtコマンドを保存時に走らせる
     autocmd BufWritePre *.go Gofmt
     autocmd FileType go compiler go
+    autocmd FileType go :highlight goExtraVars ctermfg=214
+    autocmd FileType go :match goExtraVars /\<ok\>\|\<err\>/
     " autocmd FileType go nmap  <silent><buffer>K                   <Plug>(go-doc)
     " autocmd FileType go nmap  <silent><buffer><LocalLeader>]      :<C-u>GoGeneDefinition<CR>
     " autocmd FileType go nmap  <silent><buffer><C-]>               :<C-u>call GoGuru('definition')<CR>
@@ -481,7 +484,7 @@ augroup GolangSetting
     autocmd FileType go let g:go#lint#metalinter#autosave#tools = ['vet', 'golint']
     autocmd FileType go let g:go#lint#metalinter#deadline = '20s'
     autocmd FileType go let g:go#lint#metalinter#skip_dir = ['internal', 'vendor', 'testdata', '__*.go', '*_test.go']
-    autocmd FileType go let g:go#lint#metalinter#tools = ['vet', 'golint']
+    autocmd FileType go let g:go#lint#metalinter#tools = ['vet', 'golint', 'errcheck']
     autocmd FileType go let g:go#rename#prefill = 1
     autocmd FileType go let g:go#terminal#height = 120
     autocmd FileType go let g:go#terminal#start_insert = 1
@@ -493,6 +496,7 @@ augroup GolangSetting
     autocmd FileType go set runtimepath+=globpath($GOROOT, "/misc/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/golang/lint/misc/vim")
+    autocmd FileType go nnoremap <F5> :GoRun<CR>
 augroup END
 
 " ---- Scala Settings
@@ -832,6 +836,7 @@ endif
 " ---- Default Setting ----
 " -------------------------
 colorscheme monokai
+" colorscheme spring-night
 
 " ---- Enable Word Wrap
 set wrap
