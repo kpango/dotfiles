@@ -14,11 +14,6 @@ if [ -z $DOTENV_LOADED ]; then
     export PASSWORD="your password"
 
     [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh 
-    if type nvim >/dev/null 2>&1; then
-        export EDITOR=$(which nvim)
-    else
-        export EDITOR=$(which vim)
-    fi
 
     export SHELL=$(which zsh)
 
@@ -74,12 +69,14 @@ if [ -z $DOTENV_LOADED ]; then
 
     #Nim
     export NIMPATH=/usr/local/bin/Nim;
+    export NIMBLE_PATH=$HOME/.nimble;
 
     #ReactNative
-    export REACT_EDITOR=$EDITOR;
+    export REACT_EDITOR=$(which nvim);
 
     # Rust
     export RUST_SRC_PATH=/usr/local/src/rust/src;
+    export RUST_BACKTRACE=1;
     export CARGO_HOME=$HOME/.cargo;
 
     #QT
@@ -92,7 +89,7 @@ if [ -z $DOTENV_LOADED ]; then
     export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
 
     if [ -z $TMUX ]; then
-        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
+        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$NIMBLE_PATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
         #anyenv init
         if [ -d "$HOME/.anyenv" ] ; then
             export PATH="$HOME/.anyenv/bin:$PATH"
@@ -145,13 +142,19 @@ if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc
     zcompile $HOME/.zcompdump
 fi
 
+if [ ! -f "$ZPLUG_HOME/cache/command.zsh.zwc" -o "$ZPLUG_HOME/cache/command.zsh" -nt "$ZPLUG_HOME/cache/command.zsh.zwc" ]; then
+    zcompile $ZPLUG_HOME/cache/command.zsh
+fi
+if [ ! -f "$ZPLUG_HOME/cache/plugin.zsh.zwc" -o "$ZPLUG_HOME/cache/plugin.zsh" -nt "$ZPLUG_HOME/cache/plugin.zsh.zwc" ]; then
+    zcompile $ZPLUG_HOME/cache/plugin.zsh
+fi
+
 ########################################
 #Zplug Settings
 source "$HOME/.zplug/init.zsh";
 if ! type zplug >/dev/null 2>&1; then
     rm -rf $ZPLUG_HOME
     git clone https://github.com/zplug/zplug $ZPLUG_HOME
-    zsup
     source "$HOME/.zshrc"
 else
     zplug "Tarrasch/zsh-colors"
@@ -172,6 +175,10 @@ else
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
     zplug "soimort/translate-shell", at:stable, as:command, use:"build/*", hook-build:"make build &> /dev/null"
 
+    if zplug check junegunn/fzf; then
+        export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
+    fi
+
     if zplug check b4b4r07/enhancd; then
         export ENHANCD_FILTER=fzf-tmux
         export ENHANCD_COMMAND=ccd
@@ -188,7 +195,8 @@ else
     if ! zplug check --verbose; then
         zplug install
     fi
-    zplug load --verbose
+    # zplug load --verbose
+    zplug load
 
 fi
 
@@ -225,8 +233,8 @@ zstyle ':zle:*' word-style unspecified
 ########################################
 # 補完
 # 補完機能を有効にする
-# autoload -Uz compinit -C
-# compinit -C
+autoload -Uz compinit -C
+compinit -C
 
 zstyle ':completion:*' format '%B%d%b'
 zstyle ':completion:*' group-name ''
@@ -261,7 +269,7 @@ setopt auto_list            # 補完候補を一覧表示
 setopt auto_menu            # 補完候補が複数あるときに自動的に一覧表示する
 setopt auto_param_keys      # カッコの対応などを自動的に補完
 setopt auto_pushd           # cd したら自動的にpushdする
-# setopt correct
+setopt correct
 setopt extended_glob
 setopt ignore_eof
 setopt interactive_comments # '#' 以降をコメントとして扱う
@@ -314,6 +322,7 @@ if type go >/dev/null 2>&1; then
         go get -u github.com/cweill/gotests/...
         go get -u github.com/derekparker/delve/cmd/dlv
         go get -u github.com/garyburd/go-explorer/src/getool
+        go get -u github.com/golang/dep
         go get -u github.com/golang/lint/golint
         go get -u github.com/gopherjs/gopherjs
         go get -u github.com/jstemmer/gotags
@@ -326,12 +335,16 @@ if type go >/dev/null 2>&1; then
         go get -u github.com/nsf/gocode
         go get -u github.com/peco/peco/cmd/peco
         go get -u github.com/rogpeppe/godef
+        go get -u github.com/valyala/quicktemplate
+        go get -u github.com/valyala/quicktemplate/qtc
         go get -u github.com/zmb3/gogetdoc
         go get -u golang.org/x/tools/cmd/cover
         go get -u golang.org/x/tools/cmd/godoc
         go get -u golang.org/x/tools/cmd/goimports
         go get -u golang.org/x/tools/cmd/gorename
         go get -u golang.org/x/tools/cmd/guru
+        go get -u golang.org/x/tools/cmd/present
+        go get -u google.golang.org/grpc
         go get -u sourcegraph.com/sqs/goreturns
 
         gocode set autobuild true
@@ -425,6 +438,7 @@ if type git >/dev/null 2>&1; then
     alias gcom="git commit -m"
     alias gdiff="git diff"
     alias gbra="git branch"
+    alias tb="git symbolic-ref --short HEAD|tr -d \"\\n\""
     alias gpull="git pull origin"
     alias gpush="git push origin"
     gitcompush(){
@@ -432,15 +446,20 @@ if type git >/dev/null 2>&1; then
         git commit -m $1;
         git push -u origin $2;
     }
-    alias gcp=gitcompush
-    alias gfix="gcp fix master"
+    gcp(){
+        gitcompush $1 $(tb);
+    }
+    alias gcp=gcp
+    alias gfix="gitcompush fix master"
+    alias gedit="nvim $HOME/.gitconfig"
+
 fi
 
 if type tmux >/dev/null 2>&1; then
     alias aliastx='alias | grep tmux'
     alias tmls='\tmux list-sessions'
     alias tmlc='\tmux list-clients'
-    alias killtmux='\tmux kill-server'
+    alias tkill='\tmux kill-server'
     alias tmkl='\tmux kill-session'
     alias tmaw='\tmux main-horizontal'
     alias tmuxa='\tmux -2 a -t'
@@ -472,6 +491,14 @@ fi
 
 if type rustc >/dev/null 2>&1; then
     alias rust="rustc -O"
+
+    rust_run() {
+        rustc $1
+        local binary=$(basename $1 .rs)
+        ./$binary
+    }
+
+    alias rrun="rust_run"
 fi
 
 if type javac >/dev/null 2>&1; then
@@ -488,8 +515,11 @@ alias rsagen=rsagen
 alias sedit="nvim $HOME/.ssh/config"
 alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
 
+alias tedit="nvim $HOME/.tmux.conf"
+
 alias zedit="nvim $HOME/.zshrc"
 alias zcompinit="sudo rm -rf $HOME/.zcompd*;sudo rm -rf $HOME/.zplug/zcompd*;"
+
 zsup(){
     zcompinit;
     rm $HOME/.zshrc.zwc;
@@ -500,9 +530,6 @@ zsup(){
     zplug info;
     rm $HOME/.bashrc;
     rm $HOME/.fzf.bash;
-    for f in $(find . -name "*.zsh");
-    do zcompile $f;
-    done;
 }
 alias zsup=zsup
 alias zsinit="zcompinit;sudo rm -rf $HOME/.zplug;sudo rm -rf $HOME/.zshrc.zwc;zsup;"
@@ -555,7 +582,7 @@ alias gt=greptext
 chword(){
     if [ $# -eq 3 ]; then
         if type rg >/dev/null 2>&1; then
-            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s/$2/$3/g";
         elif type jvgrep >/dev/null 2>&1; then
             jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
             | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
@@ -564,6 +591,17 @@ chword(){
             -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
             -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
         fi
+    elif [ $# -eq 4 ]; then
+        if type rg >/dev/null 2>&1; then
+            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s$4$2$4$3$4g";
+        elif type jvgrep >/dev/null 2>&1; then
+            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
+            | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g";
+        else
+            find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
+            -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
+            -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g";
+        fi
     else
         echo "Not enough arguments"
     fi
@@ -571,7 +609,12 @@ chword(){
 
 alias chword=chword;
 
-alias :q=exit
+alias :q=exit;
+
+alias 644='chmod -R 644'
+alias 655='chmod -R 655'
+alias 755='chmod -R 755'
+alias 777='chmod -R 777'
 
 ########################################
 # OS 別の設定
@@ -636,6 +679,7 @@ case ${OSTYPE} in
 
             sudo purge
             sudo du -sx / &
+            sudo mkdir /usr/local/etc/my.cnf.d
         }
         alias clean=clean
 
@@ -643,7 +687,7 @@ case ${OSTYPE} in
             if [ -z $OSXENV_LOADED ]; then
                 export CLICOLOR=1
                 export HOMEBREW_GITHUB_API_TOKEN="Please Insert Your GitHub API Token"
-                export HOMEBREW_EDITOR=$EDITOR
+                export HOMEBREW_EDITOR=$(which nvim)
                 export HOMEBREW_MAKE_JOBS=6
                 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
                 export CFLAGS="-I$(xcrun --show-sdk-path)/usr/include:$CFLAGS"

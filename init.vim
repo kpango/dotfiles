@@ -63,10 +63,11 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'osyo-manga/vim-watchdogs'
     Plug 'rizzatti/dash.vim', {'on': 'Dash'}
     Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
+    Plug 'terryma/vim-multiple-cursors'
     Plug 'thinca/vim-quickrun'
     Plug 'tpope/vim-surround'
     Plug 'tyru/caw.vim'
-    Plug 'ujihisa/neco-look'
+    " Plug 'ujihisa/neco-look'
     Plug 'vim-scripts/sudo.vim'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
@@ -100,7 +101,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'vim-erlang/vim-erlang-runtime', {'for': 'erlang'}
     Plug 'vim-erlang/vim-erlang-tags', {'for': 'erlang'}
 " ---- HTML
-    Plug 'amirh/HTML-AutoCloseTag', {'for': ['html', 'php']}
     Plug 'digitaltoad/vim-jade', { 'for': ['jade', 'pug'] }
     Plug 'gregsexton/MatchTag', { 'for': ['html','php'] }
     Plug 'hokaccha/vim-html5validator', {'for': ['html', 'php']}
@@ -329,14 +329,6 @@ augroup DeopleteSetting
     autocmd FileType python let g:deoplete#sources#jedi#python_path = g:python3_host_prog
 augroup END
 
-augroup DeniteSetting
-    autocmd!
-    call denite#custom#source('file_rec', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
-    call denite#custom#source('file_rec', 'matchers', ['matcher_cpsm'])
-    call denite#custom#source('grep', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
-    call denite#custom#source('line', 'command', ['pt', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
-augroup END
-
 augroup IndentSetting
     autocmd!
     autocmd FileType coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS
@@ -346,7 +338,7 @@ augroup IndentSetting
     autocmd FileType php setlocal ts=4 sts=4 sw=4 expandtab omnifunc=phpcomplete_extended#CompletePHP
 
     autocmd FileType python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-    autocmd FileType rust setlocal sw=4 noexpandtab ts=4 completeopt=menu,preview
+    autocmd FileType rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview
     autocmd FileType ruby setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
     autocmd FileType scala setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
     autocmd FileType sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
@@ -526,6 +518,11 @@ augroup SwiftSetting
                 \ '%-G%.%#'
                 \ },
                 \ }
+    autocmd FileType swift let g:quickrun_config['swift'] = {
+            \ 'command': 'xcrun',
+            \ 'cmdopt': 'swift',
+            \ 'exec': '%c %o %s',
+            \}
 augroup END
 
 " ---- PHP Settings
@@ -612,9 +609,12 @@ augroup END
 " ---- Rust Settings
 augroup RustSetting
     autocmd!
+    autocmd BufWritePre *.rust RustFmt
     autocmd FileType BufWritePost *.rs QuickRun -type syntax/rust
     autocmd FileType rust let g:rustfmt_autosave = 1
     autocmd FileType rust let g:rustfmt_command = system('which rustfmt')
+    autocmd FileType rust let g:rustfmt_options = "--write-mode=overwrite"
+    autocmd FileType rust let g:racer_cmd = system('which racer')
     autocmd FileType rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
     autocmd FileType rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
     autocmd FileType rust let g:deoplete#sources#rust#documentation_max_height=20
@@ -694,11 +694,7 @@ let g:quickrun_config._={ 'runner':'vimproc',
             \       'runner/vimproc/updatetime' : 10,
             \       'outputter/buffer/close_on_empty' : 1,
             \ }
-let g:quickrun_config['swift'] = {
-            \ 'command': 'xcrun',
-            \ 'cmdopt': 'swift',
-            \ 'exec': '%c %o %s',
-            \}
+
 " ---- emmet-vim
 let g:user_emmet_expandabbr_key = '<c-E>'
 let g:user_emmet_leader_key='<c-e>'
@@ -733,68 +729,7 @@ nnoremap <Leader>d :call <SID>dash(expand('<cword>'))<CR>
 
 let g:gitgutter_max_signs = 10000
 
-" insert modeで開始
-let g:unite_enable_start_insert = 0
-
-" 大文字小文字を区別しない
-let g:unite_enable_ignore_case = 1
-let g:unite_enable_smart_case = 1
-
-" grep検索
-nnoremap <silent> ,g  :<C-u>Unite grep:. -buffer-name=search-buffer<CR>
-
-" カーソル位置の単語をgrep検索
-nnoremap <silent> ,cg :<C-u>Unite grep:. -buffer-name=search-buffer<CR><C-R><C-W>
-
-" grep検索結果の再呼出
-nnoremap <silent> ,r  :<C-u>UniteResume search-buffer<CR>
-
-if executable('ag')
-    let g:ackprg = 'ag --vimgrep'
-    let g:unite_source_grep_command = 'ag'
-    let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
-    let g:unite_source_grep_recursive_opt = ''
-endif
-
 set completeopt=menu,preview
-
-" --------------------------
-" ---- Unite Setting ----
-" --------------------------
-" ---- Use Space Key on unite Prefix
-nnoremap <Space> [Unite]
-" ---- Original Status line on Unite
-let g:unite_force_overwrite_statusline = 0
-
-let g:ctrlp_match_func = {'match': 'cpsm#CtrlPMatch'}
-
-" --------------------------
-" ---- VimFiler Setting ----
-" --------------------------
-" ---- Original Status line on VimFiler
-let g:vimfiler_force_overwrite_statusline = 0
-" ---- Use VimFiler on Default FileManager
-let g:vimfiler_as_default_explorer = 1
-let g:vimfiler_safe_mode_by_default = 0
-" ---- Open Current Buffer Directory on Space+ff
-nnoremap <silent> [Unite]ff :<C-u>VimFilerBufferDir<CR>
-
-augroup VimFilerSetting
-    autocmd!
-    autocmd FileType vimfiler nmap <buffer> <CR> <Plug>(vimfiler_expand_or_edit)
-augroup END
-
-
-nnoremap <F10> :VimFilerTree<CR>
-
-command! VimFilerTree call VimFilerTree(<f-args>)
-function VimFilerTree(...)
-    let l:h = expand(a:0 > 0 ? a:1 : '%:p:h')
-    let l:path = isdirectory(l:h) ? l:h : ''
-    exec ':VimFiler -buffer-name=explorer -split -simple -winwidth=30 -find -toggle -no-quit ' . l:path
-    wincmd t
-    setl winfixwidth
-endfunction
 
 if executable('jq')
     function! s:jq(has_bang, ...) abort range
@@ -842,7 +777,7 @@ colorscheme monokai
 set wrap
 
 " ---- Max Syntax Highlight Per Colmun
-set synmaxcol=400
+set synmaxcol=2000
 
 " ---- highlight both bracket
 set showmatch matchtime=2

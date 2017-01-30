@@ -1,64 +1,69 @@
 [core]
-    editor = nvim
     attributesfile = ~/.gitattributes
-    excludesfile = ~/.gitignore  # globalな.gitignoreの指定
     autocrlf = input                 # CRLFを自動変換
+    editor = nvim
+    excludesfile = ~/.gitignore  # globalな.gitignoreの指定
+    filemode = false
     precomposeunicode = true
     quotepath = false
 [color]
 	ui = auto
-    status = auto
-    diff = auto
     branch = auto
-    interactive = auto
+    diff = auto
     grep = auto
+    interactive = auto
+    status = auto
 [push]
     default = tracking
 [diff]
-    patience = true
     mnemonicprefix = yes
+    patience = true
 [http]
     postBuffer = 524288000
 [help]
     autocorrect = 0
 [alias]
-    st = status
+    ad = add
+    cam = commit -a --amend  # 直前のcommitを修正
+    ci = commit -a           # modifiedなファイルを全てstageへ
+    cm = commit
+    co = checkout
+    ft = fetch
+    rbm = rebase master      # masterへのrebaseはよく使うのでalias
     sh = show
     so = remote show origin
-    ft = fetch
+    st = status
+    stt = status -uno
     up = pull --rebase       # pull rebase
-    rbm = rebase master      # masterへのrebaseはよく使うのでalias
-    ad = add
-    ci = commit -a           # modifiedなファイルを全てstageへ
-    cam = commit -a --amend  # 直前のcommitを修正
-    co = checkout
     # branch関連
-    br = branch
     ba = branch -a           # originも含めた全てのbranchを表示
     bm = branch --merged     # merge済みのbranchを表示
     bn = branch --no-merged  # mergeしてないbranchを表示
+    br = branch
     # log関連
-    wc = whatchanged         # logに変更されたファイルも一緒に出す
-    ls = log --stat          # logに変更されたファイルも一緒に出す
-    lp = log -p              # diffも一緒に出す
     la = log --pretty=\"format:%ad %h (%an): %s\" --date=short  # ざっくりログ出す
+    lp = log -p              # diffも一緒に出す
     lr = log origin          # originのlog
+    ls = log --stat          # logに変更されたファイルも一緒に出す
+    lg = log --graph --date=short --decorate=short --pretty=format:'%Cgreen%h %Creset%cd %Cblue%cn %Cred%d %Creset%s'
+    lag = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
     oneline = log --pretty=oneline
     ranking = shortlog -s -n --no-merges
+    wc = whatchanged         # logに変更されたファイルも一緒に出す
     # logをtree表示
-    log-graph = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
-    log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
     # diff関連
-    dm = diff master           # masterとのdiff
-    dw = diff --color-words    # 単語単位でいろつけてdiff
-    dc = diff --cached         # addされているものとのdiff
-    ds = diff --staged         # 同上(1.6.1移行)
     d1 = diff HEAD~            # HEADから1つ前とdiff
     d2 = diff HEAD~~           # HEADから2つ前とdiff
     d3 = diff HEAD~~~          # HEADから3つ前とdiff
     d4 = diff HEAD~~~~         # HEADから4つ前とdiff
     d5 = diff HEAD~~~~~        # HEADから5つ前とdiff
     d10 = diff HEAD~~~~~~~~~~  # HEADから10前とdiff
+    dc = diff --cached         # addされているものとのdiff
+    dm = diff master           # masterとのdiff
+    ds = diff --staged         # 同上(1.6.1移行)
+    dw = diff --color-words    # 単語単位でいろつけてdiff
+    di = diff --word-diff
+    dn = diff --name-only
     # mergeの際にconflictが起きたファイルを編集
     edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
     # mergeの際にconflictが起きたファイルをadd
@@ -66,3 +71,10 @@
     # grep関連
     gr = grep
     gn = grep -n
+
+    cp = cherry-pick
+
+    sp = stash pop
+    ss = stash save
+
+[user]

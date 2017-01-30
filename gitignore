@@ -49,10 +49,11 @@ $RECYCLE.BIN/
 .Spotlight-V100
 .Trashes
 ._*
+:w
+:q
 # Icon must ends with two \r.
 # ↓コピペだと正しく設定できないかも。
 Icon
-
 
 
 ## version control system ##
@@ -70,6 +71,7 @@ Icon
 *.old
 *.log
 .cache/
+.glide/
 *.autosave
 
 ## Vim ##
@@ -94,3 +96,9 @@ build/
 /tmp
 /vendor
 /log
+
+## Certification Files
+*.crt
+*.key
+*.cer
+*.pem
