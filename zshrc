@@ -3,6 +3,7 @@
 if [ -z $DOTENV_LOADED ]; then
     setopt no_global_rcs
     if [ -x /usr/libexec/path_helper ]; then
+        PATH=''
         eval "$(/usr/libexec/path_helper -s)"
     fi
 
@@ -11,9 +12,24 @@ if [ -z $DOTENV_LOADED ]; then
     export MANLANG=ja_JP.UTF-8
     export LC_TIME=en_US.UTF-8
 
-    export PASSWORD="your password"
+    export TERM="xterm-256color";
 
-    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh 
+    if type nvim >/dev/null 2>&1; then
+        export VIM=$(which nvim);
+        export VIMRUNTIME=/usr/local/share/nvim/runtime;
+    else
+        export VIM=$(which vim);
+        export VIMRUNTIME=/usr/share/vim/vim*;
+    fi
+
+    export EDITOR=$VIM;
+    export VISUAL=$VIM;
+    export PAGER=$(which less);
+    export SUDO_EDITOR=$EDITOR;
+
+    export PASSWORD="PASSWORD"
+
+    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
     export SHELL=$(which zsh)
 
@@ -26,11 +42,12 @@ if [ -z $DOTENV_LOADED ]; then
     export XDG_DATA_HOME=$NVIM_HOME/log;
     export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME;
 
+    export LLVM_HOME=/usr/local/opt/llvm;
     #LLVM
     if type llvm >/dev/null 2>&1; then
-        export LLVM_HOME=/usr/local/opt/llvm;
         export C=$LLVM_HOME/bin/clang;
         export CXX=$LLVM_HOME/bin/clang++;
+        export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
         export LIBRARY_PATH=$LLVM_HOME/lib;
         export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
 
@@ -72,7 +89,7 @@ if [ -z $DOTENV_LOADED ]; then
     export NIMBLE_PATH=$HOME/.nimble;
 
     #ReactNative
-    export REACT_EDITOR=$(which nvim);
+    export REACT_EDITOR=$EDITOR;
 
     # Rust
     export RUST_SRC_PATH=/usr/local/src/rust/src;
@@ -92,10 +109,8 @@ if [ -z $DOTENV_LOADED ]; then
         export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$NIMBLE_PATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
         #anyenv init
         if [ -d "$HOME/.anyenv" ] ; then
-            export PATH="$HOME/.anyenv/bin:$PATH"
-            if type anyenv >/dev/null 2>&1; then
-                eval "$(anyenv init - --no-rehash)"
-            fi
+            export PATH="$HOME/.anyenv/bin:$HOME/.anyenv/libexec:$PATH"
+            eval "$(anyenv init - --no-rehash)"
         fi
     fi
 
@@ -118,7 +133,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     #Node
     if type npm >/dev/null 2>&1; then
-        export NODE_PATH=$(npm root -g);
+        export NODE_PATH=$(\npm root -g);
     fi
 
     if type vagrant > /dev/null 2>&1; then
@@ -131,6 +146,20 @@ if [ -z $DOTENV_LOADED ]; then
     export HTTPS_PROXY_HOST=$HTTP_PROXY_HOST
     export HTTPS_PROXY_PORT="https port"
 
+    if type zplug > /dev/null 2>&1; then
+        if zplug check junegunn/fzf; then
+            # export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob'
+            export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
+        fi
+
+        if zplug check b4b4r07/enhancd; then
+            export ENHANCD_FILTER=fzf-tmux
+            export ENHANCD_COMMAND=ccd
+            export ENHANCD_FILTER=fzf:peco:gof
+            export ENHANCD_DOT_SHOW_FULLPATH=1
+        fi
+    fi
+
     export DOTENV_LOADED=1
 fi
 
@@ -142,31 +171,14 @@ if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc
     zcompile $HOME/.zcompdump
 fi
 
-if [ ! -f "$ZPLUG_HOME/cache/command.zsh.zwc" -o "$ZPLUG_HOME/cache/command.zsh" -nt "$ZPLUG_HOME/cache/command.zsh.zwc" ]; then
-    zcompile $ZPLUG_HOME/cache/command.zsh
-fi
-if [ ! -f "$ZPLUG_HOME/cache/plugin.zsh.zwc" -o "$ZPLUG_HOME/cache/plugin.zsh" -nt "$ZPLUG_HOME/cache/plugin.zsh.zwc" ]; then
-    zcompile $ZPLUG_HOME/cache/plugin.zsh
-fi
-
 ########################################
 #Zplug Settings
-source "$HOME/.zplug/init.zsh";
-if ! type zplug >/dev/null 2>&1; then
-    rm -rf $ZPLUG_HOME
-    git clone https://github.com/zplug/zplug $ZPLUG_HOME
-    source "$HOME/.zshrc"
-else
-    zplug "Tarrasch/zsh-colors"
-    zplug "ascii-soup/zsh-url-highlighter"
-    zplug "b4b4r07/enhancd", use:enhancd.sh
-    zplug "b4b4r07/zspec", as:command, use:bin/zspec
-    zplug "chrissicool/zsh-256color"
+if [[ -f ~/.zplug/init.zsh ]]; then
+    source "$HOME/.zplug/init.zsh";
+
     zplug "zchee/go-zsh-completions"
     zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
-    zplug "mollifier/anyframe"
-    zplug "mollifier/cd-gitroot"
     zplug "rupa/z", use:z.sh
     zplug "supercrabtree/k"
     zplug "zsh-users/zsh-autosuggestions"
@@ -175,29 +187,16 @@ else
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
     zplug "soimort/translate-shell", at:stable, as:command, use:"build/*", hook-build:"make build &> /dev/null"
 
-    if zplug check junegunn/fzf; then
-        export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
-    fi
-
-    if zplug check b4b4r07/enhancd; then
-        export ENHANCD_FILTER=fzf-tmux
-        export ENHANCD_COMMAND=ccd
-        export ENHANCD_FILTER=fzf:peco:gof
-        export ENHANCD_DOT_SHOW_FULLPATH=1
-    fi
-
-    if zplug check supercrabtree/k; then
-        alias ll='k --no-vcs'
-        alias la='k -a --no-vcs'
-        alias lla='k -a'
-    fi
-
     if ! zplug check --verbose; then
         zplug install
     fi
+
     # zplug load --verbose
     zplug load
-
+else
+    rm -rf $ZPLUG_HOME
+    git clone https://github.com/zplug/zplug $ZPLUG_HOME
+    source "$HOME/.zshrc"
 fi
 
 # 色を使用出来るようにする
@@ -225,6 +224,7 @@ PROMPT="%{${fg[cyan]}%}%/#%{${reset_color}%} %"
 # 単語の区切り文字を指定する
 autoload -Uz select-word-style
 select-word-style default
+
 # ここで指定した文字は単語区切りとみなされる
 # / も区切りと扱うので、^W でディレクトリ１つ分を削除できる
 zstyle ':zle:*' word-chars " /=;@:{},|"
@@ -255,12 +255,11 @@ autoload -Uz add-zsh-hook
 zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
 zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
 
-function _update_vcs_info_msg() {
+_update_vcs_info_msg() {
     LANG=en_US.UTF-8 vcs_info
     RPROMPT="${vcs_info_msg_0_}"
 }
 add-zsh-hook precmd _update_vcs_info_msg
-
 
 ########################################
 # オプション
@@ -286,439 +285,482 @@ setopt prompt_subst         # プロンプト定義内で変数置換やコマ�
 setopt pushd_ignore_dups    # 重複したディレクトリを追加しない
 ########################################
 # ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
+bindkey -e
 bindkey '^R' history-incremental-pattern-search-backward
 
-########################################
-# エイリアス
-alias cdu='cd-gitroot'
-alias cp='cp -r'
-alias ln="sudo ln -Fsnfiv"
-alias mv='mv -i'
-alias wget='wget --no-cookies --no-check-certificate --no-dns-cache -4'
-alias mkdir='mkdir -p'
-alias gtrans='trans -b -e google'
-
-# sudo の後のコマンドでエイリアスを有効にする
-alias sudo="echo $PASSWORD | sudo -S "
-
-# グローバルエイリアス
-alias -g L='| less'
-alias -g G='| grep'
-
-if type anyenv >/dev/null 2>&1; then
-    alias anyenvup="anyenv update;anyenv git gc --aggressive;anyenv git prune;"
-fi
-
-if type nim >/dev/null 2>&1; then
-    alias nimup="\cd $NIMPATH;git -C $NIMPATH pull;nim c $NIMPATH/koch;$NIMPATH/koch boot -d:release;\cd $HOME"
-fi
-
-if type go >/dev/null 2>&1; then
-    go-update(){
-        go get -u github.com/Masterminds/glide
-        go get -u github.com/aarzilli/gdlv
-        go get -u github.com/alecthomas/gometalinter
-        go get -u github.com/constabulary/gb/...
-        go get -u github.com/cweill/gotests/...
-        go get -u github.com/derekparker/delve/cmd/dlv
-        go get -u github.com/garyburd/go-explorer/src/getool
-        go get -u github.com/golang/dep
-        go get -u github.com/golang/lint/golint
-        go get -u github.com/gopherjs/gopherjs
-        go get -u github.com/jstemmer/gotags
-        go get -u github.com/kardianos/govendor
-        go get -u github.com/kisielk/gotool
-        go get -u github.com/mattn/files
-        go get -u github.com/mattn/jvgrep
-        go get -u github.com/motemen/ghq
-        go get -u github.com/motemen/go-iferr/cmd/goiferr
-        go get -u github.com/nsf/gocode
-        go get -u github.com/peco/peco/cmd/peco
-        go get -u github.com/rogpeppe/godef
-        go get -u github.com/valyala/quicktemplate
-        go get -u github.com/valyala/quicktemplate/qtc
-        go get -u github.com/zmb3/gogetdoc
-        go get -u golang.org/x/tools/cmd/cover
-        go get -u golang.org/x/tools/cmd/godoc
-        go get -u golang.org/x/tools/cmd/goimports
-        go get -u golang.org/x/tools/cmd/gorename
-        go get -u golang.org/x/tools/cmd/guru
-        go get -u golang.org/x/tools/cmd/present
-        go get -u google.golang.org/grpc
-        go get -u sourcegraph.com/sqs/goreturns
-
-        gocode set autobuild true
-        gocode set lib-path $GOPATH/pkg/darwin_amd64/
-        gocode set propose-builtins true
-    }
-    alias go-update=go-update
-
-    cover () {
-        t=$(mktemp -t cover)
-        go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -func=$t && unlink $t
-    }
-
-    cover-web() {
-        t=$(mktemp -t cover)
-        go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -html=$t && unlink $t
-    }
-
-    alias goup="rm -rf $GOPATH/bin;rm -rf $GOPATH/pkg;go-update;nvim +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall"
-fi
-
-if type apm >/dev/null 2>&1; then
-    alias atomup="sudo apm update;sudo apm upgrade;sudo apm rebuild;sudo apm clean"
-fi
-
-alias gemup="sudo chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;sudo chmod -R 777 /Library/Ruby/;gem update --system;gem update"
-alias haskellup="stack upgrade;stack update;cabal update"
-alias npmup="npm update -g npm;npm update -g;npm upgrade -g"
-alias pipup="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;pip install --upgrade pip;pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip install -U --upgrade"
-alias pip2up="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;pip2 install --upgrade pip;pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip2 install -U --upgrade"
-alias pip3up="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages;pip3 install --upgrade pip;pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip3 install -U --upgrade"
-
-mkcd() {
-    if [[ -d $1 ]]; then
-        \cd $1
+fzf-z-search (){
+    which fzf z > /dev/null
+    if [ $? -ne 0 ]; then
+        echo "Please install fzf and z"
+        return 1
+    fi
+    local res=$(z | sort -rn | cut -c 12- | fzf)
+    if [ -n "$res" ]; then
+        BUFFER+="$res"
+        zle accept-line
     else
-        printf "Confirm to Make Directory? $1 [y/N]: "
-        if read -q; then
-            echo; \mkdir -p $1 && \cd $1
-        fi
+        return 1
     fi
 }
+zle -N fzf-z-search
+bindkey '^s' fzf-z-search
 
-alias mkcd=mkcd
-alias ..='\cd ../'
-alias ...='\cd ../../'
-alias ....='\cd ../../../'
-alias ,,='\cd ../'
-alias ,,,='\cd ../../'
-alias ,,,,='\cd ../../../'
-alias cdlc='mkcd /usr/local/'
-alias cddl='mkcd $HOME/Downloads'
-alias cddc='mkcd $HOME/Documents'
-alias cdmd='mkcd $HOME/Documents/Programming/Markdown/'
-alias cdpg='mkcd $HOME/Documents/Programming/'
-alias cdpy='mkcd $HOME/Documents/Programming/Python'
-alias cdrb='mkcd $HOME/Documents/Programming/Ruby'
-alias cdph='mkcd $HOME/Documents/Programming/PHP'
-alias cdjava='mkcd $HOME/Documents/Programming/Java'
-alias cdjavaee='mkcd $HOME/Documents/Programming/JavaEE'
-alias cdjavafx='mkcd $HOME/Documents/Programming/JavaFX'
-alias cdgo='mkcd $HOME/Documents/Programming/go/src'
-alias cdpl='mkcd $HOME/Documents/Programming/perl'
-alias cdrs='mkcd $HOME/Documents/Programming/rust/src'
-alias cdex='mkcd $HOME/Documents/Programming/elixir'
-alias cdjs='mkcd $HOME/Documents/Programming/JavaScript'
-alias cdnode='mkcd $HOME/Documents/Programming/Node'
-alias cdsh='mkcd $HOME/Documents/Programming/shells'
-alias cdnim='mkcd $HOME/Documents/Programming/Nim'
-alias cdv='mkcd $HOME/Documents/vagrant'
-alias cdvf='mkcd $HOME/Documents/vagrant/ForceVM'
-alias cdcent='mkcd $HOME/Documents/vagrant/CentOS7'
-alias cdarch='mkcd $HOME/Documents/vagrant/ArchLinux'
+if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
-if type rails >/dev/null 2>&1; then
-    alias railskill="kill -9 `ps aux | grep rails | awk '{print $2}'`"
-fi
+    if type go >/dev/null 2>&1; then
+        go-update(){
+            go get -u github.com/Masterminds/glide
+            go get -u github.com/aarzilli/gdlv
+            go get -u github.com/alecthomas/gometalinter
+            go get -u github.com/constabulary/gb/...
+            go get -u github.com/cweill/gotests/...
+            go get -u github.com/derekparker/delve/cmd/dlv
+            go get -u github.com/garyburd/go-explorer/src/getool
+            go get -u github.com/golang/dep/...
+            go get -u github.com/golang/lint/golint
+            go get -u github.com/gopherjs/gopherjs
+            go get -u github.com/jstemmer/gotags
+            go get -u github.com/kardianos/govendor
+            go get -u github.com/kisielk/gotool
+            go get -u github.com/mattn/files
+            go get -u github.com/mattn/jvgrep
+            go get -u github.com/motemen/ghq
+            go get -u github.com/motemen/go-iferr/cmd/goiferr
+            go get -u github.com/nsf/gocode
+            go get -u github.com/peco/peco/cmd/peco
+            go get -u github.com/rogpeppe/godef
+            go get -u github.com/valyala/quicktemplate
+            go get -u github.com/valyala/quicktemplate/qtc
+            go get -u github.com/zmb3/gogetdoc
+            go get -u golang.org/x/tools/cmd/cover
+            go get -u golang.org/x/tools/cmd/godoc
+            go get -u golang.org/x/tools/cmd/goimports
+            go get -u golang.org/x/tools/cmd/gorename
+            go get -u golang.org/x/tools/cmd/guru
+            go get -u golang.org/x/tools/cmd/present
+            go get -u google.golang.org/grpc
+            go get -u sourcegraph.com/sqs/goreturns
 
-alias tarzip="tar Jcvf"
-alias tarunzip="tar Jxvf"
-alias f="open ."
-alias ks="ls "
-alias rm='sudo rm -rf'
-alias find='sudo find'
-alias grep='grep --color=auto'
-alias lg='la | grep'
-
-if type git >/dev/null 2>&1; then
-    alias gco="git checkout"
-    alias gsta="git status"
-    alias gcom="git commit -m"
-    alias gdiff="git diff"
-    alias gbra="git branch"
-    alias tb="git symbolic-ref --short HEAD|tr -d \"\\n\""
-    alias gpull="git pull origin"
-    alias gpush="git push origin"
-    gitcompush(){
-        git add -A;
-        git commit -m $1;
-        git push -u origin $2;
-    }
-    gcp(){
-        gitcompush $1 $(tb);
-    }
-    alias gcp=gcp
-    alias gfix="gitcompush fix master"
-    alias gedit="nvim $HOME/.gitconfig"
-
-fi
-
-if type tmux >/dev/null 2>&1; then
-    alias aliastx='alias | grep tmux'
-    alias tmls='\tmux list-sessions'
-    alias tmlc='\tmux list-clients'
-    alias tkill='\tmux kill-server'
-    alias tmkl='\tmux kill-session'
-    alias tmaw='\tmux main-horizontal'
-    alias tmuxa='\tmux -2 a -t'
-fi
-
-if type nvim >/dev/null 2>&1; then
-    alias vi='nvim'
-    alias vim="nvim"
-    alias cim="nvim"
-    alias bim="nvim"
-    alias v="nvim"
-    alias vedit="nvim $HOME/.config/nvim/init.vim"
-    alias vspdchk="rm -rf /tmp/starup.log && nvim --startuptime /tmp/startup.log +q && less /tmp/startup.log"
-    alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;rm $HOME/.nvimlog;rm $HOME/.viminfo"
-    nvim-init(){
-        rm -rf "$HOME/.config/gocode";
-        rm -rf "$HOME/.config/nvim/autoload";
-        rm -rf "$HOME/.config/nvim/ftplugin";
-        rm -rf "$HOME/.config/nvim/log";
-        rm -rf "$HOME/.config/nvim/plugged";
-        nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
-        rm "$HOME/.nvimlog";
-        rm "$HOME/.viminfo";
-        wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
-        mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-darwin-amd64" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
-    }
-    alias nvinit="nvim-init";
-fi
-
-if type rustc >/dev/null 2>&1; then
-    alias rust="rustc -O"
-
-    rust_run() {
-        rustc $1
-        local binary=$(basename $1 .rs)
-        ./$binary
-    }
-
-    alias rrun="rust_run"
-fi
-
-if type javac >/dev/null 2>&1; then
-    alias javad="\javac -d64 -Dfile.encoding=UTF8"
-    alias javacd="\javac -d64 -J-Dfile.encoding=UTF8"
-fi
-
-rsagen(){
-    sudo -u $USER ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
-}
-
-alias rsagen=rsagen
-
-alias sedit="nvim $HOME/.ssh/config"
-alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
-
-alias tedit="nvim $HOME/.tmux.conf"
-
-alias zedit="nvim $HOME/.zshrc"
-alias zcompinit="sudo rm -rf $HOME/.zcompd*;sudo rm -rf $HOME/.zplug/zcompd*;"
-
-zsup(){
-    zcompinit;
-    rm $HOME/.zshrc.zwc;
-    zplug update;
-    zplug clean;
-    zplug clear;
-    zplug status;
-    zplug info;
-    rm $HOME/.bashrc;
-    rm $HOME/.fzf.bash;
-}
-alias zsup=zsup
-alias zsinit="zcompinit;sudo rm -rf $HOME/.zplug;sudo rm -rf $HOME/.zshrc.zwc;zsup;"
-
-peco-hostname() {
-    local selected_hosts=$(cat $HOME/.ssh/known_hosts | awk -F'[ ,]+' '{print $1}' | peco)
-    if [ -n "$selected_hosts" ]; then
-        BUFFER="$BUFFER${selected_hosts}"
-        CURSOR=$#BUFFER             # move cursor
-    fi
-}
-zle -N peco-hostname
-bindkey '^H' peco-hostname
-
-peco-ghq-cd () {
-    local selected_dir=$(ghq list | peco --query "$LBUFFER")
-    if [ -n "$selected_dir" ]; then
-        selected_dir="`ghq root`/$selected_dir"
-        BUFFER="cd ${selected_dir}"
-    fi
-    zle clear-screen
-}
-zle -N peco-ghq-cd
-bindkey '^f' peco-ghq-cd;
-
-findfile(){
-    sudo find $1 -name $2
-}
-
-alias findfile=findfile
-
-greptext(){
-    if [ $# -eq 2 ]; then
-        if type rg >/dev/null 2>&1; then
-            rg $2 $1
-        elif type jvgrep >/dev/null 2>&1; then
-            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$'
-        else
-            find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
-            -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
-            -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 /dev/null
-        fi
-    else
-        echo "Not enough arguments"
-    fi
-}
-
-alias gt=greptext
-
-chword(){
-    if [ $# -eq 3 ]; then
-        if type rg >/dev/null 2>&1; then
-            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s/$2/$3/g";
-        elif type jvgrep >/dev/null 2>&1; then
-            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
-            | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
-        else
-            find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
-            -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
-            -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
-        fi
-    elif [ $# -eq 4 ]; then
-        if type rg >/dev/null 2>&1; then
-            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s$4$2$4$3$4g";
-        elif type jvgrep >/dev/null 2>&1; then
-            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
-            | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g";
-        else
-            find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
-            -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
-            -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g";
-        fi
-    else
-        echo "Not enough arguments"
-    fi
-}
-
-alias chword=chword;
-
-alias :q=exit;
-
-alias 644='chmod -R 644'
-alias 655='chmod -R 655'
-alias 755='chmod -R 755'
-alias 777='chmod -R 777'
-
-########################################
-# OS 別の設定
-case ${OSTYPE} in
-    darwin*)
-        #Mac用の設定
-        alias ls='ls -G -F'
-        alias -g C='| pbcopy'
-        alias xcodeUUIDFix='sudo find -L $HOME/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins -name Info.plist -maxdepth 3 | xargs -P $CPUCORES -I{} defaults write {} DVTPlugInCompatibilityUUIDs -array-add `defaults read /Applications/Xcode.app/Contents/Info DVTPlugInCompatibilityUUID`;sudo xcode-select --reset'
-        proxy(){
-            if [ $1 = "start" ]; then
-                export http_proxy="http://$HTTP_PROXY_HOST:$HTTP_PROXY_PORT";
-                export HTTP_PROXY="http://$HTTP_PROXY_HOST:$HTTP_PROXY_PORT";
-                sudo networksetup -setwebproxy Wi-Fi $HTTP_PROXY_HOST $HTTP_PROXY_PORT;
-                sudo networksetup -setwebproxystate Wi-Fi on;
-            elif [ $1 = "stop" ]; then
-                export http_proxy="";
-                export HTTP_PROXY="";
-                unset http_proxy;
-                unset HTTP_PROXY;
-                sudo networksetup -setwebproxystate Wi-Fi off
-            elif [ $1 = "status" ]; then
-                echo $http_proxy;
-            fi
-
-            ssh ci "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
+            gocode set autobuild true
+            gocode set lib-path $GOPATH/pkg/darwin_amd64/
+            gocode set propose-builtins true
         }
-        alias proxy=proxy
-        
-        dns(){
-            if [ $1 = "start" ]; then
-                sudo networksetup -setdnsservers Wi-Fi  106.186.17.181 129.250.35.250 129.250.35.251 8.8.8.8 8.8.4.4
-            elif [ $1 = "stop" ]; then
-                sudo networksetup -setdnsservers Wi-Fi Empty
-            elif [ $1 = "status" ]; then
-                networksetup -getdnsservers Wi-Fi
-            fi
+        cover () {
+            t=$(mktemp -t cover)
+            go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -func=$t && unlink $t
         }
-        alias dns=dns
+        cover-web() {
+            t=$(mktemp -t cover)
+            go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -html=$t && unlink $t
+        }
 
-        dock(){
-            if [ $1 = "l" ] || [ $1 = "left" ];then
-                defaults write com.apple.dock orientation -string left
-            elif [ $1 = "r" ] || [ $1 = "right" ];then
-                defaults write com.apple.dock orientation -string right
+        alias go-update=go-update
+        alias goup="rm -rf $GOPATH/bin;rm -rf $GOPATH/pkg;go-update;$VIM +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall"
+        alias present="present -play -http=0.0.0.0:3999"
+    fi
+
+    mkcd() {
+        if [[ -d $1 ]]; then
+            \cd $1
+        else
+            printf "Confirm to Make Directory? $1 [y/N]: "
+            if read -q; then
+                echo; \mkdir -p $1 && \cd $1
+            fi
+        fi
+    }
+
+    if type git >/dev/null 2>&1; then
+        alias gco="git checkout"
+        alias gsta="git status"
+        alias gcom="git commit -m"
+        alias gdiff="git diff"
+        alias gbra="git branch"
+        gitthisrepo(){
+            git symbolic-ref --short HEAD|tr -d "\n"
+        }
+        alias tb=gitthisrepo
+        gitpull(){
+            git pull origin $(tb) -rebase
+        }
+        alias gpull=gitpull
+        alias gpush="git push origin"
+        gitcompush(){
+            git add -A;
+            git commit -m $1;
+            git push -u origin $2;
+        }
+        alias gitcompush=gitcompush
+        gcp(){
+            gitcompush $1 "$(tb)";
+        }
+        alias gcp=gcp
+        alias gfix="gcp fix"
+        alias gedit="$EDITOR $HOME/.gitconfig"
+    fi
+
+    if type nvim >/dev/null 2>&1; then
+        nvim-init(){
+            rm -rf "$HOME/.config/gocode";
+            rm -rf "$HOME/.config/nvim/autoload";
+            rm -rf "$HOME/.config/nvim/ftplugin";
+            rm -rf "$HOME/.config/nvim/log";
+            rm -rf "$HOME/.config/nvim/plugged";
+            nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
+            rm "$HOME/.nvimlog";
+            rm "$HOME/.viminfo";
+            wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
+            mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-darwin-amd64" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
+        }
+        alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
+        alias nvinit="nvim-init";
+    else
+        alias vedit="$EDITOR $HOME/.vimrc"
+    fi
+
+    alias vi="$EDITOR"
+    alias vim="$EDITOR"
+    alias bim="$EDITOR"
+    alias cim="$EDITOR"
+    alias v="$EDITOR"
+    alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
+
+    if type rustc >/dev/null 2>&1; then
+        rust_run() {
+            rustc $1
+            local binary=$(basename $1 .rs)
+            ./$binary
+        }
+        alias rust="rustc -O"
+        alias rrun="rust_run"
+    fi
+
+    # sudo の後のコマンドでエイリアスを有効にする
+    alias sudo="echo $PASSWORD | sudo -S "
+
+    # エイリアス
+    alias cp='cp -r'
+    alias ln="sudo ln -Fsnfiv"
+    alias mv='mv -i'
+    # alias wget='wget --no-cookies --no-check-certificate --no-dns-cache -4'
+    alias wget='axel -a -n 10'
+    alias mkdir='mkdir -p'
+    alias gtrans='trans -b -e google'
+
+    # グローバルエイリアス
+    alias -g L='| less'
+    alias -g G='| grep'
+
+    if type zplug >/dev/null 2>&1; then
+        if zplug check supercrabtree/k; then
+            alias ll='k --no-vcs'
+            alias la='k -a --no-vcs'
+            alias lla='k -a'
+        fi
+    fi
+
+    if type anyenv >/dev/null 2>&1; then
+        alias anyenvup="anyenv update;anyenv git gc --aggressive;anyenv git prune;"
+    fi
+
+    if type nim >/dev/null 2>&1; then
+        alias nimup="\cd $NIMPATH;git -C $NIMPATH pull;nim c $NIMPATH/koch;$NIMPATH/koch boot -d:release;\cd $HOME"
+    fi
+
+    if type apm >/dev/null 2>&1; then
+        alias atomup="sudo apm update;sudo apm upgrade;sudo apm rebuild;sudo apm clean"
+    fi
+
+    alias gemup="sudo chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;sudo chmod -R 777 /Library/Ruby/;gem update --system;gem update"
+    alias haskellup="stack upgrade;stack update;cabal update"
+    alias npmup="npm update -g npm;npm update -g;npm upgrade -g"
+    alias pipup="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;pip install --upgrade pip;pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip install -U --upgrade"
+    alias pip2up="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;pip2 install --upgrade pip;pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip2 install -U --upgrade"
+    alias pip3up="sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages;pip3 install --upgrade pip;pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip3 install -U --upgrade"
+
+    alias mkcd=mkcd
+    alias ..='\cd ../'
+    alias ...='\cd ../../'
+    alias ....='\cd ../../../'
+    alias ,,='\cd ../'
+    alias ,,,='\cd ../../'
+    alias ,,,,='\cd ../../../'
+    alias cdlc='mkcd /usr/local/'
+    alias cddl='mkcd $HOME/Downloads'
+    alias cddc='mkcd $HOME/Documents'
+    alias cdmd='mkcd $HOME/Documents/Programming/Markdown/'
+    alias cdpg='mkcd $HOME/Documents/Programming/'
+    alias cdpy='mkcd $HOME/Documents/Programming/Python'
+    alias cdrb='mkcd $HOME/Documents/Programming/Ruby'
+    alias cdph='mkcd $HOME/Documents/Programming/PHP'
+    alias cdjava='mkcd $HOME/Documents/Programming/Java'
+    alias cdjavaee='mkcd $HOME/Documents/Programming/JavaEE'
+    alias cdjavafx='mkcd $HOME/Documents/Programming/JavaFX'
+    alias cdgo='mkcd $HOME/Documents/Programming/go/src'
+    alias cdc='mkcd $HOME/Documents/Programming/C'
+    alias cdpl='mkcd $HOME/Documents/Programming/perl'
+    alias cdrs='mkcd $HOME/Documents/Programming/rust/src'
+    alias cdex='mkcd $HOME/Documents/Programming/elixir'
+    alias cdjs='mkcd $HOME/Documents/Programming/JavaScript'
+    alias cdnode='mkcd $HOME/Documents/Programming/Node'
+    alias cdsh='mkcd $HOME/Documents/Programming/shells'
+    alias cdnim='mkcd $HOME/Documents/Programming/Nim'
+    alias cdv='mkcd $HOME/Documents/vagrant'
+    alias cdvf='mkcd $HOME/Documents/vagrant/ForceVM'
+    alias cdcent='mkcd $HOME/Documents/vagrant/CentOS7'
+    alias cdarch='mkcd $HOME/Documents/vagrant/ArchLinux'
+    alias cdi='mkcd $HOME/Documents/Programming/go/src/github.com/kpango/introduction-to-go'
+
+    if type rails >/dev/null 2>&1; then
+        alias railskill="kill -9 `ps aux | grep rails | awk '{print $2}'`"
+    fi
+
+    alias tarzip="tar Jcvf"
+    alias tarunzip="tar Jxvf"
+    alias f="open ."
+    alias ks="ls "
+    alias rm='sudo rm -rf'
+    alias find='sudo find'
+    alias grep='grep --color=auto'
+    alias lg='la | grep'
+
+    if type tmux >/dev/null 2>&1; then
+        alias aliastx='alias | grep tmux'
+        alias tmls='\tmux list-sessions'
+        alias tmlc='\tmux list-clients'
+        alias tkill='\tmux kill-server'
+        alias tmkl='\tmux kill-session'
+        alias tmaw='\tmux main-horizontal'
+        alias tmuxa='\tmux -2 a -t'
+    fi
+
+    if type javac >/dev/null 2>&1; then
+        alias javad="\javac -d64 -Dfile.encoding=UTF8"
+        alias javacd="\javac -d64 -J-Dfile.encoding=UTF8"
+    fi
+
+    rsagen(){
+        sudo -u $USER ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
+    }
+    alias rsagen=rsagen
+
+    alias sedit="$EDITOR $HOME/.ssh/config"
+    alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
+
+    alias tedit="$EDITOR $HOME/.tmux.conf"
+
+    zscompile(){
+        for f in $(find $HOME -name "*.zsh"); do
+            zcompile $f;
+        done;
+    }
+    alias zscompile=zscompile
+
+    zsup(){
+        sudo rm -rf $HOME/.zcompd*;
+        sudo rm -rf $HOME/.zplug/zcompd*;
+        sudo rm $HOME/.zshrc.zwc;
+        zplug update;
+        zplug clean;
+        zplug clear;
+        zplug info;
+        sudo rm -rf $HOME/.bashrc;
+        sudo rm -rf $HOME/.fzf.bash;
+        zscompile;
+    }
+    alias zsup=zsup
+
+    zsinit(){
+        sudo rm -rf $ZPLUG_HOME;
+        sudo rm -rf $HOME/.zcompd*;
+        sudo rm -rf $HOME/.zplug/zcompd*;
+        sudo rm -rf $HOME/.zshrc.zwc;
+    }
+    alias zsinit=zsinit
+
+    zstime(){
+        for i in $(seq 1 $1); do
+            time (zsh -i -c exit);
+        done
+    }
+    alias zstime=zstime
+
+    alias zedit="$EDITOR $HOME/.zshrc"
+
+    greptext(){
+        if [ $# -eq 2 ]; then
+            if type rg >/dev/null 2>&1; then
+                rg $2 $1
+            elif type jvgrep >/dev/null 2>&1; then
+                jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$'
             else
-                defaults write com.apple.dock orientation -string bottom
+                find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
+                    -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
+                    -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 /dev/null
             fi
-
-            killall Dock
-        }
-        alias dock=dock
-
-        clean(){
-            sudo update_dyld_shared_cache -force
-            sudo kextcache -system-caches
-            sudo kextcache -system-prelinked-kernel
-
-            sudo rm -rf $HOME/Library/Developer/Xcode/DerivedData
-            sudo rm -rf $HOME/Library/Developer/Xcode/Archives
-            sudo rm -rf $HOME/Library/Caches
-
-            sudo purge
-            sudo du -sx / &
-            sudo mkdir /usr/local/etc/my.cnf.d
-        }
-        alias clean=clean
-
-        if type brew >/dev/null 2>&1; then
-            if [ -z $OSXENV_LOADED ]; then
-                export CLICOLOR=1
-                export HOMEBREW_GITHUB_API_TOKEN="Please Insert Your GitHub API Token"
-                export HOMEBREW_EDITOR=$(which nvim)
-                export HOMEBREW_MAKE_JOBS=6
-                export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-                export CFLAGS="-I$(xcrun --show-sdk-path)/usr/include:$CFLAGS"
-                export OSXENV_LOADED=1
-            fi
-            alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
-            alias brewup="brew upgrade;\cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && \cd -;brew-cask-update;brew prune;brew doctor";
-
-            brewcaskup(){
-                brew untap caskroom/homebrew-cask;
-                rm -rf $(brew --prefix)/Library/Taps/phinze-cask;
-                rm $(brew --prefix)/Library/Formula/brew-cask.rb;
-                rm -rf $(brew --prefix)/Library/Taps/caskroom;
-                brew uninstall --force brew-cask;
-                brew update;
-                brew cask update;
-                brew cleanup;
-                brew cask cleanup;
-            }
-            alias brew-cask-update=brewcaskup
-
-            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;pip install vim-vint --force-reinstall;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;clean;";
         else
-            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup"
-
+            echo "Not enough arguments"
         fi
-        ;;
-    linux*)
-        #Linux用の設定
-        alias ls='ls -F --color=auto'
-        alias -g C='| xsel --input --clipboard'
-        alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;nvup;zsup"
-        ;;
-esac
+    }
+    alias gt=greptext
+
+   chword(){
+        if [ $# -eq 3 ]; then
+            if type rg >/dev/null 2>&1; then
+                rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s/$2/$3/g";
+            elif type jvgrep >/dev/null 2>&1; then
+                jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
+                    | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+            else
+                find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
+                    -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
+                    -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+            fi
+        elif [ $# -eq 4 ]; then
+            if type rg >/dev/null 2>&1; then
+                rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s$4$2$4$3$4g";
+            elif type jvgrep >/dev/null 2>&1; then
+                jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
+                    | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g";
+            else
+                find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
+                    -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
+                    -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g";
+            fi
+        else
+            echo "Not enough arguments"
+        fi
+    }
+    alias chword=chword;
+
+    alias :q=exit;
+
+    alias 644='chmod -R 644'
+    alias 655='chmod -R 655'
+    alias 755='chmod -R 755'
+    alias 777='chmod -R 777'
+
+    # OS 別の設定
+    case ${OSTYPE} in
+        darwin*)
+            proxy(){
+                if [ $1 = "start" ]; then
+                    export http_proxy="http://$HTTP_PROXY_HOST:$HTTP_PROXY_PORT";
+                    export HTTP_PROXY="http://$HTTP_PROXY_HOST:$HTTP_PROXY_PORT";
+                    sudo networksetup -setwebproxy Wi-Fi $HTTP_PROXY_HOST $HTTP_PROXY_PORT;
+                    sudo networksetup -setwebproxystate Wi-Fi on;
+                elif [ $1 = "stop" ]; then
+                    export http_proxy="";
+                    export HTTP_PROXY="";
+                    unset http_proxy;
+                    unset HTTP_PROXY;
+                    sudo networksetup -setwebproxy Wi-Fi $HTTP_PROXY_HOST $HTTP_PROXY_PORT;
+                    sudo networksetup -setwebproxystate Wi-Fi off
+                elif [ $1 = "status" ]; then
+                    echo $http_proxy;
+                fi
+                ssh proxy "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
+            }
+
+            dns(){
+                if [ $1 = "start" ]; then
+                    sudo networksetup -setdnsservers Wi-Fi  106.186.17.181 129.250.35.250 129.250.35.251 8.8.8.8 8.8.4.4
+                elif [ $1 = "stop" ]; then
+                    sudo networksetup -setdnsservers Wi-Fi Empty
+                elif [ $1 = "status" ]; then
+                    networksetup -getdnsservers Wi-Fi
+                fi
+            }
+
+            dock(){
+                if [ $1 = "l" ] || [ $1 = "left" ];then
+                    defaults write com.apple.dock orientation -string left
+                elif [ $1 = "r" ] || [ $1 = "right" ];then
+                    defaults write com.apple.dock orientation -string right
+                else
+                    defaults write com.apple.dock orientation -string bottom
+                fi
+
+                killall Dock
+            }
+
+            clean(){
+                sudo update_dyld_shared_cache -force
+                sudo kextcache -system-caches
+                sudo kextcache -system-prelinked-kernel
+
+                sudo rm -rf $HOME/Library/Developer/Xcode/DerivedData
+                sudo rm -rf $HOME/Library/Developer/Xcode/Archives
+                sudo rm -rf $HOME/Library/Caches
+
+                sudo purge
+                sudo du -sx / &
+                sudo mkdir /usr/local/etc/my.cnf.d
+            }
+
+            #Mac用の設定
+            alias ls='ls -G -F'
+            alias -g C='| pbcopy'
+            xcodeUUIDFix(){
+                sudo find -L $HOME/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins -name Info.plist -maxdepth 3 | \
+                    xargs -P $CPUCORES -I{} defaults write {} DVTPlugInCompatibilityUUIDs -array-add `defaults read /Applications/Xcode.app/Contents/Info DVTPlugInCompatibilityUUID`;
+                sudo xcode-select --reset;
+            }
+            alias xcodeUUIDFix=xcodeUUIDFix
+            alias proxy=proxy
+            alias dns=dns
+            alias dock=dock
+
+            alias clean=clean
+
+            if type brew >/dev/null 2>&1; then
+                if [ -z $OSXENV_LOADED ]; then
+                    export CLICOLOR=1
+                    export HOMEBREW_GITHUB_API_TOKEN="Please Insert Your GitHub API Token"
+                    export HOMEBREW_EDITOR=$EDITOR
+                    export HOMEBREW_MAKE_JOBS=6
+                    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+                    export CFLAGS="-I$(xcrun --show-sdk-path)/usr/include:$CFLAGS"
+                    export OSXENV_LOADED=1
+                fi
+                brewcaskup(){
+                    brew untap caskroom/homebrew-cask;
+                    rm -rf $(brew --prefix)/Library/Taps/phinze-cask;
+                    rm $(brew --prefix)/Library/Formula/brew-cask.rb;
+                    rm -rf $(brew --prefix)/Library/Taps/caskroom;
+                    brew uninstall --force brew-cask;
+                    brew update;
+                    brew cask update;
+                    brew cleanup;
+                    brew cask cleanup;
+                }
+                alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
+                alias brew-cask-update=brewcaskup
+                alias brewup="brew upgrade;\cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && \cd -;brew-cask-update;brew prune;brew doctor";
+
+                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;pip install vim-vint --force-reinstall;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;clean;";
+            else
+                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup"
+            fi
+            findfile(){
+                sudo mdfind -onlyin $1 "kMDItemFSName == '$2'c && (kMDItemSupportFileType == MDSystemFile || kMDItemSupportFileType != MDSystemFile || kMDItemFSInvisible == *)"
+            }
+            ;;
+        linux*)
+            #Linux用の設定
+            findfile(){
+                sudo find $1 -name $2
+            }
+            alias ls='ls -F --color=auto'
+            alias -g C='| xsel --input --clipboard'
+            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;nvup;zsup"
+            ;;
+    esac
+    alias findfile=findfile
+
+    export ZSH_LOADED=1;
+fi
+
+if [[ $SHLVL = 1 && -z $TMUX ]]; then
+    tmux -2 new-session
+fi
