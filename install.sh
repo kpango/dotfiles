@@ -62,7 +62,7 @@ else
             sudo apt-get update
             sudo apt-get install xclip xsel
         else
-            sudo yum install epel-release.noarch
+            sudo yum -y install epel-release.noarch
             sudo yum -y install git libtool autoconf automake cmake gcc gcc-c++ make pkgconfig unzip ctags
             sudo yum -y groupinstall "Development Tools"
             sudo yum -y install readline readline-devel zlib zlib-devel bzip2 bzip2-devel sqlite sqlite-devel openssl openssl-devel 
