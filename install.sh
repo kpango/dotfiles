@@ -51,7 +51,7 @@ else
             brew upgrade --all
             brew cleanup
         fi
-        
+
         if ! type zsh > /dev/null 2>&1; then
             brew install zsh --HEAD
         fi
@@ -65,7 +65,7 @@ else
             sudo yum install epel-release.noarch
             sudo yum -y install git libtool autoconf automake cmake gcc gcc-c++ make pkgconfig unzip ctags
             sudo yum -y groupinstall "Development Tools"
-            sudo yum -y install readline-devel zlib-devel bzip2-devel sqlite-devel openssl-devel
+            sudo yum -y install readline readline-devel zlib zlib-devel bzip2 bzip2-devel sqlite sqlite-devel openssl openssl-devel 
             if ! type tmux > /dev/null 2>&1; then
                 sudo yum -y install tmux --enablerepo=rpmforge
             fi
@@ -90,17 +90,19 @@ else
         exit 1
     fi
 
-    sudo rm -rf /usr/local/bin/nvim
-    sudo rm -rf /usr/local/share/nvim
-    cd $HOME
-    git clone https://github.com/neovim/neovim
-    cd neovim
-    rm -r build/
-    make clean
-    make CMAKE_BUILD_TYPE=RelWithDebInfo
-    sudo make install
-    cd ../
-    rm -rf neovim
+    if ! type nvim > /dev/null 2>&1; then
+        sudo rm -rf /usr/local/bin/nvim
+        sudo rm -rf /usr/local/share/nvim
+        cd $HOME
+        git clone https://github.com/neovim/neovim
+        cd neovim
+        rm -r build/
+        make clean
+        make CMAKE_BUILD_TYPE=RelWithDebInfo
+        sudo make install
+        cd ../
+        rm -rf neovim
+    fi
 
 fi
 
@@ -128,22 +130,22 @@ if type pip3 > /dev/null 2>&1; then
 else
     if ! type pyenv > /dev/null 2>&1; then
     "$HOME/.anyenv/bin/anyenv" install pyenv
-    
+
     mkdir -p "$HOME/.anyenv/envs/pyenv/plugins"
     git clone git://github.com/yyuu/pyenv-virtualenv.git "$HOME/.anyenv/envs/pyenv/plugins/pyenv-virtualenv"
     git clone https://github.com/yyuu/pyenv-pip-rehash.git "$HOME/.anyenv/envs/pyenv/plugins/pyenv-pip-rehash"
-    
+
     reload_anyenv
     fi
-    
+
     if ! type python3 > /dev/null 2>&1; then
-    "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.12
-    "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.5.2
-    "$HOME/.anyenv/envs/pyenv/bin/pyenv" global 2.7.12 3.5.2
-    
+    PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.13
+    PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.0
+    "$HOME/.anyenv/envs/pyenv/bin/pyenv" global 2.7.13 3.6.0
+
     reload_anyenv
     fi
-    
+
     "$HOME/.anyenv/envs/pyenv/shims/pip" install --upgrade pip;
     "$HOME/.anyenv/envs/pyenv/shims/pip2" install --upgrade pip;
     "$HOME/.anyenv/envs/pyenv/shims/pip3" install --upgrade pip;
