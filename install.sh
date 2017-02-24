@@ -55,19 +55,12 @@ else
         if ! type zsh > /dev/null 2>&1; then
             brew install zsh --HEAD
         fi
-        
-        if ! type nvim > /dev/null 2>&1; then
-            brew install neovim/neovim/neovim
-        fi
-
     elif [ "$(expr substr $(uname -s) 1 5)" = 'Linux' ]; then
         OS="Linux"
         if   [ -e /etc/debian_version ] || [ -e /etc/debian_release ]; then
             sudo add-apt-repository ppa:neovim-ppa/unstable
             sudo apt-get update
             sudo apt-get install xclip xsel
-            sudo apt-get install neovim
-            
         else
             sudo yum install epel-release.noarch
             sudo yum -y install git libtool autoconf automake cmake gcc gcc-c++ make pkgconfig unzip ctags
@@ -77,21 +70,13 @@ else
                 sudo yum -y install tmux --enablerepo=rpmforge
             fi
 
-            if ! type nvim > /dev/null 2>&1; then
-                sudo yum --enablerepo=epel install xsel xclip
-                git clone https://github.com/neovim/neovim
-                cd neovim || exit
-                make
-                sudo make install
-                cd || exit
-            fi
         fi
         sudo mkdir -p /usr/local/bin
         sudo mkdir -p /usr/local/etc
         sudo mkdir -p /usr/local/opt
-        
+
         sudo chmod -R 777 /usr/local
-        
+
         if ! type zsh > /dev/null 2>&1; then
             wget http://downloads.sourceforge.net/project/zsh/zsh/5.2/zsh-5.2.tar.gz
             tar xzvf zsh-5.2.tar.gz
@@ -104,6 +89,19 @@ else
         echo "Your platform ($(uname -a)) is not supported."
         exit 1
     fi
+
+    sudo rm -rf /usr/local/bin/nvim
+    sudo rm -rf /usr/local/share/nvim
+    cd $HOME
+    git clone https://github.com/neovim/neovim
+    cd neovim
+    rm -r build/
+    make clean
+    make CMAKE_BUILD_TYPE=RelWithDebInfo
+    sudo make install
+    cd ../
+    rm -rf neovim
+
 fi
 
 chsh -s "$(which zsh)"
