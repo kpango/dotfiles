@@ -18,12 +18,7 @@ runtime macros/matchit.vim
 " ---- Plugins ----
 " -----------------
 if has('vim_starting')
-    if &compatible
-        set nocompatible
-    endif
-
     set runtimepath+=~/.config/nvim/plugged/vim-plug
-
     if !isdirectory(expand('$NVIM_HOME') . '/plugged/vim-plug')
         call system('mkdir -p ~/.config/nvim/plugged/vim-plug')
         call system('git clone https://github.com/junegunn/vim-plug.git ~/.config/nvim/plugged/vim-plug/autoload')
@@ -41,17 +36,18 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neoyank.vim'
-    Plug 'Shougo/unite.vim', {'on': ['Unite', 'UniteWithBufferDir','VimFiler']}
-    Plug 'Shougo/vimfiler.vim', {'on': 'VimFiler'}
+    " Plug 'Shougo/unite.vim', {'on': ['Unite', 'UniteWithBufferDir','VimFiler']}
+    " Plug 'Shougo/vimfiler.vim', {'on': 'VimFiler'}
     Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Townk/vim-autoclose'
     Plug 'airblade/vim-gitgutter'
     Plug 'bronson/vim-trailing-whitespace', {'on': 'FixWhitespace'}
+    Plug 'cocopon/vaffle.vim'
     Plug 'honza/vim-snippets'
     Plug 'itchyny/lightline.vim'
     Plug 'janko-m/vim-test', {'for': ['go','rust','elixir','python','ruby','javascript','sh','lua','php','perl','java']}
     Plug 'jiangmiao/auto-pairs'
-    "Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
+    Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
     Plug 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
     Plug 'lilydjwg/colorizer', {'do': 'make'}
     Plug 'majutsushi/tagbar'
@@ -67,7 +63,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'thinca/vim-quickrun'
     Plug 'tpope/vim-surround'
     Plug 'tyru/caw.vim'
-    " Plug 'ujihisa/neco-look'
+"     Plug 'ujihisa/neco-look'
     Plug 'vim-scripts/sudo.vim'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
@@ -75,7 +71,11 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Yaml Setting
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Yaml Setting
-    Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake']}
+    Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+    Plug 'critiqjo/lldb.nvim', {'do': ':UpdateRemotePlugins', 'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+    Plug 'vim-jp/vim-cpp', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+    Plug 'Mizuchi/STL-Syntax', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+"     Plug 'rhysd/vim-clang-format', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
 " ---- Golang Setting
     Plug 'dgryski/vim-godef', { 'for': 'go' }
     Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
@@ -165,10 +165,10 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'tfnico/vim-gradle', {'for': 'groovy' }
 " ---- Nim
     Plug 'zah/nim.vim', {'for': 'nim'}
-"   Plug 'baabelfish/nvim-nim', {'for': 'nim'}
+"       Plug 'baabelfish/nvim-nim', {'for': 'nim'}
 " ---- Rust
     Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
-    Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Unite']}
+    Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
     Plug 'rust-lang/rust.vim', {'for': 'rust'}
 " ---- Haskell
     Plug 'dag/vim2hs', {'for': 'haskell'}
@@ -192,7 +192,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Swift
     Plug 'keith/swift.vim', {'for': 'swift'}
     Plug 'kballard/vim-swift', {'for': 'swift'}
-    " Plug 'landaire/deoplete-swift', {'for': 'swift'}
+"     Plug 'landaire/deoplete-swift', {'for': 'swift'}
     Plug 'mitsuse/autocomplete-swift', {'for': 'swift'}
 " ---- Markdown
     Plug 'kannokanno/previm', {'for': 'markdown'}
@@ -268,7 +268,6 @@ let g:indent_guides_guide_size = 1
 
 augroup FileTypeSetting
     autocmd!
-    autocmd BufNewFile,BufRead *.c,*.cpp,*.cxx,*.cmake set filetype=clang
     autocmd BufNewFile,BufRead *.dart set filetype=dart
     autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
     autocmd BufNewFile,BufRead *.es6 set filetype=javascript
@@ -307,7 +306,7 @@ augroup DeopleteSetting
     autocmd FileType go call deoplete#custom#set('go', 'sorters', [])
     autocmd FileType go let g:deoplete#sources#go#align_class = 1
     autocmd FileType go let g:deoplete#sources#go#cgo = 1
-    autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= "/Library/Developer/CommandLineTools/usr/lib/libclang.dylib"
+    autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= expand("/usr/local/Cellar/llvm/*/lib/libclang.dylib")
     autocmd FileType go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
     autocmd FileType go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
     autocmd FileType go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
@@ -317,8 +316,8 @@ augroup DeopleteSetting
     autocmd FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
     autocmd FileType go let g:deoplete#sources#go#use_cache = 1
     " clang
-    autocmd FileType clang let g:deoplete#sources#clang#libclang_path= expand("/usr/local/Cellar/llvm/*/Toolchains/*/usr/lib/libclang.dylib")
-    autocmd FileType clang let g:deoplete#sources#clang#clang_header = expand("/usr/local/Cellar/llvm/*/include/clang")
+    autocmd FileType c,cpp,clang,hpp let g:deoplete#sources#clang#libclang_path= expand("/usr/local/Cellar/llvm/*/lib/libclang.dylib")
+    autocmd FileType c,cpp,clang,hpp let g:deoplete#sources#clang#clang_header = expand("/usr/local/Cellar/llvm/*/include/clang")
     " Python
     autocmd FileType python call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
     autocmd FileType python call deoplete#custom#set('jedi', 'matchers', ['matcher_fuzzy'])
@@ -402,6 +401,15 @@ augroup TagBarSetting
                 \ ]
                 \}
 augroup END
+
+" ---- Clang
+if executable('clang-format')
+    augroup ClangSetting
+        autocmd!
+        autocmd FileType cpp,c,hpp,clang command! CFmt :call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
+        " autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
+    augroup END
+endif
 
 " ---- Golang
 augroup GolangSetting
@@ -507,7 +515,7 @@ augroup END
 " ---- Swift Settings
 augroup SwiftSetting
     autocmd!
-    "autocmd FileType swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
+    autocmd FileType swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
     autocmd FileType swift let g:neomake_swift_swiftc_maker = {
                 \ 'exe': 'swiftc',
                 \ 'args': ['-parse'],
@@ -519,10 +527,10 @@ augroup SwiftSetting
                 \ },
                 \ }
     autocmd FileType swift let g:quickrun_config['swift'] = {
-            \ 'command': 'xcrun',
-            \ 'cmdopt': 'swift',
-            \ 'exec': '%c %o %s',
-            \}
+                \ 'command': 'xcrun',
+                \ 'cmdopt': 'swift',
+                \ 'exec': '%c %o %s',
+                \}
 augroup END
 
 " ---- PHP Settings
@@ -563,16 +571,16 @@ augroup TypeScriptSettings
     autocmd BufWritePre *.ts EsFix
     autocmd BufWritePre *.ts Autoformat
     autocmd FileType typescript let g:neomake_typescript_tsc_maker = {
-        \ 'args': [
-            \ '--project', getcwd(), '--noEmit'
-        \ ],
-        \ 'append_file': 0,
-        \ 'errorformat':
-            \ '%E%f %#(%l\,%c): error %m,' .
-            \ '%E%f %#(%l\,%c): %m,' .
-            \ '%Eerror %m,' .
-            \ '%C%\s%\+%m'
-        \ }
+                \ 'args': [
+                \ '--project', getcwd(), '--noEmit'
+                \ ],
+                \ 'append_file': 0,
+                \ 'errorformat':
+                \ '%E%f %#(%l\,%c): error %m,' .
+                \ '%E%f %#(%l\,%c): %m,' .
+                \ '%Eerror %m,' .
+                \ '%C%\s%\+%m'
+                \ }
     autocmd FileType coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
     autocmd! VimLeave *.js  !eslint_d stop
 augroup END
@@ -767,6 +775,34 @@ if executable('trans')
     nnoremap <silent> <F3> :Trans<CR>
 endif
 
+" ------------------------
+" ---- Denite Setting ----
+" ------------------------
+nnoremap <silent> <C-k><C-f> :<C-u>Denite file_rec<CR>
+nnoremap <silent> <C-k><C-g> :<C-u>Denite grep -buffer-name=search-buffer-denite<CR>
+nnoremap <silent> <C-k><C-r> :<C-u>Denite -resume -buffer-name=search-buffer-denite<CR>
+nnoremap <silent> <C-k><C-n> :<C-u>Denite -resume -buffer-name=search-buffer-denite -select=+1 -immediately<CR>
+nnoremap <silent> <C-k><C-p> :<C-u>Denite -resume -buffer-name=search-buffer-denite -select=-1 -immediately<CR>
+nnoremap <silent> <C-k><C-l> :<C-u>Denite line<CR>
+nnoremap <silent> <C-k><C-u> :<C-u>Denite file_mru<CR>
+nnoremap <silent> <C-k><C-y> :<C-u>Denite neoyank<CR>
+
+call denite#custom#map('_', '<C-h>','<denite:do_action:split>')
+call denite#custom#map('insert', '<C-h>','<denite:do_action:split>')
+call denite#custom#map('_', '<C-v>','<denite:do_action:vsplit>')
+call denite#custom#map('insert','<C-v>', '<denite:do_action:vsplit>')
+call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>')
+
+if executable('rg')
+    call denite#custom#var('file_rec', 'command', ['rg', '--files', '--glob', '!.git'])
+    call denite#custom#var('grep', 'command', ['rg'])
+    call denite#custom#var('grep', 'recursive_opts', [])
+    call denite#custom#var('grep', 'final_opts', [])
+    call denite#custom#var('grep', 'separator', ['--'])
+    call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+else
+    call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
+endif
 " -------------------------
 " ---- Default Setting ----
 " -------------------------
