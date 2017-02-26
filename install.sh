@@ -149,9 +149,9 @@ else
     "$HOME/.anyenv/envs/pyenv/shims/pip" install --upgrade pip;
     "$HOME/.anyenv/envs/pyenv/shims/pip2" install --upgrade pip;
     "$HOME/.anyenv/envs/pyenv/shims/pip3" install --upgrade pip;
-    "$HOME/.anyenv/envs/pyenv/shims/pip" install neovim;
-    "$HOME/.anyenv/envs/pyenv/shims/pip2" install neovim;
-    "$HOME/.anyenv/envs/pyenv/shims/pip2" install neovim;
+    "$HOME/.anyenv/envs/pyenv/shims/pip" install neovim vim-vint;
+    "$HOME/.anyenv/envs/pyenv/shims/pip2" install neovim vim-vint;
+    "$HOME/.anyenv/envs/pyenv/shims/pip2" install neovim vim-vint;
 fi
 
 mkdir -p ~/.config/nvim/plugged/vim-plug
