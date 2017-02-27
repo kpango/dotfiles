@@ -55,6 +55,11 @@ else
         if ! type zsh > /dev/null 2>&1; then
             brew install zsh --HEAD
         fi
+
+        if ! type go > /dev/null 2>&1; then
+            brew install go
+        fi
+
     elif [ "$(expr substr $(uname -s) 1 5)" = 'Linux' ]; then
         OS="Linux"
         if   [ -e /etc/debian_version ] || [ -e /etc/debian_release ]; then
@@ -84,6 +89,13 @@ else
             ./configure --prefix="$HOME/local" --enable-multibyte --enable-locale
             sudo make
             sudo make install
+        fi
+
+        if ! type go > /dev/null 2>&1; then
+            wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
+            tar xvzf ./go1.8.linux-amd64.tar.gz
+            mv go /usr/local/go
+            rm -rf ./go1.8.linux-amd64.tar.gz
         fi
     else
         echo "Your platform ($(uname -a)) is not supported."

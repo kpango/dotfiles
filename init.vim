@@ -179,7 +179,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Perl
     Plug 'c9s/perlomni.vim', {'for': 'perl'}
     Plug 'hotchpotch/perldoc-vim', {'for': 'perl'}
-    Plug 'vim-perl/vim-perl', { 'for': 'perl', 'do': 'make clean carp dancer highlight-all-pragmas moose test-more try-tiny' }
+    Plug 'vim-perl/vim-perl', { 'branch': 'dev', 'for': 'perl', 'do': 'make clean carp dancer highlight-all-pragmas moose test-more try-tiny' }
 " ---- Python
     Plug 'davidhalter/jedi-vim', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi'}
     Plug 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi'}

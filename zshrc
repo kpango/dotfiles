@@ -43,21 +43,6 @@ if [ -z $DOTENV_LOADED ]; then
     export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME;
 
     export LLVM_HOME=/usr/local/opt/llvm;
-    #LLVM
-    if type llvm >/dev/null 2>&1; then
-        export C=$LLVM_HOME/bin/clang;
-        export CXX=$LLVM_HOME/bin/clang++;
-        export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
-        export LIBRARY_PATH=$LLVM_HOME/lib;
-        export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
-
-        #CLANG
-        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
-        export CPPFLAGS=$CFLAGS;
-        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
-        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
-        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
-    fi
 
     #JAVA
     if type java >/dev/null 2>&1; then
@@ -80,6 +65,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     #GO
     export GOPATH=$PROGRAMMING/go;
+    export CGO_ENABLED=1;
     export GOBIN=$GOPATH/bin;
     export GO15VENDOREXPERIMENT=1;
     export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go;
@@ -106,12 +92,30 @@ if [ -z $DOTENV_LOADED ]; then
     export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
 
     if [ -z $TMUX ]; then
-        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$NIMBLE_PATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
+        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/go/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$NIMBLE_PATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
         #anyenv init
         if [ -d "$HOME/.anyenv" ] ; then
             export PATH="$HOME/.anyenv/bin:$HOME/.anyenv/libexec:$PATH"
             eval "$(anyenv init - --no-rehash)"
         fi
+    fi
+
+    #LLVM
+    if type llvm >/dev/null 2>&1; then
+        export C=$LLVM_HOME/bin/clang;
+        export CC=$LLVM_HOME/bin/clang;
+        export CPP=$LLVM_HOME/bin/clang++;
+        export CXX=$LLVM_HOME/bin/clang++;
+        export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
+        export LIBRARY_PATH=$LLVM_HOME/lib;
+        export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
+
+        #CLANG
+        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
+        export CPPFLAGS=$CFLAGS;
+        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
+        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
+        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
     fi
 
     if type ndenv > /dev/null 2>&1; then
@@ -140,15 +144,14 @@ if [ -z $DOTENV_LOADED ]; then
         export VAGRANT_HOME=$HOME/Documents/vagrant;
     fi
 
-    export HTTP_PROXY_HOST="proxy host"
-    export HTTP_PROXY_PORT="http port"
-    export HTTP_PROXY_PASSWORD="proxy passowrd"
+    export HTTP_PROXY_HOST="HTTP_PROXY_HOST"
+    export HTTP_PROXY_PORT="HTTP_PROXY_PORT"
+    export HTTP_PROXY_PASSWORD="PASSWORD"
     export HTTPS_PROXY_HOST=$HTTP_PROXY_HOST
-    export HTTPS_PROXY_PORT="https port"
+    export HTTPS_PROXY_PORT="HTTPS_PROXY_PORT"
 
     if type zplug > /dev/null 2>&1; then
         if zplug check junegunn/fzf; then
-            # export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob'
             export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
         fi
 
@@ -191,7 +194,6 @@ if [[ -f ~/.zplug/init.zsh ]]; then
         zplug install
     fi
 
-    # zplug load --verbose
     zplug load
 else
     rm -rf $ZPLUG_HOME
@@ -308,43 +310,58 @@ bindkey '^s' fzf-z-search
 if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type go >/dev/null 2>&1; then
+
+        go-get(){
+            cd $GOPATH/src/$1
+            git fetch
+            git reset --hard origin/master
+            cd -
+            go get -u $1
+        }
         go-update(){
-            go get -u github.com/Masterminds/glide
-            go get -u github.com/aarzilli/gdlv
-            go get -u github.com/alecthomas/gometalinter
-            go get -u github.com/constabulary/gb/...
-            go get -u github.com/cweill/gotests/...
-            go get -u github.com/derekparker/delve/cmd/dlv
-            go get -u github.com/garyburd/go-explorer/src/getool
-            go get -u github.com/golang/dep/...
-            go get -u github.com/golang/lint/golint
-            go get -u github.com/gopherjs/gopherjs
-            go get -u github.com/jstemmer/gotags
-            go get -u github.com/kardianos/govendor
-            go get -u github.com/kisielk/gotool
-            go get -u github.com/mattn/files
-            go get -u github.com/mattn/jvgrep
-            go get -u github.com/motemen/ghq
-            go get -u github.com/motemen/go-iferr/cmd/goiferr
-            go get -u github.com/nsf/gocode
-            go get -u github.com/peco/peco/cmd/peco
-            go get -u github.com/rogpeppe/godef
-            go get -u github.com/valyala/quicktemplate
-            go get -u github.com/valyala/quicktemplate/qtc
-            go get -u github.com/zmb3/gogetdoc
-            go get -u golang.org/x/tools/cmd/cover
-            go get -u golang.org/x/tools/cmd/godoc
-            go get -u golang.org/x/tools/cmd/goimports
-            go get -u golang.org/x/tools/cmd/gorename
-            go get -u golang.org/x/tools/cmd/guru
-            go get -u golang.org/x/tools/cmd/present
-            go get -u google.golang.org/grpc
-            go get -u sourcegraph.com/sqs/goreturns
+            go-get github.com/Masterminds/glide &
+            go-get github.com/aarzilli/gdlv &
+            go-get github.com/alecthomas/gometalinter &
+            go-get github.com/constabulary/gb/... &
+            go-get github.com/cweill/gotests/... &
+            go-get github.com/derekparker/delve/cmd/dlv &
+            go-get github.com/garyburd/go-explorer/src/getool &
+            go-get github.com/golang/dep/... &
+            go-get github.com/golang/lint/golint &
+            go-get github.com/gopherjs/gopherjs &
+            go-get github.com/haya14busa/gosum/cmd/gosumcheck &
+            go-get github.com/haya14busa/goverage &
+            go-get github.com/haya14busa/reviewdog/cmd/reviewdog &
+            go-get github.com/jstemmer/gotags &
+            go-get github.com/kardianos/govendor &
+            go-get github.com/kisielk/gotool &
+            go-get github.com/mattn/files &
+            go-get github.com/mattn/jvgrep &
+            go-get github.com/motemen/ghq &
+            go-get github.com/motemen/gofind/cmd/gofind &
+            go-get github.com/motemen/go-iferr/cmd/goiferr &
+            go-get github.com/nsf/gocode &
+            go-get github.com/peco/peco/cmd/peco &
+            go-get github.com/pwaller/goimports-update-ignore &
+            go-get github.com/rogpeppe/godef &
+            go-get github.com/valyala/quicktemplate/... &
+            go-get github.com/zmb3/gogetdoc &
+            go-get golang.org/x/tools/cmd/cover &
+            go-get golang.org/x/tools/cmd/godoc &
+            go-get golang.org/x/tools/cmd/goimports &
+            go-get golang.org/x/tools/cmd/gorename &
+            go-get golang.org/x/tools/cmd/guru &
+            go-get golang.org/x/tools/cmd/present &
+            go-get google.golang.org/grpc &
+            go-get sourcegraph.com/sqs/goreturns &
+
+            wait
 
             gocode set autobuild true
-            gocode set lib-path $GOPATH/pkg/darwin_amd64/
+            gocode set lib-path $GOPATH/pkg/$GOOS\_$GOARCH/
             gocode set propose-builtins true
         }
+
         cover () {
             t=$(mktemp -t cover)
             go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -func=$t && unlink $t
@@ -354,9 +371,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -html=$t && unlink $t
         }
 
+        alias goui=goimports-update-ignore
         alias go-update=go-update
         alias goup="rm -rf $GOPATH/bin;rm -rf $GOPATH/pkg;go-update;$VIM +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall"
-        alias present="present -play -http=0.0.0.0:3999"
     fi
 
     mkcd() {
@@ -380,8 +397,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             git symbolic-ref --short HEAD|tr -d "\n"
         }
         alias tb=gitthisrepo
+        alias gfr="git fetch;git reset --hard origin/master"
         gitpull(){
-            git pull origin $(tb) -rebase
+            git pull --rebase origin $(tb)
         }
         alias gpull=gitpull
         alias gpush="git push origin"
@@ -400,17 +418,18 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     fi
 
     if type nvim >/dev/null 2>&1; then
+        alias nvup=nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall; 
         nvim-init(){
             rm -rf "$HOME/.config/gocode";
             rm -rf "$HOME/.config/nvim/autoload";
             rm -rf "$HOME/.config/nvim/ftplugin";
             rm -rf "$HOME/.config/nvim/log";
             rm -rf "$HOME/.config/nvim/plugged";
-            nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
+            nvup
             rm "$HOME/.nvimlog";
             rm "$HOME/.viminfo";
             wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
-            mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-darwin-amd64" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
+            mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-$GOOS\-$GOARCH" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
         }
         alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
         alias nvinit="nvim-init";
@@ -442,8 +461,11 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias cp='cp -r'
     alias ln="sudo ln -Fsnfiv"
     alias mv='mv -i'
-    # alias wget='wget --no-cookies --no-check-certificate --no-dns-cache -4'
-    alias wget='axel -a -n 10'
+    if type axel >/dev/null 2>&1; then
+        alias wget='axel -a -n 10'
+    else
+        alias wget='wget --no-cookies --no-check-certificate --no-dns-cache -4'
+    fi
     alias mkdir='mkdir -p'
     alias gtrans='trans -b -e google'
 
@@ -509,7 +531,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias cdvf='mkcd $HOME/Documents/vagrant/ForceVM'
     alias cdcent='mkcd $HOME/Documents/vagrant/CentOS7'
     alias cdarch='mkcd $HOME/Documents/vagrant/ArchLinux'
-    alias cdi='mkcd $HOME/Documents/Programming/go/src/github.com/kpango/introduction-to-go'
 
     if type rails >/dev/null 2>&1; then
         alias railskill="kill -9 `ps aux | grep rails | awk '{print $2}'`"
@@ -635,10 +656,27 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     alias :q=exit;
 
+    alias 600='chmod -R 600'
     alias 644='chmod -R 644'
     alias 655='chmod -R 655'
     alias 755='chmod -R 755'
     alias 777='chmod -R 777'
+
+    nvim-install(){
+        sudo rm -rf $HOME/neovim
+        sudo rm -rf /usr/local/bin/nvim
+        sudo rm -rf /usr/local/share/nvim
+        cd $HOME
+        git clone https://github.com/neovim/neovim
+        cd neovim
+        rm -r build/
+        make clean
+        make CMAKE_BUILD_TYPE=RelWithDebInfo
+        sudo make install
+        cd ../
+        rm -rf neovim
+    }
+    alias nvinstall=nvim-install
 
     # OS 別の設定
     case ${OSTYPE} in
@@ -659,7 +697,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                 elif [ $1 = "status" ]; then
                     echo $http_proxy;
                 fi
-                ssh proxy "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
+                ssh ci "echo $HTTP_PROXY_PASSWORD | sudo -S systemctl $1 proxy"
             }
 
             dns(){
@@ -694,7 +732,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                 sudo rm -rf $HOME/Library/Caches
 
                 sudo purge
-                sudo du -sx / &
+                sudo du -sx /* &
                 sudo mkdir /usr/local/etc/my.cnf.d
             }
 
@@ -738,9 +776,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                 alias brew-cask-update=brewcaskup
                 alias brewup="brew upgrade;\cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && \cd -;brew-cask-update;brew prune;brew doctor";
 
-                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;pip install vim-vint --force-reinstall;nimup;atomup;nvup;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;clean;";
+                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;pip install vim-vint --force-reinstall;nimup;atomup;nvinstall;nvinit;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;clean;";
             else
-                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvup;zsup"
+                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvinstall;nvinit;zsup"
             fi
             findfile(){
                 sudo mdfind -onlyin $1 "kMDItemFSName == '$2'c && (kMDItemSupportFileType == MDSystemFile || kMDItemSupportFileType != MDSystemFile || kMDItemFSInvisible == *)"
@@ -753,7 +791,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             }
             alias ls='ls -F --color=auto'
             alias -g C='| xsel --input --clipboard'
-            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;nvup;zsup"
+            alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;nvinit;zsup"
             ;;
     esac
     alias findfile=findfile
