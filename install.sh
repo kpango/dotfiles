@@ -21,11 +21,13 @@ cp "./gitattributes" "$HOME/.gitattributes"
 mv "$HOME/.gitconfig" "$HOME/.gitconfig.back"
 cp "./gitconfig" "$HOME/.gitconfig"
 
-sudo mkdir -p /usr/local/bin
-sudo mkdir -p /usr/local/etc
-sudo mkdir -p /usr/local/opt
+sed -i -e "s/\"PASSWORD\"/\"$1\"/g" "$HOME/.zshrc"
 
-sudo chmod -R 777 /usr/local
+echo "$1" | sudo -S mkdir -p /usr/local/bin
+echo "$1" | sudo -S mkdir -p /usr/local/etc
+echo "$1" | sudo -S mkdir -p /usr/local/opt
+
+echo "$1" | sudo -S chmod -R 777 /usr/local
 
 reload_anyenv() {
     export PROGRAMMING=$HOME/Documents/Programming;
@@ -63,32 +65,32 @@ else
     elif [ "$(expr substr $(uname -s) 1 5)" = 'Linux' ]; then
         OS="Linux"
         if   [ -e /etc/debian_version ] || [ -e /etc/debian_release ]; then
-            sudo add-apt-repository ppa:neovim-ppa/unstable
-            sudo apt-get update
-            sudo apt-get install xclip xsel
+            echo "$1" | sudo -S add-apt-repository ppa:neovim-ppa/unstable
+            echo "$1" | sudo -S apt-get update
+            echo "$1" | sudo -S apt-get install xclip xsel
         else
-            sudo yum -y install epel-release.noarch
-            sudo yum -y install git libtool autoconf automake cmake gcc gcc-c++ make pkgconfig unzip ctags
-            sudo yum -y groupinstall "Development Tools"
-            sudo yum -y install readline readline-devel zlib zlib-devel bzip2 bzip2-devel sqlite sqlite-devel openssl openssl-devel 
+            echo "$1" | sudo -S yum -y install epel-release.noarch
+            echo "$1" | sudo -S yum -y install git libtool autoconf automake cmake gcc gcc-c++ make pkgconfig unzip ctags
+            echo "$1" | sudo -S yum -y groupinstall "Development Tools"
+            echo "$1" | sudo -S yum -y install readline readline-devel zlib zlib-devel bzip2 bzip2-devel sqlite sqlite-devel openssl openssl-devel 
             if ! type tmux > /dev/null 2>&1; then
-                sudo yum -y install tmux --enablerepo=rpmforge
+                echo "$1" | sudo -S yum -y install tmux --enablerepo=rpmforge
             fi
 
         fi
-        sudo mkdir -p /usr/local/bin
-        sudo mkdir -p /usr/local/etc
-        sudo mkdir -p /usr/local/opt
+        echo "$1" | sudo -S mkdir -p /usr/local/bin
+        echo "$1" | sudo -S mkdir -p /usr/local/etc
+        echo "$1" | sudo -S mkdir -p /usr/local/opt
 
-        sudo chmod -R 777 /usr/local
+        echo "$1" | sudo -S chmod -R 777 /usr/local
 
         if ! type zsh > /dev/null 2>&1; then
             wget http://downloads.sourceforge.net/project/zsh/zsh/5.2/zsh-5.2.tar.gz
             tar xzvf zsh-5.2.tar.gz
             cd zsh-5.2 || exit
             ./configure --prefix="$HOME/local" --enable-multibyte --enable-locale
-            sudo make
-            sudo make install
+            echo "$1" | sudo -S make
+            echo "$1" | sudo -S make install
         fi
 
         if ! type go > /dev/null 2>&1; then
@@ -103,16 +105,16 @@ else
     fi
 
     if ! type nvim > /dev/null 2>&1; then
-        sudo rm -rf /usr/local/bin/nvim
-        sudo rm -rf /usr/local/share/nvim
-        cd $HOME
+        echo "$1" | sudo -S rm -rf /usr/local/bin/nvim
+        echo "$1" | sudo -S rm -rf /usr/local/share/nvim
+        cd "$HOME" || exit
         git clone https://github.com/neovim/neovim
-        cd neovim
+        cd neovim || exit
         rm -r build/
         make clean
         make CMAKE_BUILD_TYPE=RelWithDebInfo
-        sudo make install
-        cd ../
+        echo "$1" | sudo -S make install
+        cd ../ || exit
         rm -rf neovim
     fi
 
@@ -170,4 +172,4 @@ mkdir -p ~/.config/nvim/plugged/vim-plug
 git clone https://github.com/junegunn/vim-plug.git ~/.config/nvim/plugged/vim-plug/autoload
 
 nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall
-wget -P $HOME/.config/nvim/plugged/nvim-go/syntax/ https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim
+wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim
