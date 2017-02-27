@@ -35,7 +35,7 @@ my dotfiles
 ```shell
 git clone https://github.com/kpango/dotfiles
 cd dotfiles
-sh ./install.sh
+sh ./install.sh {your password}
 cd ../
 rm -rf dotfiles
 ```
