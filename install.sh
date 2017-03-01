@@ -163,9 +163,9 @@ else
     "$HOME/.anyenv/envs/pyenv/shims/pip" install --upgrade pip;
     "$HOME/.anyenv/envs/pyenv/shims/pip2" install --upgrade pip;
     "$HOME/.anyenv/envs/pyenv/shims/pip3" install --upgrade pip;
-    "$HOME/.anyenv/envs/pyenv/shims/pip" install neovim vim-vint;
-    "$HOME/.anyenv/envs/pyenv/shims/pip2" install neovim vim-vint;
-    "$HOME/.anyenv/envs/pyenv/shims/pip2" install neovim vim-vint;
+    "$HOME/.anyenv/envs/pyenv/shims/pip" install --upgrade sexpdata websocket-client neovim vim-vint;
+    "$HOME/.anyenv/envs/pyenv/shims/pip2" install --upgrade sexpdata websocket-client neovim vim-vint;
+    "$HOME/.anyenv/envs/pyenv/shims/pip2" install --upgrade sexpdata websocket-client neovim vim-vint;
 fi
 
 if type gem > /dev/null 2>&1; then
