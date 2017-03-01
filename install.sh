@@ -168,6 +168,28 @@ else
     "$HOME/.anyenv/envs/pyenv/shims/pip2" install neovim vim-vint;
 fi
 
+if type gem > /dev/null 2>&1; then
+    echo 'gem found'
+else
+    if ! type rbenv > /dev/null 2>&1; then
+    "$HOME/.anyenv/bin/anyenv" install rbenv
+    fi
+
+    if ! type ruby > /dev/null 2>&1; then
+    $HOME/.anyenv/envs/rbenv/bin/rbenv install 2.5.0-dev
+    $HOME/.anyenv/envs/rbenv/bin/rbenv global 2.5.0-dev
+    echo "$1" | sudo -S rm -rf /usr/bin/ruby
+    echo "$1" | sudo -S rm -rf /usr/bin/gem
+    echo "$1" | sudo -S ln -sfv $HOME/.anyenv/envs/rbenv/shims/ruby /usr/bin/ruby
+    echo "$1" | sudo -S ln -sfv $HOME/.anyenv/envs/rbenv/shims/gem /usr/bin/gem
+    reload_anyenv
+    echo "$1" | sudo -S chmod -R 755 $HOME/.anyenv/envs/rbenv/versions
+    reload_anyenv
+    fi
+
+    $HOME/.anyenv/envs/rbenv/shims/gem install neovim --no-rdoc --no-ri
+fi
+
 mkdir -p ~/.config/nvim/plugged/vim-plug
 git clone https://github.com/junegunn/vim-plug.git ~/.config/nvim/plugged/vim-plug/autoload
 
