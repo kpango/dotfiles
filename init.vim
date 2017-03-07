@@ -36,8 +36,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neoyank.vim'
-    " Plug 'Shougo/unite.vim', {'on': ['Unite', 'UniteWithBufferDir','VimFiler']}
-    " Plug 'Shougo/vimfiler.vim', {'on': 'VimFiler'}
     Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Townk/vim-autoclose'
     Plug 'airblade/vim-gitgutter'
@@ -70,16 +68,17 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
 " ---- Yaml Setting
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
-" ---- Yaml Setting
+" ---- Clang Setting
     Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
-    Plug 'critiqjo/lldb.nvim', {'do': ':UpdateRemotePlugins', 'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
     Plug 'vim-jp/vim-cpp', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
     Plug 'Mizuchi/STL-Syntax', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
 "     Plug 'rhysd/vim-clang-format', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+    Plug 'critiqjo/lldb.nvim', {'do': ':UpdateRemotePlugins', 'for': ['c', 'cpp', 'cxx', 'cmake', 'clang', 'go']}
 " ---- Golang Setting
-    Plug 'dgryski/vim-godef', { 'for': 'go' }
-    Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
-    Plug 'fatih/vim-go', {'for': 'go', 'on': 'GoAddTags'}
+    " Plug 'dgryski/vim-godef', { 'for': 'go' }
+    " Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
+    " Plug 'fatih/vim-go', {'for': 'go', 'on': 'GoAddTags'}
+    Plug 'fatih/vim-go', {'for': 'go'}
     Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
     Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
@@ -165,7 +164,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'tfnico/vim-gradle', {'for': 'groovy' }
 " ---- Nim
     Plug 'zah/nim.vim', {'for': 'nim'}
-"       Plug 'baabelfish/nvim-nim', {'for': 'nim'}
+    " Plug 'baabelfish/nvim-nim', {'for': 'nim'}
 " ---- Rust
     Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
     Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
@@ -415,9 +414,10 @@ endif
 augroup GolangSetting
     autocmd!
     " ---- GoFmtコマンドを保存時に走らせる
-    autocmd BufWritePre *.go Gofmt
+    autocmd BufWritePre *.go GoFmt
+    " autocmd BufWritePre *.go Gofmt
     autocmd FileType go compiler go
-    autocmd FileType go :highlight goExtraVars ctermfg=214
+    autocmd FileType go :highlight goExtraVars cterm=bold ctermfg=214
     autocmd FileType go :match goExtraVars /\<ok\>\|\<err\>/
     " autocmd FileType go nmap  <silent><buffer>K                   <Plug>(go-doc)
     " autocmd FileType go nmap  <silent><buffer><LocalLeader>]      :<C-u>GoGeneDefinition<CR>
@@ -452,13 +452,12 @@ augroup GolangSetting
     " autocmd FileType go nmap <leader>gdft <Plug>(go-def-tab)
     " autocmd FileType go nmap <leader>gd <Plug>(go-doc)
     " autocmd FileType go nmap <leader>gdv <Plug>(go-doc-vertical)
-    " autocmd FileType go highlight goErr cterm=bold ctermfg=214
-    " autocmd FileType go match goErr /\<err\>/
+    autocmd FileType go highlight goErr cterm=bold ctermfg=214
+    autocmd FileType go match goErr /\<err\>/
     autocmd FileType go let g:go#highlight#cgo = 1
     autocmd FileType go let g:go#build#autosave = 1
     autocmd FileType go let g:go#build#force = 0
     autocmd FileType go let g:go#fmt#autosave  = 1
-    " autocmd FileType go let g:go#fmt#mode = 'goreturns'
     autocmd FileType go let g:go#fmt#mode = 'goimports'
     autocmd FileType go let g:go#guru#keep_cursor = {
                 \       'callees'    : 0,

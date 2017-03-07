@@ -12,8 +12,6 @@ if [ -z $DOTENV_LOADED ]; then
     export MANLANG=ja_JP.UTF-8
     export LC_TIME=en_US.UTF-8
 
-    export TERM="xterm-256color";
-
     if type nvim >/dev/null 2>&1; then
         export VIM=$(which nvim);
         export VIMRUNTIME=/usr/local/share/nvim/runtime;
@@ -41,6 +39,8 @@ if [ -z $DOTENV_LOADED ]; then
     export NVIM_HOME=$XDG_CONFIG_HOME/nvim;
     export XDG_DATA_HOME=$NVIM_HOME/log;
     export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME;
+    export NVIM_PYTHON_LOG_LEVEL=WARNING;
+    export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log;
 
     export LLVM_HOME=/usr/local/opt/llvm;
 
@@ -69,6 +69,11 @@ if [ -z $DOTENV_LOADED ]; then
     export GOBIN=$GOPATH/bin;
     export GO15VENDOREXPERIMENT=1;
     export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go;
+    export CGO_CFLAGS="-g -Ofast -march=native"
+    export CGO_CPPFLAGS="-g -Ofast -march=native"
+    export CGO_CXXFLAGS="-g -Ofast -march=native"
+    export CGO_FFLAGS="-g -Ofast -march=native"
+    export CGO_LDFLAGS="-g -Ofast -march=native"
 
     #Nim
     export NIMPATH=/usr/local/bin/Nim;
@@ -96,7 +101,7 @@ if [ -z $DOTENV_LOADED ]; then
         #anyenv init
         if [ -d "$HOME/.anyenv" ] ; then
             export PATH="$HOME/.anyenv/bin:$HOME/.anyenv/libexec:$PATH"
-            eval "$(anyenv init - --no-rehash)"
+            eval "$(anyenv init - --no-rehash zsh)"
         fi
     fi
 
@@ -163,15 +168,15 @@ if [ -z $DOTENV_LOADED ]; then
         fi
     fi
 
+    if [ ! -f "$HOME/.zshrc.zwc" -o "$HOME/.zshrc" -nt "$HOME/.zshrc.zwc" ]; then
+        zcompile $HOME/.zshrc
+    fi
+
+    if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc" ]; then
+        zcompile $HOME/.zcompdump
+    fi
+
     export DOTENV_LOADED=1
-fi
-
-if [ ! -f "$HOME/.zshrc.zwc" -o "$HOME/.zshrc" -nt "$HOME/.zshrc.zwc" ]; then
-    zcompile $HOME/.zshrc
-fi
-
-if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc" ]; then
-    zcompile $HOME/.zcompdump
 fi
 
 ########################################
@@ -201,113 +206,113 @@ else
     source "$HOME/.zshrc"
 fi
 
-# 色を使用出来るようにする
-autoload -Uz colors
-colors
-
-# ヒストリの設定
-HISTFILE=$HOME/.zsh_history
-HISTSIZE=1000000
-SAVEHIST=1000000
-setopt APPEND_HISTORY
-setopt SHARE_HISTORY
-setopt extended_history
-setopt hist_ignore_all_dups
-setopt hist_ignore_dups
-setopt hist_ignore_space
-setopt hist_reduce_blanks
-setopt hist_save_no_dups
-setopt share_history
-LISTMAX=1000
-WORDCHARS="$WORDCHARS|:"
-# プロンプト
-PROMPT="%{${fg[cyan]}%}%/#%{${reset_color}%} %"
-
-# 単語の区切り文字を指定する
-autoload -Uz select-word-style
-select-word-style default
-
-# ここで指定した文字は単語区切りとみなされる
-# / も区切りと扱うので、^W でディレクトリ１つ分を削除できる
-zstyle ':zle:*' word-chars " /=;@:{},|"
-zstyle ':zle:*' word-style unspecified
-
-########################################
-# 補完
-# 補完機能を有効にする
-autoload -Uz compinit -C
-compinit -C
-
-zstyle ':completion:*' format '%B%d%b'
-zstyle ':completion:*' group-name ''
-zstyle ':completion:*' ignore-parents parent pwd ..
-zstyle ':completion:*' keep-prefix
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
-zstyle ':completion:*' menu select
-zstyle ':completion:*:default' menu select=1
-zstyle ':completion:*:processes' command 'ps x -o pid, s, args'
-zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
-
-########################################
-# vcs_info
-autoload -Uz vcs_info
-autoload -Uz add-zsh-hook
-
-zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
-zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
-
-_update_vcs_info_msg() {
-    LANG=en_US.UTF-8 vcs_info
-    RPROMPT="${vcs_info_msg_0_}"
-}
-add-zsh-hook precmd _update_vcs_info_msg
-
-########################################
-# オプション
-setopt auto_cd              # ディレクトリ名だけでcdする
-setopt auto_list            # 補完候補を一覧表示
-setopt auto_menu            # 補完候補が複数あるときに自動的に一覧表示する
-setopt auto_param_keys      # カッコの対応などを自動的に補完
-setopt auto_pushd           # cd したら自動的にpushdする
-setopt correct
-setopt extended_glob
-setopt ignore_eof
-setopt interactive_comments # '#' 以降をコメントとして扱う
-setopt list_packed          # 補完候補を詰めて表示
-setopt list_types           # 補完候補一覧でファイルの種別をマーク表示
-setopt magic_equal_subst    # = の後はパス名として補完する
-setopt no_beep              # beep を無効にする
-setopt no_flow_control      # フローコントロールを無効にする
-setopt noautoremoveslash    # 最後のスラッシュを自動的に削除しない
-setopt nonomatch
-setopt notify               # バックグラウンドジョブの状態変化を即時報告
-setopt print_eight_bit      # 日本語ファイル名を表示可能にする
-setopt prompt_subst         # プロンプト定義内で変数置換やコマンド置換を扱う
-setopt pushd_ignore_dups    # 重複したディレクトリを追加しない
-########################################
-# ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
-bindkey -e
-bindkey '^R' history-incremental-pattern-search-backward
-
-fzf-z-search (){
-    which fzf z > /dev/null
-    if [ $? -ne 0 ]; then
-        echo "Please install fzf and z"
-        return 1
-    fi
-    local res=$(z | sort -rn | cut -c 12- | fzf)
-    if [ -n "$res" ]; then
-        BUFFER+="$res"
-        zle accept-line
-    else
-        return 1
-    fi
-}
-zle -N fzf-z-search
-bindkey '^s' fzf-z-search
-
 if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
+
+    # 色を使用出来るようにする
+    autoload -Uz colors
+    colors
+
+    # ヒストリの設定
+    HISTFILE=$HOME/.zsh_history
+    HISTSIZE=1000000
+    SAVEHIST=1000000
+    setopt APPEND_HISTORY
+    setopt SHARE_HISTORY
+    setopt extended_history
+    setopt hist_ignore_all_dups
+    setopt hist_ignore_dups
+    setopt hist_ignore_space
+    setopt hist_reduce_blanks
+    setopt hist_save_no_dups
+    setopt share_history
+    LISTMAX=1000
+    WORDCHARS="$WORDCHARS|:"
+    # プロンプト
+    PROMPT="%{${fg[cyan]}%}%/#%{${reset_color}%} %"
+
+    # 単語の区切り文字を指定する
+    autoload -Uz select-word-style
+    select-word-style default
+
+    # ここで指定した文字は単語区切りとみなされる
+    # / も区切りと扱うので、^W でディレクトリ１つ分を削除できる
+    zstyle ':zle:*' word-chars " /=;@:{},|"
+    zstyle ':zle:*' word-style unspecified
+
+    ########################################
+    # 補完
+    # 補完機能を有効にする
+    autoload -Uz compinit -C
+    compinit -C
+
+    zstyle ':completion:*' format '%B%d%b'
+    zstyle ':completion:*' group-name ''
+    zstyle ':completion:*' ignore-parents parent pwd ..
+    zstyle ':completion:*' keep-prefix
+    zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+    zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+    zstyle ':completion:*' menu select
+    zstyle ':completion:*:default' menu select=1
+    zstyle ':completion:*:processes' command 'ps x -o pid, s, args'
+    zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+
+    ########################################
+    # vcs_info
+    autoload -Uz vcs_info
+    autoload -Uz add-zsh-hook
+
+    zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
+    zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
+
+    _update_vcs_info_msg() {
+        LANG=en_US.UTF-8 vcs_info
+        RPROMPT="${vcs_info_msg_0_}"
+    }
+    add-zsh-hook precmd _update_vcs_info_msg
+
+    ########################################
+    # オプション
+    setopt auto_cd              # ディレクトリ名だけでcdする
+    setopt auto_list            # 補完候補を一覧表示
+    setopt auto_menu            # 補完候補が複数あるときに自動的に一覧表示する
+    setopt auto_param_keys      # カッコの対応などを自動的に補完
+    setopt auto_pushd           # cd したら自動的にpushdする
+    setopt correct
+    setopt extended_glob
+    setopt ignore_eof
+    setopt interactive_comments # '#' 以降をコメントとして扱う
+    setopt list_packed          # 補完候補を詰めて表示
+    setopt list_types           # 補完候補一覧でファイルの種別をマーク表示
+    setopt magic_equal_subst    # = の後はパス名として補完する
+    setopt no_beep              # beep を無効にする
+    setopt no_flow_control      # フローコントロールを無効にする
+    setopt noautoremoveslash    # 最後のスラッシュを自動的に削除しない
+    setopt nonomatch
+    setopt notify               # バックグラウンドジョブの状態変化を即時報告
+    setopt print_eight_bit      # 日本語ファイル名を表示可能にする
+    setopt prompt_subst         # プロンプト定義内で変数置換やコマンド置換を扱う
+    setopt pushd_ignore_dups    # 重複したディレクトリを追加しない
+    ########################################
+    # ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
+    bindkey -e
+    bindkey '^R' history-incremental-pattern-search-backward
+
+    fzf-z-search (){
+        which fzf z > /dev/null
+        if [ $? -ne 0 ]; then
+            echo "Please install fzf and z"
+            return 1
+        fi
+        local res=$(z | sort -rn | cut -c 12- | fzf)
+        if [ -n "$res" ]; then
+            BUFFER+="$res"
+            zle accept-line
+        else
+            return 1
+        fi
+    }
+    zle -N fzf-z-search
+    bindkey '^s' fzf-z-search
 
     if type go >/dev/null 2>&1; then
 
@@ -315,13 +320,16 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             cd $GOPATH/src/$1
             git fetch
             git reset --hard origin/master
+            git submodule foreach git pull origin master
             cd -
             go get -u $1
         }
+
         go-update(){
             go-get github.com/Masterminds/glide &
             go-get github.com/aarzilli/gdlv &
             go-get github.com/alecthomas/gometalinter &
+            go-get github.com/concourse/fly &
             go-get github.com/constabulary/gb/... &
             go-get github.com/cweill/gotests/... &
             go-get github.com/derekparker/delve/cmd/dlv &
@@ -338,9 +346,10 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             go-get github.com/mattn/files &
             go-get github.com/mattn/jvgrep &
             go-get github.com/motemen/ghq &
-            go-get github.com/motemen/gofind/cmd/gofind &
             go-get github.com/motemen/go-iferr/cmd/goiferr &
+            go-get github.com/motemen/gofind/cmd/gofind &
             go-get github.com/nsf/gocode &
+            go-get github.com/onsi/ginkgo/ginkgo &
             go-get github.com/peco/peco/cmd/peco &
             go-get github.com/pwaller/goimports-update-ignore &
             go-get github.com/rogpeppe/godef &
@@ -417,33 +426,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         alias gedit="$EDITOR $HOME/.gitconfig"
     fi
 
-    if type nvim >/dev/null 2>&1; then
-        alias nvup=nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall; 
-        nvim-init(){
-            rm -rf "$HOME/.config/gocode";
-            rm -rf "$HOME/.config/nvim/autoload";
-            rm -rf "$HOME/.config/nvim/ftplugin";
-            rm -rf "$HOME/.config/nvim/log";
-            rm -rf "$HOME/.config/nvim/plugged";
-            nvup
-            rm "$HOME/.nvimlog";
-            rm "$HOME/.viminfo";
-            wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
-            mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-$GOOS\-$GOARCH" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
-        }
-        alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
-        alias nvinit="nvim-init";
-    else
-        alias vedit="$EDITOR $HOME/.vimrc"
-    fi
-
-    alias vi="$EDITOR"
-    alias vim="$EDITOR"
-    alias bim="$EDITOR"
-    alias cim="$EDITOR"
-    alias v="$EDITOR"
-    alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
-
     if type rustc >/dev/null 2>&1; then
         rust_run() {
             rustc $1
@@ -461,11 +443,13 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias cp='cp -r'
     alias ln="sudo ln -Fsnfiv"
     alias mv='mv -i'
+
     if type axel >/dev/null 2>&1; then
         alias wget='axel -a -n 10'
     else
         alias wget='wget --no-cookies --no-check-certificate --no-dns-cache -4'
     fi
+
     alias mkdir='mkdir -p'
     alias gtrans='trans -b -e google'
 
@@ -666,6 +650,13 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         sudo rm -rf $HOME/neovim
         sudo rm -rf /usr/local/bin/nvim
         sudo rm -rf /usr/local/share/nvim
+        rm -rf "$HOME/.config/gocode";
+        rm -rf "$HOME/.config/nvim/autoload";
+        rm -rf "$HOME/.config/nvim/ftplugin";
+        rm -rf "$HOME/.config/nvim/log";
+        rm -rf "$HOME/.config/nvim/plugged";
+        rm "$HOME/.nvimlog";
+        rm "$HOME/.viminfo";
         cd $HOME
         git clone https://github.com/neovim/neovim
         cd neovim
@@ -675,8 +666,38 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         sudo make install
         cd ../
         rm -rf neovim
+        nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
+        wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
+        mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-$GOOS-$GOARCH" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
     }
     alias nvinstall=nvim-install
+
+    if type nvim >/dev/null 2>&1; then
+        alias nvup=nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall; 
+        nvim-init(){
+            rm -rf "$HOME/.config/gocode";
+            rm -rf "$HOME/.config/nvim/autoload";
+            rm -rf "$HOME/.config/nvim/ftplugin";
+            rm -rf "$HOME/.config/nvim/log";
+            rm -rf "$HOME/.config/nvim/plugged";
+            nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
+            rm "$HOME/.nvimlog";
+            rm "$HOME/.viminfo";
+            wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
+            mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-$GOOS-$GOARCH" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
+        }
+        alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
+        alias nvinit="nvim-init";
+    else
+        alias vedit="$EDITOR $HOME/.vimrc"
+    fi
+
+    alias vi="$EDITOR"
+    alias vim="$EDITOR"
+    alias bim="$EDITOR"
+    alias cim="$EDITOR"
+    alias v="$EDITOR"
+    alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
 
     # OS 別の設定
     case ${OSTYPE} in
@@ -736,7 +757,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                 sudo mkdir /usr/local/etc/my.cnf.d
             }
 
-            #Mac用の設定
             alias ls='ls -G -F'
             alias -g C='| pbcopy'
             xcodeUUIDFix(){
@@ -776,16 +796,15 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                 alias brew-cask-update=brewcaskup
                 alias brewup="brew upgrade;\cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && \cd -;brew-cask-update;brew prune;brew doctor";
 
-                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;pip install vim-vint --force-reinstall;nimup;atomup;nvinstall;nvinit;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;clean;";
+                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;brewup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;pip install vim-vint --force-reinstall;nimup;atomup;nvinstall;zsup;rm $HOME/.lesshst;rm $HOME/.mysql_history;clean;";
             else
-                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvinstall;nvinit;zsup"
+                alias update="sudo chown -R $(whoami) /usr/local;anyenvup;goup;gemup;haskellup;npmup;pipup;pip2up;pip3up;nimup;atomup;nvinstall;zsup"
             fi
             findfile(){
                 sudo mdfind -onlyin $1 "kMDItemFSName == '$2'c && (kMDItemSupportFileType == MDSystemFile || kMDItemSupportFileType != MDSystemFile || kMDItemFSInvisible == *)"
             }
             ;;
         linux*)
-            #Linux用の設定
             findfile(){
                 sudo find $1 -name $2
             }
@@ -795,6 +814,17 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             ;;
     esac
     alias findfile=findfile
+
+    case ${OSTYPE} in
+        darwin*)
+            eval "$(rbenv init - --no-rehash zsh)";
+            eval "$(pyenv init - --no-rehash zsh)"
+            ;;
+        linux*)
+            ;;
+    esac
+
+    export TERM="xterm-256color";
 
     export ZSH_LOADED=1;
 fi

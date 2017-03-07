@@ -76,5 +76,3 @@
 
     sp = stash pop
     ss = stash save
-
-[user]
