@@ -76,9 +76,9 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'critiqjo/lldb.nvim', {'do': ':UpdateRemotePlugins', 'for': ['c', 'cpp', 'cxx', 'cmake', 'clang', 'go']}
 " ---- Golang Setting
     " Plug 'dgryski/vim-godef', { 'for': 'go' }
-    " Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
-    " Plug 'fatih/vim-go', {'for': 'go', 'on': 'GoAddTags'}
-    Plug 'fatih/vim-go', {'for': 'go'}
+    Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
+    " Plug 'fatih/vim-go', {'for': 'go', 'on': ['GoInstallBinaries', 'GoAddTags','GoFmt']}
+    " Plug 'fatih/vim-go', {'for': 'go'}
     Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
     Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
@@ -158,8 +158,10 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'derekwyatt/vim-scala', {'for': 'scala'}
     Plug 'ensime/ensime-vim', {'for': ['scala'], 'do': ':UpdateRemotePlugins'}
     Plug 'ktvoelker/sbt-vim', {'for': 'scala'}
-    Plug 'vhakulinen/neovim-intellij-complete', {'for': ['java', 'scala']}
-    Plug 'vhakulinen/neovim-intellij-complete-deoplete', {'for': ['java','scala']}
+    Plug 'vhakulinen/neovim-intellij-complete'
+    Plug 'vhakulinen/neovim-intellij-complete-deoplete'
+    " Plug 'vhakulinen/neovim-intellij-complete', {'for': ['java', 'scala', 'kotlin']}
+    " Plug 'vhakulinen/neovim-intellij-complete-deoplete', {'for': ['java','scala','kotlin']}
     Plug 'vim-scripts/java_getset.vim', {'for': 'java'}
     Plug 'tfnico/vim-gradle', {'for': 'groovy' }
 " ---- Nim
@@ -243,10 +245,10 @@ endif
 
 let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
 
+let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_complete_delay = 0
 let g:deoplete#auto_complete_start_length = 1
 let g:deoplete#auto_completion_start_length = 1
-let g:deoplete#enable_at_startup = 1
 let g:deoplete#enable_camel_case = 1
 let g:deoplete#enable_ignore_case = 1
 let g:deoplete#enable_refresh_always = 1
@@ -304,9 +306,9 @@ augroup DeopleteSetting
     autocmd FileType go call deoplete#custom#set('go', 'matchers', ['matcher_full_fuzzy'])
     autocmd FileType go call deoplete#custom#set('go', 'sorters', [])
     autocmd FileType go let g:deoplete#sources#go#align_class = 1
-    autocmd FileType go let g:deoplete#sources#go#cgo = 1
-    autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= expand("/usr/local/Cellar/llvm/*/lib/libclang.dylib")
-    autocmd FileType go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
+    " autocmd FileType go let g:deoplete#sources#go#cgo = 1
+    " autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= expand("/usr/local/Cellar/llvm/*/lib/libclang.dylib")
+    " autocmd FileType go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
     autocmd FileType go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
     autocmd FileType go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
     autocmd FileType go let g:deoplete#sources#go#package_dot = 1
@@ -414,8 +416,8 @@ endif
 augroup GolangSetting
     autocmd!
     " ---- GoFmtコマンドを保存時に走らせる
-    autocmd BufWritePre *.go GoFmt
-    " autocmd BufWritePre *.go Gofmt
+    " autocmd BufWritePre *.go GoFmt
+    autocmd BufWritePre *.go Gofmt
     autocmd FileType go compiler go
     autocmd FileType go :highlight goExtraVars cterm=bold ctermfg=214
     autocmd FileType go :match goExtraVars /\<ok\>\|\<err\>/
@@ -455,9 +457,9 @@ augroup GolangSetting
     autocmd FileType go highlight goErr cterm=bold ctermfg=214
     autocmd FileType go match goErr /\<err\>/
     autocmd FileType go let g:go#highlight#cgo = 1
-    autocmd FileType go let g:go#build#autosave = 1
-    autocmd FileType go let g:go#build#force = 0
-    autocmd FileType go let g:go#fmt#autosave  = 1
+    autocmd FileType go let g:go#build#autosave = 0
+    autocmd FileType go let g:go#build#force = 1
+    autocmd FileType go let g:go#fmt#autosave  = 0
     autocmd FileType go let g:go#fmt#mode = 'goimports'
     autocmd FileType go let g:go#guru#keep_cursor = {
                 \       'callees'    : 0,
@@ -495,7 +497,7 @@ augroup GolangSetting
     autocmd FileType go set runtimepath+=globpath($GOROOT, "/misc/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/golang/lint/misc/vim")
-    autocmd FileType go nnoremap <F5> :GoRun<CR>
+    autocmd FileType go nnoremap <F5> :Gorun<CR>
 augroup END
 
 " ---- Scala Settings
@@ -818,6 +820,7 @@ set synmaxcol=2000
 set showmatch matchtime=2
 set list listchars=tab:>\ ,trail:_,eol:↲,extends:»,precedes:«,nbsp:%
 
+set display=lastline
 " ---- 2spaces width for ambient
 set ambiwidth=double
 
