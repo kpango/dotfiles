@@ -244,7 +244,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     ########################################
     # 補完
     # 補完機能を有効にする
-    autoload -Uz compinit && compinit -C
+    autoload -Uz compinit -C && compinit -C
 
     zstyle ':completion:*' format '%B%d%b'
     zstyle ':completion:*' group-name ''
