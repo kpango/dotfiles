@@ -86,9 +86,9 @@ else
         echo "$1" | sudo -S chmod -R 777 /usr/local
 
         if ! type zsh > /dev/null 2>&1; then
-            wget http://downloads.sourceforge.net/project/zsh/zsh/5.2/zsh-5.2.tar.gz
-            tar xzvf zsh-5.2.tar.gz
-            cd zsh-5.2 || exit
+            wget http://downloads.sourceforge.net/project/zsh/zsh/5.3/zsh-5.3.1.tar.xz
+            tar xzvf zsh-5.3.1.tar.xz
+            cd zsh-5.3.1 || exit
             ./configure --prefix="$HOME/local" --enable-multibyte --enable-locale
             echo "$1" | sudo -S make
             echo "$1" | sudo -S make install
