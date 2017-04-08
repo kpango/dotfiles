@@ -1,0 +1,70 @@
+#!/bin/bash
+
+#load-average
+load_avg="#[bold][#[default]#[fg=blue] $(uptime | awk '{print $(NF-2)}') #[default]#[bold]]#[default]"
+
+
+#airport
+airport_path="/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport"
+
+if air_info=($(eval "$airport_path" --getinfo | grep -E "^ *(agrCtlRSSI|state|lastTxRate|SSID):" | awk '{print $2}')) ; then
+  rssi=${air_info[0]}
+  state=${air_info[1]}
+  rate=${air_info[2]}
+  ssid=${air_info[3]}
+
+  case "$state" in
+    "running" )
+      signals=(▁ ▂ ▄ ▆ █)
+      signal=""
+      rssi_=$(expr 5 - ${rssi} / -20)
+      for ((i=0; i < $rssi_; i++ )); do
+        signal="${signal}${signals[$i]}"
+      done
+      airport_=" #[underscore]${ssid}#[default] | ${signal} "
+    ;;
+    "init"    ) airport_="#[fg=yellow] ... " ;;
+    *         ) airport_="#[fg=red] ✘ " ;;
+  esac
+
+  if [ "$rate" = 0 ]; then
+      airport="#[bold]|#[default]${airport_}#[bold]#[fg=colour014]|#[default] "
+  else
+      airport="#[bold]|#[default]${airport_} | ${rate}Mbs #[bold]#[fg=colour014]|#[default] "
+  fi
+fi
+
+
+#sound-volume
+if sound_info=$(osascript -e 'get volume settings') ; then
+  if [ "$(echo $sound_info | awk '{print $8}')" = "muted:false" ]; then
+    sound_volume=$(expr $(echo $sound_info | awk '{print $2}' | sed "s/[^0-9]//g") / 6 )
+    str=""
+    for ((i=0; i < $sound_volume; i++ )); do
+      str="${str}■"
+    done
+    for ((i=$sound_volume; i < 16; i++ )); do
+      str="${str} "
+    done
+    sound="#[bold][$str]#[default] "
+  else
+    sound="#[bold][      mute      ]#[default] "
+  fi
+fi
+
+
+#battery
+if battery_info=$(/usr/bin/pmset -g ps | awk '{ if (NR == 2) print $2 " " $3 }' | sed -e "s/;//g" -e "s/%//" | cut -d " " -f2) ; then
+  battery_quantity=$(echo $battery_info | awk '{print $1}')
+  if [[ ! $battery_info =~ "discharging" ]]; then
+    battery="#[bg=cyan,fg=black] ⚡  $battery_quantity% #[default]"
+  elif (( $battery_quantity < 40 )); then
+    battery="#[bg=yellow,fg=black] ⚠️   $battery_quantity% #[default]"
+  elif (( $battery_quantity < 16 )); then
+    battery="#[bg=red,fg=white] $battery_quantity% #[default]"
+  else
+    battery="#[bg=cyan,fg=black] $battery_quantity% #[default]"
+  fi
+fi
+
+echo "${load_avg}${sound}${airport}${battery}"
