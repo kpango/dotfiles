@@ -443,7 +443,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             git symbolic-ref --short HEAD|tr -d "\n"
         }
         alias tb=gitthisrepo
-        alias gfr="git fetch;git reset --hard origin/master"
+        alias gfr="git fetch;git reset --hard origin/$(tb)"
         gitpull(){
             git pull --rebase origin $(tb)
         }
