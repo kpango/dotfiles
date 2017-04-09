@@ -230,7 +230,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     LISTMAX=1000
     WORDCHARS="$WORDCHARS|:"
     # プロンプト
-    PROMPT="%{${fg[cyan]}%}%/#%{${reset_color}%} %"
+    PROMPT="%{${fg[cyan]}%}%/ $%{${reset_color}%} %"
+    # PS1="%{${fg[green]}%}%/#%{${reset_color}%} %"
 
     # 単語の区切り文字を指定する
     autoload -Uz select-word-style
@@ -290,12 +291,12 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     autoload -Uz vcs_info
     autoload -Uz add-zsh-hook
 
-    zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
+    zstyle ':vcs_info:*' formats '(%s)-[%b]'
     zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
 
     _update_vcs_info_msg() {
         LANG=en_US.UTF-8 vcs_info
-        RPROMPT="${vcs_info_msg_0_}"
+        RPROMPT="%F{green}${vcs_info_msg_0_}%f"
     }
     add-zsh-hook precmd _update_vcs_info_msg
 
@@ -452,7 +453,10 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             git pull --rebase origin $(tb)
         }
         alias gpull=gitpull
-        alias gpush="git push origin"
+        gpush(){
+            git push -u origin $(tb)
+        }
+        alias gpush=gpush
         gitcompush(){
             git add -A;
             git commit -m $1;
