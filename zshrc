@@ -478,43 +478,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         fi
     }
 
-    if type git >/dev/null 2>&1; then
-        alias gco="git checkout"
-        alias gsta="git status"
-        alias gcom="git commit -m"
-        alias gdiff="git diff"
-        alias gbra="git branch"
-        gitthisrepo(){
-            git symbolic-ref --short HEAD|tr -d "\n"
-        }
-        alias tb=gitthisrepo
-        gfr(){
-            git fetch;
-            git reset --hard origin/$(tb);
-        }
-        alias gfr=gfr
-        gitpull(){
-            git pull --rebase origin $(tb)
-        }
-        alias gpull=gitpull
-        gpush(){
-            git push -u origin $(tb)
-        }
-        alias gpush=gpush
-        gitcompush(){
-            git add -A;
-            git commit -m $1;
-            git push -u origin $2;
-        }
-        alias gitcompush=gitcompush
-        gcp(){
-            gitcompush $1 "$(tb)";
-        }
-        alias gcp=gcp
-        alias gfix="gcp fix"
-        alias gedit="$EDITOR $HOME/.gitconfig"
-    fi
-
     if type rustc >/dev/null 2>&1; then
         rust_run() {
             rustc $1
@@ -556,7 +519,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type anyenv >/dev/null 2>&1; then
         anyenvup(){
-            anyenv update;
+            anyenv update --force;
             anyenv git gc --aggressive;
             anyenv git prune;
         }
