@@ -157,7 +157,7 @@ if [ -z $DOTENV_LOADED ]; then
     export HTTPS_PROXY_HOST=$HTTP_PROXY_HOST
     export HTTPS_PROXY_PORT="HTTPS_PROXY_PORT"
 
-    if type zplug > /dev/null 2>&1; then
+    if type zplug >/dev/null 2>&1; then
         if zplug check junegunn/fzf; then
             export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
         fi
@@ -576,7 +576,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         alias npmup=npmup
     fi
 
-    if type npm >/dev/null 2>&1; then
+    if type pip >/dev/null 2>&1; then
         pipup(){
             sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;
             pip install --upgrade pip;
@@ -585,7 +585,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         alias pipup=pipup
     fi
 
-    if type npm >/dev/null 2>&1; then
+    if type pip2 >/dev/null 2>&1; then
         pip2up(){
             sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;
             pip2 install --upgrade pip;
@@ -594,7 +594,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         alias pip2up=pip2up
     fi
 
-    if type npm >/dev/null 2>&1; then
+    if type pip3 >/dev/null 2>&1; then
         pip3up(){
             sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages;
             pip3 install --upgrade pip;
@@ -668,7 +668,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         sudo -u $USER ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
     }
     alias rsagen=rsagen
-
     ecdsagen(){
         sudo -u $USER ssh-keygen -t ecdsa -b 521 -P $1 -f $HOME/.ssh/id_ecdsa -C $USER
     }
