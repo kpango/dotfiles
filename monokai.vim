@@ -1,23 +1,3 @@
-" File:       monokai.vim
-" Maintainer: Crusoe Xia (crusoexia)
-" URL:        https://github.com/crusoexia/vim-monokai
-" License:    MIT
-"
-" The colour palette is from http://www.colourlovers.com/
-" The original code is from https://github.com/w0ng/vim-hybrid
-"
-" Configuration:
-"
-"   * Enable italic:
-"
-"       let g:monokai_italic = 1
-"
-"   * Use thick window border:
-"
-"       let g:monokai_thick_border = 1
-"
-" Initialisation
-" --------------
 
 if !has('gui_running') && &t_Co < 256
   finish
@@ -72,7 +52,7 @@ if has('gui_running')
   let s:changebg   = '#5f5f87'
 else
   let s:vmode      = 'cterm'
-  let s:background = '0'
+  let s:background = 'NONE'
   let s:foreground = '253'
   let s:window     = '239'
   let s:line       = '236'
