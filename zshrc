@@ -67,6 +67,7 @@ if [ -z $DOTENV_LOADED ]; then
         export JDK_HOME=/Library/Java/JavaVirtualMachines/jdk$(java -version 2>&1 >/dev/null | grep 'java version' | sed -e 's/java\ version\ \"//g' -e 's/\"//g').jdk;
         export STUDIO_JDK=$JDK_HOME;
         export JAVA_HOME=$JDK_HOME/Contents/Home;
+        export JAVA8_HOME=$JAVA_HOME;
         export JRE_HOME=$JAVA_HOME/jre/bin;
         export ANDROID_HOME=/usr/local/opt/android-sdk;
         if type jetty >/dev/null 2>&1; then
@@ -344,14 +345,57 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     zle -N fzf-z-search
     bindkey '^s' fzf-z-search
 
-    if type go >/dev/null 2>&1; then
+    if type git >/dev/null 2>&1; then
+        alias gco="git checkout"
+        alias gsta="git status"
+        alias gcom="git commit -m"
+        alias gdiff="git diff"
+        alias gbra="git branch"
+        gitthisrepo(){
+            git symbolic-ref --short HEAD|tr -d "\n"
+        }
+        alias tb=gitthisrepo
+        gfr(){
+            git fetch;
+            git reset --hard origin/$(tb);
+        }
+        alias gfr=gfr
+        gfrs(){
+            gfr;
+            git submodule foreach git pull origin master;
+        }
+        alias gfrs=gfrs
+        gitpull(){
+            git pull --rebase origin $(tb)
+        }
+        alias gpull=gitpull
+        gpush(){
+            git push -u origin $(tb)
+        }
+        alias gpush=gpush
+        gitcompush(){
+            git add -A;
+            git commit -m $1;
+            git push -u origin $2;
+        }
+        alias gitcompush=gitcompush
+        gcp(){
+            gitcompush $1 "$(tb)";
+        }
+        alias gcp=gcp
+        alias gfix="gcp fix"
+        alias gedit="$EDITOR $HOME/.gitconfig"
+    fi
 
+    if type go >/dev/null 2>&1; then
         go-get(){
-            cd $GOPATH/src/$1
-            git fetch
-            git reset --hard origin/master
-            git submodule foreach git pull origin master
-            cd -
+            if [[ -d $GOPATH/src/$1/.git ]]; then
+                cd $GOPATH/src/$1
+                gfrs
+                cd -
+            else
+                rm -rf $GOPATH/src/$1
+            fi
             go get -u $1
         }
 
@@ -662,6 +706,11 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     }
     alias rsagen=rsagen
 
+    ecdsagen(){
+        sudo -u $USER ssh-keygen -t ecdsa -b 521 -P $1 -f $HOME/.ssh/id_ecdsa -C $USER
+    }
+    alias ecdsagen=ecdsagen
+
     alias sedit="$EDITOR $HOME/.ssh/config"
     alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
 
@@ -966,8 +1015,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         clean;
     }
     alias update=update;
-
-
 
     case ${OSTYPE} in
         darwin*)
