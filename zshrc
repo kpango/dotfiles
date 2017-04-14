@@ -550,8 +550,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type gem >/dev/null 2>&1; then
         gemup(){
-            sudo chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;
-            sudo chmod -R 777 /Library/Ruby/;
+            echo $PASSWORD | sudo -S  chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;
+            echo $PASSWORD | sudo -S  chmod -R 777 /Library/Ruby/;
             gem update --system;
             gem update;
         }
@@ -578,7 +578,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type pip >/dev/null 2>&1; then
         pipup(){
-            sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;
+            echo $PASSWORD | sudo -S chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;
             pip install --upgrade pip;
             pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip install -U --upgrade;
         }
@@ -587,7 +587,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type pip2 >/dev/null 2>&1; then
         pip2up(){
-            sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;
+            echo $PASSWORD | sudo -S chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;
             pip2 install --upgrade pip;
             pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip2 install -U --upgrade;
         }
@@ -596,7 +596,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type pip3 >/dev/null 2>&1; then
         pip3up(){
-            sudo chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages;
+            echo $PASSWORD | sudo -S chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages;
             pip3 install --upgrade pip;
             pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip3 install -U --upgrade;
         }
@@ -881,7 +881,12 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                 sudo mkdir /usr/local/etc/my.cnf.d
             }
 
-            alias ls='ls -G -F'
+            if type exa >/dev/null 2>&1; then
+                alias ls='exa -G'
+            else
+                alias ls='ls -G -F'
+            fi
+
             alias -g C='| pbcopy'
             xcodeUUIDFix(){
                 sudo find -L $HOME/Library/Application\ Support/Developer/Shared/Xcode/Plug-ins -name Info.plist -maxdepth 3 | \
