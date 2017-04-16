@@ -69,7 +69,7 @@ if [ -z $DOTENV_LOADED ]; then
         export JAVA_HOME=$JDK_HOME/Contents/Home;
         export JAVA8_HOME=$JAVA_HOME;
         export JRE_HOME=$JAVA_HOME/jre/bin;
-        export ANDROID_HOME=/usr/local/opt/android-sdk;
+        export ANDROID_HOME=/usr/local/share/android-sdk;
         if type jetty >/dev/null 2>&1; then
             export JETTY_HOME=/usr/local/opt/jetty;
         fi
@@ -190,7 +190,6 @@ if [[ -f ~/.zplug/init.zsh ]]; then
     zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
     zplug "rupa/z", use:z.sh
     zplug "soimort/translate-shell", at:stable, as:command, use:"build/*", hook-build:"make build &> /dev/null"
-    zplug "supercrabtree/k"
     zplug "zchee/go-zsh-completions"
     zplug "zsh-users/zsh-autosuggestions"
     zplug "zsh-users/zsh-completions"
@@ -345,6 +344,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     zle -N fzf-z-search
     bindkey '^s' fzf-z-search
 
+    # sudo の後のコマンドでエイリアスを有効にする
+    alias sudo="echo $PASSWORD | sudo -S "
+
     if type git >/dev/null 2>&1; then
         alias gco="git checkout"
         alias gsta="git status"
@@ -361,8 +363,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         }
         alias gfr=gfr
         gfrs(){
-            gfr;
-            git submodule foreach git pull origin master;
+            gfr
+            git submodule foreach git pull origin master
         }
         alias gfrs=gfrs
         gitpull(){
@@ -389,14 +391,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type go >/dev/null 2>&1; then
         go-get(){
-            if [[ -d $GOPATH/src/$1/.git ]]; then
-                cd $GOPATH/src/$1
-                gfrs
-                cd -
-            else
-                rm -rf $GOPATH/src/$1
-            fi
-            go get -u $1
+            go get -u -f -v $1;
         }
 
         go-update(){
@@ -407,6 +402,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             go-get github.com/constabulary/gb/... &
             go-get github.com/cweill/gotests/... &
             go-get github.com/derekparker/delve/cmd/dlv &
+            go-get github.com/fatih/gomodifytags &
             go-get github.com/garyburd/go-explorer/src/getool &
             go-get github.com/golang/dep/... &
             go-get github.com/golang/lint/golint &
@@ -445,6 +441,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             gocode set autobuild true
             gocode set lib-path $GOPATH/pkg/$GOOS\_$GOARCH/
             gocode set propose-builtins true
+            gocode set unimported-packages true
         }
 
         cover () {
@@ -488,9 +485,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         alias rrun="rust_run"
     fi
 
-    # sudo の後のコマンドでエイリアスを有効にする
-    alias sudo="echo $PASSWORD | sudo -S "
-
     # エイリアス
     alias cp='cp -r'
     alias ln="sudo ln -Fsnfiv"
@@ -509,12 +503,13 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias -g L='| less'
     alias -g G='| grep'
 
-    if type zplug >/dev/null 2>&1; then
-        if zplug check supercrabtree/k; then
-            alias ll='k --no-vcs'
-            alias la='k -a --no-vcs'
-            alias lla='k -a'
-        fi
+
+    if type exa >/dev/null 2>&1; then
+        alias ll='exa -l'
+        alias la='exa -aghHliS'
+        alias tree='exa -T'
+    else
+        alias ll='ls -la'
     fi
 
     if type anyenv >/dev/null 2>&1; then
@@ -983,14 +978,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     }
     alias update=update;
 
-    case ${OSTYPE} in
-        darwin*)
-            eval "$(rbenv init - --no-rehash zsh)";
-            eval "$(pyenv init - --no-rehash zsh)"
-            ;;
-        linux*)
-            ;;
-    esac
+    eval "$(rbenv init - --no-rehash zsh)";
+    eval "$(pyenv init - --no-rehash zsh)"
 
     export TERM="xterm-256color";
 
