@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/local/bin/zsh
 
 if [ -z $DOTENV_LOADED ]; then
     setopt no_global_rcs
@@ -188,11 +188,11 @@ if [[ -f ~/.zplug/init.zsh ]]; then
 
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
     zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
-    zplug "rupa/z", use:z.sh
+    zplug "rupa/z", use:"*.sh"
     zplug "soimort/translate-shell", at:stable, as:command, use:"build/*", hook-build:"make build &> /dev/null"
     zplug "zchee/go-zsh-completions"
     zplug "zsh-users/zsh-autosuggestions"
-    zplug "zsh-users/zsh-completions"
+    zplug "zsh-users/zsh-completions", as:plugin, use:"src"
     zplug "zsh-users/zsh-history-substring-search"
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
@@ -363,7 +363,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         }
         alias gfr=gfr
         gfrs(){
-            gfr
+            gfr;
             git submodule foreach git pull origin master
         }
         alias gfrs=gfrs
@@ -507,6 +507,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     if type exa >/dev/null 2>&1; then
         alias ll='exa -l'
         alias la='exa -aghHliS'
+        alias lla='exa -aghHliSm'
         alias tree='exa -T'
     else
         alias ll='ls -la'

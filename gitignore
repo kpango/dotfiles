@@ -32,6 +32,9 @@
 *.out
 *.app
 
+## node
+node_modules
+
 ## Windows ##
 Thumbs.db
 ehthumbs.db
@@ -64,8 +67,6 @@ Icon
 ## backup,log ##
 *~
 ~*
-*.swp
-.swp.*
 *.tmp
 *.bak
 *.old
@@ -76,6 +77,10 @@ Icon
 
 ## Vim ##
 *.un~
+.*.sw[a-z]
+*.swp
+.swp.*
+
 Session.vim
 .netrwhist
 
@@ -88,6 +93,7 @@ nbproject/
 .project
 .classpath
 .buildpath
+.metadata
 ## XCode ##
 *.xcodeproj/*
 
@@ -98,6 +104,8 @@ build/
 /log
 
 ## Certification Files
+*.rsa
+*.cert
 *.crt
 *.key
 *.cer
