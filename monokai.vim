@@ -36,7 +36,7 @@ if has('gui_running')
   let s:comment    = '#75715E'
   let s:error      = '#5f0000'
   let s:zentree    = '#8f8f8f'
-  
+
   let s:pink       = '#F92772'
   let s:green      = '#A6E22D'
   let s:aqua       = '#66d9ef'
@@ -63,13 +63,13 @@ else
   let s:comment    = '59'
   let s:error      = '52'
   let s:zentree    = '242'
-  
-  let s:pink       = '197'
-  let s:green      = '148'
-  let s:aqua       = '81'
+
+  let s:pink       = '13'
+  let s:green      = '118'
+  let s:aqua       = '45'
   let s:yellow     = '186'
   let s:orange     = '208'
-  let s:purple     = '141'
+  let s:purple     = '99'
   let s:red        = '196'
 
   let s:addfg      = '193'

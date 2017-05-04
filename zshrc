@@ -1,6 +1,9 @@
 #!/usr/local/bin/zsh
 
 if [ -z $DOTENV_LOADED ]; then
+    stty stop undef
+    stty start undef
+
     setopt no_global_rcs
     if [ -x /usr/libexec/path_helper ]; then
         PATH=""
@@ -188,7 +191,6 @@ if [[ -f ~/.zplug/init.zsh ]]; then
 
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
     zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
-    zplug "rupa/z", use:"*.sh"
     zplug "soimort/translate-shell", at:stable, as:command, use:"build/*", hook-build:"make build &> /dev/null"
     zplug "zchee/go-zsh-completions"
     zplug "zsh-users/zsh-autosuggestions"
@@ -220,15 +222,14 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     SAVEHIST=1000000
     setopt APPEND_HISTORY
     setopt SHARE_HISTORY
-    setopt extended_history
     setopt hist_ignore_all_dups
-    setopt hist_ignore_dups
     setopt hist_ignore_space
     setopt hist_reduce_blanks
     setopt hist_save_no_dups
-    setopt share_history
     LISTMAX=1000
     WORDCHARS="$WORDCHARS|:"
+    export PROMPT_COMMAND='hcmd=$(history 1); hcmd="${hcmd# *[0-9]*  }"; if [[ ${hcmd%% *} == "cd" ]]; then pwd=$OLDPWD; else pwd=$PWD; fi; hcmd=$(echo -e "cd $pwd && $hcmd"); history -s "$hcmd"'
+
     # プロンプト
     PROMPT="%{${fg[cyan]}%}%/ $%{${reset_color}%} %"
     # PS1="%{${fg[green]}%}%/#%{${reset_color}%} %"
@@ -296,7 +297,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     _update_vcs_info_msg() {
         LANG=en_US.UTF-8 vcs_info
-        RPROMPT="%F{green}${vcs_info_msg_0_}%f"
+        RPROMPT="%F{green}${vcs_info_msg_0_} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
     }
     add-zsh-hook precmd _update_vcs_info_msg
 
@@ -328,17 +329,12 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     bindkey '^R' history-incremental-pattern-search-backward
 
     fzf-z-search (){
-        which fzf z > /dev/null
-        if [ $? -ne 0 ]; then
-            echo "Please install fzf and z"
-            return 1
-        fi
-        local res=$(z | sort -rn | cut -c 12- | fzf)
+        local res=$(history -n 1 | tail -f | fzf)
         if [ -n "$res" ]; then
             BUFFER+="$res"
             zle accept-line
         else
-            return 1
+            return 0
         fi
     }
     zle -N fzf-z-search
@@ -363,7 +359,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         }
         alias gfr=gfr
         gfrs(){
-            gfr;
+            git fetch;
+            git reset --hard origin/$(tb);
             git submodule foreach git pull origin master
         }
         alias gfrs=gfrs
@@ -680,6 +677,10 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         done;
     }
     alias zscompile=zscompile
+    zshaddhistory(){
+        whence ${${(z)1}[1]} >| /dev/null || return 1
+    }
+    alias zshaddhistory=zshaddhistory
 
     zsup(){
         sudo rm -rf $HOME/.zcompd*;
@@ -711,6 +712,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias zstime=zstime
 
     alias zedit="$EDITOR $HOME/.zshrc"
+
+    alias zsback="cp $HOME/.zshrc $HOME/.zshrc.back"
 
     greptext(){
         if [ $# -eq 2 ]; then
@@ -787,27 +790,30 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         cd ../
         rm -rf neovim
         nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
-        wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
+        \wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
         mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-$GOOS-$GOARCH" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
     }
     alias nvinstall=nvinstall
 
     if type nvim >/dev/null 2>&1; then
-        alias nvup=nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall; 
+
+        alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall"; 
+
         nvim-init(){
             rm -rf "$HOME/.config/gocode";
             rm -rf "$HOME/.config/nvim/autoload";
             rm -rf "$HOME/.config/nvim/ftplugin";
             rm -rf "$HOME/.config/nvim/log";
             rm -rf "$HOME/.config/nvim/plugged";
-            nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
+            nvup;
             rm "$HOME/.nvimlog";
             rm "$HOME/.viminfo";
-            wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
-            mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-$GOOS-$GOARCH" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
+            \wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
+            mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-${GOOS}-${GOARCH}" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
         }
         alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
         alias nvinit="nvim-init";
+        alias vback="cp $HOME/.config/nvim/init.vim $HOME/.config/nvim/init.vim.back";
     else
         alias vedit="$EDITOR $HOME/.vimrc"
     fi
@@ -864,6 +870,14 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             }
 
             clean(){
+                sudo pkill sh
+                sudo pkill zsh
+                sudo pkill bash
+                sudo pkill tr
+                sudo pkill cat
+                sudo pkill grep
+                sudo pkill find
+                sudo pkill tmux
                 sudo update_dyld_shared_cache -force
                 sudo kextcache -system-caches
                 sudo kextcache -system-prelinked-kernel
@@ -899,7 +913,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             if type brew >/dev/null 2>&1; then
                 if [ -z $OSXENV_LOADED ]; then
                     export CLICOLOR=1
-                    export HOMEBREW_GITHUB_API_TOKEN="Please Insert Your GitHub API Token"
+                    export HOMEBREW_GITHUB_API_TOKEN="Please Inpu Your GitHub API Token"
                     export HOMEBREW_EDITOR=$EDITOR
                     export HOMEBREW_MAKE_JOBS=6
                     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
