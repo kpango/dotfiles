@@ -73,16 +73,16 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Clang Setting
     Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
-    Plug 'vim-jp/vim-cpp', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
-    Plug 'Mizuchi/STL-Syntax', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
-    Plug 'critiqjo/lldb.nvim', {'do': ':UpdateRemotePlugins', 'for': ['c', 'cpp', 'cxx', 'cmake', 'clang', 'go']}
+    " Plug 'vim-jp/vim-cpp', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+    " Plug 'Mizuchi/STL-Syntax', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+    " Plug 'critiqjo/lldb.nvim', {'do': ':UpdateRemotePlugins', 'for': ['c', 'cpp', 'cxx', 'cmake', 'clang', 'go']}
 " ---- Golang Setting
-    " Plug 'dgryski/vim-godef', { 'for': 'go' }
+    Plug 'dgryski/vim-godef', { 'for': 'go' }
     Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
-    " Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries','on': ['GoInstallBinaries', 'GoAddTags']}
+    Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries','on': ['GoInstallBinaries', 'GoAddTags']}
     Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
-    Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
+    " Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'}
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'}
 " ---- Elixir Setting
@@ -117,19 +117,19 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- JavaScript
     Plug 'benjie/neomake-local-eslint.vim', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json'], 'do': 'npm install -g tern' }
-    Plug 'elzr/vim-json', {'for': ['javascript', 'json']}
-    Plug 'heavenshell/vim-jsdoc', {'for': ['javascript', 'javascript.jsx', 'json']}
+    " Plug 'elzr/vim-json', {'for': ['javascript', 'json']}
+    " Plug 'heavenshell/vim-jsdoc', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
     Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
     Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
     Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
     Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
-    Plug 'moll/vim-node', {'for': 'javascript'}
+    " Plug 'moll/vim-node', {'for': 'javascript'}
     Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
-    Plug 'myhere/vim-nodejs-complete', {'for': 'javascript'}
-    Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
-    Plug 'othree/javascript-libraries-syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
-    Plug 'othree/jsdoc-syntax.vim', {'for': ['javascript', 'javascript.jsx', 'json']}
+    " Plug 'myhere/vim-nodejs-complete', {'for': 'javascript'}
+    " Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
+    " Plug 'othree/javascript-libraries-syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
+    " Plug 'othree/jsdoc-syntax.vim', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
@@ -292,12 +292,12 @@ augroup NeomakeSetting
     autocmd BufRead * let g:neomake_list_height = 6
     autocmd FileType coffee,javascript,javascript.jsx,json let g:neomake_javascript_enabled_makers=['eslint_d']
     autocmd FileType go let g:neomake_go_enabled_makers = ['go', 'govet', 'gometalinter']
-    autocmd FileType go let g:neomake_go_go_serialize = 1
-    autocmd FileType go let g:neomake_go_go_serialize_abort_on_error = 1
     autocmd FileType html,xhtml let g:neomake_html_enabled_makers = ['tidy', 'htmlhint']
-    autocmd FileType c,cpp,clang,hpp,cxx let g:neomake_cpp_enabled_makers = ['clang', 'clangtidy']
-    autocmd FileType c,cpp,clang,hpp,cxx let g:neomake_cpp_clang_maker = {'args': ['-std=c++14', '-Wall', '-Wextra', '-Weverything', '-pedantic']}
-    autocmd FileType c,cpp,clang,hpp,cxx let g:neomake_cpp_clangtidy_maker = {'exe': '/usr/local/opt/llvm/bin/clang-tidy', 'args': ['-checks=*']}
+    autocmd FileType c,cpp,clang,hpp,cxx let g:neomake_cpp_enabled_makers = ['clang']
+    autocmd FileType c,cpp,clang,hpp,cxx let g:neomake_cpp_clang_maker = {
+       \ 'exe': 'clang++',
+       \ 'args': ['-std=c++14', '-Wall', '-Wextra', '-Weverything', '-pedantic', '-Wno-sign-conversion'],
+       \}
     autocmd FileType css let g:neomake_css_enabled_makers = ['csslint', 'stylelint']
     autocmd FileType nim let g:neomake_nim_enabled_makers = ['nim', 'nimsuggest']
     autocmd FileType php let g:neomake_php_enabled_makers = ['php', 'phpcs', 'phpmd']
@@ -306,7 +306,7 @@ augroup NeomakeSetting
     autocmd FileType rust let g:neomake_rust_enabled_makers = ['rustc']
     autocmd FileType sh let g:neomake_sh_enabled_makers = ['sh', 'shellcheck']
     autocmd FileType vim let g:neomake_vim_enabled_makers = ['vint']
-    autocmd FileType zsh let g:neomake_zsh_enabled_makers = ['zsh', 'shellcheck']
+    autocmd FileType zsh let g:neomake_zsh_enabled_makers = ['zsh']
     autocmd FileType swift let g:neomake_swift_enabled_makers = ['swiftc']
 augroup END
 
@@ -316,7 +316,7 @@ augroup DeopleteSetting
     autocmd FileType go call deoplete#custom#set('go', 'sorters', [])
     autocmd FileType go let g:deoplete#sources#go#align_class = 1
     autocmd FileType go let g:deoplete#sources#go#cgo = 1
-    autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= expand("/usr/local/Cellar/llvm/4.0.0_1/lib/libclang.dylib")
+    autocmd FileType go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
     autocmd FileType go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
     autocmd FileType go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
     autocmd FileType go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
@@ -326,8 +326,8 @@ augroup DeopleteSetting
     autocmd FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
     autocmd FileType go let g:deoplete#sources#go#use_cache = 1
     " clang
-    autocmd FileType c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#libclang_path= expand("/usr/local/Cellar/llvm/4.0.0_1/lib/libclang.dylib")
-    autocmd FileType c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#clang_header = expand("/usr/local/Cellar/llvm/4.0.0_1/include/clang")
+    autocmd FileType c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
+    autocmd FileType c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#clang_header = expand("/Library/Developer/CommandLineTools/usr/lib/clang")
     " Python
     autocmd FileType python call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
     autocmd FileType python call deoplete#custom#set('jedi', 'matchers', ['matcher_fuzzy'])
@@ -430,105 +430,39 @@ augroup GolangSetting
     autocmd FileType go compiler go
     autocmd FileType go :highlight goExtraVars cterm=bold ctermfg=214
     autocmd FileType go :match goExtraVars /\<ok\>\|\<err\>/
+    autocmd FileType go let g:neomake_go_go_serialize = 1
+    autocmd FileType go let g:neomake_go_go_serialize_abort_on_error = 1
     autocmd FileType go let g:neomake_go_gometalinter_maker = {
             \ 'args': [
             \   '--tests',
+            \   '--disable-all',
             \   '--enable-gc',
-            \   '--concurrency=3',
+            \   '--aggregate',
+            \   '--concurrency=16',
+            \   '--sort=severity',
             \   '--fast',
-            \   '-D', 'aligncheck',
-            \   '-D', 'dupl',
-            \   '-D', 'gocyclo',
-            \   '-D', 'gotype',
-            \   '-E', 'errcheck',
-            \   '-E', 'misspell',
-            \   '-E', 'unused',
+            \   '-E', 'gocyclo',
+            \   '-E', 'golint',
             \   '%:p:h',
             \ ],
-            \ 'append_file': -1,
+            \ 'append_file': 0,
             \ 'errorformat':
             \   '%E%f:%l:%c:%trror: %m,' .
             \   '%W%f:%l:%c:%tarning: %m,' .
             \   '%E%f:%l::%trror: %m,' .
             \   '%W%f:%l::%tarning: %m'
             \ }
-    autocmd FileType go nmap  <silent><buffer>K                   <Plug>(go-doc)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>]      :<C-u>GoGeneDefinition<CR>
-    autocmd FileType go nmap  <silent><buffer><C-]>               :<C-u>call GoGuru('definition')<CR>
-    autocmd FileType go nmap  <silent><buffer><Leader>]           :<C-u>Godef<CR>
-    autocmd FileType go nmap  <silent><buffer><Leader>a           <Plug>(nvim-go-analyze-buffer)
-    autocmd FileType go nmap  <silent><buffer><Leader>e           <Plug>(nvim-go-rename)
-    autocmd FileType go nmap  <silent><buffer><Leader>i           <Plug>(nvim-go-iferr)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>db     :<C-u>DlvBreakpoint<CR>
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>dc     :<C-u>DlvContinue<CR>
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>dd     :<C-u>DlvDebug<CR>
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>dn     :<C-u>DlvNext<CR>
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>dr     :<C-u>DlvBreakpoint<CR>
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gb      <Plug>(nvim-go-build)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gc     <Plug>(nvim-go-callers)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gcs    <Plug>(nvim-go-callstack)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>ge     <Plug>(nvim-go-callees)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gs     <Plug>(nvim-go-implements)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gml    <Plug>(nvim-go-metalinter)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gr     <Plug>(nvim-go-referrers)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gts    <Plug>(nvim-go-test-switch)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gl     <Plug>(nvim-go-lint)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gr     <Plug>(nvim-go-run)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>gt     <Plug>(nvim-go-test)
-    autocmd FileType go nmap  <silent><buffer><LocalLeader>v      <Plug>(nvim-go-vet)
-    autocmd FileType go nmap <leader>gc <Plug>(go-coverage)
-    autocmd FileType go nmap <leader>gi <Plug>(go-import)
-    autocmd FileType go nmap <Leader>ge <Plug>(go-rename)
-    autocmd FileType go nmap <Leader>gi <Plug>(go-info)
-    autocmd FileType go nmap <leader>gdf <Plug>(go-def-split)
-    autocmd FileType go nmap <leader>gdfv <Plug>(go-def-vertical)
-    autocmd FileType go nmap <leader>gdft <Plug>(go-def-tab)
-    autocmd FileType go nmap <leader>gd <Plug>(go-doc)
-    autocmd FileType go nmap <leader>gdv <Plug>(go-doc-vertical)
-    autocmd FileType go highlight goErr cterm=bold ctermfg=214
-    autocmd FileType go match goErr /\<err\>/
-    autocmd FileType go let g:go#highlight#cgo = 1
     autocmd FileType go let g:go#build#autosave = 0
     autocmd FileType go let g:go#build#force = 1
     autocmd FileType go let g:go#fmt#autosave  = 0
     autocmd FileType go let g:go#fmt#mode = 'goimports'
-    autocmd FileType go let g:go#guru#keep_cursor = {
-                \       'callees'    : 0,
-                \       'callers'    : 0,
-                \       'callstack'  : 0,
-                \       'definition' : 1,
-                \       'describe'   : 0,
-                \       'freevars'   : 0,
-                \       'implements' : 0,
-                \       'peers'      : 0,
-                \       'pointsto'   : 0,
-                \       'referrers'  : 0,
-                \       'whicherrs'  : 0
-                \ }
-    " autocmd FileType go let g:go#guru#reflection = 0
-    " autocmd FileType go let g:go#iferr#autosave = 0
-    " autocmd FileType go let g:go#lint#golint#autosave = 1
-    " autocmd FileType go let g:go#lint#golint#ignore = ['internal']
-    " autocmd FileType go let g:go#lint#golint#mode = 'root'
-    " autocmd FileType go let g:go#lint#govet#autosave = 0
-    " autocmd FileType go let g:go#lint#govet#flags = ['-v', '-lostcancel']
-    " autocmd FileType go let g:go#lint#metalinter#autosave = 0
-    " autocmd FileType go let g:go#lint#metalinter#autosave#tools = ['vet', 'golint']
-    " autocmd FileType go let g:go#lint#metalinter#deadline = '20s'
-    " autocmd FileType go let g:go#lint#metalinter#skip_dir = ['internal', 'vendor', 'testdata', '__*.go', '*_test.go']
-    " autocmd FileType go let g:go#lint#metalinter#tools = ['vet', 'golint', 'errcheck']
-    " autocmd FileType go let g:go#rename#prefill = 1
-    " autocmd FileType go let g:go#terminal#height = 120
-    " autocmd FileType go let g:go#terminal#start_insert = 1
-    " autocmd FileType go let g:go#terminal#width = 120
-    " autocmd FileType go let g:go#test#args = ['-v']
-    " autocmd FileType go let g:go#test#autosave = 0
     autocmd FileType go let g:go_highlight_functions = 1
     autocmd FileType go let g:go_highlight_operators = 1
     autocmd FileType go set runtimepath+=globpath($GOROOT, "/misc/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/golang/lint/misc/vim")
     autocmd FileType go nnoremap <F5> :Gorun<CR>
+    augroup Filetype go nnoremap gd <Plug>(go-def-split)
 augroup END
 
 " ---- Scala Settings

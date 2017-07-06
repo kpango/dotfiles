@@ -82,8 +82,11 @@ if [ -z $DOTENV_LOADED ]; then
         export COMPOSER_HOME="$HOME/.composer/vendor"
     fi
 
+    # Athenz PATH
+    export ATHENZ_HOME=/usr/local/athenz;
+
     if [ -z $TMUX ]; then
-        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/go/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$NIMBLE_PATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$PATH";
+        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/go/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$NIMBLE_PATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$ATHENZ_HOME/bin:$HOME/Documents/Programming/go/src/github.com/uber/go-torch/FlameGraph:$PATH";
         #anyenv init
         if [ -d "$HOME/.anyenv" ] ; then
             export PATH="$HOME/.anyenv/bin:$HOME/.anyenv/libexec:$PATH"
@@ -110,23 +113,25 @@ if [ -z $DOTENV_LOADED ]; then
     #ReactNative
     export REACT_EDITOR=$EDITOR;
 
-    #LLVM
-    if type llvm >/dev/null 2>&1; then
-        export C=$LLVM_HOME/bin/clang;
-        export CC=$LLVM_HOME/bin/clang;
-        export CPP=$LLVM_HOME/bin/clang++;
-        export CXX=$LLVM_HOME/bin/clang++;
-        export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
-        export LIBRARY_PATH=$LLVM_HOME/lib;
-        export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64
 
-        #CLANG
-        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
-        export CPPFLAGS=$CFLAGS;
-        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
-        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
-        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
-    fi
+    #LLVM
+    # if type lld >/dev/null 2>&1; then
+    #     export C=$LLVM_HOME/bin/clang;
+    #     export CC=$LLVM_HOME/bin/clang;
+    #     export CPP=$LLVM_HOME/bin/clang++;
+    #     export CXX=$LLVM_HOME/bin/clang++;
+    #     export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
+    #     export LIBRARY_PATH=$LLVM_HOME/lib;
+    #     export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
+    #
+    #     #CLANG
+    #     export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
+    #     export CPPFLAGS=$CFLAGS;
+    #     export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
+    #     export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
+    #     export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
+    # fi
 
     if type ndenv > /dev/null 2>&1; then
         export NODE_BIN="$(ndenv prefix)/bin"
@@ -388,19 +393,33 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type go >/dev/null 2>&1; then
         go-get(){
-            go get -u -f -v $1;
+            sudo rm -rf $GOPATH/src/$1
+            # go get -u -f -v -fix $1;
+            go get -u $1;
+            go install $1;
         }
 
         go-update(){
+            mv $GOPATH/src/github.com/kpango $HOME/
+            sudo rm -rf "$GOPATH/bin" "$GOPATH/pkg"
+            sudo rm -rf "$GOPATH/src/github.com"
+            sudo rm -rf "$GOPATH/src/golang.org"
+            sudo rm -rf "$GOPATH/src/google.golang.org"
+            sudo rm -rf "$GOPATH/src/gopkg.in"
+            sudo rm -rf "$GOPATH/src/code.cloudfoundry.org"
+            sudo rm -rf "$GOPATH/src/sourcegraph.com"
+
             go-get github.com/Masterminds/glide &
             go-get github.com/aarzilli/gdlv &
             go-get github.com/alecthomas/gometalinter &
+            go-get github.com/cespare/prettybench &
             go-get github.com/concourse/fly &
             go-get github.com/constabulary/gb/... &
             go-get github.com/cweill/gotests/... &
             go-get github.com/derekparker/delve/cmd/dlv &
             go-get github.com/fatih/gomodifytags &
             go-get github.com/garyburd/go-explorer/src/getool &
+            go-get github.com/gogo/protobuf/protoc-gen-gofast &
             go-get github.com/golang/dep/... &
             go-get github.com/golang/lint/golint &
             go-get github.com/gopherjs/gopherjs &
@@ -435,10 +454,12 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
             wait
 
+            mv $HOME/kpango $GOPATH/src/github.com/
             gocode set autobuild true
             gocode set lib-path $GOPATH/pkg/$GOOS\_$GOARCH/
             gocode set propose-builtins true
             gocode set unimported-packages true
+            gometalinter -i
         }
 
         cover () {
@@ -459,6 +480,31 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             $VIM +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
         }
         alias goup=goup
+
+        gobg-build(){
+            while true;
+            do 
+                if [ ! $(git -C $PWD diff --name-only HEAD | wc -l ) -eq 0 ]; then
+                    go build;
+                    ./${PWD##*/};
+                fi;
+                sleep 2;
+            done;
+        }
+        alias gobg-build=gobg-build
+
+        go-bench(){
+            if [ $# -eq 2 ]; then
+                go test -count=$1 -run=NONE -bench $2 -benchmem
+            else
+                go test -count=$1 -run=NONE -bench . -benchmem
+            fi
+        }
+        alias gobench=go-bench
+        go-pprof-out(){
+            go test -count=10 -run=NONE -bench=. -benchmem -o pprof/test.bin -cpuprofile pprof/cpu.out -memprofile pprof/mem.out
+        }
+
     fi
 
     mkcd() {
@@ -500,14 +546,17 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias -g L='| less'
     alias -g G='| grep'
 
-
     if type exa >/dev/null 2>&1; then
         alias ll='exa -l'
         alias la='exa -aghHliS'
         alias lla='exa -aghHliSm'
         alias tree='exa -T'
+        alias ls='exa -G'
+        alias lg='la | rg'
     else
         alias ll='ls -la'
+        alias ls='ls -G -F'
+        alias lg='ls -a | rg'
     fi
 
     if type anyenv >/dev/null 2>&1; then
@@ -640,7 +689,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias rm='sudo rm -rf'
     alias find='sudo find'
     alias grep='grep --color=auto'
-    alias lg='la | grep'
 
     if type tmux >/dev/null 2>&1; then
         alias aliastx='alias | grep tmux'
@@ -879,6 +927,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                 sudo pkill find
                 sudo pkill tmux
                 sudo update_dyld_shared_cache -force
+                sudo dscacheutil -flushcache;
+                sudo killall -INFO mDNSResponder;
+                sudo killall -HUP mDNSResponder;
                 sudo kextcache -system-caches
                 sudo kextcache -system-prelinked-kernel
 
@@ -886,16 +937,19 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                 sudo rm -rf $HOME/Library/Developer/Xcode/Archives
                 sudo rm -rf $HOME/Library/Caches
 
+                cd /tmp
+                sudo ls -a /tmp/ | rg -v mysql | xargs sudo rm -rf
+                cd -
+                cd /private/tmp
+                sudo ls -a /private/tmp/ | rg -v mysql | xargs sudo rm -rf
+                cd -
+
                 sudo purge
                 sudo du -sx /* &
                 sudo mkdir /usr/local/etc/my.cnf.d
             }
 
-            if type exa >/dev/null 2>&1; then
-                alias ls='exa -G'
-            else
-                alias ls='ls -G -F'
-            fi
+            alias clean=clean
 
             alias -g C='| pbcopy'
             xcodeUUIDFix(){
@@ -908,12 +962,11 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             alias dns=dns
             alias dock=dock
 
-            alias clean=clean
 
             if type brew >/dev/null 2>&1; then
                 if [ -z $OSXENV_LOADED ]; then
                     export CLICOLOR=1
-                    export HOMEBREW_GITHUB_API_TOKEN="Please Inpu Your GitHub API Token"
+                    export HOMEBREW_GITHUB_API_TOKEN="Input your API Token"
                     export HOMEBREW_EDITOR=$EDITOR
                     export HOMEBREW_MAKE_JOBS=6
                     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
@@ -930,13 +983,13 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
                     brew cask update;
                     brew cleanup;
                     brew cask cleanup;
+                    mas upgrade
                 }
                 alias brew="env PATH=${PATH//$HOME\/.anyenv\/envs\/*\/shims:/} brew";
-                alias brew-cask-update=brewcaskup
                 brewup(){
                     brew upgrade;
                     \cd $(brew --repo) && git fetch && git reset --hard origin/master && brew update && \cd -;
-                    brew-cask-update;
+                    brewcaskup;
                     brew prune;
                     brew doctor;
                 }
@@ -992,9 +1045,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         clean;
     }
     alias update=update;
-
-    eval "$(rbenv init - --no-rehash zsh)";
-    eval "$(pyenv init - --no-rehash zsh)"
 
     export TERM="xterm-256color";
 
