@@ -51,7 +51,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'majutsushi/tagbar'
     Plug 'nathanaelkane/vim-indent-guides'
     Plug 'neomake/neomake'
-    " Plug 'w0rp/ale'
     Plug 'nixprime/cpsm', {'do': expand('$NVIM_HOME') . '/plugged/cpsm/install.sh'}
     Plug 'osyo-manga/shabadou.vim'
     Plug 'osyo-manga/vim-precious'
@@ -62,10 +61,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'thinca/vim-quickrun'
     Plug 'tpope/vim-surround'
     Plug 'tyru/caw.vim'
-"     Plug 'ujihisa/neco-look'
     Plug 'vim-scripts/sudo.vim'
 " ---- Vim Color Setting
-    " Plug 'whatyouhide/vim-gotham'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
@@ -73,18 +70,12 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Clang Setting
     Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
-    " Plug 'vim-jp/vim-cpp', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
-    " Plug 'Mizuchi/STL-Syntax', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
-    " Plug 'critiqjo/lldb.nvim', {'do': ':UpdateRemotePlugins', 'for': ['c', 'cpp', 'cxx', 'cmake', 'clang', 'go']}
 " ---- Golang Setting
-    Plug 'dgryski/vim-godef', { 'for': 'go' }
-    Plug 'zchee/nvim-go', { 'for': 'go', 'do': 'make'}
-    Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries','on': ['GoInstallBinaries', 'GoAddTags']}
-    Plug 'nsf/gocode', { 'for': 'go', 'rtp': 'nvim', 'do': expand('$NVIM_HOME') . '/plugged/gocode/nvim/symlink.sh'}
-    Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'}
-    " Plug 'zchee/vim-goiferr', {'for': 'go', 'on': 'GoIferr'}
-    Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'}
-    Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'}
+    Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
+    Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
+    Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
+    Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
+    Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
 " ---- Elixir Setting
     Plug 'archSeer/elixir.nvim', {'for': ['elixir', 'eelixir']}
     Plug 'c-brenn/phoenix.vim', {'for': ['elixir', 'eelixir']}
@@ -117,19 +108,12 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- JavaScript
     Plug 'benjie/neomake-local-eslint.vim', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json'], 'do': 'npm install -g tern' }
-    " Plug 'elzr/vim-json', {'for': ['javascript', 'json']}
-    " Plug 'heavenshell/vim-jsdoc', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
     Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
     Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
     Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
     Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
-    " Plug 'moll/vim-node', {'for': 'javascript'}
     Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
-    " Plug 'myhere/vim-nodejs-complete', {'for': 'javascript'}
-    " Plug 'othree/es.next.syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
-    " Plug 'othree/javascript-libraries-syntax.vim', { 'for': ['javascript', 'javascript.jsx'] }
-    " Plug 'othree/jsdoc-syntax.vim', {'for': ['javascript', 'javascript.jsx', 'json']}
     Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
@@ -234,6 +218,7 @@ endif
 " ---- Deoplete
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
+let g:EditorConfig_core_mode = 'python_external'
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
@@ -416,7 +401,6 @@ augroup END
 if executable('clang-format')
     augroup ClangSetting
         autocmd!
-        " autocmd FileType cpp,c,hpp,clang command! CFmt :call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
         autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
     augroup END
 endif
@@ -425,8 +409,7 @@ endif
 augroup GolangSetting
     autocmd!
     " ---- GoFmtコマンドを保存時に走らせる
-    " autocmd BufWritePre *.go GoFmt
-    autocmd BufWritePre *.go Gofmt
+    autocmd BufWritePre *.go GoFmt
     autocmd FileType go compiler go
     autocmd FileType go :highlight goExtraVars cterm=bold ctermfg=214
     autocmd FileType go :match goExtraVars /\<ok\>\|\<err\>/
@@ -439,7 +422,7 @@ augroup GolangSetting
             \   '--enable-gc',
             \   '--aggregate',
             \   '--concurrency=16',
-            \   '--sort=severity',
+            \   '--sort=line',
             \   '--fast',
             \   '-E', 'gocyclo',
             \   '-E', 'golint',
@@ -452,12 +435,35 @@ augroup GolangSetting
             \   '%E%f:%l::%trror: %m,' .
             \   '%W%f:%l::%tarning: %m'
             \ }
-    autocmd FileType go let g:go#build#autosave = 0
-    autocmd FileType go let g:go#build#force = 1
-    autocmd FileType go let g:go#fmt#autosave  = 0
-    autocmd FileType go let g:go#fmt#mode = 'goimports'
+    autocmd FileType go let g:go_fmt_command = "goimports"
+    autocmd FileType go let g:go_snippet_engine = "neosnippet"
+    autocmd FileType go let g:go_highlight_types = 1
+    autocmd FileType go let g:go_highlight_fields = 1
     autocmd FileType go let g:go_highlight_functions = 1
+    autocmd FileType go let g:go_highlight_methods = 1
+    autocmd FileType go let g:go_highlight_structs = 1
     autocmd FileType go let g:go_highlight_operators = 1
+    autocmd FileType go let g:go_highlight_build_constraints = 1
+    autocmd FileType go let g:go_highlight_extra_types = 1
+    autocmd FileType go let g:go_auto_type_info = 1
+    autocmd FileType go let g:go_auto_sameids = 1
+    autocmd FileType go let g:go_list_type = "quickfix"
+    " autocmd FileType go let g:go_metalinter_command = ""
+    " autocmd FileType go let g:go_metalinter_deadline = "5s"
+    " autocmd FileType go let g:go_metalinter_enabled = [
+    "         \ 'deadcode',
+    "         \ 'errcheck',
+    "         \ 'gas',
+    "         \ 'goconst',
+    "         \ 'gocyclo',
+    "         \ 'golint',
+    "         \ 'gosimple',
+    "         \ 'ineffassign',
+    "         \ 'vet',
+    "         \ 'vetshadow'
+    "         \]
+    autocmd FileType go let g:go_addtags_transform = "snakecase"
+    autocmd FileType go let g:go_alternate_mode = "edit"
     autocmd FileType go set runtimepath+=globpath($GOROOT, "/misc/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
     autocmd FileType go set runtimepath+=globpath($GOPATH, "src/github.com/golang/lint/misc/vim")

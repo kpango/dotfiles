@@ -394,12 +394,12 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     if type go >/dev/null 2>&1; then
         go-get(){
             sudo rm -rf $GOPATH/src/$1
-            # go get -u -f -v -fix $1;
-            go get -u $1;
+            go get -u -f -v -fix $1;
+            # go get -u $1;
             go install $1;
         }
 
-        go-update(){
+        goup(){
             mv $GOPATH/src/github.com/kpango $HOME/
             sudo rm -rf "$GOPATH/bin" "$GOPATH/pkg"
             sudo rm -rf "$GOPATH/src/github.com"
@@ -410,51 +410,29 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             sudo rm -rf "$GOPATH/src/sourcegraph.com"
 
             go-get github.com/Masterminds/glide &
-            go-get github.com/aarzilli/gdlv &
-            go-get github.com/alecthomas/gometalinter &
             go-get github.com/cespare/prettybench &
             go-get github.com/concourse/fly &
-            go-get github.com/constabulary/gb/... &
             go-get github.com/cweill/gotests/... &
             go-get github.com/derekparker/delve/cmd/dlv &
-            go-get github.com/fatih/gomodifytags &
-            go-get github.com/garyburd/go-explorer/src/getool &
             go-get github.com/gogo/protobuf/protoc-gen-gofast &
             go-get github.com/golang/dep/... &
-            go-get github.com/golang/lint/golint &
             go-get github.com/gopherjs/gopherjs &
-            go-get github.com/haya14busa/gosum/cmd/gosumcheck &
-            go-get github.com/haya14busa/goverage &
-            go-get github.com/haya14busa/reviewdog/cmd/reviewdog &
-            go-get github.com/jstemmer/gotags &
-            go-get github.com/kardianos/govendor &
-            go-get github.com/kisielk/gotool &
-            go-get github.com/mattn/files &
-            go-get github.com/mattn/jvgrep &
-            go-get github.com/motemen/ghq &
             go-get github.com/motemen/go-iferr/cmd/goiferr &
-            go-get github.com/motemen/gofind/cmd/gofind &
-            go-get github.com/nsf/gocode &
-            go-get github.com/onsi/ginkgo/ginkgo &
-            go-get github.com/peco/peco/cmd/peco &
             go-get github.com/pwaller/goimports-update-ignore &
-            go-get github.com/rogpeppe/godef &
+            go-get github.com/sugyan/ttygif &
             go-get github.com/tsenart/vegeta &
             go-get github.com/uber/go-torch &
-            go-get github.com/valyala/quicktemplate/... &
-            go-get github.com/zmb3/gogetdoc &
-            go-get golang.org/x/tools/cmd/cover &
-            go-get golang.org/x/tools/cmd/godoc &
-            go-get golang.org/x/tools/cmd/goimports &
-            go-get golang.org/x/tools/cmd/gorename &
-            go-get golang.org/x/tools/cmd/guru &
             go-get golang.org/x/tools/cmd/present &
             go-get google.golang.org/grpc &
             go-get sourcegraph.com/sqs/goreturns &
 
             wait
 
+            mkdir -p $GOPATH/src/github.com
             mv $HOME/kpango $GOPATH/src/github.com/
+
+            $VIM main.go +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
+
             gocode set autobuild true
             gocode set lib-path $GOPATH/pkg/$GOOS\_$GOARCH/
             gocode set propose-builtins true
@@ -472,13 +450,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         }
 
         alias goui=goimports-update-ignore
-        alias go-update=go-update
-        goup(){
-            rm -rf $GOPATH/bin;
-            rm -rf $GOPATH/pkg;
-            go-update;
-            $VIM +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
-        }
         alias goup=goup
 
         gobg-build(){
@@ -611,6 +582,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type npm >/dev/null 2>&1; then
         npmup(){
+            npm i -g npm;
             npm update -g npm;
             npm update -g;
             npm upgrade -g;
@@ -715,6 +687,10 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias ecdsagen=ecdsagen
 
     alias sedit="$EDITOR $HOME/.ssh/config"
+    sshls(){
+        rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
+    }
+    alias sshls=sshls
     alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;chmod 600 $HOME/.ssh/config"
 
     alias tedit="$EDITOR $HOME/.tmux.conf"
@@ -966,7 +942,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             if type brew >/dev/null 2>&1; then
                 if [ -z $OSXENV_LOADED ]; then
                     export CLICOLOR=1
-                    export HOMEBREW_GITHUB_API_TOKEN="Input your API Token"
+                    export HOMEBREW_GITHUB_API_TOKEN="Input Your API Token"
                     export HOMEBREW_EDITOR=$EDITOR
                     export HOMEBREW_MAKE_JOBS=6
                     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
@@ -1045,6 +1021,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         clean;
     }
     alias update=update;
+
+    # eval "$(rbenv init - --no-rehash zsh)";
+    # eval "$(pyenv init - --no-rehash zsh)"
 
     export TERM="xterm-256color";
 
