@@ -86,19 +86,19 @@ else
         echo "$1" | sudo -S chmod -R 777 /usr/local
 
         if ! type zsh > /dev/null 2>&1; then
-            wget http://downloads.sourceforge.net/project/zsh/zsh/5.3/zsh-5.3.1.tar.xz
-            tar xzvf zsh-5.3.1.tar.xz
-            cd zsh-5.3.1 || exit
+            wget http://downloads.sourceforge.net/project/zsh/zsh/5.4.1/zsh-5.4.1.tar.xz
+            tar xzvf zsh-5.4.1.tar.xz
+            cd zsh-5.4.1 || exit
             ./configure --prefix="$HOME/local" --enable-multibyte --enable-locale
             echo "$1" | sudo -S make
             echo "$1" | sudo -S make install
         fi
 
         if ! type go > /dev/null 2>&1; then
-            wget https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz
-            tar xvzf ./go1.8.linux-amd64.tar.gz
+            wget https://storage.googleapis.com/golang/go1.9.linux-amd64.tar.gz
+            tar xvzf ./go1.9.linux-amd64.tar.gz
             mv go /usr/local/go
-            rm -rf ./go1.8.linux-amd64.tar.gz
+            rm -rf ./go1.9.linux-amd64.tar.gz
         fi
     else
         echo "Your platform ($(uname -a)) is not supported."
@@ -155,8 +155,8 @@ else
 
     if ! type python3 > /dev/null 2>&1; then
     PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.13
-    PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.0
-    "$HOME/.anyenv/envs/pyenv/bin/pyenv" global 2.7.13 3.6.0
+    PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.2
+    "$HOME/.anyenv/envs/pyenv/bin/pyenv" global 2.7.13 3.6.2
 
     reload_anyenv
     fi
