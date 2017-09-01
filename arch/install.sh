@@ -1,13 +1,13 @@
-#!/bin/sh
-sudo umount /dev/mmcblk0p1
-sudo umount /dev/mmcblk0
-sudo wipefs -a /dev/mmcblk0
-sudo dd if=/dev/zero of=/dev/mmcblk0 bs=1M count=64 conv=notrunc && sync
-sudo lvremove /dev/mmcblk0
-sudo pvremove /dev/mmcblk0
-sudo parted /dev/mmcblk0 mklable msdos mkpart primary xfs 1MiB 100%
-sudo mkfs.xfs /dev/mmcblk0
-mount /dev/mmcblk0 /mnt
+#!/bin/bash
+umount /dev/mmcblk0p1
+umount /dev/mmcblk0
+wipefs -a /dev/mmcblk0 && sync
+dd if=/dev/zero of=/dev/mmcblk0 bs=1024 && sync
+lvremove /dev/mmcblk0
+pvremove /dev/mmcblk0
+parted -s -a optimal /dev/mmcblk0 -- mklabel msdos mkpart P1 xfs 1 -1 && sync
+mkfs.xfs /dev/mmcblk0p1
+mount /dev/mmcblk0p1 /mnt
 mkdir /mnt/home
 mkdir /mnt/boot
 mkdir /mnt/home/kpango
