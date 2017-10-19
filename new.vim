@@ -32,10 +32,12 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/neoyank.vim'
     Plug 'Shougo/neoinclude.vim'
-    Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
+    " Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
+    Plug 'Shougo/neosnippet'
+    Plug 'Shougo/neosnippet-snippets'
+    Plug 'Shougo/neoyank.vim'
+    " Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Shougo/neomru.vim'
     Plug 'cohama/lexima.vim' " auto close bracket
     Plug 'airblade/vim-gitgutter'
@@ -184,6 +186,574 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'zchee/deoplete-zsh', {'for': 'zsh'}
 
 call plug#end()
+
+" --------------------------------------
+" ---- Plugin Dependencies Settings ----
+" --------------------------------------
+if !has('python') && !has('pip')
+    call system('pip install --upgrade pip')
+    call system('pip install neovim --upgrade')
+endif
+
+if !has('python3') && !has('pip3')
+    call system('pip3 install --upgrade pip')
+    call system('pip3 install neovim --upgrade')
+endif
+
+if !has('gb') && has('go')
+    call system('go get -u -v github.com/constabulary/gb/...')
+endif
+
+let g:python_host_skip_check = 1
+let g:python2_host_skip_check = 1
+let g:python3_host_skip_check = 1
+
+if executable('python')
+    let g:python_host_prog = system('which python')
+endif
+
+if executable('python3')
+    let g:python3_host_prog = system('which python3')
+endif
+
+" ----------------------------
+" ---- AutoGroup Settings ----
+" ----------------------------
+augroup AutoGroup
+    autocmd!
+augroup END
+command! -nargs=* Autocmd autocmd AutoGroup <args>
+command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
+
+" ---------------------------
+" ---- Deoplete Settings ----
+" ---------------------------
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#auto_complete_delay = 0
+let g:deoplete#auto_complete_start_length = 1
+let g:deoplete#auto_completion_start_length = 1
+let g:deoplete#enable_camel_case = 1
+let g:deoplete#enable_ignore_case = 1
+let g:deoplete#enable_refresh_always = 1
+let g:deoplete#enable_smart_case = 1
+let g:deoplete#file#enable_buffer_path = 1
+let g:deoplete#max_list = 10000
+
+" TODO remove it
+let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
+" TODO if deoppet is fully worked replace neosnippet
+" let g:deoppet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
+" smap <expr><TAB> deoppet#expandable_or_jumpable() ? "\<Plug>(deoppet_expand_or_jump)" : "\<TAB>"
+
+" Deoplete-Golang
+AutocmdFT go call deoplete#custom#set('go', 'matchers', ['matcher_full_fuzzy'])
+AutocmdFT go call deoplete#custom#set('go', 'sorters', [])
+AutocmdFT go let g:deoplete#sources#go#align_class = 1
+AutocmdFT go let g:deoplete#sources#go#cgo = 1
+AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
+AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
+AutocmdFT go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
+AutocmdFT go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
+AutocmdFT go let g:deoplete#sources#go#package_dot = 1
+AutocmdFT go let g:deoplete#sources#go#on_event = 1
+AutocmdFT go let g:deoplete#sources#go#pointer = 1
+AutocmdFT go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+AutocmdFT go let g:deoplete#sources#go#use_cache = 1
+
+" Deoplete-Clang
+AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
+AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#clang_header = expand("/Library/Developer/CommandLineTools/usr/lib/clang")
+
+" Deoplete Python
+AutocmdFT python let g:deoplete#sources#jedi#enable_cache = 1
+AutocmdFT python let g:deoplete#sources#jedi#statement_length = 0
+AutocmdFT python let g:deoplete#sources#jedi#short_types = 0
+AutocmdFT python let g:deoplete#sources#jedi#show_docstring = 1
+AutocmdFT python let g:deoplete#sources#jedi#worker_threads = 4
+AutocmdFT python call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
+AutocmdFT python call deoplete#custom#set('jedi', 'matchers', ['matcher_fuzzy'])
+
+" Deoplete Rust
+AutocmdFT rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
+AutocmdFT rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
+AutocmdFT rust let g:deoplete#sources#rust#documentation_max_height=20
+
+" Deoplete Swift
+AutocmdFT swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
+
+" ----------------------
+" ---- Ale settings ----
+" ----------------------
+let g:ale_enabled = 1
+let g:ale_completion_enabled = 1
+let g:ale_keep_list_window_open = 0
+let g:ale_list_window_size = 4
+let g:ale_open_list = 1
+let g:ale_set_highlights = 1
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+let g:ale_warn_about_trailing_whitespace = 0
+let g:ale_linters = {
+        \   'javascript': ['eslint_d'],
+        \   'php': ['php', 'phpcs', 'phpmd'],
+        \   'go': ['go build', 'gometalinter'],
+        \   'rust': ['rustc'],
+        \   'html': ['tidy', 'htmlhint'],
+        \   'c': ['clang'],
+        \   'cpp': ['clang++'],
+        \   'css': ['csslint', 'stylelint'],
+        \   'nim': ['nim', 'nimsuggest'],
+        \   'vim': ['vint'],
+        \   'python': ['python', 'pyflakes', 'flake8'],
+        \   'shell': ['sh', 'shellcheck'],
+        \   'zsh': ['zsh'],
+        \   'swift': ['swiftc'],
+        \}
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_enter = 1
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = '⨉'
+let g:ale_sign_warning = '⚠'
+let g:ale_sign_info = 'i'
+let g:ale_statusline_format = ['%d error(s)', '%d warning(s)', 'OK']
+let g:ale_echo_cursor = 1
+let g:ale_echo_msg_error_str = 'ERROR'
+let g:ale_echo_msg_warning_str = 'WARNING'
+let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+nnoremap <silent> <C-k> <Plug>(ale_previous_wrap)
+nnoremap <silent> <C-j> <Plug>(ale_next_wrap)
+" Close Quickfix list when file leave
+Autocmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) == 'quickfix' | quit | endif
+
+AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggregate --fast --sort=line --vendor --concurrency=16  --enable=gocyclo --enable=govet --enable=golint --enable=gotype'
+
+" -------------------------
+" ---- Denite settings ----
+" -------------------------
+" nnoremap <silent> <C-k><C-f> :<C-u>Denite file_rec<CR>
+" nnoremap <silent> <C-k><C-g> :<C-u>Denite grep -mode=normal -buffer-name=search-buffer-denite<CR>
+" nnoremap <silent> <C-k><C-r> :<C-u>Denite -resume -buffer-name=search-buffer-denite<CR>
+" nnoremap <silent> <C-k><C-n> :<C-u>Denite -resume -buffer-name=search-buffer-denite -select=+1 -immediately<CR>
+" nnoremap <silent> <C-k><C-p> :<C-u>Denite -resume -buffer-name=search-buffer-denite -select=-1 -immediately<CR>
+" nnoremap <silent> <C-k><C-l> :<C-u>Denite line<CR>
+" nnoremap <silent> <C-k><C-u> :<C-u>Denite file_mru -mode=normal buffer<CR>
+" nnoremap <silent> <C-k><C-y> :<C-u>Denite neoyank<CR>
+" nnoremap <silent> <C-k><C-b> :<C-u>Denite buffer<CR>
+"
+" " 選択しているファイルをsplitで開く
+" call denite#custom#map('_', '<C-h>','<denite:do_action:split>')
+" call denite#custom#map('insert', '<C-h>','<denite:do_action:split>')
+" " 選択しているファイルをvsplitで開く
+" call denite#custom#map('_', '<C-v>','<denite:do_action:vsplit>')
+" call denite#custom#map('insert','<C-v>', '<denite:do_action:vsplit>')
+" " jjコマンドで標準モードに戻る
+" call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>')
+" " ESCキーでdeniteを終了
+" call denite#custom#map('insert', '<esc>', '<denite:enter_mode:normal>', 'noremap')
+" call denite#custom#map('normal', '<esc>', '<denite:quit>', 'noremap')
+"
+if executable('rg')
+    call denite#custom#var('file_rec', 'command', ['rg', '--files', '--glob', '!.git'])
+    call denite#custom#var('grep', 'command', ['rg'])
+    call denite#custom#var('grep', 'recursive_opts', [])
+    call denite#custom#var('grep', 'final_opts', [])
+    call denite#custom#var('grep', 'separator', ['--'])
+    call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+else
+    call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
+endif
+"
+" " プロンプトの左端に表示される文字を指定
+" call denite#custom#option('default', 'prompt', '>')
+" " deniteの起動位置をtopに変更
+" "call denite#custom#option('default', 'direction', 'top')
+
+" ------------------------------
+" ---- Status line settings ----
+" ------------------------------
+set statusline+=%#warningmsg#
+set statusline+=%{ALEGetStatusLine()}
+set statusline+=%*
+
+" ----------------------------
+" ---- File type settings ----
+" ----------------------------
+Autocmd BufNewFile,BufRead *.tmpl set filetype=html
+Autocmd BufNewFile,BufRead *.dart set filetype=dart
+Autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
+Autocmd BufNewFile,BufRead *.es6 set filetype=javascript
+Autocmd BufNewFile,BufRead *.exs,*.ex set filetype=elixir
+Autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+Autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
+Autocmd BufNewFile,BufRead *.rs set filetype=rust
+Autocmd BufNewFile,BufRead *.ts set filetype=typescript
+Autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+
+" ------------------------------
+" ---- Indentation settings ----
+" ------------------------------
+let g:indent_guides_enable_on_vim_startup=1
+let g:indent_guides_start_level=2
+let g:indent_guides_auto_colors=0
+let g:indent_guides_color_change_percent = 30
+let g:indent_guides_guide_size = 1
+
+AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS
+AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+AutocmdFT php setlocal ts=4 sts=4 sw=4 expandtab omnifunc=phpcomplete_extended#CompletePHP
+AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
+AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview
+AutocmdFT ruby setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+AutocmdFT scala setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+AutocmdFT sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
+AutocmdFT xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+
+" --------------------------
+" ---- Tag bar settings ----
+" --------------------------
+nmap <F8> :TagbarToggle<CR>
+set updatetime=300
+
+let g:tagbar_left = 0
+let g:tagbar_autofocus = 1
+AutocmdFT go let g:tagbar_type_go = {
+                \ 'ctagstype' : 'go',
+                \ 'kinds'     : [
+                    \ 'p:package',
+                    \ 'i:imports',
+                    \ 'c:constants',
+                    \ 'v:variables',
+                    \ 't:types',
+                    \ 'n:interfaces',
+                    \ 'w:fields',
+                    \ 'e:embedded',
+                    \ 'm:methods',
+                    \ 'r:constructor',
+                    \ 'f:functions'
+                \ ],
+                \ 'sro' : '.',
+                \ 'kind2scope' : {
+                    \ 't' : 'ctype',
+                    \ 'n' : 'ntype'
+                \ },
+                \ 'scope2kind' : {
+                    \ 'ctype' : 't',
+                    \ 'ntype' : 'n'
+                \ },
+                \ 'ctagsbin'  : 'gotags',
+                \ 'ctagsargs' : '-sort -silent'
+            \ }
+AutocmdFT nim let g:tagbar_type_nim = {
+            \ 'ctagstype' : 'nim',
+            \ 'kinds' : [
+            \   'h:Headline',
+            \   't:class',
+            \   't:enum',
+            \   't:tuple',
+            \   't:subrange',
+            \   't:proctype',
+            \   'f:procedure',
+            \   'f:method',
+            \   'o:operator',
+            \   't:template',
+            \   'm:macro',
+            \ ],
+            \ }
+AutocmdFT ruby let g:tagbar_type_ruby = {
+            \ 'ctagstype' : 'ruby',
+            \ 'kinds' : [
+            \   'm:modules',
+            \   'c:classes',
+            \   'd:describes',
+            \   'C:contexts',
+            \   'f:methods',
+            \   'F:singleton methods'
+            \ ]
+            \}
+
+" -------------------------
+" ---- Format settings ----
+" -------------------------
+"  JSON Formatter
+if executable('jq')
+    function! s:jq(has_bang, ...) abort range
+        execute 'silent' a:firstline ',' a:lastline '!jq' string(a:0 == 0 ? '.' : a:1)
+        if !v:shell_error || a:has_bang
+            return
+        endif
+        let l:error_lines = filter(getline('1', '$'), 'v:val =~# "^parse error: "')
+        " 範囲指定している場合のために，行番号を置き換える
+        let l:error_lines = map(l:error_lines, 'substitute(v:val, "line \\zs\\(\\d\\+\\)\\ze,", "\\=(submatch(1) + a:firstline - 1)", "")')
+        let l:winheight = len(l:error_lines) > 10 ? 10 : len(l:error_lines)
+        " カレントバッファがエラーメッセージになっているので，元に戻す
+        undo
+        " カレントバッファの下に新たにウィンドウを作り，エラーメッセージを表示するバッファを作成する
+        execute 'botright' l:winheight 'new'
+        setlocal nobuflisted bufhidden=unload buftype=nofile
+        call setline(1, l:error_lines)
+        " エラーメッセージ用バッファのundo履歴を削除(エラーメッセージをundoで消去しないため)
+        let l:save_undolevels = &l:undolevels
+        setlocal undolevels=-1
+        execute "normal! a \<BS>\<Esc>"
+        setlocal nomodified
+        let &l:undolevels = l:save_undolevels
+        " エラーメッセージ用バッファは読み取り専用にしておく
+        setlocal readonly
+    endfunction
+    command! -bar -bang -range=% -nargs=? Jq <line1>,<line2>call s:jq(<bang>0, <f-args>)
+endif
+
+" -------------------------
+" ---- Lexima settings ----
+" -------------------------
+call lexima#add_rule({'char': '$', 'input_after': '$', 'filetype': 'latex'})
+call lexima#add_rule({'char': '$', 'at': '\%#\$', 'leave': 1, 'filetype': 'latex'})
+call lexima#add_rule({'char': '<BS>', 'at': '\$\%#\$', 'delete': 1, 'filetype': 'latex'})
+call lexima#add_rule({'at': '\%#.*[-0-9a-zA-Z_,:]', 'char': '{', 'input': '{'})
+call lexima#add_rule({'at': '\%#\n\s*}', 'char': '}', 'input': '}', 'delete': '}'})
+
+" ----------------------------
+" ---- gitgutter settings ----
+" ----------------------------
+let g:gitgutter_max_signs = 10000
+
+" ----------------------
+" ---- Dash Setting ----
+" ----------------------
+" Dash.app連携
+function! s:dash(...)
+    if len(a:000) == 1 && len(a:1) == 0
+        echomsg 'No keyword'
+    else
+        let l:ft = &filetype
+        if &filetype ==# 'python'
+            let l:ft = l:ft.'2'
+        endif
+        let l:ft = l:ft.':'
+        let l:word = len(a:000) == 0 ? input('Keyword: ', l:ft.expand('<cword>')) : l:ft.join(a:000, ' ')
+        call system(printf("open dash://'%s'", l:word))
+    endif
+endfunction
+
+command! -nargs=* Dash call <SID>dash(<f-args>)
+
+nnoremap <Leader>d :call <SID>dash(expand('<cword>'))<CR>
+
+" ---------------------
+" ---- Caw Setting ----
+" ---------------------
+let g:caw_hatpos_skip_blank_line = 0
+let g:caw_no_default_keymappings = 1
+let g:caw_operator_keymappings = 0
+nmap <C-C> <Plug>(caw:hatpos:toggle)
+vmap <C-C> <Plug>(caw:hatpos:toggle)
+
+" -------------------------
+" ---- Golang settings ----
+" -------------------------
+Autocmd BufWinEnter *.go GoFmt
+Autocmd BufWritePre *.go GoFmt
+AutocmdFT go compiler go
+AutocmdFT go :highlight goExtraVars cterm=bold ctermfg=214
+AutocmdFT go :match goExtraVars /\<ok\>\|\<err\>/
+AutocmdFT go let g:go_fmt_command = "goimports"
+" TODO if deoppet is fully worked replace neosnippet
+" AutocmdFT go let g:go_snippet_engine = "deoppet"
+" TODO remove this
+AutocmdFT go let g:go_snippet_engine = "neosnippet"
+AutocmdFT go let g:go_highlight_types = 1
+AutocmdFT go let g:go_highlight_fields = 1
+AutocmdFT go let g:go_highlight_functions = 1
+AutocmdFT go let g:go_highlight_methods = 1
+AutocmdFT go let g:go_highlight_structs = 1
+AutocmdFT go let g:go_highlight_operators = 1
+AutocmdFT go let g:go_highlight_build_constraints = 1
+AutocmdFT go let g:go_highlight_extra_types = 1
+AutocmdFT go let g:go_auto_type_info = 1
+AutocmdFT go let g:go_auto_sameids = 1
+AutocmdFT go let g:go_list_type = "quickfix"
+AutocmdFT go let g:go_addtags_transform = "snakecase"
+AutocmdFT go let g:go_alternate_mode = "edit"
+AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
+AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
+AutocmdFT go nnoremap <F5> :Gorun<CR>
+AutocmdFT go nnoremap gd <Plug>(go-def-split)
+
+" ------------------------
+" ---- Clang settings ----
+" ------------------------
+" Autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
+
+" ----------------------
+" ---- Nim settings ----
+" ----------------------
+AutocmdFT nim let g:nvim_nim_enable_async = 0
+
+" -----------------------
+" ---- Rust settings ----
+" -----------------------
+Autocmd BufWritePre *.rust RustFmt
+AutocmdFT BufWritePost *.rs QuickRun -type syntax/rust
+AutocmdFT rust let g:rustfmt_autosave = 1
+AutocmdFT rust let g:rustfmt_command = system('which rustfmt')
+AutocmdFT rust let g:rustfmt_options = "--write-mode=overwrite"
+AutocmdFT rust let g:racer_cmd = system('which racer')
+
+" -----------------------
+" ---- Java settings ----
+" -----------------------
+AutocmdFT java,jsp setlocal omnifunc=javacomplete#Complete
+AutocmdFT java,jsp setlocal completefunc=javacomplete#CompleteParamsInfo
+AutocmdFT java,jsp let g:java_highlight_all=1
+AutocmdFT java,jsp let g:java_highlight_debug=1
+AutocmdFT java,jsp let g:java_allow_cpp_keywords=1
+AutocmdFT java,jsp let g:java_space_errors=1
+AutocmdFT java,jsp let g:java_highlight_functions=1
+AutocmdFT java,jsp let b:javagetset_enable_K_and_R=1
+AutocmdFT java,jsp let b:javagetset_add_this=1
+AutocmdFT java,jsp let g:JavaComplete_MavenRepositoryDisable = 0
+AutocmdFT java,jsp let g:JavaComplete_UseFQN = 0
+AutocmdFT java,jsp nmap <F5> <Plug>(JavaComplete-Imports-Add)
+AutocmdFT java,jsp imap <F5> <Plug>(JavaComplete-Imports-Add)
+AutocmdFT java,jsp nmap <F4> <Plug>(JavaComplete-Imports-AddSmart)
+AutocmdFT java,jsp imap <F4> <Plug>(JavaComplete-Imports-AddSmart)
+AutocmdFT java,jsp no <F9> :make clean<CR>
+AutocmdFT java,jsp no <F10> :wa<CR> :make compile<CR>
+AutocmdFT java,jsp no <F11> :make exec:exec<CR>
+
+" ------------------------
+" ---- Scala settings ----
+" ------------------------
+Autocmd BufWritePost *.scala silent :EnTypeCheck
+AutocmdFT scala compiler sbt
+
+" -------------------------
+" ---- Erlang settings ----
+" -------------------------
+AutocmdFT erlang let erlang_folding = 1
+AutocmdFT erlang let erlang_show_errors = 1
+
+" -------------------------
+" ---- Elixir settings ----
+" -------------------------
+AutocmdFT elixir imap >> \|><Space>
+AutocmdFT elixir nnoremap <Leader>t :QuickRun mix_test<CR>
+AutocmdFT elixir let g:quickrun_config.mix_test = {
+                \ 'command'     : 'mix',
+                \ 'exec'        : 'mix test',
+                \ 'outputter'   : 'quickfix',
+                \ 'errorformat' : '%E\ %#%n)\ %.%#,%C\ %#%f:%l,%Z%.%#stacktrace:,%C%m,%.%#(%.%#Error)\ %f:%l:\ %m,%-G%.%#',
+                \ 'hook/cd/directory': yacd#get_root_dir(expand('%:p:h'))
+                \ }
+
+" -----------------------
+" ---- Swift settings ----
+" -----------------------
+AutocmdFT swift let g:neomake_swift_swiftc_maker = {
+                \ 'exe': 'swiftc',
+                \ 'args': ['-parse'],
+                \ 'errorformat': {
+                \ '%E%f:%l:%c: error: %m,' .
+                \ '%W%f:%l:%c: warning: %m,' .
+                \ '%Z%\s%#^~%#,' .
+                \ '%-G%.%#'
+                \ },
+                \ }
+AutocmdFT swift let g:quickrun_config['swift'] = {
+                \ 'command': 'xcrun',
+                \ 'cmdopt': 'swift',
+                \ 'exec': '%c %o %s',
+                \}
+
+" -----------------------
+" ---- Ruby settings ----
+" -----------------------
+AutocmdFT ruby let g:rubycomplete_buffer_loading = 1
+AutocmdFT ruby let g:rubycomplete_classes_in_global = 1
+AutocmdFT ruby let g:rubycomplete_rails = 1
+AutocmdFT ruby map <Leader>t :call RunCurrentSpecFile()<CR>
+AutocmdFT ruby map <Leader>s :call RunNearestSpec()<CR>
+AutocmdFT ruby map <Leader>l :call RunLastSpec()<CR>
+AutocmdFT ruby map <Leader>a :call RunAllSpecs()<CR>
+AutocmdFT ruby nnoremap <leader>rap  :RAddParameter<cr>
+AutocmdFT ruby nnoremap <leader>rcpc :RConvertPostConditional<cr>
+AutocmdFT ruby nnoremap <leader>rel  :RExtractLet<cr>
+AutocmdFT ruby vnoremap <leader>rec  :RExtractConstant<cr>
+AutocmdFT ruby vnoremap <leader>relv :RExtractLocalVariable<cr>
+AutocmdFT ruby nnoremap <leader>rit  :RInlineTemp<cr>
+AutocmdFT ruby vnoremap <leader>rrlv :RRenameLocalVariable<cr>
+AutocmdFT ruby vnoremap <leader>rriv :RRenameInstanceVariable<cr>
+AutocmdFT ruby vnoremap <leader>rem  :RExtractMethod<cr>
+
+" ----------------------
+" ---- PHP settings ----
+" ----------------------
+AutocmdFT php let g:php_baselib       = 1
+AutocmdFT php let g:php_htmlInStrings = 1
+AutocmdFT php let g:php_noShortTags   = 1
+AutocmdFT php let g:php_sql_query     = 1
+AutocmdFT php let g:php_parent_error_close  = 1
+AutocmdFT php let g:php_cs_fixer_rules = "@PSR2"
+AutocmdFT php let g:php_cs_fixer_config                 = 'default'
+AutocmdFT php let g:php_cs_fixer_dry_run                = 0
+AutocmdFT php let g:php_cs_fixer_enable_default_mapping = 1
+AutocmdFT php let g:php_cs_fixer_config_file = '.php_cs'
+AutocmdFT php let g:php_cs_fixer_fixers_list            = 'align_equals,align_double_arrow'
+AutocmdFT php let g:php_cs_fixer_level                  = 'symfony'
+AutocmdFT php let g:php_cs_fixer_php_path               = 'php'
+AutocmdFT php let g:php_cs_fixer_verbose                = 0
+
+" -----------------------------
+" ---- JavaScript settings ----
+" -----------------------------
+Autocmd BufWritePre *.js,*.jsx,*.coffee EsFix
+Autocmd BufWritePre *.js,*.jsx,*.coffee Autoformat
+AutocmdFT coffee,javascript,javascript.jsx,json let g:node_usejscomplete = 1
+AutocmdFT coffee,javascript,javascript.jsx,json let g:tern_request_timeout = 1
+AutocmdFT coffee,javascript,javascript.jsx,json let g:tern_show_signature_in_pum = '0'
+AutocmdFT coffee,javascript,javascript.jsx,json let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
+AutocmdFT coffee,javascript,javascript.jsx,json let g:js_indent_typescript = 1
+AutocmdFT coffee,javascript,javascript.jsx,json let g:tagbar_type_javascript = {'ctagsbin' : system('which jsctags')}
+" AutocmdFT coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
+autocmd! AutoGroup VimLeave *.js  !eslint_d stop
+
+" -----------------------------
+" ---- TypeScript settings ----
+" -----------------------------
+Autocmd BufWritePre *.ts EsFix
+Autocmd BufWritePre *.ts Autoformat
+" AutocmdFT coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
+AutocmdFT typescript let g:neomake_typescript_tsc_maker = {
+                \ 'args': [
+                \ '--project', getcwd(), '--noEmit'
+                \ ],
+                \ 'append_file': 0,
+                \ 'errorformat':
+                \ '%E%f %#(%l\,%c): error %m,' .
+                \ '%E%f %#(%l\,%c): %m,' .
+                \ '%Eerror %m,' .
+                \ '%C%\s%\+%m'
+                \ }
+autocmd! AutoGroup VimLeave *.js  !eslint_d stop
+
+" -----------------------
+" ---- HTML settings ----
+" -----------------------
+AutocmdFT html,xhtml imap <buffer><expr><tab> emmet#isExpandable() ? "\<plug>(emmet-expand-abbr)" : "\<tab>"
+
+" ------------------------
+" ---- Other settings ----
+" ------------------------
+" ---- Enable Binary Mode
+Autocmd BufReadPre  *.bin let &binary = 1
+Autocmd BufReadPost * if &binary | silent %!xxd -g 1
+Autocmd BufReadPost * set ft=xxd | endif
+Autocmd BufWritePre * if &binary | %!xxd -r | endif
+Autocmd BufWritePost * if &binary | silent %!xxd -g 1
+Autocmd BufWritePost * set nomod | endif
 
 " -------------------------
 " ---- Default Setting ----
@@ -390,559 +960,8 @@ inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 
-" ----------------------------
-" ---- AutoGroup Settings ----
-" ----------------------------
-augroup AutoGroup
-    autocmd!
-augroup END
-
-" ------------------------
-" ---- Other settings ----
-" ------------------------
-" ---- Enable Binary Mode
-autocmd AutoGroup BufReadPre  *.bin let &binary = 1
-autocmd AutoGroup BufReadPost * if &binary | silent %!xxd -g 1
-autocmd AutoGroup BufReadPost * set ft=xxd | endif
-autocmd AutoGroup BufWritePre * if &binary | %!xxd -r | endif
-autocmd AutoGroup BufWritePost * if &binary | silent %!xxd -g 1
-autocmd AutoGroup BufWritePost * set nomod | endif
-
-" --------------------------------------
-" ---- Plugin Dependencies Settings ----
-" --------------------------------------
-if !has('python') && !has('pip')
-    call system('pip install --upgrade pip')
-    call system('pip install neovim --upgrade')
-endif
-
-if !has('python3') && !has('pip3')
-    call system('pip3 install --upgrade pip')
-    call system('pip3 install neovim --upgrade')
-endif
-
-if !has('gb') && has('go')
-    call system('go get -u -v github.com/constabulary/gb/...')
-endif
-
-let g:python_host_skip_check = 1
-let g:python2_host_skip_check = 1
-let g:python3_host_skip_check = 1
-
-if executable('python')
-    let g:python_host_prog = system('which python')
-endif
-
-if executable('python3')
-    let g:python3_host_prog = system('which python3')
-endif
-
-" ---------------------------
-" ---- Deoplete Settings ----
-" ---------------------------
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#auto_complete_delay = 0
-let g:deoplete#auto_complete_start_length = 1
-let g:deoplete#auto_completion_start_length = 1
-let g:deoplete#enable_camel_case = 1
-let g:deoplete#enable_ignore_case = 1
-let g:deoplete#enable_refresh_always = 1
-let g:deoplete#enable_smart_case = 1
-let g:deoplete#file#enable_buffer_path = 1
-let g:deoplete#max_list = 10000
-
-" Deoplete-Golang
-autocmd AutoGroup FileType go call deoplete#custom#set('go', 'matchers', ['matcher_full_fuzzy'])
-autocmd AutoGroup FileType go call deoplete#custom#set('go', 'sorters', [])
-autocmd AutoGroup FileType go let g:deoplete#sources#go#align_class = 1
-autocmd AutoGroup FileType go let g:deoplete#sources#go#cgo = 1
-autocmd AutoGroup FileType go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
-autocmd AutoGroup FileType go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
-autocmd AutoGroup FileType go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
-autocmd AutoGroup FileType go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
-autocmd AutoGroup FileType go let g:deoplete#sources#go#package_dot = 1
-autocmd AutoGroup FileType go let g:deoplete#sources#go#on_event = 1
-autocmd AutoGroup FileType go let g:deoplete#sources#go#pointer = 1
-autocmd AutoGroup FileType go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-autocmd AutoGroup FileType go let g:deoplete#sources#go#use_cache = 1
-
-" Deoplete-Clang
-autocmd AutoGroup FileType c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
-autocmd AutoGroup FileType c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#clang_header = expand("/Library/Developer/CommandLineTools/usr/lib/clang")
-
-" Deoplete Python
-autocmd AutoGroup FileType python let g:deoplete#sources#jedi#enable_cache = 1
-autocmd AutoGroup FileType python let g:deoplete#sources#jedi#statement_length = 0
-autocmd AutoGroup FileType python let g:deoplete#sources#jedi#short_types = 0
-autocmd AutoGroup FileType python let g:deoplete#sources#jedi#show_docstring = 1
-autocmd AutoGroup FileType python let g:deoplete#sources#jedi#worker_threads = 4
-autocmd AutoGroup FileType python call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
-autocmd AutoGroup FileType python call deoplete#custom#set('jedi', 'matchers', ['matcher_fuzzy'])
-
-" Deoplete Rust
-autocmd AutoGroup FileType rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
-autocmd AutoGroup FileType rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
-autocmd AutoGroup FileType rust let g:deoplete#sources#rust#documentation_max_height=20
-
-" Deoplete Swift
-autocmd AutoGroup FileType swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
-
-" ----------------------
-" ---- Ale settings ----
-" ----------------------
-let g:ale_enabled = 1
-let g:ale_completion_enabled = 1
-let g:ale_keep_list_window_open = 0
-let g:ale_list_window_size = 4
-let g:ale_open_list = 1
-let g:ale_set_highlights = 1
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
-let g:ale_warn_about_trailing_whitespace = 0
-let g:ale_linters = {
-        \   'javascript': ['eslint_d'],
-        \   'php': ['php', 'phpcs', 'phpmd'],
-        \   'go': ['go build', 'gometalinter'],
-        \   'rust': ['rustc'],
-        \   'html': ['tidy', 'htmlhint'],
-        \   'c': ['clang'],
-        \   'cpp': ['clang++'],
-        \   'css': ['csslint', 'stylelint'],
-        \   'nim': ['nim', 'nimsuggest'],
-        \   'vim': ['vint'],
-        \   'python': ['python', 'pyflakes', 'flake8'],
-        \   'shell': ['sh', 'shellcheck'],
-        \   'zsh': ['zsh'],
-        \   'swift': ['swiftc'],
-        \}
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_lint_on_save = 1
-let g:ale_lint_on_enter = 1
-let g:ale_sign_column_always = 1
-let g:ale_sign_error = '⨉'
-let g:ale_sign_warning = '⚠'
-let g:ale_sign_info = 'i'
-let g:ale_statusline_format = ['%d error(s)', '%d warning(s)', 'OK']
-let g:ale_echo_cursor = 1
-let g:ale_echo_msg_error_str = 'ERROR'
-let g:ale_echo_msg_warning_str = 'WARNING'
-let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-nnoremap <silent> <C-k> <Plug>(ale_previous_wrap)
-nnoremap <silent> <C-j> <Plug>(ale_next_wrap)
-" Close Quickfix list when file leave
-autocmd AutoGroup WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) == 'quickfix' | quit | endif
-autocmd AutoGroup FileType go let g:ale_go_gometalinter_options = '--tests --disable-all --aggregate --fast --sort=line --vendor --concurrency=16  --enable=gocyclo --enable=govet --enable=golint --enable=gotype'
-
-" -------------------------
-" ---- Denite settings ----
-" -------------------------
-nnoremap <silent> <C-k><C-f> :<C-u>Denite file_rec<CR>
-nnoremap <silent> <C-k><C-g> :<C-u>Denite grep -mode=normal -buffer-name=search-buffer-denite<CR>
-nnoremap <silent> <C-k><C-r> :<C-u>Denite -resume -buffer-name=search-buffer-denite<CR>
-nnoremap <silent> <C-k><C-n> :<C-u>Denite -resume -buffer-name=search-buffer-denite -select=+1 -immediately<CR>
-nnoremap <silent> <C-k><C-p> :<C-u>Denite -resume -buffer-name=search-buffer-denite -select=-1 -immediately<CR>
-nnoremap <silent> <C-k><C-l> :<C-u>Denite line<CR>
-nnoremap <silent> <C-k><C-u> :<C-u>Denite file_mru -mode=normal buffer<CR>
-nnoremap <silent> <C-k><C-y> :<C-u>Denite neoyank<CR>
-nnoremap <silent> <C-k><C-b> :<C-u>Denite buffer<CR>
-
-" 選択しているファイルをsplitで開く
-call denite#custom#map('_', '<C-h>','<denite:do_action:split>')
-call denite#custom#map('insert', '<C-h>','<denite:do_action:split>')
-" 選択しているファイルをvsplitで開く
-call denite#custom#map('_', '<C-v>','<denite:do_action:vsplit>')
-call denite#custom#map('insert','<C-v>', '<denite:do_action:vsplit>')
-" jjコマンドで標準モードに戻る
-call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>')
-" ESCキーでdeniteを終了
-call denite#custom#map('insert', '<esc>', '<denite:enter_mode:normal>', 'noremap')
-call denite#custom#map('normal', '<esc>', '<denite:quit>', 'noremap')
-
-if executable('rg')
-    call denite#custom#var('file_rec', 'command', ['rg', '--files', '--glob', '!.git'])
-    call denite#custom#var('grep', 'command', ['rg'])
-    call denite#custom#var('grep', 'recursive_opts', [])
-    call denite#custom#var('grep', 'final_opts', [])
-    call denite#custom#var('grep', 'separator', ['--'])
-    call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
-else
-    call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
-endif
-
-" プロンプトの左端に表示される文字を指定
-call denite#custom#option('default', 'prompt', '>')
-" deniteの起動位置をtopに変更
-"call denite#custom#option('default', 'direction', 'top')
-
-" ------------------------------
-" ---- Status line settings ----
-" ------------------------------
-set statusline+=%#warningmsg#
-set statusline+=%{ALEGetStatusLine()}
-set statusline+=%*
-
-" ----------------------------
-" ---- File type settings ----
-" ----------------------------
-autocmd AutoGroup BufNewFile,BufRead *.dart set filetype=dart
-autocmd AutoGroup BufNewFile,BufRead *.erls,*.erl set filetype=erlang
-autocmd AutoGroup BufNewFile,BufRead *.es6 set filetype=javascript
-autocmd AutoGroup BufNewFile,BufRead *.exs,*.ex set filetype=elixir
-autocmd AutoGroup BufNewFile,BufRead *.jsx set filetype=javascript.jsx
-autocmd AutoGroup BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
-autocmd AutoGroup BufNewFile,BufRead *.rs set filetype=rust
-autocmd AutoGroup BufNewFile,BufRead *.ts set filetype=typescript
-autocmd AutoGroup BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
-
-" ------------------------------
-" ---- Indentation settings ----
-" ------------------------------
-let g:indent_guides_enable_on_vim_startup=1
-let g:indent_guides_start_level=2
-let g:indent_guides_auto_colors=0
-let g:indent_guides_color_change_percent = 30
-let g:indent_guides_guide_size = 1
-
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS
-autocmd AutoGroup FileType go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
-autocmd AutoGroup FileType html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
-autocmd AutoGroup FileType nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
-autocmd AutoGroup FileType php setlocal ts=4 sts=4 sw=4 expandtab omnifunc=phpcomplete_extended#CompletePHP
-autocmd AutoGroup FileType python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-autocmd AutoGroup FileType rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview
-autocmd AutoGroup FileType ruby setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
-autocmd AutoGroup FileType scala setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
-autocmd AutoGroup FileType sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
-autocmd AutoGroup FileType xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
-
-" --------------------------
-" ---- Tag bar settings ----
-" --------------------------
-nmap <F8> :TagbarToggle<CR>
-set updatetime=300
-
-let g:tagbar_left = 0
-let g:tagbar_autofocus = 1
-autocmd AutoGroup FileType go let g:tagbar_type_go = {
-                \ 'ctagstype' : 'go',
-                \ 'kinds'     : [
-                    \ 'p:package',
-                    \ 'i:imports',
-                    \ 'c:constants',
-                    \ 'v:variables',
-                    \ 't:types',
-                    \ 'n:interfaces',
-                    \ 'w:fields',
-                    \ 'e:embedded',
-                    \ 'm:methods',
-                    \ 'r:constructor',
-                    \ 'f:functions'
-                \ ],
-                \ 'sro' : '.',
-                \ 'kind2scope' : {
-                    \ 't' : 'ctype',
-                    \ 'n' : 'ntype'
-                \ },
-                \ 'scope2kind' : {
-                    \ 'ctype' : 't',
-                    \ 'ntype' : 'n'
-                \ },
-                \ 'ctagsbin'  : 'gotags',
-                \ 'ctagsargs' : '-sort -silent'
-            \ }
-autocmd AutoGroup FileType nim let g:tagbar_type_nim = {
-            \ 'ctagstype' : 'nim',
-            \ 'kinds' : [
-            \   'h:Headline',
-            \   't:class',
-            \   't:enum',
-            \   't:tuple',
-            \   't:subrange',
-            \   't:proctype',
-            \   'f:procedure',
-            \   'f:method',
-            \   'o:operator',
-            \   't:template',
-            \   'm:macro',
-            \ ],
-            \ }
-autocmd AutoGroup FileType ruby let g:tagbar_type_ruby = {
-            \ 'ctagstype' : 'ruby',
-            \ 'kinds' : [
-            \   'm:modules',
-            \   'c:classes',
-            \   'd:describes',
-            \   'C:contexts',
-            \   'f:methods',
-            \   'F:singleton methods'
-            \ ]
-            \}
-
-" -------------------------
-" ---- Format settings ----
-" -------------------------
-"  JSON Formatter
-if executable('jq')
-    function! s:jq(has_bang, ...) abort range
-        execute 'silent' a:firstline ',' a:lastline '!jq' string(a:0 == 0 ? '.' : a:1)
-        if !v:shell_error || a:has_bang
-            return
-        endif
-        let l:error_lines = filter(getline('1', '$'), 'v:val =~# "^parse error: "')
-        " 範囲指定している場合のために，行番号を置き換える
-        let l:error_lines = map(l:error_lines, 'substitute(v:val, "line \\zs\\(\\d\\+\\)\\ze,", "\\=(submatch(1) + a:firstline - 1)", "")')
-        let l:winheight = len(l:error_lines) > 10 ? 10 : len(l:error_lines)
-        " カレントバッファがエラーメッセージになっているので，元に戻す
-        undo
-        " カレントバッファの下に新たにウィンドウを作り，エラーメッセージを表示するバッファを作成する
-        execute 'botright' l:winheight 'new'
-        setlocal nobuflisted bufhidden=unload buftype=nofile
-        call setline(1, l:error_lines)
-        " エラーメッセージ用バッファのundo履歴を削除(エラーメッセージをundoで消去しないため)
-        let l:save_undolevels = &l:undolevels
-        setlocal undolevels=-1
-        execute "normal! a \<BS>\<Esc>"
-        setlocal nomodified
-        let &l:undolevels = l:save_undolevels
-        " エラーメッセージ用バッファは読み取り専用にしておく
-        setlocal readonly
-    endfunction
-    command! -bar -bang -range=% -nargs=? Jq <line1>,<line2>call s:jq(<bang>0, <f-args>)
-endif
-
-" -------------------------
-" ---- Lexima settings ----
-" -------------------------
-call lexima#add_rule({'char': '$', 'input_after': '$', 'filetype': 'latex'})
-call lexima#add_rule({'char': '$', 'at': '\%#\$', 'leave': 1, 'filetype': 'latex'})
-call lexima#add_rule({'char': '<BS>', 'at': '\$\%#\$', 'delete': 1, 'filetype': 'latex'})
-call lexima#add_rule({'at': '\%#.*[-0-9a-zA-Z_,:]', 'char': '{', 'input': '{'})
-call lexima#add_rule({'at': '\%#\n\s*}', 'char': '}', 'input': '}', 'delete': '}'})
-
-" ----------------------------
-" ---- gitgutter settings ----
-" ----------------------------
-let g:gitgutter_max_signs = 10000
-
-" ----------------------
-" ---- Dash Setting ----
-" ----------------------
-" Dash.app連携
-function! s:dash(...)
-    if len(a:000) == 1 && len(a:1) == 0
-        echomsg 'No keyword'
-    else
-        let l:ft = &filetype
-        if &filetype ==# 'python'
-            let l:ft = l:ft.'2'
-        endif
-        let l:ft = l:ft.':'
-        let l:word = len(a:000) == 0 ? input('Keyword: ', l:ft.expand('<cword>')) : l:ft.join(a:000, ' ')
-        call system(printf("open dash://'%s'", l:word))
-    endif
-endfunction
-
-command! -nargs=* Dash call <SID>dash(<f-args>)
-
-nnoremap <Leader>d :call <SID>dash(expand('<cword>'))<CR>
-
-" ---------------------
-" ---- Caw Setting ----
-" ---------------------
-let g:caw_hatpos_skip_blank_line = 0
-let g:caw_no_default_keymappings = 1
-let g:caw_operator_keymappings = 0
-nmap <C-C> <Plug>(caw:hatpos:toggle)
-vmap <C-C> <Plug>(caw:hatpos:toggle)
-
-" -------------------------
-" ---- Golang settings ----
-" -------------------------
-autocmd AutoGroup BufWritePre *.go GoFmt
-autocmd AutoGroup FileType go compiler go
-autocmd AutoGroup FileType go :highlight goExtraVars cterm=bold ctermfg=214
-autocmd AutoGroup FileType go :match goExtraVars /\<ok\>\|\<err\>/
-autocmd AutoGroup FileType go let g:go_fmt_command = "goimports"
-autocmd AutoGroup FileType go let g:go_snippet_engine = "deoppet"
-autocmd AutoGroup FileType go let g:go_highlight_types = 1
-autocmd AutoGroup FileType go let g:go_highlight_fields = 1
-autocmd AutoGroup FileType go let g:go_highlight_functions = 1
-autocmd AutoGroup FileType go let g:go_highlight_methods = 1
-autocmd AutoGroup FileType go let g:go_highlight_structs = 1
-autocmd AutoGroup FileType go let g:go_highlight_operators = 1
-autocmd AutoGroup FileType go let g:go_highlight_build_constraints = 1
-autocmd AutoGroup FileType go let g:go_highlight_extra_types = 1
-autocmd AutoGroup FileType go let g:go_auto_type_info = 1
-autocmd AutoGroup FileType go let g:go_auto_sameids = 1
-autocmd AutoGroup FileType go let g:go_list_type = "quickfix"
-autocmd AutoGroup FileType go let g:go_addtags_transform = "snakecase"
-autocmd AutoGroup FileType go let g:go_alternate_mode = "edit"
-autocmd AutoGroup FileType go set runtimepath+=globpath($GOROOT, "/misc/vim")
-autocmd AutoGroup FileType go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
-autocmd AutoGroup FileType go nnoremap <F5> :Gorun<CR>
-augroup AutoGroup Filetype go nnoremap gd <Plug>(go-def-split)
-
-" ------------------------
-" ---- Clang settings ----
-" ------------------------
-autocmd AutoGroup BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
-
-" ----------------------
-" ---- Nim settings ----
-" ----------------------
-autocmd AutoGroup FileType nim let g:nvim_nim_enable_async = 0
-
-" -----------------------
-" ---- Rust settings ----
-" -----------------------
-autocmd AutoGroup BufWritePre *.rust RustFmt
-autocmd AutoGroup FileType BufWritePost *.rs QuickRun -type syntax/rust
-autocmd AutoGroup FileType rust let g:rustfmt_autosave = 1
-autocmd AutoGroup FileType rust let g:rustfmt_command = system('which rustfmt')
-autocmd AutoGroup FileType rust let g:rustfmt_options = "--write-mode=overwrite"
-autocmd AutoGroup FileType rust let g:racer_cmd = system('which racer')
-
-" -----------------------
-" ---- Java settings ----
-" -----------------------
-autocmd AutoGroup FileType java,jsp setlocal omnifunc=javacomplete#Complete
-autocmd AutoGroup FileType java,jsp setlocal completefunc=javacomplete#CompleteParamsInfo
-autocmd AutoGroup FileType java,jsp let g:java_highlight_all=1
-autocmd AutoGroup FileType java,jsp let g:java_highlight_debug=1
-autocmd AutoGroup FileType java,jsp let g:java_allow_cpp_keywords=1
-autocmd AutoGroup FileType java,jsp let g:java_space_errors=1
-autocmd AutoGroup FileType java,jsp let g:java_highlight_functions=1
-autocmd AutoGroup FileType java,jsp let b:javagetset_enable_K_and_R=1
-autocmd AutoGroup FileType java,jsp let b:javagetset_add_this=1
-autocmd AutoGroup FileType java,jsp let g:JavaComplete_MavenRepositoryDisable = 0
-autocmd AutoGroup FileType java,jsp let g:JavaComplete_UseFQN = 0
-autocmd AutoGroup FileType java,jsp nmap <F5> <Plug>(JavaComplete-Imports-Add)
-autocmd AutoGroup FileType java,jsp imap <F5> <Plug>(JavaComplete-Imports-Add)
-autocmd AutoGroup FileType java,jsp nmap <F4> <Plug>(JavaComplete-Imports-AddSmart)
-autocmd AutoGroup FileType java,jsp imap <F4> <Plug>(JavaComplete-Imports-AddSmart)
-autocmd AutoGroup FileType java,jsp no <F9> :make clean<CR>
-autocmd AutoGroup FileType java,jsp no <F10> :wa<CR> :make compile<CR>
-autocmd AutoGroup FileType java,jsp no <F11> :make exec:exec<CR>
-
-" ------------------------
-" ---- Scala settings ----
-" ------------------------
-autocmd AutoGroup BufWritePost *.scala silent :EnTypeCheck
-autocmd AutoGroup FileType scala compiler sbt
-
-" -------------------------
-" ---- Erlang settings ----
-" -------------------------
-autocmd AutoGroup FileType erlang let erlang_folding = 1
-autocmd AutoGroup FileType erlang let erlang_show_errors = 1
-
-" -------------------------
-" ---- Elixir settings ----
-" -------------------------
-autocmd AutoGroup FileType elixir imap >> \|><Space>
-autocmd AutoGroup FileType elixir nnoremap <Leader>t :QuickRun mix_test<CR>
-autocmd AutoGroup FileType elixir let g:quickrun_config.mix_test = {
-                \ 'command'     : 'mix',
-                \ 'exec'        : 'mix test',
-                \ 'outputter'   : 'quickfix',
-                \ 'errorformat' : '%E\ %#%n)\ %.%#,%C\ %#%f:%l,%Z%.%#stacktrace:,%C%m,%.%#(%.%#Error)\ %f:%l:\ %m,%-G%.%#',
-                \ 'hook/cd/directory': yacd#get_root_dir(expand('%:p:h'))
-                \ }
-
-" -----------------------
-" ---- Swift settings ----
-" -----------------------
-autocmd AutoGroup FileType swift let g:neomake_swift_swiftc_maker = {
-                \ 'exe': 'swiftc',
-                \ 'args': ['-parse'],
-                \ 'errorformat': {
-                \ '%E%f:%l:%c: error: %m,' .
-                \ '%W%f:%l:%c: warning: %m,' .
-                \ '%Z%\s%#^~%#,' .
-                \ '%-G%.%#'
-                \ },
-                \ }
-autocmd AutoGroup FileType swift let g:quickrun_config['swift'] = {
-                \ 'command': 'xcrun',
-                \ 'cmdopt': 'swift',
-                \ 'exec': '%c %o %s',
-                \}
-
-" -----------------------
-" ---- Ruby settings ----
-" -----------------------
-autocmd AutoGroup FileType ruby let g:rubycomplete_buffer_loading = 1
-autocmd AutoGroup FileType ruby let g:rubycomplete_classes_in_global = 1
-autocmd AutoGroup FileType ruby let g:rubycomplete_rails = 1
-autocmd AutoGroup FileType ruby map <Leader>t :call RunCurrentSpecFile()<CR>
-autocmd AutoGroup FileType ruby map <Leader>s :call RunNearestSpec()<CR>
-autocmd AutoGroup FileType ruby map <Leader>l :call RunLastSpec()<CR>
-autocmd AutoGroup FileType ruby map <Leader>a :call RunAllSpecs()<CR>
-autocmd AutoGroup FileType ruby nnoremap <leader>rap  :RAddParameter<cr>
-autocmd AutoGroup FileType ruby nnoremap <leader>rcpc :RConvertPostConditional<cr>
-autocmd AutoGroup FileType ruby nnoremap <leader>rel  :RExtractLet<cr>
-autocmd AutoGroup FileType ruby vnoremap <leader>rec  :RExtractConstant<cr>
-autocmd AutoGroup FileType ruby vnoremap <leader>relv :RExtractLocalVariable<cr>
-autocmd AutoGroup FileType ruby nnoremap <leader>rit  :RInlineTemp<cr>
-autocmd AutoGroup FileType ruby vnoremap <leader>rrlv :RRenameLocalVariable<cr>
-autocmd AutoGroup FileType ruby vnoremap <leader>rriv :RRenameInstanceVariable<cr>
-autocmd AutoGroup FileType ruby vnoremap <leader>rem  :RExtractMethod<cr>
-
-" ----------------------
-" ---- PHP settings ----
-" ----------------------
-autocmd AutoGroup FileType php let g:php_baselib       = 1
-autocmd AutoGroup FileType php let g:php_htmlInStrings = 1
-autocmd AutoGroup FileType php let g:php_noShortTags   = 1
-autocmd AutoGroup FileType php let g:php_sql_query     = 1
-autocmd AutoGroup FileType php let g:php_parent_error_close  = 1
-autocmd AutoGroup FileType php let g:php_cs_fixer_rules = "@PSR2"
-autocmd AutoGroup FileType php let g:php_cs_fixer_config                 = 'default'
-autocmd AutoGroup FileType php let g:php_cs_fixer_dry_run                = 0
-autocmd AutoGroup FileType php let g:php_cs_fixer_enable_default_mapping = 1
-autocmd AutoGroup FileType php let g:php_cs_fixer_config_file = '.php_cs'
-autocmd AutoGroup FileType php let g:php_cs_fixer_fixers_list            = 'align_equals,align_double_arrow'
-autocmd AutoGroup FileType php let g:php_cs_fixer_level                  = 'symfony'
-autocmd AutoGroup FileType php let g:php_cs_fixer_php_path               = 'php'
-autocmd AutoGroup FileType php let g:php_cs_fixer_verbose                = 0
-
-" -----------------------------
-" ---- JavaScript settings ----
-" -----------------------------
-autocmd AutoGroup BufWritePre *.js,*.jsx,*.coffee EsFix
-autocmd AutoGroup BufWritePre *.js,*.jsx,*.coffee Autoformat
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,json let g:node_usejscomplete = 1
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,json let g:tern_request_timeout = 1
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,json let g:tern_show_signature_in_pum = '0'
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,json let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,json let g:js_indent_typescript = 1
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,json let g:tagbar_type_javascript = {'ctagsbin' : system('which jsctags')}
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
-autocmd! AutoGroup VimLeave *.js  !eslint_d stop
-
-" -----------------------------
-" ---- TypeScript settings ----
-" -----------------------------
-autocmd AutoGroup BufWritePre *.ts EsFix
-autocmd AutoGroup BufWritePre *.ts Autoformat
-autocmd AutoGroup FileType coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
-autocmd AutoGroup FileType typescript let g:neomake_typescript_tsc_maker = {
-                \ 'args': [
-                \ '--project', getcwd(), '--noEmit'
-                \ ],
-                \ 'append_file': 0,
-                \ 'errorformat':
-                \ '%E%f %#(%l\,%c): error %m,' .
-                \ '%E%f %#(%l\,%c): %m,' .
-                \ '%Eerror %m,' .
-                \ '%C%\s%\+%m'
-                \ }
-autocmd! AutoGroup VimLeave *.js  !eslint_d stop
-
-" -----------------------
-" ---- HTML settings ----
-" -----------------------
-autocmd AutoGroup FileType html,xhtml imap <buffer><expr><tab> emmet#isExpandable() ? "\<plug>(emmet-expand-abbr)" : "\<tab>"
+" imap <expr><TAB> deoppet#expandable_or_jumpable() ? "\<Plug>(deoppet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " ----------------------------
 " ---- File type settings ----
