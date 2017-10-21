@@ -33,11 +33,12 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'Shougo/neoinclude.vim'
+    " TODO if deoppet is fully worked replace neosnippet
     " Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neoyank.vim'
-    " Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
+    Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Shougo/neomru.vim'
     Plug 'cohama/lexima.vim' " auto close bracket
     Plug 'airblade/vim-gitgutter'
@@ -50,7 +51,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'majutsushi/tagbar' " tag bar toggle
     Plug 'nathanaelkane/vim-indent-guides' " show indent guide
     Plug 'w0rp/ale' " lint plugin
-    " Plug 'nixprime/cpsm', {'do': expand('$NVIM_HOME') . '/plugged/cpsm/install.sh'}
     Plug 'tyru/caw.vim' " comment out
     Plug 'rizzatti/dash.vim', {'on': 'Dash'}
     Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
@@ -61,7 +61,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'ozelentok/denite-gtags'
     " Plug 'jsfaint/gen_tags.vim'
     " Plug 'vim-scripts/gtags.vim'
-" ---- Vim Color Setting
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
