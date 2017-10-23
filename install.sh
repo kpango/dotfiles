@@ -63,6 +63,9 @@ else
             brew install go
         fi
 
+        if ! type tmux > /dev/null 2>&1; then
+            brew install tmux --HEAD
+        fi
     elif [ "$(expr substr $(uname -s) 1 5)" = 'Linux' ]; then
         OS="Linux"
         if   [ -e /etc/debian_version ] || [ -e /etc/debian_release ]; then
@@ -77,7 +80,6 @@ else
             if ! type tmux > /dev/null 2>&1; then
                 echo "$1" | sudo -S yum -y install tmux --enablerepo=rpmforge
             fi
-
         fi
         echo "$1" | sudo -S mkdir -p /usr/local/bin
         echo "$1" | sudo -S mkdir -p /usr/local/etc
@@ -95,10 +97,10 @@ else
         fi
 
         if ! type go > /dev/null 2>&1; then
-            wget https://storage.googleapis.com/golang/go1.9.linux-amd64.tar.gz
-            tar xvzf ./go1.9.linux-amd64.tar.gz
+            wgey https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz
+            tar xvzf ./go1.9.1.linux-amd64.tar.gz
             mv go /usr/local/go
-            rm -rf ./go1.9.linux-amd64.tar.gz
+            rm -rf ./go1.9.1.linux-amd64.tar.gz
         fi
     else
         echo "Your platform ($(uname -a)) is not supported."
@@ -154,11 +156,15 @@ else
     fi
 
     if ! type python3 > /dev/null 2>&1; then
-    PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.13
-    PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.2
-    "$HOME/.anyenv/envs/pyenv/bin/pyenv" global 2.7.13 3.6.2
-
-    reload_anyenv
+        if [ "$(uname)" = 'Darwin' ]; then
+            PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.13
+            PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.2
+        elif [ "$(expr substr $(uname -s) 1 5)" = 'Linux' ]; then
+            PYTHON_CONFIGURE_OPTS="--enable-shared" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.13
+            PYTHON_CONFIGURE_OPTS="--enable-shared" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.2
+        fi
+        "$HOME/.anyenv/envs/pyenv/bin/pyenv" global 2.7.13 3.6.2
+        reload_anyenv
     fi
 
     "$HOME/.anyenv/envs/pyenv/shims/pip" install --upgrade pip;
@@ -177,8 +183,8 @@ else
     fi
 
     if ! type ruby > /dev/null 2>&1; then
-    $HOME/.anyenv/envs/rbenv/bin/rbenv install 2.5.0-dev
-    $HOME/.anyenv/envs/rbenv/bin/rbenv global 2.5.0-dev
+    $HOME/.anyenv/envs/rbenv/bin/rbenv install 2.5.0-preview1
+    $HOME/.anyenv/envs/rbenv/bin/rbenv global 2.5.0-preview1
     echo "$1" | sudo -S rm -rf /usr/bin/ruby
     echo "$1" | sudo -S rm -rf /usr/bin/gem
     echo "$1" | sudo -S ln -sfv $HOME/.anyenv/envs/rbenv/shims/ruby /usr/bin/ruby
