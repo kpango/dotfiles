@@ -74,12 +74,14 @@ else
             echo "$1" | sudo -S apt-get install xclip xsel
         else
             echo "$1" | sudo -S yum -y install epel-release.noarch
-            echo "$1" | sudo -S yum -y install git libtool autoconf automake cmake gcc gcc-c++ make pkgconfig unzip ctags
+            echo "$1" | sudo -S yum -y install git libtool autoconf automake cmake gcc gcc-c++ make pkgconfig unzip ctags ncurses-devel
             echo "$1" | sudo -S yum -y groupinstall "Development Tools"
-            echo "$1" | sudo -S yum -y install readline readline-devel zlib zlib-devel bzip2 bzip2-devel sqlite sqlite-devel openssl openssl-devel 
+            echo "$1" | sudo -S yum -y install readline readline-devel zlib zlib-devel bzip2 bzip2-devel sqlite sqlite-devel openssl openssl-devel python-devel
             if ! type tmux > /dev/null 2>&1; then
                 echo "$1" | sudo -S yum -y install tmux --enablerepo=rpmforge
             fi
+            echo "$1" | sudo -S yum -y install zlib-devel
+
         fi
         echo "$1" | sudo -S mkdir -p /usr/local/bin
         echo "$1" | sudo -S mkdir -p /usr/local/etc
@@ -88,9 +90,9 @@ else
         echo "$1" | sudo -S chmod -R 777 /usr/local
 
         if ! type zsh > /dev/null 2>&1; then
-            wget http://downloads.sourceforge.net/project/zsh/zsh/5.4.1/zsh-5.4.1.tar.xz
-            tar xzvf zsh-5.4.1.tar.xz
-            cd zsh-5.4.1 || exit
+            wget http://downloads.sourceforge.net/project/zsh/zsh/5.4.2/zsh-5.4.2.tar.xz
+            tar xzvf zsh-5.4.2.tar.xz
+            cd zsh-5.4.2 || exit
             ./configure --prefix="$HOME/local" --enable-multibyte --enable-locale
             echo "$1" | sudo -S make
             echo "$1" | sudo -S make install
@@ -157,13 +159,13 @@ else
 
     if ! type python3 > /dev/null 2>&1; then
         if [ "$(uname)" = 'Darwin' ]; then
-            PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.13
-            PYTHON_CONFIGURE_OPTS="--enable-framewok" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.2
+            PYTHON_CONFIGURE_OPTS="--enable-framewok  CC=clang" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.14
+            PYTHON_CONFIGURE_OPTS="--enable-framewok  CC=clang" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.3
         elif [ "$(expr substr $(uname -s) 1 5)" = 'Linux' ]; then
-            PYTHON_CONFIGURE_OPTS="--enable-shared" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.13
-            PYTHON_CONFIGURE_OPTS="--enable-shared" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.2
+            PYTHON_CONFIGURE_OPTS="--enable-shared" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 2.7.14
+            PYTHON_CONFIGURE_OPTS="--enable-shared" "$HOME/.anyenv/envs/pyenv/bin/pyenv" install 3.6.3
         fi
-        "$HOME/.anyenv/envs/pyenv/bin/pyenv" global 2.7.13 3.6.2
+        "$HOME/.anyenv/envs/pyenv/bin/pyenv" global 2.7.14 3.6.3
         reload_anyenv
     fi
 
@@ -179,19 +181,19 @@ if type gem > /dev/null 2>&1; then
     echo 'gem found'
 else
     if ! type rbenv > /dev/null 2>&1; then
-    "$HOME/.anyenv/bin/anyenv" install rbenv
+        "$HOME/.anyenv/bin/anyenv" install rbenv
     fi
 
     if ! type ruby > /dev/null 2>&1; then
-    $HOME/.anyenv/envs/rbenv/bin/rbenv install 2.5.0-preview1
-    $HOME/.anyenv/envs/rbenv/bin/rbenv global 2.5.0-preview1
-    echo "$1" | sudo -S rm -rf /usr/bin/ruby
-    echo "$1" | sudo -S rm -rf /usr/bin/gem
-    echo "$1" | sudo -S ln -sfv $HOME/.anyenv/envs/rbenv/shims/ruby /usr/bin/ruby
-    echo "$1" | sudo -S ln -sfv $HOME/.anyenv/envs/rbenv/shims/gem /usr/bin/gem
-    reload_anyenv
-    echo "$1" | sudo -S chmod -R 755 $HOME/.anyenv/envs/rbenv/versions
-    reload_anyenv
+        $HOME/.anyenv/envs/rbenv/bin/rbenv install 2.5.0-preview1
+        $HOME/.anyenv/envs/rbenv/bin/rbenv global 2.5.0-preview1
+        echo "$1" | sudo -S rm -rf /usr/bin/ruby
+        echo "$1" | sudo -S rm -rf /usr/bin/gem
+        echo "$1" | sudo -S ln -sfv $HOME/.anyenv/envs/rbenv/shims/ruby /usr/bin/ruby
+        echo "$1" | sudo -S ln -sfv $HOME/.anyenv/envs/rbenv/shims/gem /usr/bin/gem
+        reload_anyenv
+        echo "$1" | sudo -S chmod -R 755 $HOME/.anyenv/envs/rbenv/versions
+        reload_anyenv
     fi
 
     $HOME/.anyenv/envs/rbenv/shims/gem install neovim --no-rdoc --no-ri

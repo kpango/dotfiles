@@ -401,6 +401,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
         goup(){
             mv $GOPATH/src/github.com/kpango $HOME/
+            mv $GOPATH/src/github.com/azamasu $HOME/
             sudo rm -rf "$GOPATH/bin" "$GOPATH/pkg"
             sudo rm -rf "$GOPATH/src/github.com"
             sudo rm -rf "$GOPATH/src/golang.org"
@@ -430,6 +431,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
             mkdir -p $GOPATH/src/github.com
             mv $HOME/kpango $GOPATH/src/github.com/
+            mv $HOME/azamasu $GOPATH/src/github.com/
 
             $VIM main.go +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
 
@@ -658,6 +660,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias tarunzip="tar Jxvf"
     alias f="open ."
     alias ks="ls "
+    alias l="ls "
+    alias s="ls "
     alias rm='sudo rm -rf'
     alias find='sudo find'
     alias grep='grep --color=auto'
