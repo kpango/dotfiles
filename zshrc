@@ -813,13 +813,12 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         cd neovim
         rm -r build/
         make clean
-        make CMAKE_BUILD_TYPE=RelWithDebInfo
+        # make CMAKE_BUILD_TYPE=RelWithDebInfo
+        make CMAKE_BUILD_TYPE=Release
         sudo make install
         cd ../
         rm -rf neovim
         nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
-        \wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
-        mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-$GOOS-$GOARCH" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
     }
     alias nvinstall=nvinstall
 
@@ -836,8 +835,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             nvup;
             rm "$HOME/.nvimlog";
             rm "$HOME/.viminfo";
-            \wget -P "$HOME/.config/nvim/plugged/nvim-go/syntax/" https://raw.githubusercontent.com/fatih/vim-go/master/syntax/go.vim;
-            mv "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go-${GOOS}-${GOARCH}" "$HOME/.config/nvim/plugged/nvim-go/bin/nvim-go";
         }
         alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
         alias nvinit="nvim-init";
