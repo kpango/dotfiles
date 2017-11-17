@@ -79,5 +79,5 @@
 
     tree = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
 [user]
-	name = kpango
-	email = kpango@gmail.com
+	name = $(whoami)
+	email = $(whoami)@gmail.com
