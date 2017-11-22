@@ -81,7 +81,8 @@ else
                 echo "$1" | sudo -S yum -y install tmux --enablerepo=rpmforge
             fi
             echo "$1" | sudo -S yum -y install zlib-devel
-
+            curl -L https://git.io/XClipYum | sh
+            curl -L https://git.io/XSelYum | sh
         fi
         echo "$1" | sudo -S mkdir -p /usr/local/bin
         echo "$1" | sudo -S mkdir -p /usr/local/etc
@@ -99,10 +100,10 @@ else
         fi
 
         if ! type go > /dev/null 2>&1; then
-            wgey https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz
-            tar xvzf ./go1.9.1.linux-amd64.tar.gz
+            wgey https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz
+            tar xvzf ./go1.9.2.linux-amd64.tar.gz
             mv go /usr/local/go
-            rm -rf ./go1.9.1.linux-amd64.tar.gz
+            rm -rf ./go1.9.2.linux-amd64.tar.gz
         fi
     else
         echo "Your platform ($(uname -a)) is not supported."
@@ -197,6 +198,30 @@ else
     fi
 
     $HOME/.anyenv/envs/rbenv/shims/gem install neovim --no-rdoc --no-ri
+fi
+
+if type node > /dev/null 2>&1; then
+    echo 'node found'
+else
+    if ! type rbenv > /dev/null 2>&1; then
+        "$HOME/.anyenv/bin/anyenv" install ndenv
+    fi
+    $HOME/.anyenv/envs/ndenv/bin/ndenv install -l
+    $HOME/.anyenv/envs/ndenv/bin/ndenv install v9.2.0
+    $HOME/.anyenv/envs/ndenv/bin/ndenv global v9.2.0
+    reload_anyenv
+    $HOME/.anyenv/envs/ndenv/shims/npm install -g less jsctags jshint htmlhint js-beautify eslint eslint_d babel-eslint eslint-config-airbnb eslint-plugin-import eslint-plugin-react eslint-plugin-jsx-a11y source-map-support webpack csslint stylelint pug-cli markdown-pdf
+fi
+
+if type rustc > /dev/null 2>&1; then
+    echo 'rust found'
+else
+    curl -sSf https://static.rust-lang.org/rustup.sh | sh -s -- --prefix=/usr/local --channel=nightly
+    /usr/local/bin/cargo install --git https://github.com/phildawes/racer.git
+    /usr/local/bin/cargo install --git https://github.com/rust-lang-nursery/rustfmt
+    /usr/local/bin/cargo install ripgrep
+    /usr/local/bin/cargo install --no-default-features --git https://github.com/ogham/exa
+    /usr/local/bin/cargo install --no-default-features --git https://github.com/sharkdp/fd
 fi
 
 mkdir -p ~/.config/nvim/plugged/vim-plug
