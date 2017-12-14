@@ -1,14 +1,14 @@
 #!/bin/bash
-umount /dev/mmcblk0p1
-umount /dev/mmcblk0
-wipefs -a /dev/mmcblk0 && sync
-dd if=/dev/zero of=/dev/mmcblk0 bs=1024 && sync
-lvremove /dev/mmcblk0
-pvremove /dev/mmcblk0
-parted -s -a optimal /dev/mmcblk0 -- mklabel msdos
-parted -s -a optimal /dev/mmcblk0 -- mkpart primary xfs 1 -1
-mkfs.xfs /dev/mmcblk0p1
-mount /dev/mmcblk0p1 /mnt
+umount $1
+umount $1
+wipefs -a $1 && sync
+dd if=/dev/zero of=$1 bs=1024 && sync
+lvremove $1
+pvremove $1
+parted -s -a optimal $1 -- mklabel msdos
+parted -s -a optimal $1 -- mkpart primary xfs 1 -1
+mkfs.xfs $1p1
+mount $1p1 /mnt
 mkdir /mnt/home
 mkdir /mnt/boot
 mkdir /mnt/home/kpango
