@@ -61,6 +61,11 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'ozelentok/denite-gtags'
     " Plug 'jsfaint/gen_tags.vim'
     " Plug 'vim-scripts/gtags.vim'
+    Plug 'autozimu/LanguageClient-neovim', {
+        \ 'branch': 'next',
+        \ 'do': './install.sh',
+        \ 'tag': 'binary-*-x86_64-apple-darwin'
+        \ }
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
@@ -99,15 +104,17 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'hail2u/vim-css3-syntax', {'for': ['css','less','sass','scss','stylus'] }
     Plug 'wavded/vim-stylus', {'for': ['stylus']}
 " ---- JavaScript
-    Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json'], 'do': 'npm install -g tern' }
+    Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
     Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
     Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
     Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
-    Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
+    " Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
     Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
     Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
-    Plug 'othree/jspc.vim', { 'for': ['javascript', 'javascript.jsx'] }
-    Plug 'othree/yajs.vim', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'posva/vim-vue', { 'for': ['vue'] }
+    Plug 'othree/jspc.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+    Plug 'othree/yajs.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
     Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
     Plug 'ramitos/jsctags', {'for': ['javascript', 'javascript.jsx', 'json']}
 " ---- Dart
@@ -289,8 +296,8 @@ let g:ale_keep_list_window_open = 0
 let g:ale_list_window_size = 5
 let g:ale_open_list = 1
 let g:ale_set_highlights = 1
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
+" let g:ale_set_loclist = 0
+" let g:ale_set_quickfix = 1
 let g:ale_warn_about_trailing_whitespace = 0
 let g:ale_linters = {
         \   'javascript': ['eslint_d'],
@@ -326,6 +333,16 @@ nnoremap <silent> <C-j> <Plug>(ale_next_wrap)
 Autocmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) == 'quickfix' | quit | endif
 
 AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggregate --fast --sort=line --vendor --concurrency=16  --enable=gocyclo --enable=govet --enable=golint --enable=gotype'
+
+
+" --------------------------------------------------
+" ---- Language Server Protocol Client settings ----
+" --------------------------------------------------
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+    \ 'javascript': ['javascript-typescript-stdio'],
+    \ 'vue': ['vls'],
+    \ }
 
 " -------------------------
 " ---- Denite settings ----
@@ -709,7 +726,7 @@ AutocmdFT php let g:php_cs_fixer_verbose                = 0
 " ---- JavaScript settings ----
 " -----------------------------
 Autocmd BufWritePre *.js,*.jsx,*.coffee EsFix
-Autocmd BufWritePre *.js,*.jsx,*.coffee Autoformat
+Autocmd BufWritePre *.js,*.jsx,*.coffee Neoformat
 AutocmdFT coffee,javascript,javascript.jsx,json let g:node_usejscomplete = 1
 AutocmdFT coffee,javascript,javascript.jsx,json let g:tern_request_timeout = 1
 AutocmdFT coffee,javascript,javascript.jsx,json let g:tern_show_signature_in_pum = '0'
@@ -723,7 +740,7 @@ Autocmd VimLeave *.js  !eslint_d stop
 " ---- TypeScript settings ----
 " -----------------------------
 Autocmd BufWritePre *.ts EsFix
-Autocmd BufWritePre *.ts Autoformat
+Autocmd BufWritePre *.ts Neoformat
 AutocmdFT coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
 AutocmdFT typescript let g:neomake_typescript_tsc_maker = {
                 \ 'args': [
@@ -949,7 +966,7 @@ nnoremap <silent> go :<C-u>tabonly<CR>
 noremap ; :
 inoremap <C-j> <esc>
 inoremap <C-s> <esc>:w<CR>
-nnoremap <c-q> :qall<CR>
+nnoremap <C-q> :qall<CR>
 
 " Tab補完
 function! s:completion_check_bs()

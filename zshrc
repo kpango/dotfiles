@@ -96,6 +96,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     export PHP_BUILD_CONFIGURE_OPTS="--with-openssl=/usr/local/opt/openssl"
     export PYTHON_CONFIGURE_OPTS="--enable-framework"
+    export PYTHONIOENCODING='UTF-8'
 
     if type nvim >/dev/null 2>&1; then
         export VIM=$(which nvim);
@@ -116,22 +117,22 @@ if [ -z $DOTENV_LOADED ]; then
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64
 
     #LLVM
-    # if type lld >/dev/null 2>&1; then
-    #     export C=$LLVM_HOME/bin/clang;
-    #     export CC=$LLVM_HOME/bin/clang;
-    #     export CPP=$LLVM_HOME/bin/clang++;
-    #     export CXX=$LLVM_HOME/bin/clang++;
-    #     export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
-    #     export LIBRARY_PATH=$LLVM_HOME/lib;
-    #     export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
-    #
-    #     #CLANG
-    #     export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
-    #     export CPPFLAGS=$CFLAGS;
-    #     export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
-    #     export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
-    #     export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
-    # fi
+    if type lld >/dev/null 2>&1; then
+        export C=$LLVM_HOME/bin/clang;
+        export CC=$C;
+        export CPP=${C}++;
+        export CXX=$CPP;
+        export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
+        export LIBRARY_PATH=$LLVM_HOME/lib;
+        export LLVM_CONFIG_PATH=$(which llvm-config);
+    
+        #CLANG
+        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
+        export CPPFLAGS=$CFLAGS;
+        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
+        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
+        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
+    fi
 
     if type ndenv > /dev/null 2>&1; then
         export NODE_BIN="$(ndenv prefix)/bin"
@@ -817,7 +818,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         make CMAKE_BUILD_TYPE=Release
         sudo make install
         cd ../
-        rm -rf neovim
+        sudo rm -rf $HOME/neovim
         nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall;
     }
     alias nvinstall=nvinstall
