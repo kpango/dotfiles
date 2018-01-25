@@ -9,8 +9,8 @@ passwd
 yaourt -S sway-dmenu-desktop
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
-#yaourt -S slack-desktop ibus mozc python-gobject
 useradd -m -g users -G wheel -s /usr/bin/zsh kpango
 passwd kpango
-bootctl --path=/boot install
-
+mkdir /boot/efi/EFI
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub --boot-directory=/boot/efi/EFI --recheck --debug
+grub-mkconfig -o /boot/efi/EFI/grub/grub.cfg
