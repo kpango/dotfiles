@@ -5,8 +5,8 @@ wipefs -a /dev/sda && sync
 shred -n 2 -z /dev/sda && sync
 lvremove /dev/sda
 pvremove /dev/sda
-partes -s -a optimal /dev/sda -- mklabel gpt mkpart ESP fat32 1MiB 513MiB set 1 boot on
-partes -s -a optimal /dev/sda -- mkpart primary xfs 513MiB 100%
+parted -s -a optimal /dev/sda -- mklabel gpt mkpart ESP fat32 1MiB 513MiB set 1 boot on
+parted -s -a optimal /dev/sda -- mkpart primary xfs 513MiB 100%
 mkfs.vfat -cvIF32 /dev/sda1 
 mkfs.xfs /dev/sda2
 mount /dev/sda2 /mnt
