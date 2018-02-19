@@ -402,7 +402,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
         goup(){
             mv $GOPATH/src/github.com/kpango $HOME/
-            mv $GOPATH/src/github.com/azamasu $HOME/
             sudo rm -rf "$GOPATH/bin" "$GOPATH/pkg"
             sudo rm -rf "$GOPATH/src/github.com"
             sudo rm -rf "$GOPATH/src/golang.org"
@@ -432,7 +431,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
             mkdir -p $GOPATH/src/github.com
             mv $HOME/kpango $GOPATH/src/github.com/
-            mv $HOME/azamasu $GOPATH/src/github.com/
 
             $VIM main.go +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
 
@@ -802,20 +800,20 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         sudo rm -rf $HOME/neovim
         sudo rm -rf /usr/local/bin/nvim
         sudo rm -rf /usr/local/share/nvim
-        rm -rf "$HOME/.config/gocode";
-        rm -rf "$HOME/.config/nvim/autoload";
-        rm -rf "$HOME/.config/nvim/ftplugin";
-        rm -rf "$HOME/.config/nvim/log";
-        rm -rf "$HOME/.config/nvim/plugged";
-        rm "$HOME/.nvimlog";
-        rm "$HOME/.viminfo";
+        sudo rm -rf "$HOME/.config/gocode";
+        sudo rm -rf "$HOME/.config/nvim/autoload";
+        sudo rm -rf "$HOME/.config/nvim/ftplugin";
+        sudo rm -rf "$HOME/.config/nvim/log";
+        sudo rm -rf "$HOME/.config/nvim/plugged";
+        sudo rm "$HOME/.nvimlog";
+        sudo rm "$HOME/.viminfo";
         cd $HOME
         git clone https://github.com/neovim/neovim
         cd neovim
-        rm -r build/
-        make clean
+        sudo rm -r build/
+        sudo make clean
         # make CMAKE_BUILD_TYPE=RelWithDebInfo
-        make CMAKE_BUILD_TYPE=Release
+        sudo make CMAKE_BUILD_TYPE=Release
         sudo make install
         cd ../
         sudo rm -rf $HOME/neovim
@@ -944,7 +942,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             if type brew >/dev/null 2>&1; then
                 if [ -z $OSXENV_LOADED ]; then
                     export CLICOLOR=1
-                    export HOMEBREW_GITHUB_API_TOKEN="Input Your API Token"
+                    export HOMEBREW_GITHUB_API_TOKEN="Please Input your Github API Token"
                     export HOMEBREW_EDITOR=$EDITOR
                     export HOMEBREW_MAKE_JOBS=6
                     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
