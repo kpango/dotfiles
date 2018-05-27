@@ -48,7 +48,6 @@ if [ -z $DOTENV_LOADED ]; then
     export CGO_LDFLAGS="-g -Ofast -march=native"
 
     #Nim
-    export NIMPATH=/usr/local/bin/Nim;
     export NIMBLE_PATH=$HOME/.nimble;
 
     # Rust
@@ -67,7 +66,8 @@ if [ -z $DOTENV_LOADED ]; then
 
     #JAVA
     if type java >/dev/null 2>&1; then
-        export JDK_HOME=/Library/Java/JavaVirtualMachines/jdk$(java -version 2>&1 >/dev/null | grep 'java version' | sed -e 's/java\ version\ \"//g' -e 's/\"//g').jdk;
+        export JAVA_VERSION=$(java -version 2>&1 >/dev/null | grep 'java version' | sed -e 's/java\ version\ \"//g' -e 's/\"//g');
+        export JDK_HOME=/Library/Java/JavaVirtualMachines/jdk\-$JAVA_VERSION.jdk;
         export STUDIO_JDK=$JDK_HOME;
         export JAVA_HOME=$JDK_HOME/Contents/Home;
         export JAVA8_HOME=$JAVA_HOME;
@@ -125,7 +125,7 @@ if [ -z $DOTENV_LOADED ]; then
         export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
         export LIBRARY_PATH=$LLVM_HOME/lib;
         export LLVM_CONFIG_PATH=$(which llvm-config);
-    
+
         #CLANG
         export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
         export CPPFLAGS=$CFLAGS;
@@ -162,7 +162,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     export HTTP_PROXY_HOST="HTTP_PROXY_HOST"
     export HTTP_PROXY_PORT="HTTP_PROXY_PORT"
-    export HTTP_PROXY_PASSWORD="PASSWORD"
+    export HTTP_PROXY_PASSWORD=$PASSWORD
     export HTTPS_PROXY_HOST=$HTTP_PROXY_HOST
     export HTTPS_PROXY_PORT="HTTPS_PROXY_PORT"
 
@@ -203,6 +203,8 @@ if [[ -f ~/.zplug/init.zsh ]]; then
     zplug "zsh-users/zsh-completions", as:plugin, use:"src"
     zplug "zsh-users/zsh-history-substring-search"
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
+    zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
+    zplug "greymd/tmux-xpanes"
 
     if ! zplug check --verbose; then
         zplug install
@@ -303,7 +305,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     _update_vcs_info_msg() {
         LANG=en_US.UTF-8 vcs_info
-        RPROMPT="%F{green}${vcs_info_msg_0_} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
+        RPROMPT="%{$fg[green]%}${vcs_info_msg_0_}%{$reset_color%}%{$fg[blue]%}${ZSH_KUBECTL_PROMPT}%{$reset_color%}%{$fg[gray]%} [%D{%Y-%m-%d %H:%M:%S}]%{$reset_color%}"
     }
     add-zsh-hook precmd _update_vcs_info_msg
 
@@ -390,6 +392,17 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         alias gcp=gcp
         alias gfix="gcp fix"
         alias gedit="$EDITOR $HOME/.gitconfig"
+        git-remote-add-merge(){
+            git remote add upstream $1
+            git fetch upstream
+            git merge upstream/master
+        }
+        alias grfa=git-remote-add-merge
+        git-remote-merge(){
+            git fetch upstream
+            git merge upstream/master
+        }
+        alias grf=git-remote-merge
     fi
 
     if type go >/dev/null 2>&1; then
@@ -476,6 +489,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         go-pprof-out(){
             go test -count=10 -run=NONE -bench=. -benchmem -o pprof/test.bin -cpuprofile pprof/cpu.out -memprofile pprof/mem.out
         }
+        alias gprofout=go-pprof-out
 
     fi
 
@@ -516,7 +530,7 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     # グローバルエイリアス
     alias -g L='| less'
-    alias -g G='| grep'
+    alias -g G='| rg'
 
     if type exa >/dev/null 2>&1; then
         alias ll='exa -l'
@@ -542,14 +556,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 
     if type nim >/dev/null 2>&1; then
         nimup(){
-            CURRENT=$(pwd)
-            \cd $NIMPATH;
-            git -C $NIMPATH pull;
-            nim c $NIMPATH/koch;
-            $NIMPATH/koch boot -d:release;
-            \cd $CURRENT
+            curl https://nim-lang.org/choosenim/init.sh -sSf | sh
         }
-        alias nimup=
+        alias nimup=nimup
     fi
 
     if type apm >/dev/null 2>&1; then
@@ -633,6 +642,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias cddl='mkcd $HOME/Downloads'
     alias cdex='mkcd $HOME/Documents/Programming/elixir'
     alias cdgo='mkcd $HOME/Documents/Programming/go/src'
+    alias cdkpango='mkcd $HOME/Documents/Programming/go/src/github.com/kpango'
+    alias cdazam='mkcd $HOME/Documents/Programming/go/src/github.com/azamasu'
     alias cdjava='mkcd $HOME/Documents/Programming/Java'
     alias cdjavaee='mkcd $HOME/Documents/Programming/JavaEE'
     alias cdjavafx='mkcd $HOME/Documents/Programming/JavaFX'
@@ -648,8 +659,10 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias cdrb='mkcd $HOME/Documents/Programming/Ruby'
     alias cdrs='mkcd $HOME/Documents/Programming/rust'
     alias cdsh='mkcd $HOME/Documents/Programming/shells'
+    alias cdel='mkcd $HOME/Documents/Programming/elm'
     alias cdv='mkcd $HOME/Documents/vagrant'
     alias cdvf='mkcd $HOME/Documents/vagrant/ForceVM'
+    alias cdkube='mkcd $HOME/Documents/kubernetes'
 
     if type rails >/dev/null 2>&1; then
         alias railskill="kill -9 `ps aux | grep rails | awk '{print $2}'`"
@@ -849,6 +862,8 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     alias v="$EDITOR"
     alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
 
+    alias scg="swagger-codegen"
+
     # OS 別の設定
     case ${OSTYPE} in
         darwin*)
@@ -1028,6 +1043,13 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     export TERM="xterm-256color";
 
     export ZSH_LOADED=1;
+
+    alias tmux-cssh="xpanes -c 'ssh {}' "
+
+    source <(kubectl completion zsh)
+    alias k=kubectl
+    complete -o default -F __start_kubectl k
+    eval $(thefuck --alias)
 fi
 
 if [[ $SHLVL = 1 && -z $TMUX ]]; then

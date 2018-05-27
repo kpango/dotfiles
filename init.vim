@@ -97,6 +97,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'mustache/vim-mustache-handlebars', { 'for': ['html','php','haml'] }
     Plug 'othree/html5.vim', {'for': ['html', 'php']}
     Plug 'tpope/vim-haml', {'for': 'haml'}
+" ---- ELM
+    Plug 'pbogut/deoplete-elm', {'for': ['elm']}
 " ---- LESS SASS CSS
     Plug 'ap/vim-css-color', {'for': ['css','less','sass','scss','stylus'] }
     Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass','scss'] }
@@ -215,11 +217,11 @@ let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
 
 if executable('python')
-    let g:python_host_prog = system('which python')
+    let g:python_host_prog = globpath($HOME,"/.anyenv/envs/pyenv/shims/python")
 endif
 
 if executable('python3')
-    let g:python3_host_prog = system('which python3')
+    let g:python3_host_prog = globpath($HOME,"/.anyenv/envs/pyenv/shims/python3")
 endif
 
 " ----------------------------
@@ -252,8 +254,8 @@ let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-
 " let g:deoppet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
 
 " Deoplete-Golang
-AutocmdFT go call deoplete#custom#set('go', 'matchers', ['matcher_full_fuzzy'])
-AutocmdFT go call deoplete#custom#set('go', 'sorters', [])
+AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
+AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
 AutocmdFT go let g:deoplete#sources#go#align_class = 1
 AutocmdFT go let g:deoplete#sources#go#cgo = 1
 AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
@@ -276,8 +278,8 @@ AutocmdFT python let g:deoplete#sources#jedi#statement_length = 0
 AutocmdFT python let g:deoplete#sources#jedi#short_types = 0
 AutocmdFT python let g:deoplete#sources#jedi#show_docstring = 1
 AutocmdFT python let g:deoplete#sources#jedi#worker_threads = 4
-AutocmdFT python call deoplete#custom#set('jedi', 'disabled_syntaxes', ['Comment'])
-AutocmdFT python call deoplete#custom#set('jedi', 'matchers', ['matcher_fuzzy'])
+AutocmdFT python call deoplete#custom#source('jedi', 'disabled_syntaxes', ['Comment'])
+AutocmdFT python call deoplete#custom#source('jedi', 'matchers', ['matcher_fuzzy'])
 
 " Deoplete Rust
 AutocmdFT rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
@@ -601,7 +603,7 @@ AutocmdFT go nnoremap gd <Plug>(go-def-split)
 " ------------------------
 " ---- Clang settings ----
 " ------------------------
-Autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
+" Autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
 
 " ----------------------
 " ---- Nim settings ----
