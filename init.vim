@@ -63,8 +63,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'vim-scripts/gtags.vim'
     Plug 'autozimu/LanguageClient-neovim', {
         \ 'branch': 'next',
-        \ 'do': './install.sh',
-        \ 'tag': 'binary-*-x86_64-apple-darwin'
+        \ 'do': 'zsh install.sh',
         \ }
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
@@ -98,7 +97,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'othree/html5.vim', {'for': ['html', 'php']}
     Plug 'tpope/vim-haml', {'for': 'haml'}
 " ---- ELM
-    Plug 'pbogut/deoplete-elm', {'for': ['elm']}
+    Plug 'pbogut/deoplete-elm', {'for': 'elm'}
 " ---- LESS SASS CSS
     Plug 'ap/vim-css-color', {'for': ['css','less','sass','scss','stylus'] }
     Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass','scss'] }
@@ -185,7 +184,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'sotte/presenting.vim', {'for': 'markdown'}
     Plug 'tyru/open-browser.vim', {'for': 'markdown'}
 " ---- SQL
-    " Plug 'SQLComplete.vim', { 'for': 'sql' }
+    Plug 'JarrodCTaylor/vim-sql-suggest', { 'for': 'sql' }
 " ---- TOML
     Plug 'cespare/vim-toml', {'for': 'toml'}
 " ---- LLVM
@@ -217,11 +216,11 @@ let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
 
 if executable('python')
-    let g:python_host_prog = globpath($HOME,"/.anyenv/envs/pyenv/shims/python")
+    let g:python_host_prog=globpath($HOME,"/.anyenv/envs/pyenv/shims/python")
 endif
 
 if executable('python3')
-    let g:python3_host_prog = globpath($HOME,"/.anyenv/envs/pyenv/shims/python3")
+    let g:python3_host_prog=globpath($HOME,"/.anyenv/envs/pyenv/shims/python3")
 endif
 
 " ----------------------------
@@ -237,6 +236,7 @@ command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
 " ---------------------------
 " ---- Deoplete Settings ----
 " ---------------------------
+set runtimepath+=globpath($NVIM_HOME,"/plugged/deoplete.nvim")
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_complete_delay = 0
 let g:deoplete#auto_complete_start_length = 1
@@ -257,9 +257,9 @@ let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-
 AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
 AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
 AutocmdFT go let g:deoplete#sources#go#align_class = 1
-AutocmdFT go let g:deoplete#sources#go#cgo = 1
-AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
-AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
+" AutocmdFT go let g:deoplete#sources#go#cgo = 1
+" AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
+" AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
 AutocmdFT go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
 AutocmdFT go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
 AutocmdFT go let g:deoplete#sources#go#package_dot = 1
@@ -316,6 +316,7 @@ let g:ale_linters = {
         \   'shell': ['sh', 'shellcheck'],
         \   'zsh': ['zsh'],
         \   'swift': ['swiftc'],
+        \   'sql': ['sqlint'],
         \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
@@ -603,7 +604,12 @@ AutocmdFT go nnoremap gd <Plug>(go-def-split)
 " ------------------------
 " ---- Clang settings ----
 " ------------------------
-" Autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
+Autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
+
+" ---------------------------
+" ---- protobuf settings ----
+" ---------------------------
+Autocmd BufWritePre *.proto,*.pb,*.protobuf Neoformat
 
 " ----------------------
 " ---- Nim settings ----
