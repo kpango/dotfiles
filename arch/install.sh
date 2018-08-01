@@ -19,7 +19,7 @@ cp Xdefaults /mnt/home/kpango/.Xdefaults
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
-pacstrap -i /mnt base base-devel archlinux-keyring cmake ccache clang dmenu rxvt-unicode git neovim zsh tmux wlc wayland sway i3status chromium openssh ntp ranger grub dosfstools efibootmgr
+pacstrap -i /mnt base base-devel archlinux-keyring intel-ucode cmake ccache clang dmenu rxvt-unicode git neovim zsh tmux wlc wayland sway i3status openssh ntp ranger dosfstools
 genfstab -U -p /mnt >> /mnt/etc/fstab
 cp ./mirrorlist /mnt/etc/pacman.d/mirrorlist
 cp ./locale.gen /mnt/etc/locale.gen
