@@ -16,7 +16,7 @@ filetype plugin indent off
 " --------------------------
 if has('vim_starting')
     set runtimepath+=~/.config/nvim/plugged/vim-plug
-    if !isdirectory(expand('$NVIM_HOME') . '/plugged/vim-plug')
+    if !isdirectory('/root/.config/nvim/plugged/vim-plug')
         call system('mkdir -p ~/.config/nvim/plugged/vim-plug')
         call system('git clone https://github.com/junegunn/vim-plug.git ~/.config/nvim/plugged/vim-plug/autoload')
     end
@@ -25,9 +25,9 @@ endif
 " -------------------------
 " ---- Plugins Install ----
 " -------------------------
-call plug#begin(expand('$NVIM_HOME') . '/plugged')
+call plug#begin('/root/.config/nvim/plugged')
 " ----- update self
-    Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
+    Plug 'junegunn/vim-plug', {'dir': '/root/.config/nvim/plugged/vim-plug/autoload'}
 " ---- common plugins
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
@@ -38,7 +38,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neoyank.vim'
-    Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
+    Plug 'Shougo/vimproc.vim', {'dir': '/root/.config/nvim/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Shougo/neomru.vim'
     Plug 'cohama/lexima.vim' " auto close bracket
     Plug 'airblade/vim-gitgutter'
@@ -74,8 +74,8 @@ let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
 
-let g:python_host_prog="/root/.anyenv/envs/pyenv/shims/python"
-let g:python3_host_prog="/root/.anyenv/envs/pyenv/shims/python3"
+let g:python_host_prog="/usr/bin/python"
+let g:python3_host_prog="/usr/bin/python3"
 
 " ----------------------------
 " ---- AutoGroup Settings ----
@@ -90,7 +90,7 @@ command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
 " ---------------------------
 " ---- Deoplete Settings ----
 " ---------------------------
-set runtimepath+=globpath($NVIM_HOME,"/plugged/deoplete.nvim")
+set runtimepath+="/root/.config/nvim/plugged/deoplete.nvim"
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#auto_complete_delay = 0
 let g:deoplete#auto_complete_start_length = 1
@@ -103,7 +103,7 @@ let g:deoplete#file#enable_buffer_path = 1
 let g:deoplete#max_list = 10000
 
 " TODO remove it
-let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
+let g:neosnippet#snippets_directory='/root/.config/nvim/plugged/neosnippet-snippets/neosnippets/'
 " TODO if deoppet is fully worked replace neosnippet
 " let g:deoppet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
 
@@ -114,8 +114,8 @@ AutocmdFT go let g:deoplete#sources#go#align_class = 1
 " AutocmdFT go let g:deoplete#sources#go#cgo = 1
 " AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
 " AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
-AutocmdFT go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
-AutocmdFT go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
+AutocmdFT go let g:deoplete#sources#go#gocode_binary = "/go/bin/gocode"
+AutocmdFT go let g:deoplete#sources#go#json_directory = "/root/.config/nvim/plugged/deoplete-go/data/json/*/".expand("$GOOS")."_".expand("$GOARCH")
 AutocmdFT go let g:deoplete#sources#go#package_dot = 1
 AutocmdFT go let g:deoplete#sources#go#on_event = 1
 AutocmdFT go let g:deoplete#sources#go#pointer = 1
@@ -301,11 +301,11 @@ AutocmdFT go let g:go_list_type = "quickfix"
 AutocmdFT go let g:go_addtags_transform = "snakecase"
 AutocmdFT go let g:go_alternate_mode = "edit"
 AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
-AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
+AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/mdempsky/gocode/vim")
 AutocmdFT go nnoremap <F5> :Gorun<CR>
 AutocmdFT go nnoremap gd <Plug>(go-def-split)
 
- -------------------------
+" -------------------------
 " ---- Default Setting ----
 " -------------------------
 
