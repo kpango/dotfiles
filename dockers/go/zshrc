@@ -31,11 +31,10 @@ if [ -z $DOTENV_LOADED ]; then
     export NVIM_PYTHON_LOG_LEVEL=WARNING;
     export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log;
 
-    export LLVM_HOME=/usr/local/opt/llvm;
-
     #GO
     export GOPATH=/go;
     export CGO_ENABLED=1;
+    export GO111MODULES=on
     export GOBIN=$GOPATH/bin;
     export GO15VENDOREXPERIMENT=1;
     export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go;
@@ -45,54 +44,7 @@ if [ -z $DOTENV_LOADED ]; then
     export CGO_FFLAGS="-g -Ofast -march=native"
     export CGO_LDFLAGS="-g -Ofast -march=native"
 
-    #Nim
-    export NIMPATH=/usr/local/bin/Nim;
-    export NIMBLE_PATH=$HOME/.nimble;
 
-    # Rust
-    export RUST_SRC_PATH=/usr/local/src/rust/src;
-    export RUST_BACKTRACE=1;
-    export CARGO_HOME=$HOME/.cargo;
-
-    #QT
-    export QT_HOME=/usr/local/opt/qt;
-
-    # IntelliJ
-    export NVIM_LISTEN_ADDRESS="127.0.0.1:7650";
-
-    # CoreUtil
-    export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
-
-    #JAVA
-    if type java >/dev/null 2>&1; then
-        export JDK_HOME=/usr/lib/jvm/java-7-openjdk;
-        export STUDIO_JDK=$JDK_HOME;
-        export JAVA_HOME=$JDK_HOME
-        export JAVA8_HOME=$JAVA_HOME;
-        export JRE_HOME=$JAVA_HOME/jre/bin;
-        export ANDROID_HOME=/usr/local/share/android-sdk;
-        if type jetty >/dev/null 2>&1; then
-            export JETTY_HOME=/usr/local/opt/jetty;
-        fi
-    fi
-
-    if type composer >/dev/null 2>&1; then
-        export COMPOSER_HOME="$HOME/.composer/vendor"
-    fi
-
-    # Athenz PATH
-    export ATHENZ_HOME=/usr/local/athenz;
-
-    if [ -z $TMUX ]; then
-        export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/go/bin:/opt/local/bin:$HOME/.cabal/bin:$HOME/.local/bin:$LLVM_HOME/bin:$GOBIN:$COMPOSER_HOME/bin:$JAVA_HOME/bin:$JRE_HOME:$NIMPATH/bin:$NIMBLE_PATH/bin:$CARGO_HOME:$CARGO_HOME/bin:$ATHENZ_HOME/bin:$HOME/Documents/Programming/go/src/github.com/uber/go-torch/FlameGraph:$HOME/.config/go_appengine:$PATH";
-        #anyenv init
-        if [ -d "$HOME/.anyenv" ] ; then
-            export PATH="$HOME/.anyenv/bin:$HOME/.anyenv/libexec:$PATH"
-            eval "$(anyenv init - --no-rehash zsh)"
-        fi
-    fi
-
-    export PHP_BUILD_CONFIGURE_OPTS="--with-openssl=/usr/local/opt/openssl"
     export PYTHON_CONFIGURE_OPTS="--enable-shared"
 
     if type nvim >/dev/null 2>&1; then
@@ -108,34 +60,6 @@ if [ -z $DOTENV_LOADED ]; then
     export PAGER=$(which less);
     export SUDO_EDITOR=$EDITOR;
 
-    #ReactNative
-    export REACT_EDITOR=$EDITOR;
-
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64
-
-    #LLVM
-    if type lld >/dev/null 2>&1; then
-        export C=$LLVM_HOME/bin/clang;
-        export CC=$C;
-        export CPP=${C}++;
-        export CXX=$CPP;
-        export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
-        export LIBRARY_PATH=$LLVM_HOME/lib;
-        export LLVM_CONFIG_PATH=$LLVM_HOME/bin/llvm-config;
-        export LLVM_CONFIG_PATH=$(which llvm-config);
-        #CLANG
-        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
-        export CPPFLAGS=$CFLAGS;
-        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
-        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
-        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
-    fi
-
-    if type ndenv > /dev/null 2>&1; then
-        export NODE_BIN="$(ndenv prefix)/bin"
-        export PATH="$NODE_BIN:$PATH"
-    fi
-
     if type go >/dev/null 2>&1; then
         export GOROOT="$(go env GOROOT)";
         export GOOS="$(go env GOOS)";
@@ -147,25 +71,6 @@ if [ -z $DOTENV_LOADED ]; then
     if [ -e $ZPLUG_HOME/repos/zsh-users/zsh-completions ]; then
         fpath=($ZPLUG_HOME/repos/zsh-users/zsh-completions/src $fpath)
     fi
-
-    #Node
-    if type npm >/dev/null 2>&1; then
-        export NODE_PATH=$(\npm root -g);
-    fi
-
-    if type vagrant > /dev/null 2>&1; then
-        export VAGRANT_HOME=$HOME/Documents/vagrant;
-    fi
-
-    export HTTP_PROXY_HOST="HTTP_PROXY_HOST"
-    export HTTP_PROXY_PORT="HTTP_PROXY_PORT"
-    export HTTP_PROXY_PASSWORD=$PASSWORD
-    export HTTPS_PROXY_HOST=$HTTP_PROXY_HOST
-    export HTTPS_PROXY_PORT="HTTPS_PROXY_PORT"
-
-    export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/id_ecdsa"
-    export GITHUB_ACCESS_TOKEN="Please Input your API Token"
-    export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
 
     if type zplug >/dev/null 2>&1; then
         if zplug check junegunn/fzf; then
@@ -514,16 +419,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         fi
     }
 
-    if type rustc >/dev/null 2>&1; then
-        rust_run() {
-            rustc $1
-            local binary=$(basename $1 .rs)
-            ./$binary
-        }
-        alias rust="rustc -O"
-        alias rrun="rust_run"
-    fi
-
     # エイリアス
     alias cp='cp -r'
     alias ln="ln -Fsnfiv"
@@ -554,22 +449,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
         alias lg='ls -a | rg'
     fi
 
-    if type anyenv >/dev/null 2>&1; then
-        anyenvup(){
-            anyenv update --force;
-            anyenv git gc --aggressive;
-            anyenv git prune;
-        }
-        alias anyenvup=anyenvup
-    fi
-
-    if type nim >/dev/null 2>&1; then
-        nimup(){
-            curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-        }
-        alias nimup=nimup
-    fi
-
     if type gem >/dev/null 2>&1; then
         gemup(){
             chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;
@@ -578,15 +457,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             gem update;
         }
         alias gemup=gemup
-    fi
-
-    if type stack >/dev/null 2>&1; then
-        haskellup(){
-            stack upgrade;
-            stack update;
-            cabal update;
-        }
-        alias haskellup=haskellup
     fi
 
     if type npm >/dev/null 2>&1; then
@@ -808,7 +678,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
     export ZSH_LOADED=1;
 fi
 
+nvim +UpdateRemotePlugins +qall
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$PATH";
 
-if [[ $SHLVL = 3 && -z $TMUX ]]; then
+if [[ $SHLVL = 1 && -z $TMUX ]]; then
     tmux -2 new-session
 fi

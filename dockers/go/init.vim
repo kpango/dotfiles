@@ -114,7 +114,7 @@ AutocmdFT go let g:deoplete#sources#go#align_class = 1
 " AutocmdFT go let g:deoplete#sources#go#cgo = 1
 " AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
 " AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
-AutocmdFT go let g:deoplete#sources#go#gocode_binary = "/go/bin/gocode"
+AutocmdFT go let g:deoplete#sources#go#gocode_binary = expand("$GOPATH").'/bin/gocode' 
 AutocmdFT go let g:deoplete#sources#go#json_directory = "/root/.config/nvim/plugged/deoplete-go/data/json/*/".expand("$GOOS")."_".expand("$GOARCH")
 AutocmdFT go let g:deoplete#sources#go#package_dot = 1
 AutocmdFT go let g:deoplete#sources#go#on_event = 1
@@ -264,6 +264,7 @@ call lexima#add_rule({'at': '\%#\n\s*}', 'char': '}', 'input': '}', 'delete': '}
 " ---- gitgutter settings ----
 " ----------------------------
 let g:gitgutter_max_signs = 10000
+let g:gitgutter_git_executable = "/usr/bin/git"
 
 " ---------------------
 " ---- Caw Setting ----
@@ -301,7 +302,6 @@ AutocmdFT go let g:go_list_type = "quickfix"
 AutocmdFT go let g:go_addtags_transform = "snakecase"
 AutocmdFT go let g:go_alternate_mode = "edit"
 AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
-AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/mdempsky/gocode/vim")
 AutocmdFT go nnoremap <F5> :Gorun<CR>
 AutocmdFT go nnoremap gd <Plug>(go-def-split)
 
