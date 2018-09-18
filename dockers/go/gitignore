@@ -1,0 +1,112 @@
+#
+# ~/.gitignote
+#
+## archive ##
+*.zip
+*.lzh
+*.tar.gz
+*.tgz
+*.bz2
+*.dmg
+*.lock
+
+## Compiled object files ##
+*.slo
+*.lo
+*.o
+*.obj
+
+## Compiled Dynamic libraries ##
+*.so
+*.dylib
+*.dll
+
+## Compiled Static libraries ##
+*.lai
+*.la
+*.a
+*.lib
+
+## Executables ##
+*.exe
+*.out
+*.app
+
+## node
+node_modules
+
+## Windows ##
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+
+## Mac ##
+.DS_Store
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+._*
+:w
+:q
+# Icon must ends with two \r.
+# ↓コピペだと正しく設定できないかも。
+Icon
+
+
+## version control system ##
+.git/
+.hg/
+.svn/
+
+## backup,log ##
+*~
+~*
+*.tmp
+*.bak
+*.old
+*.log
+.cache/
+.glide/
+*.autosave
+
+## Vim ##
+*.un~
+.*.sw[a-z]
+*.swp
+.swp.*
+
+Session.vim
+.netrwhist
+
+## netbeans ##
+nbproject/
+## intellij idea ##
+.idea/
+## eclipse ##
+.settings/
+.project
+.classpath
+.buildpath
+.metadata
+## XCode ##
+*.xcodeproj/*
+
+## Build dir ##
+build/
+/tmp
+/vendor
+/log
+
+## Certification Files
+*.rsa
+*.cert
+*.crt
+*.key
+*.cer
+*.pem

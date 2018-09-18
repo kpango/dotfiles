@@ -679,7 +679,9 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
 fi
 
 nvim +UpdateRemotePlugins +qall
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$PATH";
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:/usr/local/cargo/bin:$PATH";
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
 
 if [[ $SHLVL = 1 && -z $TMUX ]]; then
     tmux -2 new-session
