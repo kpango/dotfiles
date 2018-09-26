@@ -82,7 +82,7 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repos
 WORKDIR /tmp
 RUN apk update \
     && apk upgrade \
-    && apk add --no-cache \
+    && apk --update add --no-cache \
     make \
     curl \
     gcc \
@@ -102,6 +102,7 @@ RUN apk update \
     bash \
     xclip \
     perl \
+    less \
     && rm -rf /var/cache/apk/*
 
 RUN pip3 install --upgrade pip neovim \
