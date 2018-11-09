@@ -14,9 +14,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/dominikh/go-tools/cmd/keyify \
     github.com/fatih/gomodifytags \
     github.com/fatih/motion \
-    github.com/garyburd/go-explorer/src/getool \
     github.com/golang/dep/... \
-    github.com/golang/lint/golint \
     github.com/gopherjs/gopherjs \
     github.com/josharian/impl \
     github.com/jstemmer/gotags \
@@ -30,6 +28,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/rogpeppe/godef \
     github.com/sugyan/ttygif \
     github.com/zmb3/gogetdoc \
+    golang.org/x/lint/golint \
     golang.org/x/tools/cmd/goimports \
     golang.org/x/tools/cmd/gorename \
     golang.org/x/tools/cmd/guru \
@@ -39,11 +38,13 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     && gometalinter -i
 
 FROM kpango/rust-musl-builder:latest AS rust
+
 RUN cargo install --force ripgrep \
     && cargo install --force --no-default-features --git https://github.com/sharkdp/fd \
     && cargo install --force --no-default-features exa
+    && cargo install --force --no-default-features bat
 
-FROM docker:rc AS docker
+FROM docker:latest AS docker
 
 FROM alpine:edge
 
@@ -103,7 +104,16 @@ RUN apk update \
     xclip \
     perl \
     less \
+    ncurses \
     && rm -rf /var/cache/apk/*
+
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
+    && mv ./kubectl /usr/bin/kubectl \
+    && chmod +x /usr/bin/kubectl \
+    && kubectl version --client \
+    && git clone https://github.com/ahmetb/kubectx /opt/kubectx \
+    && ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx \
+    && ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 
 RUN pip3 install --upgrade pip neovim \
     && pip2 install --upgrade pip neovim \
@@ -130,10 +140,12 @@ RUN  ["/bin/zsh", "-c", "source ~/.zshrc"]
 
 WORKDIR $NVIM_HOME/plugged/vim-plug
 
-RUN git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload \
+RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
+    && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload \
     && nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall \
     && git clone https://github.com/zplug/zplug $ZPLUG_HOME
 
 WORKDIR /go/src
 
-ENTRYPOINT ["zsh"]
+ENTRYPOINT ["docker-entrypoint"]
+CMD ["zsh"]

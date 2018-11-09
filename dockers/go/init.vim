@@ -52,7 +52,6 @@ call plug#begin('/root/.config/nvim/plugged')
     Plug 'nathanaelkane/vim-indent-guides' " show indent guide
     Plug 'w0rp/ale' " lint plugin
     Plug 'tyru/caw.vim' " comment out
-    Plug 'rizzatti/dash.vim', {'on': 'Dash'}
     Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
     Plug 'terryma/vim-multiple-cursors' " multiple cursors
     Plug 'thinca/vim-quickrun'
@@ -65,10 +64,10 @@ call plug#begin('/root/.config/nvim/plugged')
     Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
+    Plug 'nsf/gocode', {'for': 'go', 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh'}
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
 call plug#end()
-
 
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
