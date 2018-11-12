@@ -41,7 +41,7 @@ FROM kpango/rust-musl-builder:latest AS rust
 
 RUN cargo install --force ripgrep \
     && cargo install --force --no-default-features --git https://github.com/sharkdp/fd \
-    && cargo install --force --no-default-features exa
+    && cargo install --force --no-default-features exa \
     && cargo install --force --no-default-features bat
 
 FROM docker:latest AS docker
@@ -50,6 +50,7 @@ FROM alpine:edge
 
 LABEL maintainer="kpango <i.can.feel.gravity@gmail.com>"
 
+ENV TZ Asia/Tokyo
 ENV HOME /root
 ENV GOPATH /go
 ENV GOROOT /usr/local/go
@@ -105,6 +106,7 @@ RUN apk update \
     perl \
     less \
     ncurses \
+    tig \
     && rm -rf /var/cache/apk/*
 
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
