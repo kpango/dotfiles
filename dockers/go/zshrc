@@ -112,6 +112,7 @@ if [[ -f ~/.zplug/init.zsh ]]; then
     zplug "zsh-users/zsh-completions", as:plugin, use:"src"
     zplug "zsh-users/zsh-history-substring-search"
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
+    zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
     zplug "greymd/tmux-xpanes"
 
     if ! zplug check --verbose; then
@@ -672,6 +673,10 @@ alias vim="$EDITOR"
 alias bim="$EDITOR"
 alias cim="$EDITOR"
 alias v="$EDITOR"
+
+source <(kubectl completion zsh)
+alias k=kubectl
+complete -o default -F __start_kubectl k
 
 nvim +UpdateRemotePlugins +qall
 if [[ $SHLVL = 2 && -z $TMUX ]]; then

@@ -44,7 +44,9 @@ RUN cargo install --force ripgrep \
     && cargo install --force --no-default-features exa \
     && cargo install --force --no-default-features bat
 
-FROM docker:latest AS docker
+FROM docker:18.09-dind AS docker
+
+FROM google/cloud-sdk:224.0.0-alpine AS gcloud
 
 FROM alpine:edge
 
@@ -67,17 +69,26 @@ COPY --from=go /usr/local/go/pkg $GOROOT/pkg
 COPY --from=go /usr/local/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
+
 COPY --from=rust /home/rust/.cargo/bin /usr/local/cargo/bin
+
+COPY --from=docker /usr/local/bin/containerd /usr/bin/docker-containerd
+COPY --from=docker /usr/local/bin/containerd-shim /usr/bin/docker-containerd-shim
+COPY --from=docker /usr/local/bin/ctr /usr/bin/docker-containerd-ctr
+COPY --from=docker /usr/local/bin/dind /usr/bin/dind
 COPY --from=docker /usr/local/bin/docker /usr/bin/docker
-COPY --from=docker /usr/local/bin/docker-containerd /usr/bin/docker-containerd
-COPY --from=docker /usr/local/bin/docker-containerd-ctr /usr/bin/docker-containerd-ctr
-COPY --from=docker /usr/local/bin/docker-containerd-shim /usr/bin/docker-containerd-shim
 COPY --from=docker /usr/local/bin/docker-entrypoint.sh /usr/bin/docker-entrypoint
 COPY --from=docker /usr/local/bin/docker-init /usr/bin/docker-init
 COPY --from=docker /usr/local/bin/docker-proxy /usr/bin/docker-proxy
-COPY --from=docker /usr/local/bin/docker-runc /usr/bin/docker-runc
 COPY --from=docker /usr/local/bin/dockerd /usr/bin/dockerd
 COPY --from=docker /usr/local/bin/modprobe /usr/bin/modprobe
+COPY --from=docker /usr/local/bin/runc /usr/bin/docker-runc
+
+COPY --from=gcloud /google-cloud-sdk/bin/gcloud /usr/bin/gcloud
+COPY --from=gcloud /google-cloud-sdk/lib/gcloud.py /usr/lib/gcloud.py
+COPY --from=gcloud /google-cloud-sdk/bin/bq /usr/bin/bq
+COPY --from=gcloud /google-cloud-sdk/bin/gsutil /usr/bin/gsutil
+COPY --from=gcloud /google-cloud-sdk/bin/docker-credential-gcloud /usr/bin/docker-credential-gcloud
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
 
@@ -107,6 +118,7 @@ RUN apk update \
     less \
     ncurses \
     tig \
+    tzdata \
     && rm -rf /var/cache/apk/*
 
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
