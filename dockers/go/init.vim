@@ -60,6 +60,11 @@ call plug#begin('/root/.config/nvim/plugged')
     " Plug 'ozelentok/denite-gtags'
     " Plug 'jsfaint/gen_tags.vim'
     " Plug 'vim-scripts/gtags.vim'
+" ---- Vim Setting
+    Plug 'Shougo/neco-vim', {'for': 'vim'}
+    Plug 'Shougo/neco-syntax', {'for': 'vim'}
+" ---- Yaml Setting
+    Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Golang Setting
     Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
@@ -67,6 +72,15 @@ call plug#begin('/root/.config/nvim/plugged')
     Plug 'nsf/gocode', {'for': 'go', 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh'}
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
+" ---- Dart
+    Plug 'dart-lang/dart-vim-plugin', {'for': 'dart'}
+    Plug 'miyakogi/vim-dartanalyzer', {'for': 'dart'}
+" ---- Nim
+    Plug 'zah/nim.vim', {'for': 'nim'}
+" ---- Rust
+    Plug 'rust-lang/rust.vim', {'for': 'rust'}
+    Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
+    Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
 call plug#end()
 
 let g:python_host_skip_check = 1
@@ -121,6 +135,11 @@ AutocmdFT go let g:deoplete#sources#go#pointer = 1
 AutocmdFT go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
 AutocmdFT go let g:deoplete#sources#go#use_cache = 1
 
+" Deoplete Rust
+AutocmdFT rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
+AutocmdFT rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
+AutocmdFT rust let g:deoplete#sources#rust#documentation_max_height=20
+
 " ----------------------
 " ---- Ale settings ----
 " ----------------------
@@ -134,7 +153,11 @@ let g:ale_set_highlights = 1
 " let g:ale_set_quickfix = 1
 let g:ale_warn_about_trailing_whitespace = 0
 let g:ale_linters = {
+        \   'c': ['clang'],
         \   'go': ['go build', 'gometalinter'],
+        \   'rust': ['rustc'],
+        \   'nim': ['nim', 'nimsuggest'],
+        \   'vim': ['vint'],
         \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
@@ -214,6 +237,9 @@ let g:indent_guides_color_change_percent = 30
 let g:indent_guides_guide_size = 1
 
 AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview
+AutocmdFT sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
 
 " --------------------------
 " ---- Tag bar settings ----
@@ -249,6 +275,22 @@ AutocmdFT go let g:tagbar_type_go = {
                 \ },
                 \ 'ctagsbin'  : 'gotags',
                 \ 'ctagsargs' : '-sort -silent'
+            \ }
+AutocmdFT nim let g:tagbar_type_nim = {
+            \ 'ctagstype' : 'nim',
+            \ 'kinds' : [
+            \   'h:Headline',
+            \   't:class',
+            \   't:enum',
+            \   't:tuple',
+            \   't:subrange',
+            \   't:proctype',
+            \   'f:procedure',
+            \   'f:method',
+            \   'o:operator',
+            \   't:template',
+            \   'm:macro',
+            \ ],
             \ }
 " -------------------------
 " ---- Lexima settings ----
@@ -303,6 +345,26 @@ AutocmdFT go let g:go_alternate_mode = "edit"
 AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
 AutocmdFT go nnoremap <F5> :Gorun<CR>
 AutocmdFT go nnoremap gd <Plug>(go-def-split)
+
+" ----------------------
+" ---- Nim settings ----
+" ----------------------
+AutocmdFT nim let g:nvim_nim_enable_async = 0
+
+" -----------------------
+" ---- Rust settings ----
+" -----------------------
+Autocmd BufWritePre *.rust RustFmt
+AutocmdFT BufWritePost *.rs QuickRun -type syntax/rust
+AutocmdFT rust let g:rustfmt_autosave = 1
+AutocmdFT rust let g:rustfmt_command = system('which rustfmt')
+AutocmdFT rust let g:rustfmt_options = "--write-mode=overwrite"
+AutocmdFT rust let g:racer_cmd = system('which racer')
+
+" ---------------------------
+" ---- protobuf settings ----
+" ---------------------------
+Autocmd BufWritePre *.proto,*.pb,*.protobuf Neoformat
 
 " -------------------------
 " ---- Default Setting ----
@@ -514,6 +576,11 @@ imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expan
 " ----------------------------
 " ---- File type settings ----
 " ----------------------------
+Autocmd BufNewFile,BufRead *.tmpl set filetype=html
+Autocmd BufNewFile,BufRead *.dart set filetype=dart
+Autocmd BufNewFile,BufRead *.rs set filetype=rust
+Autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+
 " ---- Enable Filetype
 filetype plugin indent on
 filetype on

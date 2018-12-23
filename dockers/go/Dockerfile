@@ -1,3 +1,5 @@
+# syntax = docker/dockerfile:1.0-experimental
+
 FROM golang:1.11-alpine AS go
 
 RUN apk update \
@@ -7,7 +9,8 @@ RUN apk update \
     curl \
     wget
 
-RUN go get -v -u github.com/alecthomas/gometalinter \
+RUN --mount=target=/root/.cache,type=cache \
+    go get -v -u github.com/alecthomas/gometalinter \
     github.com/cweill/gotests/... \
     github.com/davidrjenni/reftools/cmd/fillstruct \
     github.com/derekparker/delve/cmd/dlv \
@@ -46,7 +49,11 @@ RUN cargo install --force ripgrep \
 
 FROM docker:18.09-dind AS docker
 
-FROM google/cloud-sdk:224.0.0-alpine AS gcloud
+FROM google/cloud-sdk:228.0.0-alpine AS gcloud
+
+FROM nimlang/nim:latest-alpine AS nim
+
+FROM google/dart:dev AS dart
 
 FROM alpine:edge
 
@@ -57,7 +64,8 @@ ENV HOME /root
 ENV GOPATH /go
 ENV GOROOT /usr/local/go
 ENV CARGO_PATH /usr/local/cargo
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$PATH
+ENV DART_PATH /usr/lib/dart
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$PATH
 ENV NVIM_HOME $HOME/.config/nvim
 ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
 ENV ZPLUG_HOME $HOME/.zplug;
@@ -71,6 +79,14 @@ COPY --from=go /go/bin $GOPATH/bin
 COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
 COPY --from=rust /home/rust/.cargo/bin /usr/local/cargo/bin
+
+COPY --from=nim /bin/nim /usr/local/bin/nim
+COPY --from=nim /bin/nimble /usr/local/bin/nimble
+COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
+
+COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
+COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
+COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
 
 COPY --from=docker /usr/local/bin/containerd /usr/bin/docker-containerd
 COPY --from=docker /usr/local/bin/containerd-shim /usr/bin/docker-containerd-shim

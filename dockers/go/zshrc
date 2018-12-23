@@ -43,6 +43,7 @@ export CGO_CXXFLAGS="-g -Ofast -march=native"
 export CGO_FFLAGS="-g -Ofast -march=native"
 export CGO_LDFLAGS="-g -Ofast -march=native"
 
+export DOCKER_BUILDKIT=1
 
 export PYTHON_CONFIGURE_OPTS="--enable-shared"
 
