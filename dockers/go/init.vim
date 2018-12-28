@@ -34,8 +34,8 @@ call plug#begin('/root/.config/nvim/plugged')
     Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
     Plug 'Shougo/neoinclude.vim'
     " TODO if deoppet is fully worked replace neosnippet
-    " Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/neosnippet'
+    Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
+    " Plug 'Shougo/neosnippet'
     Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neoyank.vim'
     Plug 'Shougo/vimproc.vim', {'dir': '/root/.config/nvim/plugged/vimproc.vim', 'do': 'make' }
@@ -51,6 +51,8 @@ call plug#begin('/root/.config/nvim/plugged')
     Plug 'majutsushi/tagbar' " tag bar toggle
     Plug 'nathanaelkane/vim-indent-guides' " show indent guide
     Plug 'w0rp/ale' " lint plugin
+    Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
+    " Plug 'Shougo/deoplete-lsp'
     Plug 'tyru/caw.vim' " comment out
     Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
     Plug 'terryma/vim-multiple-cursors' " multiple cursors
@@ -69,7 +71,7 @@ call plug#begin('/root/.config/nvim/plugged')
     Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
     Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
-    Plug 'nsf/gocode', {'for': 'go', 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh'}
+    " Plug 'nsf/gocode', {'for': 'go', 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh'}
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
 " ---- Dart
@@ -116,18 +118,19 @@ let g:deoplete#file#enable_buffer_path = 1
 let g:deoplete#max_list = 10000
 
 " TODO remove it
-let g:neosnippet#snippets_directory='/root/.config/nvim/plugged/neosnippet-snippets/neosnippets/'
+" let g:neosnippet#snippets_directory='/root/.config/nvim/plugged/neosnippet-snippets/neosnippets/'
 " TODO if deoppet is fully worked replace neosnippet
-" let g:deoppet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
+let g:deoppet#snippets_directory='root/.config/nvim/plugged/neosnippet-snippets/neosnippets/'
 
 " Deoplete-Golang
+AutocmdFT go call lsp#server#add('go', ['bingo', '--mode', 'stdio', '--logfile', '/tmp/lspserver.log', '--trace', '--pprof', ':6060'])
 AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
 AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
 AutocmdFT go let g:deoplete#sources#go#align_class = 1
 " AutocmdFT go let g:deoplete#sources#go#cgo = 1
 " AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
 " AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
-AutocmdFT go let g:deoplete#sources#go#gocode_binary = expand("$GOPATH").'/bin/gocode' 
+" AutocmdFT go let g:deoplete#sources#go#gocode_binary = expand("$GOPATH").'/bin/gocode' 
 AutocmdFT go let g:deoplete#sources#go#json_directory = "/root/.config/nvim/plugged/deoplete-go/data/json/*/".expand("$GOOS")."_".expand("$GOARCH")
 AutocmdFT go let g:deoplete#sources#go#package_dot = 1
 AutocmdFT go let g:deoplete#sources#go#on_event = 1
@@ -178,6 +181,14 @@ Autocmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) 
 
 AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggregate --fast --sort=line --vendor --concurrency=16  --enable=gocyclo --enable=govet --enable=golint --enable=gotype'
 
+" let g:LanguageClient_rootMarkers = {
+    "\ 'go': ['.git', 'go.mod'],
+    "\ }
+
+" let g:LanguageClient_serverCommands = {
+    "\ 'rust': ['/usr/local/cargo/bin/rustup', 'run', 'stable', 'rls'],
+    "\ 'go': ['bingo', '--mode', 'stdio', '--logfile', '/tmp/lspserver.log','--trace', '--pprof', ':6060'],
+    "\ }
 
 " -------------------------
 " ---- Denite settings ----
@@ -328,6 +339,8 @@ AutocmdFT go let g:go_fmt_command = "goimports"
 " TODO if deoppet is fully worked replace neosnippet
 " AutocmdFT go let g:go_snippet_engine = "deoppet"
 " TODO remove this
+AutocmdFT go let g:go_def_mapping_enabled = 0
+AutocmdFT go let g:go_doc_keywordprg_enabled = 0
 AutocmdFT go let g:go_snippet_engine = "neosnippet"
 AutocmdFT go let g:go_highlight_types = 1
 AutocmdFT go let g:go_highlight_fields = 1
