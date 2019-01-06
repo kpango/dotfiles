@@ -123,7 +123,7 @@ let g:deoplete#max_list = 10000
 let g:deoppet#snippets_directory='root/.config/nvim/plugged/neosnippet-snippets/neosnippets/'
 
 " Deoplete-Golang
-AutocmdFT go call lsp#server#add('go', ['bingo', '--mode', 'stdio', '--logfile', '/tmp/lspserver.log', '--trace', '--pprof', ':6060'])
+" AutocmdFT go call lsp#server#add('go', ['bingo', '--mode', 'stdio', '--logfile', '/tmp/lspserver.log', '--trace', '--pprof', ':6060'])
 AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
 AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
 AutocmdFT go let g:deoplete#sources#go#align_class = 1
@@ -181,14 +181,14 @@ Autocmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) 
 
 AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggregate --fast --sort=line --vendor --concurrency=16  --enable=gocyclo --enable=govet --enable=golint --enable=gotype'
 
-" let g:LanguageClient_rootMarkers = {
-    "\ 'go': ['.git', 'go.mod'],
-    "\ }
+let g:LanguageClient_rootMarkers = {
+    \ 'go': ['.git', 'go.mod'],
+    \ }
 
-" let g:LanguageClient_serverCommands = {
-    "\ 'rust': ['/usr/local/cargo/bin/rustup', 'run', 'stable', 'rls'],
-    "\ 'go': ['bingo', '--mode', 'stdio', '--logfile', '/tmp/lspserver.log','--trace', '--pprof', ':6060'],
-    "\ }
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['/usr/local/cargo/bin/rustup', 'run', 'stable', 'rls'],
+    \ 'go': ['bingo', '--mode', 'stdio', '--logfile', '/tmp/lspserver.log','--trace', '--pprof', ':6060'],
+    \ }
 
 " -------------------------
 " ---- Denite settings ----
