@@ -1,0 +1,11 @@
+#!/usr/local/bin/zsh
+
+alias docker="DOCKER_BUILDKIT=1 sudo docker"
+
+alias dockerrm="docker container stop $(docker container ls -aq);docker ps -aq | xargs docker rm -f;docker container prune -f;docker images -aq | xargs docker rmi -f;docker image prune -a;docker volume prune -f;docker network prune -f;docker system prune -a"
+
+alias kpbuild="cd $HOME/go/src/github.com/kpango/dotfiles/dockers/go&&docker build --pull=true --file=$HOME/go/src/github.com/kpango/dotfiles/dockers/go/Dockerfile -t kpango/dev:latest $HOME/go/src/github.com/kpango/dotfiles/dockers/go"
+
+alias kpmove="cd $HOME/go/src/github.com/kpango/dotfiles/dockers/go"
+
+alias devrun="sudo docker run --network host --cap-add=ALL --privileged=true -v $HOME/.netrc:/root/.netrc  -v /var/run/docker.sock:/var/run/docker.sock -v $HOME/.docker/daemon.json:/root/.docker/daemon.json -v /usr/share/zoneinfo/Japan:/etc/timezone:ro -v $HOME/go/src:/go/src:cached -v $HOME/.ssh:/root/.ssh -v $HOME/.kube:/root/.kube -v $HOME/go/src/github.com/kpango/dotfiles/dockers/go/zshrc:/root/.zshrc -v $HOME/go/src/github.com/kpango/dotfiles/dockers/go/init.vim:/root/.config/nvim/init.vim -v $HOME/go/src/github.com/kpango/dotfiles/dockers/go/tmux.conf:/root/.tmux.conf --name dev -it --rm kpango/dev"

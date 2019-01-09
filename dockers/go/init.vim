@@ -16,7 +16,7 @@ filetype plugin indent off
 " --------------------------
 if has('vim_starting')
     set runtimepath+=~/.config/nvim/plugged/vim-plug
-    if !isdirectory('/root/.config/nvim/plugged/vim-plug')
+    if !isdirectory(expand('$NVIM_HOME') . '/plugged/vim-plug')
         call system('mkdir -p ~/.config/nvim/plugged/vim-plug')
         call system('git clone https://github.com/junegunn/vim-plug.git ~/.config/nvim/plugged/vim-plug/autoload')
     end
@@ -25,20 +25,20 @@ endif
 " -------------------------
 " ---- Plugins Install ----
 " -------------------------
-call plug#begin('/root/.config/nvim/plugged')
+call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ----- update self
-    Plug 'junegunn/vim-plug', {'dir': '/root/.config/nvim/plugged/vim-plug/autoload'}
+    Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
 " ---- common plugins
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/neoinclude.vim'
+    " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    " Plug 'Shougo/neoinclude.vim'
     " TODO if deoppet is fully worked replace neosnippet
-    Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
+    " Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
     " Plug 'Shougo/neosnippet'
-    Plug 'Shougo/neosnippet-snippets'
+    " Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neoyank.vim'
-    Plug 'Shougo/vimproc.vim', {'dir': '/root/.config/nvim/plugged/vimproc.vim', 'do': 'make' }
+    Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Shougo/neomru.vim'
     Plug 'cohama/lexima.vim' " auto close bracket
     Plug 'airblade/vim-gitgutter'
@@ -51,9 +51,8 @@ call plug#begin('/root/.config/nvim/plugged')
     Plug 'majutsushi/tagbar' " tag bar toggle
     Plug 'nathanaelkane/vim-indent-guides' " show indent guide
     Plug 'w0rp/ale' " lint plugin
-    Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
-    " Plug 'Shougo/deoplete-lsp'
     Plug 'tyru/caw.vim' " comment out
+    Plug 'rizzatti/dash.vim', {'on': 'Dash'}
     Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
     Plug 'terryma/vim-multiple-cursors' " multiple cursors
     Plug 'thinca/vim-quickrun'
@@ -62,35 +61,124 @@ call plug#begin('/root/.config/nvim/plugged')
     " Plug 'ozelentok/denite-gtags'
     " Plug 'jsfaint/gen_tags.vim'
     " Plug 'vim-scripts/gtags.vim'
+    " Plug 'autozimu/LanguageClient-neovim', {
+        "\ 'branch': 'next',
+        "\ 'do': 'zsh install.sh',
+        "\ }
+    Plug 'prabirshrestha/async.vim'
+    Plug 'prabirshrestha/vim-lsp'
+    Plug 'prabirshrestha/asyncomplete.vim'
+    Plug 'prabirshrestha/asyncomplete-lsp.vim'
+    Plug 'natebosch/vim-lsc'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
 " ---- Yaml Setting
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
+" ---- Clang Setting
+    " Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
 " ---- Golang Setting
     Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
-    Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
-    " Plug 'nsf/gocode', {'for': 'go', 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh'}
+    " Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
+" ---- HTML
+    Plug 'digitaltoad/vim-jade', { 'for': ['jade', 'pug'] }
+    Plug 'gregsexton/MatchTag', { 'for': ['html','php'] }
+    Plug 'hokaccha/vim-html5validator', {'for': ['html', 'php']}
+    Plug 'mattn/emmet-vim', {'for': ['html', 'php']}
+    Plug 'mustache/vim-mustache-handlebars', { 'for': ['html','php','haml'] }
+    Plug 'othree/html5.vim', {'for': ['html', 'php']}
+    Plug 'tpope/vim-haml', {'for': 'haml'}
+" ---- LESS SASS CSS
+    Plug 'ap/vim-css-color', {'for': ['css','less','sass','scss','stylus'] }
+    Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass','scss'] }
+    Plug 'groenewege/vim-less', {'for': 'less'}
+    Plug 'hail2u/vim-css3-syntax', {'for': ['css','less','sass','scss','stylus'] }
+    Plug 'wavded/vim-stylus', {'for': ['stylus']}
+" ---- JavaScript
+    Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
+    " Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
+    Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
+    Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
+    Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
+    " Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
+    " Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
+    Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
+    Plug 'posva/vim-vue', { 'for': ['vue'] }
+    Plug 'othree/jspc.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+    Plug 'othree/yajs.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+    Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'ramitos/jsctags', {'for': ['javascript', 'javascript.jsx', 'json']}
 " ---- Dart
     Plug 'dart-lang/dart-vim-plugin', {'for': 'dart'}
     Plug 'miyakogi/vim-dartanalyzer', {'for': 'dart'}
+" ---- Crystal
+    Plug 'rhysd/vim-crystal', {'for': ['crystal'] }
 " ---- Nim
     Plug 'zah/nim.vim', {'for': 'nim'}
 " ---- Rust
     Plug 'rust-lang/rust.vim', {'for': 'rust'}
-    Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
+    " Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
     Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
+" ---- Python
+    " Plug 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi;pip3 install jedi'}
+" ---- Lisp
+    Plug 'vim-scripts/slimv.vim', {'for': 'lisp'}
+" ---- Lua
+    Plug 'xolox/vim-misc', {'for': 'lua'}
+    Plug 'xolox/vim-lua-ftplugin', {'for': 'lua'}
+    Plug 'xolox/vim-lua-inspect', {'for': 'lua'}
+" ---- Swift
+    Plug 'keith/swift.vim', {'for': 'swift'}
+    Plug 'kballard/vim-swift', {'for': 'swift'}
+"     Plug 'landaire/deoplete-swift', {'for': 'swift'}
+    Plug 'mitsuse/autocomplete-swift', {'for': 'swift'}
+" ---- Markdown
+    Plug 'kannokanno/previm', {'for': 'markdown'}
+    Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
+    Plug 'shinespark/vim-list2tree', {'for': 'markdown', 'on': 'List2Tree'}
+    Plug 'sotte/presenting.vim', {'for': 'markdown'}
+    Plug 'tyru/open-browser.vim', {'for': 'markdown'}
+" ---- SQL
+    Plug 'JarrodCTaylor/vim-sql-suggest', { 'for': 'sql' }
+" ---- TOML
+    Plug 'cespare/vim-toml', {'for': 'toml'}
+" ---- LLVM
+    Plug 'qnighy/llvm.vim', {'for': 'llvm'}
+" ---- ZSH
+    " Plug 'zchee/deoplete-zsh', {'for': 'zsh'}
 call plug#end()
+
+" --------------------------------------
+" ---- Plugin Dependencies Settings ----
+" --------------------------------------
+if !has('python') && !has('pip')
+    call system('pip install --upgrade pip')
+    call system('pip install neovim --upgrade')
+endif
+
+if !has('python3') && !has('pip3')
+    call system('pip3 install --upgrade pip')
+    call system('pip3 install neovim --upgrade')
+endif
+
+if !has('gb') && has('go')
+    call system('go get -u -v github.com/constabulary/gb/...')
+endif
 
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
 
-let g:python_host_prog="/usr/bin/python"
-let g:python3_host_prog="/usr/bin/python3"
+if executable('python2')
+    let g:python_host_prog=system('which python2')
+endif
+
+if executable('python3')
+    let g:python3_host_prog=system('which python3')
+endif
 
 " ----------------------------
 " ---- AutoGroup Settings ----
@@ -105,43 +193,58 @@ command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
 " ---------------------------
 " ---- Deoplete Settings ----
 " ---------------------------
-set runtimepath+="/root/.config/nvim/plugged/deoplete.nvim"
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#auto_complete_delay = 0
-let g:deoplete#auto_complete_start_length = 1
-let g:deoplete#auto_completion_start_length = 1
-let g:deoplete#enable_camel_case = 1
-let g:deoplete#enable_ignore_case = 1
-let g:deoplete#enable_refresh_always = 1
-let g:deoplete#enable_smart_case = 1
-let g:deoplete#file#enable_buffer_path = 1
-let g:deoplete#max_list = 10000
+" set runtimepath+=globpath($NVIM_HOME,"/plugged/deoplete.nvim")
+" let g:deoplete#enable_at_startup = 1
+" let g:deoplete#auto_complete_delay = 0
+" let g:deoplete#auto_complete_start_length = 1
+" let g:deoplete#auto_completion_start_length = 1
+" let g:deoplete#enable_camel_case = 1
+" let g:deoplete#enable_ignore_case = 1
+" let g:deoplete#enable_refresh_always = 1
+" let g:deoplete#enable_smart_case = 1
+" let g:deoplete#file#enable_buffer_path = 1
+" let g:deoplete#max_list = 10000
 
 " TODO remove it
-" let g:neosnippet#snippets_directory='/root/.config/nvim/plugged/neosnippet-snippets/neosnippets/'
+" let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
 " TODO if deoppet is fully worked replace neosnippet
-let g:deoppet#snippets_directory='root/.config/nvim/plugged/neosnippet-snippets/neosnippets/'
+" let g:deoppet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
 
 " Deoplete-Golang
-" AutocmdFT go call lsp#server#add('go', ['bingo', '--mode', 'stdio', '--logfile', '/tmp/lspserver.log', '--trace', '--pprof', ':6060'])
-AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
-AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
-AutocmdFT go let g:deoplete#sources#go#align_class = 1
-" AutocmdFT go let g:deoplete#sources#go#cgo = 1
-" AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
-" AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
-" AutocmdFT go let g:deoplete#sources#go#gocode_binary = expand("$GOPATH").'/bin/gocode' 
-AutocmdFT go let g:deoplete#sources#go#json_directory = "/root/.config/nvim/plugged/deoplete-go/data/json/*/".expand("$GOOS")."_".expand("$GOARCH")
-AutocmdFT go let g:deoplete#sources#go#package_dot = 1
-AutocmdFT go let g:deoplete#sources#go#on_event = 1
-AutocmdFT go let g:deoplete#sources#go#pointer = 1
-AutocmdFT go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-AutocmdFT go let g:deoplete#sources#go#use_cache = 1
-
-" Deoplete Rust
-AutocmdFT rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
-AutocmdFT rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
-AutocmdFT rust let g:deoplete#sources#rust#documentation_max_height=20
+" AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
+" AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
+" AutocmdFT go let g:deoplete#sources#go#align_class = 1
+" " AutocmdFT go let g:deoplete#sources#go#cgo = 1
+" " AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
+" " AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
+" AutocmdFT go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
+" AutocmdFT go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
+" AutocmdFT go let g:deoplete#sources#go#package_dot = 1
+" AutocmdFT go let g:deoplete#sources#go#on_event = 1
+" AutocmdFT go let g:deoplete#sources#go#pointer = 1
+" AutocmdFT go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+" AutocmdFT go let g:deoplete#sources#go#use_cache = 1
+"
+" " Deoplete-Clang
+" AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
+" AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#clang_header = expand("/Library/Developer/CommandLineTools/usr/lib/clang")
+"
+" " Deoplete Python
+" AutocmdFT python let g:deoplete#sources#jedi#enable_cache = 1
+" AutocmdFT python let g:deoplete#sources#jedi#statement_length = 0
+" AutocmdFT python let g:deoplete#sources#jedi#short_types = 0
+" AutocmdFT python let g:deoplete#sources#jedi#show_docstring = 1
+" AutocmdFT python let g:deoplete#sources#jedi#worker_threads = 4
+" AutocmdFT python call deoplete#custom#source('jedi', 'disabled_syntaxes', ['Comment'])
+" AutocmdFT python call deoplete#custom#source('jedi', 'matchers', ['matcher_fuzzy'])
+"
+" " Deoplete Rust
+" AutocmdFT rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
+" AutocmdFT rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
+" AutocmdFT rust let g:deoplete#sources#rust#documentation_max_height=20
+"
+" " Deoplete Swift
+" AutocmdFT swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
 
 " ----------------------
 " ---- Ale settings ----
@@ -156,11 +259,21 @@ let g:ale_set_highlights = 1
 " let g:ale_set_quickfix = 1
 let g:ale_warn_about_trailing_whitespace = 0
 let g:ale_linters = {
-        \   'c': ['clang'],
+        \   'javascript': ['eslint_d'],
+        \   'php': ['php', 'phpcs', 'phpmd'],
         \   'go': ['go build', 'gometalinter'],
         \   'rust': ['rustc'],
+        \   'html': ['tidy', 'htmlhint'],
+        \   'c': ['clang'],
+        \   'cpp': ['clang++'],
+        \   'css': ['csslint', 'stylelint'],
         \   'nim': ['nim', 'nimsuggest'],
         \   'vim': ['vint'],
+        \   'python': ['python', 'pyflakes', 'flake8'],
+        \   'shell': ['sh', 'shellcheck'],
+        \   'zsh': ['zsh'],
+        \   'swift': ['swiftc'],
+        \   'sql': ['sqlint'],
         \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
@@ -181,14 +294,28 @@ Autocmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) 
 
 AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggregate --fast --sort=line --vendor --concurrency=16  --enable=gocyclo --enable=govet --enable=golint --enable=gotype'
 
-let g:LanguageClient_rootMarkers = {
-    \ 'go': ['.git', 'go.mod'],
-    \ }
 
-let g:LanguageClient_serverCommands = {
-    \ 'rust': ['/usr/local/cargo/bin/rustup', 'run', 'stable', 'rls'],
-    \ 'go': ['bingo', '--mode', 'stdio', '--logfile', '/tmp/lspserver.log','--trace', '--pprof', ':6060'],
-    \ }
+" --------------------------------------------------
+" ---- Language Server Protocol Client settings ----
+" --------------------------------------------------
+" let g:LanguageClient_serverCommands = {
+"    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+"    \ 'javascript': ['javascript-typescript-stdio'],
+"    \ 'vue': ['vls'],
+"    \ }
+let g:lsp_async_completion = 1
+let g:lsp_diagnostics_enabled = 0
+if executable('golsp')
+  augroup LspGo
+    au!
+    autocmd User lsp_setup call lsp#register_server({
+        \ 'name': 'go-lang',
+        \ 'cmd': {server_info->['golsp', '-mode', 'stdio']},
+        \ 'whitelist': ['go'],
+        \ })
+    autocmd FileType go setlocal omnifunc=lsp#complete
+  augroup END
+endif
 
 " -------------------------
 " ---- Denite settings ----
@@ -238,6 +365,20 @@ set statusline+=%#warningmsg#
 set statusline+=%{ALEGetStatusLine()}
 set statusline+=%*
 
+" ----------------------------
+" ---- File type settings ----
+" ----------------------------
+Autocmd BufNewFile,BufRead *.tmpl set filetype=html
+Autocmd BufNewFile,BufRead *.dart set filetype=dart
+Autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
+Autocmd BufNewFile,BufRead *.es6 set filetype=javascript
+Autocmd BufNewFile,BufRead *.exs,*.ex set filetype=elixir
+Autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+Autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
+Autocmd BufNewFile,BufRead *.rs set filetype=rust
+Autocmd BufNewFile,BufRead *.ts set filetype=typescript
+Autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+
 " ------------------------------
 " ---- Indentation settings ----
 " ------------------------------
@@ -247,10 +388,14 @@ let g:indent_guides_auto_colors=0
 let g:indent_guides_color_change_percent = 30
 let g:indent_guides_guide_size = 1
 
+AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS
 AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview
 AutocmdFT sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
+AutocmdFT xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 
 " --------------------------
 " ---- Tag bar settings ----
@@ -303,6 +448,50 @@ AutocmdFT nim let g:tagbar_type_nim = {
             \   'm:macro',
             \ ],
             \ }
+AutocmdFT ruby let g:tagbar_type_ruby = {
+            \ 'ctagstype' : 'ruby',
+            \ 'kinds' : [
+            \   'm:modules',
+            \   'c:classes',
+            \   'd:describes',
+            \   'C:contexts',
+            \   'f:methods',
+            \   'F:singleton methods'
+            \ ]
+            \}
+
+" -------------------------
+" ---- Format settings ----
+" -------------------------
+"  JSON Formatter
+if executable('jq')
+    function! s:jq(has_bang, ...) abort range
+        execute 'silent' a:firstline ',' a:lastline '!jq' string(a:0 == 0 ? '.' : a:1)
+        if !v:shell_error || a:has_bang
+            return
+        endif
+        let l:error_lines = filter(getline('1', '$'), 'v:val =~# "^parse error: "')
+        " 範囲指定している場合のために，行番号を置き換える
+        let l:error_lines = map(l:error_lines, 'substitute(v:val, "line \\zs\\(\\d\\+\\)\\ze,", "\\=(submatch(1) + a:firstline - 1)", "")')
+        let l:winheight = len(l:error_lines) > 10 ? 10 : len(l:error_lines)
+        " カレントバッファがエラーメッセージになっているので，元に戻す
+        undo
+        " カレントバッファの下に新たにウィンドウを作り，エラーメッセージを表示するバッファを作成する
+        execute 'botright' l:winheight 'new'
+        setlocal nobuflisted bufhidden=unload buftype=nofile
+        call setline(1, l:error_lines)
+        " エラーメッセージ用バッファのundo履歴を削除(エラーメッセージをundoで消去しないため)
+        let l:save_undolevels = &l:undolevels
+        setlocal undolevels=-1
+        execute "normal! a \<BS>\<Esc>"
+        setlocal nomodified
+        let &l:undolevels = l:save_undolevels
+        " エラーメッセージ用バッファは読み取り専用にしておく
+        setlocal readonly
+    endfunction
+    command! -bar -bang -range=% -nargs=? Jq <line1>,<line2>call s:jq(<bang>0, <f-args>)
+endif
+
 " -------------------------
 " ---- Lexima settings ----
 " -------------------------
@@ -316,7 +505,7 @@ call lexima#add_rule({'at': '\%#\n\s*}', 'char': '}', 'input': '}', 'delete': '}
 " ---- gitgutter settings ----
 " ----------------------------
 let g:gitgutter_max_signs = 10000
-let g:gitgutter_git_executable = "/usr/bin/git"
+let g:gitgutter_git_executable="/usr/bin/git"
 
 " ---------------------
 " ---- Caw Setting ----
@@ -339,9 +528,9 @@ AutocmdFT go let g:go_fmt_command = "goimports"
 " TODO if deoppet is fully worked replace neosnippet
 " AutocmdFT go let g:go_snippet_engine = "deoppet"
 " TODO remove this
+" AutocmdFT go let g:go_snippet_engine = "neosnippet"
 AutocmdFT go let g:go_def_mapping_enabled = 0
 AutocmdFT go let g:go_doc_keywordprg_enabled = 0
-AutocmdFT go let g:go_snippet_engine = "neosnippet"
 AutocmdFT go let g:go_highlight_types = 1
 AutocmdFT go let g:go_highlight_fields = 1
 AutocmdFT go let g:go_highlight_functions = 1
@@ -356,8 +545,19 @@ AutocmdFT go let g:go_list_type = "quickfix"
 AutocmdFT go let g:go_addtags_transform = "snakecase"
 AutocmdFT go let g:go_alternate_mode = "edit"
 AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
+" AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
 AutocmdFT go nnoremap <F5> :Gorun<CR>
 AutocmdFT go nnoremap gd <Plug>(go-def-split)
+
+" ------------------------
+" ---- Clang settings ----
+" ------------------------
+Autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
+
+" ---------------------------
+" ---- protobuf settings ----
+" ---------------------------
+Autocmd BufWritePre *.proto,*.pb,*.protobuf Neoformat
 
 " ----------------------
 " ---- Nim settings ----
@@ -374,10 +574,98 @@ AutocmdFT rust let g:rustfmt_command = system('which rustfmt')
 AutocmdFT rust let g:rustfmt_options = "--write-mode=overwrite"
 AutocmdFT rust let g:racer_cmd = system('which racer')
 
+" -----------------------
+" ---- Swift settings ----
+" -----------------------
+AutocmdFT swift let g:neomake_swift_swiftc_maker = {
+                \ 'exe': 'swiftc',
+                \ 'args': ['-parse'],
+                \ 'errorformat': {
+                \ '%E%f:%l:%c: error: %m,' .
+                \ '%W%f:%l:%c: warning: %m,' .
+                \ '%Z%\s%#^~%#,' .
+                \ '%-G%.%#'
+                \ },
+                \ }
+AutocmdFT swift let g:quickrun_config['swift'] = {
+                \ 'command': 'xcrun',
+                \ 'cmdopt': 'swift',
+                \ 'exec': '%c %o %s',
+                \}
+
+" -----------------------
+" ---- Ruby settings ----
+" -----------------------
+AutocmdFT ruby let g:rubycomplete_buffer_loading = 1
+AutocmdFT ruby let g:rubycomplete_classes_in_global = 1
+AutocmdFT ruby let g:rubycomplete_rails = 1
+AutocmdFT ruby map <Leader>t :call RunCurrentSpecFile()<CR>
+AutocmdFT ruby map <Leader>s :call RunNearestSpec()<CR>
+AutocmdFT ruby map <Leader>l :call RunLastSpec()<CR>
+AutocmdFT ruby map <Leader>a :call RunAllSpecs()<CR>
+AutocmdFT ruby nnoremap <leader>rap  :RAddParameter<cr>
+AutocmdFT ruby nnoremap <leader>rcpc :RConvertPostConditional<cr>
+AutocmdFT ruby nnoremap <leader>rel  :RExtractLet<cr>
+AutocmdFT ruby vnoremap <leader>rec  :RExtractConstant<cr>
+AutocmdFT ruby vnoremap <leader>relv :RExtractLocalVariable<cr>
+AutocmdFT ruby nnoremap <leader>rit  :RInlineTemp<cr>
+AutocmdFT ruby vnoremap <leader>rrlv :RRenameLocalVariable<cr>
+AutocmdFT ruby vnoremap <leader>rriv :RRenameInstanceVariable<cr>
+AutocmdFT ruby vnoremap <leader>rem  :RExtractMethod<cr>
+
+" -----------------------------
+" ---- JavaScript settings ----
+" -----------------------------
+Autocmd BufWritePre *.js,*.jsx,*.coffee EsFix
+Autocmd BufWritePre *.js,*.jsx,*.coffee Neoformat
+AutocmdFT coffee,javascript,javascript.jsx,json let g:node_usejscomplete = 1
+AutocmdFT coffee,javascript,javascript.jsx,json let g:tern_request_timeout = 1
+AutocmdFT coffee,javascript,javascript.jsx,json let g:tern_show_signature_in_pum = '0'
+AutocmdFT coffee,javascript,javascript.jsx,json let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
+AutocmdFT coffee,javascript,javascript.jsx,json let g:js_indent_typescript = 1
+AutocmdFT coffee,javascript,javascript.jsx,json let g:tagbar_type_javascript = {'ctagsbin' : system('which jsctags')}
+AutocmdFT coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
+Autocmd VimLeave *.js  !eslint_d stop
+
+" -----------------------------
+" ---- TypeScript settings ----
+" -----------------------------
+Autocmd BufWritePre *.ts EsFix
+Autocmd BufWritePre *.ts Neoformat
+AutocmdFT coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
+AutocmdFT typescript let g:neomake_typescript_tsc_maker = {
+                \ 'args': [
+                \ '--project', getcwd(), '--noEmit'
+                \ ],
+                \ 'append_file': 0,
+                \ 'errorformat':
+                \ '%E%f %#(%l\,%c): error %m,' .
+                \ '%E%f %#(%l\,%c): %m,' .
+                \ '%Eerror %m,' .
+                \ '%C%\s%\+%m'
+                \ }
+Autocmd VimLeave *.ts  !eslint_d stop
+
+" -----------------------
+" ---- HTML settings ----
+" -----------------------
+AutocmdFT html,xhtml imap <buffer><expr><tab> emmet#isExpandable() ? "\<plug>(emmet-expand-abbr)" : "\<tab>"
+
 " ---------------------------
-" ---- protobuf settings ----
+" ---- Markdown settings ----
 " ---------------------------
-Autocmd BufWritePre *.proto,*.pb,*.protobuf Neoformat
+AutocmdFT md,markdown let g:previm_open_cmd = 'open -a Google\ Chrome'
+
+" ------------------------
+" ---- Other settings ----
+" ------------------------
+" ---- Enable Binary Mode
+Autocmd BufReadPre  *.bin let &binary = 1
+Autocmd BufReadPost * if &binary | silent %!xxd -g 1
+Autocmd BufReadPost * set ft=xxd | endif
+Autocmd BufWritePre * if &binary | %!xxd -r | endif
+Autocmd BufWritePost * if &binary | silent %!xxd -g 1
+Autocmd BufWritePost * set nomod | endif
 
 " -------------------------
 " ---- Default Setting ----
@@ -578,21 +866,13 @@ function! s:completion_check_bs()
 endfunction
 
 " Deoplete Key map
-inoremap <expr><silent><Tab> pumvisible() ? "\<C-n>" : (<sid>completion_check_bs() ? "\<Tab>" : deoplete#mappings#manual_complete())
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
-" imap <expr><TAB> deoppet#expandable_or_jumpable() ? "\<Plug>(deoppet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-
-" ----------------------------
-" ---- File type settings ----
-" ----------------------------
-Autocmd BufNewFile,BufRead *.tmpl set filetype=html
-Autocmd BufNewFile,BufRead *.dart set filetype=dart
-Autocmd BufNewFile,BufRead *.rs set filetype=rust
-Autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+" inoremap <expr><silent><Tab> pumvisible() ? "\<C-n>" : (<sid>completion_check_bs() ? "\<Tab>" : deoplete#mappings#manual_complete())
+" inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
+" inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
+" inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
+" " imap <expr><TAB> deoppet#expandable_or_jumpable() ? "\<Plug>(deoppet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+" imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " ---- Enable Filetype
 filetype plugin indent on

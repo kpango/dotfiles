@@ -1,5 +1,3 @@
-# syntax = docker/dockerfile:1.0-experimental
-
 FROM golang:1.11-alpine AS go
 
 RUN apk update \
@@ -10,8 +8,7 @@ RUN apk update \
     wget
 
 # RUN --mount=target=/root/.cache,type=cache \
-    # go get -v -u github.com/alecthomas/gometalinter \
-RUN go get -u github.com/alecthomas/gometalinter \
+RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/cweill/gotests/... \
     github.com/davidrjenni/reftools/cmd/fillstruct \
     github.com/derekparker/delve/cmd/dlv \
@@ -35,6 +32,7 @@ RUN go get -u github.com/alecthomas/gometalinter \
     github.com/zmb3/gogetdoc \
     golang.org/x/lint/golint \
     golang.org/x/tools/cmd/goimports \
+    golang.org/x/tools/cmd/golsp \
     golang.org/x/tools/cmd/gorename \
     golang.org/x/tools/cmd/guru \
     google.golang.org/grpc \
@@ -54,43 +52,116 @@ FROM docker:18.09-dind AS docker
 
 FROM google/cloud-sdk:228.0.0-alpine AS gcloud
 
+RUN gcloud config set core/disable_usage_reporting true \
+    && gcloud config set component_manager/disable_update_check true \
+    && gcloud config set metrics/environment github_docker_image \
+    && gcloud --version
+
 FROM nimlang/nim:latest-alpine AS nim
 
-FROM node:11-alpine AS node
+# FROM node:11-alpine AS node
 
-RUN npm config set user  root \
-    && npm install -g neovim resume-cli
+# RUN npm config set user  root \
+#     && npm install -g neovim resume-cli
 
-FROM python:3.7-alpine AS python3
+# FROM python:3.7-alpine AS python3
 
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev
-RUN pip3 install --upgrade pip neovim
-RUN apk del .build-deps gcc musl-dev
+# RUN apk add --no-cache --virtual .build-deps gcc musl-dev
+# RUN pip3 install --upgrade pip neovim
+# RUN apk del .build-deps gcc musl-dev
 
-FROM python:2.7-alpine AS python2
+# FROM python:2.7-alpine AS python2
 
-RUN apk add --no-cache --virtual .build-deps gcc musl-dev
-RUN pip2 install --upgrade pip neovim
-RUN apk del .build-deps gcc musl-dev
+# RUN apk add --no-cache --virtual .build-deps gcc musl-dev
+# RUN pip2 install --upgrade pip neovim
+# RUN apk del .build-deps gcc musl-dev
 
-FROM ruby:alpine AS ruby
-
-RUN apk add --no-cache --virtual .build-deps gcc make musl-dev
-RUN gem install neovim -no-ri-no-rdoc
-RUN apk del .build-deps gcc musl-dev
+# FROM ruby:alpine AS ruby
+#
+# RUN apk add --no-cache --virtual .build-deps gcc make musl-dev
+# RUN gem install neovim -no-ri-no-rdoc
+# RUN apk del .build-deps gcc musl-dev
 
 FROM google/dart:dev AS dart
 
 FROM alpine:edge AS base
 
-FROM base
+FROM base AS kube
 
 RUN apk update \
     && apk upgrade \
-    && apk --update add --no-cache
+    && apk --update add --no-cache \
+    make \
+    curl \
+    gcc \
+    openssl \
+    bash \
+    git
 
-FROM base
- 
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
+    && mv ./kubectl /usr/local/bin/kubectl \
+    && chmod a+x /usr/local/bin/kubectl \
+    && kubectl version --client \
+    && curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash \
+    && git clone https://github.com/ahmetb/kubectx /opt/kubectx \
+    && ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx \
+    && ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+
+FROM base AS env
+
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
+
+RUN mkdir /etc/ld.so.conf.d \
+    && echo $'/lib\n\
+/lib64\n\
+/var/lib\n\
+/usr/lib\n\
+/usr/local/lib\n\
+/usr/x86_64-alpine-linux-musl/lib\n\
+/usr/local/go/lib\n\
+/usr/lib/dart/lib\n\
+/usr/lib/node_modules/lib\n\
+/google-cloud-sdk/lib' > /etc/ld.so.conf.d/usr-local-lib.conf \
+    && echo $(ldconfig) \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
+    && apk update \
+    && apk upgrade \
+    && apk --update add --no-cache \
+    make \
+    curl \
+    gcc \
+    git \
+    linux-headers \
+    openssl \
+    openssl-dev \
+    musl-dev \
+    neovim \
+    python-dev \
+    py-pip \
+    python3-dev \
+    py3-pip \
+    nodejs \
+    npm \
+    ruby-dev \
+    tmux \
+    zsh \
+    bash \
+    xclip \
+    perl \
+    less \
+    ncurses \
+    tig \
+    tzdata \
+    jq \
+    && rm -rf /var/cache/apk/* \
+    && pip2 install --upgrade pip neovim \
+    && pip3 install --upgrade pip neovim \
+    && gem install neovim -N \
+    && npm config set user root \
+    && npm install -g neovim resume-cli
+
+FROM env
+
 LABEL maintainer="kpango <i.can.feel.gravity@gmail.com>"
 
 ENV TZ Asia/Tokyo
@@ -105,48 +176,21 @@ ENV NVIM_HOME $HOME/.config/nvim
 ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
 ENV ZPLUG_HOME $HOME/.zplug;
 
-COPY --from=go /usr/local/go/bin $GOROOT/bin
-COPY --from=go /usr/local/go/src $GOROOT/src
-COPY --from=go /usr/local/go/lib $GOROOT/lib
-COPY --from=go /usr/local/go/pkg $GOROOT/pkg
-COPY --from=go /usr/local/go/misc $GOROOT/misc
-COPY --from=go /go/bin $GOPATH/bin
-COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
+# COPY --from=python3 /usr/local /usr/local
+# COPY --from=python2 /usr/local /usr/local
 
-COPY --from=rust /home/rust/.cargo/bin /usr/local/cargo/bin
+# COPY --from=node /usr/local/bin/node /usr/bin/node
+# COPY --from=node /usr/local/bin/npm /usr/bin/npm
+# COPY --from=node /usr/local/bin/yarn /usr/bin/yarn
+# COPY --from=node /usr/local/bin/neovim-node-host /usr/bin/neovim-node-host
+# COPY --from=node /usr/local/bin/resume /usr/bin/resume
+# COPY --from=node /usr/local/lib/node_modules /usr/lib/node_modules
 
-COPY --from=nim /bin/nim /usr/local/bin/nim
-COPY --from=nim /bin/nimble /usr/local/bin/nimble
-COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
-
-COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
-COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
-COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
-
-COPY --from=python3 /usr/local/bin/python3 /usr/bin/python3
-COPY --from=python3 /usr/local/lib/libpython3* /usr/lib/
-COPY --from=python3 /usr/local/bin/pip3 /usr/bin/pip3
-COPY --from=python3 /usr/local/lib/python3.7 /usr/lib/python3.7
-COPY --from=python3 /usr/local/lib/pkgconfig/python* /usr/lib/pkgconfig/
-
-COPY --from=python2 /usr/local/bin/python2 /usr/bin/python2
-COPY --from=python2 /usr/local/lib/libpython2* /usr/lib/
-COPY --from=python2 /usr/local/bin/pip2 /usr/bin/pip2
-COPY --from=python2 /usr/local/lib/python2.7 /usr/lib/python2.7
-COPY --from=python2 /usr/local/lib/pkgconfig/python* /usr/lib/pkgconfig/
-
-COPY --from=node /usr/local/bin/node /usr/bin/node
-COPY --from=node /usr/local/bin/npm /usr/bin/npm
-COPY --from=node /usr/local/bin/yarn /usr/bin/yarn
-COPY --from=node /usr/local/bin/neovim-node-host /usr/bin/neovim-node-host
-COPY --from=node /usr/local/bin/resume /usr/bin/resume
-COPY --from=node /usr/local/lib/node_modules /usr/lib/node_modules
-
-COPY --from=ruby /usr/local/bin/ruby /usr/bin/ruby
-COPY --from=ruby /usr/local/bin/gem /usr/bin/gem
-COPY --from=ruby /usr/local/lib/ruby /usr/lib/ruby
-COPY --from=ruby /usr/local/lib/libruby* /usr/lib/
-COPY --from=ruby /usr/local/bundle /usr/bundle
+# COPY --from=ruby /usr/local/bin/ruby /usr/bin/ruby
+# COPY --from=ruby /usr/local/bin/gem /usr/bin/gem
+# COPY --from=ruby /usr/local/lib/ruby /usr/lib/ruby
+# COPY --from=ruby /usr/local/lib/libruby* /usr/lib/
+# COPY --from=ruby /usr/local/bundle /usr/bundle
 
 COPY --from=docker /usr/local/bin/containerd /usr/bin/docker-containerd
 COPY --from=docker /usr/local/bin/containerd-shim /usr/bin/docker-containerd-shim
@@ -160,62 +204,31 @@ COPY --from=docker /usr/local/bin/dockerd /usr/bin/dockerd
 COPY --from=docker /usr/local/bin/modprobe /usr/bin/modprobe
 COPY --from=docker /usr/local/bin/runc /usr/bin/docker-runc
 
+COPY --from=kube /usr/local/bin/kubectl /usr/bin/kubectl
+COPY --from=kube /usr/local/bin/kubectx /usr/bin/kubectx
+COPY --from=kube /usr/local/bin/kubens /usr/bin/kubens
+COPY --from=kube /usr/local/bin/helm /usr/bin/helm
+
 COPY --from=gcloud /google-cloud-sdk /google-cloud-sdk
+COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
 
-WORKDIR /etc/ld.so.conf.d
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib
+COPY --from=nim /bin/nim /usr/local/bin/nim
+COPY --from=nim /bin/nimble /usr/local/bin/nimble
+COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
 
-RUN echo $'/lib\n\
-/lib64\n\
-/var/lib\n\
-/usr/lib\n\
-/usr/local/lib\n\
-/usr/x86_64-alpine-linux-musl/lib\n\
-/usr/local/go/lib\n\
-/usr/lib/dart/lib\n\
-/google-cloud-sdk/lib' > /etc/ld.so.conf.d/usr-local-lib.conf \
-    && echo $(ldconfig)
+COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
+COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
+COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
 
-WORKDIR /tmp
+COPY --from=go /usr/local/go/bin $GOROOT/bin
+COPY --from=go /usr/local/go/src $GOROOT/src
+COPY --from=go /usr/local/go/lib $GOROOT/lib
+COPY --from=go /usr/local/go/pkg $GOROOT/pkg
+COPY --from=go /usr/local/go/misc $GOROOT/misc
+COPY --from=go /go/bin $GOPATH/bin
+COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
-RUN apk update \
-    && apk upgrade \
-    && apk --update add --no-cache \
-    make \
-    curl \
-    gcc \
-    git \
-    linux-headers \
-    openssl \
-    openssl-dev \
-    musl-dev \
-    neovim \
-    tmux \
-    zsh \
-    bash \
-    xclip \
-    perl \
-    less \
-    ncurses \
-    tig \
-    tzdata \
-    jq \
-    && rm -rf /var/cache/apk/*
-
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
-    && mv ./kubectl /usr/bin/kubectl \
-    && chmod +x /usr/bin/kubectl \
-    && kubectl version --client \
-    && curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash \
-    && git clone https://github.com/ahmetb/kubectx /opt/kubectx \
-    && ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx \
-    && ln -s /opt/kubectx/kubens /usr/local/bin/kubens
-
-RUN gcloud config set core/disable_usage_reporting true \
-    && gcloud config set component_manager/disable_update_check true \
-    && gcloud config set metrics/environment github_docker_image \
-    && gcloud --version
+COPY --from=rust /home/rust/.cargo/bin /usr/local/cargo/bin
 
 COPY init.vim $NVIM_HOME/init.vim
 COPY monokai.vim $NVIM_HOME/colors/monokai.vim
