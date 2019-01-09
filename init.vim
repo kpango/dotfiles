@@ -31,12 +31,12 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- common plugins
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/neoinclude.vim'
+    " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+    " Plug 'Shougo/neoinclude.vim'
     " TODO if deoppet is fully worked replace neosnippet
     " Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/neosnippet'
-    Plug 'Shougo/neosnippet-snippets'
+    " Plug 'Shougo/neosnippet'
+    " Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neoyank.vim'
     Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Shougo/neomru.vim'
@@ -61,33 +61,28 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'ozelentok/denite-gtags'
     " Plug 'jsfaint/gen_tags.vim'
     " Plug 'vim-scripts/gtags.vim'
-    Plug 'autozimu/LanguageClient-neovim', {
-        \ 'branch': 'next',
-        \ 'do': 'zsh install.sh',
-        \ }
+    " Plug 'autozimu/LanguageClient-neovim', {
+        "\ 'branch': 'next',
+        "\ 'do': 'zsh install.sh',
+        "\ }
+    Plug 'prabirshrestha/async.vim'
+    Plug 'prabirshrestha/vim-lsp'
+    Plug 'prabirshrestha/asyncomplete.vim'
+    Plug 'prabirshrestha/asyncomplete-lsp.vim'
+    Plug 'natebosch/vim-lsc'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
 " ---- Yaml Setting
     Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Clang Setting
-    Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+    " Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
 " ---- Golang Setting
     Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
-    Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
+    " Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
-" ---- Elixir Setting
-    Plug 'elixir-lang/vim-elixir',{'for': ['elixir', 'eelixir']}
-    Plug 'archSeer/elixir.nvim', {'for': ['elixir', 'eelixir']}
-    Plug 'avdgaag/vim-phoenix', {'for': ['elixir', 'eelixir']}
-" ---- Erlang Setting
-    Plug 'edkolev/erlang-motions.vim', {'for': 'erlang'}
-    Plug 'vim-erlang/vim-erlang-compiler', {'for': 'erlang'}
-    Plug 'vim-erlang/vim-erlang-omnicomplete', {'for': 'erlang'}
-    Plug 'vim-erlang/vim-erlang-runtime', {'for': 'erlang'}
-    Plug 'vim-erlang/vim-erlang-tags', {'for': 'erlang'}
 " ---- HTML
     Plug 'digitaltoad/vim-jade', { 'for': ['jade', 'pug'] }
     Plug 'gregsexton/MatchTag', { 'for': ['html','php'] }
@@ -96,8 +91,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'mustache/vim-mustache-handlebars', { 'for': ['html','php','haml'] }
     Plug 'othree/html5.vim', {'for': ['html', 'php']}
     Plug 'tpope/vim-haml', {'for': 'haml'}
-" ---- ELM
-    Plug 'pbogut/deoplete-elm', {'for': 'elm'}
 " ---- LESS SASS CSS
     Plug 'ap/vim-css-color', {'for': ['css','less','sass','scss','stylus'] }
     Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass','scss'] }
@@ -106,12 +99,12 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'wavded/vim-stylus', {'for': ['stylus']}
 " ---- JavaScript
     Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
-    Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
+    " Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
     Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
     Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
     Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
     " Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
-    Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
+    " Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
     Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
     Plug 'posva/vim-vue', { 'for': ['vue'] }
     Plug 'othree/jspc.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
@@ -121,51 +114,16 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Dart
     Plug 'dart-lang/dart-vim-plugin', {'for': 'dart'}
     Plug 'miyakogi/vim-dartanalyzer', {'for': 'dart'}
-" ---- PHP
-    Plug 'arnaud-lb/vim-php-namespace', {'for': 'php'}
-    Plug 'evidens/vim-twig', {'for': 'php'}
-    Plug 'h1mesuke/vim-alignta', {'for': 'php'}
-    Plug 'm2mdas/phpcomplete-extended', {'for': 'php'}
-    Plug 'pbogut/deoplete-padawan', {'for': 'php'}
-    Plug 'stephpy/vim-php-cs-fixer', {'for': 'php', 'on': 'PhpCsFixerFixFile'}
-    Plug 'thinca/vim-ref', {'for': 'php'}
-" ---- Ruby
-    Plug 'astashov/vim-ruby-debugger', {'for': 'ruby'}
-    Plug 'ecomba/vim-ruby-refactoring', {'for': 'ruby'}
-    Plug 'thoughtbot/vim-rspec', {'for': 'ruby'}
-    Plug 'tpope/vim-endwise', {'for': ['ruby', 'elixir']}
-    Plug 'tpope/vim-projectionist', {'for': 'ruby'}
-    Plug 'tpope/vim-rails', {'for': 'ruby'}
-    Plug 'tpope/vim-rake', {'for': 'ruby'}
 " ---- Crystal
     Plug 'rhysd/vim-crystal', {'for': ['crystal'] }
-" ---- Java Scala
-    Plug 'artur-shaik/vim-javacomplete2', {'for': 'java'}
-    Plug 'derekwyatt/vim-scala', {'for': 'scala'}
-    Plug 'ensime/ensime-vim', {'for': ['scala'], 'do': ':UpdateRemotePlugins'}
-    Plug 'ktvoelker/sbt-vim', {'for': 'scala'}
-    " Plug 'vhakulinen/neovim-intellij-complete', {'for': ['java', 'scala', 'kotlin']}
-    " Plug 'vhakulinen/neovim-intellij-complete-deoplete', {'for': ['java','scala','kotlin']}
-    Plug 'vim-scripts/java_getset.vim', {'for': 'java'}
-    Plug 'tfnico/vim-gradle', {'for': 'groovy' }
 " ---- Nim
     Plug 'zah/nim.vim', {'for': 'nim'}
 " ---- Rust
     Plug 'rust-lang/rust.vim', {'for': 'rust'}
-    Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
+    " Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
     Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
-" ---- Haskell
-    Plug 'dag/vim2hs', {'for': 'haskell'}
-    Plug 'eagletmt/ghcmod-vim', {'for': 'haskell'}
-    Plug 'eagletmt/neco-ghc', {'for': 'haskell'}
-    Plug 'neovimhaskell/haskell-vim', {'for': 'haskell'}
-    Plug 'pbrisbin/vim-syntax-shakespeare', {'for': 'haskell'}
-" ---- Perl
-    Plug 'c9s/perlomni.vim', {'for': 'perl'}
-    Plug 'hotchpotch/perldoc-vim', {'for': 'perl'}
-    Plug 'vim-perl/vim-perl', { 'branch': 'dev', 'for': 'perl', 'do': 'make clean carp dancer highlight-all-pragmas moose test-more try-tiny' }
 " ---- Python
-    Plug 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi;pip3 install jedi'}
+    " Plug 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi;pip3 install jedi'}
 " ---- Lisp
     Plug 'vim-scripts/slimv.vim', {'for': 'lisp'}
 " ---- Lua
@@ -190,8 +148,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- LLVM
     Plug 'qnighy/llvm.vim', {'for': 'llvm'}
 " ---- ZSH
-    Plug 'zchee/deoplete-zsh', {'for': 'zsh'}
-
+    " Plug 'zchee/deoplete-zsh', {'for': 'zsh'}
 call plug#end()
 
 " --------------------------------------
@@ -215,12 +172,12 @@ let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
 
-if executable('python')
-    let g:python_host_prog=globpath($HOME,"/.anyenv/envs/pyenv/shims/python")
+if executable('python2')
+    let g:python_host_prog=system('which python2')
 endif
 
 if executable('python3')
-    let g:python3_host_prog=globpath($HOME,"/.anyenv/envs/pyenv/shims/python3")
+    let g:python3_host_prog=system('which python3')
 endif
 
 " ----------------------------
@@ -236,58 +193,58 @@ command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
 " ---------------------------
 " ---- Deoplete Settings ----
 " ---------------------------
-set runtimepath+=globpath($NVIM_HOME,"/plugged/deoplete.nvim")
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#auto_complete_delay = 0
-let g:deoplete#auto_complete_start_length = 1
-let g:deoplete#auto_completion_start_length = 1
-let g:deoplete#enable_camel_case = 1
-let g:deoplete#enable_ignore_case = 1
-let g:deoplete#enable_refresh_always = 1
-let g:deoplete#enable_smart_case = 1
-let g:deoplete#file#enable_buffer_path = 1
-let g:deoplete#max_list = 10000
+" set runtimepath+=globpath($NVIM_HOME,"/plugged/deoplete.nvim")
+" let g:deoplete#enable_at_startup = 1
+" let g:deoplete#auto_complete_delay = 0
+" let g:deoplete#auto_complete_start_length = 1
+" let g:deoplete#auto_completion_start_length = 1
+" let g:deoplete#enable_camel_case = 1
+" let g:deoplete#enable_ignore_case = 1
+" let g:deoplete#enable_refresh_always = 1
+" let g:deoplete#enable_smart_case = 1
+" let g:deoplete#file#enable_buffer_path = 1
+" let g:deoplete#max_list = 10000
 
 " TODO remove it
-let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
+" let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
 " TODO if deoppet is fully worked replace neosnippet
 " let g:deoppet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
 
 " Deoplete-Golang
-AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
-AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
-AutocmdFT go let g:deoplete#sources#go#align_class = 1
-" AutocmdFT go let g:deoplete#sources#go#cgo = 1
-" AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
-" AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
-AutocmdFT go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
-AutocmdFT go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
-AutocmdFT go let g:deoplete#sources#go#package_dot = 1
-AutocmdFT go let g:deoplete#sources#go#on_event = 1
-AutocmdFT go let g:deoplete#sources#go#pointer = 1
-AutocmdFT go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-AutocmdFT go let g:deoplete#sources#go#use_cache = 1
-
-" Deoplete-Clang
-AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
-AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#clang_header = expand("/Library/Developer/CommandLineTools/usr/lib/clang")
-
-" Deoplete Python
-AutocmdFT python let g:deoplete#sources#jedi#enable_cache = 1
-AutocmdFT python let g:deoplete#sources#jedi#statement_length = 0
-AutocmdFT python let g:deoplete#sources#jedi#short_types = 0
-AutocmdFT python let g:deoplete#sources#jedi#show_docstring = 1
-AutocmdFT python let g:deoplete#sources#jedi#worker_threads = 4
-AutocmdFT python call deoplete#custom#source('jedi', 'disabled_syntaxes', ['Comment'])
-AutocmdFT python call deoplete#custom#source('jedi', 'matchers', ['matcher_fuzzy'])
-
-" Deoplete Rust
-AutocmdFT rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
-AutocmdFT rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
-AutocmdFT rust let g:deoplete#sources#rust#documentation_max_height=20
-
-" Deoplete Swift
-AutocmdFT swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
+" AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
+" AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
+" AutocmdFT go let g:deoplete#sources#go#align_class = 1
+" " AutocmdFT go let g:deoplete#sources#go#cgo = 1
+" " AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
+" " AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
+" AutocmdFT go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
+" AutocmdFT go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
+" AutocmdFT go let g:deoplete#sources#go#package_dot = 1
+" AutocmdFT go let g:deoplete#sources#go#on_event = 1
+" AutocmdFT go let g:deoplete#sources#go#pointer = 1
+" AutocmdFT go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+" AutocmdFT go let g:deoplete#sources#go#use_cache = 1
+"
+" " Deoplete-Clang
+" AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
+" AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#clang_header = expand("/Library/Developer/CommandLineTools/usr/lib/clang")
+"
+" " Deoplete Python
+" AutocmdFT python let g:deoplete#sources#jedi#enable_cache = 1
+" AutocmdFT python let g:deoplete#sources#jedi#statement_length = 0
+" AutocmdFT python let g:deoplete#sources#jedi#short_types = 0
+" AutocmdFT python let g:deoplete#sources#jedi#show_docstring = 1
+" AutocmdFT python let g:deoplete#sources#jedi#worker_threads = 4
+" AutocmdFT python call deoplete#custom#source('jedi', 'disabled_syntaxes', ['Comment'])
+" AutocmdFT python call deoplete#custom#source('jedi', 'matchers', ['matcher_fuzzy'])
+"
+" " Deoplete Rust
+" AutocmdFT rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
+" AutocmdFT rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
+" AutocmdFT rust let g:deoplete#sources#rust#documentation_max_height=20
+"
+" " Deoplete Swift
+" AutocmdFT swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
 
 " ----------------------
 " ---- Ale settings ----
@@ -341,11 +298,24 @@ AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggreg
 " --------------------------------------------------
 " ---- Language Server Protocol Client settings ----
 " --------------------------------------------------
-let g:LanguageClient_serverCommands = {
-    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
-    \ 'javascript': ['javascript-typescript-stdio'],
-    \ 'vue': ['vls'],
-    \ }
+" let g:LanguageClient_serverCommands = {
+"    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
+"    \ 'javascript': ['javascript-typescript-stdio'],
+"    \ 'vue': ['vls'],
+"    \ }
+let g:lsp_async_completion = 1
+let g:lsp_diagnostics_enabled
+if executable('bingo')
+  augroup LspGo
+    au!
+    autocmd User lsp_setup call lsp#register_server({
+        \ 'name': 'go-lang',
+        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
+        \ 'whitelist': ['go'],
+        \ })
+    autocmd FileType go setlocal omnifunc=lsp#complete
+  augroup END
+endif
 
 " -------------------------
 " ---- Denite settings ----
@@ -422,11 +392,8 @@ AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 exp
 AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
 AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
-AutocmdFT php setlocal ts=4 sts=4 sw=4 expandtab omnifunc=phpcomplete_extended#CompletePHP
 AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview
-AutocmdFT ruby setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
-AutocmdFT scala setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 AutocmdFT sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
 AutocmdFT xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 
@@ -538,28 +505,7 @@ call lexima#add_rule({'at': '\%#\n\s*}', 'char': '}', 'input': '}', 'delete': '}
 " ---- gitgutter settings ----
 " ----------------------------
 let g:gitgutter_max_signs = 10000
-
-" ----------------------
-" ---- Dash Setting ----
-" ----------------------
-" Dash.app連携
-function! s:dash(...)
-    if len(a:000) == 1 && len(a:1) == 0
-        echomsg 'No keyword'
-    else
-        let l:ft = &filetype
-        if &filetype ==# 'python'
-            let l:ft = l:ft.'2'
-        endif
-        let l:ft = l:ft.':'
-        let l:word = len(a:000) == 0 ? input('Keyword: ', l:ft.expand('<cword>')) : l:ft.join(a:000, ' ')
-        call system(printf("open dash://'%s'", l:word))
-    endif
-endfunction
-
-command! -nargs=* Dash call <SID>dash(<f-args>)
-
-nnoremap <Leader>d :call <SID>dash(expand('<cword>'))<CR>
+let g:gitgutter_git_executable=system("which git")
 
 " ---------------------
 " ---- Caw Setting ----
@@ -582,7 +528,9 @@ AutocmdFT go let g:go_fmt_command = "goimports"
 " TODO if deoppet is fully worked replace neosnippet
 " AutocmdFT go let g:go_snippet_engine = "deoppet"
 " TODO remove this
-AutocmdFT go let g:go_snippet_engine = "neosnippet"
+" AutocmdFT go let g:go_snippet_engine = "neosnippet"
+AutocmdFT go let g:go_def_mapping_enabled = 0
+AutocmdFT go let g:go_doc_keywordprg_enabled = 0
 AutocmdFT go let g:go_highlight_types = 1
 AutocmdFT go let g:go_highlight_fields = 1
 AutocmdFT go let g:go_highlight_functions = 1
@@ -597,7 +545,7 @@ AutocmdFT go let g:go_list_type = "quickfix"
 AutocmdFT go let g:go_addtags_transform = "snakecase"
 AutocmdFT go let g:go_alternate_mode = "edit"
 AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
-AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
+" AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
 AutocmdFT go nnoremap <F5> :Gorun<CR>
 AutocmdFT go nnoremap gd <Plug>(go-def-split)
 
@@ -625,53 +573,6 @@ AutocmdFT rust let g:rustfmt_autosave = 1
 AutocmdFT rust let g:rustfmt_command = system('which rustfmt')
 AutocmdFT rust let g:rustfmt_options = "--write-mode=overwrite"
 AutocmdFT rust let g:racer_cmd = system('which racer')
-
-" -----------------------
-" ---- Java settings ----
-" -----------------------
-AutocmdFT java,jsp setlocal omnifunc=javacomplete#Complete
-AutocmdFT java,jsp setlocal completefunc=javacomplete#CompleteParamsInfo
-AutocmdFT java,jsp let g:java_highlight_all=1
-AutocmdFT java,jsp let g:java_highlight_debug=1
-AutocmdFT java,jsp let g:java_allow_cpp_keywords=1
-AutocmdFT java,jsp let g:java_space_errors=1
-AutocmdFT java,jsp let g:java_highlight_functions=1
-AutocmdFT java,jsp let b:javagetset_enable_K_and_R=1
-AutocmdFT java,jsp let b:javagetset_add_this=1
-AutocmdFT java,jsp let g:JavaComplete_MavenRepositoryDisable = 0
-AutocmdFT java,jsp let g:JavaComplete_UseFQN = 0
-AutocmdFT java,jsp nmap <F5> <Plug>(JavaComplete-Imports-Add)
-AutocmdFT java,jsp imap <F5> <Plug>(JavaComplete-Imports-Add)
-AutocmdFT java,jsp nmap <F4> <Plug>(JavaComplete-Imports-AddSmart)
-AutocmdFT java,jsp imap <F4> <Plug>(JavaComplete-Imports-AddSmart)
-AutocmdFT java,jsp no <F9> :make clean<CR>
-AutocmdFT java,jsp no <F10> :wa<CR> :make compile<CR>
-AutocmdFT java,jsp no <F11> :make exec:exec<CR>
-
-" ------------------------
-" ---- Scala settings ----
-" ------------------------
-Autocmd BufWritePost *.scala silent :EnTypeCheck
-AutocmdFT scala compiler sbt
-
-" -------------------------
-" ---- Erlang settings ----
-" -------------------------
-AutocmdFT erlang let erlang_folding = 1
-AutocmdFT erlang let erlang_show_errors = 1
-
-" -------------------------
-" ---- Elixir settings ----
-" -------------------------
-AutocmdFT elixir imap >> \|><Space>
-AutocmdFT elixir nnoremap <Leader>t :QuickRun mix_test<CR>
-AutocmdFT elixir let g:quickrun_config.mix_test = {
-                \ 'command'     : 'mix',
-                \ 'exec'        : 'mix test',
-                \ 'outputter'   : 'quickfix',
-                \ 'errorformat' : '%E\ %#%n)\ %.%#,%C\ %#%f:%l,%Z%.%#stacktrace:,%C%m,%.%#(%.%#Error)\ %f:%l:\ %m,%-G%.%#',
-                \ 'hook/cd/directory': yacd#get_root_dir(expand('%:p:h'))
-                \ }
 
 " -----------------------
 " ---- Swift settings ----
@@ -711,24 +612,6 @@ AutocmdFT ruby nnoremap <leader>rit  :RInlineTemp<cr>
 AutocmdFT ruby vnoremap <leader>rrlv :RRenameLocalVariable<cr>
 AutocmdFT ruby vnoremap <leader>rriv :RRenameInstanceVariable<cr>
 AutocmdFT ruby vnoremap <leader>rem  :RExtractMethod<cr>
-
-" ----------------------
-" ---- PHP settings ----
-" ----------------------
-AutocmdFT php let g:php_baselib       = 1
-AutocmdFT php let g:php_htmlInStrings = 1
-AutocmdFT php let g:php_noShortTags   = 1
-AutocmdFT php let g:php_sql_query     = 1
-AutocmdFT php let g:php_parent_error_close  = 1
-AutocmdFT php let g:php_cs_fixer_rules = "@PSR2"
-AutocmdFT php let g:php_cs_fixer_config                 = 'default'
-AutocmdFT php let g:php_cs_fixer_dry_run                = 0
-AutocmdFT php let g:php_cs_fixer_enable_default_mapping = 1
-AutocmdFT php let g:php_cs_fixer_config_file = '.php_cs'
-AutocmdFT php let g:php_cs_fixer_fixers_list            = 'align_equals,align_double_arrow'
-AutocmdFT php let g:php_cs_fixer_level                  = 'symfony'
-AutocmdFT php let g:php_cs_fixer_php_path               = 'php'
-AutocmdFT php let g:php_cs_fixer_verbose                = 0
 
 " -----------------------------
 " ---- JavaScript settings ----
@@ -983,17 +866,14 @@ function! s:completion_check_bs()
 endfunction
 
 " Deoplete Key map
-inoremap <expr><silent><Tab> pumvisible() ? "\<C-n>" : (<sid>completion_check_bs() ? "\<Tab>" : deoplete#mappings#manual_complete())
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
-inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
-" imap <expr><TAB> deoppet#expandable_or_jumpable() ? "\<Plug>(deoppet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+" inoremap <expr><silent><Tab> pumvisible() ? "\<C-n>" : (<sid>completion_check_bs() ? "\<Tab>" : deoplete#mappings#manual_complete())
+" inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
+" inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
+" inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
+" " imap <expr><TAB> deoppet#expandable_or_jumpable() ? "\<Plug>(deoppet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+" imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 
-" ----------------------------
-" ---- File type settings ----
-" ----------------------------
 " ---- Enable Filetype
 filetype plugin indent on
 filetype on
