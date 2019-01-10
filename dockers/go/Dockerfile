@@ -98,12 +98,12 @@ RUN apk update \
     bash \
     git
 
-RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl \
+RUN curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" \
     && mv ./kubectl /usr/local/bin/kubectl \
     && chmod a+x /usr/local/bin/kubectl \
     && kubectl version --client \
-    && curl https://raw.githubusercontent.com/helm/helm/master/scripts/get | bash \
-    && git clone https://github.com/ahmetb/kubectx /opt/kubectx \
+    && curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get" | bash \
+    && git clone "https://github.com/ahmetb/kubectx" /opt/kubectx \
     && ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx \
     && ln -s /opt/kubectx/kubens /usr/local/bin/kubens
 
@@ -111,7 +111,7 @@ FROM base AS env
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 
-RUN mkdir /etc/ld.so.conf.d \
+RUN mkdir "/etc/ld.so.conf.d" \
     && echo $'/lib\n\
 /lib64\n\
 /var/lib\n\
