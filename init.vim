@@ -69,7 +69,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'prabirshrestha/vim-lsp'
     Plug 'prabirshrestha/asyncomplete.vim'
     Plug 'prabirshrestha/asyncomplete-lsp.vim'
-    Plug 'natebosch/vim-lsc'
+    " Plug 'natebosch/vim-lsc'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
@@ -250,7 +250,7 @@ command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
 " ---- Ale settings ----
 " ----------------------
 let g:ale_enabled = 1
-let g:ale_completion_enabled = 1
+let g:ale_completion_enabled = 0
 let g:ale_keep_list_window_open = 0
 let g:ale_list_window_size = 5
 let g:ale_open_list = 1
@@ -298,23 +298,28 @@ AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggreg
 " --------------------------------------------------
 " ---- Language Server Protocol Client settings ----
 " --------------------------------------------------
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 " let g:LanguageClient_serverCommands = {
 "    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
 "    \ 'javascript': ['javascript-typescript-stdio'],
 "    \ 'vue': ['vls'],
 "    \ }
 let g:lsp_async_completion = 1
-let g:lsp_diagnostics_enabled
+let g:lsp_diagnostics_enabled = 0
+let g:asyncomplete_remove_duplicates = 1
+let g:asyncomplete_smart_completion = 1
+let g:asyncomplete_auto_popup = 1
+
 if executable('bingo')
-  augroup LspGo
-    au!
-    autocmd User lsp_setup call lsp#register_server({
+    AutocmdFT go call lsp#register_server({
         \ 'name': 'go-lang',
         \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
         \ 'whitelist': ['go'],
         \ })
-    autocmd FileType go setlocal omnifunc=lsp#complete
-  augroup END
 endif
 
 " -------------------------
@@ -389,7 +394,7 @@ let g:indent_guides_color_change_percent = 30
 let g:indent_guides_guide_size = 1
 
 AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS
-AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview omnifunc=lsp#complete
 AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
 AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
@@ -505,7 +510,7 @@ call lexima#add_rule({'at': '\%#\n\s*}', 'char': '}', 'input': '}', 'delete': '}
 " ---- gitgutter settings ----
 " ----------------------------
 let g:gitgutter_max_signs = 10000
-let g:gitgutter_git_executable=system("which git")
+let g:gitgutter_git_executable="/usr/bin/git"
 
 " ---------------------
 " ---- Caw Setting ----

@@ -5,6 +5,8 @@ RUN apk update \
     && apk add --no-cache \
     git \
     curl \
+    gcc \
+    musl-dev \
     wget
 
 # RUN --mount=target=/root/.cache,type=cache \
@@ -27,7 +29,6 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/nsf/gocode \
     github.com/pwaller/goimports-update-ignore \
     github.com/rogpeppe/godef \
-    # github.com/saibing/bingo \
     github.com/sugyan/ttygif \
     github.com/zmb3/gogetdoc \
     golang.org/x/lint/golint \
@@ -39,7 +40,10 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     honnef.co/go/tools/cmd/keyify \
     sigs.k8s.io/kustomize \
     sourcegraph.com/sqs/goreturns \
-    && gometalinter -i
+    && gometalinter -i \
+    && git clone https://github.com/saibing/bingo.git \
+    && cd bingo \
+    && GO111MODULE=on go install
 
 FROM kpango/rust-musl-builder:latest AS rust
 
@@ -50,7 +54,7 @@ RUN cargo install --force ripgrep \
 
 FROM docker:18.09-dind AS docker
 
-FROM google/cloud-sdk:228.0.0-alpine AS gcloud
+FROM google/cloud-sdk:alpine AS gcloud
 
 RUN gcloud config set core/disable_usage_reporting true \
     && gcloud config set component_manager/disable_update_check true \
@@ -98,14 +102,20 @@ RUN apk update \
     bash \
     git
 
-RUN curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" \
+RUN set -x; cd "$(mktemp -d)" \
+    && curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" \
     && mv ./kubectl /usr/local/bin/kubectl \
     && chmod a+x /usr/local/bin/kubectl \
     && kubectl version --client \
     && curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get" | bash \
     && git clone "https://github.com/ahmetb/kubectx" /opt/kubectx \
     && ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx \
-    && ln -s /opt/kubectx/kubens /usr/local/bin/kubens
+    && ln -s /opt/kubectx/kubens /usr/local/bin/kubens \
+    && curl -fsSLO "https://storage.googleapis.com/krew/v0.2.1/krew.{tar.gz,yaml}" \
+    && tar zxvf krew.tar.gz \
+    && ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" install --manifest=krew.yaml --archive=krew.tar.gz \
+    && ls /root/.krew \
+    && ls /root/.krew/bin
 
 FROM base AS env
 
@@ -149,13 +159,13 @@ RUN mkdir "/etc/ld.so.conf.d" \
     xclip \
     perl \
     less \
-    ncurses \
+    # ncurses \
     tig \
     tzdata \
     jq \
     && rm -rf /var/cache/apk/* \
     && pip2 install --upgrade pip neovim \
-    && pip3 install --upgrade pip neovim \
+    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie \
     && gem install neovim -N \
     && npm config set user root \
     && npm install -g neovim resume-cli
@@ -208,6 +218,7 @@ COPY --from=kube /usr/local/bin/kubectl /usr/bin/kubectl
 COPY --from=kube /usr/local/bin/kubectx /usr/bin/kubectx
 COPY --from=kube /usr/local/bin/kubens /usr/bin/kubens
 COPY --from=kube /usr/local/bin/helm /usr/bin/helm
+COPY --from=kube /root/.krew/bin /usr/bin/
 
 COPY --from=gcloud /google-cloud-sdk /google-cloud-sdk
 COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
@@ -226,7 +237,7 @@ COPY --from=go /usr/local/go/lib $GOROOT/lib
 COPY --from=go /usr/local/go/pkg $GOROOT/pkg
 COPY --from=go /usr/local/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
-COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
+# COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
 COPY --from=rust /home/rust/.cargo/bin /usr/local/cargo/bin
 

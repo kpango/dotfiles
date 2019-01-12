@@ -79,5 +79,7 @@
 
     tree = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
 [user]
-	name = $(whoami)
-	email = $(whoami)@gmail.com
+    name = yusukato
+    email = yusukato@yahoo-corp.jp
+[ghq]
+    root = /go/src
