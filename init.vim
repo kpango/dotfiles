@@ -98,19 +98,21 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'hail2u/vim-css3-syntax', {'for': ['css','less','sass','scss','stylus'] }
     Plug 'wavded/vim-stylus', {'for': ['stylus']}
 " ---- JavaScript
-    Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
+    Plug 'ryanolsonx/vim-lsp-javascript', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+    Plug 'ryanolsonx/vim-lsp-typescript', { 'for': 'typescript' }
+    " Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
     " Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
-    Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
-    Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
-    Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
+    " Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
+    " Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
+    " Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
     " Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
     " Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
-    Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
-    Plug 'posva/vim-vue', { 'for': ['vue'] }
-    Plug 'othree/jspc.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-    Plug 'othree/yajs.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-    Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
-    Plug 'ramitos/jsctags', {'for': ['javascript', 'javascript.jsx', 'json']}
+    " Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
+    " Plug 'posva/vim-vue', { 'for': ['vue'] }
+    " Plug 'othree/jspc.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+    " Plug 'othree/yajs.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+    " Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
+    " Plug 'ramitos/jsctags', {'for': ['javascript', 'javascript.jsx', 'json']}
 " ---- Dart
     Plug 'dart-lang/dart-vim-plugin', {'for': 'dart'}
     Plug 'miyakogi/vim-dartanalyzer', {'for': 'dart'}
@@ -124,6 +126,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
 " ---- Python
     " Plug 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi;pip3 install jedi'}
+    Plug 'ryanolsonx/vim-lsp-python', {'for': ['python', 'python3','djangohtml'] }
 " ---- Lisp
     Plug 'vim-scripts/slimv.vim', {'for': 'lisp'}
 " ---- Lua
@@ -322,6 +325,48 @@ if executable('bingo')
         \ })
 endif
 
+if executable('rls')
+    AutocmdFT rust call lsp#register_server({
+        \ 'name': 'rls',
+        \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
+        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'Cargo.toml'))},
+        \ 'whitelist': ['rust'],
+        \ })
+endif
+
+if executable('docker-langserver')
+    AutocmdFT dockerfile call lsp#register_server({
+        \ 'name': 'docker-langserver',
+        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
+        \ 'whitelist': ['dockerfile'],
+        \ })
+endif
+
+if executable('typescript-language-server')
+    AutocmdFT javascript call lsp#register_server({
+      \ 'name': 'javascript support using typescript-language-server',
+      \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+      \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'package.json'))},
+      \ 'whitelist': ['javascript', 'javascript.jsx', 'json', 'jsx', 'vue']
+      \ })
+
+    AutocmdFT typescript call lsp#register_server({
+        \ 'name': 'typescript-language-server',
+        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
+        \ 'whitelist': ['typescript', 'typescript.tsx'],
+        \ })
+endif
+
+if executable('pyls')
+    AutocmdFT python call lsp#register_server({
+        \ 'name': 'pyls',
+        \ 'cmd': {server_info->['pyls']},
+        \ 'whitelist': ['python'],
+        \ 'workspace_config': {'pyls': {'plugins': {'pydocstyle': {'enabled': v:true}}}}
+        \ })
+endif
+
 " -------------------------
 " ---- Denite settings ----
 " -------------------------
@@ -373,16 +418,19 @@ set statusline+=%*
 " ----------------------------
 " ---- File type settings ----
 " ----------------------------
-Autocmd BufNewFile,BufRead *.tmpl set filetype=html
 Autocmd BufNewFile,BufRead *.dart set filetype=dart
 Autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
 Autocmd BufNewFile,BufRead *.es6 set filetype=javascript
 Autocmd BufNewFile,BufRead *.exs,*.ex set filetype=elixir
 Autocmd BufNewFile,BufRead *.jsx set filetype=javascript.jsx
+Autocmd BufNewFile,BufRead *.py set filetype=python
 Autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
 Autocmd BufNewFile,BufRead *.rs set filetype=rust
+Autocmd BufNewFile,BufRead *.tmpl set filetype=html
 Autocmd BufNewFile,BufRead *.ts set filetype=typescript
 Autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
+Autocmd BufRead,BufNewFile *.{[Dd]ockerfile,[Dd]ock} set filetype=dockerfile
+Autocmd BufRead,BufNewFile Dockerfile* set filetype=dockerfile
 
 " ------------------------------
 " ---- Indentation settings ----
@@ -393,12 +441,12 @@ let g:indent_guides_auto_colors=0
 let g:indent_guides_color_change_percent = 30
 let g:indent_guides_guide_size = 1
 
-AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS
+AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS omnifunc=lsp#complete
 AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview omnifunc=lsp#complete
 AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
-AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview
+AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with omnifunc=lsp#complete
+AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview omnifunc=lsp#complete
 AutocmdFT sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
 AutocmdFT xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 
