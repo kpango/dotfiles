@@ -1,6 +1,7 @@
 FROM golang:1.11-alpine AS go
 
-RUN apk update \
+RUN set -ex; cd "$(mktemp -d)" \
+    && apk update \
     && apk upgrade \
     && apk add --no-cache \
     git \
@@ -47,7 +48,8 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
 
 FROM kpango/rust-musl-builder:latest AS rust
 
-RUN cargo install --force ripgrep \
+RUN set -ex; cd "$(mktemp -d)" \
+    && cargo install --force ripgrep \
     && cargo install --force --no-default-features --git https://github.com/sharkdp/fd \
     && cargo install --force --no-default-features exa \
     && cargo install --force --no-default-features bat
@@ -102,7 +104,7 @@ RUN apk update \
     bash \
     git
 
-RUN set -x; cd "$(mktemp -d)" \
+RUN set -ex; cd "$(mktemp -d)" \
     && curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" \
     && mv ./kubectl /usr/local/bin/kubectl \
     && chmod a+x /usr/local/bin/kubectl \
@@ -121,7 +123,8 @@ FROM base AS env
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 
-RUN mkdir "/etc/ld.so.conf.d" \
+RUN set -ex; cd "$(mktemp -d)" \
+    && mkdir "/etc/ld.so.conf.d" \
     && echo $'/lib\n\
 /lib64\n\
 /var/lib\n\
@@ -164,11 +167,11 @@ RUN mkdir "/etc/ld.so.conf.d" \
     tzdata \
     jq \
     && rm -rf /var/cache/apk/* \
-    && pip2 install --upgrade pip neovim \
-    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie \
+    && pip2 install --upgrade pip neovim python-language-server \
+    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server \
     && gem install neovim -N \
     && npm config set user root \
-    && npm install -g neovim resume-cli
+    && npm install -g neovim resume-cli dockerfile-language-server-nodejs typescript typescript-language-server
 
 FROM env
 
