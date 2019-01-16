@@ -52,7 +52,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'nathanaelkane/vim-indent-guides' " show indent guide
     Plug 'w0rp/ale' " lint plugin
     Plug 'tyru/caw.vim' " comment out
-    Plug 'rizzatti/dash.vim', {'on': 'Dash'}
     Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
     Plug 'terryma/vim-multiple-cursors' " multiple cursors
     Plug 'thinca/vim-quickrun'

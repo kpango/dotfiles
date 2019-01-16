@@ -229,6 +229,8 @@ COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
 COPY --from=nim /bin/nim /usr/local/bin/nim
 COPY --from=nim /bin/nimble /usr/local/bin/nimble
 COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
+COPY --from=nim /nim/bin /usr/local/bin
+COPY --from=nim /nim/lib /usr/local/lib/nim
 
 COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
 COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
@@ -260,8 +262,9 @@ WORKDIR $NVIM_HOME/plugged/vim-plug
 
 RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
     && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload \
-    && nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall \
-    && git clone https://github.com/zplug/zplug $ZPLUG_HOME
+    && nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +GoInstallBinaries +qall /tmp/main.go \
+    && git clone https://github.com/zplug/zplug $ZPLUG_HOME \
+    && rm -rf /tmp/*
 
 WORKDIR /go/src
 
