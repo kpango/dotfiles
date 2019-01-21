@@ -164,11 +164,11 @@ RUN mkdir "/etc/ld.so.conf.d" \
     tzdata \
     jq \
     && rm -rf /var/cache/apk/* \
-    && pip2 install --upgrade pip neovim \
-    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie \
+    && pip2 install --upgrade pip neovim python-language-server \
+    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server \
     && gem install neovim -N \
     && npm config set user root \
-    && npm install -g neovim resume-cli
+    && npm install -g neovim resume-cli dockerfile-language-server-nodejs typescript typescript-language-server
 
 FROM env
 
