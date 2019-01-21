@@ -1,4 +1,4 @@
-.PHONY: zsh bash build push
+.PHONY: link zsh bash build run push pull
 
 link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/alias $(HOME)/.aliases
@@ -12,5 +12,11 @@ bash: link
 build:
 	docker build -t kpango/dev:latest .
 
+run:
+	source ./alias && devrun
+
 push:
 	docker push kpango/dev:latest
+
+pull:
+	docker pull kpango/dev:latest
