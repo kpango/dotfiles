@@ -1,10 +1,13 @@
 .PHONY: zsh bash build push
 
-zsh:
-	ln -sfv ./alias $(HOME)/.zsh_aliases
+link:
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/alias $(HOME)/.aliases
 
-bash:
-	ln -sfv ./alias $(HOME)/.bash_aliases
+zsh: link
+	[ -f $(HOME)/.zshrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.zshrc
+
+bash: link
+	[ -f $(HOME)/.bashrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.bashrc
 
 build:
 	docker build -t kpango/dev:latest .

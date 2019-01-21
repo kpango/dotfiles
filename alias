@@ -6,24 +6,69 @@ alias dockerrm="docker container stop $(docker container ls -aq);docker ps -aq |
 
 dpath="$HOME/go/src/github.com/kpango/dotfiles"
 
+container_name="dev"
+
 alias kpbuild="cd $dpath&&docker build --pull=true --file=$dpath/Dockerfile -t kpango/dev:latest $dpath"
 
 alias kpmove="cd $dpath"
 
-alias devrun="sudo docker run --network host --cap-add=ALL \
--v /var/run/docker.sock:/var/run/docker.sock \
--v /etc/timezon:/etc/timezone:ro \
--v /etc/docker/daemon.json:/etc/docker/daemon.json \
--v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
--v $HOME/.kube:/root/.kube \
--v $HOME/.netrc:/root/.netrc \
--v $HOME/.ssh:/root/.ssh \
--v $HOME/.zsh_history:/root/.zsh_history \
--v $HOME/go/src:/go/src:cached \
--v $HOME/Downloads:/root/Downloads \
--v $HOME/Documents:/root/Documents \
--v $dpath/init.vim:/root/.config/nvim/init.vim \
--v $dpath/tmux-kube:/root/.tmux-kube \
--v $dpath/tmux.conf:/root/.tmux.conf \
--v $dpath/zshrc:/root/.zshrc \
---name dev --rm -it kpango/dev:latest"
+function devrun(){
+    case "$(uname -s)" in
+        Darwin)
+            echo 'Docker on macOS start'
+            sudo docker run --network host --cap-add=ALL --privileged=true --name $1 --restart always \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v /usr/share/zoneinfo/Japan:/etc/timezone:ro \
+            -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
+            -v $HOME/.kube:/root/.kube \
+            -v $HOME/.netrc:/root/.netrc \
+            -v $HOME/.ssh:/root/.ssh \
+            -v $HOME/.zsh_history:/root/.zsh_history \
+            -v $HOME/go/src:/go/src:cached \
+            -v $HOME/Downloads:/root/Downloads \
+            -v $HOME/Documents:/root/Documents \
+            -v $dpath/init.vim:/root/.config/nvim/init.vim \
+            -v $dpath/tmux-kube:/root/.tmux-kube \
+            -v $dpath/tmux.conf:/root/.tmux.conf \
+            -v $dpath/zshrc:/root/.zshrc \
+            -dit kpango/dev:latest
+            ;;
+
+        Linux)
+            echo 'Docker on Linux start'
+            sudo docker run --network host --cap-add=ALL --name $1 --restart always \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v /etc/timezon:/etc/timezone:ro \
+            -v /etc/docker/daemon.json:/etc/docker/daemon.json \
+            -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
+            -v $HOME/.kube:/root/.kube \
+            -v $HOME/.netrc:/root/.netrc \
+            -v $HOME/.ssh:/root/.ssh \
+            -v $HOME/.zsh_history:/root/.zsh_history \
+            -v $HOME/go/src:/go/src:cached \
+            -v $HOME/Downloads:/root/Downloads \
+            -v $HOME/Documents:/root/Documents \
+            -v $dpath/init.vim:/root/.config/nvim/init.vim \
+            -v $dpath/tmux-kube:/root/.tmux-kube \
+            -v $dpath/tmux.conf:/root/.tmux.conf \
+            -v $dpath/zshrc:/root/.zshrc \
+            -dit kpango/dev:latest
+            ;;
+
+        CYGWIN*|MINGW32*|MSYS*)
+            echo 'MS Windows is not ready for this environment'
+            ;;
+
+        *)
+            echo 'other OS'
+            ;;
+    esac
+
+    docker exec -d $1 /usr/bin/nvim /tmp/main.go +GoInstallBinaries +qa
+}
+
+alias devrun="devrun $container_name"
+
+alias devin="docker exec -it $container_name /bin/zsh"
+alias devkill="docker update --restart=no $container_name && docker kill $(docker ps -a -q) && docker rm $(docker ps -a -q)"
+alias devres="devkill && devrun"
