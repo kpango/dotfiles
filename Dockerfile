@@ -117,7 +117,10 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar zxvf krew.tar.gz \
     && ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" install --manifest=krew.yaml --archive=krew.tar.gz \
     && ls /root/.krew \
-    && ls /root/.krew/bin
+    && ls /root/.krew/bin \
+    && curl -Lo kubebox https://github.com/astefanutti/kubebox/releases/download/v0.4.0/kubebox-linux \
+    && chmod +x kubebox \
+    && mv kubebox /usr/local/bin/kubebox
 
 FROM base AS env
 
