@@ -125,7 +125,7 @@ jobs:
             if [ ! -z "$TAG" ]; then
               echo $TAG
               git tag $TAG
-              git push git@github.com:${ORG_NAME}/${REPO_NAME} --tags
+              git push https://${GITHUB_ACCESS_TOKEN}:x-oauth-basic@github.com/${ORG_NAME}/${REPO_NAME} --tags
             fi
       - persist_to_workspace:
           root: .
