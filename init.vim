@@ -22,6 +22,8 @@ if has('vim_starting')
     end
 endif
 
+" let g:ale_completion_enabled = 1
+
 " -------------------------
 " ---- Plugins Install ----
 " -------------------------
@@ -253,7 +255,6 @@ command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
 " ---- Ale settings ----
 " ----------------------
 let g:ale_enabled = 1
-let g:ale_completion_enabled = 0
 let g:ale_keep_list_window_open = 0
 let g:ale_list_window_size = 5
 let g:ale_open_list = 1
@@ -290,6 +291,8 @@ let g:ale_echo_cursor = 1
 let g:ale_echo_msg_error_str = 'ERROR'
 let g:ale_echo_msg_warning_str = 'WARNING'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
+" let g:ale_go_langserver_executable = "bingo"
+" let g:ale_go_langserver_options = "-mode stdio"
 nnoremap <silent> <C-k> <Plug>(ale_previous_wrap)
 nnoremap <silent> <C-j> <Plug>(ale_next_wrap)
 " Close Quickfix list when file leave
@@ -319,54 +322,54 @@ let g:asyncomplete_auto_popup = 1
 
 if executable('bingo')
     AutocmdFT go call lsp#register_server({
-        \ 'name': 'go-lang',
-        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
-        \ 'whitelist': ['go'],
-        \ })
+       \ 'name': 'go-lang',
+       \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
+       \ 'whitelist': ['go'],
+       \ })
 endif
 
 if executable('rls')
     AutocmdFT rust call lsp#register_server({
-        \ 'name': 'rls',
-        \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
-        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'Cargo.toml'))},
-        \ 'whitelist': ['rust'],
-        \ })
+       \ 'name': 'rls',
+       \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
+       \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'Cargo.toml'))},
+       \ 'whitelist': ['rust'],
+       \ })
 endif
 
 if executable('docker-langserver')
     AutocmdFT dockerfile call lsp#register_server({
-        \ 'name': 'docker-langserver',
-        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
-        \ 'whitelist': ['dockerfile'],
-        \ })
+       \ 'name': 'docker-langserver',
+       \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
+       \ 'whitelist': ['dockerfile'],
+       \ })
 endif
 
 if executable('typescript-language-server')
     AutocmdFT javascript call lsp#register_server({
-      \ 'name': 'javascript support using typescript-language-server',
-      \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-      \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'package.json'))},
-      \ 'whitelist': ['javascript', 'javascript.jsx', 'json', 'jsx', 'vue']
-      \ })
+     \ 'name': 'javascript support using typescript-language-server',
+     \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+     \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'package.json'))},
+     \ 'whitelist': ['javascript', 'javascript.jsx', 'json', 'jsx', 'vue']
+     \ })
 
     AutocmdFT typescript call lsp#register_server({
-        \ 'name': 'typescript-language-server',
-        \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
-        \ 'whitelist': ['typescript', 'typescript.tsx'],
-        \ })
+       \ 'name': 'typescript-language-server',
+       \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+       \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
+       \ 'whitelist': ['typescript', 'typescript.tsx'],
+       \ })
 endif
 
 if executable('pyls')
     AutocmdFT python call lsp#register_server({
-        \ 'name': 'pyls',
-        \ 'cmd': {server_info->['pyls']},
-        \ 'whitelist': ['python'],
-        \ 'workspace_config': {'pyls': {'plugins': {'pydocstyle': {'enabled': v:true}}}}
-        \ })
+       \ 'name': 'pyls',
+       \ 'cmd': {server_info->['pyls']},
+       \ 'whitelist': ['python'],
+       \ 'workspace_config': {'pyls': {'plugins': {'pydocstyle': {'enabled': v:true}}}}
+       \ })
 endif
-
+"
 " -------------------------
 " ---- Denite settings ----
 " -------------------------
@@ -443,6 +446,7 @@ let g:indent_guides_guide_size = 1
 
 AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS omnifunc=lsp#complete
 AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview omnifunc=lsp#complete
+" AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,menuone,preview,noselect,noinsert
 AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
 AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with omnifunc=lsp#complete

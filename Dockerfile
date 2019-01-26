@@ -17,6 +17,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/dominikh/go-tools/cmd/keyify \
     github.com/fatih/gomodifytags \
     github.com/fatih/motion \
+    github.com/gohugoio/hugo \
     github.com/golang/dep/... \
     github.com/gopherjs/gopherjs \
     github.com/josharian/impl \
@@ -138,9 +139,12 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && apk upgrade \
     && apk --update add --no-cache \
     make \
+    cmake \
     curl \
     gcc \
+    g++ \
     git \
+    diffutils \
     linux-headers \
     openssl \
     openssl-dev \
@@ -163,12 +167,21 @@ RUN mkdir "/etc/ld.so.conf.d" \
     tig \
     tzdata \
     jq \
+    ctags \
     && rm -rf /var/cache/apk/* \
     && pip2 install --upgrade pip neovim python-language-server \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server \
     && gem install neovim -N \
     && npm config set user root \
-    && npm install -g neovim resume-cli dockerfile-language-server-nodejs typescript typescript-language-server
+    && npm install -g neovim resume-cli dockerfile-language-server-nodejs typescript typescript-language-server \
+    && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz \
+    && tar zxf ngt.tar.gz -C /tmp \
+    && rm -rf ngt.tar.gz \
+    && cd /tmp/NGT-1.5.1 \
+    && cmake . \
+    && make -j -C /tmp/NGT-1.5.1 \
+    && make install -C /tmp/NGT-1.5.1 \
+    && rm -rf /tmp/NGT-1.5.1
 
 FROM env
 
@@ -226,6 +239,7 @@ COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
 COPY --from=nim /bin/nim /usr/local/bin/nim
 COPY --from=nim /bin/nimble /usr/local/bin/nimble
 COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
+COPY --from=nim /nim /nim
 
 COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
 COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
