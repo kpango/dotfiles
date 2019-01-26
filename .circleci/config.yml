@@ -1,6 +1,6 @@
 alias:
   default: &default
-    working_directory: /go/src/github.com/yahoojapan/garm
+    working_directory: /tmp/github.com/kpango/dotfiles
     docker:
       - image: circleci/buildpack-deps:latest
         environment:
