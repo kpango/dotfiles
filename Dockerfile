@@ -271,7 +271,7 @@ WORKDIR $NVIM_HOME/plugged/vim-plug
 
 RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
     && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload \
-    && nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall \
+    && nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +GoInstallBinaries +qall main.go \
     && git clone https://github.com/zplug/zplug $ZPLUG_HOME
 
 WORKDIR /go/src
