@@ -31,6 +31,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/pwaller/goimports-update-ignore \
     github.com/rogpeppe/godef \
     github.com/sugyan/ttygif \
+    github.com/wagoodman/dive \
     github.com/zmb3/gogetdoc \
     golang.org/x/lint/golint \
     golang.org/x/tools/cmd/goimports \
