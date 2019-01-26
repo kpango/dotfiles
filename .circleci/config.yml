@@ -4,8 +4,9 @@ alias:
     docker:
       - image: circleci/buildpack-deps:latest
         environment:
-          REPO_NAME: "kpango"
-          IMAGE_NAME: "dotfiles"
+          ORG_NAME: "kpango"
+          REPO_NAME: "dotfiles"
+          IMAGE_NAME: "dev"
           GITHUB_API: "https://api.github.com/"
           DOCKER_USER: "kpango"
   setup_remote_docker: &setup_remote_docker
@@ -26,12 +27,12 @@ jobs:
       - run:
           name: docker image build
           command: |
-            # env DOCKER_BUILDKIT=1 docker build -t ${REPO_NAME}/${IMAGE_NAME}:latest .
-            docker build -t ${REPO_NAME}/${IMAGE_NAME}:latest .
+            # env DOCKER_BUILDKIT=1 docker build -t ${ORG_NAME}/${IMAGE_NAME}:latest .
+            docker build -t ${ORG_NAME}/${IMAGE_NAME}:latest .
       - run:
           name: save image
           command: |
-            docker image save ${REPO_NAME}/${IMAGE_NAME}:latest > ./docker-image.tar
+            docker image save ${ORG_NAME}/${IMAGE_NAME}:latest > ./docker-image.tar
       - persist_to_workspace:
           root: .
           paths:
@@ -49,7 +50,7 @@ jobs:
       - run:
           name: tag to latest
           command: |
-            docker tag ${REPO_NAME}/${IMAGE_NAME}:latest ${REPO_NAME}/${IMAGE_NAME}:nightly
+            docker tag ${ORG_NAME}/${IMAGE_NAME}:latest ${ORG_NAME}/${IMAGE_NAME}:nightly
       - run:
           name: docker login
           command: |
@@ -57,7 +58,7 @@ jobs:
       - run:
           name: push image to registory
           command: |
-            docker push ${REPO_NAME}/${IMAGE_NAME}
+            docker push ${ORG_NAME}/${IMAGE_NAME}
   publish:
     <<: *default
     steps:
@@ -71,7 +72,7 @@ jobs:
       - run:
           name: tag to latest
           command: |
-            docker tag ${REPO_NAME}/${IMAGE_NAME}:latest ${REPO_NAME}/${IMAGE_NAME}:$CIRCLE_TAG
+            docker tag ${ORG_NAME}/${IMAGE_NAME}:latest ${ORG_NAME}/${IMAGE_NAME}:$CIRCLE_TAG
       - run:
           name: docker login
           command: |
@@ -79,7 +80,7 @@ jobs:
       - run:
           name: push image to registory
           command: |
-            docker push ${REPO_NAME}/${IMAGE_NAME}
+            docker push ${ORG_NAME}/${IMAGE_NAME}
   versioning:
     <<: *default
     steps:
@@ -124,7 +125,7 @@ jobs:
             if [ ! -z "$TAG" ]; then
               echo $TAG
               git tag $TAG
-              git push git@github.com:${REPO_NAME}/${IMAGE_NAME} --tags
+              git push git@github.com:${ORG_NAME}/${REPO_NAME} --tags
             fi
       - persist_to_workspace:
           root: .
@@ -145,7 +146,7 @@ jobs:
               curl -H "Authorization: token ${GITHUB_ACCESS_TOKEN}" \
                    -X POST \
                    -d "{\"tag_name\": \"${TAG}\"}" \
-                   ${GITHUB_API}repos/${REPO_NAME}/${IMAGE_NAME}/releases
+                   ${GITHUB_API}repos/${ORG_NAME}/${REPO_NAME}/releases
             fi
 
 workflows:
