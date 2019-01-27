@@ -71,7 +71,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'prabirshrestha/vim-lsp'
     Plug 'prabirshrestha/asyncomplete.vim'
     Plug 'prabirshrestha/asyncomplete-lsp.vim'
-    Plug 'natebosch/vim-lsc'
+    " Plug 'natebosch/vim-lsc'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
