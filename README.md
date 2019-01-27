@@ -6,19 +6,16 @@ my dotfiles
 
 - neovim (https://neovim.io)
   - vim-plug (https://github.com/junegunn/vim-plug)
-  - deoplete (https://github.com/Shougo/deoplete.nvim)
+  - vim-lsp (https://github.com/prabirshrestha/vim-lsp)
   - python3 deoplete dependency
-  - vimfiler (https://github.com/Shougo/vimfiler.vim)
   - language
     - Go
-    - Elixir
+    - Rust
     - Nim
+    - Python
     - C / C++
-    - PHP
     - Ruby
-    - Java
     - JavaScript
-    - ReactJS
     - HTML CSS
 - zsh
   - zplug (https://github.com/zplug/zplug)
@@ -27,17 +24,14 @@ my dotfiles
   - gitconfig
   - gitignore
   - gitattributes
-- ECMAScript
-  - eslintrc
-  - esformatter
 
 ## Install
 ```shell
-git clone https://github.com/kpango/dotfiles
-cd dotfiles
-sh ./install.sh {your password}
-cd ../
-rm -rf dotfiles
+# I recommend use ghq instead of git command
+git config --global ghq.root $HOME/go/src
+ghq get kpango/dotfiles
+cd $HOME/go/src/github.com/kpango/dotfiles
+make $SHELL
 ```
 
 ## Contribution
