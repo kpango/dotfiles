@@ -71,7 +71,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'prabirshrestha/vim-lsp'
     Plug 'prabirshrestha/asyncomplete.vim'
     Plug 'prabirshrestha/asyncomplete-lsp.vim'
-    " Plug 'natebosch/vim-lsc'
+    Plug 'natebosch/vim-lsc'
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
@@ -323,7 +323,7 @@ let g:asyncomplete_auto_popup = 1
 if executable('bingo')
     AutocmdFT go call lsp#register_server({
        \ 'name': 'go-lang',
-       \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
+       \ 'cmd': {server_info->['bingo', '--golist-duration', '0', '-mode', 'stdio']},
        \ 'whitelist': ['go'],
        \ })
 endif
