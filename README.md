@@ -1,6 +1,7 @@
 # dotfiles
 ----
-my dotfiles
+kpango's dotfiles
+Fullstack Develop Environment in Docker
 
 ## Description
 
@@ -24,6 +25,12 @@ my dotfiles
   - gitconfig
   - gitignore
   - gitattributes
+
+## Requirements
+- ghq
+- make
+- docker
+- bash/zsh
 
 ## Install
 ```shell
