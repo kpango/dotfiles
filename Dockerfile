@@ -49,10 +49,14 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
 
 FROM kpango/rust-musl-builder:latest AS rust
 
-RUN cargo install --force ripgrep \
-    && cargo install --force --no-default-features --git https://github.com/sharkdp/fd \
-    && cargo install --force --no-default-features exa \
-    && cargo install --force --no-default-features bat
+# RUN cargo install --force --no-default-features --all-features --bins --git https://github.com/rust-lang/rust \
+    # && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
+RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
+    && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/RazrFalcon/cargo-bloat \
+    && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/sharkdp/fd \
+    && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features ripgrep \
+    && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features exa \
+    && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features bat
 
 FROM docker:18.09-dind AS docker
 
@@ -243,6 +247,7 @@ COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
 COPY --from=nim /bin/nim /usr/local/bin/nim
 COPY --from=nim /bin/nimble /usr/local/bin/nimble
 COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
+COPY --from=nim /nim/lib /usr/local/lib/nim
 COPY --from=nim /nim /nim
 
 COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
