@@ -33,12 +33,6 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- common plugins
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
-    " Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-    " Plug 'Shougo/neoinclude.vim'
-    " TODO if deoppet is fully worked replace neosnippet
-    " Plug 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
-    " Plug 'Shougo/neosnippet'
-    " Plug 'Shougo/neosnippet-snippets'
     Plug 'Shougo/neoyank.vim'
     Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Shougo/neomru.vim'
