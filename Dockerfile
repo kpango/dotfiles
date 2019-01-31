@@ -39,6 +39,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     golang.org/x/tools/cmd/gorename \
     golang.org/x/tools/cmd/guru \
     google.golang.org/grpc \
+    gopkg.in/src-d/go-license-detector.v2/... \
     honnef.co/go/tools/cmd/keyify \
     sigs.k8s.io/kustomize \
     sourcegraph.com/sqs/goreturns \
