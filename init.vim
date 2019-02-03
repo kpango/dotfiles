@@ -406,7 +406,7 @@ endif
 " " deniteの起動位置をtopに変更
 " "call denite#custom#option('default', 'direction', 'top')
 
-let g:trans_bin = system('which trans')
+let g:trans_bin = '/usr/local/bin'
 
 " ------------------------------
 " ---- Status line settings ----
