@@ -8,7 +8,7 @@
 *.tgz
 *.bz2
 *.dmg
-*.lock
+# *.lock
 
 ## Compiled object files ##
 *.slo
