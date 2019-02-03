@@ -684,6 +684,7 @@ alias k=kubectl
 complete -o default -F __start_kubectl k
 
 nvim +UpdateRemotePlugins +qall
-if [[ $SHLVL = 2 && -z $TMUX ]]; then
+tmux has-session >/dev/null 2>&1 && if [ -z "${TMUX}" ]; then
+# if [[ $SHLVL = 2 && -z $TMUX ]]; then
     tmux -2 new-session
 fi
