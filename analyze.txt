@@ -1,0 +1,1410 @@
+====================================================================================================
+ 5.5 MB 	 $ #(nop) ADD file:eac0bce4a6ab7b4027d86d3e47b5494be3a9e7dabcc0cc39670cee5766644dbf in /
+====================================================================================================
+ 2.6 MB 	 lib/libcrypto.so.1.1
+ 796 kB 	 bin/busybox
+ 584 kB 	 lib/ld-musl-x86_64.so.1
+ 520 kB 	 lib/libssl.so.1.1
+ 233 kB 	 etc/ssl/cert.pem
+ 211 kB 	 sbin/apk
+  96 kB 	 usr/lib/libtls-standalone.so.1.0.0
+  92 kB 	 lib/libz.so.1.2.11
+  80 kB 	 usr/bin/scanelf
+  52 kB 	 usr/bin/getent
+  37 kB 	 usr/bin/getconf
+  36 kB 	 etc/services
+  25 kB 	 usr/bin/iconv
+  23 kB 	 usr/lib/engines-1.1/afalg.so
+  14 kB 	 sbin/mkmntdirs
+  14 kB 	 usr/bin/ssl_client
+  14 kB 	 usr/lib/engines-1.1/padlock.so
+  14 kB 	 usr/lib/engines-1.1/capi.so
+  11 kB 	 lib/apk/db/installed
+  11 kB 	 etc/ssl/openssl.cnf
+  11 kB 	 etc/ssl/openssl.cnf.dist
+ 9.7 kB 	 lib/apk/db/scripts.tar
+ 7.6 kB 	 etc/ssl/misc/CA.pl
+ 6.6 kB 	 etc/ssl/misc/tsget.pl
+ 4.2 kB 	 etc/udhcpd.conf
+ 2.0 kB 	 etc/modprobe.d/blacklist.conf
+ 1.9 kB 	 etc/protocols
+ 1.5 kB 	 etc/modprobe.d/aliases.conf
+ 1.2 kB 	 etc/passwd
+ 1.1 kB 	 etc/sysctl.d/00-alpine.conf
+  697 B 	 etc/group
+  570 B 	 etc/inittab
+  451 B 	 etc/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+  451 B 	 etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub
+  451 B 	 etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub
+  451 B 	 usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub
+  451 B 	 usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub
+  451 B 	 usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub
+  451 B 	 usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub
+  451 B 	 usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58199dcc.rsa.pub
+  451 B 	 usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58cbb476.rsa.pub
+  451 B 	 usr/share/apk/keys/alpine-devel@lists.alpinelinux.org-58e4f17d.rsa.pub
+  440 B 	 etc/shadow
+  414 B 	 etc/ssl/ct_log_list.cnf
+  414 B 	 etc/ssl/ct_log_list.cnf.dist
+  393 B 	 sbin/ldconfig
+  295 B 	 etc/profile.d/color_prompt
+  283 B 	 etc/crontabs/root
+  283 B 	 etc/motd
+  259 B 	 etc/profile
+  218 B 	 etc/network/if-up.d/dad
+  162 B 	 etc/os-release
+  140 B 	 etc/logrotate.d/acpid
+  122 B 	 etc/modprobe.d/i386.conf
+  118 B 	 etc/localtime
+   99 B 	 etc/apk/repositories
+   91 B 	 etc/modprobe.d/kms.conf
+   89 B 	 etc/fstab
+   79 B 	 etc/hosts
+   76 B 	 lib/apk/db/triggers
+   65 B 	 etc/securetty
+   59 B 	 etc/apk/world
+   53 B 	 etc/issue
+   53 B 	 etc/sysctl.conf
+   38 B 	 etc/shells
+   15 B 	 etc/modules
+   10 B 	 etc/hostname
+    7 B 	 etc/apk/arch
+    6 B 	 etc/alpine-release
+    4 B 	 etc/TZ
+    0 B 	 bin/arch
+    0 B 	 bin/ash
+    0 B 	 bin/base64
+    0 B 	 bin/bbconfig
+    0 B 	 bin/cat
+    0 B 	 bin/chgrp
+    0 B 	 bin/chmod
+    0 B 	 bin/chown
+    0 B 	 bin/conspy
+    0 B 	 bin/cp
+    0 B 	 bin/date
+    0 B 	 bin/dd
+    0 B 	 bin/df
+    0 B 	 bin/dmesg
+    0 B 	 bin/dnsdomainname
+    0 B 	 bin/dumpkmap
+    0 B 	 bin/echo
+    0 B 	 bin/ed
+    0 B 	 bin/egrep
+    0 B 	 bin/false
+    0 B 	 bin/fatattr
+    0 B 	 bin/fdflush
+    0 B 	 bin/fgrep
+    0 B 	 bin/fsync
+    0 B 	 bin/getopt
+    0 B 	 bin/grep
+    0 B 	 bin/gunzip
+    0 B 	 bin/gzip
+    0 B 	 bin/hostname
+    0 B 	 bin/ionice
+
+====================================================================================================
+ 930 MB 	 $ mkdir "/etc/ld.so.conf.d" && echo $'/lib\n/lib64\n/var/lib\n/usr/lib\n/usr/local/lib\n/usr/x86_64-alpine-linux-musl/lib\n/usr/local/go/lib\n/usr/lib/dart/lib\n/usr/lib/node_modules/lib\n/google-cloud-sdk/lib' >/etc/ld.so.conf.d/usr-local-lib.conf && echo $(ldconfig) && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >>/etc/apk/repositories && apk update && apk upgrade && apk --update add --no-cache bash cmake ctags curl diffutils g++ gawk gcc git jq less linux-headers make musl-dev neovim nodejs npm openssl openssl-dev perl py-pip py3-pip python-dev python3-dev ruby-dev tig tmux tzdata xclip zsh && rm -rf /var/cache/apk/* && pip2 install --upgrade pip neovim python-language-server && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server && gem install neovim -N && npm config set user root && npm install -g neovim resume-cli dockerfile-language-server-nodejs typescript typescript-language-server && cd /tmp && git clone https://github.com/soimort/translate-shell && cd /tmp/translate-shell/ && make TARGET=zsh -j -C /tmp/translate-shell && make install -C /tmp/translate-shell && cd /tmp && rm -rf /tmp/translate-shell/ && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz && tar zxf ngt.tar.gz -C /tmp && rm -rf ngt.tar.gz && cd /tmp/NGT-1.5.1 && cmake . && make -j -C /tmp/NGT-1.5.1 && make install -C /tmp/NGT-1.5.1 && cd /tmp && rm -rf /tmp/NGT-1.5.1 # buildkit
+====================================================================================================
+ 324 MB 	 usr/lib/node_modules/resume-cli/node_modules/puppeteer/.local-chromium/linux-624487
+  37 MB 	 usr/lib/python3.6/config-3.6m-x86_64-linux-gnu/libpython3.6m.a
+  24 MB 	 usr/bin/node
+  20 MB 	 usr/libexec/gcc/x86_64-alpine-linux-musl/8.2.0/cc1plus
+  19 MB 	 usr/libexec/gcc/x86_64-alpine-linux-musl/8.2.0/cc1obj
+  19 MB 	 usr/libexec/gcc/x86_64-alpine-linux-musl/8.2.0/cc1
+  18 MB 	 usr/libexec/gcc/x86_64-alpine-linux-musl/8.2.0/lto1
+  16 MB 	 usr/lib/libstdc++.a
+  15 MB 	 usr/lib/libcrypto.a
+  10 MB 	 usr/lib/libc.a
+ 9.7 MB 	 usr/lib/libstdc++fs.a
+ 8.6 MB 	 usr/lib/python2.7/config/libpython2.7.a
+ 7.7 MB 	 root/.npm/_cacache/content-v2/sha512/71/39/880c55bb3b42076e7d433d88e489e6c7c70b42314f9e4f2df466d24d04f17d8f63b5213bb95c7d989c179544a587a85fb7250c1626fd10d1a5205fc5bb20
+ 7.4 MB 	 usr/lib/node_modules/typescript/lib/tsserverlibrary.js
+ 7.4 MB 	 usr/lib/node_modules/typescript/lib/tsserver.js
+ 7.0 MB 	 usr/lib/node_modules/typescript/lib/typescript.js
+ 7.0 MB 	 usr/lib/node_modules/typescript/lib/typescriptServices.js
+ 5.4 MB 	 usr/lib/node_modules/typescript/lib/typingsInstaller.js
+ 4.6 MB 	 usr/bin/ctest
+ 4.1 MB 	 usr/bin/cmake
+ 4.1 MB 	 usr/bin/cpack
+ 4.0 MB 	 usr/lib/node_modules/typescript/lib/tsc.js
+ 3.8 MB 	 usr/lib/libssl.a
+ 3.7 MB 	 usr/bin/ccmake
+ 2.9 MB 	 usr/lib/gcc/x86_64-alpine-linux-musl/8.2.0/libgcc.a
+ 2.8 MB 	 usr/lib/perl5/core_perl/auto/Encode/JP/JP.so
+ 2.7 MB 	 usr/bin/nvim
+ 2.4 MB 	 usr/lib/libpython3.6m.so.1.0
+ 2.4 MB 	 usr/lib/perl5/core_perl/auto/Encode/KR/KR.so
+ 2.3 MB 	 usr/local/lib/libngt.a
+ 2.3 MB 	 usr/bin/git
+ 2.3 MB 	 usr/lib/libruby.so.2.5.3
+ 2.2 MB 	 usr/bin/dwp
+ 2.1 MB 	 usr/lib/perl5/core_perl/auto/Encode/CN/CN.so
+ 2.0 MB 	 usr/lib/perl5/core_perl/auto/Encode/TW/TW.so
+ 1.8 MB 	 usr/lib/node_modules/resume-cli/node_modules/resume-schema/research/A more professional recruitment process with structured CV data.pdf
+ 1.8 MB 	 usr/share/perl5/core_perl/Unicode/Collate/allkeys.txt
+ 1.8 MB 	 usr/lib/perl5/core_perl/CORE/libperl.so
+ 1.8 MB 	 root/.npm/_cacache/content-v2/sha512/cc/44/aa9aa6c514ab15e1292790a1a7c49ff271bb8e6980ebf8a30cfe38009ddc5dcb9e8bd4be52fbda8b053c12f045c0617384b5f130b8c5f83694cd048b7fa1
+ 1.7 MB 	 usr/lib/libopcodes-2.31.1.so
+ 1.7 MB 	 usr/bin/ld
+ 1.6 MB 	 usr/share/perl5/core_perl/Locale/Codes/Language_Codes.pm
+ 1.6 MB 	 usr/lib/libpython2.7.so.1.0
+ 1.5 MB 	 usr/lib/libisl.so.15.3.0
+ 1.4 MB 	 usr/lib/perl5/core_perl/auto/Unicode/Collate/Collate.so
+ 1.4 MB 	 usr/lib/python2.7/ensurepip/_bundled/pip-9.0.3-py2.py3-none-any.whl
+ 1.4 MB 	 usr/lib/node_modules/resume-cli/node_modules/handlebars/coverage/lcov-report
+ 1.4 MB 	 usr/lib/libstdc++.so.6.0.25
+ 1.4 MB 	 root/.cache/pip/http/2/6/8/0
+ 1.3 MB 	 lib/apk/db/installed
+ 1.3 MB 	 usr/lib/python3.6/ensurepip/_bundled/pip-18.1-py2.py3-none-any.whl
+ 1.3 MB 	 usr/libexec/git-core/git-http-push
+ 1.3 MB 	 usr/libexec/git-core/git-remote-ftp
+ 1.3 MB 	 usr/libexec/git-core/git-http-fetch
+ 1.3 MB 	 usr/libexec/git-core/git-credential-cache--daemon
+ 1.3 MB 	 usr/libexec/git-core/git-credential-store
+ 1.3 MB 	 usr/bin/git-shell
+ 1.3 MB 	 usr/libexec/git-core/git-credential-cache
+ 1.3 MB 	 usr/libexec/git-core/git-sh-i18n--envsubst
+ 1.2 MB 	 usr/lib/libgmp.a
+ 1.2 MB 	 root/.npm/_cacache/content-v2/sha1/43/af/334f797ce94cb4ec980ce11ced1f33bbcfeb
+ 1.2 MB 	 usr/lib/libX11.so.6.3.0
+ 1.2 MB 	 usr/lib/node_modules/npm/node_modules/node-gyp/gyp/pylib
+ 1.1 MB 	 usr/lib/libbfd-2.31.1.so
+ 1.1 MB 	 usr/lib/gcc/x86_64-alpine-linux-musl/8.2.0/plugin/gtype.state
+ 1.1 MB 	 usr/lib/ruby/gems/2.5.0/gems/msgpack-1.2.6/ext
+ 1.0 MB 	 root/.npm/_cacache/content-v2/sha1/d0/77/f6825571f82132f9dffaed587b4029feff57
+ 1.0 MB 	 usr/lib/libsupc++.a
+ 983 kB 	 usr/share/perl5/core_perl/unicore/Name.pl
+ 980 kB 	 usr/lib/node_modules/npm/node_modules/ajv/dist/regenerator.min.js
+ 931 kB 	 usr/local/bin/ngtq
+ 925 kB 	 usr/lib/gcc/x86_64-alpine-linux-musl/8.2.0/plugin/include/insn-flags.h
+ 901 kB 	 usr/lib/libsqlite3.so.0.8.6
+ 898 kB 	 usr/bin/c++
+ 898 kB 	 usr/bin/cpp
+ 898 kB 	 usr/bin/gcc
+ 894 kB 	 usr/lib/python3.6/lib-dynload/unicodedata.cpython-36m-x86_64-linux-gnu.so
+ 850 kB 	 root/.cache/pip/http/d/c/2/3
+ 830 kB 	 root/.cache/pip/http/2/9/9/0
+ 823 kB 	 usr/lib/node_modules/resume-cli/node_modules/JSV/jsdoc-toolkit/java
+ 815 kB 	 usr/bin/as
+ 810 kB 	 usr/libexec/gcc/x86_64-alpine-linux-musl/8.2.0/lto-wrapper
+ 806 kB 	 usr/share/perl5/core_perl/Module/CoreList.pm
+ 768 kB 	 root/.npm/_cacache/content-v2/sha512/d3/84/aa105cd812fa2e473ff844c0d7a92eee53a03ef4a54e898d1c5f33bd054a9799346b7b78d25f1dce2407e41254dabfa52b1b9b6ca8664784a22adc575975
+ 750 kB 	 usr/local/lib/libngt.so.1.5.1
+ 715 kB 	 bin/bash
+ 703 kB 	 usr/lib/node_modules/typescript/lib/lib.dom.d.ts
+ 692 kB 	 usr/lib/python2.7/lib-dynload/unicodedata.so
+ 676 kB 	 usr/lib/python2.7/pydoc_data/topics.py
+ 658 kB 	 usr/bin/openssl
+ 645 kB 	 bin/zsh
+ 643 kB 	 usr/lib/python3.6/pydoc_data/topics.py
+ 609 kB 	 usr/share/nvim/runtime/spell/en.utf-8.spl
+ 608 kB 	 usr/lib/libarchive.so.13.3.2
+ 586 kB 	 usr/bin/tig
+ 584 kB 	 usr/lib/libpcre2-8.so.0.7.1
+ 583 kB 	 usr/lib/ruby/2.5.0/x86_64-linux-musl/enc/trans/big5.so
+ 575 kB 	 usr/lib/perl5/core_perl/auto/Unicode/Normalize/Normalize.so
+ 573 kB 	 usr/share/X11/locale/en_US.UTF-8/Compose
+ 573 kB 	 usr/lib/python3.6/ensurepip/_bundled/setuptools-40.6.2-py2.py3-none-any.whl
+
+====================================================================================================
+  28 MB 	 $ COPY /usr/local/bin/containerd /usr/bin/docker-containerd # buildkit
+====================================================================================================
+  28 MB 	 usr/bin/docker-containerd
+
+====================================================================================================
+ 5.0 MB 	 $ COPY /usr/local/bin/containerd-shim /usr/bin/docker-containerd-shim # buildkit
+====================================================================================================
+ 5.0 MB 	 usr/bin/docker-containerd-shim
+
+====================================================================================================
+  16 MB 	 $ COPY /usr/local/bin/ctr /usr/bin/docker-containerd-ctr # buildkit
+====================================================================================================
+  16 MB 	 usr/bin/docker-containerd-ctr
+
+====================================================================================================
+ 1.0 kB 	 $ COPY /usr/local/bin/dind /usr/bin/dind # buildkit
+====================================================================================================
+ 1.0 kB 	 usr/bin/dind
+
+====================================================================================================
+  51 MB 	 $ COPY /usr/local/bin/docker /usr/bin/docker # buildkit
+====================================================================================================
+  51 MB 	 usr/bin/docker
+
+====================================================================================================
+  933 B 	 $ COPY /usr/local/bin/docker-entrypoint.sh /usr/bin/docker-entrypoint # buildkit
+====================================================================================================
+  933 B 	 usr/bin/docker-entrypoint
+
+====================================================================================================
+ 764 kB 	 $ COPY /usr/local/bin/docker-init /usr/bin/docker-init # buildkit
+====================================================================================================
+ 764 kB 	 usr/bin/docker-init
+
+====================================================================================================
+ 2.8 MB 	 $ COPY /usr/local/bin/docker-proxy /usr/bin/docker-proxy # buildkit
+====================================================================================================
+ 2.8 MB 	 usr/bin/docker-proxy
+
+====================================================================================================
+  54 MB 	 $ COPY /usr/local/bin/dockerd /usr/bin/dockerd # buildkit
+====================================================================================================
+  54 MB 	 usr/bin/dockerd
+
+====================================================================================================
+  587 B 	 $ COPY /usr/local/bin/modprobe /usr/bin/modprobe # buildkit
+====================================================================================================
+  587 B 	 usr/bin/modprobe
+
+====================================================================================================
+ 7.5 MB 	 $ COPY /usr/local/bin/runc /usr/bin/docker-runc # buildkit
+====================================================================================================
+ 7.5 MB 	 usr/bin/docker-runc
+
+====================================================================================================
+  39 MB 	 $ COPY /usr/local/bin/kubectl /usr/bin/kubectl # buildkit
+====================================================================================================
+  39 MB 	 usr/bin/kubectl
+
+====================================================================================================
+ 5.2 kB 	 $ COPY /usr/local/bin/kubectx /usr/bin/kubectx # buildkit
+====================================================================================================
+ 5.2 kB 	 usr/bin/kubectx
+
+====================================================================================================
+ 5.3 kB 	 $ COPY /usr/local/bin/kubens /usr/bin/kubens # buildkit
+====================================================================================================
+ 5.3 kB 	 usr/bin/kubens
+
+====================================================================================================
+  37 MB 	 $ COPY /usr/local/bin/helm /usr/bin/helm # buildkit
+====================================================================================================
+  37 MB 	 usr/bin/helm
+
+====================================================================================================
+    0 B 	 $ COPY /root/.krew/bin /usr/bin/ # buildkit
+====================================================================================================
+    0 B 	 usr/bin/kubectl-krew
+
+====================================================================================================
+ 139 MB 	 $ COPY /google-cloud-sdk /google-cloud-sdk # buildkit
+====================================================================================================
+  26 MB 	 google-cloud-sdk/lib/third_party/grpc/_cython/cygrpc.so
+  22 MB 	 google-cloud-sdk/data/cli/gcloud.json
+ 2.3 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_alpha.json
+ 2.1 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/alpha/compute_alpha_messages.py
+ 1.9 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_beta.json
+ 1.8 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/beta/compute_beta_messages.py
+ 1.6 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_v1.json
+ 1.5 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/v1/compute_v1_messages.py
+ 1.2 MB 	 google-cloud-sdk/data/cli/gcloud_completions.py
+ 1.0 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_dev_alpha.json
+ 686 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/alpha/compute_alpha_client.py
+ 560 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/beta/compute_beta_client.py
+ 461 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/v1/compute_v1_client.py
+ 420 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/apitools/base/py
+ 357 kB 	 google-cloud-sdk/data/cli/gsutil.json
+ 352 kB 	 google-cloud-sdk/lib/third_party/google/protobuf/unittest_pb2.py
+ 345 kB 	 google-cloud-sdk/lib/third_party/requests/cacert.pem
+ 332 kB 	 google-cloud-sdk/RELEASE_NOTES
+ 314 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/vision_v1.json
+ 304 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/datastore/datastore_v3_pb.py
+ 272 kB 	 google-cloud-sdk/lib/third_party/grpc/_cython/_credentials/roots.pem
+ 269 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/cacerts/cacerts.txt
+ 266 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/apitools/base/protorpclite
+ 263 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/api/taskqueue/taskqueue_service_pb.py
+ 263 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container_v1alpha1.json
+ 255 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/vision/v1/vision_v1_messages.py
+ 252 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataflow_v1b3.json
+ 243 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container_v1beta1.json
+ 240 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dlp_v2.json
+ 240 kB 	 google-cloud-sdk/platform/gsutil/gslib/data/cacerts.txt
+ 229 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/spanner_v1.json
+ 224 kB 	 google-cloud-sdk/lib/third_party/pyparsing/__init__.py
+ 224 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/servicemanagement_v1.json
+ 222 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataflow/v1b3/dataflow_v1b3_messages.py
+ 220 kB 	 google-cloud-sdk/.install/core.manifest
+ 217 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container_v1.json
+ 216 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/tests/unit/ec2
+ 204 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/logging_v2.json
+ 196 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/servicemanagement/v1/servicemanagement_v1_messages.py
+ 192 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/genomics_v1.json
+ 189 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/datastore/datastore_v4_pb.py
+ 186 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/samples/servicemanagement_sample/servicemanagement_v1
+ 184 kB 	 google-cloud-sdk/platform/bq/bq.py
+ 183 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dlp/v2/dlp_v2_messages.py
+ 182 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc_v1beta2.json
+ 182 kB 	 google-cloud-sdk/platform/gsutil/gslib/tests/test_cp.py
+ 179 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/ec2/connection.py
+ 179 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/monitoring_v3.json
+ 178 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/spanner/v1/spanner_v1_messages.py
+ 178 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serverless_v1alpha1.json
+ 177 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/samples/servicemanagement_sample/servicemanagement_v1.json
+ 176 kB 	 google-cloud-sdk/platform/bq/bigquery_client.py
+ 169 kB 	 google-cloud-sdk/platform/gsutil/gslib/utils/copy_helper.py
+ 167 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc_v1.json
+ 162 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/source_v1.json
+ 161 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine_v1beta.json
+ 160 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/rds2/layer1.py
+ 159 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/googlestorage/onestore/v3
+ 157 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine_v1.json
+ 156 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/monitoring/v3/monitoring_v3_messages.py
+ 154 kB 	 google-cloud-sdk/lib/third_party/pygments/lexers/_php_builtins.py
+ 153 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/dynamodb2/layer1.py
+ 146 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/genomics/v1/genomics_v1_messages.py
+ 144 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container/v1alpha1/container_v1alpha1_messages.py
+ 144 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc/v1beta2/dataproc_v1beta2_messages.py
+ 143 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/samples/storage_sample/storage_v1
+ 141 kB 	 google-cloud-sdk/lib/third_party/pygments/lexers/lisp.py
+ 141 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/storage_v1.json
+ 140 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/logging/v2/logging_v2_messages.py
+ 139 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/redshift/layer1.py
+ 138 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/firestore_v1.json
+ 138 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/bigquery_v2.json
+ 138 kB 	 google-cloud-sdk/platform/bq/discovery/httpswwwgoogleapiscom.bigquery.v2.rest.json
+ 136 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc/v1/dataproc_v1_messages.py
+ 136 kB 	 google-cloud-sdk/lib/third_party/httplib2/python3/httplib2/cacerts.txt
+ 136 kB 	 google-cloud-sdk/platform/bq/third_party/httplib2/cacerts.txt
+ 136 kB 	 google-cloud-sdk/platform/gsutil/third_party/httplib2/python3/httplib2/cacerts.txt
+ 136 kB 	 google-cloud-sdk/lib/third_party/httplib2/python2/httplib2/cacerts.txt
+ 136 kB 	 google-cloud-sdk/platform/gsutil/third_party/httplib2/python2/httplib2/cacerts.txt
+ 134 kB 	 google-cloud-sdk/lib/third_party/pygments/lexers/_lasso_builtins.py
+ 132 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serviceusage_v1.json
+ 131 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/containeranalysis_v1alpha1.json
+ 130 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serviceusage_v1beta1.json
+ 130 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/opsworks/layer1.py
+ 129 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/deploymentmanager_alpha.json
+ 128 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/bigquery/v2/bigquery_v2_messages.py
+ 128 kB 	 google-cloud-sdk/lib/third_party/google/protobuf/internal/reflection_test.py
+ 128 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container/v1beta1/container_v1beta1_messages.py
+ 124 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/ml_v1.json
+ 123 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/tests/integration/s3
+ 123 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serverless/v1alpha1/serverless_v1alpha1_messages.py
+ 122 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/deploymentmanager_v2beta.json
+ 122 kB 	 google-cloud-sdk/lib/third_party/google/protobuf/map_unittest_pb2.py
+ 121 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine/v1beta/appengine_v1beta_messages.py
+ 121 kB 	 google-cloud-sdk/platform/gsutil/gslib/tests/test_rsync.py
+ 120 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/servicenetworking_v1beta.json
+ 119 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/datastore/datastore_query.py
+ 118 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serviceuser_v1.json
+ 118 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine/v1/appengine_v1_messages.py
+ 118 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serviceusage/v1/serviceusage_v1_messages.py
+
+====================================================================================================
+ 6.3 kB 	 $ COPY /root/.config/gcloud /root/.config/gcloud # buildkit
+====================================================================================================
+ 1.1 kB 	 root/.config/gcloud/logs/2019.01.28/02.09.33.384829.log
+ 1.1 kB 	 root/.config/gcloud/logs/2019.02.03/05.49.59.024634.log
+  682 B 	 root/.config/gcloud/logs/2019.01.28/02.09.29.369954.log
+  630 B 	 root/.config/gcloud/logs/2019.01.28/02.09.31.002938.log
+  630 B 	 root/.config/gcloud/logs/2019.02.03/05.49.56.634655.log
+  610 B 	 root/.config/gcloud/logs/2019.02.03/05.49.55.545531.log
+  607 B 	 root/.config/gcloud/logs/2019.01.28/02.09.32.184034.log
+  607 B 	 root/.config/gcloud/logs/2019.02.03/05.49.57.828570.log
+  134 B 	 root/.config/gcloud/.last_update_check.json
+  133 B 	 root/.config/gcloud/configurations/config_default
+    7 B 	 root/.config/gcloud/active_config
+    5 B 	 root/.config/gcloud/gce
+    0 B 	 root/.config/gcloud/config_sentinel
+
+====================================================================================================
+ 3.4 MB 	 $ COPY /bin/nim /usr/local/bin/nim # buildkit
+====================================================================================================
+ 3.4 MB 	 usr/local/bin/nim
+
+====================================================================================================
+ 5.7 MB 	 $ COPY /bin/nimble /usr/local/bin/nimble # buildkit
+====================================================================================================
+ 5.7 MB 	 usr/local/bin/nimble
+
+====================================================================================================
+ 2.4 MB 	 $ COPY /bin/nimsuggest /usr/local/bin/nimsuggest # buildkit
+====================================================================================================
+ 2.4 MB 	 usr/local/bin/nimsuggest
+
+====================================================================================================
+ 4.0 MB 	 $ COPY /nim/lib /usr/local/lib/nim # buildkit
+====================================================================================================
+ 234 kB 	 usr/local/lib/nim/pure/unidecode/unidecode.dat
+ 167 kB 	 usr/local/lib/nim/system.nim
+  95 kB 	 usr/local/lib/nim/pure/times.nim
+  90 kB 	 usr/local/lib/nim/pure/strutils.nim
+  70 kB 	 usr/local/lib/nim/pure/htmlparser.nim
+  69 kB 	 usr/local/lib/nim/pure/pegs.nim
+  65 kB 	 usr/local/lib/nim/pure/os.nim
+  63 kB 	 usr/local/lib/nim/pure/net.nim
+  62 kB 	 usr/local/lib/nim/deprecated/pure/sockets.nim
+  62 kB 	 usr/local/lib/nim/pure/asyncdispatch.nim
+  55 kB 	 usr/local/lib/nim/packages/docutils/rst.nim
+  53 kB 	 usr/local/lib/nim/wrappers/mysql.nim
+  53 kB 	 usr/local/lib/nim/core/macros.nim
+  52 kB 	 usr/local/lib/nim/posix/posix.nim
+  52 kB 	 usr/local/lib/nim/pure/json.nim
+  50 kB 	 usr/local/lib/nim/pure/unicode.nim
+  49 kB 	 usr/local/lib/nim/pure/httpclient.nim
+  49 kB 	 usr/local/lib/nim/posix/posix_other_consts.nim
+  49 kB 	 usr/local/lib/nim/packages/docutils/rstgen.nim
+  48 kB 	 usr/local/lib/nim/pure/collections/tables.nim
+  47 kB 	 usr/local/lib/nim/pure/osproc.nim
+  44 kB 	 usr/local/lib/nim/windows/winlean.nim
+  39 kB 	 usr/local/lib/nim/wrappers/linenoise/linenoise.c
+  39 kB 	 usr/local/lib/nim/pure/parsesql.nim
+  39 kB 	 usr/local/lib/nim/pure/xmldom.nim
+  38 kB 	 usr/local/lib/nim/system/alloc.nim
+  37 kB 	 usr/local/lib/nim/pure/collections/sets.nim
+  37 kB 	 usr/local/lib/nim/pure/collections/sequtils.nim
+  36 kB 	 usr/local/lib/nim/wrappers/iup.nim
+  35 kB 	 usr/local/lib/nim/wrappers/odbcsql.nim
+  33 kB 	 usr/local/lib/nim/pure/terminal.nim
+  33 kB 	 usr/local/lib/nim/system/gc.nim
+  30 kB 	 usr/local/lib/nim/wrappers/openssl.nim
+  30 kB 	 usr/local/lib/nim/posix/posix_other.nim
+  29 kB 	 usr/local/lib/nim/packages/docutils/highlite.nim
+  28 kB 	 usr/local/lib/nim/pure/math.nim
+  28 kB 	 usr/local/lib/nim/posix/posix_linux_amd64.nim
+  27 kB 	 usr/local/lib/nim/pure/nativesockets.nim
+  27 kB 	 usr/local/lib/nim/pure/strscans.nim
+  26 kB 	 usr/local/lib/nim/system/gc2.nim
+  26 kB 	 usr/local/lib/nim/pure/asyncnet.nim
+  26 kB 	 usr/local/lib/nim/core/typeinfo.nim
+  26 kB 	 usr/local/lib/nim/system/threads.nim
+  25 kB 	 usr/local/lib/nim/impure/re.nim
+  25 kB 	 usr/local/lib/nim/deprecated/pure/asyncio.nim
+  24 kB 	 usr/local/lib/nim/pure/parsexml.nim
+  24 kB 	 usr/local/lib/nim/impure/nre.nim
+  24 kB 	 usr/local/lib/nim/pure/ospaths.nim
+  23 kB 	 usr/local/lib/nim/pure/htmlgen.nim
+  23 kB 	 usr/local/lib/nim/impure/db_postgres.nim
+  23 kB 	 usr/local/lib/nim/pure/unittest.nim
+  23 kB 	 usr/local/lib/nim/pure/strformat.nim
+  22 kB 	 usr/local/lib/nim/posix/posix_nintendoswitch.nim
+  22 kB 	 usr/local/lib/nim/deprecated/pure/ftpclient.nim
+  22 kB 	 usr/local/lib/nim/pure/ioselects/ioselectors_kqueue.nim
+  21 kB 	 usr/local/lib/nim/system/mmdisp.nim
+  20 kB 	 usr/local/lib/nim/wrappers/sqlite3.nim
+  20 kB 	 usr/local/lib/nim/pure/encodings.nim
+  20 kB 	 usr/local/lib/nim/system/jssys.nim
+  20 kB 	 usr/local/lib/nim/posix/posix_linux_amd64_consts.nim
+  20 kB 	 usr/local/lib/nim/impure/db_odbc.nim
+  19 kB 	 usr/local/lib/nim/pure/uri.nim
+  19 kB 	 usr/local/lib/nim/pure/collections/LockFreeHash.nim
+  19 kB 	 usr/local/lib/nim/pure/algorithm.nim
+  18 kB 	 usr/local/lib/nim/pure/streams.nim
+  18 kB 	 usr/local/lib/nim/js/dom.nim
+  18 kB 	 usr/local/lib/nim/pure/parsecfg.nim
+  18 kB 	 usr/local/lib/nim/system/gc_ms.nim
+  18 kB 	 usr/local/lib/nim/js/jsffi.nim
+  18 kB 	 usr/local/lib/nim/pure/parseutils.nim
+  18 kB 	 usr/local/lib/nim/pure/mimetypes.nim
+  18 kB 	 usr/local/lib/nim/pure/concurrency/threadpool.nim
+  18 kB 	 usr/local/lib/nim/pure/bitops.nim
+  17 kB 	 usr/local/lib/nim/pure/ioselects/ioselectors_epoll.nim
+  17 kB 	 usr/local/lib/nim/pure/asyncfile.nim
+  17 kB 	 usr/local/lib/nim/pure/memfiles.nim
+  17 kB 	 usr/local/lib/nim/wrappers/postgres.nim
+  17 kB 	 usr/local/lib/nim/system/endb.nim
+  16 kB 	 usr/local/lib/nim/nimbase.h
+  16 kB 	 usr/local/lib/nim/system/gc_common.nim
+  16 kB 	 usr/local/lib/nim/wrappers/pcre.nim
+  16 kB 	 usr/local/lib/nim/system/excpt.nim
+  16 kB 	 usr/local/lib/nim/posix/posix_nintendoswitch_consts.nim
+  16 kB 	 usr/local/lib/nim/pure/asyncmacro.nim
+  16 kB 	 usr/local/lib/nim/pure/httpserver.nim
+  15 kB 	 usr/local/lib/nim/system/sysio.nim
+  15 kB 	 usr/local/lib/nim/pure/parsejson.nim
+  14 kB 	 usr/local/lib/nim/pure/asyncftpclient.nim
+  14 kB 	 usr/local/lib/nim/pure/asyncfutures.nim
+  14 kB 	 usr/local/lib/nim/system/atomics.nim
+  14 kB 	 usr/local/lib/nim/cycle.h
+  14 kB 	 usr/local/lib/nim/pure/ioselects/ioselectors_select.nim
+  13 kB 	 usr/local/lib/nim/system/sysstr.nim
+  13 kB 	 usr/local/lib/nim/pure/colors.nim
+  13 kB 	 usr/local/lib/nim/system/arithm.nim
+  13 kB 	 usr/local/lib/nim/pure/logging.nim
+  13 kB 	 usr/local/lib/nim/pure/selectors.nim
+  13 kB 	 usr/local/lib/nim/system/gc_regions.nim
+  13 kB 	 usr/local/lib/nim/pure/xmltree.nim
+  12 kB 	 usr/local/lib/nim/impure/db_mysql.nim
+
+====================================================================================================
+ 474 MB 	 $ COPY /nim /nim # buildkit
+====================================================================================================
+ 5.7 MB 	 nim/bin/nimble
+ 5.7 MB 	 nim/dist/nimble/src/nimble
+ 3.4 MB 	 nim/bin/nim
+ 2.4 MB 	 nim/bin/nimsuggest
+ 1.4 MB 	 nim/c_code/3_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/4_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/4_5/compiler_sem.c
+ 1.4 MB 	 nim/c_code/5_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/6_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/7_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/8_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/10_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/10_4/compiler_sem.c
+ 1.4 MB 	 nim/c_code/1_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_10/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_4/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_5/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_6/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_7/compiler_sem.c
+ 1.4 MB 	 nim/c_code/9_1/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_2/compiler_sem.c
+ 1.4 MB 	 nim/c_code/3_2/compiler_sem.c
+ 1.4 MB 	 nim/c_code/3_3/compiler_sem.c
+ 1.4 MB 	 nim/c_code/4_14/compiler_sem.c
+ 1.4 MB 	 nim/c_code/4_2/compiler_sem.c
+ 1.4 MB 	 nim/c_code/5_2/compiler_sem.c
+ 1.4 MB 	 nim/c_code/6_2/compiler_sem.c
+ 1.4 MB 	 nim/c_code/7_2/compiler_sem.c
+ 1.4 MB 	 nim/c_code/8_2/compiler_sem.c
+ 1.4 MB 	 nim/c_code/10_12/compiler_sem.c
+ 1.4 MB 	 nim/c_code/11_12/compiler_sem.c
+ 1.4 MB 	 nim/c_code/1_2/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_11/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_12/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_13/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_3/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_8/compiler_sem.c
+ 1.4 MB 	 nim/c_code/2_9/compiler_sem.c
+ 1.4 MB 	 nim/c_code/9_2/compiler_sem.c
+ 1.2 MB 	 nim/c_code/10_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/10_4/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/1_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_10/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_4/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_5/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_6/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_7/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/3_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/4_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/4_5/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/5_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/6_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/7_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/8_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/9_1/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/10_12/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/11_12/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/1_2/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_11/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_12/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_13/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_2/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_3/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_8/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/2_9/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/3_2/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/3_3/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/4_14/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/4_2/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/5_2/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/6_2/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/7_2/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/8_2/compiler_cgen.c
+ 1.2 MB 	 nim/c_code/9_2/compiler_cgen.c
+ 963 kB 	 nim/bin/nimpretty
+ 655 kB 	 nim/build.sh
+ 575 kB 	 nim/c_code/1_2/compiler_cgen.o
+ 567 kB 	 nim/c_code/2_2/compiler_sem.o
+ 506 kB 	 nim/tests/deps/opengl-1.1.0/opengl.nim
+ 443 kB 	 nim/c_code/10_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/10_4/compiler_jsgen.c
+ 443 kB 	 nim/c_code/1_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/2_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/2_10/compiler_jsgen.c
+ 443 kB 	 nim/c_code/2_4/compiler_jsgen.c
+ 443 kB 	 nim/c_code/2_5/compiler_jsgen.c
+ 443 kB 	 nim/c_code/2_6/compiler_jsgen.c
+ 443 kB 	 nim/c_code/2_7/compiler_jsgen.c
+ 443 kB 	 nim/c_code/3_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/4_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/4_5/compiler_jsgen.c
+ 443 kB 	 nim/c_code/5_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/6_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/7_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/8_1/compiler_jsgen.c
+ 443 kB 	 nim/c_code/9_1/compiler_jsgen.c
+ 441 kB 	 nim/c_code/10_12/compiler_jsgen.c
+ 441 kB 	 nim/c_code/11_12/compiler_jsgen.c
+
+====================================================================================================
+ 208 MB 	 $ COPY /usr/lib/dart/bin /usr/lib/dart/bin # buildkit
+====================================================================================================
+  48 MB 	 usr/lib/dart/bin/snapshots/dart2js.dart.snapshot
+  44 MB 	 usr/lib/dart/bin/snapshots/dartdevc.dart.snapshot
+  22 MB 	 usr/lib/dart/bin/dart
+  20 MB 	 usr/lib/dart/bin/snapshots/kernel-service.dart.snapshot
+  16 MB 	 usr/lib/dart/bin/snapshots/dartfmt.dart.snapshot
+  15 MB 	 usr/lib/dart/bin/snapshots/analysis_server.dart.snapshot
+  12 MB 	 usr/lib/dart/bin/snapshots/dartanalyzer.dart.snapshot
+  12 MB 	 usr/lib/dart/bin/snapshots/pub.dart.snapshot
+  12 MB 	 usr/lib/dart/bin/snapshots/dartdoc.dart.snapshot
+ 5.0 MB 	 usr/lib/dart/bin/snapshots/kernel_worker.dart.snapshot
+ 759 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/resources
+  47 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/templates
+ 1.5 kB 	 usr/lib/dart/bin/dart2js
+ 1.3 kB 	 usr/lib/dart/bin/pub
+  975 B 	 usr/lib/dart/bin/dartdoc
+  953 B 	 usr/lib/dart/bin/dartanalyzer
+  915 B 	 usr/lib/dart/bin/dartfmt
+  861 B 	 usr/lib/dart/bin/dartdevc
+    9 B 	 usr/lib/dart/bin/snapshots/resources/dartdoc/.packages
+
+====================================================================================================
+  83 MB 	 $ COPY /usr/lib/dart/lib /usr/lib/dart/lib # buildkit
+====================================================================================================
+ 7.3 MB 	 usr/lib/dart/lib/_internal/dart2js_platform.dill
+ 7.2 MB 	 usr/lib/dart/lib/_internal/ddc_sdk.dill
+ 5.0 MB 	 usr/lib/dart/lib/dev_compiler/legacy/dart_sdk.js
+ 5.0 MB 	 usr/lib/dart/lib/dev_compiler/amd/dart_sdk.js
+ 4.9 MB 	 usr/lib/dart/lib/_internal/ddc_sdk.sum
+ 4.9 MB 	 usr/lib/dart/lib/_internal/strong.sum
+ 4.8 MB 	 usr/lib/dart/lib/dev_compiler/kernel/legacy/dart_sdk.js
+ 4.8 MB 	 usr/lib/dart/lib/dev_compiler/kernel/amd/dart_sdk.js
+ 4.8 MB 	 usr/lib/dart/lib/dev_compiler/common/dart_sdk.js
+ 4.8 MB 	 usr/lib/dart/lib/dev_compiler/es6/dart_sdk.js
+ 4.6 MB 	 usr/lib/dart/lib/dev_compiler/kernel/common/dart_sdk.js
+ 4.6 MB 	 usr/lib/dart/lib/dev_compiler/kernel/es6/dart_sdk.js
+ 4.3 MB 	 usr/lib/dart/lib/_internal/dart2js_server_platform.dill
+ 2.6 MB 	 usr/lib/dart/lib/_internal/vm_platform_strong.dill
+ 2.4 MB 	 usr/lib/dart/lib/dev_compiler/web/ddc_web_compiler.js
+ 1.6 MB 	 usr/lib/dart/lib/dev_compiler/legacy/dart_sdk.js.map
+ 1.6 MB 	 usr/lib/dart/lib/dev_compiler/amd/dart_sdk.js.map
+ 1.6 MB 	 usr/lib/dart/lib/dev_compiler/common/dart_sdk.js.map
+ 1.6 MB 	 usr/lib/dart/lib/dev_compiler/es6/dart_sdk.js.map
+ 1.2 MB 	 usr/lib/dart/lib/html/dart2js/html_dart2js.dart
+ 165 kB 	 usr/lib/dart/lib/core/uri.dart
+ 161 kB 	 usr/lib/dart/lib/dev_compiler/web/dart_stack_trace_mapper.js
+ 125 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/js_helper.dart
+ 124 kB 	 usr/lib/dart/lib/web_gl/dart2js/web_gl_dart2js.dart
+ 124 kB 	 usr/lib/dart/lib/svg/dart2js/svg_dart2js.dart
+  98 kB 	 usr/lib/dart/lib/_http/http_impl.dart
+  95 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/core_patch.dart
+  86 kB 	 usr/lib/dart/lib/dev_compiler/amd/require.js
+  86 kB 	 usr/lib/dart/lib/dev_compiler/kernel/amd/require.js
+  78 kB 	 usr/lib/dart/lib/async/stream.dart
+  78 kB 	 usr/lib/dart/lib/_http/http.dart
+  78 kB 	 usr/lib/dart/lib/typed_data/typed_data.dart
+  63 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/native_typed_data.dart
+  55 kB 	 usr/lib/dart/lib/async/zone.dart
+  50 kB 	 usr/lib/dart/lib/mirrors/mirrors.dart
+  50 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/collection_patch.dart
+  44 kB 	 usr/lib/dart/lib/io/secure_socket.dart
+  42 kB 	 usr/lib/dart/lib/web_audio/dart2js/web_audio_dart2js.dart
+  41 kB 	 usr/lib/dart/lib/_http/websocket_impl.dart
+  41 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/js_rti.dart
+  40 kB 	 usr/lib/dart/lib/_chrome/dart2js/chrome_dart2js.dart
+  39 kB 	 usr/lib/dart/lib/indexed_db/dart2js/indexed_db_dart2js.dart
+  35 kB 	 usr/lib/dart/lib/io/file_system_entity.dart
+  35 kB 	 usr/lib/dart/lib/convert/json.dart
+  35 kB 	 usr/lib/dart/lib/async/future.dart
+  34 kB 	 usr/lib/dart/lib/_http/http_parser.dart
+  34 kB 	 usr/lib/dart/lib/io/file.dart
+  33 kB 	 usr/lib/dart/lib/io/file_impl.dart
+  33 kB 	 usr/lib/dart/lib/async/stream_controller.dart
+  32 kB 	 usr/lib/dart/lib/async/stream_impl.dart
+  31 kB 	 usr/lib/dart/lib/convert/base64.dart
+  29 kB 	 usr/lib/dart/lib/core/string.dart
+  28 kB 	 usr/lib/dart/lib/isolate/isolate.dart
+  28 kB 	 usr/lib/dart/lib/collection/queue.dart
+  28 kB 	 usr/lib/dart/lib/io/socket.dart
+  27 kB 	 usr/lib/dart/lib/_http/http_headers.dart
+  27 kB 	 usr/lib/dart/lib/core/date_time.dart
+  27 kB 	 usr/lib/dart/lib/collection/splay_tree.dart
+  27 kB 	 usr/lib/dart/lib/io/process.dart
+  26 kB 	 usr/lib/dart/lib/async/future_impl.dart
+  25 kB 	 usr/lib/dart/lib/core/iterable.dart
+  24 kB 	 usr/lib/dart/lib/core/list.dart
+  24 kB 	 usr/lib/dart/lib/internal/iterable.dart
+  23 kB 	 usr/lib/dart/lib/js/dart2js/js_dart2js.dart
+  23 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/js_array.dart
+  23 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/async_patch.dart
+  22 kB 	 usr/lib/dart/lib/io/data_transformer.dart
+  21 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/js_number.dart
+  21 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/native_helper.dart
+  21 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/preambles
+  20 kB 	 usr/lib/dart/lib/convert/utf.dart
+  20 kB 	 usr/lib/dart/lib/core/errors.dart
+  18 kB 	 usr/lib/dart/lib/core/num.dart
+  17 kB 	 usr/lib/dart/lib/_http/websocket.dart
+  17 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/convert_patch.dart
+  17 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/interceptors.dart
+  17 kB 	 usr/lib/dart/lib/collection/set.dart
+  16 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/io_patch.dart
+  16 kB 	 usr/lib/dart/lib/collection/list.dart
+  16 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/js_string.dart
+  16 kB 	 usr/lib/dart/lib/async/broadcast_stream_controller.dart
+  15 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/shared
+  15 kB 	 usr/lib/dart/lib/io/overrides.dart
+  15 kB 	 usr/lib/dart/lib/libraries.json
+  15 kB 	 usr/lib/dart/lib/_http/crypto.dart
+  14 kB 	 usr/lib/dart/lib/io/stdio.dart
+  14 kB 	 usr/lib/dart/lib/async/stream_pipe.dart
+  14 kB 	 usr/lib/dart/lib/io/directory_impl.dart
+  13 kB 	 usr/lib/dart/lib/core/map.dart
+  13 kB 	 usr/lib/dart/lib/_internal/js_runtime/lib/linked_hash_map.dart
+  13 kB 	 usr/lib/dart/lib/core/bigint.dart
+  12 kB 	 usr/lib/dart/lib/html/html_common/conversions.dart
+  12 kB 	 usr/lib/dart/lib/internal/sort.dart
+  12 kB 	 usr/lib/dart/lib/io/directory.dart
+  12 kB 	 usr/lib/dart/lib/collection/iterable.dart
+  12 kB 	 usr/lib/dart/lib/internal/list.dart
+  12 kB 	 usr/lib/dart/lib/core/int.dart
+  12 kB 	 usr/lib/dart/lib/collection/maps.dart
+  11 kB 	 usr/lib/dart/lib/_internal/libraries.dart
+  11 kB 	 usr/lib/dart/lib/_internal/sdk_library_metadata/lib/libraries.dart
+
+====================================================================================================
+ 141 kB 	 $ COPY /usr/lib/dart/include /usr/lib/dart/include # buildkit
+====================================================================================================
+ 118 kB 	 usr/lib/dart/include/dart_api.h
+  18 kB 	 usr/lib/dart/include/dart_tools_api.h
+ 5.4 kB 	 usr/lib/dart/include/dart_native_api.h
+
+====================================================================================================
+  16 MB 	 $ COPY /usr/local/go/bin /usr/local/go/bin # buildkit
+====================================================================================================
+  13 MB 	 usr/local/go/bin/go
+ 3.4 MB 	 usr/local/go/bin/gofmt
+
+====================================================================================================
+  66 MB 	 $ COPY /usr/local/go/src /usr/local/go/src # buildkit
+====================================================================================================
+ 8.4 MB 	 usr/local/go/src/cmd/compile/internal/ssa
+ 8.1 MB 	 usr/local/go/src/cmd/vendor/golang.org/x
+ 3.5 MB 	 usr/local/go/src/cmd/vendor/github.com/google
+ 2.9 MB 	 usr/local/go/src/cmd/compile/internal/gc
+ 2.1 MB 	 usr/local/go/src/cmd/asm/internal/asm
+ 886 kB 	 usr/local/go/src/vendor/golang_org/x/crypto
+ 654 kB 	 usr/local/go/src/vendor/golang_org/x/net
+ 619 kB 	 usr/local/go/src/vendor/golang_org/x/text
+ 514 kB 	 usr/local/go/src/cmd/internal/obj/x86
+ 507 kB 	 usr/local/go/src/runtime/race/race_netbsd_amd64.syso
+ 505 kB 	 usr/local/go/src/runtime/race/race_linux_ppc64le.syso
+ 503 kB 	 usr/local/go/src/runtime/race/race_freebsd_amd64.syso
+ 470 kB 	 usr/local/go/src/cmd/link/internal/ld
+ 449 kB 	 usr/local/go/src/runtime/race/race_linux_amd64.syso
+ 399 kB 	 usr/local/go/src/runtime/race/race_darwin_amd64.syso
+ 396 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_7_good
+ 394 kB 	 usr/local/go/src/regexp/testdata/re2-exhaustive.txt.bz2
+ 388 kB 	 usr/local/go/src/compress/testdata/Mark.Twain-Tom.Sawyer.txt
+ 388 kB 	 usr/local/go/src/net/testdata/Mark.Twain-Tom.Sawyer.txt
+ 371 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_10_good
+ 370 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_11_good
+ 365 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_9_good
+ 349 kB 	 usr/local/go/src/runtime/race/race_windows_amd64.syso
+ 325 kB 	 usr/local/go/src/net/http/h2_bundle.go
+ 296 kB 	 usr/local/go/src/image/png/testdata/pngsuite
+ 284 kB 	 usr/local/go/src/cmd/vendor/github.com/ianlancetaylor
+ 273 kB 	 usr/local/go/src/debug/pe/testdata/gcc-amd64-mingw-exec
+ 262 kB 	 usr/local/go/src/crypto/x509/root_darwin_armx.go
+ 232 kB 	 usr/local/go/src/cmd/internal/obj/s390x
+ 218 kB 	 usr/local/go/src/cmd/go/internal/work
+ 211 kB 	 usr/local/go/src/cmd/internal/obj/arm64
+ 193 kB 	 usr/local/go/src/unicode/tables.go
+ 190 kB 	 usr/local/go/src/cmd/internal/obj/ppc64
+ 190 kB 	 usr/local/go/src/cmd/go/go_test.go
+ 167 kB 	 usr/local/go/src/reflect/all_test.go
+ 162 kB 	 usr/local/go/src/net/http/serve_test.go
+ 159 kB 	 usr/local/go/src/cmd/compile/internal/syntax
+ 156 kB 	 usr/local/go/src/cmd/go/internal/modfetch
+ 147 kB 	 usr/local/go/src/cmd/go/internal/modconv
+ 146 kB 	 usr/local/go/src/runtime/proc.go
+ 133 kB 	 usr/local/go/src/debug/dwarf/testdata/line-gcc-win.bin
+ 130 kB 	 usr/local/go/src/net/http/transport_test.go
+ 124 kB 	 usr/local/go/src/cmd/go/alldocs.go
+ 122 kB 	 usr/local/go/src/cmd/internal/obj/arm
+ 120 kB 	 usr/local/go/src/encoding/json/testdata/code.json.gz
+ 118 kB 	 usr/local/go/src/compress/bzip2/testdata/Mark.Twain-Tom.Sawyer.txt.bz2
+ 117 kB 	 usr/local/go/src/html/entity.go
+ 116 kB 	 usr/local/go/src/hash/crc32/crc32_table_ppc64le.s
+ 113 kB 	 usr/local/go/src/debug/elf/elf.go
+ 105 kB 	 usr/local/go/src/crypto/sha512/sha512_test.go
+ 103 kB 	 usr/local/go/src/net/http/server.go
+ 102 kB 	 usr/local/go/src/cmd/go/internal/modload
+ 100 kB 	 usr/local/go/src/compress/testdata/e.txt
+ 100 kB 	 usr/local/go/src/compress/testdata/pi.txt
+  98 kB 	 usr/local/go/src/cmd/go/testdata/script
+  96 kB 	 usr/local/go/src/crypto/ecdsa/testdata/SigVer.rsp.bz2
+  95 kB 	 usr/local/go/src/cmd/go/internal/load
+  90 kB 	 usr/local/go/src/database/sql/sql_test.go
+  90 kB 	 usr/local/go/src/crypto/x509/verify_test.go
+  90 kB 	 usr/local/go/src/cmd/internal/obj/mips
+  88 kB 	 usr/local/go/src/reflect/type.go
+  88 kB 	 usr/local/go/src/database/sql/sql.go
+  87 kB 	 usr/local/go/src/crypto/x509/x509_test.go
+  83 kB 	 usr/local/go/src/crypto/x509/x509.go
+  80 kB 	 usr/local/go/src/cmd/cgo/gcc.go
+  80 kB 	 usr/local/go/src/math/all_test.go
+  80 kB 	 usr/local/go/src/cmd/go/internal/get
+  79 kB 	 usr/local/go/src/cmd/vet/testdata/asm
+  78 kB 	 usr/local/go/src/reflect/value.go
+  78 kB 	 usr/local/go/src/runtime/pprof/internal/profile
+  77 kB 	 usr/local/go/src/cmd/go/testdata/mod
+  76 kB 	 usr/local/go/src/syscall/zerrors_linux_s390x.go
+  75 kB 	 usr/local/go/src/runtime/mgc.go
+  74 kB 	 usr/local/go/src/syscall/zerrors_linux_ppc64le.go
+  74 kB 	 usr/local/go/src/syscall/zerrors_linux_ppc64.go
+  72 kB 	 usr/local/go/src/net/http/transport.go
+  72 kB 	 usr/local/go/src/syscall/zerrors_linux_mips.go
+  72 kB 	 usr/local/go/src/syscall/zerrors_linux_mipsle.go
+  71 kB 	 usr/local/go/src/syscall/zerrors_linux_arm64.go
+  71 kB 	 usr/local/go/src/syscall/zerrors_linux_mips64.go
+  71 kB 	 usr/local/go/src/syscall/zerrors_linux_mips64le.go
+  69 kB 	 usr/local/go/src/syscall/zerrors_netbsd_386.go
+  69 kB 	 usr/local/go/src/syscall/zerrors_freebsd_amd64.go
+  69 kB 	 usr/local/go/src/syscall/zerrors_freebsd_386.go
+  69 kB 	 usr/local/go/src/syscall/zerrors_freebsd_arm.go
+  69 kB 	 usr/local/go/src/syscall/zerrors_netbsd_amd64.go
+  68 kB 	 usr/local/go/src/syscall/zerrors_netbsd_arm.go
+  67 kB 	 usr/local/go/src/runtime/mbitmap.go
+  66 kB 	 usr/local/go/src/compress/flate/testdata/huffman-rand-max.golden
+  66 kB 	 usr/local/go/src/compress/gzip/testdata/issue6550.gz
+  66 kB 	 usr/local/go/src/compress/flate/testdata/huffman-null-max.in
+  66 kB 	 usr/local/go/src/compress/flate/testdata/huffman-rand-max.in
+  65 kB 	 usr/local/go/src/go/parser/parser.go
+  64 kB 	 usr/local/go/src/runtime/zcallback_windows.s
+  64 kB 	 usr/local/go/src/encoding/xml/marshal_test.go
+  64 kB 	 usr/local/go/src/syscall/zerrors_openbsd_386.go
+  64 kB 	 usr/local/go/src/syscall/zerrors_openbsd_arm.go
+  64 kB 	 usr/local/go/src/syscall/zerrors_openbsd_amd64.go
+  62 kB 	 usr/local/go/src/syscall/zsyscall_windows.go
+  62 kB 	 usr/local/go/src/cmd/go/internal/test
+
+====================================================================================================
+ 367 kB 	 $ COPY /usr/local/go/lib /usr/local/go/lib # buildkit
+====================================================================================================
+ 365 kB 	 usr/local/go/lib/time/zoneinfo.zip
+ 1.4 kB 	 usr/local/go/lib/time/update.bash
+  378 B 	 usr/local/go/lib/time/README
+
+====================================================================================================
+ 202 MB 	 $ COPY /usr/local/go/pkg /usr/local/go/pkg # buildkit
+====================================================================================================
+  30 MB 	 usr/local/go/pkg/linux_amd64/cmd/compile/internal
+  21 MB 	 usr/local/go/pkg/tool/linux_amd64/compile
+  14 MB 	 usr/local/go/pkg/tool/linux_amd64/pprof
+  11 MB 	 usr/local/go/pkg/tool/linux_amd64/trace
+ 7.5 MB 	 usr/local/go/pkg/tool/linux_amd64/vet
+ 5.9 MB 	 usr/local/go/pkg/linux_amd64/cmd/go/internal
+ 5.4 MB 	 usr/local/go/pkg/tool/linux_amd64/link
+ 5.4 MB 	 usr/local/go/pkg/tool/linux_amd64/api
+ 5.0 MB 	 usr/local/go/pkg/tool/linux_amd64/cover
+ 4.5 MB 	 usr/local/go/pkg/tool/linux_amd64/cgo
+ 4.4 MB 	 usr/local/go/pkg/tool/linux_amd64/asm
+ 4.4 MB 	 usr/local/go/pkg/tool/linux_amd64/objdump
+ 4.4 MB 	 usr/local/go/pkg/tool/linux_amd64/doc
+ 4.3 MB 	 usr/local/go/pkg/linux_amd64/cmd/vendor/github.com
+ 4.1 MB 	 usr/local/go/pkg/tool/linux_amd64/addr2line
+ 4.0 MB 	 usr/local/go/pkg/tool/linux_amd64/nm
+ 3.8 MB 	 usr/local/go/pkg/linux_amd64/cmd/vendor/golang.org
+ 3.5 MB 	 usr/local/go/pkg/linux_amd64/cmd/link/internal
+ 3.4 MB 	 usr/local/go/pkg/tool/linux_amd64/dist
+ 3.4 MB 	 usr/local/go/pkg/linux_amd64/cmd/internal/obj
+ 3.4 MB 	 usr/local/go/pkg/linux_amd64/net/http.a
+ 3.2 MB 	 usr/local/go/pkg/tool/linux_amd64/fix
+ 3.0 MB 	 usr/local/go/pkg/linux_amd64/runtime.a
+ 2.6 MB 	 usr/local/go/pkg/tool/linux_amd64/test2json
+ 2.6 MB 	 usr/local/go/pkg/tool/linux_amd64/buildid
+ 2.3 MB 	 usr/local/go/pkg/linux_amd64/vendor/golang_org/x
+ 2.1 MB 	 usr/local/go/pkg/tool/linux_amd64/pack
+ 1.8 MB 	 usr/local/go/pkg/linux_amd64/go/types.a
+ 1.7 MB 	 usr/local/go/pkg/linux_amd64/net.a
+ 1.4 MB 	 usr/local/go/pkg/linux_amd64/reflect.a
+ 932 kB 	 usr/local/go/pkg/linux_amd64/crypto/tls.a
+ 871 kB 	 usr/local/go/pkg/linux_amd64/math/big.a
+ 753 kB 	 usr/local/go/pkg/linux_amd64/encoding/gob.a
+ 713 kB 	 usr/local/go/pkg/linux_amd64/syscall.a
+ 665 kB 	 usr/local/go/pkg/linux_amd64/cmd/asm/internal
+ 631 kB 	 usr/local/go/pkg/linux_amd64/crypto/x509.a
+ 626 kB 	 usr/local/go/pkg/linux_amd64/text/template.a
+ 602 kB 	 usr/local/go/pkg/linux_amd64/database/sql.a
+ 596 kB 	 usr/local/go/pkg/linux_amd64/encoding/xml.a
+ 589 kB 	 usr/local/go/pkg/linux_amd64/debug/elf.a
+ 551 kB 	 usr/local/go/pkg/linux_amd64/go/ast.a
+ 546 kB 	 usr/local/go/pkg/linux_amd64/encoding/json.a
+ 544 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/obj.a
+ 510 kB 	 usr/local/go/pkg/linux_amd64/html/template.a
+ 509 kB 	 usr/local/go/pkg/linux_amd64/text/template/parse.a
+ 509 kB 	 usr/local/go/pkg/linux_amd64/debug/dwarf.a
+ 509 kB 	 usr/local/go/pkg/linux_amd64/runtime/pprof/internal
+ 452 kB 	 usr/local/go/pkg/linux_amd64/archive/tar.a
+ 450 kB 	 usr/local/go/pkg/linux_amd64/runtime/race.a
+ 424 kB 	 usr/local/go/pkg/linux_amd64/time.a
+ 410 kB 	 usr/local/go/pkg/linux_amd64/go/internal/gcimporter.a
+ 403 kB 	 usr/local/go/pkg/linux_amd64/regexp/syntax.a
+ 403 kB 	 usr/local/go/pkg/linux_amd64/go/parser.a
+ 389 kB 	 usr/local/go/pkg/linux_amd64/fmt.a
+ 373 kB 	 usr/local/go/pkg/linux_amd64/go/printer.a
+ 355 kB 	 usr/local/go/pkg/linux_amd64/go/doc.a
+ 351 kB 	 usr/local/go/pkg/linux_amd64/regexp.a
+ 351 kB 	 usr/local/go/pkg/linux_amd64/go/build.a
+ 343 kB 	 usr/local/go/pkg/linux_amd64/testing.a
+ 338 kB 	 usr/local/go/pkg/linux_amd64/image.a
+ 328 kB 	 usr/local/go/pkg/linux_amd64/compress/flate.a
+ 323 kB 	 usr/local/go/pkg/linux_amd64/internal/trace.a
+ 319 kB 	 usr/local/go/pkg/linux_amd64/os.a
+ 312 kB 	 usr/local/go/pkg/linux_amd64/archive/zip.a
+ 307 kB 	 usr/local/go/pkg/linux_amd64/runtime/pprof.a
+ 291 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/objfile.a
+ 283 kB 	 usr/local/go/pkg/linux_amd64/crypto/elliptic.a
+ 281 kB 	 usr/local/go/pkg/linux_amd64/go/internal/gccgoimporter.a
+ 272 kB 	 usr/local/go/pkg/linux_amd64/net/rpc.a
+ 271 kB 	 usr/local/go/pkg/linux_amd64/encoding/asn1.a
+ 262 kB 	 usr/local/go/pkg/linux_amd64/image/png.a
+ 247 kB 	 usr/local/go/pkg/linux_amd64/debug/macho.a
+ 246 kB 	 usr/local/go/pkg/linux_amd64/strconv.a
+ 241 kB 	 usr/local/go/pkg/linux_amd64/image/jpeg.a
+ 230 kB 	 usr/local/go/pkg/linux_amd64/strings.a
+ 229 kB 	 usr/local/go/pkg/linux_amd64/net/http/httputil.a
+ 225 kB 	 usr/local/go/pkg/linux_amd64/unicode.a
+ 222 kB 	 usr/local/go/pkg/linux_amd64/go/constant.a
+ 219 kB 	 usr/local/go/pkg/linux_amd64/os/exec.a
+ 204 kB 	 usr/local/go/pkg/linux_amd64/math.a
+ 189 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/dwarf.a
+ 189 kB 	 usr/local/go/pkg/linux_amd64/flag.a
+ 186 kB 	 usr/local/go/pkg/linux_amd64/mime.a
+ 179 kB 	 usr/local/go/pkg/linux_amd64/html.a
+ 179 kB 	 usr/local/go/pkg/linux_amd64/internal/poll.a
+ 177 kB 	 usr/local/go/pkg/linux_amd64/bytes.a
+ 171 kB 	 usr/local/go/pkg/linux_amd64/net/http/fcgi.a
+ 170 kB 	 usr/local/go/pkg/linux_amd64/bufio.a
+ 163 kB 	 usr/local/go/pkg/linux_amd64/debug/gosym.a
+ 163 kB 	 usr/local/go/pkg/linux_amd64/crypto/rsa.a
+ 163 kB 	 usr/local/go/pkg/linux_amd64/cmd/vet/internal
+ 158 kB 	 usr/local/go/pkg/linux_amd64/database/sql/driver.a
+ 157 kB 	 usr/local/go/pkg/linux_amd64/net/http/httptest.a
+ 154 kB 	 usr/local/go/pkg/linux_amd64/encoding/binary.a
+ 152 kB 	 usr/local/go/pkg/linux_amd64/net/textproto.a
+ 149 kB 	 usr/local/go/pkg/linux_amd64/net/url.a
+ 148 kB 	 usr/local/go/pkg/linux_amd64/net/mail.a
+ 148 kB 	 usr/local/go/pkg/linux_amd64/mime/multipart.a
+ 143 kB 	 usr/local/go/pkg/linux_amd64/net/http/cgi.a
+ 142 kB 	 usr/local/go/pkg/linux_amd64/image/gif.a
+
+====================================================================================================
+ 3.1 MB 	 $ COPY /usr/local/go/misc /usr/local/go/misc # buildkit
+====================================================================================================
+ 2.4 MB 	 usr/local/go/misc/trace/trace_viewer_full.html
+ 114 kB 	 usr/local/go/misc/cgo/test/callback.go
+  53 kB 	 usr/local/go/misc/nacl/testdata/mime.types
+  28 kB 	 usr/local/go/misc/cgo/testshared/shared_test.go
+  22 kB 	 usr/local/go/misc/ios/go_darwin_arm_exec.go
+  18 kB 	 usr/local/go/misc/cgo/testcarchive/carchive_test.go
+  16 kB 	 usr/local/go/misc/cgo/errors/ptr_test.go
+  13 kB 	 usr/local/go/misc/cgo/testcshared/cshared_test.go
+  12 kB 	 usr/local/go/misc/wasm/wasm_exec.js
+  11 kB 	 usr/local/go/misc/cgo/testsanitizers/cc_test.go
+ 9.7 kB 	 usr/local/go/misc/cgo/gmp/gmp.go
+ 5.8 kB 	 usr/local/go/misc/cgo/test/cgo_test.go
+ 5.6 kB 	 usr/local/go/misc/chrome/gophertool/gopher.png
+ 5.1 kB 	 usr/local/go/misc/nacl/mkzip.go
+ 5.0 kB 	 usr/local/go/misc/android/go_android_exec.go
+ 5.0 kB 	 usr/local/go/misc/cgo/testplugin/src/host
+ 4.7 kB 	 usr/local/go/misc/cgo/testcarchive/main2.c
+ 4.4 kB 	 usr/local/go/misc/cgo/testcarchive/main4.c
+ 4.3 kB 	 usr/local/go/misc/nacl/README
+ 4.2 kB 	 usr/local/go/misc/cgo/testcshared/main4.c
+ 4.0 kB 	 usr/local/go/misc/linkcheck/linkcheck.go
+ 3.9 kB 	 usr/local/go/misc/cgo/testplugin/test.bash
+ 3.6 kB 	 usr/local/go/misc/cgo/testcshared/main5.c
+ 3.6 kB 	 usr/local/go/misc/cgo/errors/errors_test.go
+ 3.6 kB 	 usr/local/go/misc/cgo/testplugin/src/issue25756
+ 3.5 kB 	 usr/local/go/misc/cgo/testcarchive/main3.c
+ 3.5 kB 	 usr/local/go/misc/cgo/test/issue7978.go
+ 3.4 kB 	 usr/local/go/misc/cgo/test/basic.go
+ 3.3 kB 	 usr/local/go/misc/ios/detect.go
+ 2.8 kB 	 usr/local/go/misc/cgo/test/issue18146.go
+ 2.3 kB 	 usr/local/go/misc/trace/README.md
+ 2.2 kB 	 usr/local/go/misc/ios/README
+ 2.1 kB 	 usr/local/go/misc/nacl/testzip.proto
+ 2.0 kB 	 usr/local/go/misc/cgo/test/issue6612.go
+ 2.0 kB 	 usr/local/go/misc/cgo/testsigfwd/main.go
+ 2.0 kB 	 usr/local/go/misc/cgo/testcarchive/main5.c
+ 1.8 kB 	 usr/local/go/misc/cgo/test/issue21897.go
+ 1.7 kB 	 usr/local/go/misc/arm/a
+ 1.7 kB 	 usr/local/go/misc/cgo/testcshared/src/libgo2
+ 1.7 kB 	 usr/local/go/misc/cgo/test/align.go
+ 1.7 kB 	 usr/local/go/misc/cgo/test/sigaltstack.go
+ 1.7 kB 	 usr/local/go/misc/cgo/testcshared/main1.c
+ 1.7 kB 	 usr/local/go/misc/cgo/test/buildid_linux.go
+ 1.7 kB 	 usr/local/go/misc/cgo/testplugin/src/issue18676
+ 1.6 kB 	 usr/local/go/misc/cgo/test/issue3250.go
+ 1.5 kB 	 usr/local/go/misc/cgo/testsanitizers/cshared_test.go
+ 1.5 kB 	 usr/local/go/misc/cgo/test/test27660.go
+ 1.5 kB 	 usr/local/go/misc/cgo/test/issue10303.go
+ 1.5 kB 	 usr/local/go/misc/cgo/test/test22906.go
+ 1.5 kB 	 usr/local/go/misc/cgo/testsanitizers/src/tsan_shared.go
+ 1.5 kB 	 usr/local/go/misc/cgo/testcarchive/src/libgo2
+ 1.5 kB 	 usr/local/go/misc/cgo/life/c-life.c
+ 1.4 kB 	 usr/local/go/misc/sortac/sortac.go
+ 1.4 kB 	 usr/local/go/misc/cgo/testsanitizers/src/msan6.go
+ 1.4 kB 	 usr/local/go/misc/cgo/test/issue24206.go
+ 1.4 kB 	 usr/local/go/misc/cgo/test/issue4029.go
+ 1.4 kB 	 usr/local/go/misc/cgo/test/issue2462.go
+ 1.4 kB 	 usr/local/go/misc/cgo/test/issue28896.go
+ 1.4 kB 	 usr/local/go/misc/cgo/testshared/src/global
+ 1.4 kB 	 usr/local/go/misc/cgo/testshared/src/depBase
+ 1.4 kB 	 usr/local/go/misc/cgo/testsanitizers/src/tsan9.go
+ 1.4 kB 	 usr/local/go/misc/cgo/testsanitizers/tsan_test.go
+ 1.3 kB 	 usr/local/go/misc/cgo/testsanitizers/src/tsan8.go
+ 1.3 kB 	 usr/local/go/misc/cgo/test/callback_c.c
+ 1.3 kB 	 usr/local/go/misc/cgo/gmp/pi.go
+ 1.3 kB 	 usr/local/go/misc/cgo/test/issue9400_linux.go
+ 1.3 kB 	 usr/local/go/misc/cgo/test/issue21809.go
+ 1.3 kB 	 usr/local/go/misc/chrome/gophertool/gopher.js
+ 1.3 kB 	 usr/local/go/misc/cgo/test/issue17537.go
+ 1.3 kB 	 usr/local/go/misc/cgo/testsanitizers/src/tsan11.go
+ 1.3 kB 	 usr/local/go/misc/cgo/test/issue1560.go
+ 1.3 kB 	 usr/local/go/misc/wasm/wasm_exec.html
+ 1.3 kB 	 usr/local/go/misc/cgo/testcshared/main2.c
+ 1.2 kB 	 usr/local/go/misc/cgo/testcarchive/main_unix.c
+ 1.2 kB 	 usr/local/go/misc/cgo/test/issue27340/a.go
+ 1.2 kB 	 usr/local/go/misc/cgo/test/issue18720.go
+ 1.2 kB 	 usr/local/go/misc/cgo/testsanitizers/msan_test.go
+ 1.2 kB 	 usr/local/go/misc/cgo/test/issue3261.go
+ 1.2 kB 	 usr/local/go/misc/cgo/testcshared/main0.c
+ 1.1 kB 	 usr/local/go/misc/cgo/test/issue7786.go
+ 1.1 kB 	 usr/local/go/misc/cgo/testplugin/src/issue22175
+ 1.1 kB 	 usr/local/go/misc/cgo/testsovar/cgoso.go
+ 1.1 kB 	 usr/local/go/misc/cgo/stdio/run.out
+ 1.1 kB 	 usr/local/go/misc/cgo/test/issue24161e2/main.go
+ 1.1 kB 	 usr/local/go/misc/cgo/test/issue8428.go
+ 1.1 kB 	 usr/local/go/misc/cgo/test/issue24161e1/main.go
+ 1.0 kB 	 usr/local/go/misc/cgo/test/sigprocmask.c
+ 1.0 kB 	 usr/local/go/misc/chrome/gophertool/popup.js
+ 1.0 kB 	 usr/local/go/misc/cgo/testplugin/src/iface
+ 1.0 kB 	 usr/local/go/misc/cgo/testcarchive/src/libgo3
+  991 B 	 usr/local/go/misc/cgo/test/issue3729.go
+  991 B 	 usr/local/go/misc/cgo/test/issue5603.go
+  990 B 	 usr/local/go/misc/cgo/test/issue8517_windows.go
+  983 B 	 usr/local/go/misc/cgo/stdio/fib.go
+  980 B 	 usr/local/go/misc/cgo/test/issue4417.go
+  977 B 	 usr/local/go/misc/cgo/test/env.go
+  964 B 	 usr/local/go/misc/cgo/testcarchive/src/libgo
+  962 B 	 usr/local/go/misc/cgo/stdio/fib.out
+  951 B 	 usr/local/go/misc/cgo/test/issue9557.go
+  946 B 	 usr/local/go/misc/cgo/test/issue8694.go
+
+====================================================================================================
+ 405 MB 	 $ COPY /go/bin /go/bin # buildkit
+====================================================================================================
+  30 MB 	 go/bin/kustomize
+  29 MB 	 go/bin/hugo
+  16 MB 	 go/bin/license-detector
+  15 MB 	 go/bin/dlv
+  14 MB 	 go/bin/dive
+  14 MB 	 go/bin/bingo
+  14 MB 	 go/bin/staticcheck
+  14 MB 	 go/bin/dep
+  14 MB 	 go/bin/gopherjs
+  12 MB 	 go/bin/gotests
+  12 MB 	 go/bin/gocode
+ 9.7 MB 	 go/bin/misspell
+ 9.5 MB 	 go/bin/golsp
+ 9.4 MB 	 go/bin/godef
+ 8.9 MB 	 go/bin/guru
+ 8.4 MB 	 go/bin/goreturns
+ 8.0 MB 	 go/bin/gosec
+ 7.6 MB 	 go/bin/impl
+ 7.4 MB 	 go/bin/safesql
+ 7.3 MB 	 go/bin/gogetdoc
+ 6.8 MB 	 go/bin/unparam
+ 6.8 MB 	 go/bin/interfacer
+ 6.7 MB 	 go/bin/errcheck
+ 6.6 MB 	 go/bin/lll
+ 6.3 MB 	 go/bin/gometalinter
+ 6.2 MB 	 go/bin/gotype
+ 6.0 MB 	 go/bin/unconvert
+ 6.0 MB 	 go/bin/fillstruct
+ 6.0 MB 	 go/bin/gorename
+ 5.9 MB 	 go/bin/keyify
+ 5.9 MB 	 go/bin/golint
+ 5.7 MB 	 go/bin/goiferr
+ 5.5 MB 	 go/bin/structcheck
+ 5.5 MB 	 go/bin/maligned
+ 5.5 MB 	 go/bin/varcheck
+ 5.1 MB 	 go/bin/goimports
+ 4.4 MB 	 go/bin/gomodifytags
+ 4.2 MB 	 go/bin/ghq
+ 3.9 MB 	 go/bin/nakedret
+ 3.4 MB 	 go/bin/motion
+ 3.2 MB 	 go/bin/goconst
+ 3.1 MB 	 go/bin/dupl
+ 3.0 MB 	 go/bin/gotags
+ 2.8 MB 	 go/bin/ttygif
+ 2.7 MB 	 go/bin/asmfmt
+ 2.7 MB 	 go/bin/ineffassign
+ 2.6 MB 	 go/bin/gocyclo
+ 2.6 MB 	 go/bin/deadcode
+ 2.6 MB 	 go/bin/iferr
+ 2.6 MB 	 go/bin/gochecknoglobals
+ 2.6 MB 	 go/bin/gochecknoinits
+ 2.4 MB 	 go/bin/goimports-update-ignore
+
+====================================================================================================
+  64 MB 	 $ COPY /home/rust/.cargo/bin /usr/local/cargo/bin # buildkit
+====================================================================================================
+  18 MB 	 usr/local/cargo/bin/rg
+  11 MB 	 usr/local/cargo/bin/cargo
+ 9.1 MB 	 usr/local/cargo/bin/sccache
+ 8.5 MB 	 usr/local/cargo/bin/cargo-audit
+ 7.6 MB 	 usr/local/cargo/bin/bat
+ 4.3 MB 	 usr/local/cargo/bin/cargo-bloat
+ 3.6 MB 	 usr/local/cargo/bin/fd
+ 2.1 MB 	 usr/local/cargo/bin/exa
+    0 B 	 usr/local/cargo/bin/cargo-clippy
+    0 B 	 usr/local/cargo/bin/cargo-fmt
+    0 B 	 usr/local/cargo/bin/rls
+    0 B 	 usr/local/cargo/bin/rust-gdb
+    0 B 	 usr/local/cargo/bin/rust-lldb
+    0 B 	 usr/local/cargo/bin/rustc
+    0 B 	 usr/local/cargo/bin/rustdoc
+    0 B 	 usr/local/cargo/bin/rustfmt
+    0 B 	 usr/local/cargo/bin/rustup
+
+====================================================================================================
+  36 kB 	 $ COPY init.vim /root/.config/nvim/init.vim # buildkit
+====================================================================================================
+  36 kB 	 root/.config/nvim/init.vim
+
+====================================================================================================
+  20 kB 	 $ COPY monokai.vim /root/.config/nvim/colors/monokai.vim # buildkit
+====================================================================================================
+  20 kB 	 root/.config/nvim/colors/monokai.vim
+
+====================================================================================================
+  24 kB 	 $ COPY zshrc /root/.zshrc # buildkit
+====================================================================================================
+  24 kB 	 root/.zshrc
+
+====================================================================================================
+ 2.7 kB 	 $ COPY tmux.conf /root/.tmux.conf # buildkit
+====================================================================================================
+ 2.7 kB 	 root/.tmux.conf
+
+====================================================================================================
+  994 B 	 $ COPY gitignore /root/.gitignore # buildkit
+====================================================================================================
+  994 B 	 root/.gitignore
+
+====================================================================================================
+ 3.1 kB 	 $ COPY gitconfig /root/.gitconfig # buildkit
+====================================================================================================
+ 3.1 kB 	 root/.gitconfig
+
+====================================================================================================
+  443 B 	 $ COPY gitattributes /root/.gitattributes # buildkit
+====================================================================================================
+  443 B 	 root/.gitattributes
+
+====================================================================================================
+  11 MB 	 $ RUN /bin/zsh -c source ~/.zshrc # buildkit
+====================================================================================================
+ 8.9 MB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/objects
+ 1.1 MB 	 root/.zplug/.git/objects/pack/pack-de075f49544d84d826e8b24a7d352c49e07ec497.pack
+ 154 kB 	 root/.zplug/.git/objects/pack/pack-de075f49544d84d826e8b24a7d352c49e07ec497.idx
+  74 kB 	 root/.config/nvim/plugged/vim-plug/autoload/plug.vim
+  60 kB 	 root/.zshrc.zwc
+  50 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/workflow.vader
+  33 kB 	 root/.zcompdump
+  33 kB 	 root/.zplug/zcompdump
+  23 kB 	 root/.config/nvim/plugged/vim-plug/autoload/plug.png
+  20 kB 	 root/.zplug/.git/index
+  18 kB 	 root/.zplug/doc/guide/ja/README.md
+  17 kB 	 root/.zplug/doc/man/man1/zplug.1
+  16 kB 	 root/.zplug/README.md
+  16 kB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/hooks
+  15 kB 	 root/.config/nvim/plugged/vim-plug/autoload/doc/plug.txt
+  14 kB 	 root/.zplug/doc/zplug.txt
+  12 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/regressions.vader
+  11 kB 	 root/.config/nvim/plugged/vim-plug/autoload/README.md
+  10 kB 	 root/.zplug/base/utils/git.zsh
+  10 kB 	 root/.zplug/base/sources/github.zsh
+ 9.5 kB 	 root/.zplug/base/job/handle.zsh
+ 9.1 kB 	 root/.zplug/base/core/core.zsh
+ 7.9 kB 	 root/.zplug/base/utils/theme.zsh
+ 6.4 kB 	 root/.zplug/base/core/load.zsh
+ 6.3 kB 	 root/.zplug/base/sources/oh-my-zsh.zsh
+ 6.2 kB 	 root/.zplug/base/job/parallel.zsh
+ 6.1 kB 	 root/.zplug/base/core/cache.zsh
+ 6.0 kB 	 root/.zplug/misc/completions/_zplug
+ 5.9 kB 	 root/.zplug/doc/guide/External-Sources.md
+ 5.6 kB 	 root/.zplug/base/utils/shell.zsh
+ 5.6 kB 	 root/.zplug/base/utils/releases.zsh
+ 5.5 kB 	 root/.zplug/base/sources/prezto.zsh
+ 4.9 kB 	 root/.zplug/.git/hooks/pre-rebase.sample
+ 4.8 kB 	 root/.zplug/misc/zshrc
+ 4.0 kB 	 root/.zplug/base/io/print.zsh
+ 3.6 kB 	 root/.zplug/base/base/base.zsh
+ 3.6 kB 	 root/.zplug/.git/hooks/update.sample
+ 3.3 kB 	 root/.zplug/log/trace.log
+ 3.2 kB 	 root/.zplug/misc/dev/release.zsh
+ 3.2 kB 	 root/.zplug/doc/man/man1/zplug-status.1
+ 3.2 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/run
+ 3.0 kB 	 root/.zplug/autoload/commands/__clean__
+ 3.0 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/test.vader
+ 2.8 kB 	 root/.zplug/autoload/commands/__list__
+ 2.8 kB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/packed-refs
+ 2.7 kB 	 root/.zplug/doc/man/man1/zplug-load.1
+ 2.6 kB 	 root/.zplug/base/core/add.zsh
+ 2.6 kB 	 root/.zplug/doc/man/man5/zplug-use.5
+ 2.6 kB 	 root/.zplug/autoload/commands/__check__
+ 2.5 kB 	 root/.zplug/doc/man/man1/zplug-update.1
+ 2.5 kB 	 root/.zplug/doc/man/man5/zplug-from.5
+ 2.5 kB 	 root/.zplug/doc/man/man1/zplug-install.1
+ 2.5 kB 	 root/.zplug/doc/txt/zplug-status.txt
+ 2.4 kB 	 root/.zplug/doc/man/man5/zplug-as.5
+ 2.4 kB 	 root/.zplug/doc/man/man5/zplug-frozen.5
+ 2.4 kB 	 root/.zplug/base/core/self.zsh
+ 2.4 kB 	 root/.zplug/doc/man/man1/zplug-clean.1
+ 2.4 kB 	 root/.zplug/autoload/commands/__update__
+ 2.4 kB 	 root/.zplug/doc/man/man5/zplug-rename-to.5
+ 2.3 kB 	 root/.zplug/doc/man/man5/zplug-hook-build.5
+ 2.3 kB 	 root/.zplug/doc/man/man5/zplug-ignore.5
+ 2.3 kB 	 root/.zplug/autoload/commands/__status__
+ 2.3 kB 	 root/.zplug/doc/man/man1/zplug-check.1
+ 2.3 kB 	 root/.zplug/doc/man/man1/zplug-list.1
+ 2.3 kB 	 root/.zplug/doc/man/man5/zplug-hook-load.5
+ 2.2 kB 	 root/.zplug/doc/man/man5/zplug-at.5
+ 2.2 kB 	 root/.zplug/doc/man/man5/zplug-if.5
+ 2.2 kB 	 root/.zplug/doc/man/man5/zplug-lazy.5
+ 2.2 kB 	 root/.zplug/doc/man/man5/zplug-depth.5
+ 2.2 kB 	 root/.zplug/doc/man/man5/zplug-on.5
+ 2.2 kB 	 root/.zplug/base/core/arguments.zsh
+ 2.1 kB 	 root/.zplug/doc/man/man1/zplug-info.1
+ 2.1 kB 	 root/.zplug/doc/man/man5/zplug-defer.5
+ 2.1 kB 	 root/.zplug/base/job/rollback.zsh
+ 2.1 kB 	 root/.zplug/.git/packed-refs
+ 2.1 kB 	 root/.zplug/doc/txt/zplug-load.txt
+ 2.1 kB 	 root/.zplug/doc/guide/Badges-and-references.md
+ 2.0 kB 	 root/.zplug/autoload/commands/__install__
+ 1.9 kB 	 root/.zplug/autoload/commands/__help__
+ 1.9 kB 	 root/.zplug/autoload/options/__help__
+ 1.9 kB 	 root/.zplug/base/utils/awk.zsh
+ 1.9 kB 	 root/.zplug/doc/txt/zplug-install.txt
+ 1.8 kB 	 root/.zplug/doc/txt/zplug-from.txt
+ 1.8 kB 	 root/.zplug/doc/txt/zplug-update.txt
+ 1.8 kB 	 root/.zplug/doc/txt/zplug-use.txt
+ 1.8 kB 	 root/.zplug/base/sources/gh-r.zsh
+ 1.8 kB 	 root/.zplug/base/core/options.zsh
+ 1.8 kB 	 root/.zplug/doc/man/man5/zplug-dir.5
+ 1.7 kB 	 root/.zplug/doc/txt/zplug-as.txt
+ 1.7 kB 	 root/.zplug/.github/ISSUE_TEMPLATE.md
+ 1.7 kB 	 root/.zplug/doc/txt/zplug-frozen.txt
+ 1.7 kB 	 root/.zplug/doc/txt/zplug-clean.txt
+ 1.6 kB 	 root/.zplug/.git/hooks/pre-commit.sample
+ 1.6 kB 	 root/.zplug/doc/txt/zplug-rename-to.txt
+ 1.6 kB 	 root/.zplug/doc/txt/zplug-check.txt
+ 1.6 kB 	 root/.zplug/doc/man/man1/zplug-clear.1
+ 1.6 kB 	 root/.zplug/autoload/commands/__load__
+ 1.6 kB 	 root/.zplug/doc/txt/zplug-list.txt
+ 1.6 kB 	 root/.zplug/doc/txt/zplug-hook-build.txt
+ 1.6 kB 	 root/.zplug/doc/txt/zplug-ignore.txt
+
+====================================================================================================
+  79 MB 	 $ rm -rf /root/.config/nvim/plugged/vim-plug/autoload && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload && nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +GoInstallBinaries +qall main.go && git clone https://github.com/zplug/zplug $ZPLUG_HOME # buildkit
+====================================================================================================
+ 9.6 MB 	 root/.config/nvim/plugged/ale/.git/objects/pack
+ 8.9 MB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/objects
+ 7.9 MB 	 root/.config/nvim/plugged/translate-shell.vim/.git/objects/pack
+ 5.6 MB 	 root/.config/nvim/plugged/autocomplete-swift/.git/objects/pack
+ 4.4 MB 	 root/.config/nvim/plugged/ale/img/example.gif
+ 3.4 MB 	 root/.config/nvim/plugged/translate-shell.vim/doc/screencast.gif
+ 2.9 MB 	 root/.config/nvim/plugged/autocomplete-swift/_images/completion.gif
+ 2.1 MB 	 root/.config/nvim/plugged/previm/preview/_/js
+ 1.7 MB 	 root/.config/nvim/plugged/slimv.vim/.git/objects/pack
+ 1.4 MB 	 root/.config/nvim/plugged/emmet-vim/.git/modules/docs
+ 1.3 MB 	 root/.config/nvim/plugged/vim-go/.git/objects/pack
+ 1.3 MB 	 root/.config/nvim/plugged/previm/.git/objects/pack
+ 1.1 MB 	 root/.zplug;/.git/objects/pack/pack-de075f49544d84d826e8b24a7d352c49e07ec497.pack
+ 1.1 MB 	 root/.config/nvim/plugged/vim-multiple-cursors/.git/objects/pack
+ 882 kB 	 root/.config/nvim/plugged/vim-test/.git/objects/pack
+ 786 kB 	 root/.config/nvim/plugged/slimv.vim/slime/ChangeLog
+ 666 kB 	 root/.config/nvim/plugged/vim-test/screenshots/granularity.gif
+ 545 kB 	 root/.config/nvim/plugged/vim-multiple-cursors/assets/example4.gif
+ 432 kB 	 root/.config/nvim/plugged/denite.nvim/rplugin/python3/denite
+ 320 kB 	 root/.config/nvim/plugged/vimproc.vim/.git/objects/pack
+ 300 kB 	 root/.config/nvim/plugged/vim-misc/.git/objects/pack
+ 291 kB 	 root/.config/nvim/plugged/dart-vim-plugin/DartFmt.gif
+ 282 kB 	 root/.config/nvim/plugged/presenting.vim/examples/demo.gif
+ 272 kB 	 root/.config/nvim/plugged/vim-lua-inspect/.git/objects/pack
+ 271 kB 	 root/.config/nvim/plugged/vim-multiple-cursors/assets/example2.gif
+ 267 kB 	 root/.config/nvim/plugged/colorizer/screenshot-2.png
+ 266 kB 	 root/.config/nvim/plugged/dart-vim-plugin/Dart2Js.gif
+ 264 kB 	 root/.config/nvim/plugged/presenting.vim/.git/objects/b8
+ 264 kB 	 root/.config/nvim/plugged/slimv.vim/ftplugin/slimv-javadoc.vim
+ 259 kB 	 root/.config/nvim/plugged/dart-vim-plugin/DartAnalyzer.gif
+ 258 kB 	 root/.config/nvim/plugged/colorizer/.git/objects/c0
+ 245 kB 	 root/.config/nvim/plugged/dart-vim-plugin/.git/objects/9c
+ 245 kB 	 root/.config/nvim/plugged/vim-godebug/vim-godebug.gif
+ 242 kB 	 root/.config/nvim/plugged/denite.nvim/.git/objects/pack
+ 231 kB 	 root/.config/nvim/plugged/vim-godebug/.git/objects/a9
+ 230 kB 	 root/.config/nvim/plugged/tagbar/.git/objects/pack
+ 223 kB 	 root/.config/nvim/plugged/dart-vim-plugin/.git/objects/cd
+ 220 kB 	 root/.config/nvim/plugged/dart-vim-plugin/.git/objects/ae
+ 217 kB 	 root/.config/nvim/plugged/gundo.vim/.git/objects/pack
+ 214 kB 	 root/.config/nvim/plugged/emmet-vim/.git/objects/pack
+ 210 kB 	 root/.config/nvim/plugged/vim-lua-inspect/misc/luainspect/luainspect
+ 210 kB 	 root/.config/nvim/plugged/vim-quickrun/.git/objects/pack
+ 207 kB 	 root/.config/nvim/plugged/gundo.vim/tests/bundled/lh-vim-lib
+ 194 kB 	 root/.config/nvim/plugged/vim-lua-ftplugin/.git/objects/pack
+ 181 kB 	 root/.config/nvim/plugged/vim-multiple-cursors/assets/example3.gif
+ 180 kB 	 root/.config/nvim/plugged/vim-test/screenshots/nearest.gif
+ 167 kB 	 root/.config/nvim/plugged/vim-css-color/.git/objects/e5
+ 154 kB 	 root/.zplug;/.git/objects/pack/pack-de075f49544d84d826e8b24a7d352c49e07ec497.idx
+ 153 kB 	 root/.config/nvim/plugged/ale/.git/index
+ 144 kB 	 root/.config/nvim/plugged/ale/doc/ale.txt
+ 140 kB 	 root/.config/nvim/plugged/vim-css3-syntax/.git/objects/pack
+ 136 kB 	 root/.config/nvim/plugged/slimv.vim/slime/contrib/ChangeLog
+ 136 kB 	 root/.config/nvim/plugged/slimv.vim/ftplugin/slimv.vim
+ 136 kB 	 root/.config/nvim/plugged/slimv.vim/slime/swank.lisp
+ 129 kB 	 root/.config/nvim/plugged/open-browser.vim/autoload/vital/_openbrowser
+ 126 kB 	 root/.config/nvim/plugged/slimv.vim/slime/xref.lisp
+ 123 kB 	 root/.config/nvim/plugged/swift.vim/.git/objects/09
+ 121 kB 	 root/.config/nvim/plugged/vim-lua-inspect/misc/luainspect/metalualib
+ 111 kB 	 root/.config/nvim/plugged/open-browser.vim/.git/objects/pack
+ 111 kB 	 root/.config/nvim/plugged/gundo.vim/site/Essays1743.ttf
+ 107 kB 	 root/.config/nvim/plugged/swift.vim/screenshots/screen3.png
+ 107 kB 	 root/.config/nvim/plugged/tagbar/autoload/tagbar.vim
+ 107 kB 	 root/.config/nvim/plugged/swift.vim/.git/objects/f6
+ 105 kB 	 root/.config/nvim/plugged/slimv.vim/ftplugin/slimv-clhs.vim
+ 104 kB 	 root/.config/nvim/plugged/vim-misc/autoload/xolox/misc
+ 103 kB 	 root/.config/nvim/plugged/slimv.vim/doc/slimv.txt
+ 103 kB 	 root/.config/nvim/plugged/vim-multiple-cursors/assets/example1.gif
+ 102 kB 	 root/.config/nvim/plugged/slimv.vim/slime/swank-cmucl.lisp
+ 102 kB 	 root/.config/nvim/plugged/ale/doc/tags
+ 100 kB 	 root/.config/nvim/plugged/emmet-vim/docs/static/js
+  97 kB 	 root/.config/nvim/plugged/vim-quickrun/autoload/vital/_quickrun
+  90 kB 	 root/.config/nvim/plugged/vim-go/doc/vim-go.txt
+  89 kB 	 root/.config/nvim/plugged/emmet-vim/autoload/emmet/lang
+  87 kB 	 root/.config/nvim/plugged/vim-go/CHANGELOG.md
+  86 kB 	 root/.config/nvim/plugged/vim-go/assets/vim-go.svg
+  84 kB 	 root/.config/nvim/plugged/vim-gitgutter/.git/objects/pack
+  84 kB 	 root/.config/nvim/plugged/tagbar/autoload/tagbar/types
+  84 kB 	 root/.config/nvim/plugged/slimv.vim/slime/contrib/swank-kawa.scm
+  81 kB 	 root/.config/nvim/plugged/emmet-vim/autoload/emmet.vim
+  80 kB 	 root/.config/nvim/plugged/slimv.vim/slime/swank-scl.lisp
+  78 kB 	 root/.config/nvim/plugged/neoformat/.git/objects/pack
+  74 kB 	 root/.config/nvim/plugged/vim-plug/autoload/plug.vim
+  70 kB 	 root/.config/nvim/plugged/denite.nvim/doc/denite.txt
+  70 kB 	 root/.config/nvim/plugged/slimv.vim/slime/swank-sbcl.lisp
+  68 kB 	 root/.config/nvim/plugged/tagbar/doc/tagbar.txt
+  66 kB 	 root/.config/nvim/plugged/slimv.vim/slime/contrib/swank-arglists.lisp
+  66 kB 	 root/.config/nvim/plugged/vim-css-color/tests/torture.css
+  65 kB 	 root/.config/nvim/plugged/slimv.vim/plugin/paredit.vim
+  64 kB 	 root/.config/nvim/plugged/slimv.vim/swank-clojure/swank/commands
+  60 kB 	 root/.config/nvim/plugged/caw.vim/.git/objects/pack
+  56 kB 	 root/.config/nvim/plugged/vim-misc/doc/misc.txt
+  54 kB 	 root/.config/nvim/plugged/vim-quickrun/doc/quickrun.jax
+  54 kB 	 root/.config/nvim/plugged/slimv.vim/slime/swank-backend.lisp
+  53 kB 	 root/.config/nvim/plugged/slimv.vim/slime/metering.lisp
+  53 kB 	 root/.config/nvim/plugged/emmet-vim/doc/emmet.txt
+  52 kB 	 root/.config/nvim/plugged/vim-less/screenshot.png
+  52 kB 	 root/.config/nvim/plugged/slimv.vim/ftplugin/slimv-cljapi.vim
+  50 kB 	 root/.config/nvim/plugged/lightline.vim/autoload/lightline/colorscheme
+  50 kB 	 root/.config/nvim/plugged/vimproc.vim/autoload/vimproc.vim
+  50 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/workflow.vader

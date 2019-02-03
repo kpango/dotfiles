@@ -7,9 +7,9 @@ alias dockerrm="docker container stop $(docker container ls -aq);docker ps -aq |
 
 container_name="dev"
 
-alias kpbuild="cd $rcpath&&docker build --pull=true --file=$rcpath/Dockerfile -t kpango/dev:latest $rcpath"
-
 alias kpmove="cd $rcpath"
+
+alias kpbuild="kpmove&&docker build --pull=true --file=$rcpath/Dockerfile -t kpango/dev:latest $rcpath"
 
 function devrun(){
     privileged=true

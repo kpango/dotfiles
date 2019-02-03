@@ -1,4 +1,4 @@
-.PHONY: link zsh bash build run push pull
+.PHONY: link zsh bash build prod_build profile run push pull
 
 link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/alias $(HOME)/.aliases
@@ -11,6 +11,12 @@ bash: link
 
 build:
 	docker build -t kpango/dev:latest .
+
+prod_build:
+	type minid >/dev/null 2>&1 && minid | docker build -t kpango/dev:latest -f - .
+
+profile:
+	type dlayer >/dev/null 2>&1 && docker save kpango/dev:latest | dlayer >> analyze.txt
 
 run:
 	source ./alias && devrun

@@ -28,6 +28,8 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/motemen/ghq \
     github.com/motemen/go-iferr/cmd/goiferr \
     github.com/nsf/gocode \
+    github.com/orisano/dlayer \
+    github.com/orisano/minid \
     github.com/pwaller/goimports-update-ignore \
     github.com/rogpeppe/godef \
     github.com/sugyan/ttygif \
