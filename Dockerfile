@@ -9,7 +9,8 @@ RUN apk update \
     musl-dev \
     wget
 
-# RUN --mount=target=/root/.cache,type=cache \
+# RUN --mount=type=cache,target=/root/.cache/go-build \
+#     go get -v -u github.com/alecthomas/gometalinter \
 RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/cweill/gotests/... \
     github.com/davidrjenni/reftools/cmd/fillstruct \
@@ -53,8 +54,11 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
 FROM kpango/rust-musl-builder:latest AS rust
 
 # RUN cargo install --force --no-default-features --all-features --bins --git https://github.com/rust-lang/rust \
-    # && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
+#     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
+# RUN --mount=type=cache,target=/root/.cache/sccache \
+#     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
 RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
+    && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/RazrFalcon/cargo-bloat \
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/sharkdp/fd \
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features ripgrep \
@@ -149,36 +153,37 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && apk update \
     && apk upgrade \
     && apk --update add --no-cache \
-    make \
+    # ncurses \
+    bash \
     cmake \
+    ctags \
     curl \
-    gcc \
-    g++ \
-    git \
     diffutils \
+    g++ \
+    gawk \
+    gcc \
+    git \
+    jq \
+    less \
     linux-headers \
-    openssl \
-    openssl-dev \
+    make \
     musl-dev \
     neovim \
-    python-dev \
-    py-pip \
-    python3-dev \
-    py3-pip \
     nodejs \
     npm \
-    ruby-dev \
-    tmux \
-    zsh \
-    bash \
-    xclip \
+    openssl \
+    openssl-dev \
     perl \
-    less \
-    # ncurses \
+    py-pip \
+    py3-pip \
+    python-dev \
+    python3-dev \
+    ruby-dev \
     tig \
+    tmux \
     tzdata \
-    jq \
-    ctags \
+    xclip \
+    zsh \
     && rm -rf /var/cache/apk/* \
     && pip2 install --upgrade pip neovim python-language-server \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server \
@@ -190,6 +195,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && cd /tmp/translate-shell/ \
     && make TARGET=zsh -j -C /tmp/translate-shell \
     && make install -C /tmp/translate-shell \
+    && cd /tmp \
     && rm -rf /tmp/translate-shell/ \
     && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz \
     && tar zxf ngt.tar.gz -C /tmp \
@@ -198,6 +204,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && cmake . \
     && make -j -C /tmp/NGT-1.5.1 \
     && make install -C /tmp/NGT-1.5.1 \
+    && cd /tmp \
     && rm -rf /tmp/NGT-1.5.1
 
 FROM env
