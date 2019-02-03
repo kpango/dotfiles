@@ -66,6 +66,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'prabirshrestha/asyncomplete.vim'
     Plug 'prabirshrestha/asyncomplete-lsp.vim'
     " Plug 'natebosch/vim-lsc'
+    Plug 'echuraev/translate-shell.vim' ", { 'do': 'wget -O /usr/local/bin/trans git.io/trans && chmod a+x /usr/local/bin/trans' }
 " ---- Vim Setting
     Plug 'Shougo/neco-vim', {'for': 'vim'}
     Plug 'Shougo/neco-syntax', {'for': 'vim'}
@@ -404,6 +405,8 @@ endif
 " call denite#custom#option('default', 'prompt', '>')
 " " deniteの起動位置をtopに変更
 " "call denite#custom#option('default', 'direction', 'top')
+
+let g:trans_bin = system('which trans')
 
 " ------------------------------
 " ---- Status line settings ----

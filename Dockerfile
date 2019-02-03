@@ -183,6 +183,12 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && gem install neovim -N \
     && npm config set user root \
     && npm install -g neovim resume-cli dockerfile-language-server-nodejs typescript typescript-language-server \
+    && cd /tmp \
+    && git clone https://github.com/soimort/translate-shell \
+    && cd /tmp/translate-shell/ \
+    && make TARGET=zsh -j -C /tmp/translate-shell \
+    && make install -C /tmp/translate-shell \
+    && rm -rf /tmp/translate-shell/ \
     && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz \
     && tar zxf ngt.tar.gz -C /tmp \
     && rm -rf ngt.tar.gz \
