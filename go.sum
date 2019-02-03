@@ -1,6 +1,0 @@
-github.com/moby/buildkit v0.3.3 h1:7eh9tOdFSuE84Q5wvmUjXhEvqnO7nNiwja45Hr59+uc=
-github.com/moby/buildkit v0.3.3/go.mod h1:nnELdKPRkUAQR6pAB3mRU3+IlbqL3SSaAWqQL8k/K+4=
-github.com/orisano/minid v0.0.0-20190113130345-ec5735ee9508 h1:nKz++jhplrFbDkU6v1u8QqnIvssfwqsJNAcyUs2JM0o=
-github.com/orisano/minid v0.0.0-20190113130345-ec5735ee9508/go.mod h1:Ui7bC+G08TwQeTOI2+7Jca6qdXfkqNZ8kEyLg2znrVU=
-github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
-github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
