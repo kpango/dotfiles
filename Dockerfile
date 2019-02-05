@@ -278,7 +278,7 @@ COPY --from=go /usr/local/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 # COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
-COPY --from=rust /home/rust/.cargo/bin /usr/local/cargo/bin
+COPY --from=rust /home/rust/.cargo /usr/local/cargo
 
 COPY init.vim $NVIM_HOME/init.vim
 COPY monokai.vim $NVIM_HOME/colors/monokai.vim

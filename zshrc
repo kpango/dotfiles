@@ -643,6 +643,11 @@ chword(){
 }
 alias chword=chword;
 
+
+if type bat >/dev/null 2>&1; then
+    alias cat=bat
+fi
+
 alias :q=exit;
 
 alias 600='chmod -R 600'
@@ -650,6 +655,7 @@ alias 644='chmod -R 644'
 alias 655='chmod -R 655'
 alias 755='chmod -R 755'
 alias 777='chmod -R 777'
+
 if type nvim >/dev/null 2>&1; then
 
     alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall"; 
