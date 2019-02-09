@@ -1,7 +1,15 @@
 .PHONY: link zsh bash build prod_build profile run push pull
 
+run:
+	source ./alias && devrun
+
 link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/alias $(HOME)/.aliases
+
+clean:
+	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
+	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.zshrc
+	rm $(HOME)/.aliases
 
 zsh: link
 	[ -f $(HOME)/.zshrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.zshrc
@@ -17,9 +25,6 @@ prod_build:
 
 profile:
 	type dlayer >/dev/null 2>&1 && docker save kpango/dev:latest | dlayer >> analyze.txt
-
-run:
-	source ./alias && devrun
 
 push:
 	docker push kpango/dev:latest
