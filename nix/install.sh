@@ -34,7 +34,7 @@ systemctl start wpa_supplicant
 nixos-generate-config --root /mnt
 
 mv /mnt/etc/nixos/configuration.nix /mnt/etc/nixos/configuration.nix.back
-cp ./configuration.nix /mnt/etc/nixos/configuration.nix
+cp ./*.nix /mnt/etc/nixos/
 
 nixos-install
 
