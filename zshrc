@@ -685,9 +685,23 @@ alias v="$EDITOR"
 
 eval $(thefuck --alias --enable-experimental-instant-mode)
 
-source <(kubectl completion zsh)
-alias k=kubectl
-complete -o default -F __start_kubectl k
+kubectl () {
+    local kubectl="$(whence -p kubectl 2> /dev/null)"
+    [ -z "$_lazy_kubectl_completion" ] && {
+        source <("$kubectl" completion zsh)
+        complete -o default -F __start_kubectl k
+        _lazy_kubectl_completion=1
+    }
+    "$kubectl" "$@"
+}
+alias kubectl=kubectl;
+alias k=kubectl;
+alias kpall="k get pods --all-namespaces -o wide"
+alias ksall="k get svc --all-namespaces -o wide"
+alias kiall="k get ingress --all-namespaces -o wide"
+alias knall="k get namespace -o wide"
+alias kdall="k get deployment --all-namespaces -o wide"
+# source <(kubectl completion zsh);
 
 nvim +UpdateRemotePlugins +qall
 tmux has-session >/dev/null 2>&1 && if [ -z "${TMUX}" ]; then
