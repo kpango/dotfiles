@@ -27,19 +27,21 @@
         usbutils
         wayland
         sway
+        dmenu
         which
         xbindkeys
         xclip
         xsel
+        ranger
+        rxvt_unicode
+        zathura
       ];
       crypt-packages = [
         git-crypt
-        gnupg1
       ];
       development-packages = [
         autoconf
         automake
-        cachix
         clang-tools
         ctags
         flameGraph
@@ -48,14 +50,7 @@
         git-lfs
         gitAndTools.gitFull
         gitAndTools.hub
-        global
-        gnumake
-        linuxPackages.perf
-        llvmPackages.clang-unwrapped.python # Needed for run-clang-tidy.py
-        perf-tools
-        rtags
         shellcheck
-        unifdef
       ];
       nix-packages = [
         nix-home
@@ -66,32 +61,8 @@
         patchelf
       ];
       user-packages = [
-        aspell
-        aspellDicts.en
-        aspellDicts.it
-        aspellDicts.nb
-        borgbackup
         chromium
-        evince
-        feh
-        firefox
         ghostscript
-        gimp
-        gv
-        imagemagick
-        inkscape
-        libreoffice
-        liferea
-        meld
-        pandoc
-        pass
-        pdf2svg
-        pdftk
-        pymol
-        shutter
-        spotify
-        vlc
-        wavebox
       ];
     in
       core-packages

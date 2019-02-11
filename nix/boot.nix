@@ -26,6 +26,8 @@
     };
     initrd = {
       kernelModules = [
+        "kvm_intel"
+        "tp_smapi"
         "dm_mod"
         "dm-crypt"
         "ext4"
