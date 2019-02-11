@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
-  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.defaultUserShell = "/run/current-system/sw/bin/zsh";
+
   users.extraUsers.kpango = {
     description = "Yusuke Kato";
     extraGroups = [

@@ -97,14 +97,9 @@
       core-packages
       ++ crypt-packages
       ++ development-packages
-      ++ haskell-packages
-      ++ lua-packages
       ++ nix-packages
-      ++ python-packages
-      ++ texlive-packages
       ++ user-packages;
 
-    gnome3.excludePackages = with pkgs.gnome3; [ epiphany evolution totem vino yelp accerciser ];
     variables = {
       NIX_PATH = lib.mkForce "nixpkgs=/etc/nixos/nixpkgs-channels:nixos-config=/etc/nixos/configuration.nix";
       GIT_EDITOR = lib.mkForce "nvim";

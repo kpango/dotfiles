@@ -22,11 +22,13 @@
       ";
     };
     enableRedistributableFirmware = true;
+    trackpoint.enable = true;
     cpu.intel.updateMicrocode = true;
     enableAllFirmware = true;
     opengl = {
       enable = true;
       driSupport = true;
+      extraPackages = with pkgs;[ vaapiIntel ];
     };
   };
   powerManagement = {

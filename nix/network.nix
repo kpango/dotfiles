@@ -2,7 +2,10 @@
 {
   networking = {
     hostName = "kpango";
-    networkmanager.enable = true;
+    networkmanager = {
+      enable = true;
+      useDnsmasq = true;
+    };
     firewall = {
       enable = true;
       allowedTCPPorts = [ 22 80 443 8080 8000 8443 9999 ];

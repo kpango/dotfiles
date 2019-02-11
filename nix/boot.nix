@@ -4,6 +4,7 @@
   boot = {
     blacklistedKernelModules = [ "snd_pcsp" "pcspkr" ];
     kernelPackages = pkgs.linuxPackages_latest;
+    kernelParams = ["psmouse.synaptics_intertouch=0"];
     plymouth.enable = true;
     supportedFilesystems = [ "xfs" "zfs" ];
     kernel = {
