@@ -318,8 +318,16 @@ let g:asyncomplete_auto_popup = 1
 if executable('bingo')
     AutocmdFT go call lsp#register_server({
        \ 'name': 'go-lang',
-       \ 'cmd': {server_info->['bingo', '--golist-duration', '0', '-mode', 'stdio']},
+       \ 'cmd': {server_info->['bingo', '--golist-duration', '0', '--format-style', 'goimports', '--cache-style', 'on-demand', '-mode', 'stdio']},
        \ 'whitelist': ['go'],
+       \ })
+endif
+
+if executable('nix-lsp')
+    AutocmdFT rust call lsp#register_server({
+       \ 'name': 'nix',
+       \ 'cmd': {server_info->['nix-lsp' ]},
+       \ 'whitelist': ['nix'],
        \ })
 endif
 

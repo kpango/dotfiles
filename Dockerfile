@@ -59,6 +59,7 @@ FROM kpango/rust-musl-builder:latest AS rust
 #     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
 RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
+    && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://gitlab.com/jD91mZM2/nix-lsp \
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/RazrFalcon/cargo-bloat \
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/sharkdp/fd \
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features ripgrep \
