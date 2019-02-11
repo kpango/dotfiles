@@ -1,4 +1,3 @@
-{ pkgs, ... }:
 {
   users.defaultUserShell = "/run/current-system/sw/bin/zsh";
 

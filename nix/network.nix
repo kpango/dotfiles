@@ -1,4 +1,3 @@
-{ pkgs, ... }:
 {
   networking = {
     hostName = "kpango";
