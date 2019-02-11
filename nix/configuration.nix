@@ -4,7 +4,6 @@
 
 {
   imports = [
-    <nixos-hardware/lenovo/thinkpad/x1>
     ./boot.nix
     ./environment.nix
     ./fonts.nix
