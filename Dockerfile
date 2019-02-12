@@ -328,7 +328,6 @@ COPY --from=go /usr/local/go/lib $GOROOT/lib
 COPY --from=go /usr/local/go/pkg $GOROOT/pkg
 COPY --from=go /usr/local/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
-COPY --from=go /go/src/github.com/uber/go-torch $GOPATH/src/github.com/uber/go-torch
 # COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
 COPY --from=rust /home/rust/.cargo /root/.cargo
