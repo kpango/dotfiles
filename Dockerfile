@@ -51,7 +51,10 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     && git clone https://github.com/saibing/bingo.git \
     && cd bingo \
     && GO111MODULE=on go install \
-    && git clone https://github.com/brendangregg/FlameGraph $GOPATH/github.com/uber/go-torch/FlameGraph
+    && git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
+    && cp /tmp/FlameGraph/flamegraph.pl /go/bin/ \
+    && cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ \
+    && cp /tmp/FlameGraph/stackcollapse-go.pl /go/bin/
 
 FROM kpango/rust-musl-builder:latest AS rust
 
@@ -208,6 +211,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     gawk \
     gcc \
     git \
+    graphviz \
     jq \
     less \
     linux-headers \
