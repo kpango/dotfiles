@@ -14,7 +14,7 @@ alias kpbuild="kpmove&&docker build --pull=true --file=$rcpath/Dockerfile -t kpa
 function devrun(){
     privileged=true
     tz_path="/usr/share/zoneinfo/Japan"
-    linux_docker_daemon=""
+    linux_docker_daemon="$HOME/Library/Containers/com.docker.helper/Data/.docker/daemon.json"
     case "$(uname -s)" in
         Darwin)
             echo 'Docker on macOS start'
@@ -24,7 +24,7 @@ function devrun(){
             echo 'Docker on Linux start'
             privileged=false
             tz_path="/etc/timezone"
-            linux_docker_daemon="-v /etc/docker/daemon.json:/etc/docker/daemon.json"
+            linux_docker_daemon="-/etc/docker/daemon.json"
             ;;
 
         CYGWIN*|MINGW32*|MSYS*)
@@ -39,7 +39,7 @@ function devrun(){
     sudo docker run --network host --cap-add=ALL --name $container_name --restart always \
         --privileged=$privileged \
         -v /var/run/docker.sock:/var/run/docker.sock \
-        $linux_docker_daemon \
+        -v $linux_docker_daemon:/etc/docker/daemon.json \
         -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
         -v $HOME/.kube:/root/.kube \
         -v $HOME/.netrc:/root/.netrc \
