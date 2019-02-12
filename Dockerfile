@@ -34,6 +34,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/pwaller/goimports-update-ignore \
     github.com/rogpeppe/godef \
     github.com/sugyan/ttygif \
+    github.com/uber/go-torch \
     github.com/wagoodman/dive \
     github.com/zmb3/gogetdoc \
     golang.org/x/lint/golint \
@@ -49,7 +50,8 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     && gometalinter -i \
     && git clone https://github.com/saibing/bingo.git \
     && cd bingo \
-    && GO111MODULE=on go install
+    && GO111MODULE=on go install \
+    && git clone https://github.com/brendangregg/FlameGraph $GOPATH/github.com/uber/go-torch/FlameGraph
 
 FROM kpango/rust-musl-builder:latest AS rust
 
@@ -322,6 +324,7 @@ COPY --from=go /usr/local/go/lib $GOROOT/lib
 COPY --from=go /usr/local/go/pkg $GOROOT/pkg
 COPY --from=go /usr/local/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
+COPY --from=go /go/src/github.com/uber/go-torch $GOPATH/src/github.com/uber/go-torch
 # COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
 COPY --from=rust /home/rust/.cargo /root/.cargo
