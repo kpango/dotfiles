@@ -201,7 +201,6 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && apk update \
     && apk upgrade \
     && apk --update add --no-cache --allow-untrusted --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-    # ncurses \
     bash \
     cmake \
     ctags \
@@ -217,6 +216,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     linux-headers \
     make \
     musl-dev \
+    ncurses \
     neovim \
     nodejs \
     npm \
