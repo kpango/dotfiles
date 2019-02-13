@@ -6,7 +6,8 @@
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = ["psmouse.synaptics_intertouch=0"];
     plymouth.enable = true;
-    supportedFilesystems = [ "xfs" "zfs" ];
+    # supportedFilesystems = [ "xfs" "zfs" ];
+    supportedFilesystems = [ "xfs" ];
     kernel = {
       sysctl = {
         "kernel.perf_event_paranoid" = 0;
@@ -21,7 +22,7 @@
         device = "nodev";
         efiSupport = true;
         gfxmodeEfi = "1024x768";
-        zfsSupport = true;
+        # zfsSupport = true;
       };
     };
     initrd = {

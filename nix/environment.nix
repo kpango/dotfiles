@@ -34,7 +34,7 @@
         xsel
         ranger
         rxvt_unicode
-        zathura
+        # zathura
       ];
       crypt-packages = [
         git-crypt

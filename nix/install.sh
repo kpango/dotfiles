@@ -35,6 +35,7 @@ nixos-generate-config --root /mnt
 
 mv /mnt/etc/nixos/configuration.nix /mnt/etc/nixos/configuration.nix.back
 cp ./*.nix /mnt/etc/nixos/
+cp -r ./pkgs /mnt/etc/nixos/
 
 nixos-install
 

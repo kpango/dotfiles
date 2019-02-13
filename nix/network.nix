@@ -3,7 +3,7 @@
     hostName = "kpango";
     networkmanager = {
       enable = true;
-      useDnsmasq = true;
+      dns = "dnsmasq";
     };
     firewall = {
       enable = true;

@@ -9,7 +9,7 @@
       syntaxHighlighting.enable = true;
     };
     #slock.enable = true;
-    docker.enable =true
+    # docker.enable = true;
     tmux.enable = true;
     ssh.forwardX11 = false;
     ssh.startAgent = true;

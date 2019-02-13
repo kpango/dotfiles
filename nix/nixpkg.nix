@@ -11,19 +11,19 @@
        enableGoogleTalkPlugin = true;
       };
       # Create an alias for the unstable channel
-      packageOverrides = pkgs: {
-        unstable = import <nixos-unstable> {
-          # Pass the nixpkgs config to the unstable alias
-          # to ensure `allowUnfree = true;` is propagated:
-          config = config.nixpkgs.config;
-        };
-      };
+      # packageOverrides = pkgs: {
+      #   unstable = import <nixos-unstable> {
+      #     # Pass the nixpkgs config to the unstable alias
+      #     # to ensure `allowUnfree = true;` is propagated:
+      #     config = config.nixpkgs.config;
+      #   };
+      # };
       pulseaudio = true;
     };
     overlays = [(self: super: {
-      bat = super.unstable.bat;
-      exa = super.unstable.exa;
-      chromium = super.unstable.chromium;
+      # bat = super.unstable.bat;
+      # exa = super.unstable.exa;
+      # chromium = super.unstable.chromium;
       neovim = super.neovim.override {
         withPython = true;
         withPython3 = true;

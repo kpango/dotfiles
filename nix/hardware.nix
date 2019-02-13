@@ -6,7 +6,7 @@
     pulseaudio = {
       enable = true;
       extraConfig = "load-module module-switch-on-connect";
-      extraModules = [ pkgs.pulseaudio-modules-bt ];
+      # extraModules = [ pkgs.pulseaudio-modules-bt ];
       package = pkgs.pulseaudioFull;
       support32Bit = true;
       tcp.anonymousClients.allowAll = true;
@@ -31,8 +31,8 @@
       extraPackages = with pkgs;[ vaapiIntel ];
     };
   };
-  powerManagement = {
-    enable = true;
-    cpuFreqGovernor = lib.mkDefault "powersave";
-  };
+  # powerManagement = {
+  #   enable = true;
+  #   cpuFreqGovernor = lib.mkDefault "powersave";
+  # };
 }
