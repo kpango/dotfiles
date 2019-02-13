@@ -318,6 +318,7 @@ COPY --from=nim /bin/nim /usr/local/bin/nim
 COPY --from=nim /bin/nimble /usr/local/bin/nimble
 COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
 COPY --from=nim /nim/lib /usr/local/lib/nim
+COPY --from=nim /root/.cache/nim /root/.cache/nim
 COPY --from=nim /nim /nim
 
 COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
@@ -333,6 +334,8 @@ COPY --from=go /go/bin $GOPATH/bin
 # COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
 COPY --from=rust /home/rust/.cargo /root/.cargo
+COPY --from=rust /home/rust/.rustup /root/.rustup
+COPY --from=rust /home/rust/.multirust /root/.multirust
 
 COPY init.vim $NVIM_HOME/init.vim
 COPY monokai.vim $NVIM_HOME/colors/monokai.vim
