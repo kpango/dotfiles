@@ -200,7 +200,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
     && apk update \
     && apk upgrade \
-    && apk --update add --no-cache \
+    && apk --update add --no-cache --allow-untrusted --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     # ncurses \
     bash \
     cmake \
@@ -233,6 +233,8 @@ RUN mkdir "/etc/ld.so.conf.d" \
     tzdata \
     xclip \
     zsh \
+    hdf5 \
+    hdf5-dev \
     && rm -rf /var/cache/apk/* \
     && pip2 install --upgrade pip neovim python-language-server \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server \

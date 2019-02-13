@@ -24,7 +24,7 @@ function devrun(){
             echo 'Docker on Linux start'
             privileged=false
             tz_path="/etc/timezone"
-            linux_docker_daemon="-/etc/docker/daemon.json"
+            linux_docker_daemon="/etc/docker/daemon.json"
             ;;
 
         CYGWIN*|MINGW32*|MSYS*)
