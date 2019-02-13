@@ -24,6 +24,7 @@ prod_build:
 	type minid >/dev/null 2>&1 && minid | docker build -t kpango/dev:latest -f - .
 
 profile:
+	rm -f analyze.txt
 	type dlayer >/dev/null 2>&1 && docker save kpango/dev:latest | dlayer >> analyze.txt
 
 push:
