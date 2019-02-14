@@ -15,7 +15,6 @@ function devrun(){
     privileged=true
     tz_path="/usr/share/zoneinfo/Japan"
     docker_daemon="$HOME/Library/Containers/com.docker.helper/Data/.docker/daemon.json"
-    ssl_certs="/System/Library/OpenSSL"
     case "$(uname -s)" in
         Darwin)
             echo 'Docker on macOS start'
@@ -25,7 +24,6 @@ function devrun(){
             echo 'Docker on Linux start'
             privileged=false
             tz_path="/etc/timezone"
-    	    ssl_certs="/etc/ssl"
             docker_daemon="/etc/docker/daemon.json"
             ;;
 
@@ -42,8 +40,6 @@ function devrun(){
         --privileged=$privileged \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $docker_daemon:/etc/docker/daemon.json \
-        # -v /etc/ssh:/etc/ssh \
-        # -v $ssl_certs:/etc/ssl \
         -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
         -v $HOME/.kube:/root/.kube \
         -v $HOME/.netrc:/root/.netrc \
