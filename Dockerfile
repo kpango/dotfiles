@@ -137,7 +137,10 @@ RUN set -x; cd "$(mktemp -d)" \
     && ls /root/.krew/bin \
     && curl -Lo kubebox https://github.com/astefanutti/kubebox/releases/download/v0.4.0/kubebox-linux \
     && chmod +x kubebox \
-    && mv kubebox /usr/local/bin/kubebox
+    && mv kubebox /usr/local/bin/kubebox \
+    && curl -fsSL "https://github.com/wercker/stern/releases/download/1.10.0/stern_linux_amd64" -o stern
+    && chmod +x stern \
+    && mv stern /usr/local/bin/stern
 
 FROM base AS glibc
 
@@ -308,6 +311,8 @@ COPY --from=docker /usr/local/bin/runc /usr/bin/docker-runc
 COPY --from=kube /usr/local/bin/kubectl /usr/bin/kubectl
 COPY --from=kube /usr/local/bin/kubectx /usr/bin/kubectx
 COPY --from=kube /usr/local/bin/kubens /usr/bin/kubens
+COPY --from=kube /usr/local/bin/kubebox /usr/bin/kubebox
+COPY --from=kube /usr/local/bin/stern /usr/bin/stern
 COPY --from=kube /usr/local/bin/helm /usr/bin/helm
 COPY --from=kube /root/.krew/bin /usr/bin/
 
@@ -333,9 +338,9 @@ COPY --from=go /usr/local/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 # COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
-COPY --from=rust /home/rust/.cargo /root/.cargo
-COPY --from=rust /home/rust/.rustup /root/.rustup
-COPY --from=rust /home/rust/.multirust /root/.multirust
+COPY --from=rust /root/.cargo /root/.cargo
+COPY --from=rust /root/.rustup /root/.rustup
+COPY --from=rust /root/.multirust /root/.multirust
 
 COPY init.vim $NVIM_HOME/init.vim
 COPY monokai.vim $NVIM_HOME/colors/monokai.vim
