@@ -7,6 +7,10 @@
     enableGhostscriptFonts = true;
     fonts = with pkgs; [
       ricty
+      corefonts
+      font-awesome-ttf
+      input-fonts
+      noto-fonts-cjk
     ];
   };
 }

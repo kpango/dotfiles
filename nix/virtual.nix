@@ -4,9 +4,13 @@
       enable = true;
       enableOnBoot = true;
     };
-    # virtualbox.host = {
-    #   enable = true;
-    #   headless = true;
-    # };
+    lxd = {
+      enable = true;
+    };
+    virtualbox.host = {
+      enable = true;
+      headless = true;
+      enableExtensionPack = true;
+    };
   };
 }

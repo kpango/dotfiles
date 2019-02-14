@@ -31,8 +31,20 @@
       extraPackages = with pkgs;[ vaapiIntel ];
     };
   };
-  # powerManagement = {
-  #   enable = true;
-  #   cpuFreqGovernor = lib.mkDefault "powersave";
-  # };
+
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/1b93e06d-bbbc-4594-8d91-f29dafff109a";
+    fsType = "xfs";
+  };
+
+  swapDevices = [
+    {
+      device = "/dev/disk/by-uuid/39e21160-19db-49d6-99e5-496ca3e69a8c";
+    }
+  ];
+
+  powerManagement = {
+    enable = true;
+    cpuFreqGovernor = lib.mkDefault "powersave";
+  };
 }

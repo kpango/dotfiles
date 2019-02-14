@@ -1,7 +1,4 @@
 #!/bin/sh
-SSID=$1
-PASSWORD=$2
-
 ip a
 umount /dev/nvme0n1
 wipefs -a /dev/nvme0n1 && sync
@@ -28,9 +25,6 @@ mkdir /mnt/boot
 mount /dev/sda1 /mnt/boot
 swapon /dev/vg/swap
 
-wpa_passphrase ${SSID} ${PASSWORD} >/etc/wpa_supplicant.conf
-systemctl start wpa_supplicant
-
 nixos-generate-config --root /mnt
 
 mv /mnt/etc/nixos/configuration.nix /mnt/etc/nixos/configuration.nix.back
@@ -38,5 +32,3 @@ cp ./*.nix /mnt/etc/nixos/
 cp -r ./pkgs /mnt/etc/nixos/
 
 nixos-install
-
-reboot

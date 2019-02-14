@@ -18,11 +18,14 @@
           "-I" "nixpkgs=/etc/nixos/nixpkgs-channels"
         ];
     };
-  # extraConfig = ''
-  #     DefaultCPUAccounting=true
-  #     DefaultBlockIOAccounting=true
-  #     DefaultMemoryAccounting=true
-  #     DefaultTasksAccounting=true
-  #   '';
+  };
+
+  systemd = {
+    extraConfig = ''
+      DefaultCPUAccounting=true
+      DefaultBlockIOAccounting=true
+      DefaultMemoryAccounting=true
+      DefaultTasksAccounting=true
+    '';
   };
 }
