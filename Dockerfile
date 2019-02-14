@@ -138,7 +138,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && curl -Lo kubebox https://github.com/astefanutti/kubebox/releases/download/v0.4.0/kubebox-linux \
     && chmod +x kubebox \
     && mv kubebox /usr/local/bin/kubebox \
-    && curl -fsSL "https://github.com/wercker/stern/releases/download/1.10.0/stern_linux_amd64" -o stern
+    && curl -fsSL "https://github.com/wercker/stern/releases/download/1.10.0/stern_linux_amd64" -o stern \
     && chmod +x stern \
     && mv stern /usr/local/bin/stern
 
