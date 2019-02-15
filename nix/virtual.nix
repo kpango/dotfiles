@@ -8,10 +8,10 @@
     lxd = {
       enable = true;
     };
-    virtualbox.host = {
-      enable = true;
-      headless = true;
-      enableExtensionPack = true;
-    };
+    # virtualbox.host = {
+    #   enable = true;
+    #   headless = true;
+    #   enableExtensionPack = true;
+    # };
   };
 }
