@@ -4,6 +4,7 @@
 {
   imports = [
     ./boot.nix
+    ./hardware-configuration.nix
     ./environment.nix
     ./fonts.nix
     ./hardware.nix

@@ -2,7 +2,6 @@
 {
   # Use the systemd-boot EFI boot loader.
   boot = {
-    kernelModules = [ "kvm-intel" ];
     blacklistedKernelModules = [ "snd_pcsp" "pcspkr" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = [
@@ -73,7 +72,6 @@
       };
     };
     initrd = {
-      availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
       kernelModules = [
         "kvm_intel"
         "tp_smapi"

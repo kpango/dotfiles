@@ -11,7 +11,6 @@
       require-sigs = false
       trusted-users = root
     '';
-    # maxJobs = lib.mkDefault 8;
     binaryCaches = [
       "https://cache.nixos.org"
       "https://cache.mozilla-releng.net"
