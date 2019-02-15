@@ -6,7 +6,7 @@
     dbus = {
       enable = true;
       socketActivated = true;
-    }
+    };
     locate.enable = true;
     nixosManual.showManual = true;
     openssh = {
