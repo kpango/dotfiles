@@ -3,6 +3,7 @@
     docker = {
       enable = true;
       enableOnBoot = true;
+      autoPrune.enable = true;
     };
     lxd = {
       enable = true;

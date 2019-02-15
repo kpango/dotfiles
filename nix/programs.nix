@@ -11,5 +11,6 @@
     tmux.enable = true;
     ssh.forwardX11 = false;
     ssh.startAgent = true;
+    light.enable = true;
   };
 }

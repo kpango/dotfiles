@@ -21,6 +21,10 @@
   };
 
   systemd = {
+    tmpfiles.rules = let mqueue = "/proc/sys/fs/mqueue"; in [
+      "w ${mqueue}/msgsize_max - - - - ${toString (64 * 1024)}"
+      "w ${mqueue}/msg_max     - - - - 50"
+    ];
     extraConfig = ''
       DefaultCPUAccounting=true
       DefaultBlockIOAccounting=true
