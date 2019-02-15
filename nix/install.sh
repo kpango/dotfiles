@@ -22,7 +22,7 @@ mkswap -L swap /dev/vg/swap
 
 mount /dev/vg/root /mnt
 mkdir /mnt/boot
-mount /dev/sda1 /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot
 swapon /dev/vg/swap
 
 nixos-generate-config --root /mnt
