@@ -1,9 +1,9 @@
 { config, pkgs, ... }:
-let
-  unstableTarball =
-    fetchTarball
-      https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz;
-in
+#let
+#  unstableTarball =
+#    fetchTarball
+#      https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz;
+#in
 {
   nixpkgs = {
     config = {
@@ -16,17 +16,17 @@ in
        enableGoogleTalkPlugin = true;
       };
       # Create an alias for the unstable channel
-      packageOverrides = pkgs: {
-        unstable = import unstableTarball {
-          config = config.nixpkgs.config;
-        };
-      };
+      # packageOverrides = pkgs: {
+      #   unstable = import unstableTarball {
+      #     config = config.nixpkgs.config;
+      #   };
+      # };
       pulseaudio = true;
     };
     overlays = [(self: super: {
-      bat = super.unstable.bat;
-      exa = super.unstable.exa;
-      chromium = super.unstable.chromium;
+      #bat = super.unstable.bat;
+      #exa = super.unstable.exa;
+      #chromium = super.unstable.chromium;
       neovim = super.neovim.override {
         withPython = true;
         withPython3 = true;
