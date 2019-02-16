@@ -76,8 +76,8 @@
         device = "nodev";
         efiSupport = true;
         gfxmodeEfi = "1024x768";
-        enableCryptodisk = true;
-        extraInitrd = "/boot/initrd.keys.gz";
+        # enableCryptodisk = true;
+        # extraInitrd = "/boot/initrd.keys.gz";
       };
     };
     initrd = {
@@ -89,16 +89,16 @@
         "ext4"
         "ecb"
       ];
-      luks.devices = [
-        {
-          name = "root";
-          device = "/dev/disk/by-uuid/UUID";
-          preLVM = true;
-          allowDiscards = true;
-          keyFile = "/hdd.key";
-          keyFileSize = 4096;
-        }
-      ];
+      # luks.devices = [
+      #   {
+      #     name = "root";
+      #     device = "/dev/disk/by-uuid/UUID";
+      #     preLVM = true;
+      #     allowDiscards = true;
+      #     keyFile = "/hdd.key";
+      #     keyFileSize = 4096;
+      #   }
+      # ];
     };
   };
 }
