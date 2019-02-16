@@ -24,8 +24,8 @@
     inputMethod = {
       enabled = "fcitx";
       fcitx.engines = with pkgs.fcitx-engines; [
-        mozc
         anthy
+        mozc
       ];
     };
   };

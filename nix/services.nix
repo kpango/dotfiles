@@ -17,6 +17,9 @@
         StreamLocalBindUnlink yes
       '';
     };
+    sshd = {
+        enable = true;
+    };
     unifi = {
       unifiPackage = pkgs.unifiTesting;
       enable = true;

@@ -68,8 +68,14 @@
       systemd-boot.enable = true;
       efi = {
         canTouchEfiVariables = true;
-        efiSysMountPoint = "/boot";
+        efiSysMountPoint = "/boot/efi";
       };
+      # grub = {
+      #   enable = true;
+      #   version = 2;
+      #   device = "nodev";
+      #   efiSupport = true;
+      # };
     };
     initrd = {
       kernelModules = [

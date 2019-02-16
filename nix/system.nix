@@ -1,7 +1,13 @@
 { config, pkgs, lib, ... }:
 {
-  fileSystems."/".label = "root";
-  fileSystems."/boot".label = "boot";
+
+  fileSystems = {
+    "/" = {
+      label = "root";
+      options = [ "noatime" "nodiratime" "discard" ];
+    };
+    "/boot".label = "boot";
+  };
 
   time.timeZone = "Asia/Tokyo";
 

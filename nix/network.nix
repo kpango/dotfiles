@@ -1,6 +1,6 @@
 {
   networking = {
-    hostName = "kpango";
+    hostName = "kpango.nix.dev";
     networkmanager = {
       enable = true;
       dns = "dnsmasq";
@@ -11,6 +11,7 @@
     ];
     firewall = {
       enable = true;
+      allowPing = false;
       allowedTCPPorts = [ 22 80 443 3000 8080 8000 8443 9999 ];
       allowedUDPPortRanges = [
         {
@@ -27,5 +28,10 @@
       internalInterfaces = ["ve-+"];
       externalInterface = "wlp4s0";
     };
+    networking.extraHosts = ''
+      127.0.0.2 other-localhost
+      10.0.1.1 router
+      10.0.1.2 switch
+    '';
   };
 }
