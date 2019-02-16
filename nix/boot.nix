@@ -65,17 +65,20 @@
       };
     };
     loader = {
-      systemd-boot.enable = true;
+      # systemd-boot.enable = true;
       efi = {
         canTouchEfiVariables = true;
         efiSysMountPoint = "/boot/efi";
       };
-      # grub = {
-      #   enable = true;
-      #   version = 2;
-      #   device = "nodev";
-      #   efiSupport = true;
-      # };
+      grub = {
+        enable = true;
+        version = 2;
+        device = "nodev";
+        efiSupport = true;
+        gfxmodeEfi = "1024x768";
+        enableCryptodisk = true;
+        extraInitrd = "/boot/initrd.keys.gz";
+      };
     };
     initrd = {
       kernelModules = [
@@ -89,9 +92,11 @@
       luks.devices = [
         {
           name = "root";
-          device = "/dev/nvme0n1p2";
+          device = "/dev/disk/by-uuid/UUID";
           preLVM = true;
           allowDiscards = true;
+          keyFile = "/hdd.key";
+          keyFileSize = 4096;
         }
       ];
     };
