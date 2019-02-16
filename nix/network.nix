@@ -28,7 +28,7 @@
       internalInterfaces = ["ve-+"];
       externalInterface = "wlp4s0";
     };
-    networking.extraHosts = ''
+    extraHosts = ''
       127.0.0.2 other-localhost
       10.0.1.1 router
       10.0.1.2 switch
