@@ -225,6 +225,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     nodejs \
     npm \
     yarn \
+    openssh \
     openssl \
     openssl-dev \
     perl \
