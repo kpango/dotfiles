@@ -223,6 +223,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     neovim \
     nodejs \
     npm \
+    yarn \
     openssl \
     openssl-dev \
     perl \

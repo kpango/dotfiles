@@ -49,6 +49,7 @@ function devrun(){
         -v $HOME/Downloads:/root/Downloads \
         -v $HOME/go/src:/go/src:cached \
         -v $rcpath/init.vim:/root/.config/nvim/init.vim \
+        -v $rcpath/coc-settings.json:/root/.config/nvim/coc-settings.json \
         -v $rcpath/monokai.vim:/root/.config/nvim/colors/monokai.vim \
         -v $rcpath/tmux-kube:/root/.tmux-kube \
         -v $rcpath/tmux.conf:/root/.tmux.conf \

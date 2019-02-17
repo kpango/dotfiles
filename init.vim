@@ -31,10 +31,11 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ----- update self
     Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
 " ---- common plugins
+    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': 'yarn install'}
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
-    Plug 'Shougo/neoyank.vim'
-    Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
+    " Plug 'Shougo/neoyank.vim'
+    " Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
     Plug 'Shougo/neomru.vim'
     Plug 'cohama/lexima.vim' " auto close bracket
     Plug 'airblade/vim-gitgutter'
@@ -45,13 +46,13 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
     Plug 'lilydjwg/colorizer', {'do': 'make'} " colorize rgb rgba texts
     Plug 'majutsushi/tagbar' " tag bar toggle
-    Plug 'nathanaelkane/vim-indent-guides' " show indent guide
+    " Plug 'nathanaelkane/vim-indent-guides' " show indent guide
     Plug 'w0rp/ale' " lint plugin
     Plug 'tyru/caw.vim' " comment out
-    Plug 'rizzatti/dash.vim', {'on': 'Dash'}
-    Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
-    Plug 'terryma/vim-multiple-cursors' " multiple cursors
-    Plug 'thinca/vim-quickrun'
+    " Plug 'rizzatti/dash.vim', {'on': 'Dash'}
+    " Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
+    " Plug 'terryma/vim-multiple-cursors' " multiple cursors
+    " Plug 'thinca/vim-quickrun'
     Plug 'tpope/vim-surround'
     Plug 'vim-scripts/sudo.vim'
     " Plug 'ozelentok/denite-gtags'
@@ -61,10 +62,10 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
         "\ 'branch': 'next',
         "\ 'do': 'zsh install.sh',
         "\ }
-    Plug 'prabirshrestha/async.vim'
-    Plug 'prabirshrestha/vim-lsp'
-    Plug 'prabirshrestha/asyncomplete.vim'
-    Plug 'prabirshrestha/asyncomplete-lsp.vim'
+    " Plug 'prabirshrestha/async.vim'
+    " Plug 'prabirshrestha/vim-lsp'
+    " Plug 'prabirshrestha/asyncomplete.vim'
+    " Plug 'prabirshrestha/asyncomplete-lsp.vim'
     " Plug 'natebosch/vim-lsc'
     Plug 'echuraev/translate-shell.vim' ", { 'do': 'wget -O /usr/local/bin/trans git.io/trans && chmod a+x /usr/local/bin/trans' }
 " ---- Vim Setting
@@ -95,8 +96,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'hail2u/vim-css3-syntax', {'for': ['css','less','sass','scss','stylus'] }
     Plug 'wavded/vim-stylus', {'for': ['stylus']}
 " ---- JavaScript
-    Plug 'ryanolsonx/vim-lsp-javascript', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-    Plug 'ryanolsonx/vim-lsp-typescript', { 'for': 'typescript' }
+    " Plug 'ryanolsonx/vim-lsp-javascript', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+    " Plug 'ryanolsonx/vim-lsp-typescript', { 'for': 'typescript' }
     " Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
     " Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
     " Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
@@ -123,7 +124,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
 " ---- Python
     " Plug 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi;pip3 install jedi'}
-    Plug 'ryanolsonx/vim-lsp-python', {'for': ['python', 'python3','djangohtml'] }
+    " Plug 'ryanolsonx/vim-lsp-python', {'for': ['python', 'python3','djangohtml'] }
 " ---- Lisp
     Plug 'vim-scripts/slimv.vim', {'for': 'lisp'}
 " ---- Lua
@@ -301,79 +302,140 @@ AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggreg
 " --------------------------------------------------
 " ---- Language Server Protocol Client settings ----
 " --------------------------------------------------
-imap <c-space> <Plug>(asyncomplete_force_refresh)
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+
+" Tab補完
+function! s:completion_check_bs()
+    let l:col = col('.') - 1
+    return !l:col || getline('.')[l:col - 1] =~? '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>completion_check_bs() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+autocmd CursorHold * silent call CocActionAsync('highlight')
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+" Using CocList
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+" imap <c-space> <Plug>(asyncomplete_force_refresh)
+" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
+" autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
 " let g:LanguageClient_serverCommands = {
 "    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
 "    \ 'javascript': ['javascript-typescript-stdio'],
 "    \ 'vue': ['vls'],
 "    \ }
-let g:lsp_async_completion = 1
-let g:lsp_diagnostics_enabled = 0
-let g:asyncomplete_remove_duplicates = 1
-let g:asyncomplete_smart_completion = 1
-let g:asyncomplete_auto_popup = 1
+" let g:lsp_async_completion = 1
+" let g:lsp_diagnostics_enabled = 0
+" let g:asyncomplete_remove_duplicates = 1
+" let g:asyncomplete_smart_completion = 1
+" let g:asyncomplete_auto_popup = 1
 
-if executable('bingo')
-    AutocmdFT go call lsp#register_server({
-       \ 'name': 'go-lang',
-       \ 'cmd': {server_info->['bingo', '--golist-duration', '0', '--format-style', 'goimports', '--cache-style', 'on-demand', '-mode', 'stdio']},
-       \ 'whitelist': ['go'],
-       \ })
-endif
-
-if executable('nix-lsp')
-    AutocmdFT rust call lsp#register_server({
-       \ 'name': 'nix',
-       \ 'cmd': {server_info->['nix-lsp' ]},
-       \ 'whitelist': ['nix'],
-       \ })
-endif
-
-if executable('rls')
-    AutocmdFT rust call lsp#register_server({
-       \ 'name': 'rls',
-       \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
-       \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'Cargo.toml'))},
-       \ 'whitelist': ['rust'],
-       \ })
-endif
-
-if executable('docker-langserver')
-    AutocmdFT dockerfile call lsp#register_server({
-       \ 'name': 'docker-langserver',
-       \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
-       \ 'whitelist': ['dockerfile'],
-       \ })
-endif
-
-if executable('typescript-language-server')
-    AutocmdFT javascript call lsp#register_server({
-     \ 'name': 'javascript support using typescript-language-server',
-     \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-     \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'package.json'))},
-     \ 'whitelist': ['javascript', 'javascript.jsx', 'json', 'jsx', 'vue']
-     \ })
-
-    AutocmdFT typescript call lsp#register_server({
-       \ 'name': 'typescript-language-server',
-       \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-       \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
-       \ 'whitelist': ['typescript', 'typescript.tsx'],
-       \ })
-endif
-
-if executable('pyls')
-    AutocmdFT python call lsp#register_server({
-       \ 'name': 'pyls',
-       \ 'cmd': {server_info->['pyls']},
-       \ 'whitelist': ['python'],
-       \ 'workspace_config': {'pyls': {'plugins': {'pydocstyle': {'enabled': v:true}}}}
-       \ })
-endif
+" function! s:configure_lsp() abort
+"     setlocal omnifunc=lsp#complete   " オムニ補完を有効化
+"     " LSP用にマッピング
+"     nnoremap <buffer> <C-]> :<C-u>LspDefinition<CR>
+"     nnoremap <buffer> gd :<C-u>LspDefinition<CR>
+"     nnoremap <buffer> gD :<C-u>LspReferences<CR>
+"     nnoremap <buffer> gs :<C-u>LspDocumentSymbol<CR>
+"     nnoremap <buffer> gS :<C-u>LspWorkspaceSymbol<CR>
+"     nnoremap <buffer> gQ :<C-u>LspDocumentFormat<CR>
+"     vnoremap <buffer> gQ :LspDocumentRangeFormat<CR>
+"     nnoremap <buffer> K :<C-u>LspHover<CR>
+"     nnoremap <buffer> <F1> :<C-u>LspImplementation<CR>
+"     nnoremap <buffer> <F2> :<C-u>LspRename<CR>
+" endfunction
+"
+" if executable('bingo')
+"     AutocmdFT go call lsp#register_server({
+"       \ 'name': 'go-lang',
+"       \ 'cmd': {server_info->['bingo', '--golist-duration', '0', '--format-style', 'goimports', '--cache-style', 'on-demand', '-mode', 'stdio']},
+"       \ 'whitelist': ['go'],
+"       \ })
+" endif
+"
+" if executable('nix-lsp')
+"     AutocmdFT rust call lsp#register_server({
+"       \ 'name': 'nix',
+"       \ 'cmd': {server_info->['nix-lsp' ]},
+"       \ 'whitelist': ['nix'],
+"       \ })
+" endif
+"
+" if executable('rls')
+"     AutocmdFT rust call lsp#register_server({
+"       \ 'name': 'rls',
+"       \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
+"       \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'Cargo.toml'))},
+"       \ 'whitelist': ['rust'],
+"       \ })
+" endif
+"
+" if executable('docker-langserver')
+"     AutocmdFT dockerfile call lsp#register_server({
+"       \ 'name': 'docker-langserver',
+"       \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
+"       \ 'whitelist': ['dockerfile'],
+"       \ })
+" endif
+"
+" if executable('typescript-language-server')
+"     AutocmdFT javascript call lsp#register_server({
+"     \ 'name': 'javascript support using typescript-language-server',
+"     \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+"     \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'package.json'))},
+"     \ 'whitelist': ['javascript', 'javascript.jsx', 'json', 'jsx', 'vue']
+"     \ })
+"
+"     AutocmdFT typescript call lsp#register_server({
+"       \ 'name': 'typescript-language-server',
+"       \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+"       \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
+"       \ 'whitelist': ['typescript', 'typescript.tsx'],
+"       \ })
+" endif
+"
+" if executable('pyls')
+"     AutocmdFT python call lsp#register_server({
+"       \ 'name': 'pyls',
+"       \ 'cmd': {server_info->['pyls']},
+"       \ 'whitelist': ['python'],
+"       \ 'workspace_config': {'pyls': {'plugins': {'pydocstyle': {'enabled': v:true}}}}
+"       \ })
+" endif
 "
 " -------------------------
 " ---- Denite settings ----
@@ -611,7 +673,7 @@ AutocmdFT go let g:go_alternate_mode = "edit"
 AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
 " AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
 AutocmdFT go nnoremap <F5> :Gorun<CR>
-AutocmdFT go nnoremap gd <Plug>(go-def-split)
+" AutocmdFT go nnoremap gd <Plug>(go-def-split)
 
 " ------------------------
 " ---- Clang settings ----
@@ -923,16 +985,11 @@ inoremap <C-j> <esc>
 inoremap <C-s> <esc>:w<CR>
 nnoremap <C-q> :qall<CR>
 
-" Tab補完
-function! s:completion_check_bs()
-    let l:col = col('.') - 1
-    return !l:col || getline('.')[l:col - 1] =~? '\s'
-endfunction
-
 " Deoplete Key map
 " inoremap <expr><silent><Tab> pumvisible() ? "\<C-n>" : (<sid>completion_check_bs() ? "\<Tab>" : deoplete#mappings#manual_complete())
 " inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
 " inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
 " inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
 " inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 " " imap <expr><TAB> deoppet#expandable_or_jumpable() ? "\<Plug>(deoppet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
