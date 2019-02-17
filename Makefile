@@ -1,4 +1,6 @@
-.PHONY: link zsh bash build prod_build profile run push pull
+.PHONY: all link zsh bash build prod_build profile run push pull
+
+all: prod_build login push
 
 run:
 	source ./alias && devrun
