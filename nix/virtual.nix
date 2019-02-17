@@ -4,6 +4,7 @@
       enable = true;
       enableOnBoot = true;
       autoPrune.enable = true;
+      storageDriver = "overlay2";
     };
     lxd = {
       enable = true;

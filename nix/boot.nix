@@ -10,8 +10,8 @@
       "acpi.ec_no_wakeup=1"
       "intel_pstate=no_hwp"
     ];
+    cleanTmpDir = true;
     plymouth.enable = true;
-    # supportedFilesystems = [ "xfs" "zfs" ];
     supportedFilesystems = [ "xfs" ];
     kernel = {
       sysctl = {
@@ -83,7 +83,6 @@
     initrd = {
       kernelModules = [
         "kvm_intel"
-        "tp_smapi"
         "dm_mod"
         "dm-crypt"
         "ext4"

@@ -9,8 +9,11 @@
       syntaxHighlighting.enable = true;
     };
     tmux.enable = true;
-    ssh.forwardX11 = false;
-    ssh.startAgent = true;
+    ssh = {
+      forwardX11 = false;
+      startAgent = true;
+    };
+    sway.enable = true;
     light.enable = true;
   };
 }

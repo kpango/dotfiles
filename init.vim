@@ -149,6 +149,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'qnighy/llvm.vim', {'for': 'llvm'}
 " ---- ZSH
     " Plug 'zchee/deoplete-zsh', {'for': 'zsh'}
+" ---- Nix
+    Plug 'LnL7/vim-nix', {'for': 'nix'}
 call plug#end()
 
 " --------------------------------------

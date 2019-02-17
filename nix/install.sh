@@ -42,7 +42,7 @@ mount $PP $EFI
 # find $KEY_FILE -print0 | sort -z | cpio -o -H newc -R +0:+0 --reproducible --null | gzip -9 > $INITRD_KEY
 # chmod 000 $INITRD_KEY
 
-UUID=blkid | awk '{print $2}' | sed -e 's/^.*"\(.*\)"/\1/'
+UUID=blkid $RP | awk '{print $2}' | sed -e 's/^.*"\(.*\)"/\1/'
 sed -e "s/UUID/$UUID/g" ./boot.nix > ./boot.new
 mv ./boot.new ./boot.nix
 

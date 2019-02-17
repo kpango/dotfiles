@@ -2,13 +2,13 @@
 {
   services = {
     timesyncd.enable = true;
-    # nixosManual.showManual = true;
     dbus = {
       enable = true;
       socketActivated = true;
     };
     locate.enable = true;
     nixosManual.showManual = true;
+    ntp.enable = true;
     openssh = {
       enable = true;
       passwordAuthentication = false;
@@ -18,12 +18,13 @@
       '';
     };
     sshd = {
-        enable = true;
+      enable = true;
     };
     unifi = {
       unifiPackage = pkgs.unifiTesting;
       enable = true;
     };
+    modem-manager.enable = false;
     printing = {
       enable = true;
       drivers = with pkgs; [
