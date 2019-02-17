@@ -360,6 +360,7 @@ WORKDIR $NVIM_HOME/plugged/vim-plug
 RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
     && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload \
     && nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +GoInstallBinaries +qall main.go \
+    && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java \
     && git clone https://github.com/zplug/zplug $ZPLUG_HOME
 
 WORKDIR /go/src
