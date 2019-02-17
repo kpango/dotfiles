@@ -1,7 +1,6 @@
 {
   users = {
     defaultUserShell = "/run/current-system/sw/bin/zsh";
-    mutableUsers = false;
     users.kpango = {
       description = "Yusuke Kato";
       extraGroups = [
