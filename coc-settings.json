@@ -3,8 +3,6 @@
     "golang": {
       "command": "bingo",
       "args": [
-        "--golist-duration",
-        "0",
         "--format-style",
         "goimports",
         "--cache-style",
