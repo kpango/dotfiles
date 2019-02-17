@@ -367,7 +367,13 @@ RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
     && nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go \
     && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
     && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni \
-    && git clone https://github.com/zplug/zplug $ZPLUG_HOME
+    && git clone https://github.com/zplug/zplug $ZPLUG_HOME \
+    && rm -rf $HOME/.cache \
+    && rm -rf $HOME/.npm/_cacache \
+    && rm -rf $HOME/.cargo/registry/cache \
+    && rm -rf /usr/local/share/.cache \
+    && rm -rf /tmp
+
 
 WORKDIR /go/src
 
