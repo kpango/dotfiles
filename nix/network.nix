@@ -32,6 +32,7 @@
       externalInterface = "wlp4s0";
     };
     extraHosts = ''
+      127.0.0.1 kpango.nix.dev localhost
       127.0.0.2 other-localhost
       10.0.1.1 router
       10.0.1.2 switch
