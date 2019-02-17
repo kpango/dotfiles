@@ -24,7 +24,6 @@
       unifiPackage = pkgs.unifiTesting;
       enable = true;
     };
-    modem-manager.enable = false;
     printing = {
       enable = true;
       drivers = with pkgs; [
