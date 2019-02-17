@@ -2,24 +2,49 @@
   "languageserver": {
     "golang": {
       "command": "bingo",
-      "args": ["--golist-duration", "0", "--format-style", "goimports", "--cache-style", "on-demand", "-mode", "stdio", "--diagnostics-style=instant"],
-      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
-      "filetypes": ["go"]
+      "args": [
+        "--golist-duration",
+        "0",
+        "--format-style",
+        "goimports",
+        "--cache-style",
+        "on-demand",
+        "-mode",
+        "stdio",
+        "--diagnostics-style=instant"
+      ],
+      "rootPatterns": [
+        "go.mod",
+        ".vim/",
+        ".git/",
+        ".hg/"
+      ],
+      "filetypes": [
+        "go"
+      ]
     },
     "nix": {
       "command": "nix-lsp",
-      "filetypes": ["nix"],
+      "filetypes": [
+        "nix"
+      ],
       "args": []
     },
     "dockerfile": {
       "command": "docker-langserver",
-      "filetypes": ["dockerfile"],
-      "args": ["--stdio"]
+      "filetypes": [
+        "dockerfile"
+      ],
+      "args": [
+        "--stdio"
+      ]
     },
     "dart": {
       "command": "dart_language_server",
       "args": [],
-      "filetypes": ["dart"],
+      "filetypes": [
+        "dart"
+      ],
       "initializationOptions": {},
       "settings": {
         "dart": {
@@ -30,18 +55,22 @@
     },
     "python": {
       "command": "pyls",
-      "filetypes": ["python"],
+      "filetypes": [
+        "python"
+      ],
       "args": []
-    },
-    "clangd": {
-      "command": "clangd",
-      "rootPatterns": ["compile_flags.txt", "compile_commands.json", ".vim/", ".git/", ".hg/"],
-      "filetypes": ["c", "cpp", "objc", "objcpp"]
     },
     "efm": {
       "command": "efm-langserver",
-      "args": ["-c", "$HOME/.config/nvim/efm-lsp-conf.yaml"],
-      "filetypes": ["vim", "eruby", "markdown"]
+      "args": [
+        "-c",
+        "$HOME/.config/nvim/efm-lsp-conf.yaml"
+      ],
+      "filetypes": [
+        "vim",
+        "eruby",
+        "markdown"
+      ]
     }
   }
 }
