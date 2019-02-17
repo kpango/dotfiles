@@ -245,7 +245,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint \
     && gem install neovim -N \
     && npm config set user root \
-    && npm install -g neovim resume-cli dockerfile-language-server-nodejs typescript typescript-language-server \
+    && npm install -g neovim resume-cli markdownlint-cli dockerfile-language-server-nodejs typescript typescript-language-server \
     && cd /tmp \
     && git clone https://github.com/soimort/translate-shell \
     && cd /tmp/translate-shell/ \
