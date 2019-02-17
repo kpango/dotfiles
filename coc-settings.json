@@ -27,11 +27,6 @@
       "command": "clangd",
       "rootPatterns": ["compile_flags.txt", "compile_commands.json", ".vim/", ".git/", ".hg/"],
       "filetypes": ["c", "cpp", "objc", "objcpp"]
-    },
-    "efm": {
-      "command": "efm-langserver",
-      "args": [],
-      "filetypes": ["vim", "eruby", "markdown"]
     }
   }
 }
