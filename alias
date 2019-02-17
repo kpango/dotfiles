@@ -49,11 +49,16 @@ function devrun(){
         -v $HOME/Downloads:/root/Downloads \
         -v $HOME/go/src:/go/src:cached \
         -v $rcpath/init.vim:/root/.config/nvim/init.vim \
+        -v $rcpath/vintrc.yaml:/root/.vintrc.yaml \
+        -v $rcpath/efm-lsp-conf.yaml:/root/.config/nvim/efm-lsp-conf.yaml \
         -v $rcpath/coc-settings.json:/root/.config/nvim/coc-settings.json \
         -v $rcpath/monokai.vim:/root/.config/nvim/colors/monokai.vim \
         -v $rcpath/tmux-kube:/root/.tmux-kube \
         -v $rcpath/tmux.conf:/root/.tmux.conf \
         -v $rcpath/zshrc:/root/.zshrc \
+        -v $rcpath/gitignore:/root/.gitignore \
+        -v $rcpath/gitconfig:/root/.gitconfig \
+        -v $rcpath/gitattributes:/root/.gitattributes \
         -v $tz_path:/etc/timezone:ro \
         -dit kpango/dev:latest
 

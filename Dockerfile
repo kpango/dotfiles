@@ -26,6 +26,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/kisielk/errcheck \
     github.com/klauspost/asmfmt/cmd/asmfmt \
     github.com/koron/iferr \
+    github.com/mattn/efm-langserver/cmd/efm-langserver \
     github.com/motemen/ghq \
     github.com/motemen/go-iferr/cmd/goiferr \
     github.com/nsf/gocode \
@@ -240,8 +241,8 @@ RUN mkdir "/etc/ld.so.conf.d" \
     hdf5 \
     hdf5-dev \
     && rm -rf /var/cache/apk/* \
-    && pip2 install --upgrade pip neovim python-language-server \
-    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server \
+    && pip2 install --upgrade pip neovim python-language-server vim-vint \
+    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint \
     && gem install neovim -N \
     && npm config set user root \
     && npm install -g neovim resume-cli dockerfile-language-server-nodejs typescript typescript-language-server \
@@ -343,13 +344,17 @@ COPY --from=rust /root/.cargo /root/.cargo
 COPY --from=rust /root/.rustup /root/.rustup
 COPY --from=rust /root/.multirust /root/.multirust
 
+COPY coc-settings.json $NVIM_HOME/coc-settings.json
+COPY efm-lsp-conf.yaml $NVIM_HOME/efm-lsp-conf.yaml
+COPY gitattributes $HOME/.gitattributes
+COPY gitconfig $HOME/.gitconfig
+COPY gitignore $HOME/.gitignore
 COPY init.vim $NVIM_HOME/init.vim
 COPY monokai.vim $NVIM_HOME/colors/monokai.vim
-COPY zshrc $HOME/.zshrc
+COPY tmux-kube $HOME/.tmux-kube
 COPY tmux.conf $HOME/.tmux.conf
-COPY gitignore $HOME/.gitignore
-COPY gitconfig $HOME/.gitconfig
-COPY gitattributes $HOME/.gitattributes
+COPY vintrc.yaml $HOME/.vintrc.yaml
+COPY zshrc $HOME/.zshrc
 
 ENV SHELL /bin/zsh
 
@@ -359,7 +364,7 @@ WORKDIR $NVIM_HOME/plugged/vim-plug
 
 RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
     && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload \
-    && nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +GoInstallBinaries +qall main.go \
+    && nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go \
     && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
     # && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni \
     && git clone https://github.com/zplug/zplug $ZPLUG_HOME

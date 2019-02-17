@@ -2,9 +2,14 @@
   "languageserver": {
     "golang": {
       "command": "bingo",
-      "args": ["--diagnostics-style=instant"],
+      "args": ["--golist-duration", "0", "--format-style", "goimports", "--cache-style", "on-demand", "-mode", "stdio", "--diagnostics-style=instant"],
       "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
       "filetypes": ["go"]
+    },
+    "nix": {
+      "command": "nix-lsp",
+      "filetypes": ["nix"],
+      "args": []
     },
     "dockerfile": {
       "command": "docker-langserver",
@@ -23,10 +28,20 @@
         }
       }
     },
+    "python": {
+      "command": "pyls",
+      "filetypes": ["python"],
+      "args": []
+    },
     "clangd": {
       "command": "clangd",
       "rootPatterns": ["compile_flags.txt", "compile_commands.json", ".vim/", ".git/", ".hg/"],
       "filetypes": ["c", "cpp", "objc", "objcpp"]
+    },
+    "efm": {
+      "command": "efm-langserver",
+      "args": ["-c", "$HOME/.config/nvim/efm-lsp-conf.yaml"],
+      "filetypes": ["vim", "eruby", "markdown"]
     }
   }
 }
