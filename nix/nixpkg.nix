@@ -30,6 +30,7 @@
       chromium = {
         enablePepperFlash = false;
         enablePepperPdf = true;
+        enableWideVine = true;
       };
       neovim = super.neovim.override {
         withPython = true;
@@ -38,10 +39,10 @@
         vimAlias = true;
       };
       nix-home = super.callPackage ./pkgs/nix-home {};
-      openvpn = super.openvpn.override {
-        pkcs11Support = true;
-      };
-      zathura.useMupdf = true;
+      # openvpn = super.openvpn.override {
+      #   pkcs11Support = true;
+      # };
+      # zathura.useMupdf = true;
     })];
   };
 }
