@@ -322,16 +322,16 @@ COPY --from=kube /root/.krew/bin /usr/bin/
 COPY --from=gcloud /google-cloud-sdk /google-cloud-sdk
 COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
 
-COPY --from=nim /bin/nim /usr/local/bin/nim
-COPY --from=nim /bin/nimble /usr/local/bin/nimble
-COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
-COPY --from=nim /nim/lib /usr/local/lib/nim
-COPY --from=nim /root/.cache/nim /root/.cache/nim
-COPY --from=nim /nim /nim
+# COPY --from=nim /bin/nim /usr/local/bin/nim
+# COPY --from=nim /bin/nimble /usr/local/bin/nimble
+# COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
+# COPY --from=nim /nim/lib /usr/local/lib/nim
+# COPY --from=nim /root/.cache/nim /root/.cache/nim
+# COPY --from=nim /nim /nim
 
 COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
-COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
-COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
+# COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
+# COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
 
 COPY --from=go /usr/local/go/bin $GOROOT/bin
 COPY --from=go /usr/local/go/src $GOROOT/src
@@ -341,9 +341,10 @@ COPY --from=go /usr/local/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 # COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
-COPY --from=rust /root/.cargo /root/.cargo
-COPY --from=rust /root/.rustup /root/.rustup
-COPY --from=rust /root/.multirust /root/.multirust
+COPY --from=rust /root/.cargo/bin /root/.cargo/bin
+# COPY --from=rust /root/.cargo /root/.cargo
+# COPY --from=rust /root/.rustup /root/.rustup
+# COPY --from=rust /root/.multirust /root/.multirust
 
 COPY coc-settings.json $NVIM_HOME/coc-settings.json
 COPY efm-lsp-conf.yaml $NVIM_HOME/efm-lsp-conf.yaml
