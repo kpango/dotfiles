@@ -4,6 +4,7 @@
   boot = {
     blacklistedKernelModules = [ "snd_pcsp" "pcspkr" ];
     kernelPackages = pkgs.linuxPackages_latest;
+    kernelModules = ["i2c_i801" "elan_i2c" "rmi_smbus"  "kvm_intel"];
     kernelParams = [
       "psmouse.synaptics_intertouch=1"
       "psmouse.proto=imps"
@@ -57,7 +58,7 @@
         "net.ipv4.tcp_tw_reuse" = 1;
         "net.ipv4.tcp_window_scaling" = 1;
         "net.ipv4.tcp_wmem" = "4096 87380 16777216";
-        "vm.max_map_count" = 117715;
+        "vm.max_map_count" = 262144;
         "vm.overcommit_memory" = 2;
         "vm.overcommit_ratio" = 99;
         "vm.panic_on_oom" = 1;
@@ -75,18 +76,21 @@
         version = 2;
         device = "nodev";
         efiSupport = true;
-        gfxmodeEfi = "1024x768";
+        gfxmodeEfi = "2560x1440";
         # enableCryptodisk = true;
         # extraInitrd = "/boot/initrd.keys.gz";
       };
     };
     initrd = {
       kernelModules = [
-        "kvm_intel"
-        "dm_mod"
         "dm-crypt"
-        "ext4"
+        "dm_mod"
         "ecb"
+        "elan_i2c"
+        "ext4"
+        "i2c_i801"
+        "kvm_intel"
+        "rmi_smbus"
       ];
       # luks.devices = [
       #   {

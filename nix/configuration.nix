@@ -14,6 +14,7 @@
     ./programs.nix
     ./services.nix
     ./system.nix
+    ./security.nix
     ./users.nix
     ./virtual.nix
   ];

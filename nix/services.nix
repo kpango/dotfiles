@@ -17,6 +17,12 @@
         StreamLocalBindUnlink yes
       '';
     };
+    tlp = {
+      enable = true;
+    };
+    upower = {
+      enable = true;
+    };
     sshd = {
       enable = true;
     };
@@ -31,6 +37,7 @@
         gutenprintBin
         hplip
         hplipWithPlugin
+        cups-bjnp
       ];
     };
   };

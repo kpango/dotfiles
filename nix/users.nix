@@ -9,6 +9,7 @@
         "cdrom"
         "disk"
         "docker"
+        "libvirtd"
         "networkmanager"
         "root"
         "systemd-journal"

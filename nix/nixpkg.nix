@@ -27,6 +27,10 @@
       #bat = super.unstable.bat;
       #exa = super.unstable.exa;
       #chromium = super.unstable.chromium;
+      chromium = {
+        enablePepperFlash = false;
+        enablePepperPdf = true;
+      };
       neovim = super.neovim.override {
         withPython = true;
         withPython3 = true;

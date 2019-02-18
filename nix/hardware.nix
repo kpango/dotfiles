@@ -22,7 +22,12 @@
       ";
     };
     enableRedistributableFirmware = true;
-    trackpoint.enable = true;
+    trackpoint = {
+      enable = true;
+      sensitivity = 255;
+      speed = 200;
+      emulateWheel = true;
+    };
     cpu.intel.updateMicrocode = true;
     enableAllFirmware = true;
     opengl = {

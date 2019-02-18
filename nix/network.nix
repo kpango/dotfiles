@@ -1,5 +1,6 @@
 {
   networking = {
+    hostId = "kubernetespangolang";
     hostName = "kpango.nix.dev";
     networkmanager = {
       enable = true;
@@ -21,6 +22,7 @@
           to = 61000;
         }
       ];
+      checkReversePath = false;
       extraCommands = ''
         iptables -I INPUT -p udp -m udp --dport 32768:60999 -j ACCEPT
       '';
@@ -31,7 +33,7 @@
       externalInterface = "wlp4s0";
     };
     extraHosts = ''
-      127.0.0.1 kpango.nix.dev localhost
+      127.0.0.1 ${config.networking.hostName}.local localhost
       127.0.0.2 other-localhost
       10.0.1.1 router
       10.0.1.2 switch
