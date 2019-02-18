@@ -104,7 +104,7 @@
     0 B 	 bin/ionice
 
 ====================================================================================================
- 977 MB 	 $ mkdir "/etc/ld.so.conf.d" && echo $'/lib\n/lib64\n/var/lib\n/usr/lib\n/usr/local/lib\n/usr/x86_64-alpine-linux-musl/lib\n/usr/local/go/lib\n/usr/lib/dart/lib\n/usr/lib/node_modules/lib\n/google-cloud-sdk/lib' >/etc/ld.so.conf.d/usr-local-lib.conf && echo $(ldconfig) && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >>/etc/apk/repositories && apk update && apk upgrade && apk --update add --no-cache --allow-untrusted --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing bash cmake ctags curl diffutils g++ gawk gcc git graphviz jq less linux-headers make musl-dev ncurses neovim nodejs npm yarn openssl openssl-dev perl py-pip py3-pip python-dev python3-dev ruby-dev tig tmux tzdata xclip zsh hdf5 hdf5-dev && rm -rf /var/cache/apk/* && pip2 install --upgrade pip neovim python-language-server vim-vint && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint && gem install neovim -N && npm config set user root && npm install -g neovim resume-cli markdownlint-cli dockerfile-language-server-nodejs typescript typescript-language-server && cd /tmp && git clone https://github.com/soimort/translate-shell && cd /tmp/translate-shell/ && make TARGET=zsh -j -C /tmp/translate-shell && make install -C /tmp/translate-shell && cd /tmp && rm -rf /tmp/translate-shell/ && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz && tar zxf ngt.tar.gz -C /tmp && rm -rf ngt.tar.gz && cd /tmp/NGT-1.5.1 && cmake . && make -j -C /tmp/NGT-1.5.1 && make install -C /tmp/NGT-1.5.1 && cd /tmp && rm -rf /tmp/NGT-1.5.1 # buildkit
+ 981 MB 	 $ mkdir "/etc/ld.so.conf.d" && echo $'/lib\n/lib64\n/var/lib\n/usr/lib\n/usr/local/lib\n/usr/x86_64-alpine-linux-musl/lib\n/usr/local/go/lib\n/usr/lib/dart/lib\n/usr/lib/node_modules/lib\n/google-cloud-sdk/lib' >/etc/ld.so.conf.d/usr-local-lib.conf && echo $(ldconfig) && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >>/etc/apk/repositories && apk update && apk upgrade && apk --update add --no-cache --allow-untrusted --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing bash cmake ctags curl diffutils g++ gawk gcc git graphviz jq less linux-headers make musl-dev ncurses neovim nodejs npm yarn openssh openssl openssl-dev perl py-pip py3-pip python-dev python3-dev ruby-dev tig tmux tzdata xclip zsh hdf5 hdf5-dev && rm -rf /var/cache/apk/* && pip2 install --upgrade pip neovim python-language-server vim-vint && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint && gem install neovim -N && npm config set user root && npm install -g neovim resume-cli markdownlint-cli dockerfile-language-server-nodejs typescript typescript-language-server && cd /tmp && git clone https://github.com/soimort/translate-shell && cd /tmp/translate-shell/ && make TARGET=zsh -j -C /tmp/translate-shell && make install -C /tmp/translate-shell && cd /tmp && rm -rf /tmp/translate-shell/ && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz && tar zxf ngt.tar.gz -C /tmp && rm -rf ngt.tar.gz && cd /tmp/NGT-1.5.1 && cmake . && make -j -C /tmp/NGT-1.5.1 && make install -C /tmp/NGT-1.5.1 && cd /tmp && rm -rf /tmp/NGT-1.5.1 # buildkit
 ====================================================================================================
  324 MB 	 usr/lib/node_modules/resume-cli/node_modules/puppeteer/.local-chromium/linux-624492
   37 MB 	 usr/lib/python3.6/config-3.6m-x86_64-linux-gnu/libpython3.6m.a
@@ -158,8 +158,8 @@
  1.4 MB 	 usr/lib/perl5/core_perl/auto/Unicode/Collate/Collate.so
  1.4 MB 	 usr/lib/python2.7/ensurepip/_bundled/pip-9.0.3-py2.py3-none-any.whl
  1.4 MB 	 usr/lib/node_modules/resume-cli/node_modules/handlebars/coverage/lcov-report
- 1.4 MB 	 usr/lib/libstdc++.so.6.0.25
  1.4 MB 	 lib/apk/db/installed
+ 1.4 MB 	 usr/lib/libstdc++.so.6.0.25
  1.4 MB 	 root/.cache/pip/http/a/c/5/2
  1.3 MB 	 usr/lib/python3.6/ensurepip/_bundled/pip-18.1-py2.py3-none-any.whl
  1.3 MB 	 usr/libexec/git-core/git-http-push
@@ -1674,9 +1674,9 @@
    98 B 	 root/.multirust/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/etc/gdb_load_rust_pretty_printers.py
 
 ====================================================================================================
- 1.3 kB 	 $ COPY coc-settings.json /.config/nvim/coc-settings.json # buildkit
+ 1.0 kB 	 $ COPY coc-settings.json /.config/nvim/coc-settings.json # buildkit
 ====================================================================================================
- 1.3 kB 	 .config/nvim/coc-settings.json
+ 1.0 kB 	 .config/nvim/coc-settings.json
     0 B 	 .config/.wh..wh..opq
 
 ====================================================================================================
@@ -1835,105 +1835,105 @@
  1.5 kB 	 root/.zplug/doc/txt/zplug-info.txt
 
 ====================================================================================================
- 136 MB 	 $ rm -rf /root/.config/nvim/plugged/vim-plug/autoload && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload && nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall && git clone https://github.com/zplug/zplug $ZPLUG_HOME # buildkit
+  16 MB 	 $ rm -rf /root/.config/nvim/plugged/vim-plug/autoload && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload && nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall && git clone https://github.com/zplug/zplug $ZPLUG_HOME && rm -rf $HOME/.cache && rm -rf $HOME/.npm/_cacache && rm -rf $HOME/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp # buildkit
 ====================================================================================================
-  51 MB 	 usr/local/share/.cache/yarn/v4/npm-typescript-3.3.3-f1657fc7daa27e1a8930758ace9ae8da31403221/node_modules
  8.9 MB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/objects
- 5.8 MB 	 usr/local/share/.cache/yarn/v4/.tmp/a10c0e00c0e0192ede13e712e29724ae
- 3.3 MB 	 usr/local/share/.cache/yarn/v4/npm-fsevents-1.2.4-f41dcb1af2582af3692da36fc55cbd8e1041c426/node_modules
- 3.1 MB 	 usr/local/share/.cache/yarn/v4/npm-handlebars-4.0.12-2c15c8a96d46da5e266700518ba8cb8d919d5bc5/node_modules
- 3.0 MB 	 usr/local/share/.cache/yarn/v4/npm-core-js-2.6.3-4b70938bdffdaf64931e66e2db158f0892289c49/node_modules
- 2.9 MB 	 tmp/v8-compile-cache-0/6.8.275.32-node.45/zSusrzSsharezSnode_moduleszSyarnzSbinzSyarn.js.BLOB
- 2.7 MB 	 usr/local/share/.cache/yarn/v4/npm-ajv-5.5.2-73b5eeca3fab653e3d3f9422b341ad42205dc965/node_modules
- 2.4 MB 	 usr/local/share/.cache/yarn/v4/npm-coc-nvim-0.0.55-04437f8962baf81f20dceee958a8ff9081719407/node_modules
- 2.4 MB 	 usr/local/share/.cache/yarn/v4/npm-jsdom-11.12.0-1a80d40ddd378a1de59656e9e6dc5a3ba8657bc8/node_modules
- 2.2 MB 	 usr/local/share/.cache/yarn/v4/npm-node-notifier-5.2.1-fa313dd08f5517db0e2502e5758d664ac69f9dea/node_modules
- 2.0 MB 	 usr/local/share/.cache/yarn/v4/npm-tslint-5.12.1-8cec9d454cf8a1de9b0a26d7bdbad6de362e52c1/node_modules
- 1.7 MB 	 usr/local/share/.cache/yarn/v4/npm-lodash-4.17.11-b39ea6229ef607ecd89e2c8df12536891cac9b8d/node_modules
  1.4 MB 	 usr/local/share/.config/yarn/global/node_modules/lodash
- 1.3 MB 	 usr/local/share/.cache/yarn/v4/npm-acorn-6.0.1-66e6147e1027704479dc6d9b20d884c572db3cc1/node_modules
  1.1 MB 	 .zplug;/.git/objects/pack/pack-de075f49544d84d826e8b24a7d352c49e07ec497.pack
  1.1 MB 	 usr/local/share/.config/yarn/global/node_modules/coc.nvim
- 1.0 MB 	 usr/local/share/.cache/yarn/v4/npm-source-map-0.6.1-74722af32e9614e9c287a8d0bbde48b5e2f1a263/node_modules
- 987 kB 	 usr/local/share/.cache/yarn/v4/npm-source-map-0.5.7-8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc/node_modules
- 937 kB 	 usr/local/share/.cache/yarn/v4/npm-rsvp-3.6.2-2e96491599a96cde1b515d5674a8f7a91452926a/node_modules
- 879 kB 	 usr/local/share/.cache/yarn/v4/npm-uglify-js-3.4.9-af02f180c1207d76432e473ed24a28f4a782bae3/node_modules
- 825 kB 	 usr/local/share/.cache/yarn/v4/npm-diff-3.5.0-800c0dd1e0a8bfbc95835c202ad220fe317e5a12/node_modules
- 728 kB 	 usr/local/share/.cache/yarn/v4/npm-psl-1.1.29-60f580d360170bb722a797cc704411e6da850c67/node_modules
- 721 kB 	 usr/local/share/.cache/yarn/v4/npm-acorn-5.7.3-67aa231bf8812974b85235a96771eb6bd07ea279/node_modules
- 706 kB 	 usr/local/share/.cache/yarn/v4/npm-expect-23.6.0-1e0c8d3ba9a581c87bd71fb9bc8862d443425f98/node_modules
- 685 kB 	 usr/local/share/.cache/yarn/v4/npm-@types-node-11.9.4-ceb0048a546db453f6248f2d1d95e937a6f00a14/node_modules
- 671 kB 	 usr/local/share/.cache/yarn/v4/npm-async-2.6.2-18330ea7e6e313887f5d2f2a904bac6fe4dd5381/node_modules
- 671 kB 	 usr/local/share/.cache/yarn/v4/npm-async-2.6.1-b245a23ca71930044ec53fa46aa00a3e87c6a610/node_modules
- 629 kB 	 usr/local/share/.cache/yarn/v4/npm-@types-node-10.10.3-09c75a4ad84d6a3d286790bdd9489a4f8ee9906c/node_modules
- 596 kB 	 usr/local/share/.cache/yarn/v4/npm-pretty-format-23.6.0-5eaac8eeb6b33b987b7fe6097ea6a8a146ab5760/node_modules
  541 kB 	 usr/local/share/.config/yarn/global/node_modules/async
- 531 kB 	 usr/local/share/.cache/yarn/v4/npm-iconv-lite-0.4.23-297871f63be507adcfbfca715d0cd0eed84e9a63/node_modules
- 531 kB 	 usr/local/share/.cache/yarn/v4/npm-iconv-lite-0.4.24-2022b4b25fbddc21d2f524974a474aafe733908b/node_modules
- 520 kB 	 usr/local/share/.cache/yarn/v4/npm-nan-2.11.0-574e360e4d954ab16966ec102c0c049fd961a099/node_modules
- 476 kB 	 usr/local/share/.cache/yarn/v4/npm-tsutils-2.29.0-32b488501467acbedd4b85498673a0812aca0b99/node_modules
- 451 kB 	 usr/local/share/.cache/yarn/v4/npm-cssstyle-1.1.1-18b038a9c44d65f7a8e428a653b9f6fe42faf5fb/node_modules
- 436 kB 	 usr/local/share/.cache/yarn/v4/npm-parse5-4.0.0-6d78656e3da8d78b4ec0b906f7c08ef1dfe3f608/node_modules
- 404 kB 	 usr/local/share/.cache/yarn/v4/npm-tr46-1.0.1-a8b13fd6bfd2489519674ccde55ba3693b706d09/node_modules
- 376 kB 	 usr/local/share/.cache/yarn/v4/npm-esprima-4.0.1-13b04cdb3e6c5d19df91ab6987a8695619b0aa71/node_modules
- 366 kB 	 usr/local/share/.cache/yarn/v4/npm-js-yaml-3.12.0-eaed656ec8344f10f527c6bfa1b6e2244de167d1/node_modules
- 362 kB 	 usr/local/share/.cache/yarn/v4/npm-babylon-6.18.0-af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3/node_modules
- 354 kB 	 usr/local/share/.cache/yarn/v4/npm-esprima-3.1.3-fdca51cee6133895e3c88d535ce49dbff62a4633/node_modules
- 334 kB 	 usr/local/share/.cache/yarn/v4/npm-ts-jest-23.10.5-cdb550df4466a30489bf70ba867615799f388dd5/node_modules
- 323 kB 	 usr/local/share/.cache/yarn/v4/npm-request-2.88.0-9c2fca4f7d35b592efe57c7f0a55e81052124fef/node_modules
- 303 kB 	 usr/local/share/.cache/yarn/v4/npm-jest-cli-23.6.0-61ab917744338f443ef2baa282ddffdd658a5da4/node_modules
- 286 kB 	 usr/local/share/.cache/yarn/v4/npm-vscode-languageserver-types-3.14.0-d3b5952246d30e5241592b6dde8280e03942e743/node_modules
- 283 kB 	 usr/local/share/.cache/yarn/v4/npm-sshpk-1.14.2-c6fc61648a3d9c4e764fd3fcdf4ea105e492ba98/node_modules
- 280 kB 	 usr/local/share/.cache/yarn/v4/npm-yargs-11.1.0-90b869934ed6e871115ea2ff58b03f4724ed2d77/node_modules
- 271 kB 	 usr/local/share/.cache/yarn/v4/npm-msgpack-lite-0.1.26-dd3c50b26f059f25e7edee3644418358e2a9ad89/node_modules
- 268 kB 	 usr/local/share/.cache/yarn/v4/npm-needle-2.2.4-51931bff82533b1928b7d1d69e01f1b00ffd2a4e/node_modules
- 241 kB 	 usr/local/share/.cache/yarn/v4/npm-tweetnacl-0.14.5-5ae68177f192d4456269d108afa93ff8743f4f64/node_modules
  236 kB 	 usr/local/share/.config/yarn/global/node_modules/vscode-languageserver-types
- 219 kB 	 usr/local/share/.cache/yarn/v4/npm-jsonc-parser-2.0.3-6d4199ccab7f21ff5d2a4225050c54e981fb21a2/node_modules
- 217 kB 	 usr/local/share/.cache/yarn/v4/npm-mime-db-1.36.0-5020478db3c7fe93aad7bbcc4dcf869c43363397/node_modules
- 213 kB 	 usr/local/share/.cache/yarn/v4/npm-node-pre-gyp-0.10.3-3070040716afdc778747b61b6887bf78880b80fc/node_modules
- 211 kB 	 usr/local/share/.cache/yarn/v4/npm-json5-2.0.1-3d6d0d1066039eb50984e66a7840e4f4b7a2c660/node_modules
- 209 kB 	 usr/local/share/.cache/yarn/v4/npm-tar-4.4.6-63110f09c00b4e60ac8bcfe1bf3c8660235fbc9b/node_modules
- 207 kB 	 usr/local/share/.cache/yarn/v4/npm-babel-types-6.26.0-a3b073f94ab49eb6fa55cd65227a334380632497/node_modules
- 205 kB 	 usr/local/share/.cache/yarn/v4/npm-es-abstract-1.12.0-9dbbdd27c6856f0001421ca18782d786bf8a6165/node_modules
  201 kB 	 usr/local/share/.config/yarn/global/node_modules/msgpack-lite
- 185 kB 	 usr/local/share/.cache/yarn/v4/npm-babel-traverse-6.26.0-46a9cbd7edcc62c8e5c064e2d2d8d0f4035766ee/node_modules
- 183 kB 	 usr/local/share/.cache/yarn/v4/npm-json-schema-0.2.3-b480c892e59a2f05954ce727bd3f2a4e882f9e13/node_modules
- 172 kB 	 usr/local/share/.cache/yarn/v4/npm-fileset-2.0.3-8e7548a96d3cc2327ee5e674168723a333bba2a0/node_modules
  171 kB 	 usr/local/share/.config/yarn/global/node_modules/jsonc-parser
- 170 kB 	 usr/local/share/.cache/yarn/v4/npm-fs-extra-7.0.1-4f189c44aa123b895f722804f55ea23eadc348e9/node_modules
- 163 kB 	 usr/local/share/.cache/yarn/v4/npm-jest-mock-23.2.0-ad1c60f29e8719d47c26e1138098b6d18b261134/node_modules
- 163 kB 	 usr/local/share/.cache/yarn/v4/npm-@chemzqm-neovim-4.3.44-67739b0f5a6bdde5e30a7a489b28fb5316472cae/node_modules
- 161 kB 	 usr/local/share/.cache/yarn/v4/npm-vscode-languageserver-protocol-3.15.0-next.1-1e45e224d7eef8c79b4bed75b9dcb1930d2ab8ed/node_modules
- 158 kB 	 usr/local/share/.cache/yarn/v4/npm-argparse-1.0.10-bcd6791ea5ae09725e17e5ad988134cd40b3d911/node_modules
- 155 kB 	 usr/local/share/.cache/yarn/v4/npm-qs-6.5.2-cb3ae806e8740444584ef154ce8ee98d403f3e36/node_modules
  154 kB 	 .zplug;/.git/objects/pack/pack-de075f49544d84d826e8b24a7d352c49e07ec497.idx
- 150 kB 	 usr/local/share/.cache/yarn/v4/npm-nwsapi-2.0.9-77ac0cdfdcad52b6a1151a84e73254edc33ed016/node_modules
- 150 kB 	 usr/local/share/.cache/yarn/v4/npm-micromatch-3.1.10-70859bc95c9840952f359a068a3fc49f9ecfac23/node_modules
- 146 kB 	 usr/local/share/.cache/yarn/v4/npm-nanomatch-1.2.13-b87a8aa4fc0de8fe6be88895b38983ff265bd119/node_modules
- 144 kB 	 usr/local/share/.cache/yarn/v4/npm-vscode-jsonrpc-4.0.0-a7bf74ef3254d0a0c272fab15c82128e378b3be9/node_modules
- 140 kB 	 usr/local/share/.cache/yarn/v4/npm-babel-core-6.26.3-b2e2f09e342d0f0c88e2f02e067794125e75c207/node_modules
- 139 kB 	 usr/local/share/.cache/yarn/v4/npm-ws-5.2.2-dffef14866b8e8dc9133582514d1befaf96e980f/node_modules
- 138 kB 	 usr/local/share/.cache/yarn/v4/npm-tough-cookie-2.4.3-53f36da3f47783b0925afa06ff9f3b165280f781/node_modules
- 137 kB 	 usr/local/share/.cache/yarn/v4/npm-prompts-0.1.14-a8e15c612c5c9ec8f8111847df3337c9cbd443b2/node_modules
- 133 kB 	 usr/local/share/.cache/yarn/v4/npm-escodegen-1.11.0-b27a9389481d5bfd5bec76f7bb1eb3f8f4556589/node_modules
  132 kB 	 usr/local/share/.config/yarn/global/node_modules/vscode-languageserver-protocol
- 126 kB 	 usr/local/share/.cache/yarn/v4/npm-vscode-languageserver-5.3.0-next.1-54a6c454bd48798d36fdd36f6ceed88d6e78390e/node_modules
- 126 kB 	 usr/local/share/.cache/yarn/v4/npm-dashdash-1.14.1-853cfa0f7cbe2fed5de20326b8dd581035f6e2f0/node_modules
- 125 kB 	 usr/local/share/.cache/yarn/v4/npm-debug-3.2.6-e83d17de16d8a7efb7717edbe5fb10135eee629b/node_modules
- 125 kB 	 usr/local/share/.cache/yarn/v4/npm-debug-3.2.5-c2418fbfd7a29f4d4f70ff4cea604d4b64c46407/node_modules
- 125 kB 	 usr/local/share/.cache/yarn/v4/npm-log4js-4.0.2-0c73e623ca4448669653eb0e9f629beacc7fbbe3/node_modules
  124 kB 	 usr/local/share/.config/yarn/global/node_modules/fs-extra
- 121 kB 	 usr/local/share/.cache/yarn/v4/npm-readable-stream-2.3.6-b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf/node_modules
  121 kB 	 usr/local/share/.config/yarn/global/node_modules/@chemzqm
- 119 kB 	 usr/local/share/.cache/yarn/v4/npm-source-map-support-0.5.9-41bc953b2534267ea2d605bccfa7bfa3111ced5f/node_modules
- 118 kB 	 usr/local/share/.cache/yarn/v4/npm-tslint-react-3.6.0-7f462c95c4a0afaae82507f06517ff02942196a1/node_modules
  118 kB 	 usr/local/share/.config/yarn/global/node_modules/vscode-jsonrpc
- 118 kB 	 usr/local/share/.cache/yarn/v4/npm-babel-generator-6.26.1-1844408d3b8f0d35a404ea7ac180f087a601bd90/node_modules
- 117 kB 	 usr/local/share/.cache/yarn/v4/npm-acorn-walk-6.0.1-c7827bdbb8e21aa97b609adfa225400d9ae348ba/node_modules
- 117 kB 	 usr/local/share/.cache/yarn/v4/npm-jest-jasmine2-23.6.0-840e937f848a6c8638df24360ab869cc718592e0/node_modules
- 114 kB 	 usr/local/share/.cache/yarn/v4/npm-source-map-support-0.4.18-0286a6de8be42641338594e97ccea75f0a2c585f/node_modules
- 112 kB 	 usr/local/share/.cache/yarn/v4/npm-istanbul-reports-1.5.1-97e4dbf3b515e8c484caea15d6524eebd3ff4e1a/node_modules
- 112 kB 	 usr/local/share/.cache/yarn/v4/npm-jest-config-23.6.0-f82546a90ade2d8c7026fbf6ac5207fc22f8eb1d/node_modules
- 110 kB 	 usr/local/share/.cache/yarn/v4/npm-source-map-resolve-0.5.2-72e2cc34095543e43b2c62b2c4c10d4a9054f259/node_modules
- 106 kB 	 usr/local/share/.cache/yarn/v4/npm-braces-2.3.2-5979fd3f14cd531565e5fa2df1abfff1dfaee729/node_modules
+  89 kB 	 usr/local/share/.config/yarn/global/node_modules/log4js
+  82 kB 	 usr/local/share/.config/yarn/global/node_modules/streamroller
+  80 kB 	 usr/local/share/.config/yarn/global/node_modules/debug
+  74 kB 	 root/.config/nvim/plugged/vim-plug/autoload/plug.vim
+  60 kB 	 usr/local/share/.config/yarn/global/node_modules/semver
+  58 kB 	 usr/local/share/.config/yarn/global/node_modules/tslib
+  58 kB 	 usr/local/share/.config/yarn/global/node_modules/vscode-uri
+  56 kB 	 usr/local/share/.config/yarn/global/node_modules/glob
+  50 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/workflow.vader
+  49 kB 	 usr/local/share/.config/yarn/global/node_modules/int64-buffer
+  48 kB 	 usr/local/share/.config/yarn/global/node_modules/traverse
+  46 kB 	 usr/local/share/.config/yarn/global/node_modules/isuri
+  44 kB 	 usr/local/share/.config/yarn/global/node_modules/uuid
+  40 kB 	 usr/local/share/.config/yarn/global/node_modules/fast-diff
+  35 kB 	 usr/local/share/.config/yarn/global/node_modules/node-json-db
+  33 kB 	 usr/local/share/.config/yarn/global/node_modules/minimatch
+  26 kB 	 usr/local/share/.config/yarn/global/node_modules/graceful-fs
+  23 kB 	 root/.config/nvim/plugged/vim-plug/autoload/plug.png
+  21 kB 	 usr/local/share/.config/yarn/global/node_modules/minimist
+  21 kB 	 usr/local/share/.config/yarn/global/node_modules/mkdirp
+  21 kB 	 usr/local/share/.config/yarn/global/node_modules/event-lite
+  20 kB 	 .zplug;/.git/index
+  18 kB 	 .zplug;/doc/guide/ja/README.md
+  18 kB 	 usr/local/share/.config/yarn/global/node_modules/bser
+  17 kB 	 usr/local/share/.config/yarn/global/node_modules/flatted
+  17 kB 	 usr/local/share/.config/yarn/global/node_modules/jsonfile
+  17 kB 	 .zplug;/doc/man/man1/zplug.1
+  16 kB 	 usr/local/share/.config/yarn/global/node_modules/node-int64
+  16 kB 	 usr/local/share/.config/yarn/global/yarn.lock
+  16 kB 	 .zplug;/README.md
+  16 kB 	 usr/local/share/.config/yarn/global/node_modules/date-format
+  16 kB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/hooks
+  15 kB 	 root/.config/nvim/plugged/vim-plug/autoload/doc/plug.txt
+  14 kB 	 .zplug;/doc/zplug.txt
+  14 kB 	 usr/local/share/.config/yarn/global/node_modules/rfdc
+  13 kB 	 usr/local/share/.config/yarn/global/node_modules/fs.realpath
+  12 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/regressions.vader
+  11 kB 	 root/.config/nvim/plugged/vim-plug/autoload/README.md
+  11 kB 	 usr/local/share/.config/yarn/global/node_modules/rfc-3986
+  11 kB 	 usr/local/share/.config/yarn/global/node_modules/brace-expansion
+  11 kB 	 usr/local/share/.config/yarn/global/node_modules/isexe
+  11 kB 	 usr/local/share/.config/yarn/global/node_modules/fb-watchman
+  11 kB 	 usr/local/share/.config/yarn/global/node_modules/debounce
+  10 kB 	 .zplug;/base/utils/git.zsh
+  10 kB 	 .zplug;/base/sources/github.zsh
+ 9.5 kB 	 .zplug;/base/job/handle.zsh
+ 9.4 kB 	 usr/local/share/.config/yarn/global/node_modules/which
+ 9.1 kB 	 .zplug;/base/core/core.zsh
+ 8.5 kB 	 usr/local/share/.config/yarn/global/node_modules/.yarn-integrity
+ 7.9 kB 	 .zplug;/base/utils/theme.zsh
+ 7.2 kB 	 usr/local/share/.config/yarn/global/node_modules/pify
+ 6.8 kB 	 usr/local/share/.config/yarn/global/node_modules/ms
+ 6.7 kB 	 usr/local/share/.config/yarn/global/node_modules/balanced-match
+ 6.4 kB 	 .zplug;/base/core/load.zsh
+ 6.3 kB 	 .zplug;/base/sources/oh-my-zsh.zsh
+ 6.2 kB 	 .zplug;/base/job/parallel.zsh
+ 6.1 kB 	 usr/local/share/.config/yarn/global/node_modules/ieee754
+ 6.1 kB 	 .zplug;/base/core/cache.zsh
+ 6.0 kB 	 .zplug;/misc/completions/_zplug
+ 5.9 kB 	 .zplug;/doc/guide/External-Sources.md
+ 5.6 kB 	 .zplug;/base/utils/shell.zsh
+ 5.6 kB 	 .zplug;/base/utils/releases.zsh
+ 5.5 kB 	 .zplug;/base/sources/prezto.zsh
+ 5.1 kB 	 usr/local/share/.config/yarn/global/node_modules/p-locate
+ 5.0 kB 	 usr/local/share/.config/yarn/global/node_modules/p-limit
+ 4.9 kB 	 .zplug;/.git/hooks/pre-rebase.sample
+ 4.9 kB 	 usr/local/share/.config/yarn/global/node_modules/concat-map
+ 4.8 kB 	 usr/local/share/.config/yarn/global/node_modules/find-up
+ 4.8 kB 	 .zplug;/misc/zshrc
+ 4.7 kB 	 usr/local/share/.config/yarn/global/node_modules/universalify
+ 4.0 kB 	 usr/local/share/.config/yarn/global/node_modules/once
+ 4.0 kB 	 .zplug;/base/io/print.zsh
+ 3.9 kB 	 usr/local/share/.config/yarn/global/node_modules/isarray
+ 3.9 kB 	 usr/local/share/.config/yarn/global/node_modules/locate-path
+ 3.8 kB 	 usr/local/share/.config/yarn/global/node_modules/inherits
+ 3.8 kB 	 usr/local/share/.config/yarn/global/node_modules/inflight
+ 3.6 kB 	 .zplug;/base/base/base.zsh
+ 3.6 kB 	 usr/local/share/.config/yarn/global/node_modules/path-is-absolute
+ 3.6 kB 	 .zplug;/.git/hooks/update.sample
+ 3.3 kB 	 usr/local/share/.config/yarn/global/node_modules/path-exists
+ 3.2 kB 	 .zplug;/misc/dev/release.zsh
+ 3.2 kB 	 .zplug;/doc/man/man1/zplug-status.1
+ 3.2 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/run
+ 3.0 kB 	 .zplug;/autoload/commands/__clean__
+ 3.0 kB 	 usr/local/share/.config/yarn/global/node_modules/p-try
+ 3.0 kB 	 usr/local/share/.config/yarn/global/node_modules/wrappy
+ 3.0 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/test.vader

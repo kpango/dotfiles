@@ -1,6 +1,6 @@
 .PHONY: all link zsh bash build prod_build profile run push pull
 
-all: prod_build login push
+all: prod_build login push profile git_push
 
 run:
 	source ./alias && devrun
@@ -37,3 +37,8 @@ push:
 
 pull:
 	docker pull kpango/dev:latest
+
+git_push:
+	git add -A
+	git commit -m fix
+	git push
