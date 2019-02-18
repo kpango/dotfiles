@@ -297,7 +297,7 @@ ENV ZPLUG_HOME $HOME/.zplug;
 # COPY --from=ruby /usr/local/bundle /usr/bundle
 
 # etc lib sbin bin
-COPY --from=glibc /usr/glibc-compat /usr/glibc-compat
+# COPY --from=glibc /usr/glibc-compat /usr/glibc-compat
 
 COPY --from=docker /usr/local/bin/containerd /usr/bin/docker-containerd
 COPY --from=docker /usr/local/bin/containerd-shim /usr/bin/docker-containerd-shim
