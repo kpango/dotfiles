@@ -62,7 +62,6 @@ function devrun(){
         -v $tz_path:/etc/timezone:ro \
         -dit kpango/dev:latest
 
-    docker exec -d $container_name nvup
     docker exec -d $container_name /usr/bin/nvim /tmp/main.go +GoInstallBinaries +qa
 }
 
