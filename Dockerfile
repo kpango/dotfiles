@@ -374,7 +374,7 @@ RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
     && rm -rf $HOME/.npm/_cacache \
     && rm -rf $HOME/.cargo/registry/cache \
     && rm -rf /usr/local/share/.cache \
-    && rm -rf /tmp
+    && rm -rf /tmp/*
 
 
 WORKDIR /go/src
