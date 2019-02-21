@@ -104,7 +104,7 @@
     0 B 	 bin/ionice
 
 ====================================================================================================
- 981 MB 	 $ mkdir "/etc/ld.so.conf.d" && echo $'/lib\n/lib64\n/var/lib\n/usr/lib\n/usr/local/lib\n/usr/x86_64-alpine-linux-musl/lib\n/usr/local/go/lib\n/usr/lib/dart/lib\n/usr/lib/node_modules/lib\n/google-cloud-sdk/lib' >/etc/ld.so.conf.d/usr-local-lib.conf && echo $(ldconfig) && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >>/etc/apk/repositories && apk update && apk upgrade && apk --update add --no-cache --allow-untrusted --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing bash cmake ctags curl diffutils g++ gawk gcc git graphviz jq less linux-headers make musl-dev ncurses neovim nodejs npm yarn openssh openssl openssl-dev perl py-pip py3-pip python-dev python3-dev ruby-dev tig tmux tzdata xclip zsh hdf5 hdf5-dev && rm -rf /var/cache/apk/* && pip2 install --upgrade pip neovim python-language-server vim-vint && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint && gem install neovim -N && npm config set user root && npm install -g neovim resume-cli markdownlint-cli dockerfile-language-server-nodejs typescript typescript-language-server && cd /tmp && git clone https://github.com/soimort/translate-shell && cd /tmp/translate-shell/ && make TARGET=zsh -j -C /tmp/translate-shell && make install -C /tmp/translate-shell && cd /tmp && rm -rf /tmp/translate-shell/ && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz && tar zxf ngt.tar.gz -C /tmp && rm -rf ngt.tar.gz && cd /tmp/NGT-1.5.1 && cmake . && make -j -C /tmp/NGT-1.5.1 && make install -C /tmp/NGT-1.5.1 && cd /tmp && rm -rf /tmp/NGT-1.5.1 # buildkit
+ 982 MB 	 $ mkdir "/etc/ld.so.conf.d" && echo $'/lib\n/lib64\n/var/lib\n/usr/lib\n/usr/local/lib\n/usr/x86_64-alpine-linux-musl/lib\n/usr/local/go/lib\n/usr/lib/dart/lib\n/usr/lib/node_modules/lib\n/google-cloud-sdk/lib' >/etc/ld.so.conf.d/usr-local-lib.conf && echo $(ldconfig) && echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >>/etc/apk/repositories && apk update && apk upgrade && apk --update add --no-cache --allow-untrusted --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing bash cmake ctags curl diffutils g++ gawk gcc git graphviz jq less linux-headers make musl-dev ncurses neovim nodejs npm yarn openssh openssl openssl-dev perl py-pip py3-pip python-dev python3-dev ruby-dev tig tmux tzdata xclip zsh hdf5 hdf5-dev && rm -rf /var/cache/apk/* && pip2 install --upgrade pip neovim python-language-server vim-vint && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint && gem install neovim -N && npm config set user root && npm install -g neovim resume-cli markdownlint-cli dockerfile-language-server-nodejs typescript typescript-language-server && cd /tmp && git clone https://github.com/soimort/translate-shell && cd /tmp/translate-shell/ && make TARGET=zsh -j -C /tmp/translate-shell && make install -C /tmp/translate-shell && cd /tmp && rm -rf /tmp/translate-shell/ && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz && tar zxf ngt.tar.gz -C /tmp && rm -rf ngt.tar.gz && cd /tmp/NGT-1.5.1 && cmake . && make -j -C /tmp/NGT-1.5.1 && make install -C /tmp/NGT-1.5.1 && cd /tmp && rm -rf /tmp/NGT-1.5.1 # buildkit
 ====================================================================================================
  324 MB 	 usr/lib/node_modules/resume-cli/node_modules/puppeteer/.local-chromium/linux-624492
   37 MB 	 usr/lib/python3.6/config-3.6m-x86_64-linux-gnu/libpython3.6m.a
@@ -146,7 +146,7 @@
  2.1 MB 	 usr/lib/perl5/core_perl/auto/Encode/CN/CN.so
  2.0 MB 	 usr/lib/perl5/core_perl/auto/Encode/TW/TW.so
  1.8 MB 	 usr/lib/node_modules/resume-cli/node_modules/resume-schema/research/A more professional recruitment process with structured CV data.pdf
- 1.8 MB 	 root/.npm/_cacache/content-v2/sha512/f5/6d/fa5f8e2c048b2e21112164940e78e8b57f9f228821c2914e1198e68f3f3a573837e21ff579974e1316b7adb3922f4b2838f7948e2bb88c31aa0b6757b791
+ 1.8 MB 	 root/.npm/_cacache/content-v2/sha512/f5/2c/6fdf9da025be825925b7f659c87126a179be2262f6de272102e528da17bfbfd6fc37d2eac9702b729c6de3909c3372befee5b3d31a28522c12701039c2b0
  1.8 MB 	 usr/share/perl5/core_perl/Unicode/Collate/allkeys.txt
  1.8 MB 	 usr/lib/perl5/core_perl/CORE/libperl.so
  1.7 MB 	 usr/lib/libopcodes-2.31.1.so
@@ -160,7 +160,7 @@
  1.4 MB 	 usr/lib/node_modules/resume-cli/node_modules/handlebars/coverage/lcov-report
  1.4 MB 	 lib/apk/db/installed
  1.4 MB 	 usr/lib/libstdc++.so.6.0.25
- 1.4 MB 	 root/.cache/pip/http/a/c/5/2
+ 1.4 MB 	 root/.cache/pip/http/5/4/3/d
  1.3 MB 	 usr/lib/python3.6/ensurepip/_bundled/pip-18.1-py2.py3-none-any.whl
  1.3 MB 	 usr/libexec/git-core/git-http-push
  1.3 MB 	 usr/libexec/git-core/git-remote-ftp
@@ -190,8 +190,8 @@
  898 kB 	 usr/bin/cpp
  898 kB 	 usr/bin/gcc
  894 kB 	 usr/lib/python3.6/lib-dynload/unicodedata.cpython-36m-x86_64-linux-gnu.so
+ 874 kB 	 root/.npm/_cacache/content-v2/sha512/bb/a4/c5994fd499fb5dda327749e9379e47515b6fd998e852227aa229d75fb20e0f71ecdd89024d279452ad4135480d818eb7cb868034d01795e4c05ab853c8f3
  866 kB 	 usr/lib/libhdf5_cpp.a
- 863 kB 	 root/.npm/_cacache/content-v2/sha512/32/e0/bf47cd0384ec3d31d2daf7ccf8f2db153d83afd47bb605bf4a5ab297182ac9a55b395fa2ef97b61fde76f5e0fb86ddd5b822b2f0203aef8bcd64fac9a823
  850 kB 	 root/.cache/pip/http/d/c/2/3
  833 kB 	 bin/busybox
  830 kB 	 root/.cache/pip/http/2/9/9/0
@@ -304,59 +304,59 @@
   23 MB 	 google-cloud-sdk/data/cli/gcloud.json
  2.4 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_alpha.json
  2.2 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/alpha/compute_alpha_messages.py
- 1.9 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_beta.json
+ 2.0 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_beta.json
  1.8 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/beta/compute_beta_messages.py
  1.6 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_v1.json
  1.5 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/v1/compute_v1_messages.py
  1.2 MB 	 google-cloud-sdk/data/cli/gcloud_completions.py
  1.0 MB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_dev_alpha.json
  713 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/alpha/compute_alpha_client.py
- 566 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/beta/compute_beta_client.py
+ 582 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/beta/compute_beta_client.py
  461 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute/v1/compute_v1_client.py
  420 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/apitools/base/py
+ 378 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/vision_v1.json
  361 kB 	 google-cloud-sdk/data/cli/gsutil.json
  352 kB 	 google-cloud-sdk/lib/third_party/google/protobuf/unittest_pb2.py
  345 kB 	 google-cloud-sdk/lib/third_party/requests/cacert.pem
- 338 kB 	 google-cloud-sdk/RELEASE_NOTES
- 314 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/vision_v1.json
+ 341 kB 	 google-cloud-sdk/RELEASE_NOTES
+ 311 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/vision/v1/vision_v1_messages.py
  304 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/datastore/datastore_v3_pb.py
  272 kB 	 google-cloud-sdk/lib/third_party/grpc/_cython/_credentials/roots.pem
  269 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/cacerts/cacerts.txt
  266 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/apitools/base/protorpclite
- 263 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/api/taskqueue/taskqueue_service_pb.py
  263 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container_v1alpha1.json
- 261 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare_v1alpha2.json
- 256 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/vision/v1/vision_v1_messages.py
+ 263 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/api/taskqueue/taskqueue_service_pb.py
+ 262 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare_v1alpha2.json
  255 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/logging_v2.json
  252 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataflow_v1b3.json
+ 244 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dlp_v2.json
  244 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container_v1beta1.json
- 242 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dlp_v2.json
  240 kB 	 google-cloud-sdk/platform/gsutil/gslib/data/cacerts.txt
- 231 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/spanner_v1.json
- 225 kB 	 google-cloud-sdk/.install/core.manifest
+ 234 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/spanner_v1.json
  224 kB 	 google-cloud-sdk/lib/third_party/pyparsing/__init__.py
  224 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/servicemanagement_v1.json
+ 224 kB 	 google-cloud-sdk/.install/core.manifest
  223 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataflow/v1b3/dataflow_v1b3_messages.py
  217 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container_v1.json
+ 216 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare_v1alpha.json
  216 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/tests/unit/ec2
- 215 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare_v1alpha.json
  209 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc_v1beta2.json
  196 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/servicemanagement/v1/servicemanagement_v1_messages.py
  192 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/genomics_v1.json
  190 kB 	 google-cloud-sdk/platform/bq/bq.py
  189 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/datastore/datastore_v4_pb.py
  186 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/samples/servicemanagement_sample/servicemanagement_v1
- 185 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dlp/v2/dlp_v2_messages.py
+ 186 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dlp/v2/dlp_v2_messages.py
  182 kB 	 google-cloud-sdk/platform/gsutil/gslib/tests/test_cp.py
- 179 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/spanner/v1/spanner_v1_messages.py
+ 182 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/spanner/v1/spanner_v1_messages.py
  179 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/ec2/connection.py
  179 kB 	 google-cloud-sdk/platform/bq/bigquery_client.py
  179 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/monitoring_v3.json
  177 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/samples/servicemanagement_sample/servicemanagement_v1.json
  175 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/run_v1alpha1.json
- 172 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serverless_v1alpha1.json
+ 170 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serverless_v1alpha1.json
  169 kB 	 google-cloud-sdk/platform/gsutil/gslib/utils/copy_helper.py
- 167 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc_v1.json
+ 168 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc_v1.json
  163 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/logging/v2/logging_v2_messages.py
  162 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/source_v1.json
  161 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine_v1beta.json
@@ -373,11 +373,11 @@
  142 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/storage_v1.json
  141 kB 	 google-cloud-sdk/lib/third_party/pygments/lexers/lisp.py
  139 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare/v1alpha2/healthcare_v1alpha2_client.py
+ 139 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/bigquery_v2.json
  139 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/redshift/layer1.py
  138 kB 	 google-cloud-sdk/platform/bq/discovery/httpswwwgoogleapiscom.bigquery.v2.rest.json
  138 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/firestore_v1.json
- 138 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/bigquery_v2.json
- 136 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc/v1/dataproc_v1_messages.py
+ 137 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc/v1/dataproc_v1_messages.py
  136 kB 	 google-cloud-sdk/lib/third_party/httplib2/python3/httplib2/cacerts.txt
  136 kB 	 google-cloud-sdk/platform/bq/third_party/httplib2/cacerts.txt
  136 kB 	 google-cloud-sdk/platform/gsutil/third_party/httplib2/python3/httplib2/cacerts.txt
@@ -387,16 +387,16 @@
  132 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/servicenetworking_v1.json
  132 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serviceusage_v1.json
  131 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/containeranalysis_v1alpha1.json
+ 131 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/bigquery/v2/bigquery_v2_messages.py
  130 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serviceusage_v1beta1.json
  130 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/deploymentmanager_alpha.json
  130 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/opsworks/layer1.py
- 129 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/bigquery/v2/bigquery_v2_messages.py
+ 129 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare/v1alpha2/healthcare_v1alpha2_messages.py
  128 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container/v1beta1/container_v1beta1_messages.py
  128 kB 	 google-cloud-sdk/lib/third_party/google/protobuf/internal/reflection_test.py
- 128 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare/v1alpha2/healthcare_v1alpha2_messages.py
  127 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/run/v1alpha1/run_v1alpha1_messages.py
- 124 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/ml_v1.json
  124 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serverless/v1alpha1/serverless_v1alpha1_messages.py
+ 124 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/ml_v1.json
  123 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/tests/integration/s3
  122 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/deploymentmanager_v2beta.json
  122 kB 	 google-cloud-sdk/lib/third_party/google/protobuf/map_unittest_pb2.py
@@ -404,14 +404,14 @@
 ====================================================================================================
  6.3 kB 	 $ COPY /root/.config/gcloud /root/.config/gcloud # buildkit
 ====================================================================================================
- 1.1 kB 	 root/.config/gcloud/logs/2019.02.12/21.22.09.960815.log
- 1.1 kB 	 root/.config/gcloud/logs/2019.02.14/07.19.12.923681.log
-  682 B 	 root/.config/gcloud/logs/2019.02.12/21.22.08.971334.log
-  630 B 	 root/.config/gcloud/logs/2019.02.12/21.22.09.443576.log
-  630 B 	 root/.config/gcloud/logs/2019.02.14/07.19.11.794708.log
-  610 B 	 root/.config/gcloud/logs/2019.02.14/07.19.11.179832.log
-  607 B 	 root/.config/gcloud/logs/2019.02.12/21.22.09.705548.log
-  607 B 	 root/.config/gcloud/logs/2019.02.14/07.19.12.361142.log
+ 1.1 kB 	 root/.config/gcloud/logs/2019.02.19/23.51.46.027497.log
+ 1.1 kB 	 root/.config/gcloud/logs/2019.02.21/01.57.07.901872.log
+  682 B 	 root/.config/gcloud/logs/2019.02.19/23.51.45.070029.log
+  630 B 	 root/.config/gcloud/logs/2019.02.19/23.51.45.522933.log
+  630 B 	 root/.config/gcloud/logs/2019.02.21/01.57.06.839573.log
+  610 B 	 root/.config/gcloud/logs/2019.02.21/01.57.06.221119.log
+  607 B 	 root/.config/gcloud/logs/2019.02.19/23.51.45.769263.log
+  607 B 	 root/.config/gcloud/logs/2019.02.21/01.57.07.380131.log
   134 B 	 root/.config/gcloud/.last_update_check.json
   133 B 	 root/.config/gcloud/configurations/config_default
     7 B 	 root/.config/gcloud/active_config
@@ -420,20 +420,20 @@
     0 B 	 root/.config/gcloud/config_sentinel
 
 ====================================================================================================
- 208 MB 	 $ COPY /usr/lib/dart/bin /usr/lib/dart/bin # buildkit
+ 211 MB 	 $ COPY /usr/lib/dart/bin /usr/lib/dart/bin # buildkit
 ====================================================================================================
-  48 MB 	 usr/lib/dart/bin/snapshots/dart2js.dart.snapshot
-  44 MB 	 usr/lib/dart/bin/snapshots/dartdevc.dart.snapshot
-  22 MB 	 usr/lib/dart/bin/dart
+  49 MB 	 usr/lib/dart/bin/snapshots/dart2js.dart.snapshot
+  45 MB 	 usr/lib/dart/bin/snapshots/dartdevc.dart.snapshot
+  23 MB 	 usr/lib/dart/bin/dart
   20 MB 	 usr/lib/dart/bin/snapshots/kernel-service.dart.snapshot
   16 MB 	 usr/lib/dart/bin/snapshots/dartfmt.dart.snapshot
-  15 MB 	 usr/lib/dart/bin/snapshots/analysis_server.dart.snapshot
-  12 MB 	 usr/lib/dart/bin/snapshots/dartanalyzer.dart.snapshot
+  16 MB 	 usr/lib/dart/bin/snapshots/analysis_server.dart.snapshot
+  13 MB 	 usr/lib/dart/bin/snapshots/dartanalyzer.dart.snapshot
   12 MB 	 usr/lib/dart/bin/snapshots/pub.dart.snapshot
   12 MB 	 usr/lib/dart/bin/snapshots/dartdoc.dart.snapshot
- 5.0 MB 	 usr/lib/dart/bin/snapshots/kernel_worker.dart.snapshot
+ 5.1 MB 	 usr/lib/dart/bin/snapshots/kernel_worker.dart.snapshot
  759 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/resources
-  47 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/templates
+  46 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/templates
  1.5 kB 	 usr/lib/dart/bin/dart2js
  1.3 kB 	 usr/lib/dart/bin/pub
   975 B 	 usr/lib/dart/bin/dartdoc
@@ -1019,7 +1019,7 @@
  1.5 kB 	 root/.zplug/doc/txt/zplug-info.txt
 
 ====================================================================================================
-  16 MB 	 $ rm -rf /root/.config/nvim/plugged/vim-plug/autoload && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload && nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall && git clone https://github.com/zplug/zplug $ZPLUG_HOME && rm -rf $HOME/.cache && rm -rf $HOME/.npm/_cacache && rm -rf $HOME/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp # buildkit
+  16 MB 	 $ rm -rf /root/.config/nvim/plugged/vim-plug/autoload && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload && nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall && git clone https://github.com/zplug/zplug $ZPLUG_HOME && rm -rf $HOME/.cache && rm -rf $HOME/.npm/_cacache && rm -rf $HOME/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp/* # buildkit
 ====================================================================================================
  8.9 MB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/objects
  1.4 MB 	 usr/local/share/.config/yarn/global/node_modules/lodash
@@ -1035,7 +1035,7 @@
  121 kB 	 usr/local/share/.config/yarn/global/node_modules/@chemzqm
  118 kB 	 usr/local/share/.config/yarn/global/node_modules/vscode-jsonrpc
   89 kB 	 usr/local/share/.config/yarn/global/node_modules/log4js
-  82 kB 	 usr/local/share/.config/yarn/global/node_modules/streamroller
+  84 kB 	 usr/local/share/.config/yarn/global/node_modules/streamroller
   80 kB 	 usr/local/share/.config/yarn/global/node_modules/debug
   74 kB 	 root/.config/nvim/plugged/vim-plug/autoload/plug.vim
   60 kB 	 usr/local/share/.config/yarn/global/node_modules/semver
