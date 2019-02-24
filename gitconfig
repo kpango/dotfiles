@@ -7,7 +7,7 @@
     precomposeunicode = true
     quotepath = false
 [color]
-	ui = auto
+    ui = auto
     branch = auto
     diff = auto
     grep = auto
@@ -78,8 +78,11 @@
     ss = stash save
 
     tree = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
+[gpg]
+    program = gpg
 [user]
     name = kpango
-    email = i.can.feel.gravity@gmail.com
+    email = "i.can.feel.gravity@gmail.com"
+    signingkey = "F1138C4D7C781619"
 [ghq]
     root = /go/src
