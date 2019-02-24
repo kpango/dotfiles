@@ -107,6 +107,6 @@ build/
 *.rsa
 *.cert
 *.crt
-*.key
+# *.key
 *.cer
 *.pem

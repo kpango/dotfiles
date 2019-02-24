@@ -277,13 +277,13 @@ if type git >/dev/null 2>&1; then
     }
     alias tb=gitthisrepo
     gfr(){
-        git fetch;
+        git fetch --prune;
         git reset --hard origin/$(tb);
+        git branch --merged | grep -vE '^\*|master$|develop$' | xargs -I % git branch -d %
     }
     alias gfr=gfr
     gfrs(){
-        git fetch;
-        git reset --hard origin/$(tb);
+        gfr
         git submodule foreach git pull origin master
     }
     alias gfrs=gfrs
