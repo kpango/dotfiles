@@ -480,6 +480,15 @@ endif
 
 let g:trans_bin = '/usr/local/bin'
 
+let s:undo_dir = expand('$HOME/.config/nvim/cache/undo')
+if !isdirectory(s:undo_dir)
+  call mkdir(s:undo_dir, 'p')
+endif
+if has('persistent_undo')
+  let &undodir = s:undo_dir
+  set undofile
+endif
+
 " ------------------------------
 " ---- Status line settings ----
 " ------------------------------
