@@ -44,6 +44,7 @@ function devrun(){
         -v $HOME/.kube:/root/.kube \
         -v $HOME/.netrc:/root/.netrc \
         -v $HOME/.ssh:/root/.ssh \
+        -v $HOME/.gnupg:/root/.gnupg \
         -v $HOME/.zsh_history:/root/.zsh_history \
         -v $HOME/Documents:/root/Documents \
         -v $HOME/Downloads:/root/Downloads \

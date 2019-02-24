@@ -297,7 +297,7 @@ if type git >/dev/null 2>&1; then
     alias gpush=gpush
     gitcompush(){
         git add -A;
-        git commit -m $1;
+        git commit --signoff -m $1;
         git push -u origin $2;
     }
     alias gitcompush=gitcompush
