@@ -298,7 +298,7 @@
     0 B 	 usr/bin/kubectl-krew
 
 ====================================================================================================
- 142 MB 	 $ COPY /google-cloud-sdk /google-cloud-sdk # buildkit
+ 143 MB 	 $ COPY /google-cloud-sdk /google-cloud-sdk # buildkit
 ====================================================================================================
   26 MB 	 google-cloud-sdk/lib/third_party/grpc/_cython/cygrpc.so
   23 MB 	 google-cloud-sdk/data/cli/gcloud.json
@@ -318,7 +318,7 @@
  361 kB 	 google-cloud-sdk/data/cli/gsutil.json
  352 kB 	 google-cloud-sdk/lib/third_party/google/protobuf/unittest_pb2.py
  345 kB 	 google-cloud-sdk/lib/third_party/requests/cacert.pem
- 341 kB 	 google-cloud-sdk/RELEASE_NOTES
+ 342 kB 	 google-cloud-sdk/RELEASE_NOTES
  311 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/vision/v1/vision_v1_messages.py
  304 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/datastore/datastore_v3_pb.py
  272 kB 	 google-cloud-sdk/lib/third_party/grpc/_cython/_credentials/roots.pem
@@ -333,9 +333,9 @@
  244 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container_v1beta1.json
  240 kB 	 google-cloud-sdk/platform/gsutil/gslib/data/cacerts.txt
  234 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/spanner_v1.json
+ 226 kB 	 google-cloud-sdk/.install/core.manifest
  224 kB 	 google-cloud-sdk/lib/third_party/pyparsing/__init__.py
  224 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/servicemanagement_v1.json
- 224 kB 	 google-cloud-sdk/.install/core.manifest
  223 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataflow/v1b3/dataflow_v1b3_messages.py
  217 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container_v1.json
  216 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare_v1alpha.json
@@ -355,16 +355,16 @@
  177 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/samples/servicemanagement_sample/servicemanagement_v1.json
  175 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/run_v1alpha1.json
  170 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serverless_v1alpha1.json
+ 170 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc_v1.json
  169 kB 	 google-cloud-sdk/platform/gsutil/gslib/utils/copy_helper.py
- 168 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc_v1.json
  163 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/logging/v2/logging_v2_messages.py
  162 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/source_v1.json
- 161 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine_v1beta.json
  160 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc/v1beta2/dataproc_v1beta2_messages.py
  160 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/rds2/layer1.py
  159 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/appengine/googlestorage/onestore/v3
- 157 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine_v1.json
+ 159 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine_v1beta.json
  156 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/monitoring/v3/monitoring_v3_messages.py
+ 155 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/appengine_v1.json
  154 kB 	 google-cloud-sdk/lib/third_party/pygments/lexers/_php_builtins.py
  153 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/dynamodb2/layer1.py
  146 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/genomics/v1/genomics_v1_messages.py
@@ -372,12 +372,12 @@
  143 kB 	 google-cloud-sdk/platform/gsutil/third_party/apitools/samples/storage_sample/storage_v1
  142 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/storage_v1.json
  141 kB 	 google-cloud-sdk/lib/third_party/pygments/lexers/lisp.py
+ 140 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc/v1/dataproc_v1_messages.py
  139 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare/v1alpha2/healthcare_v1alpha2_client.py
  139 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/bigquery_v2.json
  139 kB 	 google-cloud-sdk/platform/gsutil/third_party/boto/boto/redshift/layer1.py
  138 kB 	 google-cloud-sdk/platform/bq/discovery/httpswwwgoogleapiscom.bigquery.v2.rest.json
  138 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/firestore_v1.json
- 137 kB 	 google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dataproc/v1/dataproc_v1_messages.py
  136 kB 	 google-cloud-sdk/lib/third_party/httplib2/python3/httplib2/cacerts.txt
  136 kB 	 google-cloud-sdk/platform/bq/third_party/httplib2/cacerts.txt
  136 kB 	 google-cloud-sdk/platform/gsutil/third_party/httplib2/python3/httplib2/cacerts.txt
@@ -404,14 +404,14 @@
 ====================================================================================================
  6.3 kB 	 $ COPY /root/.config/gcloud /root/.config/gcloud # buildkit
 ====================================================================================================
- 1.1 kB 	 root/.config/gcloud/logs/2019.02.19/23.51.46.027497.log
- 1.1 kB 	 root/.config/gcloud/logs/2019.02.21/01.57.07.901872.log
-  682 B 	 root/.config/gcloud/logs/2019.02.19/23.51.45.070029.log
-  630 B 	 root/.config/gcloud/logs/2019.02.19/23.51.45.522933.log
-  630 B 	 root/.config/gcloud/logs/2019.02.21/01.57.06.839573.log
-  610 B 	 root/.config/gcloud/logs/2019.02.21/01.57.06.221119.log
-  607 B 	 root/.config/gcloud/logs/2019.02.19/23.51.45.769263.log
-  607 B 	 root/.config/gcloud/logs/2019.02.21/01.57.07.380131.log
+ 1.1 kB 	 root/.config/gcloud/logs/2019.02.26/19.20.23.076372.log
+ 1.1 kB 	 root/.config/gcloud/logs/2019.02.27/04.25.34.814282.log
+  682 B 	 root/.config/gcloud/logs/2019.02.26/19.20.22.009903.log
+  630 B 	 root/.config/gcloud/logs/2019.02.26/19.20.22.619784.log
+  630 B 	 root/.config/gcloud/logs/2019.02.27/04.25.33.722902.log
+  610 B 	 root/.config/gcloud/logs/2019.02.27/04.25.33.197911.log
+  607 B 	 root/.config/gcloud/logs/2019.02.26/19.20.22.843890.log
+  607 B 	 root/.config/gcloud/logs/2019.02.27/04.25.34.276706.log
   134 B 	 root/.config/gcloud/.last_update_check.json
   133 B 	 root/.config/gcloud/configurations/config_default
     7 B 	 root/.config/gcloud/active_config
@@ -420,20 +420,20 @@
     0 B 	 root/.config/gcloud/config_sentinel
 
 ====================================================================================================
- 211 MB 	 $ COPY /usr/lib/dart/bin /usr/lib/dart/bin # buildkit
+ 213 MB 	 $ COPY /usr/lib/dart/bin /usr/lib/dart/bin # buildkit
 ====================================================================================================
-  49 MB 	 usr/lib/dart/bin/snapshots/dart2js.dart.snapshot
+  50 MB 	 usr/lib/dart/bin/snapshots/dart2js.dart.snapshot
   45 MB 	 usr/lib/dart/bin/snapshots/dartdevc.dart.snapshot
   23 MB 	 usr/lib/dart/bin/dart
-  20 MB 	 usr/lib/dart/bin/snapshots/kernel-service.dart.snapshot
+  21 MB 	 usr/lib/dart/bin/snapshots/kernel-service.dart.snapshot
   16 MB 	 usr/lib/dart/bin/snapshots/dartfmt.dart.snapshot
-  16 MB 	 usr/lib/dart/bin/snapshots/analysis_server.dart.snapshot
-  13 MB 	 usr/lib/dart/bin/snapshots/dartanalyzer.dart.snapshot
+  15 MB 	 usr/lib/dart/bin/snapshots/analysis_server.dart.snapshot
+  12 MB 	 usr/lib/dart/bin/snapshots/dartanalyzer.dart.snapshot
   12 MB 	 usr/lib/dart/bin/snapshots/pub.dart.snapshot
   12 MB 	 usr/lib/dart/bin/snapshots/dartdoc.dart.snapshot
- 5.1 MB 	 usr/lib/dart/bin/snapshots/kernel_worker.dart.snapshot
- 759 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/resources
-  46 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/templates
+ 4.9 MB 	 usr/lib/dart/bin/snapshots/kernel_worker.dart.snapshot
+ 770 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/resources
+  48 kB 	 usr/lib/dart/bin/snapshots/resources/dartdoc/templates
  1.5 kB 	 usr/lib/dart/bin/dart2js
  1.3 kB 	 usr/lib/dart/bin/pub
   975 B 	 usr/lib/dart/bin/dartdoc
@@ -444,91 +444,96 @@
     0 B 	 usr/lib/dart/.wh..wh..opq
 
 ====================================================================================================
-  16 MB 	 $ COPY /usr/local/go/bin /usr/local/go/bin # buildkit
+  18 MB 	 $ COPY /usr/local/go/bin /usr/local/go/bin # buildkit
 ====================================================================================================
-  13 MB 	 usr/local/go/bin/go
- 3.4 MB 	 usr/local/go/bin/gofmt
+  15 MB 	 usr/local/go/bin/go
+ 3.5 MB 	 usr/local/go/bin/gofmt
     0 B 	 usr/local/go/.wh..wh..opq
 
 ====================================================================================================
-  66 MB 	 $ COPY /usr/local/go/src /usr/local/go/src # buildkit
+  70 MB 	 $ COPY /usr/local/go/src /usr/local/go/src # buildkit
 ====================================================================================================
- 8.4 MB 	 usr/local/go/src/cmd/compile/internal/ssa
- 8.1 MB 	 usr/local/go/src/cmd/vendor/golang.org/x
+  10 MB 	 usr/local/go/src/cmd/vendor/golang.org/x
+ 9.2 MB 	 usr/local/go/src/cmd/compile/internal/ssa
  3.5 MB 	 usr/local/go/src/cmd/vendor/github.com/google
- 2.9 MB 	 usr/local/go/src/cmd/compile/internal/gc
+ 2.8 MB 	 usr/local/go/src/cmd/compile/internal/gc
  2.1 MB 	 usr/local/go/src/cmd/asm/internal/asm
- 886 kB 	 usr/local/go/src/vendor/golang_org/x/crypto
- 654 kB 	 usr/local/go/src/vendor/golang_org/x/net
- 619 kB 	 usr/local/go/src/vendor/golang_org/x/text
+ 586 kB 	 usr/local/go/src/internal/x/text/unicode
+ 567 kB 	 usr/local/go/src/testdata/Isaac.Newton-Opticks.txt
+ 530 kB 	 usr/local/go/src/cmd/link/internal/ld
  514 kB 	 usr/local/go/src/cmd/internal/obj/x86
  507 kB 	 usr/local/go/src/runtime/race/race_netbsd_amd64.syso
  505 kB 	 usr/local/go/src/runtime/race/race_linux_ppc64le.syso
  503 kB 	 usr/local/go/src/runtime/race/race_freebsd_amd64.syso
- 470 kB 	 usr/local/go/src/cmd/link/internal/ld
  449 kB 	 usr/local/go/src/runtime/race/race_linux_amd64.syso
+ 422 kB 	 usr/local/go/src/internal/x/crypto/chacha20poly1305
+ 418 kB 	 usr/local/go/src/runtime/race/race_linux_arm64.syso
  399 kB 	 usr/local/go/src/runtime/race/race_darwin_amd64.syso
  396 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_7_good
  394 kB 	 usr/local/go/src/regexp/testdata/re2-exhaustive.txt.bz2
- 388 kB 	 usr/local/go/src/compress/testdata/Mark.Twain-Tom.Sawyer.txt
- 388 kB 	 usr/local/go/src/net/testdata/Mark.Twain-Tom.Sawyer.txt
  371 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_10_good
  370 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_11_good
  365 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_9_good
  349 kB 	 usr/local/go/src/runtime/race/race_windows_amd64.syso
- 325 kB 	 usr/local/go/src/net/http/h2_bundle.go
+ 323 kB 	 usr/local/go/src/net/http/h2_bundle.go
+ 309 kB 	 usr/local/go/src/internal/x/net/idna
  296 kB 	 usr/local/go/src/image/png/testdata/pngsuite
  284 kB 	 usr/local/go/src/cmd/vendor/github.com/ianlancetaylor
  273 kB 	 usr/local/go/src/debug/pe/testdata/gcc-amd64-mingw-exec
  262 kB 	 usr/local/go/src/crypto/x509/root_darwin_armx.go
- 232 kB 	 usr/local/go/src/cmd/internal/obj/s390x
- 218 kB 	 usr/local/go/src/cmd/go/internal/work
- 211 kB 	 usr/local/go/src/cmd/internal/obj/arm64
- 193 kB 	 usr/local/go/src/unicode/tables.go
- 190 kB 	 usr/local/go/src/cmd/internal/obj/ppc64
- 190 kB 	 usr/local/go/src/cmd/go/go_test.go
- 167 kB 	 usr/local/go/src/reflect/all_test.go
+ 244 kB 	 usr/local/go/src/internal/x/crypto/poly1305
+ 233 kB 	 usr/local/go/src/cmd/internal/obj/s390x
+ 227 kB 	 usr/local/go/src/cmd/internal/obj/arm64
+ 225 kB 	 usr/local/go/src/cmd/go/internal/work
+ 196 kB 	 usr/local/go/src/cmd/internal/obj/ppc64
+ 194 kB 	 usr/local/go/src/unicode/tables.go
+ 191 kB 	 usr/local/go/src/cmd/go/go_test.go
+ 171 kB 	 usr/local/go/src/reflect/all_test.go
+ 166 kB 	 usr/local/go/src/cmd/go/internal/modfetch
  162 kB 	 usr/local/go/src/net/http/serve_test.go
  159 kB 	 usr/local/go/src/cmd/compile/internal/syntax
- 156 kB 	 usr/local/go/src/cmd/go/internal/modfetch
+ 147 kB 	 usr/local/go/src/runtime/proc.go
  147 kB 	 usr/local/go/src/cmd/go/internal/modconv
- 146 kB 	 usr/local/go/src/runtime/proc.go
+ 135 kB 	 usr/local/go/src/net/http/transport_test.go
  133 kB 	 usr/local/go/src/debug/dwarf/testdata/line-gcc-win.bin
- 130 kB 	 usr/local/go/src/net/http/transport_test.go
- 124 kB 	 usr/local/go/src/cmd/go/alldocs.go
+ 132 kB 	 usr/local/go/src/compress/bzip2/testdata/Isaac.Newton-Opticks.txt.bz2
+ 132 kB 	 usr/local/go/src/cmd/go/testdata/script
+ 125 kB 	 usr/local/go/src/cmd/go/alldocs.go
  122 kB 	 usr/local/go/src/cmd/internal/obj/arm
  120 kB 	 usr/local/go/src/encoding/json/testdata/code.json.gz
- 118 kB 	 usr/local/go/src/compress/bzip2/testdata/Mark.Twain-Tom.Sawyer.txt.bz2
  117 kB 	 usr/local/go/src/html/entity.go
  116 kB 	 usr/local/go/src/hash/crc32/crc32_table_ppc64le.s
  113 kB 	 usr/local/go/src/debug/elf/elf.go
- 105 kB 	 usr/local/go/src/crypto/sha512/sha512_test.go
- 103 kB 	 usr/local/go/src/net/http/server.go
- 102 kB 	 usr/local/go/src/cmd/go/internal/modload
+ 111 kB 	 usr/local/go/src/cmd/go/internal/modload
+ 107 kB 	 usr/local/go/src/crypto/sha512/sha512_test.go
+ 105 kB 	 usr/local/go/src/internal/x/net/route
+ 105 kB 	 usr/local/go/src/net/http/server.go
+ 103 kB 	 usr/local/go/src/internal/x/crypto/internal
  100 kB 	 usr/local/go/src/compress/testdata/e.txt
  100 kB 	 usr/local/go/src/compress/testdata/pi.txt
-  98 kB 	 usr/local/go/src/cmd/go/testdata/script
   96 kB 	 usr/local/go/src/crypto/ecdsa/testdata/SigVer.rsp.bz2
   95 kB 	 usr/local/go/src/cmd/go/internal/load
-  90 kB 	 usr/local/go/src/database/sql/sql_test.go
-  90 kB 	 usr/local/go/src/crypto/x509/verify_test.go
+  95 kB 	 usr/local/go/src/crypto/x509/verify_test.go
+  92 kB 	 usr/local/go/src/runtime/zcallback_windows_arm.s
+  91 kB 	 usr/local/go/src/database/sql/sql_test.go
   90 kB 	 usr/local/go/src/cmd/internal/obj/mips
+  89 kB 	 usr/local/go/src/cmd/cgo/gcc.go
+  89 kB 	 usr/local/go/src/database/sql/sql.go
   88 kB 	 usr/local/go/src/reflect/type.go
-  88 kB 	 usr/local/go/src/database/sql/sql.go
   87 kB 	 usr/local/go/src/crypto/x509/x509_test.go
+  84 kB 	 usr/local/go/src/internal/x/net/dns
   83 kB 	 usr/local/go/src/crypto/x509/x509.go
-  80 kB 	 usr/local/go/src/cmd/cgo/gcc.go
-  80 kB 	 usr/local/go/src/math/all_test.go
+  82 kB 	 usr/local/go/src/math/all_test.go
+  80 kB 	 usr/local/go/src/reflect/value.go
   80 kB 	 usr/local/go/src/cmd/go/internal/get
-  79 kB 	 usr/local/go/src/cmd/vet/testdata/asm
-  78 kB 	 usr/local/go/src/reflect/value.go
+  79 kB 	 usr/local/go/src/internal/x/net/http2
+  79 kB 	 usr/local/go/src/cmd/go/testdata/mod
   78 kB 	 usr/local/go/src/runtime/pprof/internal/profile
-  77 kB 	 usr/local/go/src/cmd/go/testdata/mod
   76 kB 	 usr/local/go/src/syscall/zerrors_linux_s390x.go
   75 kB 	 usr/local/go/src/runtime/mgc.go
+  75 kB 	 usr/local/go/src/net/http/transport.go
   74 kB 	 usr/local/go/src/syscall/zerrors_linux_ppc64le.go
   74 kB 	 usr/local/go/src/syscall/zerrors_linux_ppc64.go
-  72 kB 	 usr/local/go/src/net/http/transport.go
   72 kB 	 usr/local/go/src/syscall/zerrors_linux_mips.go
   72 kB 	 usr/local/go/src/syscall/zerrors_linux_mipsle.go
   71 kB 	 usr/local/go/src/syscall/zerrors_linux_arm64.go
@@ -538,21 +543,16 @@
   69 kB 	 usr/local/go/src/syscall/zerrors_freebsd_amd64.go
   69 kB 	 usr/local/go/src/syscall/zerrors_freebsd_386.go
   69 kB 	 usr/local/go/src/syscall/zerrors_freebsd_arm.go
+  69 kB 	 usr/local/go/src/runtime/mbitmap.go
   69 kB 	 usr/local/go/src/syscall/zerrors_netbsd_amd64.go
   68 kB 	 usr/local/go/src/syscall/zerrors_netbsd_arm.go
-  67 kB 	 usr/local/go/src/runtime/mbitmap.go
   66 kB 	 usr/local/go/src/compress/flate/testdata/huffman-rand-max.golden
   66 kB 	 usr/local/go/src/compress/gzip/testdata/issue6550.gz
   66 kB 	 usr/local/go/src/compress/flate/testdata/huffman-null-max.in
   66 kB 	 usr/local/go/src/compress/flate/testdata/huffman-rand-max.in
   65 kB 	 usr/local/go/src/go/parser/parser.go
+  65 kB 	 usr/local/go/src/crypto/elliptic/p256_asm_s390x.s
   64 kB 	 usr/local/go/src/runtime/zcallback_windows.s
-  64 kB 	 usr/local/go/src/encoding/xml/marshal_test.go
-  64 kB 	 usr/local/go/src/syscall/zerrors_openbsd_386.go
-  64 kB 	 usr/local/go/src/syscall/zerrors_openbsd_arm.go
-  64 kB 	 usr/local/go/src/syscall/zerrors_openbsd_amd64.go
-  62 kB 	 usr/local/go/src/syscall/zsyscall_windows.go
-  62 kB 	 usr/local/go/src/cmd/go/internal/test
 
 ====================================================================================================
  367 kB 	 $ COPY /usr/local/go/lib /usr/local/go/lib # buildkit
@@ -563,108 +563,108 @@
     0 B 	 usr/local/go/lib/.wh..wh..opq
 
 ====================================================================================================
- 202 MB 	 $ COPY /usr/local/go/pkg /usr/local/go/pkg # buildkit
+ 232 MB 	 $ COPY /usr/local/go/pkg /usr/local/go/pkg # buildkit
 ====================================================================================================
-  30 MB 	 usr/local/go/pkg/linux_amd64/cmd/compile/internal
-  21 MB 	 usr/local/go/pkg/tool/linux_amd64/compile
-  14 MB 	 usr/local/go/pkg/tool/linux_amd64/pprof
-  11 MB 	 usr/local/go/pkg/tool/linux_amd64/trace
- 7.5 MB 	 usr/local/go/pkg/tool/linux_amd64/vet
- 5.9 MB 	 usr/local/go/pkg/linux_amd64/cmd/go/internal
- 5.4 MB 	 usr/local/go/pkg/tool/linux_amd64/link
- 5.4 MB 	 usr/local/go/pkg/tool/linux_amd64/api
- 5.0 MB 	 usr/local/go/pkg/tool/linux_amd64/cover
- 4.5 MB 	 usr/local/go/pkg/tool/linux_amd64/cgo
- 4.4 MB 	 usr/local/go/pkg/tool/linux_amd64/asm
- 4.4 MB 	 usr/local/go/pkg/tool/linux_amd64/objdump
- 4.4 MB 	 usr/local/go/pkg/tool/linux_amd64/doc
- 4.3 MB 	 usr/local/go/pkg/linux_amd64/cmd/vendor/github.com
- 4.1 MB 	 usr/local/go/pkg/tool/linux_amd64/addr2line
- 4.0 MB 	 usr/local/go/pkg/tool/linux_amd64/nm
- 3.8 MB 	 usr/local/go/pkg/linux_amd64/cmd/vendor/golang.org
- 3.5 MB 	 usr/local/go/pkg/linux_amd64/cmd/link/internal
- 3.4 MB 	 usr/local/go/pkg/tool/linux_amd64/dist
- 3.4 MB 	 usr/local/go/pkg/linux_amd64/cmd/internal/obj
- 3.4 MB 	 usr/local/go/pkg/linux_amd64/net/http.a
- 3.2 MB 	 usr/local/go/pkg/tool/linux_amd64/fix
- 3.0 MB 	 usr/local/go/pkg/linux_amd64/runtime.a
- 2.6 MB 	 usr/local/go/pkg/tool/linux_amd64/test2json
- 2.6 MB 	 usr/local/go/pkg/tool/linux_amd64/buildid
- 2.3 MB 	 usr/local/go/pkg/linux_amd64/vendor/golang_org/x
- 2.1 MB 	 usr/local/go/pkg/tool/linux_amd64/pack
- 1.8 MB 	 usr/local/go/pkg/linux_amd64/go/types.a
- 1.7 MB 	 usr/local/go/pkg/linux_amd64/net.a
- 1.4 MB 	 usr/local/go/pkg/linux_amd64/reflect.a
- 932 kB 	 usr/local/go/pkg/linux_amd64/crypto/tls.a
- 871 kB 	 usr/local/go/pkg/linux_amd64/math/big.a
- 753 kB 	 usr/local/go/pkg/linux_amd64/encoding/gob.a
- 713 kB 	 usr/local/go/pkg/linux_amd64/syscall.a
- 665 kB 	 usr/local/go/pkg/linux_amd64/cmd/asm/internal
- 631 kB 	 usr/local/go/pkg/linux_amd64/crypto/x509.a
- 626 kB 	 usr/local/go/pkg/linux_amd64/text/template.a
- 602 kB 	 usr/local/go/pkg/linux_amd64/database/sql.a
- 596 kB 	 usr/local/go/pkg/linux_amd64/encoding/xml.a
- 589 kB 	 usr/local/go/pkg/linux_amd64/debug/elf.a
- 551 kB 	 usr/local/go/pkg/linux_amd64/go/ast.a
- 546 kB 	 usr/local/go/pkg/linux_amd64/encoding/json.a
- 544 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/obj.a
- 510 kB 	 usr/local/go/pkg/linux_amd64/html/template.a
- 509 kB 	 usr/local/go/pkg/linux_amd64/text/template/parse.a
- 509 kB 	 usr/local/go/pkg/linux_amd64/debug/dwarf.a
- 509 kB 	 usr/local/go/pkg/linux_amd64/runtime/pprof/internal
- 452 kB 	 usr/local/go/pkg/linux_amd64/archive/tar.a
+  35 MB 	 usr/local/go/pkg/linux_amd64/cmd/compile/internal
+  25 MB 	 usr/local/go/pkg/tool/linux_amd64/compile
+  15 MB 	 usr/local/go/pkg/tool/linux_amd64/pprof
+  12 MB 	 usr/local/go/pkg/tool/linux_amd64/trace
+ 8.5 MB 	 usr/local/go/pkg/tool/linux_amd64/vet
+ 7.7 MB 	 usr/local/go/pkg/linux_amd64/cmd/vendor/golang.org
+ 7.1 MB 	 usr/local/go/pkg/linux_amd64/cmd/go/internal
+ 6.1 MB 	 usr/local/go/pkg/tool/linux_amd64/link
+ 5.7 MB 	 usr/local/go/pkg/tool/linux_amd64/api
+ 5.2 MB 	 usr/local/go/pkg/tool/linux_amd64/cover
+ 5.1 MB 	 usr/local/go/pkg/linux_amd64/cmd/internal/obj
+ 4.9 MB 	 usr/local/go/pkg/tool/linux_amd64/asm
+ 4.8 MB 	 usr/local/go/pkg/linux_amd64/cmd/vendor/github.com
+ 4.8 MB 	 usr/local/go/pkg/tool/linux_amd64/cgo
+ 4.6 MB 	 usr/local/go/pkg/tool/linux_amd64/doc
+ 4.6 MB 	 usr/local/go/pkg/tool/linux_amd64/objdump
+ 4.4 MB 	 usr/local/go/pkg/linux_amd64/cmd/link/internal
+ 4.2 MB 	 usr/local/go/pkg/tool/linux_amd64/addr2line
+ 4.2 MB 	 usr/local/go/pkg/tool/linux_amd64/nm
+ 3.8 MB 	 usr/local/go/pkg/linux_amd64/net/http.a
+ 3.6 MB 	 usr/local/go/pkg/tool/linux_amd64/dist
+ 3.3 MB 	 usr/local/go/pkg/tool/linux_amd64/fix
+ 3.3 MB 	 usr/local/go/pkg/linux_amd64/runtime.a
+ 2.8 MB 	 usr/local/go/pkg/tool/linux_amd64/buildid
+ 2.8 MB 	 usr/local/go/pkg/tool/linux_amd64/test2json
+ 2.2 MB 	 usr/local/go/pkg/tool/linux_amd64/pack
+ 2.1 MB 	 usr/local/go/pkg/linux_amd64/go/types.a
+ 1.8 MB 	 usr/local/go/pkg/linux_amd64/net.a
+ 1.8 MB 	 usr/local/go/pkg/linux_amd64/crypto/tls.a
+ 1.3 MB 	 usr/local/go/pkg/linux_amd64/reflect.a
+ 1.1 MB 	 usr/local/go/pkg/linux_amd64/internal/x/net
+ 941 kB 	 usr/local/go/pkg/linux_amd64/math/big.a
+ 858 kB 	 usr/local/go/pkg/linux_amd64/internal/x/text
+ 820 kB 	 usr/local/go/pkg/linux_amd64/encoding/gob.a
+ 799 kB 	 usr/local/go/pkg/linux_amd64/syscall.a
+ 739 kB 	 usr/local/go/pkg/linux_amd64/crypto/x509.a
+ 731 kB 	 usr/local/go/pkg/linux_amd64/cmd/asm/internal
+ 669 kB 	 usr/local/go/pkg/linux_amd64/text/template.a
+ 657 kB 	 usr/local/go/pkg/linux_amd64/encoding/xml.a
+ 649 kB 	 usr/local/go/pkg/linux_amd64/database/sql.a
+ 630 kB 	 usr/local/go/pkg/linux_amd64/encoding/json.a
+ 622 kB 	 usr/local/go/pkg/linux_amd64/go/ast.a
+ 620 kB 	 usr/local/go/pkg/linux_amd64/debug/elf.a
+ 619 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/obj.a
+ 594 kB 	 usr/local/go/pkg/linux_amd64/runtime/pprof/internal
+ 568 kB 	 usr/local/go/pkg/linux_amd64/text/template/parse.a
+ 548 kB 	 usr/local/go/pkg/linux_amd64/html/template.a
+ 546 kB 	 usr/local/go/pkg/linux_amd64/debug/dwarf.a
+ 532 kB 	 usr/local/go/pkg/linux_amd64/internal/trace.a
+ 492 kB 	 usr/local/go/pkg/linux_amd64/archive/tar.a
+ 485 kB 	 usr/local/go/pkg/linux_amd64/internal/x/crypto
+ 460 kB 	 usr/local/go/pkg/linux_amd64/time.a
  450 kB 	 usr/local/go/pkg/linux_amd64/runtime/race.a
- 424 kB 	 usr/local/go/pkg/linux_amd64/time.a
- 410 kB 	 usr/local/go/pkg/linux_amd64/go/internal/gcimporter.a
- 403 kB 	 usr/local/go/pkg/linux_amd64/regexp/syntax.a
- 403 kB 	 usr/local/go/pkg/linux_amd64/go/parser.a
- 389 kB 	 usr/local/go/pkg/linux_amd64/fmt.a
- 373 kB 	 usr/local/go/pkg/linux_amd64/go/printer.a
- 355 kB 	 usr/local/go/pkg/linux_amd64/go/doc.a
- 351 kB 	 usr/local/go/pkg/linux_amd64/regexp.a
- 351 kB 	 usr/local/go/pkg/linux_amd64/go/build.a
- 343 kB 	 usr/local/go/pkg/linux_amd64/testing.a
- 338 kB 	 usr/local/go/pkg/linux_amd64/image.a
- 328 kB 	 usr/local/go/pkg/linux_amd64/compress/flate.a
- 323 kB 	 usr/local/go/pkg/linux_amd64/internal/trace.a
- 319 kB 	 usr/local/go/pkg/linux_amd64/os.a
- 312 kB 	 usr/local/go/pkg/linux_amd64/archive/zip.a
- 307 kB 	 usr/local/go/pkg/linux_amd64/runtime/pprof.a
- 291 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/objfile.a
- 283 kB 	 usr/local/go/pkg/linux_amd64/crypto/elliptic.a
- 281 kB 	 usr/local/go/pkg/linux_amd64/go/internal/gccgoimporter.a
- 272 kB 	 usr/local/go/pkg/linux_amd64/net/rpc.a
- 271 kB 	 usr/local/go/pkg/linux_amd64/encoding/asn1.a
- 262 kB 	 usr/local/go/pkg/linux_amd64/image/png.a
- 247 kB 	 usr/local/go/pkg/linux_amd64/debug/macho.a
- 246 kB 	 usr/local/go/pkg/linux_amd64/strconv.a
- 241 kB 	 usr/local/go/pkg/linux_amd64/image/jpeg.a
- 230 kB 	 usr/local/go/pkg/linux_amd64/strings.a
- 229 kB 	 usr/local/go/pkg/linux_amd64/net/http/httputil.a
- 225 kB 	 usr/local/go/pkg/linux_amd64/unicode.a
- 222 kB 	 usr/local/go/pkg/linux_amd64/go/constant.a
- 219 kB 	 usr/local/go/pkg/linux_amd64/os/exec.a
- 204 kB 	 usr/local/go/pkg/linux_amd64/math.a
- 189 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/dwarf.a
- 189 kB 	 usr/local/go/pkg/linux_amd64/flag.a
- 186 kB 	 usr/local/go/pkg/linux_amd64/mime.a
- 179 kB 	 usr/local/go/pkg/linux_amd64/html.a
- 179 kB 	 usr/local/go/pkg/linux_amd64/internal/poll.a
- 177 kB 	 usr/local/go/pkg/linux_amd64/bytes.a
- 171 kB 	 usr/local/go/pkg/linux_amd64/net/http/fcgi.a
- 170 kB 	 usr/local/go/pkg/linux_amd64/bufio.a
- 163 kB 	 usr/local/go/pkg/linux_amd64/debug/gosym.a
- 163 kB 	 usr/local/go/pkg/linux_amd64/crypto/rsa.a
- 163 kB 	 usr/local/go/pkg/linux_amd64/cmd/vet/internal
- 158 kB 	 usr/local/go/pkg/linux_amd64/database/sql/driver.a
- 157 kB 	 usr/local/go/pkg/linux_amd64/net/http/httptest.a
- 154 kB 	 usr/local/go/pkg/linux_amd64/encoding/binary.a
- 152 kB 	 usr/local/go/pkg/linux_amd64/net/textproto.a
- 149 kB 	 usr/local/go/pkg/linux_amd64/net/url.a
- 148 kB 	 usr/local/go/pkg/linux_amd64/net/mail.a
- 148 kB 	 usr/local/go/pkg/linux_amd64/mime/multipart.a
- 143 kB 	 usr/local/go/pkg/linux_amd64/net/http/cgi.a
- 142 kB 	 usr/local/go/pkg/linux_amd64/image/gif.a
+ 441 kB 	 usr/local/go/pkg/linux_amd64/go/internal/gcimporter.a
+ 435 kB 	 usr/local/go/pkg/linux_amd64/fmt.a
+ 430 kB 	 usr/local/go/pkg/linux_amd64/go/parser.a
+ 422 kB 	 usr/local/go/pkg/linux_amd64/regexp/syntax.a
+ 418 kB 	 usr/local/go/pkg/linux_amd64/go/printer.a
+ 415 kB 	 usr/local/go/pkg/linux_amd64/go/doc.a
+ 397 kB 	 usr/local/go/pkg/linux_amd64/os.a
+ 395 kB 	 usr/local/go/pkg/linux_amd64/regexp.a
+ 389 kB 	 usr/local/go/pkg/linux_amd64/testing.a
+ 387 kB 	 usr/local/go/pkg/linux_amd64/go/build.a
+ 359 kB 	 usr/local/go/pkg/linux_amd64/go/internal/gccgoimporter.a
+ 358 kB 	 usr/local/go/pkg/linux_amd64/image.a
+ 350 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/objfile.a
+ 346 kB 	 usr/local/go/pkg/linux_amd64/compress/flate.a
+ 342 kB 	 usr/local/go/pkg/linux_amd64/archive/zip.a
+ 342 kB 	 usr/local/go/pkg/linux_amd64/runtime/pprof.a
+ 320 kB 	 usr/local/go/pkg/linux_amd64/crypto/elliptic.a
+ 311 kB 	 usr/local/go/pkg/linux_amd64/net/http/httputil.a
+ 301 kB 	 usr/local/go/pkg/linux_amd64/encoding/asn1.a
+ 294 kB 	 usr/local/go/pkg/linux_amd64/net/rpc.a
+ 279 kB 	 usr/local/go/pkg/linux_amd64/image/png.a
+ 266 kB 	 usr/local/go/pkg/linux_amd64/strings.a
+ 262 kB 	 usr/local/go/pkg/linux_amd64/strconv.a
+ 259 kB 	 usr/local/go/pkg/linux_amd64/debug/macho.a
+ 257 kB 	 usr/local/go/pkg/linux_amd64/image/jpeg.a
+ 254 kB 	 usr/local/go/pkg/linux_amd64/go/constant.a
+ 243 kB 	 usr/local/go/pkg/linux_amd64/os/exec.a
+ 229 kB 	 usr/local/go/pkg/linux_amd64/unicode.a
+ 224 kB 	 usr/local/go/pkg/linux_amd64/internal/poll.a
+ 223 kB 	 usr/local/go/pkg/linux_amd64/flag.a
+ 222 kB 	 usr/local/go/pkg/linux_amd64/math.a
+ 208 kB 	 usr/local/go/pkg/linux_amd64/internal/xcoff.a
+ 207 kB 	 usr/local/go/pkg/linux_amd64/mime.a
+ 199 kB 	 usr/local/go/pkg/linux_amd64/bytes.a
+ 195 kB 	 usr/local/go/pkg/linux_amd64/cmd/internal/dwarf.a
+ 186 kB 	 usr/local/go/pkg/linux_amd64/crypto/rsa.a
+ 185 kB 	 usr/local/go/pkg/linux_amd64/net/http/fcgi.a
+ 185 kB 	 usr/local/go/pkg/linux_amd64/net/http/httptest.a
+ 182 kB 	 usr/local/go/pkg/linux_amd64/html.a
+ 178 kB 	 usr/local/go/pkg/linux_amd64/database/sql/driver.a
+ 178 kB 	 usr/local/go/pkg/linux_amd64/encoding/binary.a
+ 176 kB 	 usr/local/go/pkg/linux_amd64/bufio.a
+ 173 kB 	 usr/local/go/pkg/linux_amd64/image/gif.a
+ 173 kB 	 usr/local/go/pkg/linux_amd64/mime/multipart.a
+ 173 kB 	 usr/local/go/pkg/linux_amd64/debug/gosym.a
+ 173 kB 	 usr/local/go/pkg/linux_amd64/net/mail.a
+ 168 kB 	 usr/local/go/pkg/linux_amd64/net/url.a
 
 ====================================================================================================
  3.1 MB 	 $ COPY /usr/local/go/misc /usr/local/go/misc # buildkit
@@ -674,13 +674,13 @@
   53 kB 	 usr/local/go/misc/nacl/testdata/mime.types
   28 kB 	 usr/local/go/misc/cgo/testshared/shared_test.go
   22 kB 	 usr/local/go/misc/ios/go_darwin_arm_exec.go
-  18 kB 	 usr/local/go/misc/cgo/testcarchive/carchive_test.go
-  16 kB 	 usr/local/go/misc/cgo/errors/ptr_test.go
-  13 kB 	 usr/local/go/misc/cgo/testcshared/cshared_test.go
-  12 kB 	 usr/local/go/misc/wasm/wasm_exec.js
+  20 kB 	 usr/local/go/misc/cgo/testcarchive/carchive_test.go
+  18 kB 	 usr/local/go/misc/cgo/errors/ptr_test.go
+  15 kB 	 usr/local/go/misc/cgo/testcshared/cshared_test.go
+  13 kB 	 usr/local/go/misc/wasm/wasm_exec.js
   11 kB 	 usr/local/go/misc/cgo/testsanitizers/cc_test.go
  9.7 kB 	 usr/local/go/misc/cgo/gmp/gmp.go
- 5.8 kB 	 usr/local/go/misc/cgo/test/cgo_test.go
+ 5.9 kB 	 usr/local/go/misc/cgo/test/cgo_test.go
  5.6 kB 	 usr/local/go/misc/chrome/gophertool/gopher.png
  5.1 kB 	 usr/local/go/misc/nacl/mkzip.go
  5.0 kB 	 usr/local/go/misc/android/go_android_exec.go
@@ -688,11 +688,11 @@
  4.7 kB 	 usr/local/go/misc/cgo/testcarchive/main2.c
  4.4 kB 	 usr/local/go/misc/cgo/testcarchive/main4.c
  4.3 kB 	 usr/local/go/misc/nacl/README
+ 4.3 kB 	 usr/local/go/misc/cgo/testplugin/test.bash
  4.2 kB 	 usr/local/go/misc/cgo/testcshared/main4.c
  4.0 kB 	 usr/local/go/misc/linkcheck/linkcheck.go
- 3.9 kB 	 usr/local/go/misc/cgo/testplugin/test.bash
+ 3.7 kB 	 usr/local/go/misc/cgo/errors/errors_test.go
  3.6 kB 	 usr/local/go/misc/cgo/testcshared/main5.c
- 3.6 kB 	 usr/local/go/misc/cgo/errors/errors_test.go
  3.6 kB 	 usr/local/go/misc/cgo/testplugin/src/issue25756
  3.5 kB 	 usr/local/go/misc/cgo/testcarchive/main3.c
  3.5 kB 	 usr/local/go/misc/cgo/test/issue7978.go
@@ -700,11 +700,12 @@
  3.3 kB 	 usr/local/go/misc/ios/detect.go
  2.8 kB 	 usr/local/go/misc/cgo/test/issue18146.go
  2.3 kB 	 usr/local/go/misc/trace/README.md
+ 2.2 kB 	 usr/local/go/misc/nacl/testzip.proto
  2.2 kB 	 usr/local/go/misc/ios/README
- 2.1 kB 	 usr/local/go/misc/nacl/testzip.proto
  2.0 kB 	 usr/local/go/misc/cgo/test/issue6612.go
  2.0 kB 	 usr/local/go/misc/cgo/testsigfwd/main.go
  2.0 kB 	 usr/local/go/misc/cgo/testcarchive/main5.c
+ 1.9 kB 	 usr/local/go/misc/cgo/testplugin/src/checkdwarf
  1.8 kB 	 usr/local/go/misc/cgo/test/issue21897.go
  1.7 kB 	 usr/local/go/misc/arm/a
  1.7 kB 	 usr/local/go/misc/cgo/testcshared/src/libgo2
@@ -721,9 +722,9 @@
  1.5 kB 	 usr/local/go/misc/cgo/testsanitizers/src/tsan_shared.go
  1.5 kB 	 usr/local/go/misc/cgo/testcarchive/src/libgo2
  1.5 kB 	 usr/local/go/misc/cgo/life/c-life.c
- 1.4 kB 	 usr/local/go/misc/sortac/sortac.go
  1.4 kB 	 usr/local/go/misc/cgo/testsanitizers/src/msan6.go
  1.4 kB 	 usr/local/go/misc/cgo/test/issue24206.go
+ 1.4 kB 	 usr/local/go/misc/cgo/testcarchive/main_unix.c
  1.4 kB 	 usr/local/go/misc/cgo/test/issue4029.go
  1.4 kB 	 usr/local/go/misc/cgo/test/issue2462.go
  1.4 kB 	 usr/local/go/misc/cgo/test/issue28896.go
@@ -736,13 +737,13 @@
  1.3 kB 	 usr/local/go/misc/cgo/gmp/pi.go
  1.3 kB 	 usr/local/go/misc/cgo/test/issue9400_linux.go
  1.3 kB 	 usr/local/go/misc/cgo/test/issue21809.go
+ 1.3 kB 	 usr/local/go/misc/wasm/wasm_exec.html
  1.3 kB 	 usr/local/go/misc/chrome/gophertool/gopher.js
  1.3 kB 	 usr/local/go/misc/cgo/test/issue17537.go
  1.3 kB 	 usr/local/go/misc/cgo/testsanitizers/src/tsan11.go
  1.3 kB 	 usr/local/go/misc/cgo/test/issue1560.go
- 1.3 kB 	 usr/local/go/misc/wasm/wasm_exec.html
  1.3 kB 	 usr/local/go/misc/cgo/testcshared/main2.c
- 1.2 kB 	 usr/local/go/misc/cgo/testcarchive/main_unix.c
+ 1.2 kB 	 usr/local/go/misc/cgo/testcshared/src/go2c2go
  1.2 kB 	 usr/local/go/misc/cgo/test/issue27340/a.go
  1.2 kB 	 usr/local/go/misc/cgo/test/issue18720.go
  1.2 kB 	 usr/local/go/misc/cgo/testsanitizers/msan_test.go
@@ -768,67 +769,65 @@
   964 B 	 usr/local/go/misc/cgo/testcarchive/src/libgo
   962 B 	 usr/local/go/misc/cgo/stdio/fib.out
   951 B 	 usr/local/go/misc/cgo/test/issue9557.go
-  946 B 	 usr/local/go/misc/cgo/test/issue8694.go
 
 ====================================================================================================
- 420 MB 	 $ COPY /go/bin /go/bin # buildkit
+ 436 MB 	 $ COPY /go/bin /go/bin # buildkit
 ====================================================================================================
-  30 MB 	 go/bin/kustomize
-  29 MB 	 go/bin/hugo
-  16 MB 	 go/bin/license-detector
-  15 MB 	 go/bin/dlv
-  14 MB 	 go/bin/dive
-  14 MB 	 go/bin/bingo
-  14 MB 	 go/bin/staticcheck
-  14 MB 	 go/bin/dep
-  14 MB 	 go/bin/gopherjs
-  12 MB 	 go/bin/gotests
-  12 MB 	 go/bin/gocode
-  10 MB 	 go/bin/golsp
- 9.7 MB 	 go/bin/misspell
- 9.4 MB 	 go/bin/godef
- 8.9 MB 	 go/bin/guru
- 8.4 MB 	 go/bin/goreturns
- 8.0 MB 	 go/bin/gosec
- 7.6 MB 	 go/bin/impl
- 7.4 MB 	 go/bin/safesql
- 7.3 MB 	 go/bin/gogetdoc
- 6.8 MB 	 go/bin/unparam
- 6.8 MB 	 go/bin/interfacer
- 6.7 MB 	 go/bin/errcheck
- 6.6 MB 	 go/bin/lll
- 6.3 MB 	 go/bin/gometalinter
- 6.2 MB 	 go/bin/gotype
- 6.0 MB 	 go/bin/unconvert
- 6.0 MB 	 go/bin/fillstruct
- 6.0 MB 	 go/bin/gorename
- 5.9 MB 	 go/bin/keyify
- 5.9 MB 	 go/bin/golint
- 5.7 MB 	 go/bin/goiferr
- 5.5 MB 	 go/bin/structcheck
- 5.5 MB 	 go/bin/maligned
- 5.5 MB 	 go/bin/varcheck
- 5.1 MB 	 go/bin/goimports
- 4.4 MB 	 go/bin/gomodifytags
- 4.2 MB 	 go/bin/ghq
- 3.9 MB 	 go/bin/nakedret
- 3.7 MB 	 go/bin/dlayer
- 3.6 MB 	 go/bin/efm-langserver
- 3.6 MB 	 go/bin/go-torch
- 3.4 MB 	 go/bin/motion
- 3.2 MB 	 go/bin/goconst
- 3.1 MB 	 go/bin/dupl
- 3.0 MB 	 go/bin/gotags
- 2.9 MB 	 go/bin/minid
- 2.8 MB 	 go/bin/ttygif
- 2.7 MB 	 go/bin/asmfmt
- 2.7 MB 	 go/bin/ineffassign
- 2.6 MB 	 go/bin/gocyclo
- 2.6 MB 	 go/bin/deadcode
- 2.6 MB 	 go/bin/iferr
- 2.6 MB 	 go/bin/gochecknoglobals
- 2.6 MB 	 go/bin/gochecknoinits
- 2.4 MB 	 go/bin/goimports-update-ignore
+  33 MB 	 go/bin/kustomize
+  30 MB 	 go/bin/hugo
+  17 MB 	 go/bin/license-detector
+  17 MB 	 go/bin/dlv
+  15 MB 	 go/bin/dive
+  15 MB 	 go/bin/staticcheck
+  15 MB 	 go/bin/bingo
+  15 MB 	 go/bin/dep
+  14 MB 	 go/bin/gotests
+  13 MB 	 go/bin/gocode
+  11 MB 	 go/bin/gopls
+  11 MB 	 go/bin/misspell
+  10 MB 	 go/bin/godef
+ 9.5 MB 	 go/bin/guru
+ 9.1 MB 	 go/bin/goreturns
+ 8.5 MB 	 go/bin/gosec
+ 8.1 MB 	 go/bin/impl
+ 7.9 MB 	 go/bin/safesql
+ 7.8 MB 	 go/bin/gogetdoc
+ 7.4 MB 	 go/bin/lll
+ 7.3 MB 	 go/bin/unparam
+ 7.3 MB 	 go/bin/interfacer
+ 7.1 MB 	 go/bin/errcheck
+ 6.7 MB 	 go/bin/gometalinter
+ 6.7 MB 	 go/bin/gotype
+ 6.4 MB 	 go/bin/unconvert
+ 6.4 MB 	 go/bin/gorename
+ 6.4 MB 	 go/bin/fillstruct
+ 6.3 MB 	 go/bin/keyify
+ 6.3 MB 	 go/bin/golint
+ 6.1 MB 	 go/bin/goiferr
+ 5.9 MB 	 go/bin/structcheck
+ 5.9 MB 	 go/bin/maligned
+ 5.9 MB 	 go/bin/varcheck
+ 5.4 MB 	 go/bin/goimports
+ 4.7 MB 	 go/bin/gomodifytags
+ 4.4 MB 	 go/bin/ghq
+ 4.2 MB 	 go/bin/nakedret
+ 3.9 MB 	 go/bin/dlayer
+ 3.8 MB 	 go/bin/efm-langserver
+ 3.8 MB 	 go/bin/go-torch
+ 3.5 MB 	 go/bin/motion
+ 3.4 MB 	 go/bin/goconst
+ 3.2 MB 	 go/bin/dupl
+ 3.1 MB 	 go/bin/minid
+ 3.1 MB 	 go/bin/gotags
+ 3.0 MB 	 go/bin/ttygif
+ 2.8 MB 	 go/bin/asmfmt
+ 2.8 MB 	 go/bin/ineffassign
+ 2.7 MB 	 go/bin/gocyclo
+ 2.7 MB 	 go/bin/deadcode
+ 2.7 MB 	 go/bin/iferr
+ 2.7 MB 	 go/bin/gochecknoglobals
+ 2.7 MB 	 go/bin/gochecknoinits
+ 2.5 MB 	 go/bin/goimports-update-ignore
   35 kB 	 go/bin/flamegraph.pl
  3.6 kB 	 go/bin/stackcollapse-go.pl
  2.9 kB 	 go/bin/stackcollapse.pl
@@ -879,9 +878,9 @@
  3.1 kB 	 root/.gitconfig
 
 ====================================================================================================
-  994 B 	 $ COPY gitignore /root/.gitignore # buildkit
+  996 B 	 $ COPY gitignore /root/.gitignore # buildkit
 ====================================================================================================
-  994 B 	 root/.gitignore
+  996 B 	 root/.gitignore
 
 ====================================================================================================
   39 kB 	 $ COPY init.vim /.config/nvim/init.vim # buildkit
@@ -1023,8 +1022,8 @@
 ====================================================================================================
  8.9 MB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/objects
  1.4 MB 	 usr/local/share/.config/yarn/global/node_modules/lodash
+ 1.2 MB 	 usr/local/share/.config/yarn/global/node_modules/coc.nvim
  1.1 MB 	 .zplug;/.git/objects/pack/pack-de075f49544d84d826e8b24a7d352c49e07ec497.pack
- 1.1 MB 	 usr/local/share/.config/yarn/global/node_modules/coc.nvim
  541 kB 	 usr/local/share/.config/yarn/global/node_modules/async
  236 kB 	 usr/local/share/.config/yarn/global/node_modules/vscode-languageserver-types
  201 kB 	 usr/local/share/.config/yarn/global/node_modules/msgpack-lite
@@ -1032,7 +1031,7 @@
  154 kB 	 .zplug;/.git/objects/pack/pack-de075f49544d84d826e8b24a7d352c49e07ec497.idx
  132 kB 	 usr/local/share/.config/yarn/global/node_modules/vscode-languageserver-protocol
  124 kB 	 usr/local/share/.config/yarn/global/node_modules/fs-extra
- 121 kB 	 usr/local/share/.config/yarn/global/node_modules/@chemzqm
+ 122 kB 	 usr/local/share/.config/yarn/global/node_modules/@chemzqm
  118 kB 	 usr/local/share/.config/yarn/global/node_modules/vscode-jsonrpc
   89 kB 	 usr/local/share/.config/yarn/global/node_modules/log4js
   84 kB 	 usr/local/share/.config/yarn/global/node_modules/streamroller
@@ -1048,12 +1047,9 @@
   46 kB 	 usr/local/share/.config/yarn/global/node_modules/isuri
   44 kB 	 usr/local/share/.config/yarn/global/node_modules/uuid
   40 kB 	 usr/local/share/.config/yarn/global/node_modules/fast-diff
-  35 kB 	 usr/local/share/.config/yarn/global/node_modules/node-json-db
   33 kB 	 usr/local/share/.config/yarn/global/node_modules/minimatch
   26 kB 	 usr/local/share/.config/yarn/global/node_modules/graceful-fs
   23 kB 	 root/.config/nvim/plugged/vim-plug/autoload/plug.png
-  21 kB 	 usr/local/share/.config/yarn/global/node_modules/minimist
-  21 kB 	 usr/local/share/.config/yarn/global/node_modules/mkdirp
   21 kB 	 usr/local/share/.config/yarn/global/node_modules/event-lite
   20 kB 	 .zplug;/.git/index
   18 kB 	 .zplug;/doc/guide/ja/README.md
@@ -1062,11 +1058,11 @@
   17 kB 	 usr/local/share/.config/yarn/global/node_modules/jsonfile
   17 kB 	 .zplug;/doc/man/man1/zplug.1
   16 kB 	 usr/local/share/.config/yarn/global/node_modules/node-int64
-  16 kB 	 usr/local/share/.config/yarn/global/yarn.lock
   16 kB 	 .zplug;/README.md
   16 kB 	 usr/local/share/.config/yarn/global/node_modules/date-format
   16 kB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/hooks
   15 kB 	 root/.config/nvim/plugged/vim-plug/autoload/doc/plug.txt
+  15 kB 	 usr/local/share/.config/yarn/global/yarn.lock
   14 kB 	 .zplug;/doc/zplug.txt
   14 kB 	 usr/local/share/.config/yarn/global/node_modules/rfdc
   13 kB 	 usr/local/share/.config/yarn/global/node_modules/fs.realpath
@@ -1082,14 +1078,14 @@
  9.5 kB 	 .zplug;/base/job/handle.zsh
  9.4 kB 	 usr/local/share/.config/yarn/global/node_modules/which
  9.1 kB 	 .zplug;/base/core/core.zsh
- 8.5 kB 	 usr/local/share/.config/yarn/global/node_modules/.yarn-integrity
  7.9 kB 	 .zplug;/base/utils/theme.zsh
- 7.2 kB 	 usr/local/share/.config/yarn/global/node_modules/pify
+ 7.8 kB 	 usr/local/share/.config/yarn/global/node_modules/.yarn-integrity
  6.8 kB 	 usr/local/share/.config/yarn/global/node_modules/ms
  6.7 kB 	 usr/local/share/.config/yarn/global/node_modules/balanced-match
  6.4 kB 	 .zplug;/base/core/load.zsh
  6.3 kB 	 .zplug;/base/sources/oh-my-zsh.zsh
  6.2 kB 	 .zplug;/base/job/parallel.zsh
+ 6.2 kB 	 usr/local/share/.config/yarn/global/node_modules/p-limit
  6.1 kB 	 usr/local/share/.config/yarn/global/node_modules/ieee754
  6.1 kB 	 .zplug;/base/core/cache.zsh
  6.0 kB 	 .zplug;/misc/completions/_zplug
@@ -1098,7 +1094,6 @@
  5.6 kB 	 .zplug;/base/utils/releases.zsh
  5.5 kB 	 .zplug;/base/sources/prezto.zsh
  5.1 kB 	 usr/local/share/.config/yarn/global/node_modules/p-locate
- 5.0 kB 	 usr/local/share/.config/yarn/global/node_modules/p-limit
  4.9 kB 	 .zplug;/.git/hooks/pre-rebase.sample
  4.9 kB 	 usr/local/share/.config/yarn/global/node_modules/concat-map
  4.8 kB 	 usr/local/share/.config/yarn/global/node_modules/find-up
@@ -1121,3 +1116,7 @@
  3.0 kB 	 usr/local/share/.config/yarn/global/node_modules/p-try
  3.0 kB 	 usr/local/share/.config/yarn/global/node_modules/wrappy
  3.0 kB 	 root/.config/nvim/plugged/vim-plug/autoload/test/test.vader
+ 2.8 kB 	 .zplug;/autoload/commands/__list__
+ 2.8 kB 	 root/.config/nvim/plugged/vim-plug/autoload/.git/packed-refs
+ 2.7 kB 	 .zplug;/doc/man/man1/zplug-load.1
+ 2.6 kB 	 .zplug;/base/core/add.zsh
