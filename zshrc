@@ -279,7 +279,10 @@ if type git >/dev/null 2>&1; then
     gfr(){
         git fetch --prune;
         git reset --hard origin/$(tb);
-        git branch --merged | grep -vE '^\*|master$|develop$' | xargs -I % git branch -D %
+        git branch -r --merged master | grep -v -e master -e develop | sed -e 's% *origin/%%' | xargs -I% git push --delete origin %
+        git fetch --prune;
+        git reset --hard origin/$(tb);
+        git branch --merged master | grep -vE '^\*|master$|develop$' | xargs -I % git branch -d %
     }
     alias gfr=gfr
     gfrs(){
