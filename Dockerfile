@@ -11,7 +11,7 @@ RUN apk update \
 
 # RUN --mount=type=cache,target=/root/.cache/go-build \
 #     go get -v -u github.com/alecthomas/gometalinter \
-RUN go get -v -u github.com/alecthomas/gometalinter \
+RUN go get -u github.com/alecthomas/gometalinter \
     github.com/cweill/gotests/... \
     github.com/davidrjenni/reftools/cmd/fillstruct \
     github.com/derekparker/delve/cmd/dlv \
@@ -20,7 +20,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/fatih/motion \
     github.com/gohugoio/hugo \
     github.com/golang/dep/... \
-    github.com/gopherjs/gopherjs \
+    # github.com/gopherjs/gopherjs \
     github.com/josharian/impl \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
@@ -40,7 +40,7 @@ RUN go get -v -u github.com/alecthomas/gometalinter \
     github.com/zmb3/gogetdoc \
     golang.org/x/lint/golint \
     golang.org/x/tools/cmd/goimports \
-    golang.org/x/tools/cmd/golsp \
+    golang.org/x/tools/cmd/gopls \
     golang.org/x/tools/cmd/gorename \
     golang.org/x/tools/cmd/guru \
     google.golang.org/grpc \
