@@ -327,45 +327,81 @@ if type go >/dev/null 2>&1; then
     go-get(){
         rm -rf $GOPATH/src/$1
         go get -u -f -v -fix $1;
-        # go get -u $1;
         go install $1;
     }
 
     goup(){
-        mv $GOPATH/src/github.com/kpango $HOME/
-        mv $GOPATH/src/github.com/azamasu $HOME/
-        rm -rf "$GOPATH/bin" "$GOPATH/pkg"
-        rm -rf "$GOPATH/src/github.com"
-        rm -rf "$GOPATH/src/golang.org"
-        rm -rf "$GOPATH/src/google.golang.org"
-        rm -rf "$GOPATH/src/gopkg.in"
-        rm -rf "$GOPATH/src/code.cloudfoundry.org"
-        rm -rf "$GOPATH/src/sourcegraph.com"
+        mv $GOPATH/src/github.com/kpango $GOPATH/src/github.com/azamasu $HOME/
+        rm -rf "$GOPATH/bin" "$GOPATH/pkg" "$GOPATH/cache" \
+            "$GOPATH/src/github.com" \
+            "$GOPATH/src/golang.org" \
+            "$GOPATH/src/google.golang.org" \
+            "$GOPATH/src/gopkg.in" \
+            "$GOPATH/src/code.cloudfoundry.org" \
+            "$GOPATH/src/sourcegraph.com" \
+            "$GOPATH/src/honnef.co" \
+            "$GOPATH/src/sigs.k8s.io" \
 
-        go-get github.com/Masterminds/glide &
-        go-get github.com/cespare/prettybench &
-        go-get github.com/concourse/fly &
-        go-get github.com/cweill/gotests/... &
-        go-get github.com/derekparker/delve/cmd/dlv &
-        go-get github.com/gogo/protobuf/protoc-gen-gofast &
-        go-get github.com/golang/dep/... &
-        go-get github.com/gopherjs/gopherjs &
-        go-get github.com/motemen/ghq &
-        go-get github.com/motemen/go-iferr/cmd/goiferr &
-        go-get github.com/pwaller/goimports-update-ignore &
-        go-get github.com/sugyan/ttygif &
-        go-get github.com/tsenart/vegeta &
-        go-get github.com/uber/go-torch &
-        go-get golang.org/x/tools/cmd/present &
-        go-get google.golang.org/grpc &
-        go-get sourcegraph.com/sqs/goreturns &
-        go-get github.com/jenkins-x/jx/cmd/jx &
+        go get -u github.com/alecthomas/gometalinter \
+            github.com/cweill/gotests/... \
+            github.com/davidrjenni/reftools/cmd/fillstruct \
+            github.com/derekparker/delve/cmd/dlv \
+            github.com/dominikh/go-tools/cmd/keyify \
+            github.com/fatih/gomodifytags \
+            github.com/fatih/motion \
+            github.com/gohugoio/hugo \
+            github.com/golang/dep/... \
+            # github.com/gopherjs/gopherjs \
+            github.com/josharian/impl \
+            github.com/jstemmer/gotags \
+            github.com/kisielk/errcheck \
+            github.com/klauspost/asmfmt/cmd/asmfmt \
+            github.com/koron/iferr \
+            github.com/mattn/efm-langserver/cmd/efm-langserver \
+            github.com/motemen/ghq \
+            github.com/motemen/go-iferr/cmd/goiferr \
+            github.com/nsf/gocode \
+            github.com/orisano/dlayer \
+            github.com/orisano/minid \
+            github.com/pwaller/goimports-update-ignore \
+            github.com/rogpeppe/godef \
+            github.com/sugyan/ttygif \
+            github.com/uber/go-torch \
+            github.com/wagoodman/dive \
+            github.com/zmb3/gogetdoc \
+            golang.org/x/lint/golint \
+            golang.org/x/tools/cmd/goimports \
+            golang.org/x/tools/cmd/gopls \
+            golang.org/x/tools/cmd/gorename \
+            golang.org/x/tools/cmd/guru \
+            google.golang.org/grpc \
+            gopkg.in/src-d/go-license-detector.v2/... \
+            honnef.co/go/tools/cmd/keyify \
+            sigs.k8s.io/kustomize \
+            sourcegraph.com/sqs/goreturns \
+            && gometalinter -i \
+            && git clone https://github.com/saibing/bingo.git \
+            && cd bingo \
+            && GO111MODULE=on go install \
+            && git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
+            && cp /tmp/FlameGraph/flamegraph.pl /go/bin/ \
+            && cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ \
+            && cp /tmp/FlameGraph/stackcollapse-go.pl /go/bin/
 
         wait
 
+        rm -rf "$GOPATH/pkg" "$GOPATH/cache" \
+            "$GOPATH/src/github.com" \
+            "$GOPATH/src/golang.org" \
+            "$GOPATH/src/google.golang.org" \
+            "$GOPATH/src/gopkg.in" \
+            "$GOPATH/src/code.cloudfoundry.org" \
+            "$GOPATH/src/sourcegraph.com" \
+            "$GOPATH/src/honnef.co" \
+            "$GOPATH/src/sigs.k8s.io" \
+
         mkdir -p $GOPATH/src/github.com
-        mv $HOME/kpango $GOPATH/src/github.com/
-        mv $HOME/azamasu $GOPATH/src/github.com/
+        mv $HOME/kpango $HOME/azamasu $GOPATH/src/github.com/
 
         $VIM main.go +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
 
