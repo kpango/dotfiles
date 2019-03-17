@@ -331,7 +331,11 @@ if type go >/dev/null 2>&1; then
     }
 
     goup(){
-        mv $GOPATH/src/github.com/kpango $GOPATH/src/github.com/azamasu $HOME/
+        mv $GOPATH/src/github.com/kpango \
+           $GOPATH/src/github.com/azamasu \
+           $GOPATH/src/github.com/parheliondb \
+           $GOPATH/src/github.com/yahoojapan \
+           $HOME/
         rm -rf "$GOPATH/bin" "$GOPATH/pkg" "$GOPATH/cache" \
             "$GOPATH/src/github.com" \
             "$GOPATH/src/golang.org" \
@@ -401,7 +405,11 @@ if type go >/dev/null 2>&1; then
             "$GOPATH/src/sigs.k8s.io" \
 
         mkdir -p $GOPATH/src/github.com
-        mv $HOME/kpango $HOME/azamasu $GOPATH/src/github.com/
+        mv $HOME/kpango \
+           $HOME/azamasu \
+           $HOME/parheliondb \
+           $HOME/yahoojapan \
+           $GOPATH/src/github.com/
 
         $VIM main.go +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
 
