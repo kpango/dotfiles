@@ -5,6 +5,7 @@
     blacklistedKernelModules = [ "snd_pcsp" "pcspkr" ];
     kernelPackages = pkgs.linuxPackages_latest;
     kernelModules = ["psmouse" "i2c_i801" "elan_i2c" "rmi_smbus"  "kvm_intel"];
+    # kernelModules = ["xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc"]; # thinkpad x1 gen5 available
     kernelParams = [
       "acpi.ec_no_wakeup=1"
       "intel_pstate=no_hwp"
@@ -99,6 +100,11 @@
         "kvm_intel"
         "psmouse"
         "rmi_smbus"
+        # "xhci_pci"
+        # "nvme"
+        # "usb_storage"
+        # "sd_mod"
+        # "rtsx_pci_sdmmc"
       ];
       # luks.devices = [
       #   {
