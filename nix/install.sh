@@ -53,4 +53,4 @@ cp ./*.nix /mnt/etc/nixos/
 cp -r ./pkgs /mnt/etc/nixos/
 # cp $KEY_FILE /mnt/
 
-nixos-install
+# nixos-install
