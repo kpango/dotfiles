@@ -1,14 +1,22 @@
 { pkgs, ... }:
 {
   services = {
-    timesyncd.enable = true;
+    timesyncd = {
+      enable = true;
+    };
     dbus = {
       enable = true;
       socketActivated = true;
     };
-    locate.enable = true;
-    nixosManual.showManual = true;
-    ntp.enable = true;
+    locate = {
+      enable = true;
+    };
+    nixosManual = {
+      showManual = true;
+    };
+    ntp = {
+      enable = true;
+    };
     openssh = {
       enable = true;
       passwordAuthentication = false;

@@ -19,5 +19,9 @@
     ./virtual.nix
   ];
 
-  documentation.info.enable = true;
+  documentation = {
+    info = {
+      enable = true;
+    };
+  };
 }

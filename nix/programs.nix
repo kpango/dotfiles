@@ -5,11 +5,17 @@
   programs = {
     zsh = {
       enable = true;
-      autosuggestions.enable = true;
+      autosuggestions = {
+        enable = true;
+      };
       enableCompletion = true;
-      syntaxHighlighting.enable = true;
+      syntaxHighlighting = {
+        enable = true;
+      };
     };
-    tmux.enable = true;
+    tmux = {
+      enable = true;
+    };
     ssh = {
       forwardX11 = false;
       startAgent = true;
@@ -32,7 +38,11 @@
     #     redshift-wayland # patched to work with wayland gamma protocol
     #   ];
     # };
-    sway.enable = true;
-    light.enable = true;
+    sway = {
+      enable = true;
+    };
+    light = {
+      enable = true;
+    };
   };
 }

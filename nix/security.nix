@@ -9,5 +9,21 @@
         Defaults env_keep+="HOME"
       '';
     };
+    pam = {
+      loginLimits = [
+        {
+          domain = "*";
+          type = "soft";
+          item = "nofile";
+          value = "65535";
+        }
+        {
+          domain = "*";
+          type = "hard";
+          item = "nofile";
+          value = "65535";
+        }
+      ];
+    };
   };
 }

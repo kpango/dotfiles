@@ -4,25 +4,33 @@
   boot = {
     blacklistedKernelModules = [ "snd_pcsp" "pcspkr" ];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = ["i2c_i801" "elan_i2c" "rmi_smbus"  "kvm_intel"];
+    kernelModules = ["psmouse" "i2c_i801" "elan_i2c" "rmi_smbus"  "kvm_intel"];
     kernelParams = [
-      "psmouse.synaptics_intertouch=1"
-      "psmouse.proto=imps"
       "acpi.ec_no_wakeup=1"
       "intel_pstate=no_hwp"
+      "psmouse.proto=imps"
+      "psmouse.synaptics_intertouch=1"
     ];
     cleanTmpDir = true;
-    plymouth.enable = true;
+    plymouth = {
+      enable = true;
+    };
     supportedFilesystems = [ "xfs" ];
     kernel = {
       sysctl = {
+        "fs.aio-max-nr" = 19349474;
+        "fs.aio-nr" = 0;
+        "fs.file-max" = 19349474;
+        "fs.file-nr" = "288 0 19349474";
+        "fs.epoll.max_user_watches" = 39688724;
         "kernel.panic" = 30;
         "kernel.perf_event_paranoid" = 0;
+        "kernel.threads-max" = 4000000;
         "net.core.netdev_max_backlog" = 4096;
         "net.core.optmem_max" = 40960;
         "net.core.rmem_default" = 16777216;
         "net.core.rmem_max" = 16777216;
-        "net.core.somaxconn" = 4096;
+        "net.core.somaxconn" = 30000;
         "net.core.wmem_default" = 16777216;
         "net.core.wmem_max" = 16777216;
         "net.ipv4.conf.all.accept_redirects" = 0;
@@ -45,7 +53,8 @@
         "net.ipv4.tcp_keepalive_probes" = 4;
         "net.ipv4.tcp_keepalive_time" = 20;
         "net.ipv4.tcp_low_latency" = 0;
-        "net.ipv4.tcp_max_syn_backlog" = 4096;
+        "net.ipv4.tcp_max_syn_backlog" = 30000;
+        "net.ipv4.tcp_max_tw_buckets" = 2000000;
         "net.ipv4.tcp_moderate_rcvbuf" = 1;
         "net.ipv4.tcp_no_metrics_save" = 1;
         "net.ipv4.tcp_orphan_retries" = 3;
@@ -58,6 +67,8 @@
         "net.ipv4.tcp_tw_reuse" = 1;
         "net.ipv4.tcp_window_scaling" = 1;
         "net.ipv4.tcp_wmem" = "4096 87380 16777216";
+        "net.ipv4.udp_rmem_min" = 8192;
+        "net.ipv4.udp_wmem_min" = 8192;
         "vm.max_map_count" = 262144;
         "vm.overcommit_memory" = 2;
         "vm.overcommit_ratio" = 99;
@@ -83,13 +94,10 @@
     };
     initrd = {
       kernelModules = [
-        "dm-crypt"
-        "dm_mod"
-        "ecb"
         "elan_i2c"
-        "ext4"
         "i2c_i801"
         "kvm_intel"
+        "psmouse"
         "rmi_smbus"
       ];
       # luks.devices = [
