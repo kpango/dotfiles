@@ -5,7 +5,9 @@
       enableOnBoot = true;
       autoPrune.enable = true;
       storageDriver = "overlay2";
-      extraOptions = "--insecure-registry ${config.networking.hostName}.local:80";
+      # TODO configがないらしい
+      extraOptions = "--insecure-registry kpango.nix.dev.local:80";
+      # extraOptions = "--insecure-registry ${config.networking.hostName}.local:80";
     };
     lxd = {
       enable = true;
