@@ -577,6 +577,24 @@ if type fzf >/dev/null 2>&1; then
     fi
 fi
 
+rsagen(){
+    sudo -u $USER ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
+}
+alias rsagen=rsagen
+ecdsagen(){
+    sudo -u $USER ssh-keygen -t ecdsa -b 521 -P $1 -f $HOME/.ssh/id_ecdsa -C $USER
+}
+alias ecdsagen=ecdsagen
+
+edgen(){
+    sudo -u $USER ssh-keygen -t ed25519 -P $1 -f $HOME/.ssh/id_ed -C $USER
+}
+alias edgen=edgen
+
+
+
+
+
 if type rails >/dev/null 2>&1; then
     alias railskill="kill -9 `ps aux | grep rails | awk '{print $2}'`"
 fi
