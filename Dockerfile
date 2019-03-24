@@ -206,6 +206,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && apk upgrade \
     && apk --update add --no-cache --allow-untrusted --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
     bash \
+    clang \
     cmake \
     ctags \
     curl \
