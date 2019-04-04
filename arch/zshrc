@@ -470,7 +470,6 @@ if ! [ -z $TMUX ]||[ -z $ZSH_LOADED ]; then
             gocode set lib-path $GOPATH/pkg/$GOOS\_$GOARCH/
             gocode set propose-builtins true
             gocode set unimported-packages true
-            gometalinter -i
         }
 
         cover () {

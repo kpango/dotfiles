@@ -346,7 +346,7 @@ if type go >/dev/null 2>&1; then
             "$GOPATH/src/honnef.co" \
             "$GOPATH/src/sigs.k8s.io" \
 
-        go get -u github.com/alecthomas/gometalinter \
+        go get -u \
             github.com/cweill/gotests/... \
             github.com/davidrjenni/reftools/cmd/fillstruct \
             github.com/derekparker/delve/cmd/dlv \
@@ -355,7 +355,7 @@ if type go >/dev/null 2>&1; then
             github.com/fatih/motion \
             github.com/gohugoio/hugo \
             github.com/golang/dep/... \
-            # github.com/gopherjs/gopherjs \
+            github.com/golangci/golangci-lint/cmd/golangci-lint \
             github.com/josharian/impl \
             github.com/jstemmer/gotags \
             github.com/kisielk/errcheck \
@@ -379,11 +379,9 @@ if type go >/dev/null 2>&1; then
             golang.org/x/tools/cmd/gorename \
             golang.org/x/tools/cmd/guru \
             google.golang.org/grpc \
-            gopkg.in/src-d/go-license-detector.v2/... \
             honnef.co/go/tools/cmd/keyify \
             sigs.k8s.io/kustomize \
             sourcegraph.com/sqs/goreturns \
-            && gometalinter -i \
             && git clone https://github.com/saibing/bingo.git \
             && cd bingo \
             && GO111MODULE=on go install \
@@ -417,7 +415,6 @@ if type go >/dev/null 2>&1; then
         gocode set lib-path $GOPATH/pkg/$GOOS\_$GOARCH/
         gocode set propose-builtins true
         gocode set unimported-packages true
-        gometalinter -i
     }
 
     cover () {
