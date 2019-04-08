@@ -7,7 +7,8 @@ RUN apk update \
     curl \
     gcc \
     musl-dev \
-    wget
+    wget \
+    upx
 
 # RUN --mount=type=cache,target=/root/.cache/go-build \
 #     go get -v -u \
@@ -50,6 +51,7 @@ RUN go get -u  \
     && git clone https://github.com/saibing/bingo.git \
     && cd bingo \
     && GO111MODULE=on go install \
+    && upx --best --ultra-brute ${GOPATH}/bin/* \
     && git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
     && cp /tmp/FlameGraph/flamegraph.pl /go/bin/ \
     && cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ \
@@ -71,6 +73,10 @@ RUN cargo install --force --no-default-features --git https://github.com/mozilla
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features bat
 
 FROM docker:18.09-dind AS docker
+RUN apk update \
+    && apk upgrade \
+    && apk add --no-cache upx \
+    && upx --best --ultra-brute /usr/local/bin/*
 
 FROM google/cloud-sdk:alpine AS gcloud
 
@@ -118,7 +124,8 @@ RUN apk update \
     gcc \
     openssl \
     bash \
-    git
+    git \
+    upx
 
 RUN set -x; cd "$(mktemp -d)" \
     && curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl" \
@@ -139,7 +146,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv kubebox /usr/local/bin/kubebox \
     && curl -fsSL "https://github.com/wercker/stern/releases/download/1.10.0/stern_linux_amd64" -o stern \
     && chmod +x stern \
-    && mv stern /usr/local/bin/stern
+    && mv stern /usr/local/bin/stern \
+    && upx --best --ultra-brute /usr/local/bin/* \
+    && upx --best --ultra-brute /root/.krew/bin/*
 
 FROM base AS glibc
 
