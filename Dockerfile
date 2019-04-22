@@ -147,8 +147,14 @@ RUN set -x; cd "$(mktemp -d)" \
     && curl -fsSL "https://github.com/wercker/stern/releases/download/1.10.0/stern_linux_amd64" -o stern \
     && chmod +x stern \
     && mv stern /usr/local/bin/stern \
-    && upx --best --ultra-brute /usr/local/bin/* \
-    && upx --best --ultra-brute /root/.krew/bin/*
+    && upx --best --ultra-brute \
+        /usr/local/bin/kubectl \
+        /usr/local/bin/kubebox \
+        /usr/local/bin/stern \
+        /usr/local/bin/helm \
+        /root/.krew/bin \
+        2> /dev/null \
+    && upx --best --ultra-brute /root/.krew/bin/* 2> /dev/null
 
 FROM base AS glibc
 
@@ -194,6 +200,7 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
 
 FROM base AS env
 
+ENV NGT_VERSION 1.7.0
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 
 RUN mkdir "/etc/ld.so.conf.d" \
@@ -262,15 +269,15 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && make install -C /tmp/translate-shell \
     && cd /tmp \
     && rm -rf /tmp/translate-shell/ \
-    && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v1.5.1.tar.gz \
+    && curl -Lo ngt.tar.gz https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz \
     && tar zxf ngt.tar.gz -C /tmp \
     && rm -rf ngt.tar.gz \
-    && cd /tmp/NGT-1.5.1 \
+    && cd /tmp/NGT-${NGT_VERSION} \
     && cmake . \
-    && make -j -C /tmp/NGT-1.5.1 \
-    && make install -C /tmp/NGT-1.5.1 \
+    && make -j -C /tmp/NGT-${NGT_VERSION}} \
+    && make install -C /tmp/${NGT_VERSION}} \
     && cd /tmp \
-    && rm -rf /tmp/NGT-1.5.1
+    && rm -rf /tmp/NGT-${NGT_VERSION}
 
 FROM env
 
