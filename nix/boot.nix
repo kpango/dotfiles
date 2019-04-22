@@ -21,12 +21,13 @@
       sysctl = {
         "fs.aio-max-nr" = 19349474;
         "fs.aio-nr" = 0;
+        "fs.epoll.max_user_watches" = 39688724;
         "fs.file-max" = 19349474;
         "fs.file-nr" = "288 0 19349474";
-        "fs.epoll.max_user_watches" = 39688724;
         "kernel.panic" = 30;
         "kernel.perf_event_paranoid" = 0;
         "kernel.threads-max" = 4000000;
+        "net.core.default_qdisc" = "fq";
         "net.core.netdev_max_backlog" = 4096;
         "net.core.optmem_max" = 40960;
         "net.core.rmem_default" = 16777216;
@@ -46,6 +47,9 @@
         "net.ipv4.icmp_echo_ignore_broadcasts" = 1;
         "net.ipv4.ip_local_port_range" = "1024 65535";
         "net.ipv4.tcp_abort_on_overflow" = 1;
+        "net.ipv4.tcp_allowed_congestion_control" = "bbr reno";
+        "net.ipv4.tcp_available_congestion_control" = "bbr reno";
+        "net.ipv4.tcp_congestion_control" = "bbr";
         "net.ipv4.tcp_ecn" = 1;
         "net.ipv4.tcp_fack" = 1;
         "net.ipv4.tcp_fastopen" = 3;
