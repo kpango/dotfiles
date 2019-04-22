@@ -134,8 +134,8 @@ RUN set -x; cd "$(mktemp -d)" \
     && kubectl version --client \
     && curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get" | bash \
     && git clone "https://github.com/ahmetb/kubectx" /opt/kubectx \
-    && ln -s /opt/kubectx/kubectx /usr/local/bin/kubectx \
-    && ln -s /opt/kubectx/kubens /usr/local/bin/kubens \
+    && mv /opt/kubectx/kubectx /usr/local/bin/kubectx \
+    && mv /opt/kubectx/kubens /usr/local/bin/kubens \
     && curl -fsSLO "https://storage.googleapis.com/krew/v0.2.1/krew.{tar.gz,yaml}" \
     && tar zxvf krew.tar.gz \
     && ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" install --manifest=krew.yaml --archive=krew.tar.gz \
@@ -147,12 +147,20 @@ RUN set -x; cd "$(mktemp -d)" \
     && curl -fsSL "https://github.com/wercker/stern/releases/download/1.10.0/stern_linux_amd64" -o stern \
     && chmod +x stern \
     && mv stern /usr/local/bin/stern \
+    && version=1.0.8 \
+    && arch=amd64 \
+    && curl -L -O "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${version}/kubebuilder_${version}_darwin_${arch}.tar.gz" \
+    && tar -zxvf kubebuilder_${version}_darwin_${arch}.tar.gz \
+    && mv kubebuilder_${version}_darwin_${arch}/bin/* /usr/local/bin/ \
     && upx --best --ultra-brute \
-        /usr/local/bin/kubectl \
-        /usr/local/bin/kubebox \
-        /usr/local/bin/stern \
-        /usr/local/bin/helm \
         /root/.krew/bin \
+        /usr/local/bin/helm \
+        /usr/local/bin/kubebox \
+        /usr/local/bin/kubebuilder \
+        /usr/local/bin/kubectl \
+        /usr/local/bin/kubectx \
+        /usr/local/bin/kubens \
+        /usr/local/bin/stern \
         2> /dev/null \
     && upx --best --ultra-brute /root/.krew/bin/* 2> /dev/null
 
