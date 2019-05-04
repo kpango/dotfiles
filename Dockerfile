@@ -13,6 +13,7 @@ RUN apk update \
 # RUN --mount=type=cache,target=/root/.cache/go-build \
 #     go get -v -u \
 RUN go get -u  \
+    github.com/a8m/syncmap \
     github.com/cweill/gotests/... \
     github.com/davidrjenni/reftools/cmd/fillstruct \
     github.com/derekparker/delve/cmd/dlv \
