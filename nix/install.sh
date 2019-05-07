@@ -6,8 +6,8 @@ RP=/dev/nvme0n1p2
 EPN=enc-pv
 EP=/dev/mapper/$EPN
 EFI=/mnt/boot/efi
-KEY_FILE=hdd.key
-INITRD_KEY=/mnt/boot/initrd.keys.gz
+# KEY_FILE=hdd.key
+# INITRD_KEY=/mnt/boot/initrd.keys.gz
 
 ip a
 umount $SSD

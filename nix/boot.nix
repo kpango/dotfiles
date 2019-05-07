@@ -2,10 +2,11 @@
 {
   # Use the systemd-boot EFI boot loader.
   boot = {
-    blacklistedKernelModules = [ "snd_pcsp" "pcspkr" ];
+    # blacklistedKernelModules = [ "snd_pcsp" "pcspkr" ];
     kernelPackages = pkgs.linuxPackages_latest;
-    kernelModules = ["psmouse" "i2c_i801" "elan_i2c" "rmi_smbus"  "kvm_intel"];
+    # kernelModules = ["psmouse" "i2c_i801" "elan_i2c" "rmi_smbus"  "kvm_intel"];
     # kernelModules = ["xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc"]; # thinkpad x1 gen5 available
+    kernelModules = ["xhci_pci" "nvme" ]; # thinkpad x1 gen5 available
     kernelParams = [
       "acpi.ec_no_wakeup=1"
       "intel_pstate=no_hwp"
@@ -99,11 +100,11 @@
     };
     initrd = {
       kernelModules = [
-        "elan_i2c"
-        "i2c_i801"
+        # "elan_i2c"
+        # "i2c_i801"
         "kvm_intel"
         "psmouse"
-        "rmi_smbus"
+        # "rmi_smbus"
         # "xhci_pci"
         # "nvme"
         # "usb_storage"
