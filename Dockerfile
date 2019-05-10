@@ -38,7 +38,7 @@ RUN go get -u  \
     github.com/rogpeppe/godef \
     github.com/sugyan/ttygif \
     github.com/uber/go-torch \
-    github.com/wagoodman/dive \
+    # github.com/wagoodman/dive \
     github.com/zmb3/gogetdoc \
     golang.org/x/lint/golint \
     golang.org/x/tools/cmd/goimports \
@@ -73,7 +73,7 @@ RUN cargo install --force --no-default-features --git https://github.com/mozilla
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features exa \
     && RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features bat
 
-FROM docker:18.09-dind AS docker
+FROM docker:rc-dind AS docker
 RUN apk update \
     && apk upgrade \
     && apk add --no-cache upx \
@@ -209,7 +209,7 @@ RUN ALPINE_GLIBC_BASE_URL="https://github.com/sgerrand/alpine-pkg-glibc/releases
 
 FROM base AS env
 
-ENV NGT_VERSION 1.7.0
+ENV NGT_VERSION 1.7.3
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 
 RUN mkdir "/etc/ld.so.conf.d" \
@@ -283,8 +283,8 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && rm -rf ngt.tar.gz \
     && cd /tmp/NGT-${NGT_VERSION} \
     && cmake . \
-    && make -j -C /tmp/NGT-${NGT_VERSION}} \
-    && make install -C /tmp/${NGT_VERSION}} \
+    && make -j -C /tmp/NGT-${NGT_VERSION} \
+    && make install -C /tmp/NGT-${NGT_VERSION} \
     && cd /tmp \
     && rm -rf /tmp/NGT-${NGT_VERSION}
 
@@ -339,6 +339,7 @@ COPY --from=kube /usr/local/bin/kubectl /usr/bin/kubectl
 COPY --from=kube /usr/local/bin/kubectx /usr/bin/kubectx
 COPY --from=kube /usr/local/bin/kubens /usr/bin/kubens
 COPY --from=kube /usr/local/bin/kubebox /usr/bin/kubebox
+COPY --from=kube /usr/local/bin/kubebuilder /usr/bin/kubebuilder
 COPY --from=kube /usr/local/bin/stern /usr/bin/stern
 COPY --from=kube /usr/local/bin/helm /usr/bin/helm
 COPY --from=kube /root/.krew/bin /usr/bin/
