@@ -29,7 +29,7 @@ jobs:
           command: |
             # env DOCKER_BUILDKIT=1 docker build -t ${ORG_NAME}/${IMAGE_NAME}:latest .
             docker build -t ${ORG_NAME}/${IMAGE_NAME}:latest .
-          no_output_timout: 2h
+          no_output_timout: 5h
       - run:
           name: save image
           command: |

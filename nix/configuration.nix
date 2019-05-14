@@ -21,7 +21,7 @@
 
   documentation = {
     info = {
-      enable = true;
+      enable = false;
     };
   };
 }
