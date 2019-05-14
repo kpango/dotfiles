@@ -77,7 +77,15 @@ FROM docker:rc-dind AS docker
 RUN apk update \
     && apk upgrade \
     && apk add --no-cache upx \
-    && upx --best --ultra-brute /usr/local/bin/*
+    && upx --best --ultra-brute \
+        /usr/local/bin/containerd \
+        /usr/local/bin/containerd-shim \
+        /usr/local/bin/ctr \
+        /usr/local/bin/docker \
+        /usr/local/bin/docker-init \
+        /usr/local/bin/docker-proxy \
+        /usr/local/bin/dockerd \
+        /usr/local/bin/runc
 
 FROM google/cloud-sdk:alpine AS gcloud
 
@@ -154,16 +162,15 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar -zxvf kubebuilder_${version}_darwin_${arch}.tar.gz \
     && mv kubebuilder_${version}_darwin_${arch}/bin/* /usr/local/bin/ \
     && upx --best --ultra-brute \
-        /root/.krew/bin \
         /usr/local/bin/helm \
-        /usr/local/bin/kubebox \
         /usr/local/bin/kubebuilder \
         /usr/local/bin/kubectl \
         /usr/local/bin/kubectx \
         /usr/local/bin/kubens \
         /usr/local/bin/stern \
-        2> /dev/null \
-    && upx --best --ultra-brute /root/.krew/bin/* 2> /dev/null
+        # /root/.krew/bin/* \
+        # /usr/local/bin/kubebox \
+        2> /dev/null
 
 FROM base AS glibc
 
@@ -239,16 +246,18 @@ RUN mkdir "/etc/ld.so.conf.d" \
     gcc \
     git \
     graphviz \
+    hdf5 \
+    hdf5-dev \
     jq \
     less \
     linux-headers \
+    luajit \
     make \
     musl-dev \
     ncurses \
     neovim \
     nodejs \
     npm \
-    yarn \
     openssh \
     openssl \
     openssl-dev \
@@ -262,9 +271,8 @@ RUN mkdir "/etc/ld.so.conf.d" \
     tmux \
     tzdata \
     xclip \
+    yarn \
     zsh \
-    hdf5 \
-    hdf5-dev \
     && rm -rf /var/cache/apk/* \
     && pip2 install --upgrade pip neovim python-language-server vim-vint \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint \
