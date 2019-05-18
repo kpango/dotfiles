@@ -27,6 +27,7 @@ RUN go get -u  \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
     github.com/klauspost/asmfmt/cmd/asmfmt \
+    github.com/knqyf263/trivy \
     github.com/koron/iferr \
     github.com/mattn/efm-langserver/cmd/efm-langserver \
     github.com/motemen/ghq \
@@ -163,7 +164,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv kubebuilder_${version}_darwin_${arch}/bin/* /usr/local/bin/ \
     && upx --best --ultra-brute \
         /usr/local/bin/helm \
-        /usr/local/bin/kubebuilder \
         /usr/local/bin/kubectl \
         /usr/local/bin/kubectx \
         /usr/local/bin/kubens \
