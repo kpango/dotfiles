@@ -13,6 +13,7 @@ RUN apk update \
 # RUN --mount=type=cache,target=/root/.cache/go-build \
 #     go get -v -u \
 RUN go get -u  \
+    github.com/ChimeraCoder/gojson \
     github.com/a8m/syncmap \
     github.com/cweill/gotests/... \
     github.com/davidrjenni/reftools/cmd/fillstruct \
@@ -20,6 +21,7 @@ RUN go get -u  \
     github.com/dominikh/go-tools/cmd/keyify \
     github.com/fatih/gomodifytags \
     github.com/fatih/motion \
+    github.com/gnewton/chidley \
     github.com/gohugoio/hugo \
     github.com/golang/dep/... \
     github.com/golangci/golangci-lint/cmd/golangci-lint \
