@@ -37,7 +37,7 @@ function devrun(){
     esac
 
     sudo docker run --network=host \
-        --net=host
+        --net=host \
         --cap-add=ALL \
         --name $container_name \
         --restart always \
