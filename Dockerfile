@@ -13,7 +13,7 @@ RUN apk update \
 # RUN --mount=type=cache,target=/root/.cache/go-build \
 #     go get -v -u \
 RUN go get -u  \
-    github.com/ChimeraCoder/gojson \
+    github.com/ChimeraCoder/gojson/gojson \
     github.com/a8m/syncmap \
     github.com/cweill/gotests/... \
     github.com/davidrjenni/reftools/cmd/fillstruct \
@@ -29,7 +29,7 @@ RUN go get -u  \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
     github.com/klauspost/asmfmt/cmd/asmfmt \
-    github.com/knqyf263/trivy \
+    github.com/knqyf263/trivy/cmd/trivy \
     github.com/koron/iferr \
     github.com/mattn/efm-langserver/cmd/efm-langserver \
     github.com/motemen/ghq \
