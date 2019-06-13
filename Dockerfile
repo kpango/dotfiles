@@ -25,11 +25,12 @@ RUN go get -u  \
     github.com/gohugoio/hugo \
     github.com/golang/dep/... \
     github.com/golangci/golangci-lint/cmd/golangci-lint \
+    github.com/goodwithtech/dockle \
     github.com/josharian/impl \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
     github.com/klauspost/asmfmt/cmd/asmfmt \
-    github.com/knqyf263/trivy/cmd/trivy \
+    # github.com/knqyf263/trivy/cmd/trivy \
     github.com/koron/iferr \
     github.com/mattn/efm-langserver/cmd/efm-langserver \
     github.com/motemen/ghq \
