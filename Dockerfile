@@ -25,7 +25,7 @@ RUN go get -u  \
     github.com/gohugoio/hugo \
     github.com/golang/dep/... \
     github.com/golangci/golangci-lint/cmd/golangci-lint \
-    github.com/goodwithtech/dockle \
+    github.com/goodwithtech/dockle/cmd/dockle \
     github.com/josharian/impl \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
