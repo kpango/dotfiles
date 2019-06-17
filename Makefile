@@ -22,12 +22,6 @@ bash: link
 build:
 	docker build -t kpango/dev:latest .
 
-build_all: build_base, build_env, build_go, build_rust, build_go, build_nim, build_dart, build_docker, build_gcloud, build_k8s, build_glibc
-	echo "done"
-
-push_all: push_base, push_env, push_go, push_rust, push_go, push_nim, push_dart, push_docker, push_gcloud, push_k8s, push_glibc
-	echo "done"
-
 docker_build:
 	type minid >/dev/null 2>&1 && minid -f ${DOCKERFILE} | docker build -t ${IMAGE_NAME}:latest -f - .
 
@@ -99,6 +93,12 @@ push_k8s:
 
 push_glibc:
 	@make IMAGE_NAME="kpango/glibc" docker_push
+
+build_all: build_base, build_env, build_go, build_rust, build_go, build_nim, build_dart, build_docker, build_gcloud, build_k8s, build_glibc
+	echo "done"
+
+push_all: push_base, push_env, push_go, push_rust, push_go, push_nim, push_dart, push_docker, push_gcloud, push_k8s, push_glibc
+	echo "done"
 
 profile:
 	rm -f analyze.txt
