@@ -94,10 +94,10 @@ push_k8s:
 push_glibc:
 	@make IMAGE_NAME="kpango/glibc" docker_push
 
-build_all: build_base, build_env, build_go, build_rust, build_go, build_nim, build_dart, build_docker, build_gcloud, build_k8s, build_glibc
+build_all: build_base build_env build_go build_rust build_go build_nim build_dart build_docker build_gcloud build_k8s build_glibc
 	echo "done"
 
-push_all: push_base, push_env, push_go, push_rust, push_go, push_nim, push_dart, push_docker, push_gcloud, push_k8s, push_glibc
+push_all: push_base push_env push_go push_rust push_go push_nim push_dart push_docker push_gcloud push_k8s push_glibc
 	echo "done"
 
 profile:
