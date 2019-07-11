@@ -38,7 +38,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv kubebuilder_${version}_darwin_${arch}/bin/* /usr/local/bin/ \
     && upx --best --ultra-brute \
         /usr/local/bin/helm \
-        /usr/local/bin/kubectl \
         /usr/local/bin/kubectx \
         /usr/local/bin/kubens \
         /usr/local/bin/stern \

@@ -72,8 +72,6 @@ export ZPLUG_HOME=$HOME/.zplug;
 
 export TERM="tmux-256color";
 export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:/root/.cargo/bin:$GCLOUD_PATH/bin:$PATH";
-export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
 
 if [ -e $ZPLUG_HOME/repos/zsh-users/zsh-completions ]; then
     fpath=($ZPLUG_HOME/repos/zsh-users/zsh-completions/src $fpath)
