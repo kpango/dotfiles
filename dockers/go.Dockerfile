@@ -25,7 +25,7 @@ RUN go get -u  \
     github.com/gohugoio/hugo \
     github.com/golang/dep/... \
     github.com/golangci/golangci-lint/cmd/golangci-lint \
-    github.com/goodwithtech/dockle/cmd/dockle \
+    # github.com/goodwithtech/dockle/cmd/dockle \
     github.com/josharian/impl \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
@@ -42,7 +42,7 @@ RUN go get -u  \
     github.com/rogpeppe/godef \
     github.com/sugyan/ttygif \
     github.com/uber/go-torch \
-    github.com/wagoodman/dive \
+    # github.com/wagoodman/dive \
     github.com/zmb3/gogetdoc \
     golang.org/x/lint/golint \
     golang.org/x/tools/cmd/goimports \
@@ -51,7 +51,6 @@ RUN go get -u  \
     golang.org/x/tools/cmd/guru \
     google.golang.org/grpc \
     honnef.co/go/tools/cmd/keyify \
-    sigs.k8s.io/kustomize \
     sourcegraph.com/sqs/goreturns \
     && git clone https://github.com/saibing/bingo.git \
     && cd bingo \
