@@ -733,6 +733,8 @@ if type nvim >/dev/null 2>&1; then
     alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
     alias nvinit="nvim-init";
     alias vback="cp $HOME/.config/nvim/init.vim $HOME/.config/nvim/init.vim.back";
+    alias vake="$EDITOR Makefile"
+    alias vocker="$EDITOR Dockerfile"
 else
     alias vedit="$EDITOR $HOME/.vimrc"
 fi
