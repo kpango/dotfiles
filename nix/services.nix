@@ -34,10 +34,6 @@
     sshd = {
       enable = true;
     };
-    unifi = {
-      unifiPackage = pkgs.unifiTesting;
-      enable = true;
-    };
     printing = {
       enable = true;
       drivers = with pkgs; [

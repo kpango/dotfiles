@@ -1,6 +1,5 @@
 { config, pkgs, lib, ... }:
 {
-
   fileSystems = {
     "/" = {
       label = "root";
@@ -21,6 +20,8 @@
       flags = lib.mkForce
         [
           "--fast"
+          "--max-jobs"
+          "4"
           "--no-build-output"
           "-I" "nixpkgs=/etc/nixos/nixpkgs-channels"
         ];
@@ -28,18 +29,26 @@
   };
 
   systemd = {
-    services.cpu-throttling = {
-      enable = true;
-      description = "Set temp offset to 3°C, so the new trip point is 97°C";
-      documentation = [
-        "https://wiki.archlinux.org/index.php/Lenovo_ThinkPad_X1_Carbon_(Gen_6)#Power_management.2FThrottling_issues"
-      ];
-      path = [ pkgs.msr-tools ];
-      script = "wrmsr -a 0x1a2 0x3000000";
-      serviceConfig = {
-        Type = "oneshot";
+    services = {
+      nixos-upgrade = {
+        script = pkgs.lib.mkForce ''
+          ${pkgs.nix}/bin/nix-channel --update nixos-unstable
+          ${config.system.build.nixos-rebuild}/bin/nixos-rebuild boot --upgrade ${toString config.system.autoUpgrade.flags}
+        '';
       };
-      wantedBy = [ "timers.target" ];
+      cpu-throttling = {
+        enable = true;
+        description = "Set temp offset to 3°C, so the new trip point is 97°C";
+        documentation = [
+          "https://wiki.archlinux.org/index.php/Lenovo_ThinkPad_X1_Carbon_(Gen_6)#Power_management.2FThrottling_issues"
+        ];
+        path = [ pkgs.msr-tools ];
+        script = "wrmsr -a 0x1a2 0x3000000";
+        serviceConfig = {
+          Type = "oneshot";
+        };
+        wantedBy = [ "timers.target" ];
+      };
     };
     timers.cpu-throttling = {
       enable = true;

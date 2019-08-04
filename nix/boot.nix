@@ -9,15 +9,21 @@
     kernelModules = ["xhci_pci" "nvme" ]; # thinkpad x1 gen5 available
     kernelParams = [
       "acpi.ec_no_wakeup=1"
+      "console=ttyS0,19200n8"
       "intel_pstate=no_hwp"
       "psmouse.proto=imps"
       "psmouse.synaptics_intertouch=1"
     ];
+    extraModulePackages = with config.boot.kernelPackages; [
+      acpi_call
+    ];
+    tmpOnTmpfs = true;
     cleanTmpDir = true;
     plymouth = {
       enable = true;
     };
     supportedFilesystems = [ "xfs" ];
+    earlyVconsoleSetup = true;
     kernel = {
       sysctl = {
         "fs.aio-max-nr" = 19349474;
@@ -94,6 +100,12 @@
         device = "nodev";
         efiSupport = true;
         gfxmodeEfi = "2560x1440";
+        timeout = 10;
+        extraConfig = ''
+          serial --speed=19200 --unit=0 --word=8 --parity=no --stop=1;
+          terminal_input serial;
+          terminal_output serial
+        '';
         # enableCryptodisk = true;
         # extraInitrd = "/boot/initrd.keys.gz";
       };
@@ -106,7 +118,7 @@
         "psmouse"
         # "rmi_smbus"
         # "xhci_pci"
-        # "nvme"
+        "nvme"
         # "usb_storage"
         # "sd_mod"
         # "rtsx_pci_sdmmc"

@@ -16,6 +16,7 @@
         dmidecode
         efibootmgr
         exa
+        inetutils
         iputils
         neovim
         networkmanager

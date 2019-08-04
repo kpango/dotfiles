@@ -1,7 +1,16 @@
 { config, pkgs, lib, ... }:
 {
   nix = {
+    autoOptimiseStore = true;
+    buildCores = 8;
+    gc = {
+      automatic = true;
+      options = "--delete-older-than 14d";
+    };
+    daemonNiceLevel = 10;
+    daemonIONiceLevel = 4;
     package = pkgs.nixUnstable;
+    useChroot = true;
     useSandbox = true;
     extraOptions = ''
       build-cores = 8

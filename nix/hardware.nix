@@ -6,6 +6,9 @@
   };
 
   hardware = {
+    firmware = with pkgs; [
+      firmwareLinuxNonfree
+    ];
     pulseaudio = {
       enable = true;
       extraConfig = "load-module module-switch-on-connect";
@@ -31,12 +34,21 @@
       speed = 200;
       emulateWheel = true;
     };
-    cpu.intel.updateMicrocode = true;
+    cpu = {
+      intel = {
+        updateMicrocode = true;
+      };
+    };
     enableAllFirmware = true;
     opengl = {
       enable = true;
       driSupport = true;
-      extraPackages = with pkgs;[ vaapiIntel ];
+      driSupport32Bit = true;
+      extraPackages = with pkgs; [ 
+        vaapiIntel
+        vaapiVdpau
+        libvdpau-va-gl
+      ];
     };
   };
 
