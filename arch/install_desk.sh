@@ -1,7 +1,12 @@
 #!/bin/sh
 ip a
-echo "unmount volumes"
 lsblk
+echo "mdadm clear"
+mdadm --zero-superblock /dev/nvme0n1 && sync
+mdadm --zero-superblock /dev/nvme1n1 && sync
+echo "mdadm cleared"
+lsblk
+echo "unmount volumes"
 umount /dev/nvme0n1 && sync
 umount /dev/nvme1n1 && sync
 echo "volumes unmounted"
