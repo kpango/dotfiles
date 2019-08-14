@@ -2,6 +2,8 @@
 ip a
 lsblk
 echo "mdadm clear"
+mdadm --zero-superblock /dev/nvme0n1p1 && sync
+mdadm --zero-superblock /dev/nvme1n1p1 && sync
 mdadm --zero-superblock /dev/nvme0n1 && sync
 mdadm --zero-superblock /dev/nvme1n1 && sync
 echo "mdadm cleared"
