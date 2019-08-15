@@ -19,11 +19,11 @@ wipefs -a /dev/nvme1n1 && sync
 echo "disks wiped"
 lsblk
 echo "shred nvme0n1"
-shred -n 2 -z /dev/nvme0n1 && sync
+shred -n 1 -z /dev/nvme0n1 && sync
 echo "nvme0n1 shredded"
 lsblk
 echo "shred nvme1n1"
-shred -n 2 -z /dev/nvme1n1 && sync
+shred -n 1 -z /dev/nvme1n1 && sync
 echo "nvme1n1 shredded"
 lsblk
 echo "lvremove"
@@ -78,14 +78,17 @@ cp Xdefaults /mnt/home/kpango/.Xdefaults
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
+pacman -S archlinux-keyring mdadm
+pacman -Syyu
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"
-pacstrap -i /mnt base base-devel archlinux-keyring intel-ucode cmake ccache clang dmenu rxvt-unicode git neovim zsh tmux wlc wayland sway i3status ntp ranger && sync
+pacstrap -i /mnt base base-devel archlinux-keyring intel-ucode cmake ccache clang dmenu rxvt-unicode git neovim zsh tmux wlc wayland sway i3status ntp ranger dosfstools grub efibootmgr mdadm
 genfstab -U -p /mnt >> /mnt/etc/fstab
 cp ./mirrorlist /mnt/etc/pacman.d/mirrorlist
 cp ./locale.gen /mnt/etc/locale.gen
 cp ./chroot.sh /mnt/chroot.sh
 echo LANG=en_US.UTF-8 > /mnt/etc/locale.conf
 mdadm --detail --scan >> /mnt/etc/mdadm.conf
-arch-chroot /mnt
+# arch-chroot /mnt
+arch-chroot /mnt sudo sh /chroot.sh
