@@ -63,8 +63,20 @@ pvremove /dev/nvme1n1 && sync
 echo "pvremoved"
 lsblk
 echo "mdadm clear"
-mdadm --zero-superblock /dev/nvme0n1 && sync
-mdadm --zero-superblock /dev/nvme1n1 && sync
+mdadm --misc --zero-superblock /dev/md0p1 && sync
+mdadm --misc --zero-superblock /dev/md0p2 && sync
+mdadm --misc --zero-superblock /dev/nvme1n1p1 && sync
+mdadm --misc --zero-superblock /dev/nvme0n1p1 && sync
+mdadm --misc --zero-superblock /dev/md0 && sync
+mdadm --misc --zero-superblock /dev/nvme0n1 && sync
+mdadm --misc --zero-superblock /dev/nvme1n1 && sync
+mdadm --misc --zero-superblock /dev/md0p1 && sync
+mdadm --misc --zero-superblock /dev/md0p2 && sync
+mdadm --misc --zero-superblock /dev/nvme1n1p1 && sync
+mdadm --misc --zero-superblock /dev/nvme0n1p1 && sync
+mdadm --misc --zero-superblock /dev/md0 && sync
+mdadm --misc --zero-superblock /dev/nvme0n1 && sync
+mdadm --misc --zero-superblock /dev/nvme1n1 && sync
 echo "mdadm cleared"
 cat /proc/mdstat
 lsblk
