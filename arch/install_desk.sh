@@ -1,16 +1,42 @@
 #!/bin/sh
 ip a
+rm -rf /mnt
+lsblk
+echo "unmount volumes"
+umount -f /dev/md0p1 && sync
+umount -f /dev/md0p2 && sync
+umount -f /dev/nvme1n1p1 && sync
+umount -f /dev/nvme0n1p1 && sync
+umount -f /dev/md0 && sync
+umount -f /dev/nvme0n1 && sync
+umount -f /dev/nvme1n1 && sync
+echo "volumes unmounted"
 lsblk
 echo "mdadm clear"
-mdadm --zero-superblock /dev/nvme0n1p1 && sync
-mdadm --zero-superblock /dev/nvme1n1p1 && sync
-mdadm --zero-superblock /dev/nvme0n1 && sync
-mdadm --zero-superblock /dev/nvme1n1 && sync
+mdadm --misc --zero-superblock /dev/md0p1 && sync
+mdadm --misc --zero-superblock /dev/md0p2 && sync
+mdadm --misc --zero-superblock /dev/nvme1n1p1 && sync
+mdadm --misc --zero-superblock /dev/nvme0n1p1 && sync
+mdadm --misc --zero-superblock /dev/md0 && sync
+mdadm --misc --zero-superblock /dev/nvme0n1 && sync
+mdadm --misc --zero-superblock /dev/nvme1n1 && sync
+mdadm --misc --zero-superblock /dev/md0p1 && sync
+mdadm --misc --zero-superblock /dev/md0p2 && sync
+mdadm --misc --zero-superblock /dev/nvme1n1p1 && sync
+mdadm --misc --zero-superblock /dev/nvme0n1p1 && sync
+mdadm --misc --zero-superblock /dev/md0 && sync
+mdadm --misc --zero-superblock /dev/nvme0n1 && sync
+mdadm --misc --zero-superblock /dev/nvme1n1 && sync
 echo "mdadm cleared"
 lsblk
 echo "unmount volumes"
-umount /dev/nvme0n1 && sync
-umount /dev/nvme1n1 && sync
+umount -f /dev/md0p1 && sync
+umount -f /dev/md0p2 && sync
+umount -f /dev/nvme1n1p1 && sync
+umount -f /dev/nvme0n1p1 && sync
+umount -f /dev/md0 && sync
+umount -f /dev/nvme0n1 && sync
+umount -f /dev/nvme1n1 && sync
 echo "volumes unmounted"
 lsblk
 echo "wipe disks"
@@ -40,6 +66,7 @@ echo "mdadm clear"
 mdadm --zero-superblock /dev/nvme0n1 && sync
 mdadm --zero-superblock /dev/nvme1n1 && sync
 echo "mdadm cleared"
+cat /proc/mdstat
 lsblk
 echo "volume partitioning"
 parted -s -a optimal /dev/nvme0n1 -- mklabel gpt mkpart primary xfs 0 100% set 1 raid on && sync
@@ -53,6 +80,7 @@ echo "creating mdadm raid0"
 # parted -s -a optimal /dev/nvme1n1 -- mkpart primary xfs 513MiB 100%
 mdadm --create /dev/md0 --verbose --level=raid0 --chunk=256 --raid-devices=2 /dev/nvme0n1p1 /dev/nvme1n1p1 && sync
 echo "raid0 volume created"
+cat /proc/mdstat
 lsblk
 echo "raid partitioning"
 parted -s -a optimal /dev/md0 -- mklabel gpt mkpart ESP fat32 1 513MiB set 1 boot on && sync
