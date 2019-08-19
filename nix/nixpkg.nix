@@ -1,9 +1,8 @@
 { config, pkgs, ... }:
-#let
-#  unstableTarball =
-#    fetchTarball
-#      https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz;
-#in
+let
+  unstableTarball = (import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs-channels/archive/nixos-unstable.tar.gz"));
+  waylandOverlay = (import (builtins.fetchTarball "https://github.com/colemickens/nixpkgs-wayland/archive/master.tar.gz"));
+in
 {
   nixpkgs = {
     config = {
@@ -28,6 +27,10 @@
       };
       pulseaudio = true;
     };
+    overlays = [
+      unstableTarball
+      waylandOverlay
+    ];
     overlays = [(self: super: {
       #bat = super.unstable.bat;
       #exa = super.unstable.exa;

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 SSD=/dev/nvme0n1
-PP=/dev/nvme0n1p1
-RP=/dev/nvme0n1p2
+PP=${SSD}p1
+RP=${SSD}p2
 EPN=enc-pv
 EP=/dev/mapper/$EPN
 EFI=/mnt/boot/efi
@@ -28,7 +28,7 @@ parted -s -a optimal $SSD -- mkpart primary xfs 513MiB 100%
 # lvcreate -L 8G -n swap vg
 # lvcreate -l '100%FREE' -n root vg
 
-mkfs.vfat -cvIF32 $PP
+mkfs.vfat -L boot -cvIF32 $PP
 mkfs.xfs -L root $RP
 # mkfs.xfs -L root /dev/vg/root
 # mkswap -L swap /dev/vg/swap

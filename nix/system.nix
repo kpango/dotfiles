@@ -2,10 +2,21 @@
 {
   fileSystems = {
     "/" = {
-      label = "root";
+      device = "/dev/disk/by-label/root";
+      fsType = "xfs";
       options = [ "noatime" "nodiratime" "discard" ];
+      label = "root";
     };
-    "/boot".label = "boot";
+    "/boot" = {
+      device = "/dev/disk/by-label/boot";
+      fsType = "vfat";
+      label = "boot";
+    };
+    # "/" = {
+    #   label = "root";
+    #   options = [ "noatime" "nodiratime" "discard" ];
+    # };
+    # "/boot".label = "boot";
   };
 
   time = {
@@ -14,7 +25,7 @@
   };
 
   system = {
-    stateVersion = "18.09"; # Did you read the comment?
+    stateVersion = "19.03"; # Did you read the comment?
     autoUpgrade = {
       enable = true;
       flags = lib.mkForce
