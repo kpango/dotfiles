@@ -58,7 +58,7 @@ umount -f /dev/nvme1n1 && sync
 swapoff /dev/nvme1n1p1
 echo "volumes unmounted"
 lsblk
-echo "remove partiion"
+echo "remove partition"
 echo "d
 3
 
@@ -89,6 +89,7 @@ echo "d
 
 
 w" | fdisk /dev/nvme1n1
+echo "partition removed"
 lsblk
 echo "wipe disks"
 wipefs -a /dev/nvme0n1 && sync
@@ -179,7 +180,7 @@ echo "download deps"
 rm -rf Xdefaults chroot.sh locale.gen mirrorlist
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/Xdefaults
 cp Xdefaults /mnt/home/kpango/.Xdefaults
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot_desk.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
 pacman -S archlinux-keyring mdadm
@@ -195,4 +196,4 @@ cp ./chroot.sh /mnt/chroot.sh
 echo LANG=en_US.UTF-8 > /mnt/etc/locale.conf
 mdadm --detail --scan >> /mnt/etc/mdadm.conf
 # arch-chroot /mnt
-arch-chroot /mnt sh /chroot.sh
+arch-chroot /mnt sh /chroot_desk.sh
