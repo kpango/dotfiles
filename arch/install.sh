@@ -71,7 +71,7 @@ pacman -S archlinux-keyring
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"
-pacstrap -i /mnt base base-devel archlinux-keyring intel-ucode dmenu rxvt-unicode git neovim zsh tmux wlc wayland sway i3status ntp docker ranger dosfstools grub efibootmgr
+pacstrap -i /mnt base base-devel archlinux-keyring intel-ucode dmenu rxvt-unicode git neovim zsh tmux wlc wayland sway i3status ntp docker ranger
 # pacstrap -i /mnt base base-devel archlinux-keyring intel-ucode dosfstools grub efibootmgr
 genfstab -U -p /mnt >> /mnt/etc/fstab
 cp ./mirrorlist /mnt/etc/pacman.d/mirrorlist

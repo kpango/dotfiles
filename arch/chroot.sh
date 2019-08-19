@@ -6,12 +6,29 @@ hwclock --systohc --localtime
 echo LANG=en_US.UTF-8 >> /etc/locale.conf
 systemctl enable dhcpcd
 passwd
-yaourt -S sway-dmenu-desktop
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
 sudo systemctl enable docker
 useradd -m -g users -G wheel -s /usr/bin/zsh kpango
 passwd kpango
 mkdir /boot/efi/EFI
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub --boot-directory=/boot/efi/EFI --recheck --debug
-grub-mkconfig -o /boot/efi/EFI/grub/grub.cfg
+# grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub --boot-directory=/boot/efi/EFI --recheck --debug
+# grub-mkconfig -o /boot/efi/EFI/grub/grub.cfg
+bootctl --path=/boot install
+DEVICE_ID=$(lsblk -f | grep nvme1n1p2 | awk '{print $3}')
+cat <<EOF > /boot/loader/entries/arch.conf
+title   Arch Linux
+linux   /vmlinuz-linux
+initrd  /initramfs-linux.img
+options root=UUID=${DEVICE_ID} rw
+EOF
+rm -rf /boot/loader/loader.conf
+cat <<EOF > /boot/loader/loader.conf
+default arch
+timeout 1
+editor no
+EOF
+
+bootctl update
+
+exit
