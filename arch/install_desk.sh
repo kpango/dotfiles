@@ -81,10 +81,10 @@ echo "mdadm cleared"
 cat /proc/mdstat
 lsblk
 echo "volume partitioning"
-parted -s -a optimal /dev/nvme0n1 -- mklabel gpt mkpart ESP fat32 0% 300MiB set 1 boot on
-parted -s -a optimal /dev/nvme0n1 -- mklabel gpt mkpart primary xfs 300MiB 100% set 2 raid on && sync
-parted -s -a optimal /dev/nvme1n1 -- mklabel gpt mkpart ESP fat32 0% 300MiB set 1 boot on
-parted -s -a optimal /dev/nvme1n1 -- mklabel gpt mkpart primary xfs 300MiB 100% set 2 raid on && sync
+parted -s -a optimal /dev/nvme0n1 -- mklabel gpt mkpart ESP fat32 0% 300MiB set 1 boot on && sync
+parted -s -a optimal /dev/nvme0n1 -- mkpart primary xfs 300MiB 100% set 2 raid on && sync
+parted -s -a optimal /dev/nvme1n1 -- mklabel gpt mkpart primary linux-swap 0% 300MiB set 1 swap on && sync
+parted -s -a optimal /dev/nvme1n1 -- mkpart primary xfs 300MiB 100% set 2 raid on && sync
 echo "volume partitioned"
 lsblk
 echo "creating mdadm raid0"
@@ -93,18 +93,20 @@ echo "raid0 volume created"
 cat /proc/mdstat
 lsblk
 echo "raid partitioning"
-parted -s -a optimal /dev/md0 -- mkpart primary xfs 0% 100% set 1 root on && sync
+parted -s -a optimal /dev/md0 -- mklabel gpt mkpart primary xfs 0% 100% set 1 root on && sync
 echo "raid partitioned"
 lsblk
 echo "raid formatting"
+mkswap /dev/nvme1n1p1
+swapon /dev/nvme1n1p1
 mkfs.vfat -L boot -cvIF32 /dev/nvme0n1p1 && sync
 mkfs.xfs -L root /dev/md0p1 && sync
 echo "raid formatted"
 lsblk
 echo "raid mount"
 mount /dev/md0p1 /mnt && sync
-mkdir -p /mnt/boot/efi
-mount /dev/nvme0n1p1 /mnt/boot/efi && sync
+mkdir -p /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot && sync
 mkdir -p /mnt/home/kpango
 echo "raid mounted"
 df -aT
