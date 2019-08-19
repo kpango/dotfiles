@@ -9,6 +9,7 @@ passwd
 yaourt -S sway-dmenu-desktop
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
+sudo systemctl enable docker
 useradd -m -g users -G wheel -s /usr/bin/zsh kpango
 passwd kpango
 sed -i -e "s/block filesystems/block mdadm_udev filesystems/g" /etc/mkinitcpio.conf
