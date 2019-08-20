@@ -1,199 +1,208 @@
 #!/bin/sh
+DEVICE1=/dev/nvme0n1
+DEVICE2=/dev/nvme1n1
+BOOT_PART=${DEVICE1}p1
+SWAP=${DEVICE2}p1
+RAID_PART1=${DEVICE1}p2
+RAID_PART2=${DEVICE2}p2
+RAID=/dev/md0
+ROOT_PART=${RAID}p1
+ROOT=/mnt
+BOOT=${ROOT}/boot
+ESP_SIZE=300MiB
+FILESYS=xfs
+
+unmount(){
+    umount -f ${BOOT} && sync
+    umount -f ${ROOT} && sync
+    umount -f ${ROOT_PART} && sync
+    umount -f ${RAID} && sync
+    umount -f ${BOOT_PART} && sync
+    umount -f ${RAID_PART1} && sync
+    umount -f ${RAID_PART2} && sync
+    swapoff ${SWAP}
+    umount -f ${DEVICE1} && sync
+    umount -f ${DEVICE2} && sync
+}
+
+unmdadm(){
+    mdadm -S ${ROOT_PART} && sync
+    mdadm -S ${RAID} && sync
+    mdadm -S ${BOOT_PART} && sync
+    mdadm -S ${SWAP} && sync
+    mdadm -S ${RAID_PART1} && sync
+    mdadm -S ${RAID_PART2} && sync
+    mdadm -S ${DEVICE1} && sync
+    mdadm -S ${DEVICE2} && sync
+    mdadm --misc --zero-superblock ${ROOT_PART} && sync
+    mdadm --misc --zero-superblock ${RAID} && sync
+    mdadm --misc --zero-superblock ${BOOT_PART} && sync
+    mdadm --misc --zero-superblock ${SWAP} && sync
+    mdadm --misc --zero-superblock ${RAID_PART1} && sync
+    mdadm --misc --zero-superblock ${RAID_PART2} && sync
+    mdadm --misc --zero-superblock ${DEVICE1} && sync
+    mdadm --misc --zero-superblock ${DEVICE2} && sync
+}
+
+rmpart(){
+echo "d
+3
+
+
+w" | fdisk $1
+echo "d
+2
+
+
+w" | fdisk $1
+echo "d
+1
+
+
+w" | fdisk $1
+}
+
+partition(){
+    parted -s -a optimal ${DEVICE1} -- mklabel gpt mkpart ESP fat32 0% ${ESP_SIZE} set 1 boot on && sync
+    parted -s -a optimal ${DEVICE1} -- mkpart primary ${FILESYS} ${ESP_SIZE} 100% set 2 raid on && sync
+    parted -s -a optimal ${DEVICE2} -- mklabel gpt mkpart primary linux-swap 0% ${ESP_SIZE} set 1 swap on && sync
+    parted -s -a optimal ${DEVICE2} -- mkpart primary ${FILESYS} ${ESP_SIZE} 100% set 2 raid on && sync
+}
+
 ip a
-rm -rf /mnt
+rm -rf ${ROOT}
 lsblk
 echo "unmount volumes"
-umount -f /mnt/boot
-umount -f /mnt
-umount -f /dev/md0p1 && sync
-umount -f /dev/md0p2 && sync
-umount -f /dev/nvme1n1p1 && sync
-umount -f /dev/nvme0n1p1 && sync
-umount -f /dev/md0 && sync
-umount -f /dev/nvme0n1 && sync
-umount -f /dev/nvme1n1 && sync
+unmount
 echo "volumes unmounted"
 lsblk
 echo "mdadm clear"
-mdadm -S /dev/md0p1 && sync
-mdadm -S /dev/md0p2 && sync
-mdadm -S /dev/nvme1n1p1 && sync
-mdadm -S /dev/nvme0n1p1 && sync
-mdadm -S /dev/md0 && sync
-mdadm -S /dev/nvme0n1 && sync
-mdadm -S /dev/nvme1n1 && sync
-mdadm --misc --zero-superblock /dev/md0p1 && sync
-mdadm --misc --zero-superblock /dev/md0p2 && sync
-mdadm --misc --zero-superblock /dev/nvme1n1p1 && sync
-mdadm --misc --zero-superblock /dev/nvme0n1p1 && sync
-mdadm --misc --zero-superblock /dev/md0 && sync
-mdadm --misc --zero-superblock /dev/nvme0n1 && sync
-mdadm --misc --zero-superblock /dev/nvme1n1 && sync
-mdadm -S /dev/md0p1 && sync
-mdadm -S /dev/md0p2 && sync
-mdadm -S /dev/nvme1n1p1 && sync
-mdadm -S /dev/nvme0n1p1 && sync
-mdadm -S /dev/md0 && sync
-mdadm -S /dev/nvme0n1 && sync
-mdadm -S /dev/nvme1n1 && sync
-mdadm --misc --zero-superblock /dev/md0p1 && sync
-mdadm --misc --zero-superblock /dev/md0p2 && sync
-mdadm --misc --zero-superblock /dev/nvme1n1p1 && sync
-mdadm --misc --zero-superblock /dev/nvme0n1p1 && sync
-mdadm --misc --zero-superblock /dev/md0 && sync
-mdadm --misc --zero-superblock /dev/nvme0n1 && sync
-mdadm --misc --zero-superblock /dev/nvme1n1 && sync
+unmdadm
+unmdadm
 echo "mdadm cleared"
 lsblk
 echo "unmount volumes"
-umount -f /mnt/boot
-umount -f /mnt
-umount -f /dev/md0p1 && sync
-umount -f /dev/md0p2 && sync
-umount -f /dev/nvme1n1p1 && sync
-umount -f /dev/nvme0n1p1 && sync
-umount -f /dev/md0 && sync
-umount -f /dev/nvme0n1 && sync
-umount -f /dev/nvme1n1 && sync
-swapoff /dev/nvme1n1p1
+unmount
 echo "volumes unmounted"
 lsblk
 echo "remove partition"
-echo "d
-3
-
-
-w" | fdisk /dev/nvme0n1
-echo "d
-2
-
-
-w" | fdisk /dev/nvme0n1
-echo "d
-1
-
-
-w" | fdisk /dev/nvme0n1
-echo "d
-3
-
-
-w" | fdisk /dev/nvme1n1
-echo "d
-2
-
-
-w" | fdisk /dev/nvme1n1
-echo "d
-1
-
-
-w" | fdisk /dev/nvme1n1
+rmpart ${DEVICE1}
+rmpart ${DEVICE2}
 echo "partition removed"
 lsblk
 echo "wipe disks"
-wipefs -a /dev/nvme0n1 && sync
-wipefs -a /dev/nvme1n1 && sync
+wipefs -a ${DEVICE1} && sync
+wipefs -a ${DEVICE2} && sync
 echo "disks wiped"
 lsblk
 echo "shred nvme0n1"
-shred -n 1 -z /dev/nvme0n1 && sync
+shred -n 1 -z ${DEVICE1} && sync
 echo "nvme0n1 shredded"
 lsblk
 echo "shred nvme1n1"
-shred -n 1 -z /dev/nvme1n1 && sync
+shred -n 1 -z ${DEVICE2} && sync
 echo "nvme1n1 shredded"
 lsblk
 echo "lvremove"
-lvremove /dev/nvme0n1 && sync
-lvremove /dev/nvme1n1 && sync
+lvremove ${DEVICE1} && sync
+lvremove ${DEVICE2} && sync
 echo "lvremoved"
 lsblk
 echo "pvremove"
-pvremove /dev/nvme0n1 && sync
-pvremove /dev/nvme1n1 && sync
+pvremove ${DEVICE1} && sync
+pvremove ${DEVICE2} && sync
 echo "pvremoved"
 lsblk
 echo "mdadm clear"
-mdadm -S /dev/md0p1 && sync
-mdadm -S /dev/md0p2 && sync
-mdadm -S /dev/nvme1n1p1 && sync
-mdadm -S /dev/nvme0n1p1 && sync
-mdadm -S /dev/md0 && sync
-mdadm -S /dev/nvme0n1 && sync
-mdadm -S /dev/nvme1n1 && sync
-mdadm --misc --zero-superblock /dev/md0p1 && sync
-mdadm --misc --zero-superblock /dev/md0p2 && sync
-mdadm --misc --zero-superblock /dev/nvme1n1p1 && sync
-mdadm --misc --zero-superblock /dev/nvme0n1p1 && sync
-mdadm --misc --zero-superblock /dev/md0 && sync
-mdadm --misc --zero-superblock /dev/nvme0n1 && sync
-mdadm --misc --zero-superblock /dev/nvme1n1 && sync
-mdadm -S /dev/md0p1 && sync
-mdadm -S /dev/md0p2 && sync
-mdadm -S /dev/nvme1n1p1 && sync
-mdadm -S /dev/nvme0n1p1 && sync
-mdadm -S /dev/md0 && sync
-mdadm -S /dev/nvme0n1 && sync
-mdadm -S /dev/nvme1n1 && sync
-mdadm --misc --zero-superblock /dev/md0p1 && sync
-mdadm --misc --zero-superblock /dev/md0p2 && sync
-mdadm --misc --zero-superblock /dev/nvme1n1p1 && sync
-mdadm --misc --zero-superblock /dev/nvme0n1p1 && sync
-mdadm --misc --zero-superblock /dev/md0 && sync
-mdadm --misc --zero-superblock /dev/nvme0n1 && sync
-mdadm --misc --zero-superblock /dev/nvme1n1 && sync
+unmdadm
+unmdadm
 echo "mdadm cleared"
 cat /proc/mdstat
 lsblk
 echo "volume partitioning"
-parted -s -a optimal /dev/nvme0n1 -- mklabel gpt mkpart ESP fat32 0% 300MiB set 1 boot on && sync
-parted -s -a optimal /dev/nvme0n1 -- mkpart primary xfs 300MiB 100% set 2 raid on && sync
-parted -s -a optimal /dev/nvme1n1 -- mklabel gpt mkpart primary linux-swap 0% 300MiB set 1 swap on && sync
-parted -s -a optimal /dev/nvme1n1 -- mkpart primary xfs 300MiB 100% set 2 raid on && sync
+partition
 echo "volume partitioned"
 lsblk
 echo "creating mdadm raid0"
-mdadm --create /dev/md0 --verbose --level=raid0 --chunk=256 --raid-devices=2 /dev/nvme0n1p2 /dev/nvme1n1p2 && sync
+mdadm --create ${RAID} --verbose --level=raid0 --chunk=256 --raid-devices=2 ${RAID_PART1} ${RAID_PART2} && sync
 echo "raid0 volume created"
 cat /proc/mdstat
 lsblk
 echo "raid partitioning"
-parted -s -a optimal /dev/md0 -- mklabel gpt mkpart primary xfs 0% 100% set 1 root on && sync
+parted -s -a optimal ${RAID} -- mklabel gpt mkpart primary ${FILESYS} 0% 100% set 1 root on && sync
 echo "raid partitioned"
 lsblk
 echo "raid formatting"
-mkswap /dev/nvme1n1p1 && sync
-swapon /dev/nvme1n1p1 && sync
-mkfs.vfat -f -cvIF32 /dev/nvme0n1p1 && sync
-mkfs.xfs -f /dev/md0p1 && sync
+mkswap ${SWAP} && sync
+swapon ${SWAP} && sync
+mkfs.vfat -cvIF32 ${BOOT_PART} && sync
+mkfs.${FILESYS} -f ${ROOT_PART} && sync
 echo "raid formatted"
 lsblk
 echo "raid mount"
-mount /dev/md0p1 /mnt && sync
-mkdir -p /mnt/boot
-mount /dev/nvme0n1p1 /mnt/boot && sync
-mkdir -p /mnt/home/kpango
+mount ${ROOT_PART} ${ROOT} && sync
+mkdir -p ${BOOT}
+mount ${BOOT_PART} ${BOOT} && sync
+mkdir -p ${ROOT}/home/kpango
 echo "raid mounted"
 df -aT
 echo "download deps"
 rm -rf Xdefaults chroot.sh locale.gen mirrorlist
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/Xdefaults
-cp Xdefaults /mnt/home/kpango/.Xdefaults
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot_desk.sh
+cp Xdefaults ${ROOT}/home/kpango/.Xdefaults
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/network/sysctl.conf
 pacman -S archlinux-keyring mdadm
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"
-pacstrap -i /mnt base base-devel archlinux-keyring intel-ucode dmenu rxvt-unicode git neovim zsh tmux wlc wayland sway i3status ntp docker ranger dosfstools grub efibootmgr mdadm
-# pacstrap -i /mnt base base-devel archlinux-keyring intel-ucode dosfstools grub efibootmgr mdadm
-genfstab -U -p /mnt >> /mnt/etc/fstab
-cp ./mirrorlist /mnt/etc/pacman.d/mirrorlist
-cp ./locale.gen /mnt/etc/locale.gen
-cp ./chroot.sh /mnt/chroot.sh
-echo LANG=en_US.UTF-8 > /mnt/etc/locale.conf
-mdadm --detail --scan >> /mnt/etc/mdadm.conf
-# arch-chroot /mnt
-arch-chroot /mnt sh /chroot_desk.sh
+pacstrap -i ${ROOT} \
+    base \
+    base-devel \
+    archlinux-keyring \
+    intel-ucode \
+    dmenu \
+    rxvt-unicode \
+    git \
+    neovim \
+    zsh \
+    tmux \
+    wlc \
+    wayland \
+    sway \
+    i3status \
+    ntp \
+    docker \
+    ranger \
+    dialog \
+    networkmanager \
+    network-manager-applet \
+    fcitx-im \
+    fcitx-configtool \
+    fcitx-mozc \
+    chromium \
+    alsa-utils \
+    apulse \
+    mdadm \
+    discord \
+    slack-desktop
+
+pacstrap -i ${ROOT} \
+    nvidia \
+    steam \
+    lib32-nvidia-utils 
+
+echo "pacstrap finished"
+genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
+cp ./mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
+cp ./locale.gen ${ROOT}/etc/locale.gen
+cp ./chroot.sh ${ROOT}/chroot.sh
+cp ./sysctl.conf ${ROOT}/etc/sysctl.conf
+echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
+mdadm --detail --scan >> ${ROOT}/etc/mdadm.conf
+arch-chroot ${ROOT} sh /chroot_desk.sh
+arch-chroot ${ROOT} sed -i -e "s/block filesystems/block mdadm_udev filesystems/g" /etc/mkinitcpio.conf
+arch-chroot ${ROOT} mkinitcpio -p linux
+mkinitcpio -p linux
