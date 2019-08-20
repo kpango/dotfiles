@@ -21,6 +21,8 @@ unmount(){
     umount -f ${RAID_PART1} && sync
     umount -f ${RAID_PART2} && sync
     swapoff ${SWAP}
+    swapoff -a
+    rm -f /swapfile
     umount -f ${DEVICE1} && sync
     umount -f ${DEVICE2} && sync
 }
