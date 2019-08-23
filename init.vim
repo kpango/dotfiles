@@ -793,6 +793,16 @@ AutocmdFT html,xhtml imap <buffer><expr><tab> emmet#isExpandable() ? "\<plug>(em
 AutocmdFT md,markdown let g:previm_open_cmd = 'open -a Google\ Chrome'
 
 " ------------------------
+" ---- Shell settings ----
+" ------------------------
+AutocmdFT *.zsh,*.bash,*.sh,zshrc let g:neoformat_sh_shfmt = {
+      \   'exe': 'shfmt',
+      \   'args': ['-l','-s','-i', 4],
+      \   'stdin': 1,
+      \ }
+Autocmd BufWritePre *.zsh,*.bash,*.sh,zshrc Neoformat
+
+" ------------------------
 " ---- Other settings ----
 " ------------------------
 " ---- Enable Binary Mode

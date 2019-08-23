@@ -22,21 +22,21 @@ export CPUCORES="$(getconf _NPROCESSORS_ONLN)"
 export TERMCMD="urxvtc -e $SHELL"
 
 #プログラミング環境構築
-export XDG_CONFIG_HOME=$HOME/.config;
-export NVIM_HOME=$XDG_CONFIG_HOME/nvim;
-export XDG_DATA_HOME=$NVIM_HOME/log;
-export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME;
-export NVIM_TUI_ENABLE_TRUE_COLOR=1;
-export NVIM_PYTHON_LOG_LEVEL=WARNING;
-export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log;
+export XDG_CONFIG_HOME=$HOME/.config
+export NVIM_HOME=$XDG_CONFIG_HOME/nvim
+export XDG_DATA_HOME=$NVIM_HOME/log
+export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME
+export NVIM_TUI_ENABLE_TRUE_COLOR=1
+export NVIM_PYTHON_LOG_LEVEL=WARNING
+export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log
 
 #GO
-export GOPATH=/go;
-export CGO_ENABLED=1;
+export GOPATH=/go
+export CGO_ENABLED=1
 export GO111MODULE=on
-export GOBIN=$GOPATH/bin;
-export GO15VENDOREXPERIMENT=1;
-export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go;
+export GOBIN=$GOPATH/bin
+export GO15VENDOREXPERIMENT=1
+export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go
 export CGO_CFLAGS="-g -Ofast -march=native"
 export CGO_CPPFLAGS="-g -Ofast -march=native"
 export CGO_CXXFLAGS="-g -Ofast -march=native"
@@ -50,28 +50,28 @@ export DOCKER_BUILDKIT=1
 export PYTHON_CONFIGURE_OPTS="--enable-shared"
 
 if type nvim >/dev/null 2>&1; then
-    export VIM=$(which nvim);
-    export VIMRUNTIME=/usr/share/nvim/runtime;
+    export VIM=$(which nvim)
+    export VIMRUNTIME=/usr/share/nvim/runtime
 else
-    export VIM=$(which vim);
-    export VIMRUNTIME=/usr/share/vim/vim*;
+    export VIM=$(which vim)
+    export VIMRUNTIME=/usr/share/vim/vim*
 fi
 
-export EDITOR=$VIM;
-export VISUAL=$VIM;
-export PAGER=$(which less);
-export SUDO_EDITOR=$EDITOR;
+export EDITOR=$VIM
+export VISUAL=$VIM
+export PAGER=$(which less)
+export SUDO_EDITOR=$EDITOR
 
 if type go >/dev/null 2>&1; then
-    export GOROOT="$(go env GOROOT)";
-    export GOOS="$(go env GOOS)";
-    export GOARCH="$(go env GOARCH)";
+    export GOROOT="$(go env GOROOT)"
+    export GOOS="$(go env GOOS)"
+    export GOARCH="$(go env GOARCH)"
 fi
 
-export ZPLUG_HOME=$HOME/.zplug;
+export TERM="tmux-256color"
+export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:/root/.cargo/bin:$GCLOUD_PATH/bin:$PATH"
 
-export TERM="tmux-256color";
-export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:/root/.cargo/bin:$GCLOUD_PATH/bin:$PATH";
+export ZPLUG_HOME=$HOME/.zplug
 
 if [ -e $ZPLUG_HOME/repos/zsh-users/zsh-completions ]; then
     fpath=($ZPLUG_HOME/repos/zsh-users/zsh-completions/src $fpath)
@@ -115,6 +115,8 @@ if [[ -f ~/.zplug/init.zsh ]]; then
     zplug "zsh-users/zsh-syntax-highlighting", defer:2
     zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
     zplug "greymd/tmux-xpanes"
+    zplug "felixr/docker-zsh-completion"
+    # zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
 
     if ! zplug check --verbose; then
         zplug install
@@ -168,7 +170,6 @@ zstyle ':completion:*' format '%B%d%b'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' ignore-parents parent pwd ..
 zstyle ':completion:*' keep-prefix
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' menu select
 zstyle ':completion:*' squeeze-slashes true
@@ -181,7 +182,6 @@ zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-d
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'expand'
 zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:default' list-prompt '%S%M matches%s'
 zstyle ':completion:*:default' menu select=1
 zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
@@ -220,11 +220,11 @@ add-zsh-hook precmd _update_vcs_info_msg
 
 ########################################
 # オプション
-setopt auto_cd              # ディレクトリ名だけでcdする
-setopt auto_list            # 補完候補を一覧表示
-setopt auto_menu            # 補完候補が複数あるときに自動的に一覧表示する
-setopt auto_param_keys      # カッコの対応などを自動的に補完
-setopt auto_pushd           # cd したら自動的にpushdする
+setopt auto_cd         # ディレクトリ名だけでcdする
+setopt auto_list       # 補完候補を一覧表示
+setopt auto_menu       # 補完候補が複数あるときに自動的に一覧表示する
+setopt auto_param_keys # カッコの対応などを自動的に補完
+setopt auto_pushd      # cd したら自動的にpushdする
 setopt correct
 setopt extended_glob
 setopt ignore_eof
@@ -236,16 +236,16 @@ setopt no_beep              # beep を無効にする
 setopt no_flow_control      # フローコントロールを無効にする
 setopt noautoremoveslash    # 最後のスラッシュを自動的に削除しない
 setopt nonomatch
-setopt notify               # バックグラウンドジョブの状態変化を即時報告
-setopt print_eight_bit      # 日本語ファイル名を表示可能にする
-setopt prompt_subst         # プロンプト定義内で変数置換やコマンド置換を扱う
-setopt pushd_ignore_dups    # 重複したディレクトリを追加しない
+setopt notify            # バックグラウンドジョブの状態変化を即時報告
+setopt print_eight_bit   # 日本語ファイル名を表示可能にする
+setopt prompt_subst      # プロンプト定義内で変数置換やコマンド置換を扱う
+setopt pushd_ignore_dups # 重複したディレクトリを追加しない
 ########################################
 # ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
 bindkey -e
 bindkey '^R' history-incremental-pattern-search-backward
 
-fzf-z-search (){
+fzf-z-search() {
     local res=$(history -n 1 | tail -f | fzf)
     if [ -n "$res" ]; then
         BUFFER+="$res"
@@ -257,7 +257,18 @@ fzf-z-search (){
 zle -N fzf-z-search
 bindkey '^s' fzf-z-search
 
-alias docker="docker"
+if type docker >/dev/null 2>&1; then
+    alias dls='docker ps'
+    alias dsh='\sudo \docker run -it '
+    docker() {
+        if type sudo >/dev/null 2>&1; then
+            sudo docker $@
+        else
+            docker $@
+        fi
+    }
+    alias docker=docker
+fi
 
 alias open="xdg-open"
 
@@ -270,51 +281,51 @@ if type git >/dev/null 2>&1; then
     alias gcom="git commit -m"
     alias gdiff="git diff"
     alias gbra="git branch"
-    gitthisrepo(){
-        git symbolic-ref --short HEAD|tr -d "\n"
+    gitthisrepo() {
+        git symbolic-ref --short HEAD | tr -d "\n"
     }
     alias tb=gitthisrepo
-    gfr(){
-        git fetch --prune;
-        git reset --hard origin/$(tb);
+    gfr() {
+        git fetch --prune
+        git reset --hard origin/$(tb)
         git branch -r --merged master | grep -v -e master -e develop | sed -e 's% *origin/%%' | xargs -I% git push --delete origin %
-        git fetch --prune;
-        git reset --hard origin/$(tb);
+        git fetch --prune
+        git reset --hard origin/$(tb)
         git branch --merged master | grep -vE '^\*|master$|develop$' | xargs -I % git branch -d %
     }
     alias gfr=gfr
-    gfrs(){
+    gfrs() {
         gfr
         git submodule foreach git pull origin master
     }
     alias gfrs=gfrs
-    gitpull(){
+    gitpull() {
         git pull --rebase origin $(tb)
     }
     alias gpull=gitpull
-    gpush(){
+    gpush() {
         git push -u origin $(tb)
     }
     alias gpush=gpush
-    gitcompush(){
-        git add -A;
-        git commit --signoff -m $1;
-        git push -u origin $2;
+    gitcompush() {
+        git add -A
+        git commit --signoff -m $1
+        git push -u origin $2
     }
     alias gitcompush=gitcompush
-    gcp(){
-        gitcompush $1 "$(tb)";
+    gcp() {
+        gitcompush $1 "$(tb)"
     }
     alias gcp=gcp
     alias gfix="gcp fix"
     alias gedit="$EDITOR $HOME/.gitconfig"
-    git-remote-add-merge(){
+    git-remote-add-merge() {
         git remote add upstream $1
         git fetch upstream
         git merge upstream/master
     }
     alias grfa=git-remote-add-merge
-    git-remote-merge(){
+    git-remote-merge() {
         git fetch upstream
         git merge upstream/master
     }
@@ -322,18 +333,19 @@ if type git >/dev/null 2>&1; then
 fi
 
 if type go >/dev/null 2>&1; then
-    go-get(){
+    go-get() {
         rm -rf $GOPATH/src/$1
-        go get -u -f -v -fix $1;
-        go install $1;
+        go get -u -f -v -fix $1
+        go install $1
     }
 
-    goup(){
+    goup() {
         mv $GOPATH/src/github.com/kpango \
-           $GOPATH/src/github.com/azamasu \
-           $GOPATH/src/github.com/parheliondb \
-           $GOPATH/src/github.com/yahoojapan \
-           $HOME/
+            $GOPATH/src/github.com/azamasu \
+            $GOPATH/src/github.com/parheliondb \
+            $GOPATH/src/github.com/yahoojapan \
+            $GOPATH/src/github.com/vdaas \
+            $HOME/
         rm -rf "$GOPATH/bin" "$GOPATH/pkg" "$GOPATH/cache" \
             "$GOPATH/src/github.com" \
             "$GOPATH/src/golang.org" \
@@ -342,7 +354,7 @@ if type go >/dev/null 2>&1; then
             "$GOPATH/src/code.cloudfoundry.org" \
             "$GOPATH/src/sourcegraph.com" \
             "$GOPATH/src/honnef.co" \
-            "$GOPATH/src/sigs.k8s.io" \
+            "$GOPATH/src/sigs.k8s.io"
 
         go get -u \
             github.com/cweill/gotests/... \
@@ -379,14 +391,14 @@ if type go >/dev/null 2>&1; then
             google.golang.org/grpc \
             honnef.co/go/tools/cmd/keyify \
             sigs.k8s.io/kustomize \
-            sourcegraph.com/sqs/goreturns \
-            && git clone https://github.com/saibing/bingo.git \
-            && cd bingo \
-            && GO111MODULE=on go install \
-            && git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
-            && cp /tmp/FlameGraph/flamegraph.pl /go/bin/ \
-            && cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ \
-            && cp /tmp/FlameGraph/stackcollapse-go.pl /go/bin/
+            sourcegraph.com/sqs/goreturns &&
+            git clone https://github.com/saibing/bingo.git &&
+            cd bingo &&
+            GO111MODULE=on go install &&
+            git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph &&
+            cp /tmp/FlameGraph/flamegraph.pl /go/bin/ &&
+            cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ &&
+            cp /tmp/FlameGraph/stackcollapse-go.pl /go/bin/
 
         wait
 
@@ -398,14 +410,15 @@ if type go >/dev/null 2>&1; then
             "$GOPATH/src/code.cloudfoundry.org" \
             "$GOPATH/src/sourcegraph.com" \
             "$GOPATH/src/honnef.co" \
-            "$GOPATH/src/sigs.k8s.io" \
+            "$GOPATH/src/sigs.k8s.io"
 
         mkdir -p $GOPATH/src/github.com
         mv $HOME/kpango \
-           $HOME/azamasu \
-           $HOME/parheliondb \
-           $HOME/yahoojapan \
-           $GOPATH/src/github.com/
+            $HOME/azamasu \
+            $HOME/parheliondb \
+            $HOME/yahoojapan \
+            $HOME/vdaas \
+            $GOPATH/src/github.com/
 
         $VIM main.go +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
 
@@ -415,7 +428,7 @@ if type go >/dev/null 2>&1; then
         gocode set unimported-packages true
     }
 
-    cover () {
+    cover() {
         t=$(mktemp -t cover)
         go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -func=$t && unlink $t
     }
@@ -427,19 +440,18 @@ if type go >/dev/null 2>&1; then
     alias goui=goimports-update-ignore
     alias goup=goup
 
-    gobg-build(){
-        while true;
-        do 
-            if [ ! $(git -C $PWD diff --name-only HEAD | wc -l ) -eq 0 ]; then
-                go build;
-                ./${PWD##*/};
-            fi;
-            sleep 2;
-        done;
+    gobg-build() {
+        while true; do
+            if [ ! $(git -C $PWD diff --name-only HEAD | wc -l) -eq 0 ]; then
+                go build
+                ./${PWD##*/}
+            fi
+            sleep 2
+        done
     }
     alias gobg-build=gobg-build
 
-    go-bench(){
+    go-bench() {
         if [ $# -eq 2 ]; then
             go test -count=$1 -run=NONE -bench $2 -benchmem
         else
@@ -447,7 +459,7 @@ if type go >/dev/null 2>&1; then
         fi
     }
     alias gobench=go-bench
-    go-pprof-out(){
+    go-pprof-out() {
         go test -count=10 -run=NONE -bench=. -benchmem -o pprof/test.bin -cpuprofile pprof/cpu.out -memprofile pprof/mem.out
     }
     alias gprofout=go-pprof-out
@@ -460,7 +472,8 @@ mkcd() {
     else
         printf "Confirm to Make Directory? $1 [y/N]: "
         if read -q; then
-            echo; \mkdir -p $1 && \cd $1
+            echo
+            \mkdir -p $1 && \cd $1
         fi
     fi
 }
@@ -496,48 +509,48 @@ else
 fi
 
 if type gem >/dev/null 2>&1; then
-    gemup(){
-        chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/;
-        chmod -R 777 /Library/Ruby/;
-        gem update --system;
-        gem update;
+    gemup() {
+        chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/
+        chmod -R 777 /Library/Ruby/
+        gem update --system
+        gem update
     }
     alias gemup=gemup
 fi
 
 if type npm >/dev/null 2>&1; then
-    npmup(){
-        npm i -g npm;
-        npm update -g npm;
-        npm update -g;
-        npm upgrade -g;
+    npmup() {
+        npm i -g npm
+        npm update -g npm
+        npm update -g
+        npm upgrade -g
     }
     alias npmup=npmup
 fi
 
 if type pip >/dev/null 2>&1; then
-    pipup(){
-        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;
-        pip install --upgrade pip;
-        pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip install -U --upgrade;
+    pipup() {
+        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages
+        pip install --upgrade pip
+        pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -P $CPUCORES pip install -U --upgrade
     }
     alias pipup=pipup
 fi
 
 if type pip2 >/dev/null 2>&1; then
-    pip2up(){
-        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages;
-        pip2 install --upgrade pip;
-        pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip2 install -U --upgrade;
+    pip2up() {
+        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages
+        pip2 install --upgrade pip
+        pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -P $CPUCORES pip2 install -U --upgrade
     }
     alias pip2up=pip2up
 fi
 
 if type pip3 >/dev/null 2>&1; then
-    pip3up(){
-        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages;
-        pip3 install --upgrade pip;
-        pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs -P $CPUCORES pip3 install -U --upgrade;
+    pip3up() {
+        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages
+        pip3 install --upgrade pip
+        pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -P $CPUCORES pip3 install -U --upgrade
     }
     alias pip3up=pip3up
 fi
@@ -572,26 +585,22 @@ if type fzf >/dev/null 2>&1; then
     fi
 fi
 
-rsagen(){
+rsagen() {
     ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
 }
 alias rsagen=rsagen
-ecdsagen(){
+ecdsagen() {
     ssh-keygen -t ecdsa -b 521 -P $1 -f $HOME/.ssh/id_ecdsa -C $USER
 }
 alias ecdsagen=ecdsagen
 
-edgen(){
+edgen() {
     ssh-keygen -t ed25519 -P $1 -f $HOME/.ssh/id_ed -C $USER
 }
 alias edgen=edgen
 
-
-
-
-
 if type rails >/dev/null 2>&1; then
-    alias railskill="kill -9 `ps aux | grep rails | awk '{print $2}'`"
+    alias railskill="kill -9 $(ps aux | grep rails | awk '{print $2}')"
 fi
 
 alias tarzip="tar Jcvf"
@@ -613,42 +622,38 @@ if type tmux >/dev/null 2>&1; then
 fi
 alias tedit="$EDITOR $HOME/.tmux.conf"
 
-zscompile(){
+zscompile() {
     for f in $(find $HOME -name "*.zsh"); do
-        zcompile $f;
-    done;
+        zcompile $f
+    done
 }
 alias zscompile=zscompile
-zshaddhistory(){
-    whence ${${(z)1}[1]} >| /dev/null || return 1
-}
-alias zshaddhistory=zshaddhistory
 
-zsup(){
-    rm -rf $HOME/.zcompd*;
-    rm -rf $HOME/.zplug/zcompd*;
-    rm $HOME/.zshrc.zwc;
-    zplug update;
-    zplug clean;
-    zplug clear;
-    zplug info;
-    rm -rf $HOME/.bashrc;
-    rm -rf $HOME/.fzf.bash;
-    zscompile;
+zsup() {
+    rm -rf $HOME/.zcompd*
+    rm -rf $HOME/.zplug/zcompd*
+    rm $HOME/.zshrc.zwc
+    zplug update
+    zplug clean
+    zplug clear
+    zplug info
+    rm -rf $HOME/.bashrc
+    rm -rf $HOME/.fzf.bash
+    zscompile
 }
 alias zsup=zsup
 
-zsinit(){
-    rm -rf $ZPLUG_HOME;
-    rm -rf $HOME/.zcompd*;
-    rm -rf $HOME/.zplug/zcompd*;
-    rm -rf $HOME/.zshrc.zwc;
+zsinit() {
+    rm -rf $ZPLUG_HOME
+    rm -rf $HOME/.zcompd*
+    rm -rf $HOME/.zplug/zcompd*
+    rm -rf $HOME/.zshrc.zwc
 }
 alias zsinit=zsinit
 
-zstime(){
+zstime() {
     for i in $(seq 1 $1); do
-        time (zsh -i -c exit);
+        time (zsh -i -c exit)
     done
 }
 alias zstime=zstime
@@ -657,7 +662,7 @@ alias zedit="$EDITOR $HOME/.zshrc"
 
 alias zsback="cp $HOME/.zshrc $HOME/.zshrc.back"
 
-greptext(){
+greptext() {
     if [ $# -eq 2 ]; then
         if type rg >/dev/null 2>&1; then
             rg $2 $1
@@ -674,41 +679,40 @@ greptext(){
 }
 alias gt=greptext
 
-chword(){
+chword() {
     if [ $# -eq 3 ]; then
         if type rg >/dev/null 2>&1; then
-            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s/$2/$3/g";
+            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s/$2/$3/g"
         elif type jvgrep >/dev/null 2>&1; then
-            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
-                | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r |
+                xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g"
         else
             find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
                 -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
-                -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g";
+                -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s/$2/$3/g"
         fi
     elif [ $# -eq 4 ]; then
         if type rg >/dev/null 2>&1; then
-            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s$4$2$4$3$4g";
+            rg -l $2 $1 | xargs -t -P $CPUCORES sed -i "" -E "s$4$2$4$3$4g"
         elif type jvgrep >/dev/null 2>&1; then
-            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r \
-                | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g";
+            jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r |
+                xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g"
         else
             find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
                 -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
-                -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g";
+                -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i "" -e "s$4$2$4$3$4g"
         fi
     else
         echo "Not enough arguments"
     fi
 }
-alias chword=chword;
-
+alias chword=chword
 
 if type bat >/dev/null 2>&1; then
     alias cat=bat
 fi
 
-alias :q=exit;
+alias :q=exit
 
 alias 600='chmod -R 600'
 alias 644='chmod -R 644'
@@ -718,21 +722,20 @@ alias 777='chmod -R 777'
 
 if type nvim >/dev/null 2>&1; then
 
-    alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall"; 
-
-    nvim-init(){
-        rm -rf "$HOME/.config/gocode";
-        rm -rf "$HOME/.config/nvim/autoload";
-        rm -rf "$HOME/.config/nvim/ftplugin";
-        rm -rf "$HOME/.config/nvim/log";
-        rm -rf "$HOME/.config/nvim/plugged";
-        nvup;
-        rm "$HOME/.nvimlog";
-        rm "$HOME/.viminfo";
+    alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall"
+    nvim-init() {
+        rm -rf "$HOME/.config/gocode"
+        rm -rf "$HOME/.config/nvim/autoload"
+        rm -rf "$HOME/.config/nvim/ftplugin"
+        rm -rf "$HOME/.config/nvim/log"
+        rm -rf "$HOME/.config/nvim/plugged"
+        nvup
+        rm "$HOME/.nvimlog"
+        rm "$HOME/.viminfo"
     }
     alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
-    alias nvinit="nvim-init";
-    alias vback="cp $HOME/.config/nvim/init.vim $HOME/.config/nvim/init.vim.back";
+    alias nvinit="nvim-init"
+    alias vback="cp $HOME/.config/nvim/init.vim $HOME/.config/nvim/init.vim.back"
     alias vake="$EDITOR Makefile"
     alias vocker="$EDITOR Dockerfile"
 else
@@ -747,8 +750,8 @@ alias v="$EDITOR"
 
 eval $(thefuck --alias --enable-experimental-instant-mode)
 
-kubectl () {
-    local kubectl="$(whence -p kubectl 2> /dev/null)"
+kubectl() {
+    local kubectl="$(whence -p kubectl 2>/dev/null)"
     [ -z "$_lazy_kubectl_completion" ] && {
         source <("$kubectl" completion zsh)
         complete -o default -F __start_kubectl k
@@ -756,8 +759,8 @@ kubectl () {
     }
     "$kubectl" "$@"
 }
-alias kubectl=kubectl;
-alias k=kubectl;
+alias kubectl=kubectl
+alias k=kubectl
 alias kpall="k get pods --all-namespaces -o wide"
 alias ksall="k get svc --all-namespaces -o wide"
 alias kiall="k get ingress --all-namespaces -o wide"
@@ -767,6 +770,6 @@ alias kdall="k get deployment --all-namespaces -o wide"
 
 nvim +UpdateRemotePlugins +qall
 tmux has-session >/dev/null 2>&1 && if [ -z "${TMUX}" ]; then
-# if [[ $SHLVL = 2 && -z $TMUX ]]; then
+    # if [[ $SHLVL = 2 && -z $TMUX ]]; then
     tmux -2 new-session
 fi
