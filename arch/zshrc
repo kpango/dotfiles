@@ -16,6 +16,7 @@ if [ -z $DOTENV_LOADED ]; then
     export LC_TIME=en_US.UTF-8
 
     export PASSWORD="PASSWORD"
+    export GDK_BACKEND="wayland"
 
     [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 

@@ -138,8 +138,6 @@ pacstrap -i ${ROOT} \
     # nvidia \
     # steam \
     # lib32-nvidia-utils \
-    discord \
-    slack-desktop
 echo "pacstrap finished"
 
 genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab

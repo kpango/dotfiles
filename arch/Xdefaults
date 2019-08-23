@@ -21,7 +21,7 @@ URxvt*scrollBar:            false
 URxvt.saveLines:            10000
 URxvt.internalBorder:       3
 URxvt.lineSpace:            0
-URxvt.inputMethod:          ibus
+URxvt.inputMethod:          fcitx
 
 ! Fonts
 URxvt.allow_bold:           false
@@ -37,9 +37,13 @@ URxvt.scrollBar:            false
 URxvt.termName: rxvt-unicode-256color
 
 ! Perl extensions
-URxvt.perl-ext-common:      default,tabbedex,clipboard
+URxvt.perl-ext-common:      default,tabbedex,clipboard,matcher,xim-onthespot,url-select,resize-font
 URxvt.matcher.button:       1
+URxvt.matcher.rend.0:       Uline Bold fg5
 URxvt.urlLauncher:          chromium
+URxvt.url-select.launcher:  chromium
+URxvt.url-select.underline: true
+URxvt.keysym.M-u:           perl:url-select:select_next
 URxvt.keysym.M-t:           perl:tabbedex:new_tab
 URxvt.keysym.M-n:           perl:tabbedex:next_tab
 URxvt.keysym.M-p:           perl:tabbedex:prev_tab

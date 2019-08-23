@@ -1,13 +1,13 @@
 #!/bin/sh
-sed -i -e "s/COMPRESSXZ.*/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
-sed -i -e "s/# Color/Color/g" /etc/pacman.conf
+sed -i -e "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
+sed -i -e "s/#Color/Color/g" /etc/pacman.conf
 git clone https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 cd ../
 rm -r yay
 pacman -Rs go
-yay -S ttf-ricty sway-dmenu-desktop
+yay -S ttf-ricty discord slack-desktop urxvt-perls urxvt-resize-font-git
 HOST="archpango"
 echo archpango >> /etc/hostname
 cat <<EOF > /etc/hosts
