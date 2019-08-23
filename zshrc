@@ -268,6 +268,7 @@ if type docker >/dev/null 2>&1; then
         fi
     }
     alias docker=docker
+    [ -f $$HOME/.aliases ] && source $$HOME/.aliases
 fi
 
 alias open="xdg-open"
@@ -508,53 +509,6 @@ else
     alias lg='ls -a | rg'
 fi
 
-if type gem >/dev/null 2>&1; then
-    gemup() {
-        chmod -R 777 $HOME/.anyenv/envs/rbenv/versions/
-        chmod -R 777 /Library/Ruby/
-        gem update --system
-        gem update
-    }
-    alias gemup=gemup
-fi
-
-if type npm >/dev/null 2>&1; then
-    npmup() {
-        npm i -g npm
-        npm update -g npm
-        npm update -g
-        npm upgrade -g
-    }
-    alias npmup=npmup
-fi
-
-if type pip >/dev/null 2>&1; then
-    pipup() {
-        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages
-        pip install --upgrade pip
-        pip freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -P $CPUCORES pip install -U --upgrade
-    }
-    alias pipup=pipup
-fi
-
-if type pip2 >/dev/null 2>&1; then
-    pip2up() {
-        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python2.7/site-packages
-        pip2 install --upgrade pip
-        pip2 freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -P $CPUCORES pip2 install -U --upgrade
-    }
-    alias pip2up=pip2up
-fi
-
-if type pip3 >/dev/null 2>&1; then
-    pip3up() {
-        chown -R $(whoami) $HOME/.anyenv/envs/pyenv/versions/$(python3 -V 2>&1 >/dev/null | sed -e 's/Python\ //g')/lib/python3.7/site-packages
-        pip3 install --upgrade pip
-        pip3 freeze --local | grep -v '^\-e' | cut -d = -f 1 | xargs -P $CPUCORES pip3 install -U --upgrade
-    }
-    alias pip3up=pip3up
-fi
-
 alias mkcd=mkcd
 alias ..='\cd ../'
 alias ...='\cd ../../'
@@ -585,19 +539,27 @@ if type fzf >/dev/null 2>&1; then
     fi
 fi
 
-rsagen() {
-    ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
-}
-alias rsagen=rsagen
-ecdsagen() {
-    ssh-keygen -t ecdsa -b 521 -P $1 -f $HOME/.ssh/id_ecdsa -C $USER
-}
-alias ecdsagen=ecdsagen
+if type ssh-keygen >/dev/null 2>&1; then
+    rsagen() {
+        ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
+    }
+    alias rsagen=rsagen
+    ecdsagen() {
+        ssh-keygen -t ecdsa -b 521 -P $1 -f $HOME/.ssh/id_ecdsa -C $USER
+    }
+    alias ecdsagen=ecdsagen
 
-edgen() {
-    ssh-keygen -t ed25519 -P $1 -f $HOME/.ssh/id_ed -C $USER
-}
-alias edgen=edgen
+    edgen() {
+        ssh-keygen -t ed25519 -P $1 -f $HOME/.ssh/id_ed -C $USER
+    }
+    alias edgen=edgen
+    alias sedit="$EDITOR $HOME/.ssh/config"
+    sshls() {
+        rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
+    }
+    alias sshls=sshls
+    alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;sudo rm -rf $HOME/.ssh/master_kpango@192.168.2.*;chmod 600 $HOME/.ssh/config"
+fi
 
 if type rails >/dev/null 2>&1; then
     alias railskill="kill -9 $(ps aux | grep rails | awk '{print $2}')"
@@ -747,6 +709,9 @@ alias vim="$EDITOR"
 alias bim="$EDITOR"
 alias cim="$EDITOR"
 alias v="$EDITOR"
+alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
+alias xedit="$EDITOR $HOME/.Xdefaults"
+alias wedit="$EDITOR $HOME/.config/sway/config"
 
 eval $(thefuck --alias --enable-experimental-instant-mode)
 
@@ -769,6 +734,7 @@ alias kdall="k get deployment --all-namespaces -o wide"
 # source <(kubectl completion zsh);
 
 nvim +UpdateRemotePlugins +qall
+
 tmux has-session >/dev/null 2>&1 && if [ -z "${TMUX}" ]; then
     # if [[ $SHLVL = 2 && -z $TMUX ]]; then
     tmux -2 new-session

@@ -795,9 +795,9 @@ AutocmdFT md,markdown let g:previm_open_cmd = 'open -a Google\ Chrome'
 " ------------------------
 " ---- Shell settings ----
 " ------------------------
-AutocmdFT *.zsh,*.bash,*.sh,zshrc let g:neoformat_sh_shfmt = {
+AutocmdFT *.zsh,*.bash,*.sh,zshrc let g:neoformat_zsh_shfmt = {
       \   'exe': 'shfmt',
-      \   'args': ['-l','-s','-i', 4],
+      \   'args': ['-l','-w','-s','-i', 4],
       \   'stdin': 1,
       \ }
 Autocmd BufWritePre *.zsh,*.bash,*.sh,zshrc Neoformat

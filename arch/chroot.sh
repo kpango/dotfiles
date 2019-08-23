@@ -7,17 +7,17 @@ makepkg -si
 cd ../
 rm -r yay
 pacman -Rs go
-yay -S ttf-hackgen wlroots-git sway-git discord slack-desktop urxvt-perls urxvt-resize-font-git rofi waybar-git ripgrep-git exa-git chrome-remote-desktop thefuck systemd-boot-pacman-hook nodejs
+yay -S ttf-hackgen wlroots-git sway-git discord slack-desktop urxvt-perls urxvt-resize-font-git rofi waybar-git ripgrep-git exa-git chrome-remote-desktop thefuck systemd-boot-pacman-hook nodejs yarn
 HOST="archpango"
-echo archpango >> /etc/hostname
-cat <<EOF > /etc/hosts
+echo archpango >>/etc/hostname
+cat <<EOF >/etc/hosts
 127.0.0.1 localhost.localdomain localhost.local localhost ${HOST}.localdomain ${HOST}.local ${HOST}
 ::1 localhost.localdomain localhost ${HOST}.localdomain ${HOST}.local ${HOST}
 EOF
 ln -sfv /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 locale-gen
 hwclock --systohc --localtime
-echo LANG=en_US.UTF-8 >> /etc/locale.conf
+echo LANG=en_US.UTF-8 >>/etc/locale.conf
 passwd
 sudo systemctl enable ntpd
 sudo systemctl start ntpd
@@ -30,19 +30,19 @@ mkdir /boot/efi/EFI
 bootctl --path=/boot install
 DEVICE_ID=$(lsblk -f | grep p2 | awk '{print $3}')
 echo ${DEVICE_ID}
-cat <<EOF > /boot/loader/entries/arch.conf
+cat <<EOF >/boot/loader/entries/arch.conf
 title   Arch Linux
 linux   /vmlinuz-linux
 initrd  /initramfs-linux.img
 options root=UUID=${DEVICE_ID} rw
 EOF
 rm -rf /boot/loader/loader.conf
-cat <<EOF > /boot/loader/loader.conf
+cat <<EOF >/boot/loader/loader.conf
 default arch
 timeout 1
 editor no
 EOF
-cat <<EOF >> /etc/profile
+cat <<EOF >>/etc/profile
 export GTK_IM_MODULE=fcitx
 export QT_IM_MODULE=fcitx
 export XMODIFIERS=@im=fcitx

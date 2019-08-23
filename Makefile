@@ -12,6 +12,7 @@ link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/coc-settings.json $(HOME)/.config/nvim/coc-settings.json
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/monokai.vim $(HOME)/.config/nvim/colors/monokai.vim
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/zshrc $(HOME)/.zshrc
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/alias $(HOME)/.aliases
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitconfig $(HOME)/.gitconfig
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitattributes $(HOME)/.gitattributes
