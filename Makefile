@@ -7,6 +7,7 @@ run:
 
 link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/alias $(HOME)/.aliases
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitconfig $(HOME)/.gitconfig
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
