@@ -6,8 +6,22 @@ run:
 	source ./alias && devrun
 
 link:
+	mkdir -p ${HOME}/.config/nvim/colors
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/init.vim $(HOME)/.config/nvim/init.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/coc-settings.json $(HOME)/.config/nvim/coc-settings.json
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/monokai.vim $(HOME)/.config/nvim/colors/monokai.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/alias $(HOME)/.aliases
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitconfig $(HOME)/.gitconfig
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitattributes $(HOME)/.gitattributes
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitignore $(HOME)/.gitignore
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/tmux.conf $(HOME)/.tmux.conf
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/tmux-kube $(HOME)/.tmux-kube
+
+arch_link:
+	mkdir -p ${HOME}/.config/sway
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/sway.conf $(HOME)/.config/sway/config
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc

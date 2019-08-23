@@ -7,7 +7,7 @@ makepkg -si
 cd ../
 rm -r yay
 pacman -Rs go
-yay -S ttf-ricty discord slack-desktop urxvt-perls urxvt-resize-font-git
+yay -S ttf-hackgen wlroots-git sway-git discord slack-desktop urxvt-perls urxvt-resize-font-git rofi waybar-git ripgrep-git exa-git chrome-remote-desktop thefuck systemd-boot-pacman-hook nodejs
 HOST="archpango"
 echo archpango >> /etc/hostname
 cat <<EOF > /etc/hosts

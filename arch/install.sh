@@ -93,13 +93,11 @@ echo "mount"
 mount ${ROOT_PART} ${ROOT} && sync
 mkdir -p ${BOOT}
 mount ${BOOT_PART} ${BOOT} && sync
-mkdir -p ${ROOT}/home/kpango
+mkdir -p ${ROOT}/home/kpango/go/src/github.com/kpango
 echo "mounted"
 df -aT
 echo "download deps"
-rm -rf Xdefaults chroot.sh locale.gen mirrorlist
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/Xdefaults
-cp Xdefaults ${ROOT}/home/kpango/.Xdefaults
+rm -rf chroot.sh locale.gen mirrorlist
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
@@ -113,31 +111,33 @@ pacstrap -i ${ROOT} \
     base-devel \
     archlinux-keyring \
     intel-ucode \
-    dmenu \
     rxvt-unicode \
+    xsel \
+    xclip \
     git \
     neovim \
     zsh \
     tmux \
     wlc \
     wayland \
-    sway \
-    i3status \
     ntp \
     docker \
     ranger \
     dialog \
     networkmanager \
     network-manager-applet \
+    fcitx \
     fcitx-im \
     fcitx-configtool \
     fcitx-mozc \
     chromium \
     alsa-utils \
     apulse \
+    openssh 
     # nvidia \
     # steam \
     # lib32-nvidia-utils \
+
 echo "pacstrap finished"
 
 genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
