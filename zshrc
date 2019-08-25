@@ -99,7 +99,6 @@ fi
 ########################################
 #Zplug Settings
 if [[ -f ~/.zplug/init.zsh ]]; then
-
     source "$HOME/.zplug/init.zsh"
 
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
@@ -586,7 +585,6 @@ alias rm='rm -rf'
 alias find='find'
 
 if type tmux >/dev/null 2>&1; then
-    alias aliastx='alias | grep tmux'
     alias tmls='\tmux list-sessions'
     alias tmlc='\tmux list-clients'
     alias tkill='\tmux kill-server'
