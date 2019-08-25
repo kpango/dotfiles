@@ -137,6 +137,10 @@ pacstrap -i ${ROOT} \
     alsa-utils \
     apulse \
     openssh \
+    avr-gcc \
+    avrdude \
+    avr-gdb \
+    avr-binutils \
     kubectl \
     kubectx \
     lsof \
