@@ -26,6 +26,8 @@ arch_link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/sway.conf $(HOME)/.config/sway/config
 	mkdir -p ${HOME}/.config/rofi
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
+	mkdir -p ${HOME}/.config/compton
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/compton.conf $(HOME)/.config/compton/compton.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/tmux.service /etc/systemd/system/tmux@.service
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx.sh /etc/profile.d/fcitx.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/urxvt.sh /etc/profile.d/urxvt.sh
