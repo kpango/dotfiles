@@ -205,6 +205,6 @@ cp ./sysctl.conf ${ROOT}/etc/sysctl.conf
 echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
 mdadm --detail --scan >> ${ROOT}/etc/mdadm.conf
 arch-chroot ${ROOT} sh /chroot_desk.sh
-arch-chroot ${ROOT} sed -i -e "s/block filesystems/block mdadm_udev filesystems/g" /etc/mkinitcpio.conf
+arch-chroot ${ROOT} sed -i -e "s/block filesystems/mdadm_udev block filesystems/g" /etc/mkinitcpio.conf
 arch-chroot ${ROOT} mkinitcpio -p linux
 mkinitcpio -p linux

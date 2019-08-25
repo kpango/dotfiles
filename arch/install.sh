@@ -101,8 +101,8 @@ rm -rf chroot.sh locale.gen mirrorlist
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/network/sysctl.conf
-pacman -S archlinux-keyring
+pacman -S archlinux-keyring reflector
+reflector - verbose - latest 200 - number 5 - sort rate - save /etc/pacman.d/mirrorlist
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"
@@ -122,6 +122,9 @@ pacstrap -i ${ROOT} \
     wayland \
     ntp \
     docker \
+    compton \
+    ttf-dejavu \
+    otf-ipafont \
     ranger \
     dialog \
     networkmanager \
@@ -136,6 +139,12 @@ pacstrap -i ${ROOT} \
     openssh \
     kubectl \
     kubectx \
+    lsof \
+    pciutils \
+    lshw \
+    pacman-contrib \
+    reflector \
+    tlp
     # nvidia \
     # steam \
     # lib32-nvidia-utils \
@@ -146,6 +155,8 @@ genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
 cp ./mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
 cp ./locale.gen ${ROOT}/etc/locale.gen
 cp ./chroot.sh ${ROOT}/chroot.sh
-cp ./sysctl.conf ${ROOT}/etc/sysctl.conf
 echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
 arch-chroot ${ROOT} sh /chroot.sh
+echo "unmount volumes"
+unmount
+echo "volumes unmounted"

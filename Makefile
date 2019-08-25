@@ -24,7 +24,13 @@ link:
 arch_link:
 	mkdir -p ${HOME}/.config/sway
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/sway.conf $(HOME)/.config/sway/config
+	mkdir -p ${HOME}/.config/rofi
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/tmux.service /etc/systemd/system/tmux@.service
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx.sh /etc/profile.d/fcitx.sh
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/urxvt.sh /etc/profile.d/urxvt.sh
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/network/sysctl.conf /etc/sysctl.conf
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc

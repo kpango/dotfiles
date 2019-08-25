@@ -511,8 +511,9 @@ Autocmd BufNewFile,BufRead *.rs set filetype=rust
 Autocmd BufNewFile,BufRead *.tmpl set filetype=html
 Autocmd BufNewFile,BufRead *.ts set filetype=typescript
 Autocmd BufNewFile,BufRead *.{md,mdwn,mkd,mkdn,mark*} set filetype=markdown
-Autocmd BufRead,BufNewFile *.{[Dd]ockerfile,[Dd]ock} set filetype=dockerfile
-Autocmd BufRead,BufNewFile Dockerfile* set filetype=dockerfile
+Autocmd BufNewFile,BufRead *.{[Dd]ockerfile,[Dd]ock} set filetype=dockerfile
+Autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
+Autocmd BufNewFile,BufRead *.rasi set filetype=css
 
 " ------------------------------
 " ---- Indentation settings ----
