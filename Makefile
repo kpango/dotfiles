@@ -33,6 +33,8 @@ arch_link:
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/urxvt.sh /etc/profile.d/urxvt.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/network/sysctl.conf /etc/sysctl.conf
+	mkdir -p /etc/docker
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/dockers/daemon.json /etc/docker/daemon.json
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc

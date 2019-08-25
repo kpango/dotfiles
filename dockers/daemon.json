@@ -1,0 +1,26 @@
+{
+  "dns": [
+    "1.1.1.1",
+    "8.8.8.8",
+    "8.8.4.4"
+  ],
+  "dns-opts": [
+    "timeout:1"
+  ],
+  "runtimes": {
+    "runsc": {
+      "path": "/usr/local/bin/runsc"
+    }
+  },
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3"
+  },
+  "debug": false,
+  "live-restore": true,
+  "experimental": true,
+  "features": {
+    "buildkit": true
+  }
+}
