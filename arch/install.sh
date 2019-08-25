@@ -133,7 +133,9 @@ pacstrap -i ${ROOT} \
     chromium \
     alsa-utils \
     apulse \
-    openssh 
+    openssh \
+    kubectl \
+    kubectx \
     # nvidia \
     # steam \
     # lib32-nvidia-utils \

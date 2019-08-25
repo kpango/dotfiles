@@ -1,8 +1,6 @@
 #!/usr/local/bin/zsh
 rcpath="$HOME/go/src/github.com/kpango/dotfiles"
 
-alias docker="DOCKER_BUILDKIT=1 sudo docker"
-
 alias dockerrm="docker container stop $(docker container ls -aq);docker ps -aq | xargs docker rm -f;docker container prune -f;docker images -aq | xargs docker rmi -f;docker image prune -a;docker volume prune -f;docker network prune -f;docker system prune -a"
 
 container_name="dev"
@@ -36,7 +34,7 @@ function devrun(){
             ;;
     esac
 
-    sudo docker run --network=host \
+    docker run --network=host \
         --cap-add=ALL \
         --name $container_name \
         --restart always \

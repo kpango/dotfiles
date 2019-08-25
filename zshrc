@@ -27,8 +27,6 @@ export NVIM_HOME=$XDG_CONFIG_HOME/nvim
 export XDG_DATA_HOME=$NVIM_HOME/log
 export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME
 export NVIM_TUI_ENABLE_TRUE_COLOR=1
-export NVIM_PYTHON_LOG_LEVEL=WARNING
-export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log
 
 #GO
 export GOPATH=/go
@@ -44,8 +42,6 @@ export CGO_FFLAGS="-g -Ofast -march=native"
 export CGO_LDFLAGS="-g -Ofast -march=native"
 
 export GCLOUD_PATH="/google-cloud-sdk"
-
-export DOCKER_BUILDKIT=1
 
 export PYTHON_CONFIGURE_OPTS="--enable-shared"
 
@@ -170,6 +166,7 @@ zstyle ':completion:*' format '%B%d%b'
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' ignore-parents parent pwd ..
 zstyle ':completion:*' keep-prefix
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' menu select
 zstyle ':completion:*' squeeze-slashes true
@@ -182,6 +179,7 @@ zstyle ':completion:*:*:cd:*' tag-order local-directories directory-stack path-d
 zstyle ':completion:*:*:cd:*:directory-stack' menu yes select
 zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'expand'
 zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion:*:default' list-prompt '%S%M matches%s'
 zstyle ':completion:*:default' menu select=1
 zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
@@ -258,8 +256,7 @@ zle -N fzf-z-search
 bindkey '^s' fzf-z-search
 
 if type docker >/dev/null 2>&1; then
-    alias dls='docker ps'
-    alias dsh='\sudo \docker run -it '
+    export DOCKER_BUILDKIT=1
     docker() {
         if type sudo >/dev/null 2>&1; then
             sudo docker $@
@@ -268,13 +265,17 @@ if type docker >/dev/null 2>&1; then
         fi
     }
     alias docker=docker
-    [ -f $$HOME/.aliases ] && source $$HOME/.aliases
+    alias dls='docker ps'
+    alias dsh='docker run -it '
+    [ -f $HOME/.aliases ] && source $HOME/.aliases
 fi
 
 alias open="xdg-open"
 
-alias pbcopy="xsel --clipboard --input"
-alias pbpaste="xsel --clipboard --output"
+if type xsel >/dev/null 2>&1; then
+    alias pbcopy="xsel --clipboard --input"
+    alias pbpaste="xsel --clipboard --output"
+fi
 
 if type git >/dev/null 2>&1; then
     alias gco="git checkout"
@@ -331,6 +332,10 @@ if type git >/dev/null 2>&1; then
         git merge upstream/master
     }
     alias grf=git-remote-merge
+fi
+
+if type rg >/dev/null 2>&1; then
+    alias grep=rg
 fi
 
 if type go >/dev/null 2>&1; then
@@ -491,7 +496,10 @@ else
 fi
 
 alias mkdir='mkdir -p'
-alias gtrans='trans -b -e google'
+
+if type trans >/dev/null 2>&1; then
+    alias gtrans='trans -b -e google'
+fi
 
 # グローバルエイリアス
 alias -g L='| less'
@@ -558,15 +566,19 @@ if type ssh-keygen >/dev/null 2>&1; then
         rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
     }
     alias sshls=sshls
-    alias sshinit="sudo rm -rf $HOME/.ssh/known_hosts;sudo rm -rf $HOME/.ssh/master_kpango@192.168.2.*;chmod 600 $HOME/.ssh/config"
+    alias sshinit="rm -rf $HOME/.ssh/known_hosts;rm -rf $HOME/.ssh/master_kpango@192.168.2.*;chmod 600 $HOME/.ssh/config"
 fi
 
 if type rails >/dev/null 2>&1; then
     alias railskill="kill -9 $(ps aux | grep rails | awk '{print $2}')"
 fi
 
-alias tarzip="tar Jcvf"
-alias tarunzip="tar Jxvf"
+
+if type tar >/dev/null 2>&1; then
+    alias tarzip="tar Jcvf"
+    alias tarunzip="tar Jxvf"
+fi
+
 alias f="open ."
 alias ks="ls "
 alias l="ls "
@@ -683,7 +695,6 @@ alias 755='chmod -R 755'
 alias 777='chmod -R 777'
 
 if type nvim >/dev/null 2>&1; then
-
     alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall"
     nvim-init() {
         rm -rf "$HOME/.config/gocode"
@@ -713,29 +724,37 @@ alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log 
 alias xedit="$EDITOR $HOME/.Xdefaults"
 alias wedit="$EDITOR $HOME/.config/sway/config"
 
-eval $(thefuck --alias --enable-experimental-instant-mode)
+if type thefuck >/dev/null 2>&1; then
+    eval $(thefuck --alias --enable-experimental-instant-mode)
+fi
 
-kubectl() {
-    local kubectl="$(whence -p kubectl 2>/dev/null)"
-    [ -z "$_lazy_kubectl_completion" ] && {
-        source <("$kubectl" completion zsh)
-        complete -o default -F __start_kubectl k
-        _lazy_kubectl_completion=1
+if type kubectl >/dev/null 2>&1; then
+    kubectl() {
+        local kubectl="$(whence -p kubectl 2>/dev/null)"
+        [ -z "$_lazy_kubectl_completion" ] && {
+            source <("$kubectl" completion zsh)
+            complete -o default -F __start_kubectl k
+            _lazy_kubectl_completion=1
+        }
+        "$kubectl" "$@"
     }
-    "$kubectl" "$@"
-}
-alias kubectl=kubectl
-alias k=kubectl
-alias kpall="k get pods --all-namespaces -o wide"
-alias ksall="k get svc --all-namespaces -o wide"
-alias kiall="k get ingress --all-namespaces -o wide"
-alias knall="k get namespace -o wide"
-alias kdall="k get deployment --all-namespaces -o wide"
-# source <(kubectl completion zsh);
+    alias kubectl=kubectl
+    alias k=kubectl
+    alias kpall="k get pods --all-namespaces -o wide"
+    alias ksall="k get svc --all-namespaces -o wide"
+    alias kiall="k get ingress --all-namespaces -o wide"
+    alias knall="k get namespace -o wide"
+    alias kdall="k get deployment --all-namespaces -o wide"
+    # source <(kubectl completion zsh);
+fi
 
-nvim +UpdateRemotePlugins +qall
-
-tmux has-session >/dev/null 2>&1 && if [ -z "${TMUX}" ]; then
-    # if [[ $SHLVL = 2 && -z $TMUX ]]; then
-    tmux -2 new-session
+# [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
+if [[ $SHLVL = 3 && -z $TMUX ]]; then
+    ID="$( tmux ls | grep -vm1 attached | cut -d: -f1 )" # get the id of a deattached session
+    if [[ -z "$ID" ]] ;then # if not available create a new one
+        tmux -2 new-session
+        source-file ~/.tmux/new-session
+    else
+        tmux -2 attach-session -t "$ID" # if available attach to it
+    fi
 fi
