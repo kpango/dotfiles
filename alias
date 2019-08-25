@@ -9,7 +9,7 @@ alias kpmove="cd $rcpath"
 
 alias kpbuild="kpmove&&docker build --pull=true --file=$rcpath/Dockerfile -t kpango/dev:latest $rcpath"
 
-function devrun(){
+devrun(){
     privileged=true
     tz_path="/usr/share/zoneinfo/Japan"
     docker_daemon="$HOME/Library/Containers/com.docker.helper/Data/.docker/daemon.json"

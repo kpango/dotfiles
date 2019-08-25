@@ -746,13 +746,33 @@ if type kubectl >/dev/null 2>&1; then
     # source <(kubectl completion zsh);
 fi
 
-# [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
-if [[ $SHLVL = 3 && -z $TMUX ]]; then
-    ID="$( tmux ls | grep -vm1 attached | cut -d: -f1 )" # get the id of a deattached session
-    if [[ -z "$ID" ]] ;then # if not available create a new one
-        tmux -2 new-session
-        source-file ~/.tmux/new-session
+if type nmcli >/dev/null 2>&1; then
+    nmcliwifi() {
+    if [ $# -eq 2 ]; then
+        nmcli d
+        nmcli radio wifi
+        nmcli device wifi list
+        sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1
+        sudo nmcli c mod $1 connection.autoconnect yes
+        sudo nmcli c mod $1 wifi-sec.key-mgmt wpa-psk
+        sudo nmcli c mod $1 wifi-sec.psk-flags 0
+        sudo nmcli c mod $1 wifi-sec.psk $2
+        nmcli c up $1
     else
-        tmux -2 attach-session -t "$ID" # if available attach to it
+        echo "invalid argument, SSID and PSK is required"
+    fi
+    }
+fi
+
+# [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
+if type tmux >/dev/null 2>&1; then
+    if [[ $SHLVL = 3 && -z $TMUX ]]; then
+        ID="$( tmux ls | grep -vm1 attached | cut -d: -f1 )" # get the id of a deattached session
+        if [[ -z "$ID" ]] ;then # if not available create a new one
+            tmux -2 new-session
+            source-file ~/.tmux/new-session
+        else
+            tmux -2 attach-session -t "$ID" # if available attach to it
+        fi
     fi
 fi

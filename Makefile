@@ -19,10 +19,12 @@ link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitignore $(HOME)/.gitignore
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/tmux.conf $(HOME)/.tmux.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/tmux-kube $(HOME)/.tmux-kube
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/tmux.new-session $(HOME)/.tmux.new-session
 
 arch_link:
 	mkdir -p ${HOME}/.config/sway
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/sway.conf $(HOME)/.config/sway/config
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/tmux.service /etc/systemd/system/tmux@.service
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc

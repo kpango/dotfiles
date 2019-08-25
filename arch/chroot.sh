@@ -23,7 +23,7 @@ sudo systemctl enable ntpd
 sudo systemctl start ntpd
 sudo systemctl enable docker
 sudo systemctl enable NetworkManager
-useradd -m -g users -G wheel -s /usr/bin/zsh kpango
+useradd -m -g users -G wheel,kpango,docker,sshd -s /usr/bin/zsh kpango
 passwd kpango
 visudo
 mkdir /boot/efi/EFI
