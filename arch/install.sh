@@ -134,8 +134,12 @@ pacstrap -i ${ROOT} \
     alsa-utils \
     apulse \
     openssh \
+    avr-gcc \
+    avrdude \
+    avr-gdb \
+    avr-binutils \
     kubectl \
-    kubectx \
+    kubectx
     # nvidia \
     # steam \
     # lib32-nvidia-utils \
