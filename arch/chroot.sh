@@ -45,9 +45,9 @@ systemctl enable ntpd
 systemctl start ntpd
 systemctl enable docker
 systemctl enable NetworkManager
-sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" /etc/systemd/resolved.conf && \
-sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf && \
-useradd -m -g users -G wheel,kpango,docker,sshd,storage,power,autologin,audio -s /usr/bin/zsh kpango
+sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" /etc/systemd/resolved.conf &&
+    sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf &&
+    useradd -m -g users -G wheel,kpango,docker,sshd,storage,power,autologin,audio -s /usr/bin/zsh kpango
 passwd kpango
 visudo
 mkdir /boot/efi/EFI

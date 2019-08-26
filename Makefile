@@ -28,6 +28,8 @@ arch_link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
 	mkdir -p ${HOME}/.config/compton
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/compton.conf $(HOME)/.config/compton/compton.conf
+	mkdir -p ${HOME}/.config/fcitx/conf
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/Xdefaults $(HOME)/.Xdefaults
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/tmux.service /etc/systemd/system/tmux@.service
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx.sh /etc/profile.d/fcitx.sh
