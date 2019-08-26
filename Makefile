@@ -28,13 +28,16 @@ arch_link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
 	mkdir -p ${HOME}/.config/compton
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/compton.conf $(HOME)/.config/compton/compton.conf
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/Xdefaults $(HOME)/.Xdefaults
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/tmux.service /etc/systemd/system/tmux@.service
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx.sh /etc/profile.d/fcitx.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/urxvt.sh /etc/profile.d/urxvt.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/network/sysctl.conf /etc/sysctl.conf
 	mkdir -p /etc/docker
+	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/dockers/daemon.json /etc/docker/daemon.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/dockers/daemon.json $(HOME)/.docker/daemon.json
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
