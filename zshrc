@@ -256,14 +256,6 @@ bindkey '^s' fzf-z-search
 
 if type docker >/dev/null 2>&1; then
     export DOCKER_BUILDKIT=1
-    docker() {
-        if type sudo >/dev/null 2>&1; then
-            sudo docker $@
-        else
-            docker $@
-        fi
-    }
-    alias docker=docker
     alias dls='docker ps'
     alias dsh='docker run -it '
     [ -f $HOME/.aliases ] && source $HOME/.aliases
