@@ -572,7 +572,6 @@ if type rails >/dev/null 2>&1; then
     alias railskill="kill -9 $(ps aux | grep rails | awk '{print $2}')"
 fi
 
-
 if type tar >/dev/null 2>&1; then
     alias tarzip="tar Jcvf"
     alias tarunzip="tar Jxvf"
@@ -748,27 +747,27 @@ fi
 
 if type nmcli >/dev/null 2>&1; then
     nmcliwifi() {
-    if [ $# -eq 2 ]; then
-        nmcli d
-        nmcli radio wifi
-        nmcli device wifi list
-        sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1
-        sudo nmcli c mod $1 connection.autoconnect yes
-        sudo nmcli c mod $1 wifi-sec.key-mgmt wpa-psk
-        sudo nmcli c mod $1 wifi-sec.psk-flags 0
-        sudo nmcli c mod $1 wifi-sec.psk $2
-        nmcli c up $1
-    else
-        echo "invalid argument, SSID and PSK is required"
-    fi
+        if [ $# -eq 2 ]; then
+            nmcli d
+            nmcli radio wifi
+            nmcli device wifi list
+            sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1
+            sudo nmcli c mod $1 connection.autoconnect yes
+            sudo nmcli c mod $1 wifi-sec.key-mgmt wpa-psk
+            sudo nmcli c mod $1 wifi-sec.psk-flags 0
+            sudo nmcli c mod $1 wifi-sec.psk $2
+            nmcli c up $1
+        else
+            echo "invalid argument, SSID and PSK is required"
+        fi
     }
 fi
 
 # [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
-        ID="$( tmux ls | grep -vm1 attached | cut -d: -f1 )" # get the id of a deattached session
-        if [[ -z "$ID" ]] ;then # if not available create a new one
+        ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
+        if [[ -z $ID ]]; then # if not available create a new one
             tmux -2 new-session
             source-file ~/.tmux/new-session
         else
