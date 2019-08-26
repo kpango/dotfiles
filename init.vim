@@ -31,7 +31,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ----- update self
     Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
 " ---- common plugins
-    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': 'yarn install'}
+    Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': ':call coc#util#install()'}
+    " Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
     " Plug 'Shougo/neoyank.vim'
@@ -297,8 +298,6 @@ nnoremap <silent> <C-j> <Plug>(ale_next_wrap)
 Autocmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) == 'quickfix' | quit | endif
 
 AutocmdFT go let g:ale_go_golangci_lint_options = '--enable-all --disable=gochecknoglobals --disable=gochecknoinits --disable=typecheck --disable=lll --enable=gosec --enable=prealloc'
-" AutocmdFT go let g:ale_go_gometalinter_options = '--tests --disable-all --aggregate --fast --sort=line --vendor --concurrency=16  --enable=gocyclo --enable=govet --enable=golint --enable=gotype'
-
 
 " --------------------------------------------------
 " ---- Language Server Protocol Client settings ----
@@ -323,7 +322,7 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
-autocmd CursorHold * silent call CocActionAsync('highlight')
+Autocmd CursorHold * silent call CocActionAsync('highlight')
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
 
@@ -642,7 +641,7 @@ call lexima#add_rule({'at': '\%#\n\s*}', 'char': '}', 'input': '}', 'delete': '}
 " ---- gitgutter settings ----
 " ----------------------------
 let g:gitgutter_max_signs = 10000
-let g:gitgutter_git_executable="/usr/bin/git"
+let g:gitgutter_git_executable = '/usr/bin/git'
 
 " ---------------------
 " ---- Caw Setting ----
