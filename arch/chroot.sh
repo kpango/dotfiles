@@ -15,6 +15,7 @@ yay -S ttf-hackgen \
     wlroots-git \
     sway-git \
     discord \
+    dkms \
     slack-desktop \
     urxvt-perls \
     urxvt-resize-font-git \
