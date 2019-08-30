@@ -118,13 +118,11 @@ pacstrap -i ${ROOT} \
     neovim \
     zsh \
     tmux \
-    wlc \
-    wayland \
+    # wlc \
+    # wayland \
     ntp \
     docker \
     compton \
-    ttf-dejavu \
-    otf-ipafont \
     ranger \
     dialog \
     networkmanager \
@@ -134,8 +132,6 @@ pacstrap -i ${ROOT} \
     fcitx-configtool \
     fcitx-mozc \
     chromium \
-    alsa-utils \
-    apulse \
     openssh \
     avr-gcc \
     avrdude \

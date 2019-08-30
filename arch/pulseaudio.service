@@ -1,0 +1,9 @@
+[Unit]
+Description=Pulse Audio
+
+[Services]
+Type=simple
+ExecStart=/usr/bin/pulseaudio --system --disallow-exit --disable-shm
+
+[Install]
+WantedBy=multi-user.target

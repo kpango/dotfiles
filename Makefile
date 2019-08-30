@@ -32,10 +32,11 @@ arch_link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/Xdefaults $(HOME)/.Xdefaults
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/tmux.service /etc/systemd/system/tmux@.service
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx.sh /etc/profile.d/fcitx.sh
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx.service /etc/systemd/system/fcitx@.service
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/urxvt.sh /etc/profile.d/urxvt.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/network/sysctl.conf /etc/sysctl.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
 	mkdir -p /etc/docker
 	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/dockers/daemon.json /etc/docker/daemon.json
@@ -127,10 +128,36 @@ push_k8s:
 push_glibc:
 	@make IMAGE_NAME="kpango/glibc" docker_push
 
-build_all: build_base build_env build_go build_rust build_go build_nim build_dart build_docker build_gcloud build_k8s build_glibc prod_build
+build_all: 
+	echo "start"
+	@make build_base
+	@make build_env & \
+	@make build_go & \
+	@make build_rust & \
+	@make build_nim & \
+	@make build_dart & \
+	@make build_docker & \
+	@make build_gcloud & \
+	@make build_k8s & \
+	@make build_glibc & \
+	wait;
+	@make prod_build
 	echo "done"
 
-push_all: push_base push_env push_go push_rust push_go push_nim push_dart push_docker push_gcloud push_k8s push_glibc prod_push
+push_all:
+	echo "start"
+	@make push_base & \
+	@make push_env & \
+	@make push_go & \
+	@make push_rust & \
+	@make push_nim & \
+	@make push_dart & \
+	@make push_docker & \
+	@make push_gcloud & \
+	@make push_k8s & \
+	@make push_glibc & \
+	@make prod_push & \
+	wait;
 	echo "done"
 
 profile:

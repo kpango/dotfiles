@@ -477,7 +477,6 @@ mkcd() {
 
 # エイリアス
 alias cp='cp -r'
-alias ln="ln -Fsnfiv"
 alias mv='mv -i'
 
 if type axel >/dev/null 2>&1; then

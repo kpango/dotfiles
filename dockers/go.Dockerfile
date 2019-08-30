@@ -32,7 +32,7 @@ RUN go get -u  \
     github.com/klauspost/asmfmt/cmd/asmfmt \
     # github.com/knqyf263/trivy/cmd/trivy \
     github.com/koron/iferr \
-    github.com/mattn/efm-langserver/cmd/efm-langserver \
+    github.com/mattn/efm-langserver \
     github.com/motemen/ghq \
     github.com/motemen/go-iferr/cmd/goiferr \
     github.com/nsf/gocode \

@@ -37,6 +37,12 @@
         "--stdio"
       ]
     },
+    "bash": {
+      "command": "bash-language-server",
+      "args": ["start"],
+      "filetypes": ["sh", "zsh", "bash"],
+      "ignoredRootPaths": ["~"]
+    },
     "python": {
       "command": "pyls",
       "filetypes": [
