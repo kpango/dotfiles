@@ -18,9 +18,11 @@ yay -S alsa-utils \
     discord \
     dkms \
     exa \
+    feh \
     ghq \
     i3-gaps \
     py3status \
+    kazam \
     lib32-nvidia-utils \
     lightdm \
     lightdm-locker
