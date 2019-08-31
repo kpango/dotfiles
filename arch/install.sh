@@ -143,8 +143,7 @@ pacstrap -i ${ROOT} \
     pacman-contrib \
     reflector \
     tlp \
-    nvidia \
-    lib32-nvidia-utils \
+    nvidia
     # wlc \
     # wayland \
     # nvidia \

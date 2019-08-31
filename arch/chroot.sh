@@ -1,7 +1,7 @@
 #!/bin/sh
 reflector --verbose --latest 200 --number 10 --sort rate --save /etc/pacman.d/mirrorlist
 sed -i -e "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
-sed -i -e "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=”-j9\"/g" /etc/makepkg.conf
+sed -i -e "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j9\"/g" /etc/makepkg.conf
 sed -i -e "s/#Color/Color/g" /etc/pacman.conf
 git clone https://aur.archlinux.org/yay.git
 cd yay
@@ -75,9 +75,21 @@ systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
 LOGIN_USER=kpango
-sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" /etc/systemd/resolved.conf &&
-    sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf &&
-    useradd -m -g users -G wheel,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access -s /usr/bin/zsh ${LOGIN_USER}
+sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" /etc/systemd/resolved.conf
+sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf
+
+function groupadd() {
+    if [ !`getent group $1` ]; then
+        groupadd $@
+    fi
+}
+groupadd kpango
+groupadd sshd
+groupadd autologin
+groupadd pulse
+groupadd pulse-access
+
+useradd -m -g users -G wheel,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access -s /usr/bin/zsh ${LOGIN_USER}
 passwd ${LOGIN_USER}
 visudo
 mkdir -p /go/src/github.com/kpango/
