@@ -1,0 +1,10 @@
+[Unit]
+Description=Start compton session
+
+[Service]
+Type=forking
+User=%I
+ExecStart=/usr/bin/compton -config $HOME/.config/compton/compton.conf --xrender-sync --xrender-sync-fence -b
+
+[Install]
+WantedBy=multi-user.target

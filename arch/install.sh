@@ -102,7 +102,7 @@ wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
 pacman -S archlinux-keyring reflector
-reflector - verbose - latest 200 - number 5 - sort rate - save /etc/pacman.d/mirrorlist
+reflector --latest 200 --number 5 --sort rate --save /etc/pacman.d/mirrorlist
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"
@@ -125,6 +125,7 @@ pacstrap -i ${ROOT} \
     dialog \
     networkmanager \
     network-manager-applet \
+    xf86-video-intel \
     fcitx \
     fcitx-im \
     fcitx-configtool \

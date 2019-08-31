@@ -79,7 +79,7 @@ URxvt*colorBD:      #3579a8
 URxvt*colorUL:      #4eb4fa
 
 !black
-URxvt*color0:       #000000
+URxvt*color0:       [80]#000000
 URxvt*color8:       #1c1c1c
 
 !red
