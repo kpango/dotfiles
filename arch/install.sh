@@ -118,8 +118,6 @@ pacstrap -i ${ROOT} \
     neovim \
     zsh \
     tmux \
-    # wlc \
-    # wayland \
     ntp \
     docker \
     compton \
@@ -144,10 +142,13 @@ pacstrap -i ${ROOT} \
     lshw \
     pacman-contrib \
     reflector \
-    tlp
+    tlp \
+    nvidia \
+    lib32-nvidia-utils \
+    # wlc \
+    # wayland \
     # nvidia \
     # steam \
-    # lib32-nvidia-utils \
 
 echo "pacstrap finished"
 
