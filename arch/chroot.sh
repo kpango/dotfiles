@@ -39,6 +39,7 @@ yay -S alsa-utils \
     urxvt-resize-font-git \
     volumeicon \
     xorg-server \
+    xkeysnail \
     yarn
 # wlroots-git \
 # sway-git \
