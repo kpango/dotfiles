@@ -23,7 +23,7 @@ link:
 
 arch_link:
 	mkdir -p ${HOME}/.config/sway
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/sway.conf $(HOME)/.config/sway/config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/sway.conf $(HOME)/.config/i3/config
 	mkdir -p ${HOME}/.config/rofi
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
 	mkdir -p ${HOME}/.config/compton
