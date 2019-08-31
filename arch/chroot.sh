@@ -11,34 +11,35 @@ rm -r yay
 
 pacman -Rs go
 
-yay -S ttf-hackgen
+yay -S alsa-utils \
+    axel \
+    chrome-remote-desktop \
     discord \
     dkms \
-    slack-desktop \
-    urxvt-perls \
-    urxvt-resize-font-git \
-    rofi \
-    ripgrep-git \
     exa-git \
-    chrome-remote-desktop \
-    thefuck \
-    systemd-boot-pacman-hook \
-    nodejs \
-    yarn \
     ghq \
-    axel \
-    xorg-server \
-    lightdm \
-    lightdm-webkit2-greeter \
     i3-wm \
     i3status \
+    lib32-nvidia-utils \
+    lightdm \
+    lightdm-webkit2-greeter \
+    lm_sensors \
     nerd-fonts-ricty \
-    ttf-symbola \
-    alsa-utils \
-    pulseaudio \
+    nodejs \
     pavucontrol \
+    pulseaudio \
+    ripgrep-git \
+    rofi \
+    slack-desktop \
+    systemd-boot-pacman-hook \
+    thefuck \
+    ttf-hackgen \
+    ttf-symbola \
+    urxvt-perls \
+    urxvt-resize-font-git \
     volumeicon \
-    lm_sensors
+    xorg-server \
+    yarn
 # wlroots-git \
 # sway-git \
 # waybar-git \
