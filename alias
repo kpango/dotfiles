@@ -59,7 +59,6 @@ devrun(){
         -v $rcpath/tmux.conf:/root/.tmux.conf \
         -v $rcpath/zshrc:/root/.zshrc \
         -v $rcpath/gitignore:/root/.gitignore \
-        -v $rcpath/gitconfig:/root/.gitconfig \
         -v $rcpath/gitattributes:/root/.gitattributes \
         -v $tz_path:/etc/timezone:ro \
         -dit kpango/dev:latest

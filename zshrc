@@ -29,7 +29,11 @@ export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME
 export NVIM_TUI_ENABLE_TRUE_COLOR=1
 
 #GO
-export GOPATH=/go
+if [ $USER=="root" ]; then
+    export GOPATH=/go
+else
+    export GOPATH=$HOME/go
+fi
 export CGO_ENABLED=1
 export GO111MODULE=on
 export GOBIN=$GOPATH/bin
@@ -568,7 +572,7 @@ if type tar >/dev/null 2>&1; then
     alias tarunzip="tar Jxvf"
 fi
 
-if type ranger>/dev/null 2>&1; then
+if type ranger >/dev/null 2>&1; then
     rng() {
         if [ -n "$RANGER_LEVEL" ]; then
             \ranger $@

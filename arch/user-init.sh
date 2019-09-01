@@ -17,8 +17,7 @@ yay -Syu \
     slack-desktop \
     systemd-boot-pacman-hook \
     ttf-symbola \
-    urxvt-resize-font-git \
-    xkeysnail
+    urxvt-resize-font-git
 # lib32-nvidia-utils \
 # wlroots-git \
 # sway-git \
