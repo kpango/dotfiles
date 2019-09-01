@@ -20,7 +20,7 @@ chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
 echo "/swapfile     	none    	swap    	defaults,noatime    	0 0" | tee -a /etc/fstab
-SWAP_PHYS_OFFSET=`filefrag -v /swapfile | head -n 5 | grep "0:" | awk '{print $4}' | sed "s/\.\.//g"`
+SWAP_PHYS_OFFSET=`filefrag -v /swapfile | grep "0:" | head -1 | awk '{print $4}' | sed "s/\.\.//g"`
 
 sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" /etc/systemd/resolved.conf
 sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf
@@ -96,6 +96,7 @@ ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-ef
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
 mkdir -p /go/src/github.com/kpango
 cd /go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
+ln -sfv /go /home/${LOGIN_USER}/go
 chmod -R 755 /home/${LOGIN_USER}
 chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
 chmod -R 755 /go

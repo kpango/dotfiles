@@ -26,7 +26,3 @@ yay -Syu --noconfirm \
 # waybar-git \
 
 fc-cache -f -v
-
-mkdir -p /go/src/github.com/kpango/
-cd /go/src/github.com/kpango/ && git clone https://github.com/kpango/doftiles && cd -
-cd /go/src/github.com/kpango/dotfiles && USER=${LOGIN_USER} make arch_link && cd -
