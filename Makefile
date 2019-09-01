@@ -46,6 +46,7 @@ arch_link: link
 	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/lightdm.conf /etc/lightdm/lightdm.conf
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
