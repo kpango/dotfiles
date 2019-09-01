@@ -99,6 +99,7 @@ df -aT
 echo "download deps"
 rm -rf chroot.sh locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 pacman -S archlinux-keyring reflector
 reflector --latest 200 --number 5 --sort rate --save /etc/pacman.d/mirrorlist
@@ -185,6 +186,7 @@ genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
 cp /etc/pacman.d/mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
 cp ./locale.gen ${ROOT}/etc/locale.gen
 cp ./chroot.sh ${ROOT}/chroot.sh
+cp ./user-init.sh ${ROOT}/user-init.sh
 echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
 arch-chroot ${ROOT} sh /chroot.sh
 echo "unmount volumes"
