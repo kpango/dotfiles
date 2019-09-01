@@ -569,7 +569,15 @@ if type tar >/dev/null 2>&1; then
 fi
 
 if type ranger>/dev/null 2>&1; then
-    alias rng=[ -n "$RANGER_LEVEL" ] && exit || \ranger
+    rng() {
+        if [ -n "$RANGER_LEVEL" ]; then
+            \ranger $@
+        else
+            echo "other ranger process already running"
+        fi
+    }
+    alias ranger=rng
+    alias rng=rng
 fi
 
 alias f="open ."
