@@ -11,7 +11,7 @@ cd -
 rm -r yay
 
 pacman -Rs go
-
+yay -Syyua --noconfirm
 yay -Syu --noconfirm \
     alsa-utils \
     axel \
@@ -38,7 +38,7 @@ yay -Syu --noconfirm \
     pulseaudio \
     bluez \
     bluez-utils \
-    pulseaudio-bluetooth
+    pulseaudio-bluetooth \
     ripgrep \
     rofi \
     slack-desktop \
@@ -148,6 +148,7 @@ editor no
 EOF
 bootctl update
 bootctl list
+
 ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
 
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
