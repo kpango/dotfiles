@@ -134,6 +134,7 @@ pacstrap -i ${ROOT} \
     fwupd \
     git \
     i3-gaps \
+    i3status \
     intel-ucode \
     kubectl \
     kubectx \
@@ -150,6 +151,7 @@ pacstrap -i ${ROOT} \
     ntp \
     nvidia \
     openssh \
+    pkg-tools \
     pacman-contrib \
     pavucontrol \
     pciutils \
