@@ -568,6 +568,10 @@ if type tar >/dev/null 2>&1; then
     alias tarunzip="tar Jxvf"
 fi
 
+if type ranger>/dev/null 2>&1; then
+    alias rng=[ -n "$RANGER_LEVEL" ] && exit || \ranger
+fi
+
 alias f="open ."
 alias ks="ls "
 alias l="ls "

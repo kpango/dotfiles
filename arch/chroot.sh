@@ -52,6 +52,7 @@ yay -Syu --noconfirm \
     xorg-server \
     xorg-xbacklight \
     xorg-xrandr \
+    w3m \
     yarn
 # wlroots-git \
 # sway-git \
