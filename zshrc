@@ -29,7 +29,7 @@ export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME
 export NVIM_TUI_ENABLE_TRUE_COLOR=1
 
 #GO
-if cat /proc/self/cgroup | awk -F/ '$2 == "docker"' | read ; then
+if [[ ! $(cat /proc/self/cgroup | awk -F/ '$2 == "docker"' | read) ]]; then
     export GOPATH=/go
 else
     export GOPATH=$HOME/go
