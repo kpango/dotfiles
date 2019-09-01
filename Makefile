@@ -22,6 +22,7 @@ link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.new-session $(HOME)/.tmux.new-session
 
 arch_link: link
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc $(HOME)/.xinitrc
 	mkdir -p ${HOME}/.config/sway
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
 	mkdir -p ${HOME}/.config/i3
@@ -39,6 +40,8 @@ arch_link: link
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
+	sudo systemctl enable /go/src/github.com/kpango/dotfiles/arch/xkeysnail/xkeysnail.service
+	sudo systemctl daemon-reload
 	mkdir -p /etc/docker
 	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
