@@ -37,7 +37,8 @@ groupadd pulse-access
 
 useradd -m -g users -G wheel,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,uinput -s /usr/bin/zsh ${LOGIN_USER}
 passwd ${LOGIN_USER}
-visudo
+sed -e '/%wheel ALL=(ALL) ALL/s/^# //' /etc/sudoers | EDITOR=tee visudo >/dev/null
+sed -e '/%wheel ALL=(ALL) NOPASSWORD: ALL/s/^# %wheel/kpango/' /etc/sudoers | EDITOR=tee visudo >/dev/null
 passwd
 
 mkdir -p /home/${LOGIN_USER}/.zplug
@@ -65,6 +66,10 @@ systemctl enable lightdm
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
+sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" /etc/mkinitcpio.conf
+sed -i -e "s/block filesystems/block resume filesystems/g" /etc/mkinitcpio.conf
+mkinitcpio -p linux
+
 mkdir -p /boot/efi/EFI
 bootctl --path=/boot install
 DEVICE_ID=`lsblk -f | grep p2 | awk '{print $3}'`
@@ -89,7 +94,9 @@ mkdir -p /etc/pacman.d/hooks
 ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
 
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
-sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" /etc/mkinitcpio.conf
-sed -i -e "s/block filesystems/block resume filesystems/g" /etc/mkinitcpio.conf
-mkinitcpio -p linux
-
+mkdir -p /go/src/github.com/kpango
+cd /go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
+chmod -R 755 /home/${LOGIN_USER}
+chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
+chmod -R 755 /go
+chown -R $LOGIN_USER:wheel /go
