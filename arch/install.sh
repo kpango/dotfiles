@@ -171,6 +171,7 @@ pacstrap -i ${ROOT} \
     xf86-video-intel \
     xorg-server \
     xorg-xbacklight \
+    xorg-xhost
     xorg-xrandr \
     xsel \
     yarn \
