@@ -118,7 +118,8 @@ EOF
 passwd
 mkdir -p /go/src/github.com/kpango/
 cd /go/src/github.com/kpango/ && git clone https://github.com/kpango/doftiles && cd -
-cd /go/src/github.com/kpango/dotfiles && USER=kpango make link && make arch_link && cd -
+cd /go/src/github.com/kpango/dotfiles && USER=${LOGIN_USER} make arch_link && cd -
+ln -sfv /home/${LOGIN_USER}/.config /root/.config
 
 systemctl enable ntpd
 systemctl start ntpd

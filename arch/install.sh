@@ -97,10 +97,9 @@ mkdir -p ${ROOT}/home/kpango/go/src/github.com/kpango
 echo "mounted"
 df -aT
 echo "download deps"
-rm -rf chroot.sh locale.gen mirrorlist
+rm -rf chroot.sh locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
 pacman -S archlinux-keyring reflector
 reflector --latest 200 --number 5 --sort rate --save /etc/pacman.d/mirrorlist
 echo "deps downloaded"
@@ -153,7 +152,7 @@ pacstrap -i ${ROOT} \
 echo "pacstrap finished"
 
 genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
-cp ./mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
+cp /etc/pacman.d/mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
 cp ./locale.gen ${ROOT}/etc/locale.gen
 cp ./chroot.sh ${ROOT}/chroot.sh
 echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
