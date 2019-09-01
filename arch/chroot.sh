@@ -24,6 +24,7 @@ yay -Syu --noconfirm \
     ghq \
     i3-gaps \
     py3status \
+    fwupd \
     kazam \
     lib32-nvidia-utils \
     lightdm \
@@ -147,6 +148,7 @@ editor no
 EOF
 bootctl update
 bootctl list
+ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
 
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
 sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" /etc/mkinitcpio.conf
