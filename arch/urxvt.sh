@@ -1,2 +1,0 @@
-#!/bin/sh
-urxvtd -q -o -f

@@ -6,16 +6,18 @@ sed -i -e "s/#Color/Color/g" /etc/pacman.conf
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
 git clone https://aur.archlinux.org/yay.git
 cd yay
-makepkg -si
-cd ../
+makepkg -si --noconfirm
+cd -
 rm -r yay
 
 pacman -Rs go
 
-yay -S alsa-utils \
+yay -Syu --noconfirm \
+    alsa-utils \
     axel \
     chrome-remote-desktop \
     discord \
+    dunst \
     dkms \
     exa \
     feh \
@@ -48,6 +50,7 @@ yay -S alsa-utils \
     volumeicon \
     xkeysnail \
     xorg-server \
+    xorg-xbacklight \
     xorg-xrandr \
     yarn
 # wlroots-git \

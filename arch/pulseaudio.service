@@ -3,6 +3,7 @@ Description=Pulse Audio
 
 [Services]
 Type=simple
+User=%I
 ExecStart=/usr/bin/pulseaudio --system --disallow-exit --disable-shm
 
 [Install]

@@ -7,58 +7,42 @@ run:
 
 link:
 	mkdir -p ${HOME}/.config/nvim/colors
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/init.vim $(HOME)/.config/nvim/init.vim
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/coc-settings.json $(HOME)/.config/nvim/coc-settings.json
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/monokai.vim $(HOME)/.config/nvim/colors/monokai.vim
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/zshrc $(HOME)/.zshrc
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/alias $(HOME)/.aliases
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitconfig $(HOME)/.gitconfig
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitattributes $(HOME)/.gitattributes
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/gitignore $(HOME)/.gitignore
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/tmux.conf $(HOME)/.tmux.conf
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/tmux-kube $(HOME)/.tmux-kube
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/tmux.new-session $(HOME)/.tmux.new-session
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))init.vim $(HOME)/.config/nvim/init.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))coc-settings.json $(HOME)/.config/nvim/coc-settings.json
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))monokai.vim $(HOME)/.config/nvim/colors/monokai.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))zshrc $(HOME)/.zshrc
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))alias $(HOME)/.aliases
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitconfig $(HOME)/.gitconfig
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitattributes $(HOME)/.gitattributes
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitignore $(HOME)/.gitignore
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.conf $(HOME)/.tmux.conf
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux-kube $(HOME)/.tmux-kube
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.new-session $(HOME)/.tmux.new-session
 
 arch_link:
 	mkdir -p ${HOME}/.config/sway
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/sway.conf $(HOME)/.config/sway/config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
 	mkdir -p ${HOME}/.config/i3
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/i3.conf $(HOME)/.config/i3/config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3.conf $(HOME)/.config/i3/config
 	mkdir -p ${HOME}/.config/i3status
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/i3status.conf $(HOME)/.config/i3status/config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3status.conf $(HOME)/.config/i3status/config
 	mkdir -p ${HOME}/.config/rofi
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
 	mkdir -p ${HOME}/.config/compton
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/compton.conf $(HOME)/.config/compton/compton.conf
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/compton.conf $(HOME)/.config/compton/compton.conf
 	mkdir -p ${HOME}/.config/fcitx/conf
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/Xdefaults $(HOME)/.Xdefaults
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/tmux.service /etc/systemd/system/tmux.service
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/fcitx.service /etc/systemd/system/fcitx.service
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/compton.service /etc/systemd/system/compton.service
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/feh.service /etc/systemd/system/feh.service
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/feh-refresh.service /etc/systemd/system/feh-refresh.service
-	sudo systemctl daemon-reload
-	sudo systemctl enable tmux.service
-	sudo systemctl enable fcitx.service
-	sudo systemctl enable compton.service
-	sudo systemctl enable feh.service
-	sudo systemctl enable feh-refresh.service
-	sudo systemctl start tmux.service
-	sudo systemctl start fcitx.service
-	sudo systemctl start compton.service
-	sudo systemctl start feh.service
-	sudo systemctl start feh-refresh.service
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/urxvt.sh /etc/profile.d/urxvt.sh
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/network/sysctl.conf /etc/sysctl.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xdefaults $(HOME)/.Xdefaults
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/urxvt.sh /etc/profile.d/urxvt.sh
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
 	mkdir -p /etc/docker
 	mkdir -p ${HOME}/.docker
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/dockers/daemon.json /etc/docker/daemon.json
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))/dockers/daemon.json $(HOME)/.docker/daemon.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
