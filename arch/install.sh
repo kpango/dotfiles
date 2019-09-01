@@ -151,7 +151,6 @@ pacstrap -i ${ROOT} \
     ntp \
     nvidia \
     openssh \
-    pkg-tools \
     pacman-contrib \
     pavucontrol \
     pciutils \
