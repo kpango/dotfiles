@@ -75,8 +75,7 @@ fallocate -l 24G /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
-SWAP_UUID=`blkid /swapfile | awk '{print $2}' | sed "s/\"//g"`
-echo "${SWAP_UUID}\t/swapfile\tnone\tswap\tdefaults,noatime 0 0" | tee -a /etc/fstab
+echo "/swapfile\tnone\tswap\tdefaults,noatime 0 0" | tee -a /etc/fstab
 SWAP_PHYS_OFFSET=`filefrag -v /swapfile | head -n 5 | grep "0:" | awk '{print $4}' | sed "s/\.\.//g"`
 
 
