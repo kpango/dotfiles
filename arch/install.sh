@@ -138,8 +138,8 @@ pacstrap -i ${ROOT} \
     kubectl \
     kubectx \
     lightdm \
-    lightdm-locker \
     lightdm-webkit2-greeter \
+    light-locker \
     lm_sensors \
     lshw \
     lsof \
