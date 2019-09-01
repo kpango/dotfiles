@@ -25,12 +25,6 @@ SWAP_PHYS_OFFSET=`filefrag -v /swapfile | head -n 5 | grep "0:" | awk '{print $4
 sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" /etc/systemd/resolved.conf
 sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf
 
-function groupadd() {
-    if [ !`getent group $1` ]; then
-        groupadd $@
-    fi
-}
-
 LOGIN_USER=kpango
 
 groupadd ${LOGIN_USER}
@@ -91,6 +85,7 @@ EOF
 bootctl update
 bootctl list
 
+mkdir -p /etc/pacman.d/hooks
 ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
 
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
