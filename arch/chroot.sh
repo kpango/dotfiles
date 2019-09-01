@@ -1,68 +1,11 @@
 #!/bin/sh
-reflector --latest 200 --number 10 --sort rate --save /etc/pacman.d/mirrorlist
 sed -i -e "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
 sed -i -e "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j9\"/g" /etc/makepkg.conf
 sed -i -e "s/#Color/Color/g" /etc/pacman.conf
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
-git clone https://aur.archlinux.org/yay.git
-cd yay
-makepkg -si --noconfirm
-cd -
-rm -r yay
-
-pacman -Rs go
-yay -Syyua --noconfirm
-yay -Syu --noconfirm \
-    alsa-utils \
-    axel \
-    chrome-remote-desktop \
-    discord \
-    dunst \
-    dkms \
-    exa \
-    feh \
-    ghq \
-    i3-gaps \
-    py3status \
-    fwupd \
-    kazam \
-    lib32-nvidia-utils \
-    lightdm \
-    lightdm-locker
-    lightdm-webkit2-greeter \
-    lightdm-webkit-theme-aether \
-    lm_sensors \
-    nerd-fonts-ricty \
-    nodejs \
-    pavucontrol \
-    pulseaudio \
-    bluez \
-    bluez-utils \
-    pulseaudio-bluetooth \
-    ripgrep \
-    rofi \
-    slack-desktop \
-    systemd-boot-pacman-hook \
-    thefuck \
-    ttf-ricty \
-    ttf-symbola \
-    urxvt-perls \
-    urxvt-resize-font-git \
-    volumeicon \
-    xkeysnail \
-    xorg-server \
-    xorg-xbacklight \
-    xorg-xrandr \
-    w3m \
-    yarn
-# wlroots-git \
-# sway-git \
-# waybar-git \
-
-fc-cache -f -v
 
 HOST="archpango"
-echo archpango >>/etc/hostname
+echo ${HOST} >>/etc/hostname
 cat <<EOF >/etc/hosts
 127.0.0.1 localhost.localdomain localhost.local localhost ${HOST}.localdomain ${HOST}.local ${HOST}
 ::1 localhost.localdomain localhost ${HOST}.localdomain ${HOST}.local ${HOST}
@@ -78,7 +21,6 @@ mkswap /swapfile
 swapon /swapfile
 echo "/swapfile     	none    	swap    	defaults,noatime    	0 0" | tee -a /etc/fstab
 SWAP_PHYS_OFFSET=`filefrag -v /swapfile | head -n 5 | grep "0:" | awk '{print $4}' | sed "s/\.\.//g"`
-
 
 sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" /etc/systemd/resolved.conf
 sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf
@@ -102,6 +44,12 @@ groupadd pulse-access
 useradd -m -g users -G wheel,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,uinput -s /usr/bin/zsh ${LOGIN_USER}
 passwd ${LOGIN_USER}
 visudo
+passwd
+
+mkdir -p /home/${LOGIN_USER}/.zplug
+mkdir -p /home/${LOGIN_USER}/.config
+ln -sfv /home/${LOGIN_USER}/.config /root/.config
+ln -sfv /home/${LOGIN_USER}/.zplug /root/.zplug
 
 cat <<EOF >/etc/udev/rules.d/input.rules
 KERNEL=="event*", NAME="input/%k", MODE="660", GROUP="input"
@@ -115,12 +63,6 @@ evdev:name:ThinkPad Extra Buttons:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*
  KEYBOARD_KEY_45=prog1
  KEYBOARD_KEY_49=prog2
 EOF
-
-passwd
-mkdir -p /go/src/github.com/kpango/
-cd /go/src/github.com/kpango/ && git clone https://github.com/kpango/doftiles && cd -
-cd /go/src/github.com/kpango/dotfiles && USER=${LOGIN_USER} make arch_link && cd -
-ln -sfv /home/${LOGIN_USER}/.config /root/.config
 
 systemctl enable ntpd
 systemctl start ntpd

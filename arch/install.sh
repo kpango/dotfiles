@@ -108,42 +108,72 @@ echo "start pacstrap"
 pacstrap -i ${ROOT} \
     base \
     base-devel \
+    alsa-utils \
     archlinux-keyring \
-    intel-ucode \
-    rxvt-unicode \
-    xsel \
-    xclip \
-    git \
-    neovim \
-    zsh \
-    tmux \
-    ntp \
-    docker \
-    compton \
-    ranger \
-    dialog \
-    networkmanager \
-    network-manager-applet \
-    xf86-video-intel \
-    fcitx \
-    fcitx-im \
-    fcitx-configtool \
-    fcitx-mozc \
-    chromium \
-    openssh \
-    avr-gcc \
-    avrdude \
-    avr-gdb \
     avr-binutils \
+    avr-gcc \
+    avr-gdb \
+    avrdude \
+    axel \
+    bluez \
+    bluez-utils \
+    chromium \
+    compton \
+    dialog \
+    discord \
+    dkms \
+    docker \
+    dunst \
+    exa \
+    fcitx \
+    fcitx-configtool \
+    fcitx-im \
+    fcitx-mozc \
+    feh \
+    fwupd \
+    git \
+    i3-gaps \
+    intel-ucode \
     kubectl \
     kubectx \
-    lsof \
-    pciutils \
+    lightdm \
+    lightdm-locker
+    lightdm-webkit2-greeter \
+    lm_sensors \
     lshw \
+    lsof \
+    neovim \
+    network-manager-applet \
+    networkmanager \
+    nodejs \
+    ntp \
+    nvidia \
+    openssh \
     pacman-contrib \
+    pavucontrol \
+    pciutils \
+    pulseaudio \
+    pulseaudio-bluetooth \
+    py3status \
+    ranger \
     reflector \
+    ripgrep \
+    rofi \
+    rxvt-unicode \
+    thefuck \
     tlp \
-    nvidia
+    tmux \
+    urxvt-perls \
+    volumeicon \
+    w3m \
+    xclip \
+    xf86-video-intel \
+    xorg-server \
+    xorg-xbacklight \
+    xorg-xrandr \
+    xsel \
+    yarn \
+    zsh
     # wlc \
     # wayland \
     # nvidia \

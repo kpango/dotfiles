@@ -133,36 +133,10 @@ push_k8s:
 push_glibc:
 	@make IMAGE_NAME="kpango/glibc" docker_push
 
-build_all: 
-	echo "start"
-	@make build_base
-	@make build_env & \
-	@make build_go & \
-	@make build_rust & \
-	@make build_nim & \
-	@make build_dart & \
-	@make build_docker & \
-	@make build_gcloud & \
-	@make build_k8s & \
-	@make build_glibc & \
-	wait;
-	@make prod_build
+build_all: build_base build_env build_go build_rust build_nim build_dart build_docker build_gcloud build_k8s build_glibc prod_build
 	echo "done"
 
-push_all:
-	echo "start"
-	@make push_base & \
-	@make push_env & \
-	@make push_go & \
-	@make push_rust & \
-	@make push_nim & \
-	@make push_dart & \
-	@make push_docker & \
-	@make push_gcloud & \
-	@make push_k8s & \
-	@make push_glibc & \
-	@make prod_push & \
-	wait;
+push_all: push_base push_env push_go push_rust push_nim push_dart push_docker push_gcloud push_k8s push_glibc prod_push
 	echo "done"
 
 profile:
