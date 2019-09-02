@@ -748,6 +748,7 @@ if type kubectl >/dev/null 2>&1; then
     alias ksall="k get svc --all-namespaces -o wide"
     alias kiall="k get ingress --all-namespaces -o wide"
     alias knall="k get namespace -o wide"
+
     alias kdall="k get deployment --all-namespaces -o wide"
     # source <(kubectl completion zsh);
 fi
@@ -773,12 +774,6 @@ fi
 # [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
-        ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
-        if [[ -z $ID ]]; then # if not available create a new one
-            tmux -2 new-session
-            source-file ~/.tmux/new-session
-        else
-            tmux -2 attach-session -t "$ID" # if available attach to it
-        fi
+        tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -n$USER -s$USER@$HOST && source-file $HOME/.tmux/new-session
     fi
 fi
