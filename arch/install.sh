@@ -144,6 +144,7 @@ pacstrap -i ${ROOT} \
     lm_sensors \
     lshw \
     lsof \
+    mpv \
     neovim \
     network-manager-applet \
     networkmanager \
@@ -178,6 +179,7 @@ pacstrap -i ${ROOT} \
     xorg-xrandr \
     xsel \
     yarn \
+    youtube-dl \
     zsh
     # wlc \
     # wayland \

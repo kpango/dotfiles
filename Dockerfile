@@ -152,7 +152,6 @@ RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
     && rm -rf /usr/local/share/.cache \
     && rm -rf /tmp/*
 
-
 WORKDIR /go/src
 
 ENTRYPOINT ["docker-entrypoint"]

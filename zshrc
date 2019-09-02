@@ -575,15 +575,15 @@ if type tar >/dev/null 2>&1; then
 fi
 
 if type ranger >/dev/null 2>&1; then
-    rng() {
-        if [ -n "$RANGER_LEVEL" ]; then
-            \ranger $@
-        else
-            echo "other ranger process already running"
-        fi
-    }
-    alias ranger=rng
-    alias rng=rng
+    # rng() {
+    #     if [ -z "$RANGER_LEVEL" ]; then
+    #         \ranger $@
+    #     else
+    #         echo "other ranger process already running"
+    #     fi
+    # }
+    # alias ranger=rng
+    alias rng=ranger
 fi
 
 alias f="open ."
