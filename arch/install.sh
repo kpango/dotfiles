@@ -165,6 +165,7 @@ pacstrap -i ${ROOT} \
     thefuck \
     tlp \
     tmux \
+    unzip \
     urxvt-perls \
     volumeicon \
     w3m \

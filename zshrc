@@ -17,6 +17,7 @@ export LC_TIME=en_US.UTF-8
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export SHELL=$(which zsh)
+export USER=$(whoami)
 
 export CPUCORES="$(getconf _NPROCESSORS_ONLN)"
 export TERMCMD="urxvtc -e $SHELL"
@@ -29,11 +30,12 @@ export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME
 export NVIM_TUI_ENABLE_TRUE_COLOR=1
 
 #GO
-if [[ ! $(cat /proc/self/cgroup | awk -F/ '$2 == "docker"' | read) ]]; then
+if [ "$USER" = 'root' ]; then
     export GOPATH=/go
 else
     export GOPATH=$HOME/go
 fi
+
 export CGO_ENABLED=1
 export GO111MODULE=on
 export GOBIN=$GOPATH/bin
@@ -774,6 +776,10 @@ fi
 # [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
-        tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -n$USER -s$USER@$HOST && source-file $HOME/.tmux/new-session
+        if [ "$USER" = 'root' ]; then
+            tmux -2 new-session -n$USER -s$USER@$HOST
+        else
+            tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -n$USER -s$USER@$HOST && source-file $HOME/.tmux/new-session
+        fi
     fi
 fi

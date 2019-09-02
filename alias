@@ -20,7 +20,8 @@ devrun(){
 
         Linux)
             echo 'Docker on Linux start'
-            privileged=false
+            # privileged=false
+            # privileged=false
             tz_path="/etc/timezone"
             docker_daemon="/etc/docker/daemon.json"
             ;;

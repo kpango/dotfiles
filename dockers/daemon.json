@@ -22,5 +22,6 @@
   "experimental": true,
   "features": {
     "buildkit": true
-  }
+  },
+  "storage-driver": "overlay2"
 }
