@@ -165,6 +165,7 @@ pacstrap -i ${ROOT} \
     rxvt-unicode \
     thefuck \
     tlp \
+    tp_smapi \
     tmux \
     unzip \
     urxvt-perls \
@@ -177,6 +178,7 @@ pacstrap -i ${ROOT} \
     xorg-xmodmap \
     xorg-xhost
     xorg-xrandr \
+    arandr \
     xsel \
     yarn \
     youtube-dl \

@@ -517,9 +517,13 @@ alias mkcd=mkcd
 alias ..='\cd ../'
 alias ...='\cd ../../'
 alias ....='\cd ../../../'
+alias .....='\cd ../../../../'
+alias ......='\cd ../../../../../'
 alias ,,='\cd ../'
 alias ,,,='\cd ../../'
 alias ,,,,='\cd ../../../'
+alias ,,,,,='cd ../../../../'
+alias ,,,,,,='\cd ../../../../../'
 
 if type fzf >/dev/null 2>&1; then
     if type fzf-tmux >/dev/null 2>&1; then
@@ -774,12 +778,16 @@ if type nmcli >/dev/null 2>&1; then
     alias nmcliwifi=nmcliwifi
 fi
 
-if type nmcli >/dev/null 2>&1; then
+if type compton >/dev/null 2>&1; then
     comprestart() {
         sudo pkill compton
-        /usr/bin/compton --config $HOME/.config/compton/compton.conf --xrender-sync --xrender-sync-fence -cb
+        compton --config $HOME/.config/compton/compton.conf --xrender-sync-fence -cb
     }
     alias comprestart=comprestart
+fi
+
+if type chromium >/dev/null 2>&1; then
+    alias chromium="chromium --audio-buffer-size=4096"
 fi
 
 # [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
