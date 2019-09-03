@@ -771,6 +771,15 @@ if type nmcli >/dev/null 2>&1; then
             echo "invalid argument, SSID and PSK is required"
         fi
     }
+    alias nmcliwifi=nmcliwifi
+fi
+
+if type nmcli >/dev/null 2>&1; then
+    comprestart() {
+        sudo pkill compton
+        /usr/bin/compton --config $HOME/.config/compton/compton.conf --xrender-sync --xrender-sync-fence -cb
+    }
+    alias comprestart=comprestart
 fi
 
 # [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
