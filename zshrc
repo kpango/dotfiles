@@ -785,6 +785,18 @@ if type compton >/dev/null 2>&1; then
     }
     alias comprestart=comprestart
 fi
+if type yay >/dev/null 2>&1; then
+    archback() {
+        pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
+        pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
+    }
+    alias archback=archback
+    archup() {
+        yay -Syu; paccache -ruk0 
+    }
+    alias archup=archup
+
+fi
 
 if type chromium >/dev/null 2>&1; then
     alias chromium="chromium --audio-buffer-size=4096"
@@ -794,6 +806,7 @@ fi
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
         if [ "$USER" = 'root' ]; then
+            pkill tmux
             tmux -2 new-session -n$USER -s$USER@$HOST
         else
             # tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -n$USER -s$USER@$HOST && source-file $HOME/.tmux/new-session

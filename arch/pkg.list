@@ -8,6 +8,7 @@ avr-gcc
 avr-gdb
 avrdude
 axel
+bash
 binutils
 bison
 bluez
@@ -18,12 +19,14 @@ compton
 coreutils
 cryptsetup
 device-mapper
+dhcpcd
 dialog
 diffutils
 discord
 dkms
 docker
 dunst
+e2fsprogs
 exa
 fakeroot
 fcitx
@@ -65,7 +68,9 @@ lm_sensors
 logrotate
 lshw
 lsof
+m4
 make
+man-pages
 mdadm
 mpv
 neovim
