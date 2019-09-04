@@ -12,8 +12,7 @@ configuration {
 }
 
 * {
-        /* background-color:           #222d32; */
-        background-color:           transparent;
+        background-color:           #222d32;
         text-color:                 #ffffff;
         active-text-color:          #000000;
 

@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine AS go
+FROM golang:1.13-alpine AS go
 
 RUN apk update \
     && apk upgrade \
@@ -12,7 +12,7 @@ RUN apk update \
 
 # RUN --mount=type=cache,target=/root/.cache/go-build \
 #     go get -v -u \
-RUN go get -u  \
+RUN GO111MODULE=on go get -u  \
     github.com/ChimeraCoder/gojson/gojson \
     github.com/a8m/syncmap \
     github.com/cweill/gotests/... \
@@ -25,12 +25,10 @@ RUN go get -u  \
     github.com/gohugoio/hugo \
     github.com/golang/dep/... \
     github.com/golangci/golangci-lint/cmd/golangci-lint \
-    # github.com/goodwithtech/dockle/cmd/dockle \
     github.com/josharian/impl \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
     github.com/klauspost/asmfmt/cmd/asmfmt \
-    # github.com/knqyf263/trivy/cmd/trivy \
     github.com/koron/iferr \
     github.com/mattn/efm-langserver \
     github.com/motemen/ghq \
@@ -42,7 +40,6 @@ RUN go get -u  \
     github.com/rogpeppe/godef \
     github.com/sugyan/ttygif \
     github.com/uber/go-torch \
-    # github.com/wagoodman/dive \
     github.com/zmb3/gogetdoc \
     golang.org/x/lint/golint \
     golang.org/x/tools/cmd/goimports \
@@ -52,10 +49,27 @@ RUN go get -u  \
     google.golang.org/grpc \
     honnef.co/go/tools/cmd/keyify \
     sourcegraph.com/sqs/goreturns \
-    && git clone https://github.com/saibing/bingo.git \
-    && cd bingo \
-    && GO111MODULE=on go install \
+    \
+    && GO111MODULE=off go get \
+    github.com/aquasecurity/trivy/cmd/trivy \
+    github.com/saibing/bingo \
+    github.com/wagoodman/dive \
+    github.com/goodwithtech/dockle/cmd/dockle \
+    \
+    && cd $GOPATH/src/github.com/aquasecurity/trivy
+    && GO111MODULE=on go build -o $GOPATH/bin/trivy cmd/trivy/main.go \
+    \
+    && cd $GOPATH/src/github.com/saibing/bingo \
+    && GO111MODULE=on go build -o $GOPATH/bin/bingo main.go \
+    \
+    && cd $GOPATH/src/github.com/wagoodman/dive \
+    && GO111MODULE=on go build -o $GOPATH/bin/dive main.go \
+    \
+    && cd $GOPATH/src/github.com/goodwithtech/dockle
+    && GO111MODULE=on go build -o $GOPATH/bin/dockle cmd/dockle/main.go \
+    \
     && upx --best --ultra-brute ${GOPATH}/bin/* \
+    \
     && git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
     && cp /tmp/FlameGraph/flamegraph.pl /go/bin/ \
     && cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ \
