@@ -17,14 +17,12 @@ RUN GO111MODULE=on go get -u  \
     github.com/a8m/syncmap \
     github.com/cweill/gotests/... \
     github.com/davidrjenni/reftools/cmd/fillstruct \
-    github.com/derekparker/delve/cmd/dlv \
-    github.com/dominikh/go-tools/cmd/keyify \
+    github.com/go-delve/delve/cmd/dlv \
     github.com/fatih/gomodifytags \
     github.com/fatih/motion \
     github.com/gnewton/chidley \
     github.com/gohugoio/hugo \
     github.com/golang/dep/... \
-    github.com/golangci/golangci-lint/cmd/golangci-lint \
     github.com/josharian/impl \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
@@ -55,6 +53,10 @@ RUN GO111MODULE=on go get -u  \
     github.com/saibing/bingo \
     github.com/wagoodman/dive \
     github.com/goodwithtech/dockle/cmd/dockle \
+    github.com/golangci/golangci-lint/cmd/golangci-lint \
+    \
+    && cd $GOPATH/src/github.com/golangci/golangci-lint \
+    && GO111MODULE=on go build -o $GOPATH/bin/golangci-lint cmd/golangci-lint/main.go \
     \
     && cd $GOPATH/src/github.com/aquasecurity/trivy \
     && GO111MODULE=on go build -o $GOPATH/bin/trivy cmd/trivy/main.go \
