@@ -56,7 +56,7 @@ RUN GO111MODULE=on go get -u  \
     github.com/wagoodman/dive \
     github.com/goodwithtech/dockle/cmd/dockle \
     \
-    && cd $GOPATH/src/github.com/aquasecurity/trivy
+    && cd $GOPATH/src/github.com/aquasecurity/trivy \
     && GO111MODULE=on go build -o $GOPATH/bin/trivy cmd/trivy/main.go \
     \
     && cd $GOPATH/src/github.com/saibing/bingo \
@@ -65,7 +65,7 @@ RUN GO111MODULE=on go get -u  \
     && cd $GOPATH/src/github.com/wagoodman/dive \
     && GO111MODULE=on go build -o $GOPATH/bin/dive main.go \
     \
-    && cd $GOPATH/src/github.com/goodwithtech/dockle
+    && cd $GOPATH/src/github.com/goodwithtech/dockle \
     && GO111MODULE=on go build -o $GOPATH/bin/dockle cmd/dockle/main.go \
     \
     && upx --best --ultra-brute ${GOPATH}/bin/* \
