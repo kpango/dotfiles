@@ -40,6 +40,7 @@ export CGO_ENABLED=1
 export GO111MODULE=on
 export GOBIN=$GOPATH/bin
 export GO15VENDOREXPERIMENT=1
+export GOPRIVATE="*.yahoo.co.jp"
 export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go
 export CGO_CFLAGS="-g -Ofast -march=native"
 export CGO_CPPFLAGS="-g -Ofast -march=native"
