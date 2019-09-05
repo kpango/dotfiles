@@ -184,7 +184,7 @@ pacstrap -i ${ROOT} \
     fcitx-im \
     fcitx-configtool \
     fcitx-mozc \
-    chromium \
+    chrome \
     alsa-utils \
     apulse \
     mdadm \

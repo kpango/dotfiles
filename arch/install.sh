@@ -120,7 +120,7 @@ pacstrap -i ${ROOT} - < pkg.list
 #     axel \
 #     bluez \
 #     bluez-utils \
-#     chromium \
+#     chrome \
 #     compton \
 #     dialog \
 #     discord \

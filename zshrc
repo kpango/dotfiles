@@ -798,8 +798,8 @@ if type yay >/dev/null 2>&1; then
 
 fi
 
-if type chromium >/dev/null 2>&1; then
-    alias chromium="chromium --audio-buffer-size=4096"
+if type chrome >/dev/null 2>&1; then
+    alias chrome="chrome --audio-buffer-size=4096"
 fi
 
 # [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
