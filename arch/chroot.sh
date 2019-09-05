@@ -1,7 +1,12 @@
 #!/bin/sh
 sed -i -e "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
 sed -i -e "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j9\"/g" /etc/makepkg.conf
-sed -i -e "s/#Color/Color/g" /etc/pacman.conf
+sed -i -e "s/#Color/Color\nILoveCandy/g" /etc/pacman.conf
+cat <<EOF >>/etc/pacman.conf
+
+#[multilib]
+#Include = /etc/pacman.d/mirrorlist
+EOF
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
 
 HOST="archpango"
