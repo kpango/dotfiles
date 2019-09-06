@@ -35,13 +35,13 @@ devrun(){
             ;;
     esac
 
+        # -e DISPLAY \
+        # -v /tmp/.X11-unix:/tmp/.X11-unix \
     docker run --network=host \
         --cap-add=ALL \
         --name $container_name \
         --restart always \
         --privileged=$privileged \
-        -e DISPLAY \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $docker_daemon:/etc/docker/daemon.json \
         -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
