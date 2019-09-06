@@ -71,14 +71,14 @@ FROM aquasec/trivy:latest AS trivy
 
 FROM go-base AS go
 
-COPy --from=default $GOPATH/bin/ $GOPATH/bin
-COPy --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
-COPy --from=dlayer $GOPATH/bin/dlayer $GOPATH/bin/dlayer
-COPy --from=bingo $GOPATH/bin/bingo $GOPATH/bin/bingo
-# COPy --from=minid $GOPATH/bin/minid $GOPATH/bin/minid
-COPy --from=dive /dive $GOPATH/bin/dive
-COPy --from=dockle /usr/local/bin/dockle $GOPATH/bin/dockle
-COPy --from=golangci-lint /usr/bin/golangci-lint $GOPATH/bin/golangci-lint
+COPY --from=default $GOPATH/bin/ $GOPATH/bin
+COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
+COPY --from=dlayer $GOPATH/bin/dlayer $GOPATH/bin/dlayer
+COPY --from=bingo $GOPATH/bin/bingo $GOPATH/bin/bingo
+# COPY --from=minid $GOPATH/bin/minid $GOPATH/bin/minid
+COPY --from=dive /dive $GOPATH/bin/dive
+COPY --from=dockle /usr/local/bin/dockle $GOPATH/bin/dockle
+COPY --from=golangci-lint /usr/bin/golangci-lint $GOPATH/bin/golangci-lint
 
 RUN upx --best --ultra-brute ${GOPATH}/bin/* \
     \
