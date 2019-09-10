@@ -1,3 +1,4 @@
+acpi
 alsa-utils
 arandr
 archlinux-keyring
@@ -25,6 +26,7 @@ dialog
 diffutils
 discord
 dkms
+dmidecode
 docker
 dunst
 e2fsprogs
@@ -115,6 +117,7 @@ texinfo
 thefuck
 tlp
 tmux
+tp_smapi
 unzip
 urxvt-perls
 usbutils
