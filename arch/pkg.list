@@ -10,6 +10,7 @@ avr-gdb
 avrdude
 axel
 bash
+bash-language-server
 binutils
 bison
 blueman
