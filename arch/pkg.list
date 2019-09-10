@@ -94,6 +94,7 @@ powertop
 procps-ng
 psmisc
 pulseaudio
+pulseaudio-alsa
 pulseaudio-bluetooth
 py3status
 ranger
@@ -119,6 +120,7 @@ urxvt-perls
 usbutils
 util-linux
 volumeicon
+w3m
 which
 xclip
 xf86-video-intel
