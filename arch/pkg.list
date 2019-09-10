@@ -11,6 +11,7 @@ axel
 bash
 binutils
 bison
+blueman
 bluez
 bluez-utils
 bzip2
@@ -46,6 +47,7 @@ gcc-libs
 gettext
 git
 glibc
+graphviz
 grep
 gzip
 i3-gaps
@@ -77,6 +79,7 @@ neovim
 netctl
 network-manager-applet
 networkmanager
+nmap
 nodejs
 ntp
 openssh
@@ -116,7 +119,6 @@ urxvt-perls
 usbutils
 util-linux
 volumeicon
-w3m
 which
 xclip
 xf86-video-intel

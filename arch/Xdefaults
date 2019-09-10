@@ -12,7 +12,7 @@ Xft.hintstyle:              hintslight
 !-------------------------------------------------------------------------------
 URxvt.depth:                32
 URxvt.geometry:             90x30
-URxvt.transparent:          false
+URxvt.transparent:          true
 URxvt.fading:               0
 ! URxvt.urgentOnBell:         true
 ! URxvt.visualBell:           true
@@ -22,6 +22,7 @@ URxvt.saveLines:            10000
 URxvt.internalBorder:       3
 URxvt.lineSpace:            0
 URxvt.inputMethod:          fcitx
+URxvt.preeditType:          OnTheSpot
 
 ! Fonts
 URxvt.allow_bold:           false
@@ -51,8 +52,8 @@ URxvt.tabbed.not-consumable-keys: 0xff22, 0xff23, 0xff2a
 
 ! Cursor
 URxvt.cursorBlink:          true
-URxvt.cursorColor:          #657b83
-URxvt.cursorUnderline:      false
+URxvt.cursorColor:          #00ff00
+URxvt.cursorUnderline:      true
 
 ! Pointer
 URxvt.pointerBlank:         true
@@ -63,7 +64,6 @@ URxvt*iso14755: false
 ! Color
 ! スケスケにするためのパラメータ
 urxvt*shading: 20 
-! urxvt*shading: 10
 URxvt*inheritPixmap: true
 
 ! Molokai
@@ -71,8 +71,6 @@ URxvt*inheritPixmap: true
 ! vim: set ft=xdefaults:
 URxvt*background:   [80]#000000
 URxvt*foreground:   #d0d0d0
-
-URxvt*cursorColor:  #d0d0d0
 
 URxvt*colorBD:      #3579a8
 URxvt*colorUL:      #4eb4fa
