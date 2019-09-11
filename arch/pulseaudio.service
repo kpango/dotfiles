@@ -2,9 +2,12 @@
 Description=Pulse Audio
 
 [Service]
-Type=simple
-User=root
-ExecStart=/usr/bin/pulseaudio --start --system -D --disallow-exit --disable-shm
+Type=forking
+ExecStart=/usr/bin/pulseaudio --system -D --disallow-exit --disable-shm --no-cpu-limit  --disallow-module-loading
+# ExecStart=/usr/bin/pulseaudio --system -D --disallow-exit --disable-shm --realtime --no-cpu-limit  --disallow-module-loading
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=30
 
 [Install]
 WantedBy=multi-user.target

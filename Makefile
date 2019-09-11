@@ -39,7 +39,6 @@ arch_link: link
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xdefaults $(HOME)/.Xdefaults
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/resolv.conf /etc/resolv.conf
@@ -49,10 +48,12 @@ arch_link: link
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/lightdm.conf /etc/lightdm/lightdm.conf
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio.service /etc/systemd/system/multi-user.target.wants/pulseaudio.service
+	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio.service /etc/systemd/system/pulseaudio.service
 	sudo systemctl daemon-reload
 	sudo systemctl enable pulseaudio
 	sudo systemctl start pulseaudio
+	sudo systemctl status pulseaudio
+	sudo journalctl | grep pulseaudio
 
 clean:
 	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
@@ -69,8 +70,8 @@ build:
 	docker build -t kpango/dev:latest .
 
 docker_build:
-	# docker build -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
-	type minid >/dev/null 2>&1 && minid -f ${DOCKERFILE} | docker build -t ${IMAGE_NAME}:latest -f - .
+	docker build -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
+	# type minid >/dev/null 2>&1 && minid -f ${DOCKERFILE} | docker build -t ${IMAGE_NAME}:latest -f - .
 
 docker_push:
 	docker push ${IMAGE_NAME}:latest

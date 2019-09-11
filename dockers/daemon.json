@@ -23,6 +23,5 @@
   "features": {
     "buildkit": true
   },
-  "storage-driver": "overlay2",
-  "max-concurrent-uploads": 1
+  "storage-driver": "overlay2"
 }
