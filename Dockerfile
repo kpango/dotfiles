@@ -52,6 +52,7 @@ ENV CARGO_PATH /root/.cargo
 ENV DART_PATH /usr/lib/dart
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 ENV NVIM_HOME $HOME/.config/nvim
+ENV VIM_PLUG_HOME $NVIM_HOME/plugged/vim-plug
 ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
 ENV ZPLUG_HOME $HOME/.zplug;
 
@@ -136,13 +137,11 @@ COPY zshrc $HOME/.zshrc
 
 ENV SHELL /bin/zsh
 
-RUN  ["/bin/zsh", "-c", "source ~/.zshrc"]
+WORKDIR $VIM_PLUG_HOME
 
-WORKDIR $NVIM_HOME/plugged/vim-plug
-
-RUN rm -rf /root/.config/nvim/plugged/vim-plug/autoload \
-    && git clone https://github.com/junegunn/vim-plug.git /root/.config/nvim/plugged/vim-plug/autoload \
-    && nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go \
+RUN rm -rf $VIM_PLUG_HOME/autoload \
+    && git clone https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload \ 
+    &&  nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go \
     && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
     && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall \
     && git clone https://github.com/zplug/zplug $ZPLUG_HOME \

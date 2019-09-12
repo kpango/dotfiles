@@ -71,7 +71,6 @@ build:
 
 docker_build:
 	docker build -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
-	# type minid >/dev/null 2>&1 && minid -f ${DOCKERFILE} | docker build -t ${IMAGE_NAME}:latest -f - .
 
 docker_push:
 	docker push ${IMAGE_NAME}:latest
