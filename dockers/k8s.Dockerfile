@@ -2,7 +2,7 @@ FROM alpine:edge AS kube
 
 ENV ARCH amd64
 ENV OS linux
-ENV KREW_VERSION v0.2.1
+ENV KREW_VERSION v0.3.0
 ENV KUBEBOX_VERSION v0.4.0
 ENV STERN_VERSION 1.10.0
 ENV KUBEBUILDER_VERSION 1.0.8
@@ -27,7 +27,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && git clone "https://github.com/ahmetb/kubectx" /opt/kubectx \
     && mv /opt/kubectx/kubectx /usr/local/bin/kubectx \
     && mv /opt/kubectx/kubens /usr/local/bin/kubens \
-    && curl -fsSLO "https://storage.googleapis.com/krew/${KREW_VERSION}/krew.{tar.gz,yaml}" \
+    && curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/download/${KREW_VERSION}/krew.{tar.gz,yaml}" \
     && tar zxvf krew.tar.gz \
     && ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_${ARCH}" install --manifest=krew.yaml --archive=krew.tar.gz \
     && ls /root/.krew \

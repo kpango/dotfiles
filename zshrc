@@ -821,5 +821,9 @@ if type tmux >/dev/null 2>&1; then
                 tmux -2 attach-session -t "$ID" # if available attach to it
             fi
         fi
+    else
+        if type neofetch >/dev/null 2>&1; then
+            neofetch
+        fi
     fi
 fi

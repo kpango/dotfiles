@@ -290,8 +290,6 @@ let g:ale_echo_cursor = 1
 let g:ale_echo_msg_error_str = 'ERROR'
 let g:ale_echo_msg_warning_str = 'WARNING'
 let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-" let g:ale_go_langserver_executable = "bingo"
-" let g:ale_go_langserver_options = "-mode stdio"
 nnoremap <silent> <C-k> <Plug>(ale_previous_wrap)
 nnoremap <silent> <C-j> <Plug>(ale_next_wrap)
 " Close Quickfix list when file leave
@@ -348,95 +346,7 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
-" imap <c-space> <Plug>(asyncomplete_force_refresh)
-" inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-" inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-" inoremap <expr> <cr> pumvisible() ? "\<C-y>\<cr>" : "\<cr>"
-" autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-" let g:LanguageClient_serverCommands = {
-"    \ 'rust': ['rustup', 'run', 'nightly', 'rls'],
-"    \ 'javascript': ['javascript-typescript-stdio'],
-"    \ 'vue': ['vls'],
-"    \ }
-" let g:lsp_async_completion = 1
-" let g:lsp_diagnostics_enabled = 0
-" let g:asyncomplete_remove_duplicates = 1
-" let g:asyncomplete_smart_completion = 1
-" let g:asyncomplete_auto_popup = 1
 
-" function! s:configure_lsp() abort
-"     setlocal omnifunc=lsp#complete   " オムニ補完を有効化
-"     " LSP用にマッピング
-"     nnoremap <buffer> <C-]> :<C-u>LspDefinition<CR>
-"     nnoremap <buffer> gd :<C-u>LspDefinition<CR>
-"     nnoremap <buffer> gD :<C-u>LspReferences<CR>
-"     nnoremap <buffer> gs :<C-u>LspDocumentSymbol<CR>
-"     nnoremap <buffer> gS :<C-u>LspWorkspaceSymbol<CR>
-"     nnoremap <buffer> gQ :<C-u>LspDocumentFormat<CR>
-"     vnoremap <buffer> gQ :LspDocumentRangeFormat<CR>
-"     nnoremap <buffer> K :<C-u>LspHover<CR>
-"     nnoremap <buffer> <F1> :<C-u>LspImplementation<CR>
-"     nnoremap <buffer> <F2> :<C-u>LspRename<CR>
-" endfunction
-"
-" if executable('bingo')
-"     AutocmdFT go call lsp#register_server({
-"       \ 'name': 'go-lang',
-"       \ 'cmd': {server_info->['bingo', '--golist-duration', '0', '--format-style', 'goimports', '--cache-style', 'on-demand', '-mode', 'stdio']},
-"       \ 'whitelist': ['go'],
-"       \ })
-" endif
-"
-" if executable('nix-lsp')
-"     AutocmdFT rust call lsp#register_server({
-"       \ 'name': 'nix',
-"       \ 'cmd': {server_info->['nix-lsp' ]},
-"       \ 'whitelist': ['nix'],
-"       \ })
-" endif
-"
-" if executable('rls')
-"     AutocmdFT rust call lsp#register_server({
-"       \ 'name': 'rls',
-"       \ 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']},
-"       \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'Cargo.toml'))},
-"       \ 'whitelist': ['rust'],
-"       \ })
-" endif
-"
-" if executable('docker-langserver')
-"     AutocmdFT dockerfile call lsp#register_server({
-"       \ 'name': 'docker-langserver',
-"       \ 'cmd': {server_info->[&shell, &shellcmdflag, 'docker-langserver --stdio']},
-"       \ 'whitelist': ['dockerfile'],
-"       \ })
-" endif
-"
-" if executable('typescript-language-server')
-"     AutocmdFT javascript call lsp#register_server({
-"     \ 'name': 'javascript support using typescript-language-server',
-"     \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-"     \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'package.json'))},
-"     \ 'whitelist': ['javascript', 'javascript.jsx', 'json', 'jsx', 'vue']
-"     \ })
-"
-"     AutocmdFT typescript call lsp#register_server({
-"       \ 'name': 'typescript-language-server',
-"       \ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-"       \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
-"       \ 'whitelist': ['typescript', 'typescript.tsx'],
-"       \ })
-" endif
-"
-" if executable('pyls')
-"     AutocmdFT python call lsp#register_server({
-"       \ 'name': 'pyls',
-"       \ 'cmd': {server_info->['pyls']},
-"       \ 'whitelist': ['python'],
-"       \ 'workspace_config': {'pyls': {'plugins': {'pydocstyle': {'enabled': v:true}}}}
-"       \ })
-" endif
-"
 " -------------------------
 " ---- Denite settings ----
 " -------------------------
