@@ -79,6 +79,7 @@ make
 man-pages
 mdadm
 mpv
+neofetch
 neovim
 netctl
 network-manager-applet
