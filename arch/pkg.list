@@ -50,6 +50,7 @@ gcc-libs
 gettext
 git
 glibc
+gnome-keyring
 graphviz
 grep
 gzip
@@ -79,6 +80,7 @@ make
 man-pages
 mdadm
 mpv
+mysql-workbench
 neofetch
 neovim
 netctl
