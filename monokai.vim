@@ -67,7 +67,7 @@ else
   let s:pink       = '13'
   let s:green      = '118'
   let s:aqua       = '45'
-  let s:yellow     = '186'
+  let s:yellow     = '142'
   let s:orange     = '208'
   let s:purple     = '99'
   let s:red        = '196'

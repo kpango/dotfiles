@@ -794,7 +794,7 @@ if type yay >/dev/null 2>&1; then
     alias archback=archback
     archup() {
         sudo reflector --age 24 --latest 200 --number 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-        yay -Syu
+        yay -Syu --noanswerdiff --noanswerclean
         paccache -ruk0
     }
     alias archup=archup

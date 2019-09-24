@@ -44,9 +44,9 @@ URxvt.urlLauncher:          chrome
 URxvt.url-select.launcher:  chrome
 URxvt.url-select.underline: true
 URxvt.keysym.M-u:           perl:url-select:select_next
-! URxvt.keysym.M-t:           perl:tabbedex:new_tab
-! URxvt.keysym.M-n:           perl:tabbedex:next_tab
-! URxvt.keysym.M-p:           perl:tabbedex:prev_tab
+URxvt.keysym.M-t:           perl:tabbedex:new_tab
+URxvt.keysym.M-n:           perl:tabbedex:next_tab
+URxvt.keysym.M-p:           perl:tabbedex:prev_tab
 URxvt.tabbed.no-tabbedex-keys: true
 URxvt.tabbed.not-consumable-keys: 0xff22, 0xff23, 0xff2a
 
