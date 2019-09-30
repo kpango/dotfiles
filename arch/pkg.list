@@ -18,6 +18,7 @@ bluez
 bluez-utils
 bzip2
 caprine
+cmake
 compton
 coreutils
 cryptsetup
