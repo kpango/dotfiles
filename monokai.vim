@@ -410,3 +410,5 @@ exe 'hi! cStructure'                    .s:fg_pink          .s:bg_none          
 exe 'hi! cStorageClass'                 .s:fg_pink          .s:bg_none          .s:fmt_none
 exe 'hi! cInclude'                      .s:fg_green         .s:bg_none          .s:fmt_none
 exe 'hi! cDefine'                       .s:fg_green         .s:bg_none          .s:fmt_none
+
+exe 'hi! goFunction'        .s:fg_green       .s:bg_none        .s:fmt_none

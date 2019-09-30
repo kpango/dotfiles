@@ -7,7 +7,8 @@
       "initializationOptions": {
         "gocodeCompletionEnabled": true,
         "diagnosticsEnabled": true,
-        "lintTool": "golangci-lint"
+        "lintTool": "golangci-lint",
+        "formatTool": "goimports"
       },
       "rootPatterns": [
         "go.mod",

@@ -77,7 +77,9 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Clang Setting
     " Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
 " ---- Golang Setting
-    Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
+    Plug 'arp242/gopher.vim', {'for': 'go'}
+    " Plug 'zchee/nvim-go', {'for': 'go', 'do': 'make'}
+    " Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
     " Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
@@ -565,34 +567,40 @@ vmap <C-C> <Plug>(caw:hatpos:toggle)
 " -------------------------
 " ---- Golang settings ----
 " -------------------------
-Autocmd BufWinEnter *.go GoFmt
-Autocmd BufWritePre *.go GoFmt
-AutocmdFT go compiler go
-AutocmdFT go :highlight goExtraVars cterm=bold ctermfg=214
-AutocmdFT go :match goExtraVars /\<ok\>\|\<err\>/
-AutocmdFT go let g:go_fmt_command = "goimports"
+Autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
+" Autocmd BufWritePre *.go Neoformat
+" AutocmdFT go let g:neoformat_enabled_go = ['goimports']
+" Autocmd BufWinEnter *.go GoFmt
+" Autocmd BufWritePre *.go GoFmt
+" AutocmdFT go compiler go
+" AutocmdFT go :highlight goExtraVars cterm=bold ctermfg=214
+" AutocmdFT go :match goExtraVars /\<ok\>\|\<err\>/
+" AutocmdFT go let g:go_fmt_command = "goimports"
+" AutocmdFT go let g:go_fmt_autosave = 0
 " TODO if deoppet is fully worked replace neosnippet
 " AutocmdFT go let g:go_snippet_engine = "deoppet"
 " TODO remove this
+" AutocmdFT go let g:go_autodetect_gopath = 0
 " AutocmdFT go let g:go_snippet_engine = "neosnippet"
-AutocmdFT go let g:go_def_mapping_enabled = 0
-AutocmdFT go let g:go_doc_keywordprg_enabled = 0
-AutocmdFT go let g:go_highlight_types = 1
-AutocmdFT go let g:go_highlight_fields = 1
-AutocmdFT go let g:go_highlight_functions = 1
-AutocmdFT go let g:go_highlight_methods = 1
-AutocmdFT go let g:go_highlight_structs = 1
-AutocmdFT go let g:go_highlight_operators = 1
-AutocmdFT go let g:go_highlight_build_constraints = 1
-AutocmdFT go let g:go_highlight_extra_types = 1
-AutocmdFT go let g:go_auto_type_info = 1
-AutocmdFT go let g:go_auto_sameids = 1
-AutocmdFT go let g:go_list_type = "quickfix"
-AutocmdFT go let g:go_addtags_transform = "snakecase"
-AutocmdFT go let g:go_alternate_mode = "edit"
-AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
+" AutocmdFT go let g:go_def_mode = 'gopls'
+" AutocmdFT go let g:go_def_mapping_enabled = 1
+" AutocmdFT go let g:go_doc_keywordprg_enabled = 0
+" AutocmdFT go let g:go_highlight_types = 1
+" AutocmdFT go let g:go_highlight_fields = 1
+" AutocmdFT go let g:go_highlight_functions_calls = 1
+" AutocmdFT go let g:go_highlight_methods = 1
+" AutocmdFT go let g:go_highlight_structs = 1
+" AutocmdFT go let g:go_highlight_operators = 1
+" AutocmdFT go let g:go_highlight_build_constraints = 1
+" AutocmdFT go let g:go_highlight_extra_types = 1
+" AutocmdFT go let g:go_auto_type_info = 1
+" AutocmdFT go let g:go_auto_sameids = 1
+" AutocmdFT go let g:go_list_type = "quickfix"
+" AutocmdFT go let g:go_addtags_transform = "snakecase"
+" AutocmdFT go let g:go_alternate_mode = "edit"
+" AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
 " AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
-AutocmdFT go nnoremap <F5> :Gorun<CR>
+" AutocmdFT go nnoremap <F5> :Gorun<CR>
 " AutocmdFT go nnoremap gd <Plug>(go-def-split)
 
 " ------------------------
@@ -914,16 +922,6 @@ noremap ; :
 inoremap <C-j> <esc>
 inoremap <C-s> <esc>:w<CR>
 nnoremap <C-q> :qall<CR>
-
-" Deoplete Key map
-" inoremap <expr><silent><Tab> pumvisible() ? "\<C-n>" : (<sid>completion_check_bs() ? "\<Tab>" : deoplete#mappings#manual_complete())
-" inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<C-h>"
-" inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
-
-" inoremap <expr><C-h> deolete#mappings#smart_close_popup()."\<C-h>"
-" inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
-" " imap <expr><TAB> deoppet#expandable_or_jumpable() ? "\<Plug>(deoppet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
-" imap <expr><TAB> neosnippet#expandable_or_jumpable() ? "\<Plug>(neosnippet_expand_or_jump)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " ---- Enable Filetype
 filetype plugin indent on
