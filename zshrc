@@ -308,6 +308,7 @@ if type git >/dev/null 2>&1; then
     }
     alias gpush=gpush
     gitcompush() {
+        fd "\;w" $(git rev-parse --show-toplevel) | xargs rm -rf
         git add -A
         git commit --signoff -m $1
         git push -u origin $2

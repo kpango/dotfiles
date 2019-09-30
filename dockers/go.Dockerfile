@@ -12,8 +12,6 @@ RUN apk update \
 
 FROM go-base AS default
 
-# RUN --mount=type=cache,target=/root/.cache/go-build \
-#     go get -v -u \
 RUN GO111MODULE=on go get -u  \
     github.com/ChimeraCoder/gojson/gojson \
     github.com/a8m/syncmap \
@@ -26,7 +24,6 @@ RUN GO111MODULE=on go get -u  \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
     github.com/koron/iferr \
-    github.com/mattn/efm-langserver \
     github.com/motemen/ghq \
     github.com/nsf/gocode \
     github.com/pwaller/goimports-update-ignore \
@@ -42,9 +39,9 @@ RUN GO111MODULE=on go get -u  \
 
 FROM go-base AS go-module-off-base
 RUN GO111MODULE=off go get \
+    # github.com/mattn/efm-langserver \
     github.com/gohugoio/hugo \
     github.com/golangci/golangci-lint/cmd/golangci-lint \
-    github.com/orisano/dlayer \
     # github.com/orisano/minid \
     github.com/saibing/bingo
 
@@ -56,35 +53,37 @@ FROM go-module-off-base AS bingo
 RUN cd $GOPATH/src/github.com/saibing/bingo \
     && GO111MODULE=on go build -o $GOPATH/bin/bingo main.go
 
-FROM go-module-off-base AS dlayer
-RUN cd $GOPATH/src/github.com/orisano/dlayer \
-    && GO111MODULE=on go build -o $GOPATH/bin/dlayer main.go
+# FROM go-module-off-base AS efm
+# RUN cd $GOPATH/src/github.com/mattn/efm-langserver \
+    # && GO111MODULE=on go build -o $GOPATH/bin/efm-langserver
 
 # FROM go-module-off-base AS minid
 # RUN cd $GOPATH/src/github.com/orisano/minid \
 #     && GO111MODULE=on go build -o $GOPATH/bin/minid main.go
 
 FROM golangci/golangci-lint:latest AS golangci-lint
-FROM wagoodman/dive:latest AS dive
-FROM goodwithtech/dockle:latest AS dockle
-FROM aquasec/trivy:latest AS trivy
 
 FROM go-base AS go
 
 COPY --from=default $GOPATH/bin/ $GOPATH/bin
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
-COPY --from=dlayer $GOPATH/bin/dlayer $GOPATH/bin/dlayer
 COPY --from=bingo $GOPATH/bin/bingo $GOPATH/bin/bingo
+# COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 # COPY --from=minid $GOPATH/bin/minid $GOPATH/bin/minid
-COPY --from=dive /dive $GOPATH/bin/dive
-COPY --from=dockle /usr/local/bin/dockle $GOPATH/bin/dockle
 COPY --from=golangci-lint /usr/bin/golangci-lint $GOPATH/bin/golangci-lint
 
-RUN upx --best --ultra-brute ${GOPATH}/bin/* \
+RUN upx -9 ${GOPATH}/bin/* \
     \
     && git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
     && cp /tmp/FlameGraph/flamegraph.pl /go/bin/ \
     && cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ \
     && cp /tmp/FlameGraph/stackcollapse-go.pl /go/bin/
 
-COPy --from=trivy /usr/local/bin/trivy $GOPATH/bin/trivy
+# FROM scratch
+# ENV GOROOT /usr/local/go
+# COPY --from=go $GOROOT/bin $GOROOT/bin
+# COPY --from=go $GOROOT/src $GOROOT/src
+# COPY --from=go $GOROOT/lib $GOROOT/lib
+# COPY --from=go $GOROOT/pkg $GOROOT/pkg
+# COPY --from=go $GOROOT/misc $GOROOT/misc
+# COPY --from=go /go/bin $GOPATH/bin

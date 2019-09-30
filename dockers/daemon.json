@@ -23,5 +23,5 @@
   "features": {
     "buildkit": true
   },
-  "storage-driver": "overlay"
+  "storage-driver": "overlay2"
 }
