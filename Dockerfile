@@ -100,6 +100,7 @@ COPY --from=kube /usr/local/bin/kubebox /usr/bin/kubebox
 COPY --from=kube /usr/local/bin/kubebuilder /usr/bin/kubebuilder
 COPY --from=kube /usr/local/bin/stern /usr/bin/stern
 COPY --from=kube /usr/local/bin/helm /usr/bin/helm
+COPY --from=kube /usr/local/bin/kind /usr/bin/kind
 COPY --from=kube /root/.krew/bin /usr/bin/
 
 COPY --from=gcloud /google-cloud-sdk /google-cloud-sdk
