@@ -55,6 +55,7 @@ devrun(){
         -v $HOME/go/src:/go/src:cached \
         -v $rcpath/init.vim:/root/.config/nvim/init.vim \
         -v $rcpath/vintrc.yaml:/root/.vintrc.yaml \
+        -v $rcpath/go.vim:/root/.config/nvim/syntax/go.vim \
         -v $rcpath/efm-lsp-conf.yaml:/root/.config/nvim/efm-lsp-conf.yaml \
         -v $rcpath/coc-settings.json:/root/.config/nvim/coc-settings.json \
         -v $rcpath/monokai.vim:/root/.config/nvim/colors/monokai.vim \
