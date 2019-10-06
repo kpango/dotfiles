@@ -1,6 +1,7 @@
 FROM kpango/dev-base:latest AS env
 
 ENV NGT_VERSION 1.7.9
+ENV HUB_VERSION 2.12.8
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 
 RUN mkdir "/etc/ld.so.conf.d" \
@@ -86,5 +87,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && make -j -C /tmp/NGT-${NGT_VERSION} \
     && make install -C /tmp/NGT-${NGT_VERSION} \
     && cd /tmp \
-    && rm -rf /tmp/NGT-${NGT_VERSION}
+    && rm -rf /tmp/NGT-${NGT_VERSION} \
+    && curl -fsSLo hub.tar.gz "https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-amd64-${HUB_VERSION}.tgz" \
+    && tar zxf hub.tar.gz -C /tmp \
 

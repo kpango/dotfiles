@@ -7,6 +7,7 @@ automake
 avr-binutils
 avr-gcc
 avr-gdb
+avr-libc
 avrdude
 axel
 bash
@@ -65,6 +66,10 @@ iputils
 kubectl
 kubectx
 less
+libappindicator-gtk3
+libdbusmenu-glib
+libdbusmenu-gtk3
+libindicator-gtk3
 libtool
 licenses
 light-locker
@@ -131,6 +136,7 @@ util-linux
 volumeicon
 w3m
 which
+wpscan
 xclip
 xf86-video-intel
 xfsprogs
