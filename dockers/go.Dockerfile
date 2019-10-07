@@ -28,6 +28,7 @@ RUN GO111MODULE=on go get -u  \
     github.com/nsf/gocode \
     github.com/pwaller/goimports-update-ignore \
     github.com/rogpeppe/godef \
+    github.com/uber/prototool/cmd/prototool \
     golang.org/x/lint/golint \
     golang.org/x/tools/cmd/goimports \
     golang.org/x/tools/cmd/gopls \

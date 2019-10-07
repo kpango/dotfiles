@@ -84,6 +84,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
     Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
+" ---- Proto
+    Plug 'uber/prototool', {'for': 'proto', 'rtp':'vim/prototool'}
 " ---- HTML
     Plug 'digitaltoad/vim-jade', { 'for': ['jade', 'pug'] }
     Plug 'gregsexton/MatchTag', { 'for': ['html','php'] }
@@ -264,21 +266,22 @@ let g:ale_set_highlights = 1
 " let g:ale_set_quickfix = 1
 let g:ale_warn_about_trailing_whitespace = 0
 let g:ale_linters = {
-        \   'javascript': ['eslint_d'],
-        \   'php': ['php', 'phpcs', 'phpmd'],
-        \   'go': ['go build', 'golangci-lint'],
-        \   'rust': ['rustc'],
-        \   'html': ['tidy', 'htmlhint'],
         \   'c': ['clang'],
         \   'cpp': ['clang++'],
         \   'css': ['csslint', 'stylelint'],
+        \   'go': ['go build', 'golangci-lint'],
+        \   'html': ['tidy', 'htmlhint'],
+        \   'javascript': ['eslint_d'],
         \   'nim': ['nim', 'nimsuggest'],
-        \   'vim': ['vint'],
+        \   'php': ['php', 'phpcs', 'phpmd'],
+        \   'proto': ['prototool-lint'],
         \   'python': ['python', 'pyflakes', 'flake8'],
+        \   'rust': ['rustc'],
         \   'shell': ['sh', 'shellcheck'],
-        \   'zsh': ['zsh'],
-        \   'swift': ['swiftc'],
         \   'sql': ['sqlint'],
+        \   'swift': ['swiftc'],
+        \   'vim': ['vint'],
+        \   'zsh': ['zsh'],
         \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
