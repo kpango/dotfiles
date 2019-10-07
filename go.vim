@@ -25,6 +25,7 @@ syn keyword     goUnsignedInts      byte uint uint8 uint16 uint32 uint64 uintptr
 syn keyword     goFloats            float32 float64
 syn keyword     goComplexes         complex64 complex128
 syn keyword     goErr               err ech
+syn match       goCustomErr         /Err\w\+/ skipwhite skipnl
 syn keyword     goCType             C.uint32_t C.uint64_t C.int32_t C.int64_t C.double C.float C.size_t C.NGTProperty C.NGTError C.NGTIndex C.NGTObjectSpace
 "
 hi def link     goType              Type
@@ -34,6 +35,7 @@ hi def link     goFloats            Type
 hi def link     goComplexes         Type
 hi def link     goCType             Type
 hi def link     goErr               Todo
+hi def link     goCustomErr         Todo
 syn keyword     goBuiltins                 append cap close complex copy delete imag len
 " syn keyword     goBuiltins                 make new panic print println real recover
 " syn keyword     goBoolean                  true false

@@ -1,6 +1,6 @@
 FROM kpango/dev-base:latest AS env
 
-ENV NGT_VERSION 1.7.9
+ENV NGT_VERSION 1.7.10
 ENV HUB_VERSION 2.12.8
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 
