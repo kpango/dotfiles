@@ -110,3 +110,5 @@ build/
 # *.key
 *.cer
 *.pem
+
+\;w
