@@ -793,8 +793,11 @@ if type yay >/dev/null 2>&1; then
     }
     alias archback=archback
     archup() {
+        sudo rm -rf /var/lib/pacman/db.lck
         sudo reflector --age 24 --latest 200 --number 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+        sudo rm -rf /var/lib/pacman/db.lck
         yay -Syu --noanswerdiff --noanswerclean
+        sudo rm -rf /var/lib/pacman/db.lck
         paccache -ruk0
     }
     alias archup=archup

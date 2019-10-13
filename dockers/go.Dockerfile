@@ -24,6 +24,7 @@ RUN GO111MODULE=on go get -u  \
     github.com/jstemmer/gotags \
     github.com/kisielk/errcheck \
     github.com/koron/iferr \
+    github.com/monochromegane/dragon-imports/cmd/dragon-imports \
     github.com/motemen/ghq \
     github.com/nsf/gocode \
     github.com/pwaller/goimports-update-ignore \
@@ -40,7 +41,7 @@ RUN GO111MODULE=on go get -u  \
 
 FROM go-base AS go-module-off-base
 RUN GO111MODULE=off go get \
-    # github.com/mattn/efm-langserver \
+    github.com/mattn/efm-langserver \
     github.com/gohugoio/hugo \
     github.com/golangci/golangci-lint/cmd/golangci-lint \
     # github.com/orisano/minid \
@@ -54,9 +55,9 @@ FROM go-module-off-base AS bingo
 RUN cd $GOPATH/src/github.com/saibing/bingo \
     && GO111MODULE=on go build -o $GOPATH/bin/bingo main.go
 
-# FROM go-module-off-base AS efm
-# RUN cd $GOPATH/src/github.com/mattn/efm-langserver \
-    # && GO111MODULE=on go build -o $GOPATH/bin/efm-langserver
+FROM go-module-off-base AS efm
+RUN cd $GOPATH/src/github.com/mattn/efm-langserver \
+    && GO111MODULE=on go build -o $GOPATH/bin/efm-langserver
 
 # FROM go-module-off-base AS minid
 # RUN cd $GOPATH/src/github.com/orisano/minid \
@@ -69,7 +70,7 @@ FROM go-base AS go
 COPY --from=default $GOPATH/bin/ $GOPATH/bin
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=bingo $GOPATH/bin/bingo $GOPATH/bin/bingo
-# COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
+COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 # COPY --from=minid $GOPATH/bin/minid $GOPATH/bin/minid
 COPY --from=golangci-lint /usr/bin/golangci-lint $GOPATH/bin/golangci-lint
 
