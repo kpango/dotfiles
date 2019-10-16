@@ -209,6 +209,9 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
 zstyle ':completion::complete:*' cache-path "${ZDOTDIR:-${HOME}}/.zcompcache"
 zstyle ':completion::complete:*' use-cache on
+zstyle ':zsh-kubectl-prompt:' separator ' | ns: '
+zstyle ':zsh-kubectl-prompt:' preprompt 'ctx: '
+zstyle ':zsh-kubectl-prompt:' postprompt ''
 
 ########################################
 # vcs_info
@@ -220,8 +223,8 @@ zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
 
 _update_vcs_info_msg() {
     LANG=en_US.UTF-8
-    # RPROMPT="%F{green}${vcs_info_msg_0_} %{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
-    RPROMPT="%F{046}${vcs_info_msg_0_} %F{102}[%D{%Y-%m-%d %H:%M:%S}]"
+    RPROMPT="%F{green}${vcs_info_msg_0_} %{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
+    # RPROMPT="%F{046}${vcs_info_msg_0_} %F{102}[%D{%Y-%m-%d %H:%M:%S}]"
 }
 add-zsh-hook precmd _update_vcs_info_msg
 
