@@ -44,24 +44,14 @@ RUN GO111MODULE=off go get \
     github.com/mattn/efm-langserver \
     github.com/gohugoio/hugo \
     github.com/golangci/golangci-lint/cmd/golangci-lint \
-    # github.com/orisano/minid \
-    github.com/saibing/bingo
 
 FROM go-module-off-base AS hugo
 RUN cd $GOPATH/src/github.com/gohugoio/hugo \
     && GO111MODULE=on go build -o $GOPATH/bin/hugo main.go
 
-FROM go-module-off-base AS bingo
-RUN cd $GOPATH/src/github.com/saibing/bingo \
-    && GO111MODULE=on go build -o $GOPATH/bin/bingo main.go
-
 FROM go-module-off-base AS efm
 RUN cd $GOPATH/src/github.com/mattn/efm-langserver \
     && GO111MODULE=on go build -o $GOPATH/bin/efm-langserver
-
-# FROM go-module-off-base AS minid
-# RUN cd $GOPATH/src/github.com/orisano/minid \
-#     && GO111MODULE=on go build -o $GOPATH/bin/minid main.go
 
 FROM golangci/golangci-lint:latest AS golangci-lint
 
@@ -69,9 +59,7 @@ FROM go-base AS go
 
 COPY --from=default $GOPATH/bin/ $GOPATH/bin
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
-COPY --from=bingo $GOPATH/bin/bingo $GOPATH/bin/bingo
 COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
-# COPY --from=minid $GOPATH/bin/minid $GOPATH/bin/minid
 COPY --from=golangci-lint /usr/bin/golangci-lint $GOPATH/bin/golangci-lint
 
 RUN upx -9 ${GOPATH}/bin/* \

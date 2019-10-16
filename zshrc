@@ -20,7 +20,10 @@ export SHELL=$(which zsh)
 export USER=$(whoami)
 
 export CPUCORES="$(getconf _NPROCESSORS_ONLN)"
-export TERMCMD="urxvtc -e $SHELL"
+
+if type urxvtc >/dev/null 2>&1; then
+    export TERMCMD="urxvtc -e $SHELL"
+fi
 
 #プログラミング環境構築
 export XDG_CONFIG_HOME=$HOME/.config
@@ -36,18 +39,6 @@ else
     export GOPATH=$HOME/go
 fi
 
-export CGO_ENABLED=1
-export GO111MODULE=on
-export GOBIN=$GOPATH/bin
-export GO15VENDOREXPERIMENT=1
-export GOPRIVATE="*.yahoo.co.jp"
-export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go
-export CGO_CFLAGS="-g -Ofast -march=native"
-export CGO_CPPFLAGS="-g -Ofast -march=native"
-export CGO_CXXFLAGS="-g -Ofast -march=native"
-export CGO_FFLAGS="-g -Ofast -march=native"
-export CGO_LDFLAGS="-g -Ofast -march=native"
-
 export GCLOUD_PATH="/google-cloud-sdk"
 
 export PYTHON_CONFIGURE_OPTS="--enable-shared"
@@ -55,9 +46,11 @@ export PYTHON_CONFIGURE_OPTS="--enable-shared"
 if type nvim >/dev/null 2>&1; then
     export VIM=$(which nvim)
     export VIMRUNTIME=/usr/share/nvim/runtime
-else
+elif type vim >/dev/null 2>&1; then
     export VIM=$(which vim)
     export VIMRUNTIME=/usr/share/vim/vim*
+else
+    export VIM=$(which vi)
 fi
 
 export EDITOR=$VIM
@@ -69,6 +62,17 @@ if type go >/dev/null 2>&1; then
     export GOROOT="$(go env GOROOT)"
     export GOOS="$(go env GOOS)"
     export GOARCH="$(go env GOARCH)"
+    export CGO_ENABLED=1
+    export GO111MODULE=on
+    export GOBIN=$GOPATH/bin
+    export GO15VENDOREXPERIMENT=1
+    export GOPRIVATE="*.yahoo.co.jp"
+    export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go
+    export CGO_CFLAGS="-g -Ofast -march=native"
+    export CGO_CPPFLAGS="-g -Ofast -march=native"
+    export CGO_CXXFLAGS="-g -Ofast -march=native"
+    export CGO_FFLAGS="-g -Ofast -march=native"
+    export CGO_LDFLAGS="-g -Ofast -march=native"
 fi
 
 export TERM="tmux-256color"
@@ -118,7 +122,6 @@ if [[ -f ~/.zplug/init.zsh ]]; then
     zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
     zplug "greymd/tmux-xpanes"
     zplug "felixr/docker-zsh-completion"
-    # zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
 
     if ! zplug check --verbose; then
         zplug install
@@ -334,140 +337,6 @@ fi
 
 if type rg >/dev/null 2>&1; then
     alias grep=rg
-fi
-
-if type go >/dev/null 2>&1; then
-    go-get() {
-        rm -rf $GOPATH/src/$1
-        go get -u -f -v -fix $1
-        go install $1
-    }
-
-    goup() {
-        mv $GOPATH/src/github.com/kpango \
-            $GOPATH/src/github.com/azamasu \
-            $GOPATH/src/github.com/parheliondb \
-            $GOPATH/src/github.com/yahoojapan \
-            $GOPATH/src/github.com/vdaas \
-            $HOME/
-        rm -rf "$GOPATH/bin" "$GOPATH/pkg" "$GOPATH/cache" \
-            "$GOPATH/src/github.com" \
-            "$GOPATH/src/golang.org" \
-            "$GOPATH/src/google.golang.org" \
-            "$GOPATH/src/gopkg.in" \
-            "$GOPATH/src/code.cloudfoundry.org" \
-            "$GOPATH/src/sourcegraph.com" \
-            "$GOPATH/src/honnef.co" \
-            "$GOPATH/src/sigs.k8s.io"
-
-        go get -u \
-            github.com/cweill/gotests/... \
-            github.com/davidrjenni/reftools/cmd/fillstruct \
-            github.com/derekparker/delve/cmd/dlv \
-            github.com/dominikh/go-tools/cmd/keyify \
-            github.com/fatih/gomodifytags \
-            github.com/fatih/motion \
-            github.com/gohugoio/hugo \
-            github.com/golang/dep/... \
-            github.com/golangci/golangci-lint/cmd/golangci-lint \
-            github.com/josharian/impl \
-            github.com/jstemmer/gotags \
-            github.com/kisielk/errcheck \
-            github.com/klauspost/asmfmt/cmd/asmfmt \
-            github.com/koron/iferr \
-            github.com/mattn/efm-langserver/cmd/efm-langserver \
-            github.com/motemen/ghq \
-            github.com/motemen/go-iferr/cmd/goiferr \
-            github.com/nsf/gocode \
-            github.com/orisano/dlayer \
-            github.com/orisano/minid \
-            github.com/pwaller/goimports-update-ignore \
-            github.com/rogpeppe/godef \
-            github.com/sugyan/ttygif \
-            github.com/uber/go-torch \
-            github.com/wagoodman/dive \
-            github.com/zmb3/gogetdoc \
-            golang.org/x/lint/golint \
-            golang.org/x/tools/cmd/goimports \
-            golang.org/x/tools/cmd/gopls \
-            golang.org/x/tools/cmd/gorename \
-            golang.org/x/tools/cmd/guru \
-            google.golang.org/grpc \
-            honnef.co/go/tools/cmd/keyify \
-            sigs.k8s.io/kustomize \
-            sourcegraph.com/sqs/goreturns &&
-            git clone https://github.com/saibing/bingo.git &&
-            cd bingo &&
-            GO111MODULE=on go install &&
-            git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph &&
-            cp /tmp/FlameGraph/flamegraph.pl /go/bin/ &&
-            cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ &&
-            cp /tmp/FlameGraph/stackcollapse-go.pl /go/bin/
-
-        wait
-
-        rm -rf "$GOPATH/pkg" "$GOPATH/cache" \
-            "$GOPATH/src/github.com" \
-            "$GOPATH/src/golang.org" \
-            "$GOPATH/src/google.golang.org" \
-            "$GOPATH/src/gopkg.in" \
-            "$GOPATH/src/code.cloudfoundry.org" \
-            "$GOPATH/src/sourcegraph.com" \
-            "$GOPATH/src/honnef.co" \
-            "$GOPATH/src/sigs.k8s.io"
-
-        mkdir -p $GOPATH/src/github.com
-        mv $HOME/kpango \
-            $HOME/azamasu \
-            $HOME/parheliondb \
-            $HOME/yahoojapan \
-            $HOME/vdaas \
-            $GOPATH/src/github.com/
-
-        $VIM main.go +GoInstall +GoInstallBinaries +GoUpdateBinaries +qall
-
-        gocode set autobuild true
-        gocode set lib-path $GOPATH/pkg/$GOOS\_$GOARCH/
-        gocode set propose-builtins true
-        gocode set unimported-packages true
-    }
-
-    cover() {
-        t=$(mktemp -t cover)
-        go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -func=$t && unlink $t
-    }
-    cover-web() {
-        t=$(mktemp -t cover)
-        go test $COVERFLAGS -coverprofile=$t $@ && go tool cover -html=$t && unlink $t
-    }
-
-    alias goui=goimports-update-ignore
-    alias goup=goup
-
-    gobg-build() {
-        while true; do
-            if [ ! $(git -C $PWD diff --name-only HEAD | wc -l) -eq 0 ]; then
-                go build
-                ./${PWD##*/}
-            fi
-            sleep 2
-        done
-    }
-    alias gobg-build=gobg-build
-
-    go-bench() {
-        if [ $# -eq 2 ]; then
-            go test -count=$1 -run=NONE -bench $2 -benchmem
-        else
-            go test -count=$1 -run=NONE -bench . -benchmem
-        fi
-    }
-    alias gobench=go-bench
-    go-pprof-out() {
-        go test -count=10 -run=NONE -bench=. -benchmem -o pprof/test.bin -cpuprofile pprof/cpu.out -memprofile pprof/mem.out
-    }
-    alias gprofout=go-pprof-out
-
 fi
 
 mkcd() {
@@ -815,7 +684,6 @@ if type tmux >/dev/null 2>&1; then
             pkill tmux
             tmux -2 new-session -n$USER -s$USER@$HOST
         else
-            # tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -n$USER -s$USER@$HOST && source-file $HOME/.tmux/new-session
             ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
             if [[ -z $ID ]]; then # if not available create a new one
                 tmux -2 new-session -n$USER -s$USER@$HOST
