@@ -54,6 +54,7 @@ devrun(){
         -v $HOME/Downloads:/root/Downloads \
         -v $HOME/go/src:/go/src:cached \
         -v $rcpath/init.vim:/root/.config/nvim/init.vim \
+        -v $rcpath/go.vim:/root/.config/nvim/syntax/go.vim \
         -v $rcpath/vintrc.yaml:/root/.vintrc.yaml \
         -v $rcpath/go.vim:/root/.config/nvim/syntax/go.vim \
         -v $rcpath/efm-lsp-conf.yaml:/root/.config/nvim/efm-lsp-conf.yaml \

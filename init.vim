@@ -18,7 +18,7 @@ if has('vim_starting')
     set runtimepath+=~/.config/nvim/plugged/vim-plug
     if !isdirectory(expand('$NVIM_HOME') . '/plugged/vim-plug')
         call system('mkdir -p ~/.config/nvim/plugged/vim-plug')
-        call system('git clone https://github.com/junegunn/vim-plug.git ~/.config/nvim/plugged/vim-plug/autoload')
+        call system('git clone https://github.com/junegunn/vim-plug.git ', expand('$NVIM_HOME/plugged/vim-plug/autoload'))
     end
 endif
 
@@ -395,7 +395,7 @@ endif
 
 let g:trans_bin = '/usr/local/bin'
 
-let s:undo_dir = expand('$HOME/.config/nvim/cache/undo')
+let s:undo_dir = expand('$NVIM_HOME/cache/undo')
 if !isdirectory(s:undo_dir)
   call mkdir(s:undo_dir, 'p')
 endif
