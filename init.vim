@@ -42,7 +42,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'airblade/vim-gitgutter'
     Plug 'itchyny/lightline.vim'
     Plug 'janko-m/vim-test', {'for': ['go','rust','elixir','python','ruby','javascript','sh','lua','php','perl','java']}
-    Plug 'sbdchd/neoformat' ", {'for', '!go'}
+    Plug 'sbdchd/neoformat'
+    Plug 'editorconfig/editorconfig-vim'
     " Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
     " Plug 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
     Plug 'lilydjwg/colorizer', {'do': 'make'} " colorize rgb rgba texts
@@ -197,62 +198,6 @@ augroup END
 
 command! -nargs=* Autocmd autocmd AutoGroup <args>
 command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
-
-" ---------------------------
-" ---- Deoplete Settings ----
-" ---------------------------
-" set runtimepath+=globpath($NVIM_HOME,"/plugged/deoplete.nvim")
-" let g:deoplete#enable_at_startup = 1
-" let g:deoplete#auto_complete_delay = 0
-" let g:deoplete#auto_complete_start_length = 1
-" let g:deoplete#auto_completion_start_length = 1
-" let g:deoplete#enable_camel_case = 1
-" let g:deoplete#enable_ignore_case = 1
-" let g:deoplete#enable_refresh_always = 1
-" let g:deoplete#enable_smart_case = 1
-" let g:deoplete#file#enable_buffer_path = 1
-" let g:deoplete#max_list = 10000
-
-" TODO remove it
-" let g:neosnippet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
-" TODO if deoppet is fully worked replace neosnippet
-" let g:deoppet#snippets_directory=expand('$NVIM_HOME') . '/plugged/neosnippet-snippets/neosnippets/'
-
-" Deoplete-Golang
-" AutocmdFT go call deoplete#custom#source('go', 'matchers', ['matcher_full_fuzzy'])
-" AutocmdFT go call deoplete#custom#source('go', 'sorters', [])
-" AutocmdFT go let g:deoplete#sources#go#align_class = 1
-" " AutocmdFT go let g:deoplete#sources#go#cgo = 1
-" " AutocmdFT go let g:deoplete#sources#go#cgo#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
-" " AutocmdFT go let g:deoplete#sources#go#cgo#sort_algo = 'alphabetical'
-" AutocmdFT go let g:deoplete#sources#go#gocode_binary = globpath($GOPATH,"/bin/gocode")
-" AutocmdFT go let g:deoplete#sources#go#json_directory = globpath($NVIM_HOME,"/plugged/deoplete-go/data/json/*/").expand("$GOOS")."_".expand("$GOARCH")
-" AutocmdFT go let g:deoplete#sources#go#package_dot = 1
-" AutocmdFT go let g:deoplete#sources#go#on_event = 1
-" AutocmdFT go let g:deoplete#sources#go#pointer = 1
-" AutocmdFT go let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-" AutocmdFT go let g:deoplete#sources#go#use_cache = 1
-"
-" " Deoplete-Clang
-" AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#libclang_path= expand("/Library/Developer/CommandLineTools/usr/lib/libclang.dylib")
-" AutocmdFT c,cpp,clang,hpp,cxx let g:deoplete#sources#clang#clang_header = expand("/Library/Developer/CommandLineTools/usr/lib/clang")
-"
-" " Deoplete Python
-" AutocmdFT python let g:deoplete#sources#jedi#enable_cache = 1
-" AutocmdFT python let g:deoplete#sources#jedi#statement_length = 0
-" AutocmdFT python let g:deoplete#sources#jedi#short_types = 0
-" AutocmdFT python let g:deoplete#sources#jedi#show_docstring = 1
-" AutocmdFT python let g:deoplete#sources#jedi#worker_threads = 4
-" AutocmdFT python call deoplete#custom#source('jedi', 'disabled_syntaxes', ['Comment'])
-" AutocmdFT python call deoplete#custom#source('jedi', 'matchers', ['matcher_fuzzy'])
-"
-" " Deoplete Rust
-" AutocmdFT rust let g:deoplete#sources#rust#racer_binary = globpath("$HOME",".cargo/bin/racer")
-" AutocmdFT rust let g:deoplete#sources#rust#rust_source_path = expand("$RUST_SRC_PATH")
-" AutocmdFT rust let g:deoplete#sources#rust#documentation_max_height=20
-"
-" " Deoplete Swift
-" AutocmdFT swift let g:deoplete#sources#swift#source_kitten_binary = system("which sourcekitten")
 
 " ----------------------
 " ---- Ale settings ----
@@ -438,15 +383,15 @@ let g:indent_guides_auto_colors=0
 let g:indent_guides_color_change_percent = 30
 let g:indent_guides_guide_size = 1
 
-AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS omnifunc=lsp#complete
-AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview omnifunc=lsp#complete
-" AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,menuone,preview,noselect,noinsert
-AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
-AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
-AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with omnifunc=lsp#complete
-AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview omnifunc=lsp#complete
-AutocmdFT sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
-AutocmdFT xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+" AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS omnifunc=lsp#complete
+" AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview omnifunc=lsp#complete
+" " AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,menuone,preview,noselect,noinsert
+" AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+" AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
+" AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with omnifunc=lsp#complete
+" AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview omnifunc=lsp#complete
+" AutocmdFT sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
+" AutocmdFT xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 
 " --------------------------
 " ---- Tag bar settings ----
@@ -571,40 +516,6 @@ vmap <C-C> <Plug>(caw:hatpos:toggle)
 " ---- Golang settings ----
 " -------------------------
 Autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
-" Autocmd BufWritePre *.go Neoformat
-" AutocmdFT go let g:neoformat_enabled_go = ['goimports']
-" Autocmd BufWinEnter *.go GoFmt
-" Autocmd BufWritePre *.go GoFmt
-" AutocmdFT go compiler go
-" AutocmdFT go :highlight goExtraVars cterm=bold ctermfg=214
-" AutocmdFT go :match goExtraVars /\<ok\>\|\<err\>/
-" AutocmdFT go let g:go_fmt_command = "goimports"
-" AutocmdFT go let g:go_fmt_autosave = 0
-" TODO if deoppet is fully worked replace neosnippet
-" AutocmdFT go let g:go_snippet_engine = "deoppet"
-" TODO remove this
-" AutocmdFT go let g:go_autodetect_gopath = 0
-" AutocmdFT go let g:go_snippet_engine = "neosnippet"
-" AutocmdFT go let g:go_def_mode = 'gopls'
-" AutocmdFT go let g:go_def_mapping_enabled = 1
-" AutocmdFT go let g:go_doc_keywordprg_enabled = 0
-" AutocmdFT go let g:go_highlight_types = 1
-" AutocmdFT go let g:go_highlight_fields = 1
-" AutocmdFT go let g:go_highlight_functions_calls = 1
-" AutocmdFT go let g:go_highlight_methods = 1
-" AutocmdFT go let g:go_highlight_structs = 1
-" AutocmdFT go let g:go_highlight_operators = 1
-" AutocmdFT go let g:go_highlight_build_constraints = 1
-" AutocmdFT go let g:go_highlight_extra_types = 1
-" AutocmdFT go let g:go_auto_type_info = 1
-" AutocmdFT go let g:go_auto_sameids = 1
-" AutocmdFT go let g:go_list_type = "quickfix"
-" AutocmdFT go let g:go_addtags_transform = "snakecase"
-" AutocmdFT go let g:go_alternate_mode = "edit"
-" AutocmdFT go set runtimepath+=globpath($GOROOT, "/misc/vim")
-" AutocmdFT go set runtimepath+=globpath($GOPATH, "src/github.com/nsf/gocode/vim")
-" AutocmdFT go nnoremap <F5> :Gorun<CR>
-" AutocmdFT go nnoremap gd <Plug>(go-def-split)
 
 " ------------------------
 " ---- Clang settings ----

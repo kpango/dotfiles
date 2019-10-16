@@ -1,0 +1,71 @@
+root = true
+
+[*]
+charset  =  utf-8
+indent_style  =  tab
+indent_size  =  2
+tab_width  =  8
+end_of_line  =  lf
+insert_final_newline  =  true
+trim_trailing_whitespace = true
+
+[*.vim,*.nvim]
+indent_size = 4
+tab_width = 4
+
+[*.vader]
+indent_size = 2
+
+[{Makefile, **/Makefile, runtime/doc/*.txt}]
+indent_style  =  tab
+indent_size  =  8
+
+[*.php]
+indent_size = 4
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = lf
+
+[*.blade.php]
+indent_size = 2
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+end_of_line = lf
+
+[{*.html,*.xhtml}]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[{*.css,*.scss,*.sass}]
+charset = utf-8
+indent_size = 2
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[{*.js,*.jsx,*.vue}]
+charset = utf-8
+indent_size = 2
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.md]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = false
+insert_final_newline = true
+end_of_line = lf
+
+[{*.yml,*.yaml}]
+indent_style = tab
+indent_size = 4
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
