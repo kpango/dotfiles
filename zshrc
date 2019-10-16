@@ -27,10 +27,6 @@ fi
 
 #プログラミング環境構築
 export XDG_CONFIG_HOME=$HOME/.config
-export NVIM_HOME=$XDG_CONFIG_HOME/nvim
-export XDG_DATA_HOME=$NVIM_HOME/log
-export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME
-export NVIM_TUI_ENABLE_TRUE_COLOR=1
 
 #GO
 if [ "$USER" = 'root' ]; then
@@ -46,6 +42,13 @@ export PYTHON_CONFIGURE_OPTS="--enable-shared"
 if type nvim >/dev/null 2>&1; then
     export VIM=$(which nvim)
     export VIMRUNTIME=/usr/share/nvim/runtime
+    export NVIM_HOME=$XDG_CONFIG_HOME/nvim
+    export XDG_DATA_HOME=$NVIM_HOME/log
+    export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME
+    export NVIM_TUI_ENABLE_TRUE_COLOR=1
+    export NVIM_PYTHON_LOG_LEVEL=WARNING;
+    export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log;
+    export NVIM_LISTEN_ADDRESS="127.0.0.1:7650";
 elif type vim >/dev/null 2>&1; then
     export VIM=$(which vim)
     export VIMRUNTIME=/usr/share/vim/vim*
@@ -57,6 +60,11 @@ export EDITOR=$VIM
 export VISUAL=$VIM
 export PAGER=$(which less)
 export SUDO_EDITOR=$EDITOR
+
+#ReactNative
+export REACT_EDITOR=$EDITOR;
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64
 
 if type go >/dev/null 2>&1; then
     export GOROOT="$(go env GOROOT)"
@@ -83,6 +91,7 @@ export ZPLUG_HOME=$HOME/.zplug
 if [ -e $ZPLUG_HOME/repos/zsh-users/zsh-completions ]; then
     fpath=($ZPLUG_HOME/repos/zsh-users/zsh-completions/src $fpath)
 fi
+
 
 if type zplug >/dev/null 2>&1; then
     if zplug check junegunn/fzf; then
@@ -629,7 +638,6 @@ if type kubectl >/dev/null 2>&1; then
     alias knall="k get namespace -o wide"
 
     alias kdall="k get deployment --all-namespaces -o wide"
-    # source <(kubectl completion zsh);
 fi
 
 if type nmcli >/dev/null 2>&1; then
@@ -680,7 +688,6 @@ if type chrome >/dev/null 2>&1; then
     alias chrome="chrome --audio-buffer-size=4096"
 fi
 
-# [ tmux has-session >/dev/null 2>&1 ] && if [ -z "${TMUX}" ]; then
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
         if [ "$USER" = 'root' ]; then
