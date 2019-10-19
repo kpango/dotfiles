@@ -95,6 +95,7 @@ networkmanager
 nmap
 nodejs
 ntp
+openmp
 openssh
 pacman
 pacman-contrib
