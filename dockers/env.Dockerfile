@@ -59,6 +59,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     xclip \
     yarn \
     zsh \
+    zsh-vcs \
     && rm -rf /var/cache/apk/* \
     && pip2 install --upgrade pip neovim python-language-server vim-vint \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \

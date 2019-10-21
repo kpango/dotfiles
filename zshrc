@@ -287,7 +287,20 @@ if [ -z $ZSH_LOADED ]; then
     ########################################
     # ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
     bindkey -e
-    bindkey '^R' history-incremental-pattern-search-backward
+    select-history() {
+        BUFFER=$(history -n -r 1 \
+            | awk 'length($0) > 2' \
+            | rg -v "^...$" \
+            | rg -v "^....$" \
+            | rg -v "^.....$" \
+            | rg -v "^......$" \
+            | rg -v "^exit$" \
+            | uniq -u \
+            | fzf-tmux --no-sort +m --query "$LBUFFER" --prompt="History > ")
+        CURSOR=$#BUFFER
+    }
+    zle -N select-history
+    bindkey '^r' select-history
 
     fzf-z-search() {
         local res=$(history -n 1 | tail -f | fzf)
