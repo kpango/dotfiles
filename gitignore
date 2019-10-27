@@ -68,6 +68,7 @@ Icon
 *~
 ~*
 *.tmp
+*.hdf5
 *.bak
 *.old
 *.log

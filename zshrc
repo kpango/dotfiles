@@ -262,6 +262,8 @@ if [ -z $ZSH_LOADED ]; then
     }
     add-zsh-hook precmd _update_vcs_info_msg
 
+    eval "$(starship init zsh)"
+
     ########################################
     # オプション
     setopt auto_cd         # ディレクトリ名だけでcdする
@@ -714,6 +716,12 @@ if [ -z $ZSH_LOADED ]; then
         archup() {
             sudo rm -rf /var/lib/pacman/db.lck
             sudo reflector --age 24 --latest 200 --number 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+            sudo rm -rf /var/lib/pacman/db.lck
+            git clone https://aur.archlinux.org/yay.git
+            cd yay
+            makepkg -si
+            cd ..
+            sudo rm -rf ./yay
             sudo rm -rf /var/lib/pacman/db.lck
             yay -Syu --noanswerdiff --noanswerclean
             sudo rm -rf /var/lib/pacman/db.lck

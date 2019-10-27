@@ -43,6 +43,7 @@ devrun(){
         --restart always \
         --privileged=$privileged \
         -v /var/run/docker.sock:/var/run/docker.sock \
+        -v /usr/share/fonts:/usr/share/fonts \
         -v $docker_daemon:/etc/docker/daemon.json \
         -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
         -v $HOME/.kube:/root/.kube \
@@ -53,6 +54,7 @@ devrun(){
         -v $HOME/Documents:/root/Documents \
         -v $HOME/Downloads:/root/Downloads \
         -v $HOME/go/src:/go/src:cached \
+        -v $rcpath/starship.toml:/root/.config/starship.toml \
         -v $rcpath/init.vim:/root/.config/nvim/init.vim \
         -v $rcpath/go.vim:/root/.config/nvim/syntax/go.vim \
         -v $rcpath/vintrc.yaml:/root/.vintrc.yaml \

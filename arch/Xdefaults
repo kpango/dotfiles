@@ -37,6 +37,7 @@ URxvt.termName: rxvt-unicode-256color
 
 ! Perl extensions
 ! URxvt.perl-ext-common:      default,tabbedex,clipboard,matcher,xim-onthespot,url-select,resize-font
+URxvt.perl-ext:      default,clipboard,matcher,xim-onthespot,url-select,resize-font
 URxvt.perl-ext-common:      default,clipboard,matcher,xim-onthespot,url-select,resize-font
 URxvt.matcher.button:       1
 URxvt.matcher.rend.0:       Uline Bold fg5

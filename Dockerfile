@@ -147,11 +147,11 @@ ENV SHELL /bin/zsh
 WORKDIR $VIM_PLUG_HOME
 
 RUN rm -rf $VIM_PLUG_HOME/autoload \
-    && git clone https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload \ 
-    &&  nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +GoInstallBinaries +qall main.go \
-    && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
-    && nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall \
-    && git clone https://github.com/zplug/zplug $ZPLUG_HOME \
+    && git clone https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload
+# RUN nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +qall
+RUN yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local
+# RUN nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall
+RUN git clone https://github.com/zplug/zplug $ZPLUG_HOME \
     && rm -rf $HOME/.cache \
     && rm -rf $HOME/.npm/_cacache \
     && rm -rf $HOME/.cargo/registry/cache \
