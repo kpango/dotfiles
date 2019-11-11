@@ -125,8 +125,8 @@ COPY --from=go /usr/local/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 # COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
-COPY --from=rust /root/.cargo/bin /root/.cargo/bin
-# COPY --from=rust /root/.cargo /root/.cargo
+# COPY --from=rust /home/rust/.cargo/bin /root/.cargo/bin
+COPY --from=rust /root/.cargo /root/.cargo
 # COPY --from=rust /root/.rustup /root/.rustup
 # COPY --from=rust /root/.multirust /root/.multirust
 

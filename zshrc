@@ -628,7 +628,7 @@ if [ -z $ZSH_LOADED ]; then
     alias 777='chmod -R 777'
 
     if type nvim >/dev/null 2>&1; then
-        alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +qall"
+        alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +CocInstall +CocUpdate +qall"
         nvim-init() {
             rm -rf "$HOME/.config/gocode"
             rm -rf "$HOME/.config/nvim/autoload"
