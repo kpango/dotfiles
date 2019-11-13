@@ -1,7 +1,18 @@
 #!/usr/local/bin/zsh
 rcpath="$HOME/go/src/github.com/kpango/dotfiles"
 
-alias dockerrm="docker container stop $(docker container ls -aq);docker ps -aq | xargs docker rm -f;docker container prune -f;docker images -aq | xargs docker rmi -f;docker image prune -a;docker volume prune -f;docker network prune -f;docker system prune -a"
+dockerrm(){
+    docker container stop $(docker container ls -aq)
+    docker ps -aq | xargs docker rm -f
+    docker container prune -f
+    docker images -aq | xargs docker rmi -f;
+    docker image prune -a
+    docker volume prune -f
+    docker network prune -f
+    docker system prune -a
+}
+
+alias dockerrm="dockerrm"
 
 container_name="dev"
 
@@ -12,18 +23,18 @@ alias kpbuild="kpmove&&docker build --pull=true --file=$rcpath/Dockerfile -t kpa
 devrun(){
     privileged=true
     tz_path="/usr/share/zoneinfo/Japan"
-    font_dir="/usr/share/fonts"
+    font_dir="/System/Library/Fonts"
     docker_daemon="$HOME/Library/Containers/com.docker.helper/Data/.docker/daemon.json"
     case "$(uname -s)" in
         Darwin)
             echo 'Docker on macOS start'
-	    font_dir="/System/Library/Fonts"
             ;;
 
         Linux)
             echo 'Docker on Linux start'
             # privileged=false
             # privileged=false
+            font_dir="/usr/share/fonts"
             tz_path="/etc/timezone"
             docker_daemon="/etc/docker/daemon.json"
             ;;
@@ -79,5 +90,16 @@ devrun(){
 alias devrun="devrun"
 
 alias devin="docker exec -it $container_name /bin/zsh"
-alias devkill="docker update --restart=no $container_name && docker container stop $(docker ps -a -q) && docker rm $(docker ps -a -q)"
+
+devkill(){
+    docker update --restart=no $container_name \
+        && docker container stop $(docker container ls -aq) \
+        && docker container stop $(docker ps -a -q) \
+        && docker ps -aq | xargs docker rm -f \
+        && docker rm $(docker ps -a -q) \
+        && docker container prune -f
+}
+
+alias devkill="devkill"
+
 alias devres="devkill && devrun"
