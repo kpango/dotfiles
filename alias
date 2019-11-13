@@ -12,10 +12,12 @@ alias kpbuild="kpmove&&docker build --pull=true --file=$rcpath/Dockerfile -t kpa
 devrun(){
     privileged=true
     tz_path="/usr/share/zoneinfo/Japan"
+    font_dir="/usr/share/fonts"
     docker_daemon="$HOME/Library/Containers/com.docker.helper/Data/.docker/daemon.json"
     case "$(uname -s)" in
         Darwin)
             echo 'Docker on macOS start'
+	    font_dir="/System/Library/Fonts"
             ;;
 
         Linux)
@@ -43,7 +45,6 @@ devrun(){
         --restart always \
         --privileged=$privileged \
         -v /var/run/docker.sock:/var/run/docker.sock \
-        -v /usr/share/fonts:/usr/share/fonts \
         -v $docker_daemon:/etc/docker/daemon.json \
         -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
         -v $HOME/.kube:/root/.kube \
@@ -68,6 +69,7 @@ devrun(){
         -v $rcpath/editorconfig:/root/.editorconfig \
         -v $rcpath/gitignore:/root/.gitignore \
         -v $rcpath/gitattributes:/root/.gitattributes \
+        -v $font_dir:/usr/share/fonts:ro \
         -v $tz_path:/etc/timezone:ro \
         -dit kpango/dev:latest
 
