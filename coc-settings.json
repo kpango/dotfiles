@@ -6,6 +6,7 @@
       "command": "gopls",
       "initializationOptions": {
         "gocodeCompletionEnabled": true,
+        "completeUnimported": true,
         "diagnosticsEnabled": true,
         "lintTool": "golangci-lint",
         "formatTool": "goimports"
