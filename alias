@@ -79,5 +79,5 @@ devrun(){
 alias devrun="devrun"
 
 alias devin="docker exec -it $container_name /bin/zsh"
-alias devkill="docker update --restart=no $container_name && docker kill $(docker ps -a -q) && docker rm $(docker ps -a -q)"
+alias devkill="docker update --restart=no $container_name && docker container stop $(docker ps -a -q) && docker rm $(docker ps -a -q)"
 alias devres="devkill && devrun"
