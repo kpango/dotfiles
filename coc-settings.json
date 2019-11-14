@@ -1,13 +1,13 @@
 {
-  "suggest.noselect":false,
-  "suggest.preferCompleteThanJumpPlaceholder":true,
+  "suggest.noselect": false,
+  "suggest.preferCompleteThanJumpPlaceholder": true,
   "languageserver": {
     "golang": {
       "command": "gopls",
       "initializationOptions": {
-        "gocodeCompletionEnabled": true,
         "completeUnimported": true,
-        "diagnosticsEnabled": true,
+        "usePlaceholders": true,
+        "staticcheck": false,
         "lintTool": "golangci-lint",
         "formatTool": "goimports"
       },
@@ -39,9 +39,17 @@
     },
     "bash": {
       "command": "bash-language-server",
-      "args": ["start"],
-      "filetypes": ["sh", "zsh", "bash"],
-      "ignoredRootPaths": ["~"]
+      "args": [
+        "start"
+      ],
+      "filetypes": [
+        "sh",
+        "zsh",
+        "bash"
+      ],
+      "ignoredRootPaths": [
+        "~"
+      ]
     },
     "python": {
       "command": "pyls",

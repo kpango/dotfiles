@@ -719,7 +719,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo rm -rf /var/lib/pacman/db.lck
             git clone https://aur.archlinux.org/yay.git
             cd yay
-            makepkg -si
+            makepkg -si --noconfirm
             cd ..
             sudo rm -rf ./yay
             sudo rm -rf /var/lib/pacman/db.lck

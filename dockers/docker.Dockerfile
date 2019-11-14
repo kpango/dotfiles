@@ -7,7 +7,7 @@ FROM docker:rc-dind AS docker
 ENV DOCKER_SLIM_VERSION 1.25.3
 ENV DLAYER_VERSION 0.1.0
 
-COPY --from=dive /dive /usr/local/bin/dive
+COPY --from=dive /usr/local/bin/dive /usr/local/bin/dive
 COPY --from=dockle /usr/local/bin/dockle /usr/local/bin/dockle
 COPY --from=trivy /usr/local/bin/trivy /usr/local/bin/trivy
 

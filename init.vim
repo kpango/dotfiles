@@ -228,6 +228,9 @@ let g:ale_linters = {
         \   'vim': ['vint'],
         \   'zsh': ['zsh'],
         \}
+" let g:ale_fixers  = {
+"       \   'go': ['goimports -w'],
+"       \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_enter = 1

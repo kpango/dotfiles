@@ -25,7 +25,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && curl -fsSL "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/${OS}/${ARCH}/kubectl" -o ${BIN_PATH}/kubectl \
     && chmod a+x ${BIN_PATH}/kubectl \
     && ${BIN_PATH}/kubectl version --client \
-    && curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get" | bash \
+    && curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3" | bash \
     && git clone "https://github.com/ahmetb/kubectx" /opt/kubectx \
     && mv /opt/kubectx/kubectx ${BIN_PATH}/kubectx \
     && mv /opt/kubectx/kubens ${BIN_PATH}/kubens \
