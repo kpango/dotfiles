@@ -42,7 +42,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar -zxvf kubebuilder_${KUBEBUILDER_VERSION}_${OS}_${ARCH}.tar.gz \
     && mv kubebuilder_${KUBEBUILDER_VERSION}_${OS}_${ARCH}/bin/* ${BIN_PATH}/ \
     && curl -fsSL "https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-${OS}-${ARCH}" -o ${BIN_PATH}/kind \
-    && chmod a+x ${BIN_PATH}/kind
+    && chmod a+x ${BIN_PATH}/kind \
+    && curl -sL https://run.linkerd.io/install | sh \
+    && mv ${HOME}/.linkerd2/bin/linkerd-* ${BIN_PATH}/linkerd
 
 # RUN upx --best --ultra-brute \
 #         ${BIN_PATH}/helm \
