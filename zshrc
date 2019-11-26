@@ -117,28 +117,28 @@ if [ -z $DOTENV_LOADED ]; then
     export DOTENV_LOADED=1
 fi
 
-    if type zplug >/dev/null 2>&1; then
-        if zplug check junegunn/fzf; then
-            # export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
-            export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-            export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
-        fi
-
-        if zplug check b4b4r07/enhancd; then
-            export ENHANCD_FILTER=fzf-tmux
-            export ENHANCD_COMMAND=ccd
-            export ENHANCD_FILTER=fzf:peco:gof
-            export ENHANCD_DOT_SHOW_FULLPATH=1
-        fi
+if type zplug >/dev/null 2>&1; then
+    if zplug check junegunn/fzf; then
+        # export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
+        export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+        export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
     fi
 
-    if [ ! -f "$HOME/.zshrc.zwc" -o "$HOME/.zshrc" -nt "$HOME/.zshrc.zwc" ]; then
-        zcompile $HOME/.zshrc
+    if zplug check b4b4r07/enhancd; then
+        export ENHANCD_FILTER=fzf-tmux
+        export ENHANCD_COMMAND=ccd
+        export ENHANCD_FILTER=fzf:peco:gof
+        export ENHANCD_DOT_SHOW_FULLPATH=1
     fi
+fi
 
-    if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc" ]; then
-        zcompile $HOME/.zcompdump
-    fi
+if [ ! -f "$HOME/.zshrc.zwc" -o "$HOME/.zshrc" -nt "$HOME/.zshrc.zwc" ]; then
+    zcompile $HOME/.zshrc
+fi
+
+if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc" ]; then
+    zcompile $HOME/.zcompdump
+fi
 
 if [ -z $ZSH_LOADED ]; then
     ########################################
@@ -559,7 +559,7 @@ if [ -z $ZSH_LOADED ]; then
 
     zstime() {
         for i in $(seq 1 $1); do
-            time (zsh -i -c exit)
+            time $(zsh -i -c exit)
         done
     }
     alias zstime=zstime
