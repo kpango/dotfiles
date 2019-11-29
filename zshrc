@@ -117,28 +117,28 @@ if [ -z $DOTENV_LOADED ]; then
     export DOTENV_LOADED=1
 fi
 
-    if type zplug >/dev/null 2>&1; then
-        if zplug check junegunn/fzf; then
-            # export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
-            export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
-            export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
-        fi
-
-        if zplug check b4b4r07/enhancd; then
-            export ENHANCD_FILTER=fzf-tmux
-            export ENHANCD_COMMAND=ccd
-            export ENHANCD_FILTER=fzf:peco:gof
-            export ENHANCD_DOT_SHOW_FULLPATH=1
-        fi
+if type zplug >/dev/null 2>&1; then
+    if zplug check junegunn/fzf; then
+        # export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
+        export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+        export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
     fi
 
-    if [ ! -f "$HOME/.zshrc.zwc" -o "$HOME/.zshrc" -nt "$HOME/.zshrc.zwc" ]; then
-        zcompile $HOME/.zshrc
+    if zplug check b4b4r07/enhancd; then
+        export ENHANCD_FILTER=fzf-tmux
+        export ENHANCD_COMMAND=ccd
+        export ENHANCD_FILTER=fzf:peco:gof
+        export ENHANCD_DOT_SHOW_FULLPATH=1
     fi
+fi
 
-    if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc" ]; then
-        zcompile $HOME/.zcompdump
-    fi
+if [ ! -f "$HOME/.zshrc.zwc" -o "$HOME/.zshrc" -nt "$HOME/.zshrc.zwc" ]; then
+    zcompile $HOME/.zshrc
+fi
+
+if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc" ]; then
+    zcompile $HOME/.zcompdump
+fi
 
 if [ -z $ZSH_LOADED ]; then
     ########################################
@@ -559,7 +559,7 @@ if [ -z $ZSH_LOADED ]; then
 
     zstime() {
         for i in $(seq 1 $1); do
-            time (zsh -i -c exit)
+            time $(zsh -i -c exit)
         done
     }
     alias zstime=zstime
@@ -666,6 +666,7 @@ if [ -z $ZSH_LOADED ]; then
             local kubectl="$(whence -p kubectl 2>/dev/null)"
             [ -z "$_lazy_kubectl_completion" ] && {
                 source <("$kubectl" completion zsh)
+                source <("$kind" completion zsh)
                 complete -o default -F __start_kubectl k
                 _lazy_kubectl_completion=1
             }
@@ -677,8 +678,19 @@ if [ -z $ZSH_LOADED ]; then
         alias ksall="k get svc --all-namespaces -o wide"
         alias kiall="k get ingress --all-namespaces -o wide"
         alias knall="k get namespace -o wide"
-
         alias kdall="k get deployment --all-namespaces -o wide"
+
+        # if type kind >/dev/null 2>&1; then
+        #     kind() {
+        #         local kind="$(whence -p kind 2>/dev/null)"
+        #         [ -z "$_lazy_kind_completion" ] && {
+        #             source <("$kind" completion zsh)
+        #             _lazy_kind_completion=1
+        #         }
+        #         "$kind" "$@"
+        #     }
+        #     alias kind=kind
+        # fi
     fi
 
     if type nmcli >/dev/null 2>&1; then
@@ -723,7 +735,7 @@ if [ -z $ZSH_LOADED ]; then
             cd ..
             sudo rm -rf ./yay
             sudo rm -rf /var/lib/pacman/db.lck
-            yay -Syu --noanswerdiff --noanswerclean
+            yay -Syu --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.lck
             paccache -ruk0
         }
