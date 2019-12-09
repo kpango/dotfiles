@@ -20,7 +20,6 @@ bluez-utils
 bzip2
 caprine
 cmake
-compton
 coreutils
 cryptsetup
 device-mapper
@@ -97,12 +96,12 @@ nodejs
 ntp
 openmp
 openssh
-pacman
 pacman-contrib
 patch
 pavucontrol
 pciutils
 perl
+picom
 pkgconf
 powertop
 procps-ng
@@ -128,6 +127,7 @@ systemd-sysvcompat
 tar
 texinfo
 thefuck
+tig
 tlp
 tmux
 tpacpi-bat
