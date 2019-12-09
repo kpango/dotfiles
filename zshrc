@@ -712,10 +712,10 @@ if [ -z $ZSH_LOADED ]; then
         alias nmcliwifi=nmcliwifi
     fi
 
-    if type picom >/dev/null 2>&1; then
+    if type compton >/dev/null 2>&1; then
         comprestart() {
-            sudo pkill picom
-            picom --config $HOME/.config/picom/picom.conf --xrender-sync-fence -cb
+            sudo pkill compton
+            compton --config $HOME/.config/compton/compton.conf --xrender-sync-fence -cb
         }
         alias comprestart=comprestart
     fi

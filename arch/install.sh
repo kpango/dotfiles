@@ -121,7 +121,7 @@ pacstrap -i ${ROOT} - < pkg.list
 #     bluez \
 #     bluez-utils \
 #     chrome \
-#     picom \
+#     compton \
 #     dialog \
 #     discord \
 #     dkms \

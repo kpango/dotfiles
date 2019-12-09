@@ -37,8 +37,8 @@ arch_link: link
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3status.conf $(HOME)/.config/i3status/config
 	mkdir -p ${HOME}/.config/rofi
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
-	mkdir -p ${HOME}/.config/picom
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/picom.conf $(HOME)/.config/picom/picom.conf
+	mkdir -p ${HOME}/.config/compton
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/compton.conf $(HOME)/.config/compton/compton.conf
 	mkdir -p ${HOME}/.config/fcitx/conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
