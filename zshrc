@@ -373,6 +373,12 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias gcp=gcp
         alias gfix="gcp fix"
+        gfp() {
+            git add -A
+            git commit --amend
+            git push -f
+        }
+        alias gfp=gfp
         alias gedit="$EDITOR $HOME/.gitconfig"
         git-remote-add-merge() {
             git remote add upstream $1

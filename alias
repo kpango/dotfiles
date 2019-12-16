@@ -50,7 +50,8 @@ devrun(){
 
         # -e DISPLAY \
         # -v /tmp/.X11-unix:/tmp/.X11-unix \
-    docker run --network=host \
+    docker run \
+        --network=host \
         --cap-add=ALL \
         --name $container_name \
         --restart always \
