@@ -65,10 +65,6 @@ iputils
 kubectl
 kubectx
 less
-libappindicator-gtk3
-libdbusmenu-glib
-libdbusmenu-gtk3
-libindicator-gtk3
 libtool
 licenses
 light-locker
@@ -117,9 +113,9 @@ ripgrep
 rofi
 rxvt-unicode
 s-nail
-schedtool
 sed
 shadow
+smartmontools
 sudo
 sysfsutils
 systemd
