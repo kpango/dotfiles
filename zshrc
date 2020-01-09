@@ -152,7 +152,7 @@ if [ -z $ZSH_LOADED ]; then
         zplug "zsh-users/zsh-autosuggestions"
         zplug "zsh-users/zsh-completions", as:plugin, use:"src"
         zplug "zsh-users/zsh-history-substring-search"
-        zplug "zsh-users/zsh-syntax-highlighting", defer:2
+        zplug "zdharma/fast-syntax-highlighting", defer:2
         zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
         zplug "greymd/tmux-xpanes"
         zplug "felixr/docker-zsh-completion"

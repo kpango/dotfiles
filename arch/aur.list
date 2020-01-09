@@ -6,7 +6,6 @@ grim
 mako
 slurp
 slack-desktop
-starship-bin
 systemd-boot-pacman-hook
 urxvt-resize-font-git
 yay

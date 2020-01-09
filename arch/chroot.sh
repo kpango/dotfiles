@@ -68,10 +68,8 @@ EOF
 systemctl enable ntpd
 systemctl start ntpd
 systemctl enable docker
-systemctl enable ananicy
 systemctl enable tlp
 systemctl enable tlp-sleep
-systemctl enable lightdm
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
