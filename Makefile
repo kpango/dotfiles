@@ -27,42 +27,71 @@ link:
 
 arch_link: link
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/gitconfig $(HOME)/.gitconfig
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc $(HOME)/.xinitrc
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc $(HOME)/.xinitrc
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
 	mkdir -p ${HOME}/.config/sway
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
-	mkdir -p ${HOME}/.config/i3
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3.conf $(HOME)/.config/i3/config
+	# mkdir -p ${HOME}/.config/i3
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3.conf $(HOME)/.config/i3/config
 	mkdir -p ${HOME}/.config/i3status
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3status.conf $(HOME)/.config/i3status/config
-	mkdir -p ${HOME}/.config/rofi
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
-	mkdir -p ${HOME}/.config/compton
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/compton.conf $(HOME)/.config/compton/compton.conf
+	# mkdir -p ${HOME}/.config/rofi
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
+	# mkdir -p ${HOME}/.config/compton
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/compton.conf $(HOME)/.config/compton/compton.conf
 	mkdir -p ${HOME}/.config/fcitx/conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xdefaults $(HOME)/.Xdefaults
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xdefaults $(HOME)/.Xdefaults
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/resolv.conf /etc/resolv.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
+	# sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
 	mkdir -p /etc/docker
 	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/lightdm.conf /etc/lightdm/lightdm.conf
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio.service /etc/systemd/system/pulseaudio.service
-	sudo systemctl daemon-reload
-	sudo systemctl enable pulseaudio
-	sudo systemctl start pulseaudio
-	sudo systemctl status pulseaudio
-	sudo journalctl | grep pulseaudio
+	# sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/lightdm.conf /etc/lightdm/lightdm.conf
+	# sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio.service /etc/systemd/system/pulseaudio.service
+	# sudo systemctl daemon-reload
+	# sudo systemctl enable pulseaudio
+	# sudo systemctl start pulseaudio
+	# sudo systemctl status pulseaudio
+	# sudo journalctl | grep pulseaudio
 
 clean:
-	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
-	sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.zshrc
-	rm $(HOME)/.aliases
+	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
+	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.zshrc
+	sudo rm -rf $(HOME)/.config/nvim
+	sudo rm -rf $(HOME)/.config/starship.toml
+	sudo rm -rf $(HOME)/.zshrc
+	sudo rm -rf $(HOME)/.editorconfig
+	sudo rm -rf $(HOME)/.aliases
+	sudo rm -rf $(HOME)/.gitconfig
+	sudo rm -rf $(HOME)/.gitattributes
+	sudo rm -rf $(HOME)/.gitignore
+	sudo rm -rf $(HOME)/.tmux.conf
+	sudo rm -rf $(HOME)/.tmux-kube
+	sudo rm -rf $(HOME)/.tmux.new-session
+	sudo rm -rf $(HOME)/.gitconfig
+	sudo rm -rf $(HOME)/.xinitrc
+	sudo rm -rf $(HOME)/.Xmodmap
+	sudo rm -rf $(HOME)/.config/sway
+	sudo rm -rf $(HOME)/.config/i3
+	sudo rm -rf $(HOME)/.config/i3status/config
+	sudo rm -rf $(HOME)/.config/rofi
+	sudo rm -rf $(HOME)/.config/compton
+	sudo rm -rf $(HOME)/.config/fcitx
+	sudo rm -rf $(HOME)/.config/ranger
+	sudo rm -rf $(HOME)/.Xdefaults
+	sudo rm -rf /etc/modules-load.d/bbr.conf
+	sudo rm -rf /etc/sysctl.conf
+	sudo rm -rf /etc/resolv.conf
+	sudo rm -rf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
+	sudo rm -rf /etc/docker/daemon.json
+	sudo rm -rf $(HOME)/.docker/daemon.json
+	sudo rm -rf /etc/lightdm
+	sudo rm -rf /etc/systemd/system/pulseaudio.service
 
 zsh: link
 	[ -f $(HOME)/.zshrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.zshrc
