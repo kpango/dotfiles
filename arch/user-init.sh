@@ -8,7 +8,7 @@ rm -r yay
 
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur.list
 pacman -Rs go
-yay -Syu - < pkg.list
+yay -Syu - < aur.list
 # yay -Syu \
 #     chrome-remote-desktop \
 #     ghq \
