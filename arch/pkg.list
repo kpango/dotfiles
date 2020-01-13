@@ -1,4 +1,5 @@
 acpi
+alacritty
 alsa-utils
 archlinux-keyring
 autoconf
@@ -25,7 +26,10 @@ fwupd
 git
 graphviz
 grep
+grim
 gzip
+i3status
+inetutils
 intel-ucode
 kubectl
 kubectx
@@ -35,6 +39,7 @@ linux-firmware
 lshw
 lsof
 make
+mako
 mdadm
 mysql-workbench
 neofetch
@@ -45,6 +50,7 @@ nmap
 ntp
 openssh
 pacman-contrib
+pkgconf
 powertop
 pulseaudio
 pulseaudio-alsa
@@ -52,9 +58,10 @@ pulseaudio-bluetooth
 ranger
 reflector
 ripgrep
-rxvt-unicode
 sed
+slurp
 sudo
+sway
 sysfsutils
 systemd
 systemd-sysvcompat
@@ -65,12 +72,12 @@ tlp
 tmux
 tpacpi-bat
 unzip
-urxvt-perls
 usbutils
 wayland
 which
+wl-clipboard
 wlc
 wpscan
-xclip
-xsel
+xorg-server-xwayland
+yarn
 zsh

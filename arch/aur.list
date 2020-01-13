@@ -2,10 +2,7 @@ chrome-remote-desktop
 ghq
 google-chrome
 google-cloud-sdk
-grim
-mako
-slurp
 systemd-boot-pacman-hook
-urxvt-resize-font-git
+wofi
 yay
 zsa-wally

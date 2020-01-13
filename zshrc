@@ -262,7 +262,9 @@ if [ -z $ZSH_LOADED ]; then
     }
     add-zsh-hook precmd _update_vcs_info_msg
 
-    eval "$(starship init zsh)"
+    if type starship >/dev/null 2>&1; then
+    	eval "$(starship init zsh)"
+    fi
 
     ########################################
     # オプション
@@ -328,6 +330,14 @@ if [ -z $ZSH_LOADED ]; then
     if type xsel >/dev/null 2>&1; then
         alias pbcopy="xsel --clipboard --input"
         alias pbpaste="xsel --clipboard --output"
+    fi
+
+    if type wl-copy >/dev/null 2>&1; then
+        alias pbcopy="wl-copy"
+    fi
+
+    if type wl-paste >/dev/null 2>&1; then
+        alias pbpaste="wl-paste"
     fi
 
     if type git >/dev/null 2>&1; then
