@@ -330,14 +330,14 @@ if [ -z $ZSH_LOADED ]; then
     if type xsel >/dev/null 2>&1; then
         alias pbcopy="xsel --clipboard --input"
         alias pbpaste="xsel --clipboard --output"
-    fi
+    else
+        if type wl-copy >/dev/null 2>&1; then
+            alias pbcopy="wl-copy"
+        fi
 
-    if type wl-copy >/dev/null 2>&1; then
-        alias pbcopy="wl-copy"
-    fi
-
-    if type wl-paste >/dev/null 2>&1; then
-        alias pbpaste="wl-paste"
+        if type wl-paste >/dev/null 2>&1; then
+            alias pbpaste="wl-paste"
+        fi
     fi
 
     if type git >/dev/null 2>&1; then
