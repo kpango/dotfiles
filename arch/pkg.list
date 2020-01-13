@@ -28,7 +28,6 @@ graphviz
 grep
 grim
 gzip
-i3status
 inetutils
 intel-ucode
 kubectl
@@ -49,6 +48,7 @@ networkmanager
 nmap
 ntp
 openssh
+otf-font-awesome
 pacman-contrib
 pkgconf
 powertop
@@ -73,11 +73,13 @@ tmux
 tpacpi-bat
 unzip
 usbutils
+waybar
 wayland
 which
 wl-clipboard
 wlc
 wpscan
+xclip
 xorg-server-xwayland
 yarn
 zsh

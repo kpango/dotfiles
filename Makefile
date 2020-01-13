@@ -33,8 +33,10 @@ arch_link: link
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
 	# mkdir -p ${HOME}/.config/i3
 	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3.conf $(HOME)/.config/i3/config
-	mkdir -p ${HOME}/.config/i3status
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3status.conf $(HOME)/.config/i3status/config
+	# mkdir -p ${HOME}/.config/i3status
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3status.conf $(HOME)/.config/i3status/config
+	mkdir -p ${HOME}/.config/waybar
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.conf $(HOME)/.config/waybar/config
 	mkdir -p ${HOME}/.config/alacritty
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	# mkdir -p ${HOME}/.config/rofi
@@ -73,7 +75,8 @@ clean:
 	sudo rm -rf $(HOME)/.config/compton
 	sudo rm -rf $(HOME)/.config/fcitx
 	sudo rm -rf $(HOME)/.config/i3
-	sudo rm -rf $(HOME)/.config/i3status/config
+	sudo rm -rf $(HOME)/.config/i3status
+	sudo rm -rf $(HOME)/.config/waybar
 	sudo rm -rf $(HOME)/.config/nvim
 	sudo rm -rf $(HOME)/.config/ranger
 	sudo rm -rf $(HOME)/.config/rofi
