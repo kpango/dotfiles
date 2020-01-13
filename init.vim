@@ -47,6 +47,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
     " Plug 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
     Plug 'lilydjwg/colorizer', {'do': 'make'} " colorize rgb rgba texts
+    " Plug 'chrisbra/Colorizer'
     Plug 'majutsushi/tagbar' " tag bar toggle
     " Plug 'nathanaelkane/vim-indent-guides' " show indent guide
     Plug 'w0rp/ale' " lint plugin

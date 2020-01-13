@@ -1,0 +1,43 @@
+font:
+  normal:
+    family: HackGen
+    style: Regular
+  bold:
+    family: HackGen
+    style: Bold
+  italic:
+    family: HackGen
+    style: Italic
+  size: 11.0
+
+background_opacity: 0.9
+
+#highlight Normal ctermbg=NONE guibg=NONE
+#highlight NonText ctermbg=NONE guibg=NONE
+#highlight SpecialKey ctermbg=NONE guibg=NONE
+#highlight EndOfBuffer ctermbg=NONE guibg=NONE
+colors:
+  # Default Colors
+  primary:
+    background: '0x000000'
+    foreground: '0xf1f1f1'
+  # Normal colors
+  normal:
+    black:   '0x212121'
+    red:     '0xc30771'
+    green:   '0x10a778'
+    yellow:  '0xa89c14'
+    blue:    '0x008eff'
+    magenta: '0xff3c79'
+    cyan:    '0x20a5ba'
+    white:   '0xe0e0e0'
+  # Bright colors
+  bright:
+    black:   '0x212121'
+    red:     '0xfb007a'
+    green:   '0x5fd7af'
+    yellow:  '0xf3e430'
+    blue:    '0x20bbfc'
+    magenta: '0xff55de'
+    cyan:    '0x4fb8cc'
+    white:   '0xf1f1f1'

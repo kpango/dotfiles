@@ -35,6 +35,8 @@ arch_link: link
 	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3.conf $(HOME)/.config/i3/config
 	mkdir -p ${HOME}/.config/i3status
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3status.conf $(HOME)/.config/i3status/config
+	mkdir -p ${HOME}/.config/alacritty
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	# mkdir -p ${HOME}/.config/rofi
 	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
 	# mkdir -p ${HOME}/.config/compton
@@ -47,6 +49,7 @@ arch_link: link
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/resolv.conf /etc/resolv.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.sh /etc/profile.d/sway.sh
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
 	# sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
 	mkdir -p /etc/docker
 	mkdir -p ${HOME}/.docker
@@ -63,36 +66,38 @@ arch_link: link
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.zshrc
-	sudo rm -rf $(HOME)/.config/nvim
-	sudo rm -rf $(HOME)/.config/starship.toml
-	sudo rm -rf $(HOME)/.zshrc
-	sudo rm -rf $(HOME)/.editorconfig
-	sudo rm -rf $(HOME)/.aliases
-	sudo rm -rf $(HOME)/.gitconfig
-	sudo rm -rf $(HOME)/.gitattributes
-	sudo rm -rf $(HOME)/.gitignore
-	sudo rm -rf $(HOME)/.tmux.conf
-	sudo rm -rf $(HOME)/.tmux-kube
-	sudo rm -rf $(HOME)/.tmux.new-session
-	sudo rm -rf $(HOME)/.gitconfig
-	sudo rm -rf $(HOME)/.xinitrc
+	sudo rm -rf $(HOME)/.Xdefaults
 	sudo rm -rf $(HOME)/.Xmodmap
-	sudo rm -rf $(HOME)/.config/sway
-	sudo rm -rf $(HOME)/.config/i3
-	sudo rm -rf $(HOME)/.config/i3status/config
-	sudo rm -rf $(HOME)/.config/rofi
+	sudo rm -rf $(HOME)/.aliases
+	sudo rm -rf $(HOME)/.config/alacritty
 	sudo rm -rf $(HOME)/.config/compton
 	sudo rm -rf $(HOME)/.config/fcitx
+	sudo rm -rf $(HOME)/.config/i3
+	sudo rm -rf $(HOME)/.config/i3status/config
+	sudo rm -rf $(HOME)/.config/nvim
 	sudo rm -rf $(HOME)/.config/ranger
-	sudo rm -rf $(HOME)/.Xdefaults
-	sudo rm -rf /etc/modules-load.d/bbr.conf
-	sudo rm -rf /etc/profile.d/sway.sh
-	sudo rm -rf /etc/sysctl.conf
-	sudo rm -rf /etc/resolv.conf
+	sudo rm -rf $(HOME)/.config/rofi
+	sudo rm -rf $(HOME)/.config/starship.toml
+	sudo rm -rf $(HOME)/.config/sway
+	sudo rm -rf $(HOME)/.docker/daemon.json
+	sudo rm -rf $(HOME)/.editorconfig
+	sudo rm -rf $(HOME)/.gitattributes
+	sudo rm -rf $(HOME)/.gitconfig
+	sudo rm -rf $(HOME)/.gitconfig
+	sudo rm -rf $(HOME)/.gitignore
+	sudo rm -rf $(HOME)/.tmux-kube
+	sudo rm -rf $(HOME)/.tmux.conf
+	sudo rm -rf $(HOME)/.tmux.new-session
+	sudo rm -rf $(HOME)/.xinitrc
+	sudo rm -rf $(HOME)/.zshrc
 	sudo rm -rf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
 	sudo rm -rf /etc/docker/daemon.json
-	sudo rm -rf $(HOME)/.docker/daemon.json
 	sudo rm -rf /etc/lightdm
+	sudo rm -rf /etc/modules-load.d/bbr.conf
+	sudo rm -rf /etc/profile.d/sway.sh
+	sudo rm -rf /etc/profile.d/fcitx.sh
+	sudo rm -rf /etc/resolv.conf
+	sudo rm -rf /etc/sysctl.conf
 	sudo rm -rf /etc/systemd/system/pulseaudio.service
 
 zsh: link
