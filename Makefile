@@ -86,6 +86,7 @@ clean:
 	sudo rm -rf $(HOME)/.config/ranger
 	sudo rm -rf $(HOME)/.Xdefaults
 	sudo rm -rf /etc/modules-load.d/bbr.conf
+	sudo rm -rf /etc/profile.d/sway.sh
 	sudo rm -rf /etc/sysctl.conf
 	sudo rm -rf /etc/resolv.conf
 	sudo rm -rf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
