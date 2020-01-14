@@ -2,6 +2,7 @@ chrome-remote-desktop
 ghq
 google-chrome
 google-cloud-sdk
+slack-desktop
 systemd-boot-pacman-hook
 wofi
 yay

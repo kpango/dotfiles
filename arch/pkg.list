@@ -50,6 +50,7 @@ ntp
 openssh
 otf-font-awesome
 pacman-contrib
+patch
 pkgconf
 powertop
 pulseaudio
