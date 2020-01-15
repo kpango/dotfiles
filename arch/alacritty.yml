@@ -10,7 +10,7 @@ font:
     style: Italic
   size: 11.0
 
-background_opacity: 0.8
+background_opacity: 1.2
 
 #highlight Normal ctermbg=NONE guibg=NONE
 #highlight NonText ctermbg=NONE guibg=NONE
@@ -19,23 +19,23 @@ background_opacity: 0.8
 colors:
   # Default Colors
   primary:
-    background: '#000000'
+    background: '#2c292a'
     foreground: '#f1f1f1'
   # Normal colors
   normal:
     black:   '#212121'
     red:     '#c30771'
-    green:   '#10a778'
+    green:   '#10ff78'
     yellow:  '#a89c14'
-    blue:    '#008eff'
+    blue:    '#006eff'
     magenta: '#ff3c79'
-    cyan:    '#20a5ba'
+    cyan:    '#10cfdf'
     white:   '#e0e0e0'
   # Bright colors
   bright:
     black:   '#212121'
     red:     '#fb007a'
-    green:   '#5fd7af'
+    green:   '#5fffaf'
     yellow:  '#f3e430'
     blue:    '#20bbfc'
     magenta: '#ff55de'

@@ -33,6 +33,7 @@ intel-ucode
 kubectl
 kubectx
 less
+light
 linux
 linux-firmware
 lshw
