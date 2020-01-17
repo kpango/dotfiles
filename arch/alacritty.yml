@@ -16,6 +16,9 @@ background_opacity: 1.2
 #highlight NonText ctermbg=NONE guibg=NONE
 #highlight SpecialKey ctermbg=NONE guibg=NONE
 #highlight EndOfBuffer ctermbg=NONE guibg=NONE
+url:
+  launcher:
+    program: xdg-open
 
 custom_cursor_colors: true
 

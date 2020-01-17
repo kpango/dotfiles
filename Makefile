@@ -61,6 +61,7 @@ arch_link: \
 	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
+	sudo sysctl -p
 	# sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/lightdm.conf /etc/lightdm/lightdm.conf
 	# sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio.service /etc/systemd/system/pulseaudio.service
 	# sudo systemctl daemon-reload
