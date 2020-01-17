@@ -16,6 +16,9 @@ background_opacity: 1.2
 #highlight NonText ctermbg=NONE guibg=NONE
 #highlight SpecialKey ctermbg=NONE guibg=NONE
 #highlight EndOfBuffer ctermbg=NONE guibg=NONE
+
+custom_cursor_colors: true
+
 colors:
   # Default Colors
   primary:
@@ -41,3 +44,11 @@ colors:
     magenta: '#ff55de'
     cyan:    '#4fb8cc'
     white:   '#f1f1f1'
+
+  cursor:
+    text: '#000000'
+    cursor: '#00ff00'
+
+  selection:
+   text: '0xeaeaea'
+   background: '0x404040'

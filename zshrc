@@ -263,7 +263,7 @@ if [ -z $ZSH_LOADED ]; then
     add-zsh-hook precmd _update_vcs_info_msg
 
     if type starship >/dev/null 2>&1; then
-    	eval "$(starship init zsh)"
+        eval "$(starship init zsh)"
     fi
 
     ########################################
@@ -743,7 +743,9 @@ if [ -z $ZSH_LOADED ]; then
         alias archback=archback
         archup() {
             sudo rm -rf /var/lib/pacman/db.lck
-            sudo reflector --age 24 --latest 200 --number 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+    	    if type reflector >/dev/null 2>&1; then
+            	sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+	    fi
             sudo rm -rf /var/lib/pacman/db.lck
             git clone https://aur.archlinux.org/yay.git
             cd yay
@@ -751,12 +753,15 @@ if [ -z $ZSH_LOADED ]; then
             cd ..
             sudo rm -rf ./yay
             sudo rm -rf /var/lib/pacman/db.lck
-            yay -Syu --noanswerdiff --noanswerclean --noconfirm
+            yay -Syyua --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.lck
             paccache -ruk0
         }
         alias archup=archup
 
+    fi
+    if type vcs_info >/dev/null 2>&1; then
+        vcs_info
     fi
 
     if type chrome >/dev/null 2>&1; then
