@@ -12,9 +12,11 @@ avrdude
 axel
 bash-language-server
 ccache
+chrony
 clang
 cmake
 discord
+dnsmasq
 docker
 exa
 fakeroot
@@ -44,10 +46,8 @@ mdadm
 mysql-workbench
 neofetch
 neovim
-netctl
 networkmanager
 nmap
-ntp
 openssh
 otf-font-awesome
 pacman-contrib

@@ -4,6 +4,7 @@ google-chrome
 google-cloud-sdk
 slack-desktop
 systemd-boot-pacman-hook
+tzupdate
 wdisplays-git
 wofi
 yay
