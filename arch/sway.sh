@@ -1,14 +1,26 @@
 # /etc/profile
 sudo rm -rf /tmp/* \
-	/var/cache \
-	$HOME/.cache \
-	$HOME/.ccache
+    /var/cache \
+    $HOME/.cache \
+    $HOME/.ccache
+
+export DefaultImModule=fcitx
+export GTK_IM_MODULE=fcitx
+export QT_IM_MODULE=fcitx
+export XMODIFIERS="@im=fcitx"
 
 export XKB_DEFAULT_OPTIONS=ctrl:nocaps
+export XKB_DEFAULT_LAYOUT=us
 
 setxkbmap -option ctrl:nocaps
 
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
-    XKB_DEFAULT_LAYOUT=us exec sway
+    DefaultImModule=fcitx \
+    GTK_IM_MODULE=fcitx \
+    QT_IM_MODULE=fcitx \
+    XMODIFIERS="@im=fcitx" \
+    XKB_DEFAULT_OPTIONS=ctrl:nocaps \
+    XKB_DEFAULT_LAYOUT=us \
+    exec sway
 fi
 # sway
