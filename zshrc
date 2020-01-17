@@ -764,6 +764,10 @@ if [ -z $ZSH_LOADED ]; then
         vcs_info
     fi
 
+    if type sway >/dev/null 2>&1; then
+        export SWAYSOCK=/run/user/$(id -u)/sway-ipc.$(id -u).$(pgrep -x sway).sock
+    fi
+
     if type chrome >/dev/null 2>&1; then
         alias chrome="chrome --audio-buffer-size=4096"
     fi
