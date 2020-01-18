@@ -53,9 +53,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'w0rp/ale' " lint plugin
     Plug 'tyru/caw.vim' " comment out
     " Plug 'rizzatti/dash.vim', {'on': 'Dash'}
-    " Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
     " Plug 'terryma/vim-multiple-cursors' " multiple cursors
-    " Plug 'thinca/vim-quickrun'
     Plug 'tpope/vim-surround'
     Plug 'vim-scripts/sudo.vim'
     " Plug 'ozelentok/denite-gtags'
