@@ -8,6 +8,7 @@ ENV KUBEBOX_VERSION 0.7.0
 ENV STERN_VERSION 1.11.0
 ENV KUBEBUILDER_VERSION 2.2.0
 ENV KIND_VERSION 0.7.0
+ENV KUBECTL_FZF_VERSION 1.0.12
 
 RUN apk update \
     && apk upgrade \
@@ -43,6 +44,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv kubebuilder_${KUBEBUILDER_VERSION}_${OS}_${ARCH}/bin/* ${BIN_PATH}/ \
     && curl -fsSL "https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-${OS}-${ARCH}" -o ${BIN_PATH}/kind \
     && chmod a+x ${BIN_PATH}/kind \
+    && curl -fsSLO "https://github.com/bonnefoa/kubectl-fzf/releases/download/v${KUBECTL_FZF_VERSION}/kubectl-fzf_${OS}_${ARCH}.tar.gz" \
+    && tar -zxvf kubectl-fzf_${OS}_${ARCH}.tar.gz \
+    && mv cache_builder ${BIN_PATH}/cache_builder \
     && curl -sL https://run.linkerd.io/install | sh \
     && mv ${HOME}/.linkerd2/bin/linkerd-* ${BIN_PATH}/linkerd
 

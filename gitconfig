@@ -33,7 +33,7 @@
     sh = show
     so = remote show origin
     st = status
-    stt = status -uno
+    stt = status -uno -u
     up = pull --rebase       # pull rebase
     # branch関連
     ba = branch -a           # originも含めた全てのbranchを表示
@@ -52,6 +52,7 @@
     wc = whatchanged         # logに変更されたファイルも一緒に出す
     # logをtree表示
     # diff関連
+    d = diff -C --stat -p
     d1 = diff HEAD~            # HEADから1つ前とdiff
     d2 = diff HEAD~~           # HEADから2つ前とdiff
     d3 = diff HEAD~~~          # HEADから3つ前とdiff

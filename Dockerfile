@@ -101,6 +101,7 @@ COPY --from=kube /usr/local/bin/kubebuilder /usr/bin/kubebuilder
 COPY --from=kube /usr/local/bin/stern /usr/bin/stern
 COPY --from=kube /usr/local/bin/helm /usr/bin/helm
 COPY --from=kube /usr/local/bin/kind /usr/bin/kind
+COPY --from=kube /usr/local/bin/cache_builder /usr/bin/cache_builder
 COPY --from=kube /usr/local/bin/linkerd /usr/bin/linkerd
 COPY --from=kube /root/.krew/bin /usr/bin/
 

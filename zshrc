@@ -19,9 +19,9 @@ if type tmux >/dev/null 2>&1; then
 fi
 
 if [ -z $DOTENV_LOADED ]; then
-        if type neofetch >/dev/null 2>&1; then
-            neofetch
-        fi
+    if type neofetch >/dev/null 2>&1; then
+        neofetch
+    fi
     stty stop undef
     stty start undef
 
@@ -156,6 +156,8 @@ if [ -z $ZSH_LOADED ]; then
         zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
         zplug "greymd/tmux-xpanes"
         zplug "felixr/docker-zsh-completion"
+        zplug "plugins/kubectl", from:oh-my-zsh, defer:2
+        zplug "bonnefoa/kubectl-fzf", defer:3
 
         if ! zplug check --verbose; then
             zplug install
@@ -678,16 +680,16 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type kubectl >/dev/null 2>&1; then
-        kubectl() {
-            local kubectl="$(whence -p kubectl 2>/dev/null)"
-            [ -z "$_lazy_kubectl_completion" ] && {
-                source <("$kubectl" completion zsh)
-                source <("$kind" completion zsh)
-                complete -o default -F __start_kubectl k
-                _lazy_kubectl_completion=1
-            }
-            "$kubectl" "$@"
-        }
+        # kubectl() {
+        # local kubectl="$(whence -p kubectl 2> /dev/null)"
+        #     [ -z "$_lazy_kubectl_completion" ] && {
+        #     echo "\e[31m$0 completion zsh\e[0m" > /dev/stderr
+        #         source <("$kubectl" completion zsh)
+        #         # complete -o default -F __start_kubectl k
+        #         _lazy_kubectl_completion=1
+        #     }
+        #     "$kubectl" "$@"
+        # }
         alias kubectl=kubectl
         alias k=kubectl
         alias kpall="k get pods --all-namespaces -o wide"
@@ -700,6 +702,7 @@ if [ -z $ZSH_LOADED ]; then
         #     kind() {
         #         local kind="$(whence -p kind 2>/dev/null)"
         #         [ -z "$_lazy_kind_completion" ] && {
+        #         echo "\e[31m$0 completion zsh\e[0m" > /dev/stderr
         #             source <("$kind" completion zsh)
         #             _lazy_kind_completion=1
         #         }
@@ -743,9 +746,9 @@ if [ -z $ZSH_LOADED ]; then
         alias archback=archback
         archup() {
             sudo rm -rf /var/lib/pacman/db.lck
-    	    if type reflector >/dev/null 2>&1; then
-            	sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
-	    fi
+            if type reflector >/dev/null 2>&1; then
+                sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+            fi
             sudo rm -rf /var/lib/pacman/db.lck
             git clone https://aur.archlinux.org/yay.git
             cd yay
