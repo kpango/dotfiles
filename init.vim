@@ -174,10 +174,6 @@ if !has('python3') && !has('pip3')
     call system('pip3 install neovim --upgrade')
 endif
 
-if !has('gb') && has('go')
-    call system('go get -u -v github.com/constabulary/gb/...')
-endif
-
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
@@ -229,9 +225,6 @@ let g:ale_linters = {
         \   'vim': ['vint'],
         \   'zsh': ['zsh'],
         \}
-" let g:ale_fixers  = {
-"       \   'go': ['goimports -w'],
-"       \}
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_enter = 1

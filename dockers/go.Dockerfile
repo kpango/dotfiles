@@ -74,9 +74,9 @@ FROM go-base AS godef
 RUN GO111MODULE=on go get -u  \
     github.com/rogpeppe/godef
 
-# FROM go-base AS prototool
-# RUN GO111MODULE=on go get -u  \
-#     github.com/uber/prototool/cmd/prototool
+FROM go-base AS efm
+RUN GO111MODULE=on go get -u  \
+    github.com/mattn/efm-langserver
 
 FROM go-base AS golint
 RUN GO111MODULE=on go get -u  \
@@ -87,8 +87,8 @@ RUN GO111MODULE=on go get -u  \
     golang.org/x/tools/cmd/goimports
 
 FROM go-base AS gopls
-RUN GO111MODULE=on go get -u  \
-    golang.org/x/tools/cmd/gopls
+RUN GO111MODULE=on go get \
+    golang.org/x/tools/gopls@latest
 
 FROM go-base AS gorename
 RUN GO111MODULE=on go get -u  \
@@ -110,16 +110,10 @@ FROM go-base AS go-module-off-base
 RUN GO111MODULE=off go get \
     github.com/gohugoio/hugo \
     github.com/uber/prototool/cmd/prototool
-    # github.com/mattn/efm-langserver \
 
 FROM go-module-off-base AS hugo
 RUN cd $GOPATH/src/github.com/gohugoio/hugo \
     && GO111MODULE=on go build -o $GOPATH/bin/hugo main.go
-
-# FROM go-module-off-base AS efm
-# RUN cd $GOPATH/src/github.com/mattn/efm-langserver \
-#     && GO111MODULE=on go mod init \
-#     && GO111MODULE=on go build -o $GOPATH/bin/efm-langserver
 
 FROM go-module-off-base AS prototool
 RUN cd $GOPATH/src/github.com/uber/prototool/cmd/prototool \
@@ -132,7 +126,7 @@ FROM go-base AS go
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
-# COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
+COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 COPY --from=errcheck $GOPATH/bin/errcheck $GOPATH/bin/errcheck
 COPY --from=fillstruct $GOPATH/bin/fillstruct $GOPATH/bin/fillstruct
 COPY --from=ghq $GOPATH/bin/ghq $GOPATH/bin/ghq

@@ -2,6 +2,7 @@ FROM kpango/dev-base:latest AS env
 
 ENV NGT_VERSION 1.8.1
 ENV HUB_VERSION 2.13.0
+ENV TENSORFLOW_C_VERSION 1.13.1
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/usr/x86_64-alpine-linux-musl/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 
 RUN mkdir "/etc/ld.so.conf.d" \
@@ -91,3 +92,9 @@ RUN mkdir "/etc/ld.so.conf.d" \
     && rm -rf /tmp/NGT-${NGT_VERSION} \
     && curl -fsSLo hub.tar.gz "https://github.com/github/hub/releases/download/v${HUB_VERSION}/hub-linux-amd64-${HUB_VERSION}.tgz" \
     && tar zxf hub.tar.gz -C /tmp \
+    && cd /tmp \
+    && curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
+	&& tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
+	&& rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
+	&& ldconfig \
+    && rm -rf /tmp/* /var/cache
