@@ -58,7 +58,7 @@ devrun(){
         --privileged=$privileged \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $docker_daemon:/etc/docker/daemon.json \
-        -v $HOME/.config:/root/.netrc \
+        -v $HOME/.netrc:/root/.netrc \
         -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
         -v $HOME/.gnupg:/root/.gnupg \
         -v $HOME/.kube:/root/.kube \
