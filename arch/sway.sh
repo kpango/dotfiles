@@ -14,7 +14,7 @@ export XKB_DEFAULT_LAYOUT=us
 
 setxkbmap -option ctrl:nocaps
 
-ulimit -n 520000
+ulimit -n 500000
 
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     DefaultImModule=fcitx \
