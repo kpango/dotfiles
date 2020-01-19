@@ -51,6 +51,7 @@ arch_link: \
 	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xdefaults $(HOME)/.Xdefaults
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/resolv.conf /etc/resolv.conf
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/chrony.conf /etc/chrony.conf
@@ -231,6 +232,12 @@ push:
 
 pull:
 	docker pull kpango/dev:latest
+
+perm:
+	chmod -R 755 ./*
+	chmod -R 755 ./.*
+	chown -R 1000:985 ./*
+	chown -R 1000:985 ./.*
 
 git_push:
 	git add -A
