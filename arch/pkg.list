@@ -43,6 +43,7 @@ lsof
 make
 mako
 mdadm
+mpv
 mysql-workbench
 neofetch
 neovim
@@ -83,4 +84,5 @@ wlc
 wpscan
 xorg-server-xwayland
 yarn
+youtube-dl
 zsh
