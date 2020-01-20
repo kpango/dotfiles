@@ -756,7 +756,7 @@ if [ -z $ZSH_LOADED ]; then
             cd ..
             sudo rm -rf ./yay
             sudo rm -rf /var/lib/pacman/db.lck
-            yay -Syyua --noanswerdiff --noanswerclean --noconfirm
+            yay -Syu --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.lck
             paccache -ruk0
         }

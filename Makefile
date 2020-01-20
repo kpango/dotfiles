@@ -29,87 +29,79 @@ arch_link: \
 	clean \
 	link
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/gitconfig $(HOME)/.gitconfig
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc $(HOME)/.xinitrc
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc $(HOME)/.xinitrc
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
 	mkdir -p ${HOME}/.config/sway
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
-	# mkdir -p ${HOME}/.config/i3
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3.conf $(HOME)/.config/i3/config
-	# mkdir -p ${HOME}/.config/i3status
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/i3status.conf $(HOME)/.config/i3status/config
 	mkdir -p ${HOME}/.config/waybar
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.conf $(HOME)/.config/waybar/config
 	mkdir -p ${HOME}/.config/alacritty
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	# mkdir -p ${HOME}/.config/rofi
 	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
-	# mkdir -p ${HOME}/.config/compton
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/compton.conf $(HOME)/.config/compton/compton.conf
 	mkdir -p ${HOME}/.config/fcitx/conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xdefaults $(HOME)/.Xdefaults
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	# sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/resolv.conf /etc/resolv.conf
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/chrony.conf /etc/chrony.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.sh /etc/profile.d/sway.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
-	# sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio-bluetooth.conf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
 	mkdir -p /etc/docker
 	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
 	sudo sysctl -p
-	# sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/lightdm.conf /etc/lightdm/lightdm.conf
-	# sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pulseaudio.service /etc/systemd/system/pulseaudio.service
-	# sudo systemctl daemon-reload
-	# sudo systemctl enable pulseaudio
-	# sudo systemctl start pulseaudio
-	# sudo systemctl status pulseaudio
-	# sudo journalctl | grep pulseaudio
+	sudo systemctl daemon-reload
 
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.zshrc
-	sudo rm -rf $(HOME)/.Xdefaults
-	sudo rm -rf $(HOME)/.Xmodmap
-	sudo rm -rf $(HOME)/.aliases
-	sudo rm -rf $(HOME)/.config/alacritty
-	sudo rm -rf $(HOME)/.config/compton
-	sudo rm -rf $(HOME)/.config/fcitx
-	sudo rm -rf $(HOME)/.config/i3
-	sudo rm -rf $(HOME)/.config/i3status
-	sudo rm -rf $(HOME)/.config/waybar
-	sudo rm -rf $(HOME)/.config/nvim
-	sudo rm -rf $(HOME)/.config/ranger
-	sudo rm -rf $(HOME)/.config/rofi
-	sudo rm -rf $(HOME)/.config/starship.toml
-	sudo rm -rf $(HOME)/.config/sway
-	sudo rm -rf $(HOME)/.docker/daemon.json
-	sudo rm -rf $(HOME)/.editorconfig
-	sudo rm -rf $(HOME)/.gitattributes
-	sudo rm -rf $(HOME)/.gitconfig
-	sudo rm -rf $(HOME)/.gitconfig
-	sudo rm -rf $(HOME)/.gitignore
-	sudo rm -rf $(HOME)/.tmux-kube
-	sudo rm -rf $(HOME)/.tmux.conf
-	sudo rm -rf $(HOME)/.tmux.new-session
-	sudo rm -rf $(HOME)/.xinitrc
-	sudo rm -rf $(HOME)/.zshrc
-	sudo rm -rf /etc/dbus-1/system.d/pulseaudio-bluetooth.conf
-	sudo rm -rf /etc/docker/daemon.json
-	sudo rm -rf /etc/lightdm
-	sudo rm -rf /etc/modules-load.d/bbr.conf
-	sudo rm -rf /etc/profile.d/sway.sh
-	sudo rm -rf /etc/profile.d/fcitx.sh
-	sudo rm -rf /etc/resolv.conf
-	sudo rm -rf /etc/chrony.conf
-	sudo rm -rf /etc/sysctl.conf
-	sudo rm -rf /etc/NetworkManager/NetworkManager.conf
-	sudo rm -rf /etc/systemd/system/pulseaudio.service
+	sudo rm -rf $(HOME)/.Xdefaults \
+		$(HOME)/.Xmodmap \
+		$(HOME)/.aliases \
+		$(HOME)/.config/alacritty \
+		$(HOME)/.config/compton \
+		$(HOME)/.config/fcitx \
+		$(HOME)/.config/i3 \
+		$(HOME)/.config/i3status \
+		$(HOME)/.config/waybar \
+		$(HOME)/.config/nvim \
+		$(HOME)/.config/ranger \
+		$(HOME)/.config/rofi \
+		$(HOME)/.config/starship.toml \
+		$(HOME)/.config/sway \
+		$(HOME)/.docker/daemon.json \
+		$(HOME)/.editorconfig \
+		$(HOME)/.gitattributes \
+		$(HOME)/.gitconfig \
+		$(HOME)/.gitconfig \
+		$(HOME)/.gitignore \
+		$(HOME)/.tmux-kube \
+		$(HOME)/.tmux.conf \
+		$(HOME)/.tmux.new-session \
+		$(HOME)/.xinitrc \
+		$(HOME)/.zshrc \
+		/etc/NetworkManager/NetworkManager.conf \
+		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
+		/etc/chrony.conf \
+		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
+		/etc/docker/daemon.json \
+		/etc/lightdm \
+		/etc/modules-load.d/bbr.conf \
+		/etc/profile.d/fcitx.sh \
+		/etc/profile.d/sway.sh \
+		/etc/resolv.conf \
+		/etc/sysctl.conf \
+		/etc/systemd/system/NetworkManager-dispatcher.service \
+		/etc/systemd/system/pulseaudio.service
 
 zsh: link
 	[ -f $(HOME)/.zshrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.zshrc
