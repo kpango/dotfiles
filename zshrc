@@ -156,8 +156,8 @@ if [ -z $ZSH_LOADED ]; then
         zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
         zplug "greymd/tmux-xpanes"
         zplug "felixr/docker-zsh-completion"
-        zplug "plugins/kubectl", from:oh-my-zsh, defer:2
-        zplug "bonnefoa/kubectl-fzf", defer:3
+        # zplug "plugins/kubectl", from:oh-my-zsh, defer:2
+        # zplug "bonnefoa/kubectl-fzf", defer:3
 
         if ! zplug check --verbose; then
             zplug install
@@ -680,17 +680,16 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type kubectl >/dev/null 2>&1; then
-        # kubectl() {
-        # local kubectl="$(whence -p kubectl 2> /dev/null)"
-        #     [ -z "$_lazy_kubectl_completion" ] && {
-        #     echo "\e[31m$0 completion zsh\e[0m" > /dev/stderr
-        #         source <("$kubectl" completion zsh)
-        #         # complete -o default -F __start_kubectl k
-        #         _lazy_kubectl_completion=1
-        #     }
-        #     "$kubectl" "$@"
-        # }
-        alias kubectl=kubectl
+        kubectl() {
+        local kubectl="$(whence -p kubectl 2> /dev/null)"
+            [ -z "$_lazy_kubectl_completion" ] && {
+                source <("$kubectl" completion zsh)
+                complete -o default -F __start_kubectl k
+                _lazy_kubectl_completion=1
+            }
+            "$kubectl" "$@"
+        }
+        # alias kubectl=kubectl
         alias k=kubectl
         alias kpall="k get pods --all-namespaces -o wide"
         alias ksall="k get svc --all-namespaces -o wide"
@@ -698,18 +697,18 @@ if [ -z $ZSH_LOADED ]; then
         alias knall="k get namespace -o wide"
         alias kdall="k get deployment --all-namespaces -o wide"
 
-        # if type kind >/dev/null 2>&1; then
-        #     kind() {
-        #         local kind="$(whence -p kind 2>/dev/null)"
-        #         [ -z "$_lazy_kind_completion" ] && {
-        #         echo "\e[31m$0 completion zsh\e[0m" > /dev/stderr
-        #             source <("$kind" completion zsh)
-        #             _lazy_kind_completion=1
-        #         }
-        #         "$kind" "$@"
-        #     }
-        #     alias kind=kind
-        # fi
+        if type kind >/dev/null 2>&1; then
+            kind() {
+                local kind="$(whence -p kind 2>/dev/null)"
+                [ -z "$_lazy_kind_completion" ] && {
+                    source <("$kind" completion zsh)
+                    complete -o default -F __start_kubectl kd
+                    _lazy_kind_completion=1
+                }
+                "$kind" "$@"
+            }
+            # alias kind=kind
+        fi
     fi
 
     if type nmcli >/dev/null 2>&1; then
