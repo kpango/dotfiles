@@ -702,12 +702,11 @@ if [ -z $ZSH_LOADED ]; then
                 local kind="$(whence -p kind 2>/dev/null)"
                 [ -z "$_lazy_kind_completion" ] && {
                     source <("$kind" completion zsh)
-                    complete -o default -F __start_kubectl kd
                     _lazy_kind_completion=1
                 }
                 "$kind" "$@"
             }
-            # alias kind=kind
+            alias kind=kind
         fi
     fi
 

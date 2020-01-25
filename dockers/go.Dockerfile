@@ -60,7 +60,7 @@ RUN GO111MODULE=on go get -u  \
 
 FROM go-base AS ghq
 RUN GO111MODULE=on go get -u  \
-    github.com/motemen/ghq
+    github.com/x-motemen/ghq
 
 FROM go-base AS gocode
 RUN GO111MODULE=on go get -u  \
