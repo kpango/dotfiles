@@ -1,12 +1,4 @@
 {
-  "dns": [
-    "1.1.1.1",
-    "8.8.8.8",
-    "8.8.4.4"
-  ],
-  "dns-opts": [
-    "timeout:1"
-  ],
   "runtimes": {
     "runsc": {
       "path": "/usr/local/bin/runsc"
