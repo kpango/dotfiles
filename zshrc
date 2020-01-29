@@ -259,8 +259,9 @@ if [ -z $ZSH_LOADED ]; then
 
     _update_vcs_info_msg() {
         LANG=en_US.UTF-8
-        RPROMPT="%F{green}${vcs_info_msg_0_} %{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
+        vcs_info
         # RPROMPT="%F{046}${vcs_info_msg_0_} %F{102}[%D{%Y-%m-%d %H:%M:%S}]"
+        RPROMPT="%F{green}${vcs_info_msg_0_} %{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
     }
     add-zsh-hook precmd _update_vcs_info_msg
 
