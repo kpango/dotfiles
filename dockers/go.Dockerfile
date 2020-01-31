@@ -38,6 +38,10 @@ FROM go-base AS dlv
 RUN GO111MODULE=on go get -u  \
     github.com/go-delve/delve/cmd/dlv
 
+FROM go-base AS hub
+RUN GO111MODULE=on go get -u  \
+    github.com/github/hub
+
 FROM go-base AS impl
 RUN GO111MODULE=on go get -u  \
     github.com/josharian/impl
@@ -150,6 +154,7 @@ COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
+COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 
 RUN upx -9 ${GOPATH}/bin/* \
     \
