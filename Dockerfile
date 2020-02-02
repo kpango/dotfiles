@@ -75,6 +75,7 @@ ENV ZPLUG_HOME $HOME/.zplug;
 # etc lib sbin bin
 # COPY --from=glibc /usr/glibc-compat /usr/glibc-compat
 
+COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
 COPY --from=docker /usr/local/bin/containerd /usr/bin/docker-containerd
 COPY --from=docker /usr/local/bin/containerd-shim /usr/bin/docker-containerd-shim
 COPY --from=docker /usr/local/bin/ctr /usr/bin/docker-containerd-ctr
