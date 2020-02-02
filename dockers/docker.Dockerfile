@@ -4,7 +4,7 @@ FROM wagoodman/dive:latest AS dive
 
 FROM docker:rc-dind AS docker
 
-ENV DOCKER_SLIM_VERSION 1.25.3
+ENV DOCKER_SLIM_VERSION 1.26.1
 ENV DLAYER_VERSION 0.1.0
 ENV BUILDX_VER 0.3.1
 
