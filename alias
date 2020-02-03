@@ -50,7 +50,7 @@ devrun(){
 
         # -e DISPLAY \
         # -v /tmp/.X11-unix:/tmp/.X11-unix \
-	# --pid=host \
+        # --pid=host \
     docker run \
         --network=host \
         --cap-add=ALL \
@@ -91,8 +91,8 @@ devrun(){
 
 alias devrun="devrun"
 
-# alias devin="docker exec -it $container_name /bin/zsh"
 alias devin="docker exec -it $container_name /bin/zsh -c \"tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -nroot -sroot@$HOST\""
+
 devkill(){
     docker update --restart=no $container_name \
         && docker container stop $(docker container ls -aq) \
