@@ -8,12 +8,12 @@ FROM kpango/dart:latest AS dart
 
 FROM kpango/docker:latest AS docker
 
-# FROM node:11-alpine AS node
+# FROM node:13-alpine AS node
 
 # RUN npm config set user  root \
 #     && npm install -g neovim resume-cli
 
-# FROM python:3.7-alpine AS python3
+# FROM python:3.8-alpine AS python3
 
 # RUN apk add --no-cache --virtual .build-deps gcc musl-dev
 # RUN pip3 install --upgrade pip neovim

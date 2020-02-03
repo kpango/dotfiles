@@ -1,4 +1,4 @@
-FROM alpine:edge AS kube
+FROM kpango/dev-base:latest AS kube
 
 ENV ARCH amd64
 ENV OS linux
