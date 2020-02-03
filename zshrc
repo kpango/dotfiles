@@ -114,6 +114,9 @@ if [ -z $DOTENV_LOADED ]; then
         fpath=($ZPLUG_HOME/repos/zsh-users/zsh-completions/src $fpath)
     fi
 
+    # for teleplesence disabling send analytics data anonymously
+    export SCOUT_DISABLE=1
+
     export DOTENV_LOADED=1
 fi
 

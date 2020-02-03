@@ -102,10 +102,12 @@ COPY --from=kube /usr/local/bin/kubebuilder /usr/bin/kubebuilder
 COPY --from=kube /usr/local/bin/stern /usr/bin/stern
 COPY --from=kube /usr/local/bin/helm /usr/bin/helm
 COPY --from=kube /usr/local/bin/kind /usr/bin/kind
+COPY --from=kube /usr/local/bin/telepresence /usr/bin/telepresence
 COPY --from=kube /usr/local/bin/cache_builder /usr/bin/cache_builder
 COPY --from=kube /usr/local/bin/linkerd /usr/bin/linkerd
 COPY --from=kube /usr/local/bin/k9s /usr/bin/k9s
-COPY --from=kube /root/.krew/bin /usr/bin/
+COPY --from=kube /usr/local/bin/kubectl-krew /usr/bin/kubectl-krew
+
 
 COPY --from=gcloud /google-cloud-sdk /google-cloud-sdk
 COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
