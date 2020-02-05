@@ -3,13 +3,6 @@ FROM kpango/dev-base:latest AS kube-base
 ENV ARCH amd64
 ENV OS linux
 ENV BIN_PATH /usr/local/bin
-ENV KREW_VERSION 0.3.3
-ENV KUBEBOX_VERSION 0.7.0
-ENV STERN_VERSION 1.11.0
-ENV KUBEBUILDER_VERSION 2.2.0
-ENV KIND_VERSION 0.7.0
-ENV KUBECTL_FZF_VERSION 1.0.12
-ENV K9S_VERSION 0.13.6
 ENV TELEPRESENCE_VERSION 0.104
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
@@ -46,39 +39,41 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM kube-base AS krew
 RUN set -x; cd "$(mktemp -d)" \
-    && curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/download/v${KREW_VERSION}/krew.{tar.gz,yaml}" \
+    && curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/download/$(curl --silent https://github.com/kubernetes-sigs/krew/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#')/krew.{tar.gz,yaml}" \
     && tar zxvf krew.tar.gz \
     && ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_${ARCH}" install --manifest=krew.yaml --archive=krew.tar.gz
 
 FROM kube-base AS kubebox
 RUN set -x; cd "$(mktemp -d)" \
-    && curl -fsSL "https://github.com/astefanutti/kubebox/releases/download/v${KUBEBOX_VERSION}/kubebox-${OS}" -o ${BIN_PATH}/kubebox \
+    && curl -fsSL "https://github.com/astefanutti/kubebox/releases/download/$(curl --silent https://github.com/astefanutti/kubebox/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#')/kubebox-${OS}" -o ${BIN_PATH}/kubebox \
     && chmod a+x ${BIN_PATH}/kubebox
 
 FROM kube-base AS stern
 RUN set -x; cd "$(mktemp -d)" \
-    && curl -fsSL "https://github.com/wercker/stern/releases/download/${STERN_VERSION}/stern_${OS}_${ARCH}" -o ${BIN_PATH}/stern \
+    && curl -fsSL "https://github.com/wercker/stern/releases/download/$(curl --silent https://github.com/wercker/stern/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#')/stern_${OS}_${ARCH}" -o ${BIN_PATH}/stern \
     && chmod a+x ${BIN_PATH}/stern
 
 FROM kube-base AS kubebuilder
 RUN set -x; cd "$(mktemp -d)" \
+    && KUBEBUILDER_VERSION="$(curl --silent https://github.com/kubernetes-sigs/kubebuilder/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && curl -fsSLO "https://github.com/kubernetes-sigs/kubebuilder/releases/download/v${KUBEBUILDER_VERSION}/kubebuilder_${KUBEBUILDER_VERSION}_${OS}_${ARCH}.tar.gz" \
     && tar -zxvf kubebuilder_${KUBEBUILDER_VERSION}_${OS}_${ARCH}.tar.gz \
     && mv kubebuilder_${KUBEBUILDER_VERSION}_${OS}_${ARCH}/bin/* ${BIN_PATH}/
 
 FROM kube-base AS kind
 RUN set -x; cd "$(mktemp -d)" \
-    && curl -fsSL "https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-${OS}-${ARCH}" -o ${BIN_PATH}/kind \
+    && curl -fsSL "https://github.com/kubernetes-sigs/kind/releases/download/$(curl --silent https://github.com/kubernetes-sigs/kind/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#')/kind-${OS}-${ARCH}" -o ${BIN_PATH}/kind \
     && chmod a+x ${BIN_PATH}/kind
 
 FROM kube-base AS kubectl-fzf
 RUN set -x; cd "$(mktemp -d)" \
-    && curl -fsSLO "https://github.com/bonnefoa/kubectl-fzf/releases/download/v${KUBECTL_FZF_VERSION}/kubectl-fzf_${OS}_${ARCH}.tar.gz" \
+    && curl -fsSLO "https://github.com/bonnefoa/kubectl-fzf/releases/download/$(curl --silent https://github.com/bonnefoa/kubectl-fzf/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#')/kubectl-fzf_${OS}_${ARCH}.tar.gz" \
     && tar -zxvf kubectl-fzf_${OS}_${ARCH}.tar.gz \
     && mv cache_builder ${BIN_PATH}/cache_builder
 
 FROM kube-base AS k9s
 RUN set -x; cd "$(mktemp -d)" \
+    && K9S_VERSION="$(curl --silent https://github.com/derailed/k9s/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && curl -fsSLO "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_${K9S_VERSION}_Linux_x86_64.tar.gz" \
     && tar -zxvf k9s_${K9S_VERSION}_Linux_x86_64.tar.gz \
     && mv k9s ${BIN_PATH}/k9s
