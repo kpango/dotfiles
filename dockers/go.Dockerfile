@@ -1,5 +1,6 @@
 FROM golang:1.13-alpine AS go-base
 
+ENV GOFLAGS "-ldflags=-w -ldflags=-s"
 RUN apk update \
     && apk upgrade \
     && apk add --no-cache \

@@ -98,6 +98,7 @@ if [ -z $DOTENV_LOADED ]; then
         export GO15VENDOREXPERIMENT=1
         export GOPRIVATE="*.yahoo.co.jp"
         export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go
+        export GOFLAGS="-ldflags=\"-w -s\""
         export CGO_CFLAGS="-g -Ofast -march=native"
         export CGO_CPPFLAGS="-g -Ofast -march=native"
         export CGO_CXXFLAGS="-g -Ofast -march=native"
