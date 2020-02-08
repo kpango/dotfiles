@@ -1,16 +1,110 @@
 {
-  "suggest.noselect": false,
-  "suggest.preferCompleteThanJumpPlaceholder": true,
+  "coc": {
+    "preferences": {
+      "formatOnType": true,
+      "formatOnSaveFileTypes": [
+        "go",
+        "nix",
+        "typescript",
+        "dockerfile",
+        "json",
+        "sh",
+        "zsh",
+        "bash",
+        "vim",
+        "eruby",
+        "markdown",
+        "python"
+      ],
+      "useQuickfixForLocations": false
+    },
+    "source": {
+      "around.enable": false,
+      "neco.enable": false,
+      "buffer.disableSyntaxes": [
+        "go"
+      ]
+    }
+  },
+  "list": {
+    "source": {
+      "grep": {
+        "command": "rg",
+        "args": []
+      }
+    }
+  },
+  "signature": {
+    "preferShownAbove": false,
+    "target": "float"
+  },
+  "session.directory": "~/.cache/vim/sessions",
+  "diagnostic": {
+    "messageTarget": "echo",
+    "refreshOnInsertMode": true,
+    "errorSign": "🔥",
+    "warningSign": "🚧",
+    "infoSign": "💬",
+    "hintSign": "💬"
+  },
+  "git": {
+    "addGBlameToBufferVar": true,
+    "addedSign.hlGroup": "GitGutterAdd",
+    "addedSign.text": "▎",
+    "changeRemovedSign.hlGroup": "GitGutterChangeDelete",
+    "changeRemovedSign.text": "▋",
+    "changedSign.hlGroup": "GitGutterChange",
+    "changedSign.text": "▎",
+    "removedSign.hlGroup": "GitGutterDelete",
+    "removedSign.text": "▏",
+    "topRemovedSign.hlGroup": "GitGutterDelete",
+    "topRemovedSign.text": "▔"
+  },
+  "suggest": {
+    "noselect": true,
+    "preferCompleteThanJumpPlaceholder": true,
+    "detailField": "abbr",
+    "enablePreview": true,
+    "enablePreselect": false,
+    "floatEnable": true,
+    "snippetIndicator": "",
+    "triggerAfterInsertEnter": true,
+    "echodocSupport": true,
+    "timeout": 5000,
+    "completionItemKindLabels": {
+      "function": "",
+      "method": "",
+      "variable": "",
+      "constant": "",
+      "struct": "פּ",
+      "class": "",
+      "interface": "禍",
+      "text": "",
+      "enum": "",
+      "enumMember": "",
+      "module": "",
+      "color": "",
+      "property": "襁",
+      "field": "綠",
+      "unit": "",
+      "file": "",
+      "value": "",
+      "event": "鬒",
+      "folder": "",
+      "keyword": "",
+      "snippet": "",
+      "operator": "洛",
+      "reference": "",
+      "typeParameter": "",
+      "default": ""
+    }
+  },
   "languageserver": {
     "golang": {
       "command": "gopls",
-      "initializationOptions": {
-        "completeUnimported": true,
-        "usePlaceholders": true,
-        "staticcheck": false,
-        "lintTool": "golangci-lint",
-        "formatTool": "goimports"
-      },
+      "args": [
+        "serve"
+      ],
       "rootPatterns": [
         "go.mod",
         ".vim/",
@@ -19,7 +113,22 @@
       ],
       "filetypes": [
         "go"
-      ]
+      ],
+      "initializationOptions": {
+        "completeUnimported": true,
+        "usePlaceholders": true,
+        "deepCompletion": false,
+        "completionDocumentation": true,
+        "fuzzyMatching": true,
+        "staticcheck": false,
+        "watchFileChanges": true,
+        "lintTool": "golangci-lint",
+        "formatTool": "goimports",
+        "hoverKind": "FullDocumentation",
+        "env": {
+          "GOFLAGS": "-tags=gandalf_tests"
+        }
+      }
     },
     "nix": {
       "command": "nix-lsp",
