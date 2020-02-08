@@ -126,7 +126,12 @@
         "formatTool": "goimports",
         "hoverKind": "FullDocumentation",
         "env": {
-          "GOFLAGS": "-tags=gandalf_tests"
+          "GOFLAGS": "-ldflags=\"-w -s\"",
+          "CGO_CFLAGS": "-g -Ofast -march=native",
+          "CGO_CPPFLAGS": "-g -Ofast -march=native",
+          "CGO_CXXFLAGS": "-g -Ofast -march=native",
+          "CGO_FFLAGS": "-g -Ofast -march=native",
+          "CGO_LDFLAGS": "-g -Ofast -march=native"
         }
       }
     },
