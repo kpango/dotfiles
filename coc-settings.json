@@ -16,7 +16,7 @@
         "markdown",
         "python"
       ],
-      "useQuickfixForLocations": false
+      "useQuickfixForLocations": true
     },
     "source": {
       "around.enable": false,
@@ -26,14 +26,6 @@
       ]
     }
   },
-  "list": {
-    "source": {
-      "grep": {
-        "command": "rg",
-        "args": []
-      }
-    }
-  },
   "signature": {
     "preferShownAbove": false,
     "target": "float"
@@ -41,24 +33,7 @@
   "session.directory": "~/.cache/vim/sessions",
   "diagnostic": {
     "messageTarget": "echo",
-    "refreshOnInsertMode": true,
-    "errorSign": "🔥",
-    "warningSign": "🚧",
-    "infoSign": "💬",
-    "hintSign": "💬"
-  },
-  "git": {
-    "addGBlameToBufferVar": true,
-    "addedSign.hlGroup": "GitGutterAdd",
-    "addedSign.text": "▎",
-    "changeRemovedSign.hlGroup": "GitGutterChangeDelete",
-    "changeRemovedSign.text": "▋",
-    "changedSign.hlGroup": "GitGutterChange",
-    "changedSign.text": "▎",
-    "removedSign.hlGroup": "GitGutterDelete",
-    "removedSign.text": "▏",
-    "topRemovedSign.hlGroup": "GitGutterDelete",
-    "topRemovedSign.text": "▔"
+    "refreshOnInsertMode": true
   },
   "suggest": {
     "noselect": true,
@@ -70,41 +45,11 @@
     "snippetIndicator": "",
     "triggerAfterInsertEnter": true,
     "echodocSupport": true,
-    "timeout": 5000,
-    "completionItemKindLabels": {
-      "function": "",
-      "method": "",
-      "variable": "",
-      "constant": "",
-      "struct": "פּ",
-      "class": "",
-      "interface": "禍",
-      "text": "",
-      "enum": "",
-      "enumMember": "",
-      "module": "",
-      "color": "",
-      "property": "襁",
-      "field": "綠",
-      "unit": "",
-      "file": "",
-      "value": "",
-      "event": "鬒",
-      "folder": "",
-      "keyword": "",
-      "snippet": "",
-      "operator": "洛",
-      "reference": "",
-      "typeParameter": "",
-      "default": ""
-    }
+    "timeout": 5000
   },
   "languageserver": {
     "golang": {
       "command": "gopls",
-      "args": [
-        "serve"
-      ],
       "rootPatterns": [
         "go.mod",
         ".vim/",
