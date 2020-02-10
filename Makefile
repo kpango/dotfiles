@@ -48,11 +48,12 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers /etc/sudoers.d/kpango
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	# sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/resolv.conf /etc/resolv.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/chrony.conf /etc/chrony.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.sh /etc/profile.d/sway.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
@@ -92,6 +93,7 @@ clean:
 		$(HOME)/.xinitrc \
 		$(HOME)/.zshrc \
 		/etc/NetworkManager/NetworkManager.conf \
+		/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
 		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
 		/etc/chrony.conf \
 		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
@@ -100,7 +102,6 @@ clean:
 		/etc/modules-load.d/bbr.conf \
 		/etc/profile.d/fcitx.sh \
 		/etc/profile.d/sway.sh \
-		/etc/resolv.conf \
 		/etc/sudoers.d/kpango \
 		/etc/sysctl.conf \
 		/etc/systemd/system/NetworkManager-dispatcher.service \

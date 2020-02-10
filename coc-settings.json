@@ -126,7 +126,6 @@
         "formatTool": "goimports",
         "hoverKind": "FullDocumentation",
         "env": {
-          "GOFLAGS": "-ldflags=\"-w -s\"",
           "CGO_CFLAGS": "-g -Ofast -march=native",
           "CGO_CPPFLAGS": "-g -Ofast -march=native",
           "CGO_CXXFLAGS": "-g -Ofast -march=native",
