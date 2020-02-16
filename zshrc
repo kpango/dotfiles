@@ -663,6 +663,7 @@ if [ -z $ZSH_LOADED ]; then
             rm "$HOME/.viminfo"
         }
         alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
+        alias cedit="$EDITOR $HOME/.config/nvim/coc-settings.json"
         alias nvinit="nvim-init"
         alias vback="cp $HOME/.config/nvim/init.vim $HOME/.config/nvim/init.vim.back"
         alias vake="$EDITOR Makefile"
@@ -713,6 +714,10 @@ if [ -z $ZSH_LOADED ]; then
             }
             alias kind=kind
         fi
+    fi
+
+    if type htop >/dev/null 2>&1; then
+        alias top=htop
     fi
 
     if type nmcli >/dev/null 2>&1; then

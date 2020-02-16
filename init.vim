@@ -33,6 +33,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- common plugins
     Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': ':call coc#util#install()'}
     " Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
+    " Plug 'iamcco/coc-spell-checker', {'do': 'yarn install --frozen-lockfile'}
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
     " Plug 'Shougo/neoyank.vim'
@@ -77,7 +78,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Clang Setting
     " Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
 " ---- Golang Setting
-    Plug 'arp242/gopher.vim', {'for': 'go'}
+    " Plug 'arp242/gopher.vim', {'for': 'go'}
+    Plug 'mattn/vim-goimports', {'for': 'go'}
     " Plug 'zchee/nvim-go', {'for': 'go', 'do': 'make'}
     " Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
@@ -273,6 +275,9 @@ nmap <leader>rn <Plug>(coc-rename)
 vmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
 
+vmap <leader>a <Plug>(coc-codeaction-selected)
+nmap <leader>a <Plug>(coc-codeaction-selected)
+
 " Using CocList
 " Show all diagnostics
 nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
@@ -290,6 +295,57 @@ nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+
+let g:coc_global_extensions = [
+      \ 'coc-emoji',
+      \ 'coc-tsserver',
+      \ 'coc-html',
+      \ 'coc-css',
+      \ 'coc-json',
+      \ 'coc-eslint',
+      \ 'coc-tslint-plugin',
+      \ 'coc-prettier',
+      \ 'coc-stylelint',
+      \ 'coc-pyls',
+      \ 'coc-java',
+      \ 'coc-rls',
+      \ 'coc-solargraph',
+      \ 'coc-vetur',
+      \ 'coc-wxml',
+      \ 'coc-yaml',
+      \ 'coc-highlight',
+      \ 'coc-emmet',
+      \ 'coc-vimlsp',
+      \ 'coc-tailwindcss',
+      \ 'coc-svg',
+      \ 'coc-angular',
+      \ 'coc-snippets',
+      \ 'coc-imselect',
+      \ 'coc-yank',
+      \ 'coc-pairs',
+      \ 'coc-git',
+      \ 'coc-lists',
+      \ 'coc-diagnostic',
+      \ 'coc-gitignore',
+      \ 'coc-project',
+      \ 'coc-post',
+      \ 'coc-clock',
+      \ 'coc-marketplace',
+      \ 'coc-smartf',
+      \ 'coc-tabnine',
+      \ 'coc-jest',
+      \ 'coc-calc',
+      \ 'coc-webpack',
+      \ 'coc-explorer',
+      \ 'coc-svelte',
+      \ 'coc-flutter',
+      \ 'coc-zi',
+      \ 'coc-spell-checker',
+      \ 'coc-cspell-dicts',
+      \ 'coc-actions',
+      \ 'https://github.com/xabikos/vscode-react',
+      \ 'https://github.com/xabikos/vscode-javascript'
+      \]
 
 
 " -------------------------
