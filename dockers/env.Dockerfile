@@ -53,6 +53,7 @@ RUN mkdir "/etc/ld.so.conf.d" \
     python-dev \
     python3-dev \
     ruby-dev \
+    tar \
     tig \
     tmux \
     tzdata \
