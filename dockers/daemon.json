@@ -15,5 +15,11 @@
   "features": {
     "buildkit": true
   },
-  "storage-driver": "overlay2"
+  "storage-driver": "overlay2",
+  "default-address-pools": [
+    {
+      "base": "192.168.0.0/16",
+      "size": 24
+    }
+  ]
 }
