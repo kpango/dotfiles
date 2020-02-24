@@ -3,6 +3,7 @@ chrome-remote-desktop
 ghq
 google-chrome
 google-cloud-sdk
+gopreload-git
 slack-desktop
 systemd-boot-pacman-hook
 tzupdate
