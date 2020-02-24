@@ -11,6 +11,7 @@ cat <<EOF >$HOME/.docker/config.json
    "auths":{ },
    "credsStore":"desktop",
    "credSstore":"osxkeychain",
+   "experimental": "enabled",
    "stackOrchestrator":"swarm"
 }
 EOF

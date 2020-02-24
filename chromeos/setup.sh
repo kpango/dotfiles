@@ -42,5 +42,10 @@ sudo tee /etc/docker/daemon.json <<EOF >/dev/null
   }
 }
 EOF
+sudo tee /etc/docker/config.json <<EOF >/dev/null
+{
+  "experimental": "enabled"
+}
+EOF
 
 docker pull kpango/dev:latest

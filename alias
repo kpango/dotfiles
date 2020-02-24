@@ -25,6 +25,7 @@ devrun(){
     tz_path="/usr/share/zoneinfo/Japan"
     font_dir="/System/Library/Fonts"
     docker_daemon="$HOME/Library/Containers/com.docker.helper/Data/.docker/daemon.json"
+    docker_config="$HOME/Library/Containers/com.docker.helper/Data/.docker/config.json"
     case "$(uname -s)" in
         Darwin)
             echo 'Docker on macOS start'
@@ -37,6 +38,7 @@ devrun(){
             font_dir="/usr/share/fonts"
             tz_path="/etc/timezone"
             docker_daemon="/etc/docker/daemon.json"
+            docker_config="/etc/docker/config.json"
             ;;
 
         CYGWIN*|MINGW32*|MSYS*)
@@ -59,8 +61,10 @@ devrun(){
         --privileged=$privileged \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $docker_daemon:/etc/docker/daemon.json \
+        -v $docker_config:/etc/docker/config.json \
         -v $HOME/.netrc:/root/.netrc \
         -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
+        -v $HOME/.docker/config.json:/root/.docker/config.json \
         -v $HOME/.gnupg:/root/.gnupg \
         -v $HOME/.kube:/root/.kube \
         -v $HOME/.ssh:/root/.ssh \

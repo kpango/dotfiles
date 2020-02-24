@@ -60,7 +60,9 @@ arch_link: \
 	mkdir -p /etc/docker
 	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json /etc/docker/config.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json $(HOME)/.docker/config.json
 	sudo sysctl -p
 	sudo systemctl daemon-reload
 
@@ -82,6 +84,7 @@ clean:
 		$(HOME)/.config/starship.toml \
 		$(HOME)/.config/sway \
 		$(HOME)/.docker/daemon.json \
+		$(HOME)/.docker/config.json \
 		$(HOME)/.editorconfig \
 		$(HOME)/.gitattributes \
 		$(HOME)/.gitconfig \
@@ -98,6 +101,7 @@ clean:
 		/etc/chrony.conf \
 		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
 		/etc/docker/daemon.json \
+		/etc/docker/config.json \
 		/etc/lightdm \
 		/etc/modules-load.d/bbr.conf \
 		/etc/profile.d/fcitx.sh \
