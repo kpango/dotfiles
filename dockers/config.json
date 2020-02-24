@@ -1,4 +1,3 @@
 {
-  "experimental": "enabled",
-  "stackOrchestrator": "kubernetes"
+  "experimental": "enabled"
 }
