@@ -195,7 +195,6 @@ build_all: \
 	build_go \
 	build_k8s \
 	build_nim \
-	build_rust \
 	prod_build
 	echo "done"
 
@@ -208,7 +207,6 @@ push_all: \
 	push_go \
 	push_k8s \
 	push_nim \
-	push_rust \
 	prod_push
 	echo "done"
 

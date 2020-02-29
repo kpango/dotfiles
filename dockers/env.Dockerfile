@@ -23,36 +23,41 @@ RUN apt-get update \
     ctags \
     diffutils \
     gawk \
+    gnupg \
     graphviz \
-    libhdf5-serial-dev \
     jq \
     less \
+    libhdf5-serial-dev \
+    libprotobuf-dev \
+    libprotoc-dev \
     luajit \
     neovim \
     nodejs \
-    npm \
-    ssh \
+    openssh-client \
     perl \
-    libprotobuf-dev \
-    libprotoc-dev \
     protobuf-compiler \
     python3-dev \
-    python3-setuptools \
     python3-pip \
+    python3-setuptools \
     python3-venv \
     ruby-dev \
+    ncurses-term \
+    sed \
     tar \
     tig \
     tmux \
     tzdata \
     xclip \
-    yarn \
-    zsh
+    && rm -rf /var/lib/apt/lists/*
+
 
 RUN pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
     && gem install neovim -N \
+    && curl https://www.npmjs.com/install.sh | sh \
     && npm config set user root \
     && npm install -g \
+        n \
+        yarn \
         neovim \
         resume-cli \
         markdownlint-cli \
@@ -60,6 +65,8 @@ RUN pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-s
         typescript \
         typescript-language-server \
         bash-language-server \
+    && n stable \
+    && apt purge -y nodejs npm \
     && git clone https://github.com/soimort/translate-shell \
     && cd /tmp/translate-shell/ \
     && make TARGET=zsh -j -C /tmp/translate-shell \
@@ -79,7 +86,7 @@ RUN git clone https://github.com/yahoojapan/NGT -b v${NGT_VERSION} --depth 1 \
 
 WORKDIR /tmp
 RUN curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
-	&& tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
-	&& rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
-	&& ldconfig \
+    && tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
+    && rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
+    && ldconfig \
     && rm -rf /tmp/* /var/cache

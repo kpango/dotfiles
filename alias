@@ -87,7 +87,6 @@ devrun(){
         -v $rcpath/vintrc.yaml:/root/.vintrc.yaml \
         -v $rcpath/zshrc:/root/.zshrc \
         -v $font_dir:/usr/share/fonts:ro \
-        -v $tz_path:/etc/timezone:ro \
         -dit kpango/dev:latest
 
     docker exec -d $container_name /usr/bin/nvim /tmp/main.go +GoInstallBinaries +qa
