@@ -1,1 +1,1 @@
-FROM nimlang/nim:latest-alpine AS nim
+FROM nimlang/nim:latest AS nim

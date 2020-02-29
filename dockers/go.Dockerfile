@@ -1,15 +1,20 @@
-FROM golang:1.13-alpine AS go-base
+FROM kpango/dev-base:latest AS go-base
 
+ENV GO_VERSION 1.14
+ENV GO111MODULE on
+ENV DEBIAN_FRONTEND noninteractive
+ENV INITRD No
+ENV LANG en_US.UTF-8
+ENV GOROOT /opt/go
+ENV GOPATH /go
 ENV GOFLAGS "-ldflags=-w -ldflags=-s"
-RUN apk update \
-    && apk upgrade \
-    && apk add --no-cache \
-    git \
-    curl \
-    gcc \
-    musl-dev \
-    wget \
-    upx
+
+WORKDIR /opt
+RUN curl -sSL -O "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz" \
+    && tar zxf "go${GO_VERSION}.linux-amd64.tar.gz" \
+    && rm "go${GO_VERSION}.linux-amd64.tar.gz" \
+    && ln -s /opt/go/bin/go /usr/bin/ \
+    && mkdir $GOPATH
 
 FROM go-base AS gojson
 RUN GO111MODULE=on go get -u  \
@@ -111,18 +116,14 @@ FROM go-base AS goreturns
 RUN GO111MODULE=on go get -u  \
     sourcegraph.com/sqs/goreturns
 
-FROM go-base AS go-module-off-base
-RUN GO111MODULE=off go get \
-    github.com/gohugoio/hugo \
-    github.com/uber/prototool/cmd/prototool
+FROM go-base AS hugo
+RUN git clone https://github.com/gohugoio/hugo --depth 1 \
+    && cd hugo \
+    && go install
 
-FROM go-module-off-base AS hugo
-RUN cd $GOPATH/src/github.com/gohugoio/hugo \
-    && GO111MODULE=on go build -o $GOPATH/bin/hugo main.go
-
-FROM go-module-off-base AS prototool
-RUN cd $GOPATH/src/github.com/uber/prototool/cmd/prototool \
-    && GO111MODULE=on go build -o $GOPATH/bin/prototool
+FROM go-base AS prototool
+RUN GO111MODULE=on go get -u \
+    github.com/uber/prototool/cmd/prototool@dev
 
 FROM golangci/golangci-lint:latest AS golangci-lint
 
@@ -164,11 +165,12 @@ RUN upx -9 ${GOPATH}/bin/* \
     && cp /tmp/FlameGraph/stackcollapse.pl /go/bin/ \
     && cp /tmp/FlameGraph/stackcollapse-go.pl /go/bin/
 
-# FROM scratch
-# ENV GOROOT /usr/local/go
-# COPY --from=go $GOROOT/bin $GOROOT/bin
-# COPY --from=go $GOROOT/src $GOROOT/src
-# COPY --from=go $GOROOT/lib $GOROOT/lib
-# COPY --from=go $GOROOT/pkg $GOROOT/pkg
-# COPY --from=go $GOROOT/misc $GOROOT/misc
-# COPY --from=go /go/bin $GOPATH/bin
+FROM scratch
+ENV GOROOT /opt/go
+ENV GOPATH /go
+COPY --from=go $GOROOT/bin $GOROOT/bin
+COPY --from=go $GOROOT/src $GOROOT/src
+COPY --from=go $GOROOT/lib $GOROOT/lib
+COPY --from=go $GOROOT/pkg $GOROOT/pkg
+COPY --from=go $GOROOT/misc $GOROOT/misc
+COPY --from=go /go/bin $GOPATH/bin

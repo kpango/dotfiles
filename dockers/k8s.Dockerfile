@@ -5,19 +5,11 @@ ENV OS linux
 ENV BIN_PATH /usr/local/bin
 ENV TELEPRESENCE_VERSION 0.104
 
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories \
-    apk update \
-    && apk upgrade \
-    && apk --update add --no-cache --allow-untrusted --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing \
-    make \
-    curl \
-    gcc \
-    py3-pip \
-    python3-dev \
-    openssl \
-    bash \
-    git \
-    upx \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.8 \
+    python3-setuptools \
+    python3-pip \
+    python3-venv \
     && mkdir -p ${BIN_PATH}
 
 FROM kube-base AS kubectl
@@ -74,8 +66,8 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM kube-base AS k9s
 RUN set -x; cd "$(mktemp -d)" \
     && K9S_VERSION="$(curl --silent https://github.com/derailed/k9s/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLO "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_${K9S_VERSION}_Linux_x86_64.tar.gz" \
-    && tar -zxvf k9s_${K9S_VERSION}_Linux_x86_64.tar.gz \
+    && curl -fsSLO "https://github.com/derailed/k9s/releases/download/v${K9S_VERSION}/k9s_Linux_x86_64.tar.gz" \
+    && tar -zxvf k9s_Linux_x86_64.tar.gz \
     && mv k9s ${BIN_PATH}/k9s
 
 FROM kube-base AS telepresence

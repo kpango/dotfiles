@@ -15,7 +15,7 @@ RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --
 # RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/RazrFalcon/cargo-bloat
 
 FROM rust-base AS fd
-RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/sharkdp/fd
+RUN RUSTC_WRAPPER=`which sccache` cargo install fd-find
 
 FROM rust-base AS starship
 RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/starship/starship

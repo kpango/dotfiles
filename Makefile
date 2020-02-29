@@ -117,11 +117,11 @@ zsh: link
 bash: link
 	[ -f $(HOME)/.bashrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.bashrc
 
-build:
-	docker build -t kpango/dev:latest .
+build: \
+	prod_build
 
 docker_build:
-	docker build --squash -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
+	docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
 
 docker_push:
 	docker push ${IMAGE_NAME}:latest
@@ -156,9 +156,6 @@ build_gcloud:
 build_k8s:
 	@make DOCKERFILE="./dockers/k8s.Dockerfile" IMAGE_NAME="kpango/kube" docker_build
 
-build_glibc:
-	@make DOCKERFILE="./dockers/glibc.Dockerfile" IMAGE_NAME="kpango/glibc" docker_build
-
 prod_push:
 	@make IMAGE_NAME="kpango/dev" docker_push
 
@@ -189,16 +186,12 @@ push_gcloud:
 push_k8s:
 	@make IMAGE_NAME="kpango/kube" docker_push
 
-push_glibc:
-	@make IMAGE_NAME="kpango/glibc" docker_push
-
 build_all: \
 	build_base \
 	build_env \
 	build_dart \
 	build_docker \
 	build_gcloud \
-	build_glibc \
 	build_go \
 	build_k8s \
 	build_nim \
@@ -212,7 +205,6 @@ push_all: \
 	push_dart \
 	push_docker \
 	push_gcloud \
-	push_glibc \
 	push_go \
 	push_k8s \
 	push_nim \

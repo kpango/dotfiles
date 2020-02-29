@@ -76,23 +76,23 @@ ENV ZPLUG_HOME $HOME/.zplug;
 # COPY --from=glibc /usr/glibc-compat /usr/glibc-compat
 
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
-COPY --from=docker /usr/local/bin/containerd /usr/bin/docker-containerd
-COPY --from=docker /usr/local/bin/containerd-shim /usr/bin/docker-containerd-shim
-COPY --from=docker /usr/local/bin/ctr /usr/bin/docker-containerd-ctr
-COPY --from=docker /usr/local/bin/dind /usr/bin/dind
-COPY --from=docker /usr/local/bin/dive /usr/bin/dive
-COPY --from=docker /usr/local/bin/dlayer /usr/bin/dlayer
-COPY --from=docker /usr/local/bin/docker /usr/bin/docker
-COPY --from=docker /usr/local/bin/docker-entrypoint.sh /usr/bin/docker-entrypoint
-COPY --from=docker /usr/local/bin/docker-init /usr/bin/docker-init
-COPY --from=docker /usr/local/bin/docker-proxy /usr/bin/docker-proxy
-COPY --from=docker /usr/local/bin/docker-slim /usr/bin/docker-slim
-COPY --from=docker /usr/local/bin/docker-slim-sensor /usr/bin/docker-slim-sensor
-COPY --from=docker /usr/local/bin/dockerd /usr/bin/dockerd
-COPY --from=docker /usr/local/bin/dockle /usr/bin/dockle
-COPY --from=docker /usr/local/bin/modprobe /usr/bin/modprobe
-COPY --from=docker /usr/local/bin/runc /usr/bin/docker-runc
-COPY --from=docker /usr/local/bin/trivy /usr/bin/trivy
+COPY --from=docker /usr/bin/docker-containerd /usr/bin/docker-containerd
+COPY --from=docker /usr/bin/docker-containerd-shim /usr/bin/docker-containerd-shim
+COPY --from=docker /usr/bin/docker-containerd-ctr /usr/bin/docker-containerd-ctr
+COPY --from=docker /usr/bin/dind /usr/bin/dind
+COPY --from=docker /usr/bin/dive /usr/bin/dive
+COPY --from=docker /usr/bin/dlayer /usr/bin/dlayer
+COPY --from=docker /usr/bin/docker /usr/bin/docker
+COPY --from=docker /usr/bin/docker-entrypoint /usr/bin/docker-entrypoint
+COPY --from=docker /usr/bin/docker-init /usr/bin/docker-init
+COPY --from=docker /usr/bin/docker-proxy /usr/bin/docker-proxy
+COPY --from=docker /usr/bin/docker-slim /usr/bin/docker-slim
+COPY --from=docker /usr/bin/docker-slim-sensor /usr/bin/docker-slim-sensor
+COPY --from=docker /usr/bin/dockerd /usr/bin/dockerd
+COPY --from=docker /usr/bin/dockle /usr/bin/dockle
+COPY --from=docker /usr/bin/modprobe /usr/bin/modprobe
+COPY --from=docker /usr/bin/docker-runc /usr/bin/docker-runc
+COPY --from=docker /usr/bin/trivy /usr/bin/trivy
 
 COPY --from=kube /usr/local/bin/kubectl /usr/bin/kubectl
 COPY --from=kube /usr/local/bin/kubectx /usr/bin/kubectx
@@ -109,7 +109,12 @@ COPY --from=kube /usr/local/bin/k9s /usr/bin/k9s
 COPY --from=kube /usr/local/bin/kubectl-krew /usr/bin/kubectl-krew
 
 
-COPY --from=gcloud /google-cloud-sdk /google-cloud-sdk
+COPY --from=gcloud /usr/bin/bq /usr/bin/bq
+COPY --from=gcloud /usr/bin/dev_appserver.py /usr/bin/dev_appserver.py
+COPY --from=gcloud /usr/bin/docker-credential-gcloud /usr/bin/docker-credential-gcloud
+COPY --from=gcloud /usr/bin/gcloud /usr/bin/gcloud
+COPY --from=gcloud /usr/bin/git-credential-gcloud.sh /usr/bin/git-credential-gcloud.sh
+COPY --from=gcloud /usr/bin/gsutil /usr/bin/gsutil
 COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
 
 # COPY --from=nim /bin/nim /usr/local/bin/nim
@@ -123,11 +128,11 @@ COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
 # COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
 # COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
 
-COPY --from=go /usr/local/go/bin $GOROOT/bin
-COPY --from=go /usr/local/go/src $GOROOT/src
-COPY --from=go /usr/local/go/lib $GOROOT/lib
-COPY --from=go /usr/local/go/pkg $GOROOT/pkg
-COPY --from=go /usr/local/go/misc $GOROOT/misc
+COPY --from=go /opt/go/bin $GOROOT/bin
+COPY --from=go /opt/go/src $GOROOT/src
+COPY --from=go /opt/go/lib $GOROOT/lib
+COPY --from=go /opt/go/pkg $GOROOT/pkg
+COPY --from=go /opt/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 # COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
@@ -155,7 +160,9 @@ WORKDIR $VIM_PLUG_HOME
 RUN rm -rf $VIM_PLUG_HOME/autoload \
     && git clone https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload
 # RUN nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +qall
-RUN yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local
+RUN npm uninstall yarn -g \
+    && npm install yarn -g \
+    &&yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local
 # RUN nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall
 RUN git clone https://github.com/zplug/zplug $ZPLUG_HOME \
     && rm -rf $HOME/.cache \
