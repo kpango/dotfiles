@@ -7,7 +7,6 @@ ENV LC_ALL en_US.UTF-8
 ENV TZ Asia/Tokyo
 ENV CC clang
 ENV CXX clang++
-ENV LLVM_VERSION 9.0.0
 ENV CLANG_PATH /usr/local/clang
 ENV PATH ${PATH}:${CLANG_PATH}/bin
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
@@ -27,7 +26,9 @@ RUN apt-get update \
         upx \
         wget \
         xz-utils \
-        zsh
+        zsh \
+    && update-alternatives --set cc $(which clang) \
+    && update-alternatives --set c++ $(which clang++)
 
 RUN echo "${LANG} UTF-8" > /etc/locale.gen \
     && ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \

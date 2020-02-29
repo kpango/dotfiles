@@ -1,5 +1,6 @@
 #!/usr/bin/zsh
 
+
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
         USER=$(whoami)
@@ -544,6 +545,11 @@ if [ -z $ZSH_LOADED ]; then
         alias tmkl='\tmux kill-session'
         alias tmaw='\tmux main-horizontal'
         alias tmuxa='\tmux -2 a -t'
+
+	if [ "$USER" = 'root' ]; then
+	    tmux unbind C-b
+	    tmux set -g prefix C-w
+	fi
     fi
     alias tedit="$EDITOR $HOME/.tmux.conf"
 
