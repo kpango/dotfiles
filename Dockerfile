@@ -107,6 +107,9 @@ COPY --from=kube /usr/local/bin/cache_builder /usr/bin/cache_builder
 COPY --from=kube /usr/local/bin/linkerd /usr/bin/linkerd
 COPY --from=kube /usr/local/bin/k9s /usr/bin/k9s
 COPY --from=kube /usr/local/bin/kubectl-krew /usr/bin/kubectl-krew
+COPY --from=kube /usr/local/bin/kubectl-tree /usr/bin/kubectl-tree
+COPY --from=kube /usr/local/bin/kubectl-profefe /usr/bin/kubectl-profefe
+COPY --from=kube /usr/local/bin/kprofefe /usr/bin/kprofefe
 
 
 COPY --from=gcloud /usr/bin/bq /usr/bin/bq

@@ -76,6 +76,21 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar -zxvf ${TELEPRESENCE_VERSION}.tar.gz \
     && env PREFIX=/usr/local telepresence-${TELEPRESENCE_VERSION}/install.sh
 
+FROM kube-base AS kube-profefe
+RUN set -x; cd "$(mktemp -d)" \
+    && KUBE_PROFEFE_VERSION="$(curl --silent https://github.com/profefe/kube-profefe/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fsSLO "https://github.com/profefe/kube-profefe/releases/download/v${KUBE_PROFEFE_VERSION}/kube-profefe_${KUBE_PROFEFE_VERSION}_Linux_x86_64.tar.gz" \
+    && tar -zxvf "kube-profefe_${KUBE_PROFEFE_VERSION}_Linux_x86_64.tar.gz" \
+    && mv kprofefe ${BIN_PATH}/kprofefe \
+    && mv kubectl-profefe ${BIN_PATH}/kubectl-profefe
+
+FROM kube-base AS kube-tree
+RUN set -x; cd "$(mktemp -d)" \
+    && KUBETREE_VERSION="$(curl --silent https://github.com/ahmetb/kubectl-tree/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fsSLO https://github.com/ahmetb/kubectl-tree/releases/download/v${KUBETREE_VERSION}/kubectl-tree_v${KUBETREE_VERSION}_linux_amd64.tar.gz \
+    && tar -zxvf "kubectl-tree_v${KUBETREE_VERSION}_linux_amd64.tar.gz" \
+    && mv kubectl-tree ${BIN_PATH}/kubectl-tree
+
 FROM kube-base AS linkerd
 RUN set -x; cd "$(mktemp -d)" \
     && curl -sL https://run.linkerd.io/install | sh \
@@ -96,3 +111,6 @@ COPY --from=kubectx /usr/local/bin/kubens /usr/local/bin/kubens
 COPY --from=linkerd /usr/local/bin/linkerd /usr/local/bin/linkerd
 COPY --from=stern /usr/local/bin/stern /usr/local/bin/stern
 COPY --from=telepresence /usr/local/bin/telepresence /usr/local/bin/telepresence
+COPY --from=kube-profefe /usr/local/bin/kprofefe /usr/local/bin/kprofefe
+COPY --from=kube-profefe /usr/local/bin/kubectl-profefe /usr/local/bin/kubectl-profefe
+COPY --from=kube-tree /usr/local/bin/kubectl-tree /usr/local/bin/kubectl-tree
