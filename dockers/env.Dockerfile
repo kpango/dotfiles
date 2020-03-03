@@ -46,7 +46,6 @@ RUN apt-get update \
     tar \
     tig \
     tmux \
-    tzdata \
     xclip \
     && rm -rf /var/lib/apt/lists/*
 

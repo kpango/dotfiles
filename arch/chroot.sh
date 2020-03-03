@@ -20,6 +20,7 @@ ln -sfv /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 locale-gen
 hwclock --systohc --localtime
 echo LANG=en_US.UTF-8 >>/etc/locale.conf
+timedatectl set-timezone Asia/Tokyo
 
 fallocate -l 24G /swapfile
 chmod 600 /swapfile
