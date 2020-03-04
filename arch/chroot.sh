@@ -42,7 +42,7 @@ groupadd uinput
 groupadd pulse
 groupadd pulse-access
 
-useradd -m -g users -G wheel,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,uinput -s /usr/bin/zsh ${LOGIN_USER}
+useradd -m -g users -G wheel,users,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,uinput -s /usr/bin/zsh ${LOGIN_USER}
 passwd ${LOGIN_USER}
 sed -e '/%wheel ALL=(ALL) ALL/s/^# //' /etc/sudoers | EDITOR=tee visudo >/dev/null
 sed -e '/%wheel ALL=(ALL) NOPASSWORD: ALL/s/^# %wheel/kpango/' /etc/sudoers | EDITOR=tee visudo >/dev/null
@@ -102,8 +102,8 @@ mkdir -p /etc/pacman.d/hooks
 ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
 
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
-mkdir -p /go/src/github.com/kpango
-cd /go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
+mkdir -p /home/kpango/go/src/github.com/kpango
+cd /home/kpango/go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
 ln -sfv /go /home/${LOGIN_USER}/go
 chmod -R 755 /home/${LOGIN_USER}
 chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}

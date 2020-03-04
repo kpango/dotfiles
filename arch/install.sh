@@ -199,6 +199,7 @@ cp ./chroot.sh ${ROOT}/chroot.sh
 cp ./user-init.sh ${ROOT}/user-init.sh
 echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
 arch-chroot ${ROOT} sh /chroot.sh
+arch-chroot ${ROOT} sh /user-init.sh
 echo "unmount volumes"
 unmount
 echo "volumes unmounted"
