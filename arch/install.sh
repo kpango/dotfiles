@@ -104,7 +104,8 @@ wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg.list
-pacman -S archlinux-keyring reflector
+pacman -Sy --noconfirm
+pacman -S --noconfirm archlinux-keyring reflector
 reflector --age 24 --latest 200 --number 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 echo "deps downloaded"
 ls -la
@@ -118,8 +119,8 @@ cp ./locale.gen ${ROOT}/etc/locale.gen
 cp ./chroot.sh ${ROOT}/chroot.sh
 cp ./user-init.sh ${ROOT}/user-init.sh
 echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
-arch-chroot ${ROOT} sh /chroot.sh
-arch-chroot ${ROOT} sh /user-init.sh
-echo "unmount volumes"
-unmount
-echo "volumes unmounted"
+# arch-chroot ${ROOT} sh /chroot.sh
+# arch-chroot ${ROOT} sh /user-init.sh
+# echo "unmount volumes"
+# unmount
+# echo "volumes unmounted"
