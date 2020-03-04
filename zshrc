@@ -329,6 +329,10 @@ if [ -z $ZSH_LOADED ]; then
         [ -f $HOME/.aliases ] && source $HOME/.aliases
     fi
 
+    if type octant >/dev/null 2>&1; then
+        export OCTANT_LISTENER_ADDR="0.0.0.0:8900"
+    fi
+
     alias open="xdg-open"
 
     if type xsel >/dev/null 2>&1; then
