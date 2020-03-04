@@ -17,8 +17,9 @@ RUN echo $'/lib\n\
 /google-cloud-sdk/lib' > /etc/ld.so.conf.d/usr-local-lib.conf \
     && echo $(ldconfig)
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends --fix-missing \
     bash \
     ctags \
     diffutils \

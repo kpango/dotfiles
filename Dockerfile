@@ -94,23 +94,23 @@ COPY --from=docker /usr/bin/modprobe /usr/bin/modprobe
 COPY --from=docker /usr/bin/docker-runc /usr/bin/docker-runc
 COPY --from=docker /usr/bin/trivy /usr/bin/trivy
 
-COPY --from=kube /usr/local/bin/kubectl /usr/bin/kubectl
-COPY --from=kube /usr/local/bin/kubectx /usr/bin/kubectx
-COPY --from=kube /usr/local/bin/kubens /usr/bin/kubens
+COPY --from=kube /usr/local/bin/cache_builder /usr/bin/cache_builder
+COPY --from=kube /usr/local/bin/helm /usr/bin/helm
+COPY --from=kube /usr/local/bin/k9s /usr/bin/k9s
+COPY --from=kube /usr/local/bin/kind /usr/bin/kind
+COPY --from=kube /usr/local/bin/kprofefe /usr/bin/kprofefe
 COPY --from=kube /usr/local/bin/kubebox /usr/bin/kubebox
 COPY --from=kube /usr/local/bin/kubebuilder /usr/bin/kubebuilder
-COPY --from=kube /usr/local/bin/stern /usr/bin/stern
-COPY --from=kube /usr/local/bin/helm /usr/bin/helm
-COPY --from=kube /usr/local/bin/kind /usr/bin/kind
-COPY --from=kube /usr/local/bin/telepresence /usr/bin/telepresence
-COPY --from=kube /usr/local/bin/cache_builder /usr/bin/cache_builder
-COPY --from=kube /usr/local/bin/linkerd /usr/bin/linkerd
-COPY --from=kube /usr/local/bin/k9s /usr/bin/k9s
+COPY --from=kube /usr/local/bin/kubectl /usr/bin/kubectl
 COPY --from=kube /usr/local/bin/kubectl-krew /usr/bin/kubectl-krew
-COPY --from=kube /usr/local/bin/kubectl-tree /usr/bin/kubectl-tree
 COPY --from=kube /usr/local/bin/kubectl-profefe /usr/bin/kubectl-profefe
-COPY --from=kube /usr/local/bin/kprofefe /usr/bin/kprofefe
-
+COPY --from=kube /usr/local/bin/kubectl-tree /usr/bin/kubectl-tree
+COPY --from=kube /usr/local/bin/kubectx /usr/bin/kubectx
+COPY --from=kube /usr/local/bin/kubens /usr/bin/kubens
+COPY --from=kube /usr/local/bin/linkerd /usr/bin/linkerd
+COPY --from=kube /usr/local/bin/octant /usr/bin/octant
+COPY --from=kube /usr/local/bin/stern /usr/bin/stern
+COPY --from=kube /usr/local/bin/telepresence /usr/bin/telepresence
 
 COPY --from=gcloud /usr/bin/bq /usr/bin/bq
 COPY --from=gcloud /usr/bin/dev_appserver.py /usr/bin/dev_appserver.py

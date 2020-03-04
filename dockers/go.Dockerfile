@@ -96,6 +96,10 @@ FROM go-base AS goimports
 RUN GO111MODULE=on go get -u  \
     golang.org/x/tools/cmd/goimports
 
+FROM go-base AS ghz
+RUN GO111MODULE=on go get -u  \
+    github.com/bojand/ghz/cmd/ghz
+
 FROM go-base AS gopls
 RUN GO111MODULE=on go get \
     golang.org/x/tools/gopls@latest
@@ -136,6 +140,7 @@ COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 COPY --from=errcheck $GOPATH/bin/errcheck $GOPATH/bin/errcheck
 COPY --from=fillstruct $GOPATH/bin/fillstruct $GOPATH/bin/fillstruct
 COPY --from=ghq $GOPATH/bin/ghq $GOPATH/bin/ghq
+COPY --from=ghz $GOPATH/bin/ghz $GOPATH/bin/ghz
 COPY --from=gocode $GOPATH/bin/gocode $GOPATH/bin/gocode
 COPY --from=godef $GOPATH/bin/godef $GOPATH/bin/godef
 COPY --from=goimports $GOPATH/bin/goimports $GOPATH/bin/goimports
@@ -150,13 +155,13 @@ COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
+COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
-COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 
 RUN upx -9 ${GOPATH}/bin/* \
     \

@@ -11,8 +11,9 @@ ENV CLANG_PATH /usr/local/clang
 ENV PATH ${PATH}:${CLANG_PATH}/bin
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
+RUN apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends --fix-missing \
         clang \
         axel \
         build-essential \

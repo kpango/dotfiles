@@ -63,7 +63,6 @@ devrun(){
         -v $docker_config:/etc/docker/config.json \
         -v $HOME/.netrc:/root/.netrc \
         -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
-        -v $HOME/.docker/config.json:/root/.docker/config.json \
         -v $HOME/.gnupg:/root/.gnupg \
         -v $HOME/.kube:/root/.kube \
         -v $HOME/.ssh:/root/.ssh \
@@ -96,7 +95,7 @@ devrun(){
 
 alias devrun="devrun"
 
-alias devin="docker exec -it $container_name /bin/zsh -c \"tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -nroot -sroot@$HOST\""
+alias devin="docker exec -it $container_name /usr/bin/zsh -c \"tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -nroot -sroot@$HOST\""
 
 devkill(){
     docker update --restart=no $container_name \
