@@ -82,6 +82,7 @@ devrun(){
             # -e DISPLAY \
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
             docker run \
+                --entrypoint='docker-entrypoint' \
                 --network=host \
                 --cap-add=ALL \
                 --name $container_name \
@@ -129,7 +130,7 @@ devrun(){
             ;;
     esac
 
-    docker exec -d $container_name /usr/bin/nvim /tmp/main.go +GoInstallBinaries +qa
+    docker exec -d $container_name /usr/bin/zsh nvup
 }
 
 alias devrun="devrun"

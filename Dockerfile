@@ -84,6 +84,7 @@ COPY --from=docker /usr/bin/dive /usr/bin/dive
 COPY --from=docker /usr/bin/dlayer /usr/bin/dlayer
 COPY --from=docker /usr/bin/docker /usr/bin/docker
 COPY --from=docker /usr/bin/docker-entrypoint /usr/bin/docker-entrypoint
+COPY --from=docker /usr/bin/dockerd-entrypoint /usr/bin/dockerd-entrypoint
 COPY --from=docker /usr/bin/docker-init /usr/bin/docker-init
 COPY --from=docker /usr/bin/docker-proxy /usr/bin/docker-proxy
 COPY --from=docker /usr/bin/docker-slim /usr/bin/docker-slim

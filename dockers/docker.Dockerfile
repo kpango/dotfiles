@@ -67,6 +67,7 @@ COPY --from=common /usr/local/bin/ctr /usr/bin/docker-containerd-ctr
 COPY --from=common /usr/local/bin/dind /usr/bin/dind
 COPY --from=common /usr/local/bin/docker /usr/bin/docker
 COPY --from=common /usr/local/bin/docker-entrypoint.sh /usr/bin/docker-entrypoint
+COPY --from=common /usr/local/bin/dockerd-entrypoint.sh /usr/bin/dockerd-entrypoint
 COPY --from=common /usr/local/bin/docker-init /usr/bin/docker-init
 COPY --from=common /usr/local/bin/docker-proxy /usr/bin/docker-proxy
 COPY --from=common /usr/local/bin/dockerd /usr/bin/dockerd
