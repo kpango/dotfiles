@@ -102,8 +102,8 @@ mkdir -p /etc/pacman.d/hooks
 ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
 
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
-mkdir -p /home/kpango/go/src/github.com/kpango
-cd /home/kpango/go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
+mkdir -p /go/src/github.com/kpango
+cd /go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
 ln -sfv /go /home/${LOGIN_USER}/go
 chmod -R 755 /home/${LOGIN_USER}
 chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
