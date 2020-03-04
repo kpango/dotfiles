@@ -30,6 +30,45 @@ devrun(){
     case "$(uname -s)" in
         Darwin)
             echo 'Docker on macOS start'
+            # -e DISPLAY \
+            # -v /tmp/.X11-unix:/tmp/.X11-unix \
+            docker run \
+                --cap-add=ALL \
+                --name $container_name \
+                --restart always \
+                --privileged=$privileged \
+                -p $port_range:$port_range \
+                -v /var/run/docker.sock:/var/run/docker.sock \
+                -v $docker_daemon:/etc/docker/daemon.json \
+                -v $docker_config:/etc/docker/config.json \
+                -v $HOME/.netrc:/root/.netrc \
+                -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
+                -v $HOME/.gnupg:/root/.gnupg \
+                -v $HOME/.kube:/root/.kube \
+                -v $HOME/.ssh:/root/.ssh \
+                -v $HOME/.zsh_history:/root/.zsh_history \
+                -v $HOME/Documents:/root/Documents \
+                -v $HOME/Downloads:/root/Downloads \
+                -v $HOME/go/src:/go/src:cached \
+                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf \
+                -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
+                -v $rcpath/coc-settings.json:/root/.config/nvim/coc-settings.json \
+                -v $rcpath/editorconfig:/root/.editorconfig \
+                -v $rcpath/efm-lsp-conf.yaml:/root/.config/nvim/efm-lsp-conf.yaml \
+                -v $rcpath/gitattributes:/root/.gitattributes \
+                -v $rcpath/gitconfig:/root/.gitconfig \
+                -v $rcpath/gitignore:/root/.gitignore \
+                -v $rcpath/go.vim:/root/.config/nvim/syntax/go.vim \
+                -v $rcpath/init.vim:/root/.config/nvim/init.vim \
+                -v $rcpath/monokai.vim:/root/.config/nvim/colors/monokai.vim \
+                -v $rcpath/starship.toml:/root/.config/starship.toml \
+                -v $rcpath/tmux-kube:/root/.tmux-kube \
+                -v $rcpath/tmux.conf:/root/.tmux.conf \
+                -v $rcpath/vintrc.yaml:/root/.vintrc.yaml \
+                -v $rcpath/zshrc:/root/.zshrc \
+                -v $font_dir:/usr/share/fonts:ro \
+                -v $tz_path:/etc/localtime:ro \
+                -dit kpango/dev:latest
             ;;
 
         Linux)
@@ -40,6 +79,45 @@ devrun(){
             tz_path="/etc/localtime"
             docker_daemon="/etc/docker/daemon.json"
             docker_config="/etc/docker/config.json"
+            # -e DISPLAY \
+            # -v /tmp/.X11-unix:/tmp/.X11-unix \
+            docker run \
+                --network=host \
+                --cap-add=ALL \
+                --name $container_name \
+                --restart always \
+                --privileged=$privileged \
+                -v /var/run/docker.sock:/var/run/docker.sock \
+                -v $docker_daemon:/etc/docker/daemon.json \
+                -v $docker_config:/etc/docker/config.json \
+                -v $HOME/.netrc:/root/.netrc \
+                -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
+                -v $HOME/.gnupg:/root/.gnupg \
+                -v $HOME/.kube:/root/.kube \
+                -v $HOME/.ssh:/root/.ssh \
+                -v $HOME/.zsh_history:/root/.zsh_history \
+                -v $HOME/Documents:/root/Documents \
+                -v $HOME/Downloads:/root/Downloads \
+                -v $HOME/go/src:/go/src:cached \
+                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf \
+                -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
+                -v $rcpath/coc-settings.json:/root/.config/nvim/coc-settings.json \
+                -v $rcpath/editorconfig:/root/.editorconfig \
+                -v $rcpath/efm-lsp-conf.yaml:/root/.config/nvim/efm-lsp-conf.yaml \
+                -v $rcpath/gitattributes:/root/.gitattributes \
+                -v $rcpath/gitconfig:/root/.gitconfig \
+                -v $rcpath/gitignore:/root/.gitignore \
+                -v $rcpath/go.vim:/root/.config/nvim/syntax/go.vim \
+                -v $rcpath/init.vim:/root/.config/nvim/init.vim \
+                -v $rcpath/monokai.vim:/root/.config/nvim/colors/monokai.vim \
+                -v $rcpath/starship.toml:/root/.config/starship.toml \
+                -v $rcpath/tmux-kube:/root/.tmux-kube \
+                -v $rcpath/tmux.conf:/root/.tmux.conf \
+                -v $rcpath/vintrc.yaml:/root/.vintrc.yaml \
+                -v $rcpath/zshrc:/root/.zshrc \
+                -v $font_dir:/usr/share/fonts:ro \
+                -v $tz_path:/etc/localtime:ro \
+                -dit kpango/dev:latest
             ;;
 
         CYGWIN*|MINGW32*|MSYS*)
@@ -50,47 +128,6 @@ devrun(){
             echo 'other OS'
             ;;
     esac
-
-        # -e DISPLAY \
-        # -v /tmp/.X11-unix:/tmp/.X11-unix \
-    docker run \
-        --network=host \
-        --cap-add=ALL \
-        --name $container_name \
-        --restart always \
-        --privileged=$privileged \
-        -p $port_range:$port_range \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -v $docker_daemon:/etc/docker/daemon.json \
-        -v $docker_config:/etc/docker/config.json \
-        -v $HOME/.netrc:/root/.netrc \
-        -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
-        -v $HOME/.gnupg:/root/.gnupg \
-        -v $HOME/.kube:/root/.kube \
-        -v $HOME/.ssh:/root/.ssh \
-        -v $HOME/.zsh_history:/root/.zsh_history \
-        -v $HOME/Documents:/root/Documents \
-        -v $HOME/Downloads:/root/Downloads \
-        -v $HOME/go/src:/go/src:cached \
-        -v $rcpath/network/sysctl.conf:/etc/sysctl.conf \
-        -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
-        -v $rcpath/coc-settings.json:/root/.config/nvim/coc-settings.json \
-        -v $rcpath/editorconfig:/root/.editorconfig \
-        -v $rcpath/efm-lsp-conf.yaml:/root/.config/nvim/efm-lsp-conf.yaml \
-        -v $rcpath/gitattributes:/root/.gitattributes \
-        -v $rcpath/gitconfig:/root/.gitconfig \
-        -v $rcpath/gitignore:/root/.gitignore \
-        -v $rcpath/go.vim:/root/.config/nvim/syntax/go.vim \
-        -v $rcpath/init.vim:/root/.config/nvim/init.vim \
-        -v $rcpath/monokai.vim:/root/.config/nvim/colors/monokai.vim \
-        -v $rcpath/starship.toml:/root/.config/starship.toml \
-        -v $rcpath/tmux-kube:/root/.tmux-kube \
-        -v $rcpath/tmux.conf:/root/.tmux.conf \
-        -v $rcpath/vintrc.yaml:/root/.vintrc.yaml \
-        -v $rcpath/zshrc:/root/.zshrc \
-        -v $font_dir:/usr/share/fonts:ro \
-        -v $tz_path:/etc/localtime:ro \
-        -dit kpango/dev:latest
 
     docker exec -d $container_name /usr/bin/nvim /tmp/main.go +GoInstallBinaries +qa
 }
