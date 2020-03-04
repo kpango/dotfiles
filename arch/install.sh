@@ -76,18 +76,20 @@ pvremove ${DEVICE} && sync
 echo "pvremoved"
 lsblk
 
+sleep 10
 echo "partition ${DEVICE}"
-parted -s -a optimal ${DEVICE} -- mklabel gpt mkpart ESP fat32 0% 300MiB set 1 boot on
-parted -s -a optimal ${DEVICE} -- mkpart primary xfs 300MiB 100%
+partition
 echo "${DEVICE} partitioned"
 lsblk
 echo "format $BOOT_PART"
 mkfs.vfat -cvIF32 ${BOOT_PART} && sync
 echo "$BOOT_PART formatted"
+sleep 10
 lsblk -a
 echo "format $ROOT_PART"
 mkfs.${FILESYS} -f ${ROOT_PART} && sync
 echo "$ROOT_PART formatted"
+sleep 10
 lsblk -a
 echo "mount"
 mount ${ROOT_PART} ${ROOT} && sync
@@ -108,88 +110,6 @@ echo "deps downloaded"
 ls -la
 echo "start pacstrap"
 pacstrap -i ${ROOT} - < pkg.list
-# pacstrap -i ${ROOT} \
-#     base \
-#     base-devel \
-#     alsa-utils \
-#     archlinux-keyring \
-#     avr-binutils \
-#     avr-gcc \
-#     avr-gdb \
-#     avrdude \
-#     axel \
-#     bluez \
-#     bluez-utils \
-#     chrome \
-#     compton \
-#     dialog \
-#     discord \
-#     dkms \
-#     docker \
-#     dunst \
-#     exa \
-#     fcitx \
-#     fcitx-configtool \
-#     fcitx-im \
-#     fcitx-mozc \
-#     feh \
-#     fwupd \
-#     git \
-#     i3-gaps \
-#     i3status \
-#     intel-ucode \
-#     kubectl \
-#     kubectx \
-#     lightdm \
-#     lightdm-webkit2-greeter \
-#     light-locker \
-#     lm_sensors \
-#     lshw \
-#     lsof \
-#     mpv \
-#     neovim \
-#     network-manager-applet \
-#     networkmanager \
-#     nodejs \
-#     ntp \
-#     nvidia \
-#     openssh \
-#     pacman-contrib \
-#     pavucontrol \
-#     pciutils \
-#     pulseaudio \
-#     pulseaudio-bluetooth \
-#     py3status \
-#     ranger \
-#     reflector \
-#     ripgrep \
-#     rofi \
-#     rxvt-unicode \
-#     thefuck \
-#     tlp \
-#     tp_smapi \
-#     tmux \
-#     unzip \
-#     urxvt-perls \
-#     volumeicon \
-#     w3m \
-#     xclip \
-#     xf86-video-intel \
-#     xorg-server \
-#     xorg-xbacklight \
-#     xorg-xmodmap \
-#     xorg-xhost
-#     xorg-xrandr \
-#     arandr \
-#     xsel \
-#     yarn \
-#     youtube-dl \
-#     zsh
-#     # wlc \
-#     # wayland \
-#     # nvidia \
-#     # steam \
-#
 echo "pacstrap finished"
 
 genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
