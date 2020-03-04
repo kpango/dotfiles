@@ -21,6 +21,7 @@ alias kpmove="cd $rcpath"
 alias kpbuild="kpmove&&docker build --pull=true --file=$rcpath/Dockerfile -t kpango/dev:latest $rcpath"
 
 devrun(){
+    port_range="8000-9300"
     privileged=true
     tz_path="/usr/share/zoneinfo/Japan"
     font_dir="/System/Library/Fonts"
@@ -58,6 +59,7 @@ devrun(){
         --name $container_name \
         --restart always \
         --privileged=$privileged \
+        -p $port_range:$port_range \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $docker_daemon:/etc/docker/daemon.json \
         -v $docker_config:/etc/docker/config.json \
