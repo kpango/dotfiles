@@ -44,6 +44,7 @@ arch_link: \
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers /etc/sudoers.d/kpango
@@ -109,7 +110,8 @@ clean:
 		/etc/sudoers.d/kpango \
 		/etc/sysctl.conf \
 		/etc/systemd/system/NetworkManager-dispatcher.service \
-		/etc/systemd/system/pulseaudio.service
+		/etc/systemd/system/pulseaudio.service \
+		/etc/udev/rules.d/60-ioschedulers.rules
 
 zsh: link
 	[ -f $(HOME)/.zshrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.zshrc
