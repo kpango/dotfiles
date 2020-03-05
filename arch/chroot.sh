@@ -66,8 +66,8 @@ evdev:name:ThinkPad Extra Buttons:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*
  KEYBOARD_KEY_49=prog2
 EOF
 
-systemctl enable ntpd
-systemctl start ntpd
+systemctl enable chronyd
+systemctl start chronyd
 systemctl enable docker
 systemctl enable tlp
 systemctl enable tlp-sleep
