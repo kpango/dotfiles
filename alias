@@ -82,7 +82,6 @@ devrun(){
             # -e DISPLAY \
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
             docker run \
-                --entrypoint='docker-entrypoint' \
                 --network=host \
                 --cap-add=ALL \
                 --name $container_name \
