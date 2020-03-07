@@ -259,11 +259,11 @@ if [ -z $ZSH_LOADED ]; then
     zstyle ':vcs_info:*' formats '(%s)-[%b]'
     zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
 
-    precmd() {
-        if [ ! -z $TMUX ]; then
-            tmux refresh-client -S
-        fi
-    }
+    # precmd() {
+    #     if [ ! -z $TMUX ]; then
+    #         tmux refresh-client -S
+    #     fi
+    # }
     _update_vcs_info_msg() {
         LANG=en_US.UTF-8
         vcs_info
