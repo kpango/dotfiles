@@ -5,12 +5,12 @@
 }
 
 window {
-    opacity: 0.85;
-    background-color: #272822;
+    opacity: 0.8;
+    background-color: #101010;
 }
 
 #input {
-    color: #F8F8F2;
+    color: #EEEEEE;
 }
 
 #inner-box {
@@ -29,5 +29,5 @@ window {
 
 #text {
     margin: 4px;
-    color: #F8F8F2;
+    color: #E0E0E0;
 }
