@@ -762,6 +762,8 @@ if [ -z $ZSH_LOADED ]; then
     fi
     if type yay >/dev/null 2>&1; then
         archback() {
+            sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
+            sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
             pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
             pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
         }

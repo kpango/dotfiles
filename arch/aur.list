@@ -5,6 +5,7 @@ ghq
 google-chrome
 google-cloud-sdk
 gopreload-git
+procs
 slack-desktop
 systemd-boot-pacman-hook
 tzupdate
