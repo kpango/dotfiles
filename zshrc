@@ -1,15 +1,18 @@
 #!/usr/bin/zsh
 
-
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
+        echo "welcome to tmux"
         USER=$(whoami)
         HOST=$(hostname)
         ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
+        # if [[ -z $ID && -z "$WINDOW" && ! -z "$PS1" ]]; then # if not available create a new one
         if [[ -z $ID ]]; then # if not available create a new one
-            tmux -2 new-session -n$USER -s$USER@$HOST source-file ~/.tmux.new-session
+            echo "creating new tmux session"
+            tmux -2 new-session -n$USER -s$USER@$HOST source-file ~/.tmux.new-session && echo "created new tmux session"
         else
-            tmux -2 attach-session -t "$ID" # if available attach to it
+            echo "attaching tmux session $ID"
+            tmux -2 attach-session -t "$ID" && echo "attached tmux session $ID"
         fi
     fi
 fi
@@ -46,13 +49,6 @@ if [ -z $DOTENV_LOADED ]; then
     #プログラミング環境構築
     export XDG_CONFIG_HOME=$HOME/.config
 
-    #GO
-    if [ "$USER" = 'root' ]; then
-        export GOPATH=/go
-    else
-        export GOPATH=$HOME/go
-    fi
-
     export GCLOUD_PATH="/google-cloud-sdk"
 
     export PYTHON_CONFIGURE_OPTS="--enable-shared"
@@ -85,6 +81,12 @@ if [ -z $DOTENV_LOADED ]; then
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64
 
     if type go >/dev/null 2>&1; then
+        #GO
+        if [ -f /.dockerenv ]; then
+            export GOPATH=/go
+        else
+            export GOPATH=$HOME/go
+        fi
         export GOROOT="$(go env GOROOT)"
         export GOOS="$(go env GOOS)"
         export GOARCH="$(go env GOARCH)"
@@ -152,7 +154,7 @@ if [ -z $ZSH_LOADED ]; then
         zplug "zsh-users/zsh-autosuggestions"
         zplug "zsh-users/zsh-completions", as:plugin, use:"src"
         zplug "zsh-users/zsh-history-substring-search"
-        zplug "zdharma/fast-syntax-highlighting", defer:2
+        zplug "auscompgeek/fast-syntax-highlighting", defer:2
         zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
         zplug "greymd/tmux-xpanes"
         zplug "felixr/docker-zsh-completion"
@@ -257,6 +259,11 @@ if [ -z $ZSH_LOADED ]; then
     zstyle ':vcs_info:*' formats '(%s)-[%b]'
     zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
 
+    precmd() {
+        if [ ! -z $TMUX ]; then
+            tmux refresh-client -S
+        fi
+    }
     _update_vcs_info_msg() {
         LANG=en_US.UTF-8
         vcs_info
@@ -543,6 +550,7 @@ if [ -z $ZSH_LOADED ]; then
     alias find='find'
 
     if type tmux >/dev/null 2>&1; then
+        export TMUX_TMPDIR=/tmp
         alias tmls='\tmux list-sessions'
         alias tmlc='\tmux list-clients'
         alias tkill='\tmux kill-server'
@@ -550,10 +558,10 @@ if [ -z $ZSH_LOADED ]; then
         alias tmaw='\tmux main-horizontal'
         alias tmuxa='\tmux -2 a -t'
 
-	if [ "$USER" = 'root' ]; then
-	    tmux unbind C-b
-	    tmux set -g prefix C-w
-	fi
+        if [ "$USER" = 'root' ]; then
+            tmux unbind C-b
+            tmux set -g prefix C-w
+        fi
     fi
     alias tedit="$EDITOR $HOME/.tmux.conf"
 

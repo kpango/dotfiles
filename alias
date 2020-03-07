@@ -1,4 +1,4 @@
-#!/usr/local/bin/zsh
+#!/usr/bin/zsh
 rcpath="$HOME/go/src/github.com/kpango/dotfiles"
 
 dockerrm(){
@@ -14,6 +14,7 @@ dockerrm(){
 
 alias dockerrm="dockerrm"
 
+zsh_path="/usr/bin/zsh"
 container_name="dev"
 
 alias kpmove="cd $rcpath"
@@ -118,6 +119,7 @@ devrun(){
                 -v $font_dir:/usr/share/fonts:ro \
                 -v $tz_path:/etc/localtime:ro \
                 -dit kpango/dev:latest
+                # -dit kpango/dev:latest $zsh_path -c "tmux -2 new-session -nroot -sroot@$HOST"
             ;;
 
         CYGWIN*|MINGW32*|MSYS*)
@@ -129,12 +131,14 @@ devrun(){
             ;;
     esac
 
-    docker exec -d $container_name /usr/bin/zsh nvup
+    docker exec -d $container_name $zsh_path nvup
 }
 
 alias devrun="devrun"
 
-alias devin="docker exec -it $container_name /usr/bin/zsh -c \"tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -nroot -sroot@$HOST\""
+alias devin="docker exec -it $container_name $zsh_path -c \"tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -nroot -sroot@$HOST\""
+# alias devin="docker exec -it $container_name $zsh_path -c \"tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -nroot -sroot@$HOST\""
+# alias devin="docker exec -it $container_name $zsh_path"
 
 devkill(){
     docker update --restart=no $container_name \

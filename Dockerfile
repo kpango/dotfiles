@@ -157,7 +157,7 @@ COPY tmux.conf $HOME/.tmux.conf
 COPY vintrc.yaml $HOME/.vintrc.yaml
 COPY zshrc $HOME/.zshrc
 
-ENV SHELL /bin/zsh
+ENV SHELL /usr/bin/zsh
 
 WORKDIR $VIM_PLUG_HOME
 
@@ -178,4 +178,4 @@ RUN git clone https://github.com/zplug/zplug $ZPLUG_HOME \
 WORKDIR /go/src
 
 ENTRYPOINT ["docker-entrypoint"]
-CMD ["zsh"]
+CMD ["/usr/bin/zsh"]
