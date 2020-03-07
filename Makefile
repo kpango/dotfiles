@@ -38,8 +38,9 @@ arch_link: \
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.css $(HOME)/.config/waybar/style.css
 	mkdir -p ${HOME}/.config/alacritty
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
-	# mkdir -p ${HOME}/.config/rofi
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/rofi/sidebar.rasi $(HOME)/.config/rofi/sidebar.rasi
+	mkdir -p ${HOME}/.config/wofi
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/wofi/style.css $(HOME)/.config/wofi/style.css
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/wofi/wofi.conf $(HOME)/.config/wofi/config
 	mkdir -p ${HOME}/.config/fcitx/conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
@@ -58,6 +59,7 @@ arch_link: \
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/chrony.conf /etc/chrony.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.sh /etc/profile.d/sway.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/environment
 	mkdir -p /etc/docker
 	mkdir -p ${HOME}/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
@@ -81,7 +83,7 @@ clean:
 		$(HOME)/.config/waybar \
 		$(HOME)/.config/nvim \
 		$(HOME)/.config/ranger \
-		$(HOME)/.config/rofi \
+		$(HOME)/.config/wofi \
 		$(HOME)/.config/starship.toml \
 		$(HOME)/.config/sway \
 		$(HOME)/.docker/daemon.json \

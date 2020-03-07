@@ -1,0 +1,33 @@
+* {
+	background-color: transparent;
+
+	font: "HackGen Regular 13";
+}
+
+window {
+    opacity: 0.85;
+    background-color: #272822;
+}
+
+#input {
+    color: #F8F8F2;
+}
+
+#inner-box {
+    margin: 5px;
+}
+
+#outer-box {
+    margin: 5px;
+}
+
+#scroll {
+}
+
+#entry {
+}
+
+#text {
+    margin: 4px;
+    color: #F8F8F2;
+}

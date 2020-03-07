@@ -105,7 +105,7 @@ if [ -z $DOTENV_LOADED ]; then
     fi
 
     export TERM="tmux-256color"
-    export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:/root/.cargo/bin:$GCLOUD_PATH/bin:$PATH"
+    export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.cargo/bin:$GCLOUD_PATH/bin:$PATH"
 
     export ZPLUG_HOME=$HOME/.zplug
 
@@ -558,7 +558,7 @@ if [ -z $ZSH_LOADED ]; then
         alias tmaw='\tmux main-horizontal'
         alias tmuxa='\tmux -2 a -t'
 
-        if [ "$USER" = 'root' ]; then
+        if [ -f /.dockerenv ]; then
             tmux unbind C-b
             tmux set -g prefix C-w
         fi
