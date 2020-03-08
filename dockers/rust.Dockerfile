@@ -1,21 +1,18 @@
 FROM kpango/rust-musl-builder:latest AS rust-base
 
-# RUN cargo install --force --no-default-features --all-features --bins --git https://github.com/rust-lang/rust \
-#     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
-# RUN --mount=type=cache,target=/root/.cache/sccache \
-#     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
-# RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
+FROM rust-base AS procs
+RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/dalance/procs
 
 FROM rust-base AS nix-lsp
 RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://gitlab.com/jD91mZM2/nix-lsp
 
-# FROM rust-base AS cargo-bloat
-# RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/RazrFalcon/cargo-bloat
+FROM rust-base AS cargo-bloat
+RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/RazrFalcon/cargo-bloat
 
 FROM rust-base AS fd
-RUN RUSTC_WRAPPER=`which sccache` cargo install fd-find
+RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/sharkdp/fd
 
 FROM rust-base AS starship
 RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/starship/starship
@@ -28,13 +25,12 @@ RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features ba
 
 FROM rust-base AS rg
 RUN RUST_BACKTRACE=1 RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features ripgrep
-# RUN RUSTC_WRAPPER=`which sccache` cargo install --force --no-default-features --git https://github.com/BurntSushi/ripgrep
-# RUN set -x \
-#     && curl -o ripgrep.tar.gz \
-#     https://github.com/BurntSushi/ripgrep/releases/download/11.0.2/ripgrep-11.0.2-x86_64-unknown-linux-musl.tar.gz \
-#     && tar xzvf ripgrep.tar.gz \
-#     && ./rg --version \
-#     && mv ./rg /home/rust/.cargo/rg
+
+# RUN cargo install --force --no-default-features --all-features --bins --git https://github.com/rust-lang/rust \
+#     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
+# RUN --mount=type=cache,target=/root/.cache/sccache \
+#     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
+# RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
 FROM kpango/rust-musl-builder:latest AS rust
 
