@@ -10,6 +10,7 @@ slack-desktop
 systemd-boot-pacman-hook
 tzupdate
 wdisplays-git
-wofi
+wofi-hg
+workstyle-git
 yay
 zsa-wally

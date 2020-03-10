@@ -44,6 +44,8 @@ arch_link: \
 	mkdir -p ${HOME}/.config/fcitx/conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
+	mkdir -p ${HOME}/.config/workstyle
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/workstyle.toml $(HOME)/.config/workstyle/config.toml
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
@@ -84,6 +86,7 @@ clean:
 		$(HOME)/.config/nvim \
 		$(HOME)/.config/ranger \
 		$(HOME)/.config/wofi \
+		$(HOME)/.config/workstyle \
 		$(HOME)/.config/starship.toml \
 		$(HOME)/.config/sway \
 		$(HOME)/.docker/daemon.json \
