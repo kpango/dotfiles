@@ -42,6 +42,13 @@ RUN curl -fSL "https://github.com/jessfraz/dockfmt/releases/download/v$(curl --s
     && upx -9 \
         /usr/local/bin/dockfmt
 
+FROM docker-base AS container-diff
+RUN curl -LO "https://storage.googleapis.com/container-diff/latest/container-diff-linux-amd64" \
+    && chmod a+x container-diff-linux-amd64 \
+    && mv container-diff-linux-amd64 /usr/local/bin/container-diff \
+    && upx -9 \
+        /usr/local/bin/container-diff
+
 FROM docker:rc-dind AS common
 RUN apk upgrade \
     && apk add --no-cache \
@@ -78,4 +85,5 @@ COPY --from=dockle /usr/local/bin/dockle /usr/bin/dockle
 COPY --from=slim /usr/local/bin/docker-slim /usr/bin/docker-slim
 COPY --from=slim /usr/local/bin/docker-slim-sensor /usr/bin/docker-slim-sensor
 COPY --from=trivy /usr/local/bin/trivy /usr/bin/trivy
+COPY --from=container-diff /usr/local/bin/container-diff /usr/bin/container-diff
 

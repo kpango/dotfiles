@@ -108,6 +108,13 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar -zxvf "octant_${OCTANT_VERSION}_Linux-64bit.tar.gz" \
     && mv octant_${OCTANT_VERSION}_Linux-64bit/octant ${BIN_PATH}/octant
 
+FROM kube-base AS skaffold
+RUN set -x; cd "$(mktemp -d)" \
+    && SKAFFOLD_VERSION="$(curl --silent ${GITHUB}/GoogleContainerTools/skaffold/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/v${SKAFFOLD_VERSION}/skaffold-linux-amd64 \
+    && chmod +x skaffold \
+    && mv skaffold ${BIN_PATH}/skaffold
+
 FROM kpango/dev-base:latest AS kube
 
 ENV BIN_PATH /usr/local/bin
@@ -127,4 +134,5 @@ COPY --from=kubectx ${BIN_PATH}/kubens ${BIN_PATH}/kubens
 COPY --from=linkerd ${BIN_PATH}/linkerd ${BIN_PATH}/linkerd
 COPY --from=octant ${BIN_PATH}/octant ${BIN_PATH}/octant
 COPY --from=stern ${BIN_PATH}/stern ${BIN_PATH}/stern
+COPY --from=skaffold ${BIN_PATH}/skaffold ${BIN_PATH}/skaffold
 COPY --from=telepresence ${BIN_PATH}/telepresence ${BIN_PATH}/telepresence
