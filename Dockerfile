@@ -92,6 +92,7 @@ COPY --from=docker /usr/bin/dockerd /usr/bin/dockerd
 COPY --from=docker /usr/bin/dockerd-entrypoint /usr/bin/dockerd-entrypoint
 COPY --from=docker /usr/bin/dockfmt /usr/bin/dockfmt
 COPY --from=docker /usr/bin/dockle /usr/bin/dockle
+COPY --from=docker /usr/bin/container-diff /usr/bin/container-diff
 COPY --from=docker /usr/bin/modprobe /usr/bin/modprobe
 COPY --from=docker /usr/bin/trivy /usr/bin/trivy
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
@@ -112,6 +113,7 @@ COPY --from=kube /usr/local/bin/kubens /usr/bin/kubens
 COPY --from=kube /usr/local/bin/linkerd /usr/bin/linkerd
 COPY --from=kube /usr/local/bin/octant /usr/bin/octant
 COPY --from=kube /usr/local/bin/stern /usr/bin/stern
+COPY --from=kube /usr/local/bin/skaffold /usr/bin/skaffold
 COPY --from=kube /usr/local/bin/telepresence /usr/bin/telepresence
 
 COPY --from=gcloud /usr/bin/bq /usr/bin/bq
