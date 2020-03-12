@@ -35,8 +35,6 @@ FROM kpango/kube:latest AS kube
 
 FROM kpango/gcloud:latest AS gcloud
 
-FROM kpango/glibc:latest AS glibc
-
 FROM kpango/env:latest AS env
 
 FROM env
@@ -71,9 +69,6 @@ ENV ZPLUG_HOME $HOME/.zplug;
 # COPY --from=ruby /usr/local/lib/ruby /usr/lib/ruby
 # COPY --from=ruby /usr/local/lib/libruby* /usr/lib/
 # COPY --from=ruby /usr/local/bundle /usr/bundle
-
-# etc lib sbin bin
-# COPY --from=glibc /usr/glibc-compat /usr/glibc-compat
 
 COPY --from=docker /usr/bin/dind /usr/bin/dind
 COPY --from=docker /usr/bin/dive /usr/bin/dive
@@ -116,6 +111,7 @@ COPY --from=kube /usr/local/bin/stern /usr/bin/stern
 COPY --from=kube /usr/local/bin/skaffold /usr/bin/skaffold
 COPY --from=kube /usr/local/bin/telepresence /usr/bin/telepresence
 
+COPY --from=gcloud /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk
 COPY --from=gcloud /usr/bin/bq /usr/bin/bq
 COPY --from=gcloud /usr/bin/dev_appserver.py /usr/bin/dev_appserver.py
 COPY --from=gcloud /usr/bin/docker-credential-gcloud /usr/bin/docker-credential-gcloud
