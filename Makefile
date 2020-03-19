@@ -8,89 +8,93 @@ run:
 link:
 	mkdir -p ${HOME}/.config/nvim/colors
 	mkdir -p ${HOME}/.config/nvim/syntax
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))init.vim $(HOME)/.config/nvim/init.vim
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))starship.toml $(HOME)/.config/starship.toml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))coc-settings.json $(HOME)/.config/nvim/coc-settings.json
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))monokai.vim $(HOME)/.config/nvim/colors/monokai.vim
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))go.vim $(HOME)/.config/nvim/syntax/go.vim
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))zshrc $(HOME)/.zshrc
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))editorconfig $(HOME)/.editorconfig
+	mkdir -p ${HOME}/.config/TabNine
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))alias $(HOME)/.aliases
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitconfig $(HOME)/.gitconfig
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))coc-settings.json $(HOME)/.config/nvim/coc-settings.json
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))editorconfig $(HOME)/.editorconfig
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitattributes $(HOME)/.gitattributes
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitconfig $(HOME)/.gitconfig
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitignore $(HOME)/.gitignore
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.conf $(HOME)/.tmux.conf
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))go.vim $(HOME)/.config/nvim/syntax/go.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))init.vim $(HOME)/.config/nvim/init.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))monokai.vim $(HOME)/.config/nvim/colors/monokai.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))starship.toml $(HOME)/.config/starship.toml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tabnine_config.json $(HOME)/.config/TabNine/tabnine_config.json
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux-kube $(HOME)/.tmux-kube
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.conf $(HOME)/.tmux.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.new-session $(HOME)/.tmux.new-session
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))zshrc $(HOME)/.zshrc
 
 arch_link: \
 	clean \
 	link
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/gitconfig $(HOME)/.gitconfig
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc $(HOME)/.xinitrc
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
+	mkdir -p ${HOME}/.config/alacritty
+	mkdir -p ${HOME}/.config/fcitx/conf
 	mkdir -p ${HOME}/.config/sway
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
 	mkdir -p ${HOME}/.config/waybar
+	mkdir -p ${HOME}/.config/wofi
+	mkdir -p ${HOME}/.config/workstyle
+	mkdir -p ${HOME}/.docker
+	mkdir -p /etc/docker
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/gitconfig $(HOME)/.gitconfig
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.conf $(HOME)/.config/waybar/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.css $(HOME)/.config/waybar/style.css
-	mkdir -p ${HOME}/.config/alacritty
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
-	mkdir -p ${HOME}/.config/wofi
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/wofi/style.css $(HOME)/.config/wofi/style.css
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/wofi/wofi.conf $(HOME)/.config/wofi/config
-	mkdir -p ${HOME}/.config/fcitx/conf
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
-	mkdir -p ${HOME}/.config/workstyle
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/workstyle.toml $(HOME)/.config/workstyle/config.toml
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers /etc/sudoers.d/kpango
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
-	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
-	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
-	# sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc $(HOME)/.xinitrc
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/chrony.conf /etc/chrony.conf
+	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/environment
+	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
+	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers /etc/sudoers.d/kpango
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.sh /etc/profile.d/sway.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/environment
-	mkdir -p /etc/docker
-	mkdir -p ${HOME}/.docker
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json $(HOME)/.docker/config.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json /etc/docker/config.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json $(HOME)/.docker/config.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
+	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo sysctl -p
 	sudo systemctl daemon-reload
 
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.zshrc
-	sudo rm -rf $(HOME)/.Xdefaults \
+	sudo rm -rf \
+		$(HOME)/.Xdefaults \
 		$(HOME)/.Xmodmap \
 		$(HOME)/.aliases \
+		$(HOME)/.config/TabNine \
 		$(HOME)/.config/alacritty \
 		$(HOME)/.config/compton \
 		$(HOME)/.config/fcitx \
 		$(HOME)/.config/i3 \
 		$(HOME)/.config/i3status \
-		$(HOME)/.config/waybar \
 		$(HOME)/.config/nvim \
 		$(HOME)/.config/ranger \
-		$(HOME)/.config/wofi \
-		$(HOME)/.config/workstyle \
 		$(HOME)/.config/starship.toml \
 		$(HOME)/.config/sway \
-		$(HOME)/.docker/daemon.json \
+		$(HOME)/.config/waybar \
+		$(HOME)/.config/wofi \
+		$(HOME)/.config/workstyle \
 		$(HOME)/.docker/config.json \
+		$(HOME)/.docker/daemon.json \
 		$(HOME)/.editorconfig \
 		$(HOME)/.gitattributes \
 		$(HOME)/.gitconfig \
@@ -102,12 +106,13 @@ clean:
 		$(HOME)/.xinitrc \
 		$(HOME)/.zshrc \
 		/etc/NetworkManager/NetworkManager.conf \
-		/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
 		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
+		/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
 		/etc/chrony.conf \
 		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
-		/etc/docker/daemon.json \
 		/etc/docker/config.json \
+		/etc/docker/daemon.json \
+		/etc/environment \
 		/etc/lightdm \
 		/etc/modules-load.d/bbr.conf \
 		/etc/profile.d/fcitx.sh \

@@ -332,7 +332,6 @@ let g:coc_global_extensions = [
       \ 'coc-clock',
       \ 'coc-marketplace',
       \ 'coc-smartf',
-      \ 'coc-tabnine',
       \ 'coc-jest',
       \ 'coc-calc',
       \ 'coc-webpack',
@@ -346,7 +345,7 @@ let g:coc_global_extensions = [
       \ 'https://github.com/xabikos/vscode-react',
       \ 'https://github.com/xabikos/vscode-javascript'
       \]
-
+      "\ 'coc-tabnine',
 
 " -------------------------
 " ---- Denite settings ----
