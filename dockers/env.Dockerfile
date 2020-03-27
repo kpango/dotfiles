@@ -1,6 +1,6 @@
 FROM kpango/dev-base:latest AS env
 
-ENV NGT_VERSION 1.9.1
+ENV NGT_VERSION 1.10.0
 ENV TENSORFLOW_C_VERSION 1.13.1
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 

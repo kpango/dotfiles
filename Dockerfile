@@ -105,10 +105,11 @@ COPY --from=kube /usr/local/bin/kubectl-profefe /usr/bin/kubectl-profefe
 COPY --from=kube /usr/local/bin/kubectl-tree /usr/bin/kubectl-tree
 COPY --from=kube /usr/local/bin/kubectx /usr/bin/kubectx
 COPY --from=kube /usr/local/bin/kubens /usr/bin/kubens
+COPY --from=kube /usr/local/bin/kubeval /usr/bin/kubeval
 COPY --from=kube /usr/local/bin/linkerd /usr/bin/linkerd
 COPY --from=kube /usr/local/bin/octant /usr/bin/octant
-COPY --from=kube /usr/local/bin/stern /usr/bin/stern
 COPY --from=kube /usr/local/bin/skaffold /usr/bin/skaffold
+COPY --from=kube /usr/local/bin/stern /usr/bin/stern
 COPY --from=kube /usr/local/bin/telepresence /usr/bin/telepresence
 
 COPY --from=gcloud /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk

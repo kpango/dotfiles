@@ -115,6 +115,13 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod +x skaffold \
     && mv skaffold ${BIN_PATH}/skaffold
 
+FROM kube-base AS kubeval
+RUN set -x; cd "$(mktemp -d)" \
+    && KUBEVAL_VERSION="$(curl --silent ${GITHUB}/instrumenta/kubeval/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fsSLO ${GITHUB}/instrumenta/kubeval/releases/download/${KUBEVAL_VERSION}/kubeval-linux-amd64.tar.gz \
+    && tar -zxvf kubeval-linux-amd64.tar.gz \
+    && mv kubeval ${BIN_PATH}/kubeval
+
 FROM kpango/dev-base:latest AS kube
 
 ENV BIN_PATH /usr/local/bin
@@ -131,8 +138,9 @@ COPY --from=kubectl ${BIN_PATH}/kubectl ${BIN_PATH}/kubectl
 COPY --from=kubectl-fzf ${BIN_PATH}/cache_builder ${BIN_PATH}/cache_builder
 COPY --from=kubectx ${BIN_PATH}/kubectx ${BIN_PATH}/kubectx
 COPY --from=kubectx ${BIN_PATH}/kubens ${BIN_PATH}/kubens
+COPY --from=kubeval ${BIN_PATH}/kubeval ${BIN_PATH}/kubeval
 COPY --from=linkerd ${BIN_PATH}/linkerd ${BIN_PATH}/linkerd
 COPY --from=octant ${BIN_PATH}/octant ${BIN_PATH}/octant
-COPY --from=stern ${BIN_PATH}/stern ${BIN_PATH}/stern
 COPY --from=skaffold ${BIN_PATH}/skaffold ${BIN_PATH}/skaffold
+COPY --from=stern ${BIN_PATH}/stern ${BIN_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${BIN_PATH}/telepresence
