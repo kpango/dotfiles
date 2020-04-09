@@ -62,10 +62,10 @@
       "initializationOptions": {
         "completeUnimported": true,
         "usePlaceholders": true,
-        "deepCompletion": false,
+        "deepCompletion": true,
         "completionDocumentation": true,
         "fuzzyMatching": true,
-        "staticcheck": false,
+        "staticcheck": true,
         "watchFileChanges": true,
         "lintTool": "golangci-lint",
         "formatTool": "goimports",
