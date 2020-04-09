@@ -83,8 +83,8 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM kube-base AS kube-profefe
 RUN set -x; cd "$(mktemp -d)" \
     && KUBE_PROFEFE_VERSION="$(curl --silent ${GITHUB}/profefe/kube-profefe/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLO "${GITHUB}/profefe/kube-profefe/releases/download/v${KUBE_PROFEFE_VERSION}/kube-profefe_${KUBE_PROFEFE_VERSION}_Linux_x86_64.tar.gz" \
-    && tar -zxvf "kube-profefe_${KUBE_PROFEFE_VERSION}_Linux_x86_64.tar.gz" \
+    && curl -fsSLO "${GITHUB}/profefe/kube-profefe/releases/download/v${KUBE_PROFEFE_VERSION}/kube-profefe_v${KUBE_PROFEFE_VERSION}_Linux_x86_64.tar.gz" \
+    && tar -zxvf "kube-profefe_v${KUBE_PROFEFE_VERSION}_Linux_x86_64.tar.gz" \
     && mv kprofefe ${BIN_PATH}/kprofefe \
     && mv kubectl-profefe ${BIN_PATH}/kubectl-profefe
 

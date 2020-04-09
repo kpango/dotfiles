@@ -51,6 +51,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'chrisbra/Colorizer'
     Plug 'majutsushi/tagbar' " tag bar toggle
     " Plug 'nathanaelkane/vim-indent-guides' " show indent guide
+    Plug 'Yggdroot/indentLine'
     Plug 'w0rp/ale' " lint plugin
     Plug 'tyru/caw.vim' " comment out
     " Plug 'rizzatti/dash.vim', {'on': 'Dash'}
@@ -427,15 +428,17 @@ Autocmd BufNewFile,BufRead *.rasi set filetype=css
 " ------------------------------
 " ---- Indentation settings ----
 " ------------------------------
-let g:indent_guides_enable_on_vim_startup=1
-let g:indent_guides_start_level=2
-let g:indent_guides_auto_colors=0
-let g:indent_guides_color_change_percent = 30
-let g:indent_guides_guide_size = 1
+" let g:indent_guides_enable_on_vim_startup=1
+" let g:indent_guides_start_level=2
+" let g:indent_guides_auto_colors=0
+" let g:indent_guides_color_change_percent = 30
+" let g:indent_guides_guide_size = 1
+let g:indentLine_faster = 1
+nmap <silent><Leader>i :<C-u>IndentLinesToggle<CR>
 
 " AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS omnifunc=lsp#complete
-" AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview omnifunc=lsp#complete
-" " AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,menuone,preview,noselect,noinsert
+" AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview omnifunc=lspcomplete
+AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,menuone,preview,noselect,noinsert
 " AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
 " AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
 " AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with omnifunc=lsp#complete

@@ -1,6 +1,6 @@
 FROM kpango/dev-base:latest AS go-base
 
-ENV GO_VERSION 1.14.1
+ENV GO_VERSION 1.14.2
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -53,10 +53,14 @@ RUN GO111MODULE=on go get -u  \
     && upx -9 ${GOPATH}/bin/chidley
 
 FROM go-base AS dlv
-RUN GO111MODULE=on go get -u  \
-    --ldflags "-s -w" --trimpath \
-    github.com/go-delve/delve/cmd/dlv \
+RUN git clone https://github.com/go-delve/delve.git $GOPATH/src/github.com/go-delve/delve \
+    && cd $GOPATH/src/github.com/go-delve/delve \
+    && make install \
     && upx -9 ${GOPATH}/bin/dlv
+# RUN GO111MODULE=on go get -u  \
+#     --ldflags "-s -w" --trimpath \
+#     github.com/go-delve/delve/cmd/dlv \
+#     && upx -9 ${GOPATH}/bin/dlv
 
 FROM go-base AS hub
 RUN GO111MODULE=on go get -u  \
