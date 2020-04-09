@@ -122,10 +122,18 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar -zxvf kubeval-linux-amd64.tar.gz \
     && mv kubeval ${BIN_PATH}/kubeval
 
+FROM kube-base AS helm-docs
+RUN set -x; cd "$(mktemp -d)" \
+    && HELM_DOCS_VERSION="$(curl --silent ${GITHUB}/norwoodj/helm-docs/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fsSLO ${GITHUB}/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz \
+    && tar -zxvf helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz \
+    && mv helm-docs ${BIN_PATH}/helm-docs
+
 FROM kpango/dev-base:latest AS kube
 
 ENV BIN_PATH /usr/local/bin
 COPY --from=helm ${BIN_PATH}/helm ${BIN_PATH}/helm
+COPY --from=helm-docs ${BIN_PATH}/helm-docs ${BIN_PATH}/helm-docs
 COPY --from=k9s ${BIN_PATH}/k9s ${BIN_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${BIN_PATH}/kind
 COPY --from=krew /root/.krew/bin/kubectl-krew ${BIN_PATH}/kubectl-krew

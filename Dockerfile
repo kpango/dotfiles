@@ -94,6 +94,7 @@ COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli
 
 COPY --from=kube /usr/local/bin/cache_builder /usr/bin/cache_builder
 COPY --from=kube /usr/local/bin/helm /usr/bin/helm
+COPY --from=kube /usr/local/bin/helm-docs /usr/bin/helm-docs
 COPY --from=kube /usr/local/bin/k9s /usr/bin/k9s
 COPY --from=kube /usr/local/bin/kind /usr/bin/kind
 COPY --from=kube /usr/local/bin/kprofefe /usr/bin/kprofefe
