@@ -98,6 +98,7 @@ COPY --from=kube /usr/local/bin/helm-docs /usr/bin/helm-docs
 COPY --from=kube /usr/local/bin/k9s /usr/bin/k9s
 COPY --from=kube /usr/local/bin/kind /usr/bin/kind
 COPY --from=kube /usr/local/bin/kprofefe /usr/bin/kprofefe
+COPY --from=kube /usr/local/bin/kpt /usr/bin/kpt
 COPY --from=kube /usr/local/bin/kubebox /usr/bin/kubebox
 COPY --from=kube /usr/local/bin/kubebuilder /usr/bin/kubebuilder
 COPY --from=kube /usr/local/bin/kubectl /usr/bin/kubectl
