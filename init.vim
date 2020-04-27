@@ -410,6 +410,7 @@ set statusline+=%*
 " ----------------------------
 " ---- File type settings ----
 " ----------------------------
+Autocmd BufNewFile,BufRead *.go,*go.mod set filetype=go
 Autocmd BufNewFile,BufRead *.dart set filetype=dart
 Autocmd BufNewFile,BufRead *.erls,*.erl set filetype=erlang
 Autocmd BufNewFile,BufRead *.es6 set filetype=javascript

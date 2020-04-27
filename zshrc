@@ -735,6 +735,29 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type nmcli >/dev/null 2>&1; then
+        nmcliwifie() {
+            if [ $# -eq 3 ]; then
+                nmcli d
+                nmcli r wifi
+                nmcli d wifi list
+                sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1
+                sudo nmcli c mod $1 connection.autoconnect yes
+                sudo nmcli c mod $1 802-11-wireless-security.key-mgmt wpa-eap
+                sudo nmcli c mod $1 802-1x.eap peap
+                # sudo nmcli c mod $1 802-1x.eap tls
+                sudo nmcli c mod $1 802-1x.phase2-auth mschapv2
+                sudo nmcli c mod $1 802-1x.identity $2
+                sudo nmcli c mod $1 802-1x.password $3
+                # sudo nmcli c mod $1 802-1x.ca-cert /path/to/ca.crt
+                # sudo nmcli c mod $1 802-1x.client-cert /path/to/client.crt
+                # sudo nmcli c mod $1 802-1x.private-key /path/to/client.key
+                # sudo nmcli c mod $1 802-1x.private-key-password {password}
+                sudo nmcli c up $1
+            else
+                echo "invalid argument, SSID and PSK is required"
+            fi
+        }
+        alias nmcliwifie=nmcliwifie
         nmcliwifi() {
             if [ $# -eq 2 ]; then
                 nmcli d
