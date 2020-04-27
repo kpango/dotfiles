@@ -7,7 +7,7 @@ ENV RELEASE_DL release/download
 ENV RELEASE_LATEST release/download
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
-ENV TELEPRESENCE_VERSION 0.104
+ENV TELEPRESENCE_VERSION 0.105
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.8 \
