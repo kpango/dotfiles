@@ -400,7 +400,7 @@ if [ -z $ZSH_LOADED ]; then
         alias gfix="gcp fix"
         gfp() {
             git add -A
-            git commit --amend
+            git commit --signoff --amend
             git push -f
         }
         alias gfp=gfp
