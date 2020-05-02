@@ -58,6 +58,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     " Plug 'terryma/vim-multiple-cursors' " multiple cursors
     Plug 'tpope/vim-surround'
     Plug 'vim-scripts/sudo.vim'
+    Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
     " Plug 'ozelentok/denite-gtags'
     " Plug 'jsfaint/gen_tags.vim'
     " Plug 'vim-scripts/gtags.vim'

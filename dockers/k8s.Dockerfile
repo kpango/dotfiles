@@ -136,7 +136,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x kpt \
     && mv kpt ${BIN_PATH}/kpt
 
-FROM kpango/dev-base:latest AS kube
+FROM scratch AS kube
 
 ENV BIN_PATH /usr/local/bin
 COPY --from=helm ${BIN_PATH}/helm ${BIN_PATH}/helm

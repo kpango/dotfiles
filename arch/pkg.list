@@ -20,6 +20,7 @@ cmake
 discord
 dnsmasq
 docker
+dosfstools
 exa
 fakeroot
 fcitx
@@ -55,6 +56,7 @@ nmap
 openssh
 otf-font-awesome
 pacman-contrib
+parted
 patch
 pkgconf
 powertop

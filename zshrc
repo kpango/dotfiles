@@ -810,6 +810,7 @@ if [ -z $ZSH_LOADED ]; then
         alias archup=archup
 
     fi
+
     if type vcs_info >/dev/null 2>&1; then
         vcs_info
     fi

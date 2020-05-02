@@ -223,12 +223,18 @@ RUN git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
     && cp /tmp/FlameGraph/stackcollapse.pl ${GOPATH}/bin/ \
     && cp /tmp/FlameGraph/stackcollapse-go.pl ${GOPATH}/bin/
 
+FROM go-base AS gosec
+RUN GO111MODULE=on go get -u \
+    --ldflags "-s -w" --trimpath \
+    github.com/securego/gosec/cmd/gosec \
+    && upx -9 ${GOPATH}/bin/gosec
+
 FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
 FROM go-base AS go-libs
-COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 # COPY --from=diago $GOPATH/bin/diago $GOPATH/bin/diago
+COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
@@ -250,6 +256,7 @@ COPY --from=gomodifytags $GOPATH/bin/gomodifytags $GOPATH/bin/gomodifytags
 COPY --from=gopls $GOPATH/bin/gopls $GOPATH/bin/gopls
 COPY --from=gorename $GOPATH/bin/gorename $GOPATH/bin/gorename
 COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
+COPY --from=gosec $GOPATH/bin/gosec $GOPATH/bin/gosec
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
