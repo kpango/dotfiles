@@ -4,7 +4,7 @@ BOOT_PART=${DEVICE}1
 ROOT_PART=${DEVICE}2
 ROOT=/mnt
 BOOT=${ROOT}/boot
-ESP_SIZE=300MiB
+BOOT_SIZE=110MiB
 FILESYS=xfs
 
 unmount(){
@@ -34,8 +34,8 @@ w" | sudo fdisk $1
 }
 
 partition(){
-    sudo parted -s -a optimal ${DEVICE} -- mklabel gpt mkpart ESP fat32 0% ${ESP_SIZE} set 1 boot on && sync
-    sudo parted -s -a optimal ${DEVICE} -- mkpart primary ${FILESYS} ${ESP_SIZE} 100% && sync
+    sudo parted -s -a optimal ${DEVICE} -- mklabel msdos mkpart primary fat32 0% ${BOOT_SIZE} set 1 boot on && sync
+    sudo parted -s -a optimal ${DEVICE} -- mkpart primary ${FILESYS} ${BOOT_SIZE} 100% && sync
 }
 
 ip a
@@ -90,9 +90,9 @@ echo "$ROOT_PART formatted"
 sleep 10
 lsblk -a
 echo "mount"
-sudo mount ${ROOT_PART} ${ROOT} && sync
+sudo mount -t ${FILESYS} ${ROOT_PART} ${ROOT} && sync
 sudo mkdir -p ${BOOT}
-sudo mount ${BOOT_PART} ${BOOT} && sync
+sudo mount -t vfat ${BOOT_PART} ${BOOT} && sync
 echo "mounted"
 df -aT
 
@@ -101,6 +101,7 @@ cd /tmp
 TARPATH=/tmp/arch.tar.gz
 axel -a -n 10 -o ${TARPATH} http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-3-latest.tar.gz
 sudo bsdtar -xpf ${TARPATH} -C ${ROOT}
+sync
 sudo rm -rf ${TARPATH}
 
 IP_RANGE=192.168.1
@@ -110,12 +111,14 @@ sudo tee ${ROOT}/etc/systemd/network/eth0.network <<EOF >/dev/null
 Name=eth0
 [Network]
 DHCP=false
-Address=${IP_RANGE}.2/24
+Address=${IP_RANGE}.4/24
 Gateway=${GATEWAY}
 DNS=${GATEWAY}
 EOF
 
-HOST="k8s-raspberry-pi-0"
+sudo cat ${ROOT}/etc/systemd/network/eth0.network 
+
+HOST="k8s-raspberry-pi-1"
 echo ${HOST} | sudo tee -a ${ROOT}/etc/hostname > /dev/null
 
 sudo tee ${ROOT}/etc/hosts <<EOF >/dev/null
