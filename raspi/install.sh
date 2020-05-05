@@ -130,6 +130,10 @@ sudo cp ./init.sh ${ROOT}/init.sh
 sudo cp ./pkg.list ${ROOT}/pkg.list
 sudo cp ./aur.list ${ROOT}/aur.list
 sudo cp ./user-init.sh ${ROOT}/user-init.sh
+wget -o ${ROOT}/init.sh https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/init.sh
+wget -o ${ROOT}/user-init.sh https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/user-init.sh
+wget -o ${ROOT}/pkg.list https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/pkg.list
+wget -o ${ROOT}/aur.list https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/aur.list
 
 echo "blacklist pcspkr" | sudo tee -a ${ROOT}/etc/modprobe.d/nobeep.conf > /dev/null
 sudo sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" ${ROOT}/etc/systemd/resolved.conf
