@@ -4,7 +4,7 @@ swapoff --all
 rm -rf /var/swap
 pacman-key --init
 pacman-key --populate archlinuxarm
-pacman -Syu
+pacman -Syu - < pkg.list
 
 ln -sfv /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 locale-gen

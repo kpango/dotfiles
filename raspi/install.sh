@@ -46,9 +46,6 @@ echo "unmount volumes"
 unmount
 echo "volumes unmounted"
 lsblk
-echo "mdadm clear"
-echo "mdadm cleared"
-lsblk
 echo "unmount volumes"
 unmount
 echo "volumes unmounted"
@@ -60,18 +57,10 @@ lsblk
 echo "wipe disks"
 sudo wipefs -a ${DEVICE} && sync
 echo "disks wiped"
-lsblk
+# lsblk
 # echo "shred ${DEVICE}"
 # sudo shred -n 1 -z ${DEVICE} && sync
 # echo "${DEVICE} shredded"
-lsblk
-echo "lvremove"
-sudo lvremove ${DEVICE} && sync
-echo "lvremoved"
-lsblk
-echo "pvremove"
-sudo pvremove ${DEVICE} && sync
-echo "pvremoved"
 lsblk
 
 sleep 10
@@ -94,6 +83,7 @@ sudo mount -t ${FILESYS} ${ROOT_PART} ${ROOT} && sync
 sudo mkdir -p ${BOOT}
 sudo mount -t vfat ${BOOT_PART} ${BOOT} && sync
 echo "mounted"
+
 df -aT
 
 cd /tmp
@@ -105,9 +95,10 @@ sync
 sudo rm -rf ${TARPATH}
 
 NODE_NO=1
-IP_RANGE=192.168.1
-GATEWAY=${IP_RANGE}.1
-sudo tee ${ROOT}/etc/systemd/network/eth0.network <<EOF >/dev/null
+IP_RANGE="192.168.1"
+GATEWAY="${IP_RANGE}.1"
+
+sudo tee "${ROOT}/etc/systemd/network/eth0.network" <<EOF >/dev/null
 [Match]
 Name=eth0
 [Network]
@@ -135,7 +126,7 @@ sudo sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" ${ROOT}/etc/mkinitcpi
 sudo sed -i -e "s/block filesystems/block resume filesystems/g" ${ROOT}/etc/mkinitcpio.conf
 
 sudo cp /etc/pacman.conf ${ROOT}/etc/pacman.conf
-sudo cp ./install.sh ${ROOT}/install.sh
+sudo cp ./init.sh ${ROOT}/init.sh
 sudo cp ./pkg.list ${ROOT}/pkg.list
 sudo cp ./aur.list ${ROOT}/aur.list
 sudo cp ./user-init.sh ${ROOT}/user-init.sh
