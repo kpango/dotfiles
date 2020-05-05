@@ -18,9 +18,6 @@ git
 gzip
 htop
 inetutils
-kubeadm-bin
-kubectl
-kubectx
 less
 linux
 linux-firmware
@@ -50,7 +47,6 @@ tar
 thefuck
 tig
 tmux
-uboot-tools
 unzip
 usbutils
 which

@@ -4,3 +4,6 @@ procs
 systemd-boot-pacman-hook
 tzupdate
 yay
+kubeadm-bin
+kubectl
+kubectx

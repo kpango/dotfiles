@@ -57,10 +57,10 @@ lsblk
 echo "wipe disks"
 sudo wipefs -a ${DEVICE} && sync
 echo "disks wiped"
-# lsblk
-# echo "shred ${DEVICE}"
-# sudo shred -n 1 -z ${DEVICE} && sync
-# echo "${DEVICE} shredded"
+lsblk
+echo "shred ${DEVICE}"
+sudo shred -n 1 -z ${DEVICE} && sync
+echo "${DEVICE} shredded"
 lsblk
 
 sleep 10
@@ -95,6 +95,8 @@ sync
 sudo rm -rf ${TARPATH}
 
 NODE_NO=1
+# NODE_NO=2
+# NODE_NO=3
 IP_RANGE="192.168.1"
 GATEWAY="${IP_RANGE}.1"
 
@@ -126,14 +128,10 @@ sudo sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" ${ROOT}/etc/mkinitcpi
 sudo sed -i -e "s/block filesystems/block resume filesystems/g" ${ROOT}/etc/mkinitcpio.conf
 
 sudo cp /etc/pacman.conf ${ROOT}/etc/pacman.conf
-sudo cp ./init.sh ${ROOT}/init.sh
-sudo cp ./pkg.list ${ROOT}/pkg.list
-sudo cp ./aur.list ${ROOT}/aur.list
-sudo cp ./user-init.sh ${ROOT}/user-init.sh
-wget -o ${ROOT}/init.sh https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/init.sh
-wget -o ${ROOT}/user-init.sh https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/user-init.sh
-wget -o ${ROOT}/pkg.list https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/pkg.list
-wget -o ${ROOT}/aur.list https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/aur.list
+axel -a -n 10 -o ${ROOT}/init.sh https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/init.sh
+axel -a -n 10 -o ${ROOT}/user-init.sh https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/user-init.sh
+axel -a -n 10 -o ${ROOT}/pkg.list https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/pkg.list
+axel -a -n 10 -o ${ROOT}/aur.list https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/aur.list
 
 echo "blacklist pcspkr" | sudo tee -a ${ROOT}/etc/modprobe.d/nobeep.conf > /dev/null
 sudo sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" ${ROOT}/etc/systemd/resolved.conf
