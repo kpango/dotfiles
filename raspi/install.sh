@@ -21,7 +21,7 @@ echo "d
 
 
 w" | sudo fdisk $1
-echo "d
+echo "dpkg
 2
 
 
@@ -104,6 +104,7 @@ sudo bsdtar -xpf ${TARPATH} -C ${ROOT}
 sync
 sudo rm -rf ${TARPATH}
 
+NODE_NO=1
 IP_RANGE=192.168.1
 GATEWAY=${IP_RANGE}.1
 sudo tee ${ROOT}/etc/systemd/network/eth0.network <<EOF >/dev/null
@@ -111,7 +112,7 @@ sudo tee ${ROOT}/etc/systemd/network/eth0.network <<EOF >/dev/null
 Name=eth0
 [Network]
 DHCP=false
-Address=${IP_RANGE}.4/24
+Address=${IP_RANGE}.$((NODE_NO+2))/24
 Gateway=${GATEWAY}
 DNS=${GATEWAY}
 EOF
@@ -134,6 +135,10 @@ sudo sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" ${ROOT}/etc/mkinitcpi
 sudo sed -i -e "s/block filesystems/block resume filesystems/g" ${ROOT}/etc/mkinitcpio.conf
 
 sudo cp /etc/pacman.conf ${ROOT}/etc/pacman.conf
+sudo cp ./install.sh ${ROOT}/install.sh
+sudo cp ./pkg.list ${ROOT}/pkg.list
+sudo cp ./aur.list ${ROOT}/aur.list
+sudo cp ./user-init.sh ${ROOT}/user-init.sh
 
 echo "blacklist pcspkr" | sudo tee -a ${ROOT}/etc/modprobe.d/nobeep.conf > /dev/null
 sudo sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" ${ROOT}/etc/systemd/resolved.conf

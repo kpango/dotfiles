@@ -4,7 +4,7 @@ swapoff --all
 rm -rf /var/swap
 pacman-key --init
 pacman-key --populate archlinuxarm
-pacman -Sy dropbear chronyd docker
+pacman -Syu
 
 ln -sfv /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 locale-gen
@@ -38,3 +38,13 @@ systemctl daemon-reload
 
 chmod -R 755 /home/${LOGIN_USER}
 chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
+
+systemctl enable chronyd
+systemctl start chronyd
+systemctl enable docker
+systemctl enable fstrim.timer
+
+sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress g_cdc usb_f_acm usb_f_ecm smsc95xx g_ether)/g" /etc/mkinitcpio.conf
+sed -i -e "s/block filesystems/block sleep netconf dropbear encryptssh resume filesystems/g" /etc/mkinitcpio.conf
+sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
+mkinitcpio -P
