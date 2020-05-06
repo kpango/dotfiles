@@ -7,11 +7,14 @@ rm -r yay
 
 curl https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/aur.list -o /aur.list
 pacman -Rs go
-yay -Syu - < /aur.list
-HACKGEN_VERSION="1.4.1"
-axel "https://github.com/yuru7/HackGen/releases/download/v${HACKGEN_VERSION}/HackGen_v${HACKGEN_VERSION}.zip"
-unzip HackGen_v${HACKGEN_VERSION}.zip
-sudo mv HackGen_v${HACKGEN_VERSION}/* /usr/share/fonts/TTF/
-sudo cp /usr/bin/google-chrome-stable /usr/bin/chrome
-
-fc-cache -f -v
+yay -Syu
+yay -S ghq
+yay -S gopreload-git
+yay -S kubeadm-bin
+yay -S kubectl
+yay -S kubectx
+yay -S procs
+yay -S reflector
+yay -S systemd-boot-pacman-hook
+yay -S tzupdate
+yay -S yay

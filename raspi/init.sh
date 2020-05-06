@@ -4,7 +4,58 @@ swapoff --all
 rm -rf /var/swap
 pacman-key --init
 pacman-key --populate archlinuxarm
-pacman -Syu - < pkg.list
+pacman -Syu
+pacman -S archlinux-keyring
+pacman -S autoconf
+pacman -S automake
+pacman -S axel
+pacman -S base-devel
+pacman -S chrony
+pacman -S clang
+pacman -S cmake
+pacman -S dnsmasq
+pacman -S docker
+pacman -S dosfstools
+pacman -S dropbear
+pacman -S exa
+pacman -S fakeroot
+pacman -S fd
+pacman -S fwupd
+pacman -S git
+pacman -S gzip
+pacman -S htop
+pacman -S inetutils
+pacman -S less
+pacman -S linux
+pacman -S linux-firmware
+pacman -S lshw
+pacman -S lsof
+pacman -S make
+pacman -S mkinitcpio-netconf
+pacman -S mkinitcpio-utils
+pacman -S neovim
+pacman -S nmap
+pacman -S pacman-contrib
+pacman -S parted
+pacman -S pkgconf
+pacman -S powertop
+pacman -S ranger
+pacman -S ripgrep
+pacman -S rsync
+pacman -S sed
+pacman -S sudo
+pacman -S sysfsutils
+pacman -S systemd
+pacman -S systemd-sysvcompat
+pacman -S tar
+pacman -S thefuck
+pacman -S tig
+pacman -S tmux
+pacman -S unzip
+pacman -S usbutils
+pacman -S which
+pacman -S xfsprogs
+pacman -S zsh
 
 ln -sfv /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 locale-gen
