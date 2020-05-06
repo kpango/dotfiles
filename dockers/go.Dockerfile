@@ -229,6 +229,12 @@ RUN GO111MODULE=on go get -u \
     github.com/securego/gosec/cmd/gosec \
     && upx -9 ${GOPATH}/bin/gosec
 
+FROM go-base AS sqls
+RUN GO111MODULE=on go get -u \
+    --ldflags "-s -w" --trimpath \
+    github.com/lighttiger2505/sqls \
+    && upx -9 ${GOPATH}/bin/sqls
+
 FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
@@ -267,6 +273,7 @@ COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
+COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 
 FROM scratch
 ENV GOROOT /opt/go

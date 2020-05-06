@@ -123,16 +123,16 @@ COPY --from=gcloud /usr/bin/git-credential-gcloud.sh /usr/bin/git-credential-gcl
 COPY --from=gcloud /usr/bin/gsutil /usr/bin/gsutil
 COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
 
-# COPY --from=nim /bin/nim /usr/local/bin/nim
-# COPY --from=nim /bin/nimble /usr/local/bin/nimble
-# COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
-# COPY --from=nim /nim/lib /usr/local/lib/nim
-# COPY --from=nim /root/.cache/nim /root/.cache/nim
-# COPY --from=nim /nim /nim
+COPY --from=nim /bin/nim /usr/local/bin/nim
+COPY --from=nim /bin/nimble /usr/local/bin/nimble
+COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
+COPY --from=nim /nim/lib /usr/local/lib/nim
+COPY --from=nim /root/.cache/nim /root/.cache/nim
+COPY --from=nim /nim /nim
 
 COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
-# COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
-# COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
+COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
+COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
 
 COPY --from=go /opt/go/bin $GOROOT/bin
 COPY --from=go /opt/go/src $GOROOT/src
@@ -140,7 +140,6 @@ COPY --from=go /opt/go/lib $GOROOT/lib
 COPY --from=go /opt/go/pkg $GOROOT/pkg
 COPY --from=go /opt/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
-# COPY --from=go /go/src/github.com/nsf/gocode/vim $GOROOT/misc/vim
 
 # COPY --from=rust /home/rust/.cargo/bin /root/.cargo/bin
 COPY --from=rust /root/.cargo /root/.cargo

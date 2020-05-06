@@ -94,8 +94,8 @@ sudo bsdtar -xpf ${TARPATH} -C ${ROOT}
 sync
 sudo rm -rf ${TARPATH}
 
-# NODE_NO=1
-NODE_NO=2
+NODE_NO=1
+# NODE_NO=2
 # NODE_NO=3
 IP_RANGE="192.168.1"
 GATEWAY="${IP_RANGE}.1"

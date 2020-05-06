@@ -100,3 +100,6 @@ sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress g_cdc usb_f_acm usb_f_ecm smsc
 sed -i -e "s/block filesystems/block sleep netconf dropbear encryptssh resume filesystems/g" /etc/mkinitcpio.conf
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
 mkinitcpio -P
+
+chmod -R 777 /home/kpango
+chown -R kpango /home/kpango

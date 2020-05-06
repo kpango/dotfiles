@@ -1,4 +1,15 @@
-FROM kpango/rust-musl-builder:latest AS rust-base
+FROM kpango/dev-base:latest AS rust-base
+
+ARG TOOLCHAIN=nightly
+
+ENV PATH /root/.cargo/bin:$PATH
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+    sh -s -- -y --default-toolchain $TOOLCHAIN
+
+RUN rustup install nightly \
+    && rustup default nightly \
+    && rustup update
 
 RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
@@ -32,7 +43,7 @@ RUN RUST_BACKTRACE=1 RUSTC_WRAPPER=`which sccache` cargo install --force --no-de
 #     && cargo install --force --no-default-features --git https://github.com/mozilla/sccache \
 # RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
-FROM kpango/rust-musl-builder:latest AS rust
+FROM scratch AS rust
 
 COPY --from=nix-lsp /home/rust/.cargo/bin/nix-lsp /root/.cargo/bin/nix-lsp
 COPY --from=fd /home/rust/.cargo/bin/fd /root/.cargo/bin/fd
