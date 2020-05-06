@@ -7,14 +7,14 @@ rm -r yay
 
 curl https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/aur.list -o /aur.list
 pacman -Rs go
-yay -Syu
-yay -S ghq
-yay -S gopreload-git
-yay -S kubeadm-bin
-yay -S kubectl
-yay -S kubectx
-yay -S procs
-yay -S reflector
-yay -S systemd-boot-pacman-hook
-yay -S tzupdate
-yay -S yay
+yay -Syu --noanswerdiff --noanswerclean --noconfirm
+yay -S --noanswerdiff --noanswerclean --noconfirm ghq
+yay -S --noanswerdiff --noanswerclean --noconfirm gopreload-git
+yay -S --noanswerdiff --noanswerclean --noconfirm kubeadm-bin
+yay -S --noanswerdiff --noanswerclean --noconfirm kubectl
+yay -S --noanswerdiff --noanswerclean --noconfirm kubectx
+yay -S --noanswerdiff --noanswerclean --noconfirm procs
+yay -S --noanswerdiff --noanswerclean --noconfirm reflector
+yay -S --noanswerdiff --noanswerclean --noconfirm systemd-boot-pacman-hook
+yay -S --noanswerdiff --noanswerclean --noconfirm tzupdate
+yay -S --noanswerdiff --noanswerclean --noconfirm yay

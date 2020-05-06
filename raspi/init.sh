@@ -4,58 +4,58 @@ swapoff --all
 rm -rf /var/swap
 pacman-key --init
 pacman-key --populate archlinuxarm
-pacman -Syu
-pacman -S archlinux-keyring
-pacman -S autoconf
-pacman -S automake
-pacman -S axel
-pacman -S base-devel
-pacman -S chrony
-pacman -S clang
-pacman -S cmake
-pacman -S dnsmasq
-pacman -S docker
-pacman -S dosfstools
-pacman -S dropbear
-pacman -S exa
-pacman -S fakeroot
-pacman -S fd
-pacman -S fwupd
-pacman -S git
-pacman -S gzip
-pacman -S htop
-pacman -S inetutils
-pacman -S less
-pacman -S linux
-pacman -S linux-firmware
-pacman -S lshw
-pacman -S lsof
-pacman -S make
-pacman -S mkinitcpio-netconf
-pacman -S mkinitcpio-utils
-pacman -S neovim
-pacman -S nmap
-pacman -S pacman-contrib
-pacman -S parted
-pacman -S pkgconf
-pacman -S powertop
-pacman -S ranger
-pacman -S ripgrep
-pacman -S rsync
-pacman -S sed
-pacman -S sudo
-pacman -S sysfsutils
-pacman -S systemd
-pacman -S systemd-sysvcompat
-pacman -S tar
-pacman -S thefuck
-pacman -S tig
-pacman -S tmux
-pacman -S unzip
-pacman -S usbutils
-pacman -S which
-pacman -S xfsprogs
-pacman -S zsh
+pacman -Syu --noconfirm
+pacman -Sy --noconfirm archlinux-keyring
+pacman -Sy --noconfirm autoconf
+pacman -Sy --noconfirm automake
+pacman -Sy --noconfirm axel
+pacman -Sy --noconfirm base-devel
+pacman -Sy --noconfirm chrony
+pacman -Sy --noconfirm clang
+pacman -Sy --noconfirm cmake
+pacman -Sy --noconfirm dnsmasq
+pacman -Sy --noconfirm docker
+pacman -Sy --noconfirm dosfstools
+pacman -Sy --noconfirm dropbear
+pacman -Sy --noconfirm exa
+pacman -Sy --noconfirm fakeroot
+pacman -Sy --noconfirm fd
+pacman -Sy --noconfirm fwupd
+pacman -Sy --noconfirm git
+pacman -Sy --noconfirm gzip
+pacman -Sy --noconfirm htop
+pacman -Sy --noconfirm inetutils
+pacman -Sy --noconfirm less
+pacman -Sy --noconfirm linux
+pacman -Sy --noconfirm linux-firmware
+pacman -Sy --noconfirm lshw
+pacman -Sy --noconfirm lsof
+pacman -Sy --noconfirm make
+pacman -Sy --noconfirm mkinitcpio-netconf
+pacman -Sy --noconfirm mkinitcpio-utils
+pacman -Sy --noconfirm neovim
+pacman -Sy --noconfirm nmap
+pacman -Sy --noconfirm pacman-contrib
+pacman -Sy --noconfirm parted
+pacman -Sy --noconfirm pkgconf
+pacman -Sy --noconfirm powertop
+pacman -Sy --noconfirm ranger
+pacman -Sy --noconfirm ripgrep
+pacman -Sy --noconfirm rsync
+pacman -Sy --noconfirm sed
+pacman -Sy --noconfirm sudo
+pacman -Sy --noconfirm sysfsutils
+pacman -Sy --noconfirm systemd
+pacman -Sy --noconfirm systemd-sysvcompat
+pacman -Sy --noconfirm tar
+pacman -Sy --noconfirm thefuck
+pacman -Sy --noconfirm tig
+pacman -Sy --noconfirm tmux
+pacman -Sy --noconfirm unzip
+pacman -Sy --noconfirm usbutils
+pacman -Sy --noconfirm which
+pacman -Sy --noconfirm xfsprogs
+pacman -Sy --noconfirm zsh
 
 ln -sfv /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 locale-gen
