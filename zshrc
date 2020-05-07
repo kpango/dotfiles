@@ -339,8 +339,6 @@ if [ -z $ZSH_LOADED ]; then
         export OCTANT_LISTENER_ADDR="0.0.0.0:8900"
     fi
 
-    alias open="xdg-open"
-
     if type xsel >/dev/null 2>&1; then
         alias pbcopy="xsel --clipboard --input"
         alias pbpaste="xsel --clipboard --output"
@@ -773,6 +771,10 @@ if [ -z $ZSH_LOADED ]; then
             fi
         }
         alias nmcliwifi=nmcliwifi
+    fi
+
+    if type xdg-open >/dev/null 2>&1; then
+        alias open=xdg-open
     fi
 
     if type compton >/dev/null 2>&1; then
