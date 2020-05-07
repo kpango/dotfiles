@@ -3,9 +3,13 @@
 /usr/bin/ruby -e $(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)
 
 brew install wget
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/macos/Brewfile
-brew bundle --file /tmp/Brewfile
+
+curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/Brewfile
+brew bundle --file Brewfile
+rm -rf Brewfile
+
 brew autoupdate --start --upgrade --cleanup
+
 cat <<EOF >$HOME/.docker/config.json
 {
    "auths":{ },
