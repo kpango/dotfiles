@@ -10,6 +10,8 @@ rm -rf Brewfile
 
 brew autoupdate --start --upgrade --cleanup
 
+sudo rm -rf $HOME/.docker
+sudo mkdir -p $HOME/.docker
 cat <<EOF >$HOME/.docker/config.json
 {
    "auths":{ },
@@ -41,3 +43,5 @@ EOF
 curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/monokai.terminal
 open monokai.terminal
 rm -rf monokai.terminal
+
+mas install 1475387142
