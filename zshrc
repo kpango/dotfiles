@@ -9,7 +9,7 @@ if type tmux >/dev/null 2>&1; then
         # if [[ -z $ID && -z "$WINDOW" && ! -z "$PS1" ]]; then # if not available create a new one
         if [[ -z $ID ]]; then # if not available create a new one
             echo "creating new tmux session"
-            tmux -2 new-session -n$USER -s$USER@$HOST source-file ~/.tmux.new-session && echo "created new tmux session"
+            tmux -2 new-session -n$USER -s$USER@$HOST \; source-file ~/.tmux.new-session && echo "created new tmux session"
         else
             echo "attaching tmux session $ID"
             tmux -2 attach-session -t "$ID" && echo "attached tmux session $ID"
@@ -30,7 +30,7 @@ if [ -z $DOTENV_LOADED ]; then
         eval "$(/usr/libexec/path_helper -s)"
     fi
 
-    # 環境変数
+    # environment var
     export LANG=en_US.UTF-8
     export MANLANG=ja_JP.UTF-8
     export LC_TIME=en_US.UTF-8
@@ -46,7 +46,6 @@ if [ -z $DOTENV_LOADED ]; then
         export TERMCMD="urxvtc -e $SHELL"
     fi
 
-    #プログラミング環境構築
     export XDG_CONFIG_HOME=$HOME/.config
 
     export GCLOUD_PATH="/google-cloud-sdk"
