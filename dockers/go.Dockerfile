@@ -235,6 +235,22 @@ RUN GO111MODULE=on go get -u \
     github.com/lighttiger2505/sqls \
     && upx -9 ${GOPATH}/bin/sqls
 
+FROM go-base AS vgrun
+RUN GO111MODULE=on go get -u \
+    --ldflags "-s -w" --trimpath \
+    github.com/vugu/vgrun \
+    && upx -9 ${GOPATH}/bin/vgrun
+
+FROM go-base AS tinygo
+RUN set -x; cd "$(mktemp -d)" \
+    && OS="$(go env GOOS)" \
+    && ARCH="$(go env GOARCH)" \
+    && TINYGO_VERSION="$(curl --silent https://github.com/tinygo-org/tinygo/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fsSLO "https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
+    && tar zxf "tinygo${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
+    && mv tinygo/bin/tinygo ${GOPATH}/bin/tinygo \
+    && upx -9 ${GOPATH}/bin/tinygo
+
 FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
@@ -274,6 +290,8 @@ COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
+COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
+COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
 
 FROM scratch
 ENV GOROOT /opt/go

@@ -3,8 +3,8 @@ FROM kpango/dev-base:latest AS kube-base
 ENV ARCH amd64
 ENV OS linux
 ENV GITHUB https://github.com
-ENV RELEASE_DL release/download
-ENV RELEASE_LATEST release/download
+ENV RELEASE_DL releases/download
+ENV RELEASE_LATEST releases/latest
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
 ENV TELEPRESENCE_VERSION 0.105
