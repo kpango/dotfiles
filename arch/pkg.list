@@ -13,6 +13,7 @@ avrdude
 axel
 bash-language-server
 bluez-utils
+caprine
 ccache
 chrony
 clang
@@ -36,6 +37,7 @@ gzip
 htop
 inetutils
 intel-ucode
+iptables-nft
 kubectl
 kubectx
 less
@@ -58,6 +60,7 @@ otf-font-awesome
 pacman-contrib
 parted
 patch
+pavucontrol
 pkgconf
 powertop
 pulseaudio

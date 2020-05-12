@@ -8,8 +8,10 @@ gopreload-git
 procs
 slack-desktop
 systemd-boot-pacman-hook
+tailscale
+tracktion-waveform
 tzupdate
-wdisplays-git
+wdisplays
 wofi-hg
 workstyle-git
 yay
