@@ -2,10 +2,10 @@ bluez-firmware
 boostnote-bin
 chrome-remote-desktop
 ghq
-google-chrome
+google-chrome-beta
 google-cloud-sdk
 gopreload-git
-procs
+procs-bin
 slack-desktop
 systemd-boot-pacman-hook
 tailscale
