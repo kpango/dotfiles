@@ -1,6 +1,5 @@
 FROM kpango/dev-base:latest AS go-base
 
-ENV GO_VERSION 1.14.2
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -10,7 +9,9 @@ ENV GOPATH /go
 ENV GOFLAGS "-ldflags=-w -ldflags=-s"
 
 WORKDIR /opt
-RUN curl -sSL -O "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz" \
+RUN url="$(wget -qO- https://golang.org/dl/ | grep -oP 'https:\/\/dl\.google\.com\/go\/go([0-9\.]+)\.linux-amd64\.tar\.gz' | head -n 1 )" \
+    && GO_VERSION="$(echo $url | grep -oP 'go[0-9\.]+' | grep -oP '[0-9\.]+' | head -c -2 )" \
+    && curl -sSL -O ${url} \
     && tar zxf "go${GO_VERSION}.linux-amd64.tar.gz" \
     && rm "go${GO_VERSION}.linux-amd64.tar.gz" \
     && ln -s /opt/go/bin/go /usr/bin/ \
