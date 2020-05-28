@@ -21,9 +21,7 @@
     "source": {
       "around.enable": false,
       "neco.enable": false,
-      "buffer.disableSyntaxes": [
-        "go"
-      ]
+      "buffer.disableSyntaxes": ["go"]
     }
   },
   "signature": {
@@ -50,15 +48,8 @@
   "languageserver": {
     "golang": {
       "command": "gopls",
-      "rootPatterns": [
-        "go.mod",
-        ".vim/",
-        ".git/",
-        ".hg/"
-      ],
-      "filetypes": [
-        "go"
-      ],
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"],
       "initializationOptions": {
         "completeUnimported": true,
         "usePlaceholders": true,
@@ -81,52 +72,29 @@
     },
     "nix": {
       "command": "nix-lsp",
-      "filetypes": [
-        "nix"
-      ],
+      "filetypes": ["nix"],
       "args": []
     },
     "dockerfile": {
       "command": "docker-langserver",
-      "filetypes": [
-        "dockerfile"
-      ],
-      "args": [
-        "--stdio"
-      ]
+      "filetypes": ["dockerfile"],
+      "args": ["--stdio"]
     },
     "bash": {
       "command": "bash-language-server",
-      "args": [
-        "start"
-      ],
-      "filetypes": [
-        "sh",
-        "zsh",
-        "bash"
-      ],
-      "ignoredRootPaths": [
-        "~"
-      ]
+      "args": ["start"],
+      "filetypes": ["sh", "zsh", "bash"],
+      "ignoredRootPaths": ["~"]
     },
     "python": {
       "command": "pyls",
-      "filetypes": [
-        "python"
-      ],
+      "filetypes": ["python"],
       "args": []
     },
     "efm": {
       "command": "efm-langserver",
-      "args": [
-        "-c",
-        "$HOME/.config/nvim/efm-lsp-conf.yaml"
-      ],
-      "filetypes": [
-        "vim",
-        "eruby",
-        "markdown"
-      ]
+      "args": ["-c", "$HOME/.config/nvim/efm-lsp-conf.yaml"],
+      "filetypes": ["vim", "eruby", "markdown"]
     }
   },
   "cSpell": {
@@ -168,6 +136,15 @@
       "yaml",
       "yml"
     ],
+    "ignoreRegExpList": [
+      ".{1}dur",
+      ".{1}len",
+      ".{2}dur",
+      ".{2}ech",
+      ".{2}err",
+      ".{2}len",
+      ".{4}ch"
+    ],
     "userWords": [
       "Neovim",
       "Nerdfont",
@@ -176,19 +153,21 @@
       "aech",
       "bignumber",
       "bowser",
+      "cSpell",
       "ccls",
       "cctx",
       "cnpm",
       "coc",
       "cocactions",
       "configrc",
-      "cSpell",
       "dech",
       "ech",
       "echodoc",
       "eelixir",
       "egctx",
       "emment",
+      "err",
+      "errs",
       "eruby",
       "gitignore",
       "gopls",
@@ -196,6 +175,8 @@
       "iamcco",
       "imselect",
       "keylayout",
+      "kmrmt",
+      "kpango",
       "langserver",
       "languagetool",
       "markdownlint",
@@ -206,6 +187,7 @@
       "objc",
       "objcpp",
       "operatorfunc",
+      "rinx",
       "runtimepath",
       "shellcheck",
       "shrinked",
@@ -214,11 +196,11 @@
       "struct",
       "stylelint",
       "ultisnips",
+      "uuid",
+      "uuids",
       "vald",
       "vdaas",
-      "kpango",
-      "rinx",
-      "kmrmt",
+      "vec",
       "vimbackupfile",
       "vimlsp",
       "vmap"
