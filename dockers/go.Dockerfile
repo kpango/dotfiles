@@ -96,8 +96,14 @@ RUN GO111MODULE=on go get -u  \
 FROM go-base AS dragon-imports
 RUN GO111MODULE=on go get -u  \
     --ldflags "-s -w" --trimpath \
-    github.com/monochromegane/dragon-imports/cmd/dragon-imports \
+    github.com/rerost/dragon-imports/cmd/dragon-imports \
     && upx -9 ${GOPATH}/bin/dragon-imports
+
+FROM go-base AS grpcurl
+RUN GO111MODULE=on go get -u  \
+    --ldflags "-s -w" --trimpath \
+    github.com/fullstorydev/grpcurl/cmd/grpcurl \
+    && upx -9 ${GOPATH}/bin/grpcurl
 
 FROM go-base AS ghq
 RUN GO111MODULE=on go get -u  \
@@ -230,6 +236,12 @@ RUN GO111MODULE=on go get -u \
     github.com/securego/gosec/cmd/gosec \
     && upx -9 ${GOPATH}/bin/gosec
 
+FROM go-base AS evans
+RUN GO111MODULE=on go get -u \
+    --ldflags "-s -w" --trimpath \
+    github.com/ktr0731/evans \
+    && upx -9 ${GOPATH}/bin/evans
+
 FROM go-base AS sqls
 RUN GO111MODULE=on go get -u \
     --ldflags "-s -w" --trimpath \
@@ -241,6 +253,12 @@ RUN GO111MODULE=on go get -u \
     --ldflags "-s -w" --trimpath \
     github.com/vugu/vgrun \
     && upx -9 ${GOPATH}/bin/vgrun
+
+FROM go-base AS pulumi
+# RUN PULUMI_VERSION="$(curl --silent https://github.com/pulumi/pulumi/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+RUN curl -fsSL https://get.pulumi.com | sh \
+    && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
+    && upx -9 ${GOPATH}/bin/pulumi
 
 FROM go-base AS tinygo
 RUN set -x; cd "$(mktemp -d)" \
@@ -262,6 +280,7 @@ COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 COPY --from=errcheck $GOPATH/bin/errcheck $GOPATH/bin/errcheck
+COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
 COPY --from=fillstruct $GOPATH/bin/fillstruct $GOPATH/bin/fillstruct
 COPY --from=flamegraph $GOPATH/bin/flamegraph.pl $GOPATH/bin/flamegraph.pl
 COPY --from=flamegraph $GOPATH/bin/stackcollapse-go.pl $GOPATH/bin/stackcollapse-go.pl
@@ -282,6 +301,7 @@ COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
 COPY --from=gosec $GOPATH/bin/gosec $GOPATH/bin/gosec
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
+COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
 COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
@@ -289,10 +309,11 @@ COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
-COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
+COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
-COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
+COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
+COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
 
 FROM scratch
 ENV GOROOT /opt/go
