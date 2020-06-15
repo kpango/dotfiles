@@ -31,6 +31,7 @@ RUN apt-get update -y \
         tzdata \
     && update-alternatives --set cc $(which clang) \
     && update-alternatives --set c++ $(which clang++) \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 RUN echo "${LANG} UTF-8" > /etc/locale.gen \

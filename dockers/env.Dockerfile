@@ -1,7 +1,5 @@
 FROM kpango/dev-base:latest AS env
 
-ENV NGT_VERSION 1.11.6
-ENV TENSORFLOW_C_VERSION 1.13.2
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 
 WORKDIR /tmp
@@ -39,6 +37,7 @@ RUN apt-get update -y \
     protobuf-compiler \
     python3-dev \
     python3-pip \
+    libomp-dev \
     python3-setuptools \
     python3-venv \
     ruby-dev \
@@ -74,17 +73,23 @@ RUN pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-s
     && cd /tmp \
     && rm -rf /tmp/translate-shell/
 
-RUN git clone https://github.com/yahoojapan/NGT -b v${NGT_VERSION} --depth 1 \
-    && cd /tmp/NGT \
-    && mkdir build \
-    && cd build \
-    && cmake -DNGT_LARGE_DATASET=ON -DNGT_OPENMP_DISABLE=1 .. \
-    && make  \
-    && make install \
+WORKDIR /tmp
+ENV NGT_VERSION 1.11.6
+ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
+ENV CXXFLAGS ${CFLAGS}
+# ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
+# ENV CPPFLAGS="-I/usr/local/opt/llvm/include"
+RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" \
+    && tar zxf "v${NGT_VERSION}.tar.gz" -C /tmp \
+    && cd "/tmp/NGT-${NGT_VERSION}" \
+    && cmake -DNGT_LARGE_DATASET=ON . \
+    && make -j -C "/tmp/NGT-${NGT_VERSION}" \
+    && make install -C "/tmp/NGT-${NGT_VERSION}" \
     && cd /tmp \
-    && rm -rf /tmp/NGT
+    && rm -rf /tmp/*
 
 WORKDIR /tmp
+ENV TENSORFLOW_C_VERSION 1.13.2
 RUN curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
