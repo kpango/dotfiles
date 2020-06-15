@@ -95,6 +95,7 @@ COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli
 COPY --from=kube /usr/k8s/bin/ /usr/bin/
 
 COPY --from=gcloud /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk
+COPY --from=gcloud /usr/lib/google-cloud-sdk/lib /usr/lib
 COPY --from=gcloud /usr/bin/bq /usr/bin/bq
 COPY --from=gcloud /usr/bin/dev_appserver.py /usr/bin/dev_appserver.py
 COPY --from=gcloud /usr/bin/docker-credential-gcloud /usr/bin/docker-credential-gcloud

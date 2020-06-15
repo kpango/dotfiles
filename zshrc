@@ -77,7 +77,7 @@ if [ -z $DOTENV_LOADED ]; then
     #ReactNative
     export REACT_EDITOR=$EDITOR;
 
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64:/usr/lib/google-cloud-sdk/lib
 
     if type go >/dev/null 2>&1; then
         #GO
@@ -281,6 +281,7 @@ if [ -z $ZSH_LOADED ]; then
     setopt auto_list       # 補完候補を一覧表示
     setopt auto_menu       # 補完候補が複数あるときに自動的に一覧表示する
     setopt auto_param_keys # カッコの対応などを自動的に補完
+    setopt auto_param_slash
     setopt auto_pushd      # cd したら自動的にpushdする
     setopt correct
     setopt extended_glob

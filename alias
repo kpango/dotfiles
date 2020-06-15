@@ -39,6 +39,7 @@ devrun(){
                 --restart always \
                 --privileged=$privileged \
                 -p $port_range:$port_range \
+                -v $HOME/.config/gcloud:/root/.config/gcloud \
                 -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
                 -v $HOME/.gnupg:/root/.gnupg \
                 -v $HOME/.kube:/root/.kube \

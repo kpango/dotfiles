@@ -134,6 +134,11 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar -zxvf helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz \
     && mv helm-docs ${BIN_PATH}/helm-docs
 
+FROM kube-base AS istio
+RUN set -x; cd "$(mktemp -d)" \
+    & curl -L https://istio.io/downloadIstio | sh - \
+    && mv "$(ls | grep istio)/bin/istioctl" ${BIN_PATH}/istioctl
+
 FROM kube-base AS kpt
 RUN set -x; cd "$(mktemp -d)" \
     && curl -fsSLo ${BIN_PATH}/kpt ${GOOGLE}/kpt-dev/latest/${OS}_${ARCH}/kpt \
@@ -154,6 +159,7 @@ ENV K8S_PATH /usr/k8s/bin
 COPY --from=helm ${BIN_PATH}/helm ${K8S_PATH}/helm
 COPY --from=helm-docs ${BIN_PATH}/helm-docs ${K8S_PATH}/helm-docs
 COPY --from=helmfile ${BIN_PATH}/helmfile ${K8S_PATH}/helmfile
+COPY --from=istio ${BIN_PATH}/istioctl ${K8S_PATH}/istioctl
 COPY --from=k9s ${BIN_PATH}/k9s ${K8S_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${K8S_PATH}/kind
 COPY --from=kpt ${BIN_PATH}/kpt ${K8S_PATH}/kpt
@@ -166,9 +172,9 @@ COPY --from=kubebuilder ${BIN_PATH}/kubebuilder ${K8S_PATH}/kubebuilder
 COPY --from=kubectl ${BIN_PATH}/kubectl ${K8S_PATH}/kubectl
 COPY --from=kubectl-fzf ${BIN_PATH}/cache_builder ${K8S_PATH}/cache_builder
 COPY --from=kubectx ${BIN_PATH}/kubectx ${K8S_PATH}/kubectx
-COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize
 COPY --from=kubectx ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
+COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize
 COPY --from=linkerd ${BIN_PATH}/linkerd ${K8S_PATH}/linkerd
 COPY --from=octant ${BIN_PATH}/octant ${K8S_PATH}/octant
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
