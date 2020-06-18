@@ -74,74 +74,97 @@ partition(){
 ip a
 rm -rf ${ROOT}
 lsblk
+
 echo "unmount volumes"
 unmount
 echo "volumes unmounted"
 lsblk
+
 echo "mdadm clear"
 unmdadm
 unmdadm
 echo "mdadm cleared"
 lsblk
+
 echo "unmount volumes"
 unmount
 echo "volumes unmounted"
 lsblk
+
 echo "remove partition"
 rmpart ${DEVICE1}
 rmpart ${DEVICE2}
 echo "partition removed"
 lsblk
+
 echo "wipe disks"
 wipefs -a ${DEVICE1} && sync
 wipefs -a ${DEVICE2} && sync
 echo "disks wiped"
 lsblk
+
 echo "shred nvme0n1"
 shred -n 1 -z ${DEVICE1} && sync
-echo "nvme0n1 shredded"
+echo "${DEVICE1} shredded"
 lsblk
+
 echo "shred nvme1n1"
 shred -n 1 -z ${DEVICE2} && sync
-echo "nvme1n1 shredded"
+echo "${DEVICE2} shredded"
 lsblk
+
 echo "lvremove"
 lvremove ${DEVICE1} && sync
 lvremove ${DEVICE2} && sync
 echo "lvremoved"
 lsblk
+
 echo "pvremove"
 pvremove ${DEVICE1} && sync
 pvremove ${DEVICE2} && sync
 echo "pvremoved"
 lsblk
+
 echo "mdadm clear"
 unmdadm
 unmdadm
 echo "mdadm cleared"
+lsblk
+
+sleep 10
 cat /proc/mdstat
 lsblk
+sleep 10
+
 echo "volume partitioning"
 partition
 echo "volume partitioned"
 lsblk
+
 echo "creating mdadm raid0"
 mdadm --create ${RAID} --verbose --level=raid0 --chunk=256 --raid-devices=2 ${RAID_PART1} ${RAID_PART2} && sync
 echo "raid0 volume created"
+sleep 10
 cat /proc/mdstat
 lsblk
+
 echo "raid partitioning"
 parted -s -a optimal ${RAID} -- mklabel gpt mkpart primary ${FILESYS} 0% 100% set 1 root on && sync
 echo "raid partitioned"
+sleep 10
 lsblk
+
 echo "raid formatting"
 mkswap ${SWAP} && sync
 swapon ${SWAP} && sync
 mkfs.vfat -cvIF32 ${BOOT_PART} && sync
 mkfs.${FILESYS} -f ${ROOT_PART} && sync
 echo "raid formatted"
+sleep 10
 lsblk
+
 echo "raid mount"
+
 mount ${ROOT_PART} ${ROOT} && sync
 mkdir -p ${BOOT}
 mount ${BOOT_PART} ${BOOT} && sync
@@ -149,62 +172,33 @@ mkdir -p ${ROOT}/home/kpango
 echo "raid mounted"
 df -aT
 echo "download deps"
-rm -rf Xdefaults chroot.sh locale.gen mirrorlist
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/Xdefaults
-cp Xdefaults ${ROOT}/home/kpango/.Xdefaults
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
+mkdir -p ${ROOT}/home/kpango/go/src/github.com/kpango
+echo "mounted"
+df -aT
+echo "download deps"
+rm -rf chroot.sh locale.gen
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot_desk.sh
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/mirrorlist
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/network/sysctl.conf
-pacman -S archlinux-keyring mdadm
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg.list
+pacman -Sy --noconfirm
+pacman -S --noconfirm archlinux-keyring reflector
+reflector --age 24 --latest 200 --number 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"
-pacstrap -i ${ROOT} \
-    base \
-    base-devel \
-    archlinux-keyring \
-    intel-ucode \
-    dmenu \
-    rxvt-unicode \
-    git \
-    neovim \
-    zsh \
-    tmux \
-    wlc \
-    wayland \
-    sway \
-    i3status \
-    ntp \
-    docker \
-    ranger \
-    dialog \
-    networkmanager \
-    network-manager-applet \
-    fcitx-im \
-    fcitx-configtool \
-    fcitx-mozc \
-    chrome \
-    alsa-utils \
-    apulse \
-    mdadm \
-    discord \
-    slack-desktop
-
-pacstrap -i ${ROOT} \
-    nvidia \
-    steam \
-    lib32-nvidia-utils 
-
+pacstrap -i ${ROOT} - < pkg.list
 echo "pacstrap finished"
+
 genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
-cp ./mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
+cp /etc/pacman.d/mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
 cp ./locale.gen ${ROOT}/etc/locale.gen
 cp ./chroot.sh ${ROOT}/chroot.sh
-cp ./sysctl.conf ${ROOT}/etc/sysctl.conf
+cp ./user-init.sh ${ROOT}/user-init.sh
 echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
+# arch-chroot ${ROOT} sh /chroot.sh
+# arch-chroot ${ROOT} sh /user-init.sh
+# echo "unmount volumes"
+# unmount
+# echo "volumes unmounted"
 mdadm --detail --scan >> ${ROOT}/etc/mdadm.conf
-arch-chroot ${ROOT} sh /chroot_desk.sh
-arch-chroot ${ROOT} sed -i -e "s/block filesystems/block filesystems resume/g" /etc/mkinitcpio.conf
-arch-chroot ${ROOT} mkinitcpio -p linux
-mkinitcpio -p linux
