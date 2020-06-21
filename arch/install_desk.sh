@@ -1,12 +1,12 @@
 #!/bin/sh
 DEVICE1=/dev/nvme0n1
 DEVICE2=/dev/nvme1n1
-# RAID1_PART1=${DEVICE1}p1
-# RAID1_PART2=${DEVICE2}p1
+RAID1_PART1=${DEVICE1}p1
+RAID1_PART2=${DEVICE2}p1
 RAID0_PART1=${DEVICE1}p2
 RAID0_PART2=${DEVICE2}p2
 RAID0=/dev/md0
-# RAID1=/dev/md1
+RAID1=/dev/md1
 # BOOT_PART=${RAID1}p1
 BOOT_PART=${DEVICE1}p1
 BOOT1_PART=${DEVICE2}p1
@@ -23,14 +23,11 @@ unmount(){
     umount -f ${BOOT_PART} && sync
     umount -f ${BOOT1_PART} && sync
     umount -f ${RAID0} && sync
-    # umount -f ${RAID1} && sync
-    # umount -f ${RAID1_PART1} && sync
-    # umount -f ${RAID1_PART2} && sync
+    umount -f ${RAID1} && sync
+    umount -f ${RAID1_PART1} && sync
+    umount -f ${RAID1_PART2} && sync
     umount -f ${RAID0_PART1} && sync
     umount -f ${RAID0_PART2} && sync
-    # swapoff ${RAID1_PART2}
-    swapoff -a
-    rm -f /swapfile
     umount -f ${DEVICE1} && sync
     umount -f ${DEVICE2} && sync
 }
@@ -40,9 +37,9 @@ unmdadm(){
     mdadm -S ${BOOT_PART} && sync
     mdadm -S ${BOOT1_PART} && sync
     mdadm -S ${RAID0} && sync
-    # mdadm -S ${RAID1} && sync
-    # mdadm -S ${RAID1_PART1} && sync
-    # mdadm -S ${RAID1_PART2} && sync
+    mdadm -S ${RAID1} && sync
+    mdadm -S ${RAID1_PART1} && sync
+    mdadm -S ${RAID1_PART2} && sync
     mdadm -S ${RAID0_PART1} && sync
     mdadm -S ${RAID0_PART2} && sync
     mdadm -S ${DEVICE1} && sync
@@ -50,10 +47,10 @@ unmdadm(){
     mdadm --misc --zero-superblock ${ROOT_PART} && sync
     mdadm --misc --zero-superblock ${BOOT_PART} && sync
     mdadm --misc --zero-superblock ${BOOT1_PART} && sync
-    # mdadm --misc --zero-superblock ${RAID1} && sync
+    mdadm --misc --zero-superblock ${RAID1} && sync
     mdadm --misc --zero-superblock ${RAID0} && sync
-    # mdadm --misc --zero-superblock ${RAID1_PART1} && sync
-    # mdadm --misc --zero-superblock ${RAID1_PART2} && sync
+    mdadm --misc --zero-superblock ${RAID1_PART1} && sync
+    mdadm --misc --zero-superblock ${RAID1_PART2} && sync
     mdadm --misc --zero-superblock ${RAID0_PART1} && sync
     mdadm --misc --zero-superblock ${RAID0_PART2} && sync
     mdadm --misc --zero-superblock ${DEVICE1} && sync
