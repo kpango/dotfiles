@@ -22,7 +22,8 @@ hwclock --systohc --localtime
 echo LANG=en_US.UTF-8 >>/etc/locale.conf
 timedatectl set-timezone Asia/Tokyo
 
-fallocate -l 24G /swapfile
+# https://itsfoss.com/swap-size/
+fallocate -l 72G /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
@@ -74,40 +75,40 @@ systemctl enable tlp-sleep
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
-sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" /etc/mkinitcpio.conf
+sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"/usr/bin/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block resume mdadm_udev filesystems/g" /etc/mkinitcpio.conf
 
 mkinitcpio -p linux
 
 mkdir -p /boot/efi/EFI
-bootctl --path=/boot install
-DEVICE_ID=`lsblk -f | grep p2 | awk '{print $3}'`
-echo ${DEVICE_ID}
-cat <<EOF >/boot/loader/entries/arch.conf
-title   Arch Linux
-linux   /vmlinuz-linux
-initrd  /intel-ucode.img
-initrd  /initramfs-linux.img
-options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1
-EOF
-rm -rf /boot/loader/loader.conf
-cat <<EOF >/boot/loader/loader.conf
-default arch
-timeout 0
-editor no
-EOF
-bootctl update
-bootctl list
-
-mkdir -p /etc/pacman.d/hooks
-ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
-
-sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
-mkdir -p /go/src/github.com/kpango
-cd /go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
-ln -sfv /go /home/${LOGIN_USER}/go
-chmod -R 755 /home/${LOGIN_USER}
-chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
-chmod -R 755 /go
-chown -R $LOGIN_USER:wheel /go
+# bootctl --path=/boot install
+# DEVICE_ID=`lsblk -f | grep xfs | awk '{print $3}'`
+# echo ${DEVICE_ID}
+# cat <<EOF >/boot/loader/entries/arch.conf
+# title   Arch Linux
+# linux   /vmlinuz-linux
+# initrd  /intel-ucode.img
+# initrd  /initramfs-linux.img
+# options root=UUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native i915.enable_execlists=0 intel_iommu=on resume=/dev/md0p1 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1
+# EOF
+# rm -rf /boot/loader/loader.conf
+# cat <<EOF >/boot/loader/loader.conf
+# default arch
+# timeout 0
+# editor no
+# EOF
+# bootctl update
+# bootctl list
+# 
+# mkdir -p /etc/pacman.d/hooks
+# ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
+# 
+# sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
+# mkdir -p /go/src/github.com/kpango
+# cd /go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
+# ln -sfv /go /home/${LOGIN_USER}/go
+# chmod -R 755 /home/${LOGIN_USER}
+# chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
+# chmod -R 755 /go
+# chown -R $LOGIN_USER:wheel /go

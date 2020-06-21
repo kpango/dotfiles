@@ -48,7 +48,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     export XDG_CONFIG_HOME=$HOME/.config
 
-    export GCLOUD_PATH="/google-cloud-sdk"
+    export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
 
     export PYTHON_CONFIGURE_OPTS="--enable-shared"
 
