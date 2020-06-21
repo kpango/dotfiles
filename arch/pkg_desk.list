@@ -44,10 +44,6 @@ iptables-nft
 kubectl
 kubectx
 less
-lib32-mesa-libgl
-lib32-nvidia-utils
-lib32-primus
-lib32-virtualgl
 light
 linux
 linux-firmware
@@ -64,7 +60,6 @@ neofetch
 neovim
 networkmanager
 nmap
-nvdock-bumblebee
 openssh
 otf-font-awesome
 pacman-contrib
