@@ -12,9 +12,7 @@ avr-libc
 avrdude
 axel
 bash-language-server
-bbswitch
 bluez-utils
-bumblebee
 caprine
 ccache
 chrony
@@ -52,7 +50,6 @@ lsof
 make
 mako
 mdadm
-mesa
 mesa-libgl
 mpv
 mysql-workbench
@@ -60,7 +57,6 @@ neofetch
 neovim
 networkmanager
 nmap
-nvidia
 openssh
 otf-font-awesome
 pacman-contrib
@@ -69,7 +65,6 @@ patch
 pavucontrol
 pkgconf
 powertop
-primus
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth
