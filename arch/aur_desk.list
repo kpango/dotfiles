@@ -1,7 +1,5 @@
-bbswitch
 bluez-firmware
 boostnote-bin
-bumblebee
 chrome-remote-desktop
 ghq
 google-chrome-beta
@@ -11,11 +9,8 @@ lib32-mesa-libgl
 lib32-nvidia-utils
 lib32-primus
 lib32-virtualgl
-mesa
 mesa-libgl
 nvdock-bumblebee
-nvidia
-primus
 procs-bin
 slack-desktop
 systemd-boot-pacman-hook
