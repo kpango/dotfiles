@@ -89,7 +89,7 @@ mkraid(){
 
 partraid(){
     # parted -s -a optimal ${RAID1} -- mklabel gpt mkpart ESP fat32 0% 100% set 1 boot on && sync
-    parted -s -a optimal ${RAID0} -- mklabel gpt mkpart primary ${FILESYS} 0% 100% set 1 root on && sync
+    parted -s -a optimal ${RAID0} -- mklabel gpt mkpart primary ${FILESYS} 0% 100% && sync
 }
 
 ip a
@@ -192,7 +192,6 @@ lsblk
 # rm -rf ${BOOT}
 # mkdir -p ${BOOT}
 # mount ${BOOT_PART} ${BOOT} && sync
-# mount ${BOOT1_PART} ${BOOT} && sync
 # echo "raid mounted"
 # sleep 20
 
