@@ -7,12 +7,6 @@ google-cloud-sdk
 gopreload-git
 libnm-iwd
 linux-firmware-iwlwifi-git
-lib32-mesa-libgl
-lib32-nvidia-utils
-lib32-primus
-lib32-virtualgl
-mesa-libgl
-nvdock-bumblebee
 procs-bin
 slack-desktop
 systemd-boot-pacman-hook

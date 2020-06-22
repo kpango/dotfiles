@@ -33,6 +33,7 @@ fd
 fwupd
 gettext
 git
+gnome-keyring
 graphviz
 grep
 grim
@@ -46,14 +47,12 @@ kubectx
 less
 light
 linux
-linux-firmware
 lshw
 lsof
 make
 mako
 mdadm
 mesa
-gnome-keyring
 mpv
 mysql-workbench
 neofetch
