@@ -787,7 +787,7 @@ if [ -z $ZSH_LOADED ]; then
     fi
     if type yay >/dev/null 2>&1; then
         archback() {
-            if [ $(cat /sys/devices/virtual/dmi/id/product_family) -eq "ThinkPad P1 Gen 2" ]; then
+            if [ $(cat /sys/devices/virtual/dmi/id/product_family) == *"P1"* ]; then
                 echo "backup ThinkPad P1 Gen 2 packages"
                 sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/pkg_desk.list
                 sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur_desk.list
