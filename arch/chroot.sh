@@ -5,8 +5,8 @@ sed -i -e "s/#BUILDDIR/BUILDDIR/g" /etc/makepkg.conf
 sed -i -e "s/#Color/Color\nILoveCandy/g" /etc/pacman.conf
 cat <<EOF >>/etc/pacman.conf
 
-#[multilib]
-#Include = /etc/pacman.d/mirrorlist
+[multilib]
+Include = /etc/pacman.d/mirrorlist
 EOF
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
 

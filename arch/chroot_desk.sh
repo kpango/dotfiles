@@ -5,8 +5,8 @@ sed -i -e "s/#BUILDDIR/BUILDDIR/g" /etc/makepkg.conf
 sed -i -e "s/#Color/Color\nILoveCandy/g" /etc/pacman.conf
 cat <<EOF >>/etc/pacman.conf
 
-#[multilib]
-#Include = /etc/pacman.d/mirrorlist
+[multilib]
+Include = /etc/pacman.d/mirrorlist
 EOF
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
 
@@ -42,8 +42,9 @@ groupadd input
 groupadd uinput
 groupadd pulse
 groupadd pulse-access
+groupadd bumblebee
 
-useradd -m -g users -G wheel,users,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,uinput -s /usr/bin/zsh ${LOGIN_USER}
+useradd -m -g users -G wheel,users,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,bumblebee,uinput -s /usr/bin/zsh ${LOGIN_USER}
 passwd ${LOGIN_USER}
 sed -e '/%wheel ALL=(ALL) ALL/s/^# //' /etc/sudoers | EDITOR=tee visudo >/dev/null
 sed -e '/%wheel ALL=(ALL) NOPASSWORD: ALL/s/^# %wheel/kpango/' /etc/sudoers | EDITOR=tee visudo >/dev/null
@@ -74,8 +75,9 @@ systemctl enable tlp
 systemctl enable tlp-sleep
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
+systemctl enable tlp
 
-sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
+sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"\/usr\/bin\/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block resume mdadm_udev filesystems/g" /etc/mkinitcpio.conf
 

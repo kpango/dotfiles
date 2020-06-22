@@ -53,7 +53,7 @@ make
 mako
 mdadm
 mesa
-mesa-libgl
+gnome-keyring
 mpv
 mysql-workbench
 neofetch
@@ -88,6 +88,7 @@ tar
 thefuck
 tig
 tlp
+tlp-rdw
 tmux
 tpacpi-bat
 ttf-nerd-fonts-symbols
@@ -95,6 +96,7 @@ unzip
 usbutils
 waybar
 wayland
+wget
 which
 wl-clipboard
 wlc

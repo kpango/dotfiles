@@ -740,16 +740,16 @@ if [ -z $ZSH_LOADED ]; then
                 nmcli d wifi list
                 sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1
                 sudo nmcli c mod $1 connection.autoconnect yes
-                sudo nmcli c mod $1 802-11-wireless-security.key-mgmt wpa-eap
-                sudo nmcli c mod $1 802-1x.eap peap
+                sudo nmcli c mod $1 \
+                  802-1x.eap peap \
+                  802-1x.identity $2 \
+                  802-1x.password $3 \
+                  802-1x.phase2-auth mschapv2
+                  # 802-1x.ca-cert /path/to/ca.crt \
+                  # 802-1x.client-cert /path/to/client.crt \
+                  # 802-1x.private-key /path/to/client.key \
+                  # 802-1x.private-key-password {password} \
                 # sudo nmcli c mod $1 802-1x.eap tls
-                sudo nmcli c mod $1 802-1x.phase2-auth mschapv2
-                sudo nmcli c mod $1 802-1x.identity $2
-                sudo nmcli c mod $1 802-1x.password $3
-                # sudo nmcli c mod $1 802-1x.ca-cert /path/to/ca.crt
-                # sudo nmcli c mod $1 802-1x.client-cert /path/to/client.crt
-                # sudo nmcli c mod $1 802-1x.private-key /path/to/client.key
-                # sudo nmcli c mod $1 802-1x.private-key-password {password}
                 sudo nmcli c up $1
             else
                 echo "invalid argument, SSID and PSK is required"
@@ -787,10 +787,19 @@ if [ -z $ZSH_LOADED ]; then
     fi
     if type yay >/dev/null 2>&1; then
         archback() {
-            sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
-            sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
-            pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
-            pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
+            if [ $(cat /sys/devices/virtual/dmi/id/product_family) -eq "ThinkPad P1 Gen 2" ]; then
+                echo "backup ThinkPad P1 Gen 2 packages"
+                sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/pkg_desk.list
+                sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur_desk.list
+                pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg_desk.list
+                pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur_desk.list
+	    else
+                echo "backup packages"
+                sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
+                sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
+                pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
+                pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
+	    fi
         }
         alias archback=archback
         archup() {
@@ -810,7 +819,31 @@ if [ -z $ZSH_LOADED ]; then
             paccache -ruk0
         }
         alias archup=archup
+    fi
 
+    if type bumblebeed >/dev/null 2>&1; then
+        discrete() {
+            killall Xorg
+            modprobe nvidia_drm
+            modprobe nvidia_modeset
+            modprobe nvidia
+            tee /proc/acpi/bbswitch <<<ON
+            cp /etc/X11/xorg.conf.nvidia /etc/X11/xorg.conf
+        }
+        alias discrete=discrete
+        integrated() {
+            killall Xorg
+            rmmod nvidia_drm
+            rmmod nvidia_modeset
+            rmmod nvidia
+            tee /proc/acpi/bbswitch <<<OFF
+            cp /etc/X11/xorg.conf.intel /etc/X11/xorg.conf
+        }
+        alias integrated=integrated
+    fi
+
+    if type systemctl >/dev/null 2>&1; then
+      alias checkkm="sudo systemctl status systemd-modules-load.service"
     fi
 
     if type vcs_info >/dev/null 2>&1; then

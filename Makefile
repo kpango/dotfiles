@@ -57,6 +57,7 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/tlp /etc/default/tlp
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers /etc/sudoers.d/kpango
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.sh /etc/profile.d/sway.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
@@ -68,10 +69,23 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/thinkfan.conf /etc/thinkfan.conf
+	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
+	sudo modprobe -rv thinkpad_acpi
+	sudo modprobe -v thinkpad_acpi
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo sysctl -p
 	sudo systemctl daemon-reload
+
+arch_p1_link: \
+	arch_link
+	sudo echo "options bbswitch load_state=0 unload_state=1" | sudo tee /etc/modprobe.d/bbswitch.conf
+	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
+	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/default.pa /etc/pulse/default.pa
+	sudo systemctl daemon-reload
+
 
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
@@ -110,16 +124,22 @@ clean:
 		/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
 		/etc/chrony.conf \
 		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
+		/etc/default/tlp \
 		/etc/docker/config.json \
 		/etc/docker/daemon.json \
 		/etc/environment \
 		/etc/lightdm \
+		/etc/modprobe.d/bbswitch.conf \
+		/etc/modprobe.d/thinkfan.conf \
 		/etc/modules-load.d/bbr.conf \
 		/etc/profile.d/fcitx.sh \
 		/etc/profile.d/sway.sh \
+		/etc/pulse/default.pa \
 		/etc/sudoers.d/kpango \
 		/etc/sysctl.conf \
 		/etc/systemd/system/NetworkManager-dispatcher.service \
+		/etc/systemd/system/nvidia-disable-resume.service \
+		/etc/systemd/system/nvidia-enable-power-off.service \
 		/etc/systemd/system/pulseaudio.service \
 		/etc/udev/rules.d/60-ioschedulers.rules
 
