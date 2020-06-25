@@ -77,7 +77,7 @@ if [ -z $DOTENV_LOADED ]; then
     #ReactNative
     export REACT_EDITOR=$EDITOR;
 
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64:/usr/lib/google-cloud-sdk/lib
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64:${GCLOUD_PATH}/lib
 
     if type go >/dev/null 2>&1; then
         #GO
