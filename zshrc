@@ -103,7 +103,13 @@ if [ -z $DOTENV_LOADED ]; then
         export CGO_LDFLAGS="-g -Ofast -march=native"
     fi
 
-    export TERM="tmux-256color"
+
+    if [ -z $TMUX ]; then
+        export TERM="xterm-256color"
+    else
+        export TERM="tmux-256color"
+    fi
+
     export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.cargo/bin:$GCLOUD_PATH/bin:$PATH"
 
     export ZPLUG_HOME=$HOME/.zplug
