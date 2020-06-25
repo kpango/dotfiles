@@ -6,7 +6,10 @@
 # Default: <none>
 START_CHARGE_THRESH_BAT0=60
 STOP_CHARGE_THRESH_BAT0=90
+
 RUNTIME_PM_DRIVER_BLACKLIST="amdgpu nouveau nvidia radeon"
+
+RESTORE_THRESHOLDS_ON_BAT=1
 
 # Ultrabay / Slice / Replaceable battery (values in %)
 # Default: <none>
