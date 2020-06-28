@@ -100,6 +100,7 @@ which
 wl-clipboard
 wlc
 wpscan
+xf86-input-synaptics
 xfsprogs
 xorg-server-xwayland
 yarn
