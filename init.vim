@@ -166,15 +166,15 @@ call plug#end()
 " --------------------------------------
 " ---- Plugin Dependencies Settings ----
 " --------------------------------------
-if !has('python') && !has('pip')
-    call system('pip install --upgrade pip')
-    call system('pip install neovim --upgrade')
-endif
+" if !has('python') && !has('pip')
+"     call system('pip install --upgrade pip')
+"     call system('pip install neovim --upgrade')
+" endif
 
-if !has('python3') && !has('pip3')
-    call system('pip3 install --upgrade pip')
-    call system('pip3 install neovim --upgrade')
-endif
+" if !has('python3') && !has('pip3')
+"     call system('pip3 install --upgrade pip')
+"     call system('pip3 install neovim --upgrade')
+" endif
 
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
