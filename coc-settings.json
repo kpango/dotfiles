@@ -97,6 +97,9 @@
       "filetypes": ["vim", "eruby", "markdown"]
     }
   },
+  "go.goplsOptions": {
+    "completeUnimported": true
+  },
   "cSpell": {
     "fixSpellingWithRenameProvider": true,
     "enabledLanguageIds": [

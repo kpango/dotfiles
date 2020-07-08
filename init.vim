@@ -80,13 +80,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ---- Clang Setting
     " Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
 " ---- Golang Setting
-    " Plug 'arp242/gopher.vim', {'for': 'go'}
     Plug 'mattn/vim-goimports', {'for': 'go'}
-    " Plug 'zchee/nvim-go', {'for': 'go', 'do': 'make'}
-    " Plug 'fatih/vim-go', {'for': 'go', 'do': 'GoInstallBinaries'} " go defact standard vim plugin
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
-    " Plug 'zchee/deoplete-go', {'for': 'go', 'do': 'make'} " for completion
-    Plug 'buoto/gotests-vim', {'for': 'go', 'on': 'GoTests'} " generates test code
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
 " ---- Proto
     Plug 'uber/prototool', {'for': 'proto', 'rtp':'vim/prototool'}
@@ -326,6 +321,7 @@ let g:coc_global_extensions = [
       \ 'coc-yank',
       \ 'coc-pairs',
       \ 'coc-git',
+      \ 'coc-go',
       \ 'coc-lists',
       \ 'coc-diagnostic',
       \ 'coc-gitignore',
