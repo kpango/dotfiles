@@ -39,6 +39,7 @@ grep
 grim
 gzip
 htop
+imagemagick
 inetutils
 intel-ucode
 iptables-nft
@@ -91,6 +92,7 @@ tlp-rdw
 tmux
 tpacpi-bat
 ttf-nerd-fonts-symbols
+unrar
 unzip
 usbutils
 waybar

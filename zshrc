@@ -31,9 +31,11 @@ if [ -z $DOTENV_LOADED ]; then
     fi
 
     # environment var
-    export LANG=en_US.UTF-8
-    export MANLANG=ja_JP.UTF-8
-    export LC_TIME=en_US.UTF-8
+    export CHARSET=UTF-8
+    export LESSCHARSET=${CHARSET}
+    export LANG=en_US.${CHARSET}
+    export MANLANG=ja_JP.${CHARSET}
+    export LC_TIME=en_US.${CHARSET}
 
     [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -68,6 +70,7 @@ if [ -z $DOTENV_LOADED ]; then
     else
         export VIM=$(which vi)
     fi
+
 
     export EDITOR=$VIM
     export VISUAL=$VIM
@@ -270,7 +273,6 @@ if [ -z $ZSH_LOADED ]; then
     #     fi
     # }
     _update_vcs_info_msg() {
-        LANG=en_US.UTF-8
         vcs_info
         # RPROMPT="%F{046}${vcs_info_msg_0_} %F{102}[%D{%Y-%m-%d %H:%M:%S}]"
         RPROMPT="%F{green}${vcs_info_msg_0_} %{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
