@@ -74,7 +74,7 @@ RUN pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-s
     && rm -rf /tmp/translate-shell/
 
 WORKDIR /tmp
-ENV NGT_VERSION 1.11.6
+ENV NGT_VERSION 1.12.0
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
@@ -89,7 +89,7 @@ RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" 
     && rm -rf /tmp/*
 
 WORKDIR /tmp
-ENV TENSORFLOW_C_VERSION 1.13.2
+ENV TENSORFLOW_C_VERSION 1.15.0
 RUN curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
