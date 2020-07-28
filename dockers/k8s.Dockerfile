@@ -147,9 +147,14 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM kube-base AS kustomize
 RUN set -x; cd "$(mktemp -d)" \
-    && KUSTOMIZE_VERSION="$(curl --silent ${GITHUB}/kubernetes-sigs/kustomize/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/kustomize\/v//g')" \
-    && curl -fsSLO ${GITHUB}/kubernetes-sigs/kustomize/${RELEASE_DL}/kustomize/v${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_${OS}_${ARCH}.tar.gz \
-    && tar -zxvf kustomize_v${KUSTOMIZE_VERSION}_${OS}_${ARCH}.tar.gz \
+    && curl -s https://api.github.com/repos/kubernetes-sigs/kustomize/releases | \
+    grep browser_download | \
+    grep ${OS}_${ARCH} | \
+    grep kustomize_v  | \
+    head -n1 | \
+    cut -d "\"" -f 4 | \
+    xargs curl -fsSLo kustomize.tar.gz \
+    && tar -zxvf kustomize.tar.gz \
     && mv kustomize ${BIN_PATH}/kustomize
 
 FROM scratch AS kube
