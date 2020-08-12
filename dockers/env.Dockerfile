@@ -74,7 +74,7 @@ RUN pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-s
     && rm -rf /tmp/translate-shell/
 
 WORKDIR /tmp
-ENV NGT_VERSION 1.12.0
+ENV NGT_VERSION 1.12.1
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
