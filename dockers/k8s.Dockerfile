@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 FROM kube-base AS kubectl
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl" \
-    && VERSION="$(curl -s ${GOOGLE}/kubernetes-release/release/stable.txt)"
+    && VERSION="$(curl -s ${GOOGLE}/kubernetes-release/release/stable.txt)" \
     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/kubernetes-release/release/${VERSION}/bin/${OS}/${ARCH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}" \

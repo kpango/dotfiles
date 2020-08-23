@@ -459,7 +459,43 @@ if [ -z $ZSH_LOADED ]; then
     # グローバルエイリアス
     alias -g L='| less'
 
+    alias f="open ."
+    alias rm='rm -rf'
+
+    if type fd >/dev/null 2>&1; then
+        alias find='fd'
+    fi
+
+    if type sd >/dev/null 2>&1; then
+        alias sed='sd'
+    fi
+
+    if type dutree >/dev/null 2>&1; then
+        alias du='dutree'
+    fi
+
+    if type bat >/dev/null 2>&1; then
+        alias cat='bat'
+    fi
+
+    if type hyperfine >/dev/null 2>&1; then
+        alias time='hyperfine'
+    fi
+
+    if type procs >/dev/null 2>&1; then
+        alias ps='procs'
+    fi
+
+    if type btm >/dev/null 2>&1; then
+        alias top='btm'
+        alias htop='btm'
+    elif type htop >/dev/null 2>&1; then
+        alias top=htop
+    fi
+
     if type exa >/dev/null 2>&1; then
+        alias ks="exa -G"
+        alias l="exa -G "
         alias ll='exa -l'
         alias la='exa -aghHliS'
         alias lla='exa -aghHliSm'
@@ -467,6 +503,8 @@ if [ -z $ZSH_LOADED ]; then
         alias ls='exa -G'
         alias lg='la | rg'
     else
+        alias ks="ls "
+        alias l="ls "
         alias ll='ls -la'
         alias la='ls -la'
         alias lg='ls -a | rg'
@@ -548,12 +586,6 @@ if [ -z $ZSH_LOADED ]; then
         # alias ranger=rng
         alias rng=ranger
     fi
-
-    alias f="open ."
-    alias ks="ls "
-    alias l="ls "
-    alias rm='rm -rf'
-    alias find='find'
 
     if type tmux >/dev/null 2>&1; then
         export TMUX_TMPDIR=/tmp
@@ -657,10 +689,6 @@ if [ -z $ZSH_LOADED ]; then
     }
     alias chword=chword
 
-    if type bat >/dev/null 2>&1; then
-        alias cat=bat
-    fi
-
     alias :q=exit
     alias :wq=exit
 
@@ -734,10 +762,6 @@ if [ -z $ZSH_LOADED ]; then
             }
             alias kind=kind
         fi
-    fi
-
-    if type htop >/dev/null 2>&1; then
-        alias top=htop
     fi
 
     if type nmcli >/dev/null 2>&1; then

@@ -48,13 +48,43 @@ FROM rust-base AS bat
 RUN cargo install --verbose --force --locked \
     --git https://github.com/sharkdp/bat
 
+FROM rust-base AS dutree
+RUN cargo +nightly install --verbose --force --no-default-features \
+    dutree
+
+FROM rust-base AS hyperfine
+RUN cargo +nightly install --verbose --force --no-default-features \
+    hyperfine
+
+FROM rust-base AS sd
+RUN cargo +nightly install --verbose --force --no-default-features \
+    sd
+
+FROM rust-base AS ytop
+RUN cargo +nightly install --verbose --force --no-default-features \
+    ytop
+
+FROM rust-base AS bottom
+RUN cargo +nightly install --verbose --force --no-default-features \
+    bottom
+
+FROM rust-base AS tokei
+RUN cargo +nightly install --verbose --force --no-default-features \
+    tokei
+
 FROM scratch AS rust
 
-COPY --from=rust-base /root/.cargo /root/.cargo
 # COPY --from=nix-lsp /root/.cargo/bin/nix-lsp /root/.cargo/bin/nix-lsp
-COPY --from=fd /root/.cargo/bin/fd /root/.cargo/bin/fd
-COPY --from=exa /root/.cargo/bin/exa /root/.cargo/bin/exa
 # COPY --from=starship /root/.cargo/bin/starship /root/.cargo/bin/starship
 COPY --from=bat /root/.cargo/bin/bat /root/.cargo/bin/bat
-COPY --from=rg /root/.cargo/bin/rg /root/.cargo/bin/rg
+COPY --from=bottom /root/.cargo/bin/btm /root/.cargo/bin/btm
+COPY --from=dutree /root/.cargo/bin/dutree /root/.cargo/bin/dutree
+COPY --from=exa /root/.cargo/bin/exa /root/.cargo/bin/exa
+COPY --from=fd /root/.cargo/bin/fd /root/.cargo/bin/fd
+COPY --from=hyperfine /root/.cargo/bin/hyperfine /root/.cargo/bin/hyperfine
 COPY --from=procs /root/.cargo/bin/procs /root/.cargo/bin/procs
+COPY --from=rg /root/.cargo/bin/rg /root/.cargo/bin/rg
+COPY --from=rust-base /root/.cargo /root/.cargo
+COPY --from=sd /root/.cargo/bin/sd /root/.cargo/bin/sd
+COPY --from=tokei /root/.cargo/bin/tokei /root/.cargo/bin/tokei
+COPY --from=ytop /root/.cargo/bin/ytop /root/.cargo/bin/ytop

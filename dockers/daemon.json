@@ -2,6 +2,10 @@
   "runtimes": {
     "runsc": {
       "path": "/usr/local/bin/runsc"
+    },
+    "runu": {
+      "path": "/usr/local/bin/runu",
+      "runtimeArgs": []
     }
   },
   "log-driver": "json-file",
@@ -17,11 +21,11 @@
   },
   "storage-driver": "overlay2",
   "default-ulimits": {
-      "memlock": {
-          "name": "memlock",
-          "hard": -1,
-          "soft": -1
-      }
+    "memlock": {
+      "name": "memlock",
+      "hard": -1,
+      "soft": -1
+    }
   },
   "default-address-pools": [
     {
