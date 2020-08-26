@@ -92,6 +92,7 @@ COPY --from=docker /usr/bin/modprobe /usr/bin/modprobe
 COPY --from=docker /usr/bin/trivy /usr/bin/trivy
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
 COPY --from=kube /usr/k8s/bin/ /usr/bin/
+COPY --from=kube /usr/k8s/lib/ /usr/lib/
 
 COPY --from=gcloud /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk
 COPY --from=gcloud /usr/lib/google-cloud-sdk/lib /usr/lib

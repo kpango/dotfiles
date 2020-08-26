@@ -300,7 +300,10 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM scratch AS kube
 
 ENV BIN_PATH /usr/local/bin
+ENV LIB_PATH /usr/local/libexec
 ENV K8S_PATH /usr/k8s/bin
+ENV K8S_LIB_PATH /usr/k8s/lib
+
 COPY --from=helm ${BIN_PATH}/helm ${K8S_PATH}/helm
 COPY --from=helm-docs ${BIN_PATH}/helm-docs ${K8S_PATH}/helm-docs
 COPY --from=helmfile ${BIN_PATH}/helmfile ${K8S_PATH}/helmfile
@@ -329,3 +332,4 @@ COPY --from=octant ${BIN_PATH}/octant ${K8S_PATH}/octant
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${K8S_PATH}/telepresence
+COPY --from=telepresence ${LIB_PATH}/sshuttle-telepresence ${K8S_LIB_PATH}/sshuttle-telepresence
