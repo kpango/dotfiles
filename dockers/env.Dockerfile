@@ -19,7 +19,7 @@ RUN apt-get update -y \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends --fix-missing \
     bash \
-    ctags \
+    exuberant-ctags \
     diffutils \
     gawk \
     gnupg \

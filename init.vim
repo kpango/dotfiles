@@ -84,7 +84,7 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
     Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
     Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
 " ---- Proto
-    Plug 'uber/prototool', {'for': 'proto', 'rtp':'vim/prototool'}
+    " Plug 'uber/prototool', {'for': 'proto', 'rtp':'vim/prototool'}
 " ---- HTML
     Plug 'digitaltoad/vim-jade', { 'for': ['jade', 'pug'] }
     Plug 'gregsexton/MatchTag', { 'for': ['html','php'] }
@@ -213,7 +213,6 @@ let g:ale_linters = {
         \   'javascript': ['eslint_d'],
         \   'nim': ['nim', 'nimsuggest'],
         \   'php': ['php', 'phpcs', 'phpmd'],
-        \   'proto': ['prototool-lint'],
         \   'python': ['python', 'pyflakes', 'flake8'],
         \   'rust': ['rustc'],
         \   'shell': ['sh', 'shellcheck'],
@@ -222,6 +221,7 @@ let g:ale_linters = {
         \   'vim': ['vint'],
         \   'zsh': ['zsh'],
         \}
+        "\   'proto': ['prototool'],
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_save = 1
 let g:ale_lint_on_enter = 1
