@@ -374,7 +374,7 @@ if [ -z $ZSH_LOADED ]; then
         gfr() {
             git fetch --prune
             git reset --hard origin/$(tb)
-            git branch -r --merged master | grep -v -e master -e develop | sed -e 's% *origin/%%' | xargs -I% git push --delete origin %
+            git branch -r --merged master | grep -v -e master -e develop | sed -E 's% *origin/%%' | xargs -I% git push --delete origin %
             git fetch --prune
             git reset --hard origin/$(tb)
             git branch --merged master | grep -vE '^\*|master$|develop$' | xargs -I % git branch -d %
@@ -530,7 +530,7 @@ if [ -z $ZSH_LOADED ]; then
             fi
             if type rg >/dev/null 2>&1; then
                 fbr() {
-                    git branch --all | rg -v HEAD | fzf-tmux +m | sed -e "s/.* //" -e "s#remotes/[^/]*/##" | xargs git checkout
+                    git branch --all | rg -v HEAD | fzf-tmux +m | sed -E "s/.* //" -e "s#remotes/[^/]*/##" | xargs git checkout
                 }
                 alias fbr=fbr
                 sshf() {

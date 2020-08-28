@@ -814,7 +814,7 @@ set viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!
 set shortmess+=I
 set fileformat=unix
 set fileformats=unix,dos,mac
-set foldmethod=manual
+" set foldmethod=manual
 if executable('zsh')
     set shell=zsh
 endif
