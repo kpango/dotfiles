@@ -141,10 +141,9 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 "     Plug 'landaire/deoplete-swift', {'for': 'swift'}
     Plug 'mitsuse/autocomplete-swift', {'for': 'swift'}
 " ---- Markdown
-    Plug 'kannokanno/previm', {'for': 'markdown'}
+    Plug 'previm/previm', {'for': 'markdown'}
     Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
     Plug 'shinespark/vim-list2tree', {'for': 'markdown', 'on': 'List2Tree'}
-    Plug 'sotte/presenting.vim', {'for': 'markdown'}
     Plug 'tyru/open-browser.vim', {'for': 'markdown'}
 " ---- SQL
     Plug 'JarrodCTaylor/vim-sql-suggest', { 'for': 'sql' }
