@@ -673,6 +673,7 @@ AutocmdFT html,xhtml imap <buffer><expr><tab> emmet#isExpandable() ? "\<plug>(em
 " ---- Markdown settings ----
 " ---------------------------
 AutocmdFT md,markdown let g:previm_open_cmd = 'open -a Google\ Chrome'
+AutocmdFT md,markdown let g:vim_markdown_folding_disabled = 1
 
 " ------------------------
 " ---- Shell settings ----
@@ -814,7 +815,7 @@ set viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!
 set shortmess+=I
 set fileformat=unix
 set fileformats=unix,dos,mac
-" set foldmethod=manual
+set foldmethod=manual
 if executable('zsh')
     set shell=zsh
 endif
