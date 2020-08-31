@@ -253,6 +253,13 @@ RUN GO111MODULE=on go get -u \
     github.com/vugu/vgrun \
     && upx -9 ${GOPATH}/bin/vgrun
 
+FROM go-base AS vegeta
+RUN GO111MODULE=on go get -u \
+    --ldflags "-s -w" --trimpath \
+    github.com/tsenart/vegeta \
+    && upx -9 ${GOPATH}/bin/vegeta
+
+
 FROM go-base AS pulumi
 # RUN PULUMI_VERSION="$(curl --silent https://github.com/pulumi/pulumi/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
 RUN curl -fsSL https://get.pulumi.com | sh \
@@ -313,6 +320,7 @@ COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
 COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
+COPY --from=vegeta $GOPATH/bin/vegeta $GOPATH/bin/vegeta
 
 FROM scratch
 ENV GOROOT /opt/go
