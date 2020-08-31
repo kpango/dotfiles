@@ -255,7 +255,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-    
+
 FROM kube-base AS kubectl-trace
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-trace" \
@@ -282,18 +282,17 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
+FROM kube-base AS k3d
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="k3d" \
+    && wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
 FROM kube-base AS kustomize
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kustomize" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
-    && curl -s https://api.github.com/repos/${REPO}/releases | \
-    grep browser_download | \
-    grep ${OS}_${ARCH} | \
-    grep ${BIN_NAME}_v  | \
-    head -n1 | \
-    cut -d "\"" -f 4 | \
-    xargs curl -fsSLo "${BIN_NAME}.tar.gz" \
-    && tar -zxvf "${BIN_NAME}.tar.gz" \
+    && wget -q -O - "https://raw.githubusercontent.com/${REPO}/master/hack/install_kustomize.sh" | bash \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -308,6 +307,7 @@ COPY --from=helm ${BIN_PATH}/helm ${K8S_PATH}/helm
 COPY --from=helm-docs ${BIN_PATH}/helm-docs ${K8S_PATH}/helm-docs
 COPY --from=helmfile ${BIN_PATH}/helmfile ${K8S_PATH}/helmfile
 COPY --from=istio ${BIN_PATH}/istioctl ${K8S_PATH}/istioctl
+COPY --from=k3d ${BIN_PATH}/k3d ${K8S_PATH}/k3d
 COPY --from=k9s ${BIN_PATH}/k9s ${K8S_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${K8S_PATH}/kind
 COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
