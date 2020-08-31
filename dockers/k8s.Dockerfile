@@ -9,7 +9,7 @@ ENV RELEASE_DL releases/download
 ENV RELEASE_LATEST releases/latest
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
-ENV TELEPRESENCE_VERSION 0.105
+ENV TELEPRESENCE_VERSION 0.107
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.8 \
@@ -285,7 +285,8 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM kube-base AS k3d
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="k3d" \
-    && wget -q -O - https://raw.githubusercontent.com/rancher/k3d/main/install.sh | bash \
+    && REPO="rancher/${BIN_NAME}" \
+    && wget -q -O - "https://raw.githubusercontent.com/${REPO}/main/install.sh" | bash \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kustomize
