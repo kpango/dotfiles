@@ -23,8 +23,9 @@ RUN curl -fsSLO "https://downloads.dockerslim.com/releases/$(curl --silent https
         /usr/local/bin/docker-slim-sensor
 
 FROM docker-base AS dlayer
-RUN curl -o /usr/local/bin/dlayer -fSsLO "https://github.com/orisano/dlayer/releases/download/v$(curl --silent https://github.com/orisano/dlayer/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#'  | sed 's/v//g')/dlayer_linux_amd64" \
-    && chmod a+x /usr/local/bin/dlayer \
+RUN curl -fSsLO "https://github.com/orisano/dlayer/releases/download/v$(curl --silent https://github.com/orisano/dlayer/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#'  | sed 's/v//g')/dlayer_0.2.2_Linux_x86_64.tar.gz" \
+    && tar zxvf dlayer_0.2.2_Linux_x86_64.tar.gz \
+    && mv dlayer /usr/local/bin \
     && upx -9 \
         /usr/local/bin/dlayer
 
