@@ -71,7 +71,6 @@ if [ -z $DOTENV_LOADED ]; then
         export VIM=$(which vi)
     fi
 
-
     export EDITOR=$VIM
     export VISUAL=$VIM
     export PAGER=$(which less)
@@ -838,6 +837,7 @@ if [ -z $ZSH_LOADED ]; then
         alias archback=archback
         archup() {
             sudo rm -rf /var/lib/pacman/db.lck
+            sudo rm -rf $HOME/.config/gcloud/logs/*
             if type reflector >/dev/null 2>&1; then
                 sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
             fi
