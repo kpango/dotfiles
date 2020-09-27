@@ -86,31 +86,31 @@ mkinitcpio -p linux
 mkdir -p /boot/efi/EFI
 DEVICE_ID=`blkid -o export /dev/md0p1 | grep '^PARTUUID' | sed -e "s/PARTUUID=//g"`
 echo ${DEVICE_ID}
-# bootctl --path=/boot install
-# cat <<EOF >/boot/loader/entries/arch.conf
-# title   Arch Linux
-# linux   /vmlinuz-linux
-# initrd  /intel-ucode.img
-# initrd  /initramfs-linux.img
-# options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 i915.enable_execlists=0 iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce resume=/dev/md0p1 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0 psmouse.proto=bare
-# EOF
-# rm -rf /boot/loader/loader.conf
-# cat <<EOF >/boot/loader/loader.conf
-# default arch
-# timeout 0
-# editor no
-# EOF
-# bootctl update
-# bootctl list
-# 
-# mkdir -p /etc/pacman.d/hooks
-# ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
-# 
-# sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
-# mkdir -p /go/src/github.com/kpango
-# cd /go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
-# ln -sfv /go /home/${LOGIN_USER}/go
-# chmod -R 755 /home/${LOGIN_USER}
-# chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
-# chmod -R 755 /go
-# chown -R $LOGIN_USER:wheel /go
+bootctl --path=/boot install
+cat <<EOF >/boot/loader/entries/arch.conf
+title   Arch Linux
+linux   /vmlinuz-linux
+initrd  /intel-ucode.img
+initrd  /initramfs-linux.img
+options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 i915.enable_execlists=0 iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce resume=/dev/md0p1 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0 psmouse.proto=bare
+EOF
+rm -rf /boot/loader/loader.conf
+cat <<EOF >/boot/loader/loader.conf
+default arch
+timeout 0
+editor no
+EOF
+bootctl update
+bootctl list
+
+mkdir -p /etc/pacman.d/hooks
+ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
+
+sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
+mkdir -p /go/src/github.com/kpango
+cd /go/src/github.com/kpango && git clone https://github.com/kpango/dotfiles
+ln -sfv /go /home/${LOGIN_USER}/go
+chmod -R 755 /home/${LOGIN_USER}
+chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
+chmod -R 755 /go
+chown -R $LOGIN_USER:wheel /go
