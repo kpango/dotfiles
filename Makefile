@@ -1,9 +1,12 @@
 .PHONY: all link zsh bash build prod_build profile run push pull
 
+
+ROOTDIR = $(eval ROOTDIR := $(shell git rev-parse --show-toplevel))$(ROOTDIR)
+
 all: prod_build login push profile git_push
 
 run:
-	source ./alias && devrun
+	source $(ROOTDIR)/alias && devrun
 
 link:
 	mkdir -p ${HOME}/.config/nvim/colors
@@ -152,7 +155,12 @@ bash: link
 	[ -f $(HOME)/.bashrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.bashrc
 
 build: \
-	prod_build
+	login \
+	build_base
+	# xpanes -c "@make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
+	xpanes -c "echo $(PWD) {}" go docker rust dart k8s nim gcloud env base
+	@make prod_build
+	@make prod_push
 
 docker_build:
 	docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
@@ -162,34 +170,34 @@ docker_push:
 	docker push ${IMAGE_NAME}:latest
 
 prod_build:
-	@make DOCKERFILE="./Dockerfile" IMAGE_NAME="kpango/dev" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/Dockerfile" IMAGE_NAME="kpango/dev" docker_build
 
 build_go:
-	@make DOCKERFILE="./dockers/go.Dockerfile" IMAGE_NAME="kpango/go" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/go.Dockerfile" IMAGE_NAME="kpango/go" docker_build
 
 build_rust:
-	@make DOCKERFILE="./dockers/rust.Dockerfile" IMAGE_NAME="kpango/rust" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/rust.Dockerfile" IMAGE_NAME="kpango/rust" docker_build
 
 build_nim:
-	@make DOCKERFILE="./dockers/nim.Dockerfile" IMAGE_NAME="kpango/nim" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/nim.Dockerfile" IMAGE_NAME="kpango/nim" docker_build
 
 build_dart:
-	@make DOCKERFILE="./dockers/dart.Dockerfile" IMAGE_NAME="kpango/dart" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/dart.Dockerfile" IMAGE_NAME="kpango/dart" docker_build
 
 build_docker:
-	@make DOCKERFILE="./dockers/docker.Dockerfile" IMAGE_NAME="kpango/docker" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/docker.Dockerfile" IMAGE_NAME="kpango/docker" docker_build
 
 build_base:
-	@make DOCKERFILE="./dockers/base.Dockerfile" IMAGE_NAME="kpango/dev-base" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/base.Dockerfile" IMAGE_NAME="kpango/dev-base" docker_build
 
 build_env:
-	@make DOCKERFILE="./dockers/env.Dockerfile" IMAGE_NAME="kpango/env" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/env.Dockerfile" IMAGE_NAME="kpango/env" docker_build
 
 build_gcloud:
-	@make DOCKERFILE="./dockers/gcloud.Dockerfile" IMAGE_NAME="kpango/gcloud" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/gcloud.Dockerfile" IMAGE_NAME="kpango/gcloud" docker_build
 
 build_k8s:
-	@make DOCKERFILE="./dockers/k8s.Dockerfile" IMAGE_NAME="kpango/kube" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/k8s.Dockerfile" IMAGE_NAME="kpango/kube" docker_build
 
 prod_push:
 	@make IMAGE_NAME="kpango/dev" docker_push
@@ -220,6 +228,44 @@ push_gcloud:
 
 push_k8s:
 	@make IMAGE_NAME="kpango/kube" docker_push
+
+
+build_and_push_base: \
+	build_base \
+	push_base
+
+build_and_push_env: \
+	build_env \
+	push_env
+
+build_and_push_go: \
+	build_go \
+	push_go
+
+build_and_push_rust: \
+	build_rust \
+	push_rust
+
+build_and_push_docker: \
+	build_docker \
+	push_docker
+
+build_and_push_k8s: \
+	build_k8s \
+	push_k8s
+
+build_and_push_nim: \
+	build_nim \
+	push_nim
+
+build_and_push_dart: \
+	build_dart \
+	push_dart
+
+build_and_push_gcloud: \
+	build_gcloud \
+	push_gcloud
+
 
 build_all: \
 	build_base \
@@ -259,10 +305,10 @@ pull:
 	docker pull kpango/dev:latest
 
 perm:
-	chmod -R 755 ./*
-	chmod -R 755 ./.*
-	chown -R 1000:985 ./*
-	chown -R 1000:985 ./.*
+	chmod -R 755 $(ROOTDIR)/*
+	chmod -R 755 $(ROOTDIR)/.*
+	chown -R 1000:985 $(ROOTDIR)/*
+	chown -R 1000:985 $(ROOTDIR)/.*
 
 git_push:
 	git add -A
