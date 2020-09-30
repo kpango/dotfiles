@@ -769,18 +769,16 @@ if [ -z $ZSH_LOADED ]; then
                 nmcli d
                 nmcli r wifi
                 nmcli d wifi list
-                sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1
-                sudo nmcli c mod $1 connection.autoconnect yes
-                sudo nmcli c mod $1 \
-                  802-1x.eap peap \
-                  802-1x.identity $2 \
-                  802-1x.password $3 \
-                  802-1x.phase2-auth mschapv2
-                  # 802-1x.ca-cert /path/to/ca.crt \
-                  # 802-1x.client-cert /path/to/client.crt \
-                  # 802-1x.private-key /path/to/client.key \
-                  # 802-1x.private-key-password {password} \
-                # sudo nmcli c mod $1 802-1x.eap tls
+                sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1 -- \
+                    connection.autoconnect yes \
+                    ipv4.method auto \
+                    802-11-wireless.ssid $1 \
+                    802-11-wireless-security.key-mgmt wpa-eap \
+                    802-1x.eap peap \
+                    802-1x.anonymous-identity $2 \
+                    802-1x.identity $2 \
+                    802-1x.password $3 \
+                    802-1x.phase2-auth mschapv2
                 sudo nmcli c up $1
             else
                 echo "invalid argument, SSID and PSK is required"
@@ -792,11 +790,13 @@ if [ -z $ZSH_LOADED ]; then
                 nmcli d
                 nmcli r wifi
                 nmcli d wifi list
-                sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1
-                sudo nmcli c mod $1 connection.autoconnect yes
-                sudo nmcli c mod $1 wifi-sec.key-mgmt wpa-psk
-                sudo nmcli c mod $1 wifi-sec.psk-flags 0
-                sudo nmcli c mod $1 wifi-sec.psk $2
+                sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1 -- \
+                    connection.autoconnect yes \
+                    ipv4.method auto \
+                    802-11-wireless.ssid $1 \
+                    802-11-wireless-security.key-mgmt wpa-psk \
+                    802-11-wireless-security.psk-flags 0 \
+                    802-11-wireless-security.psk $2
                 sudo nmcli c up $1
             else
                 echo "invalid argument, SSID and PSK is required"
