@@ -826,18 +826,21 @@ if [ -z $ZSH_LOADED ]; then
                 sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur_desk.list
                 pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg_desk.list
                 pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur_desk.list
-	    else
+            else
                 echo "backup packages"
                 sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
                 sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
                 pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
                 pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
-	    fi
+            fi
         }
         alias archback=archback
         archup() {
             sudo rm -rf /var/lib/pacman/db.lck
+            sudo chmod -R 777 $HOME/.config/gcloud
+            sudo chown -R $(whoami) $HOME/.config/gcloud
             sudo rm -rf $HOME/.config/gcloud/logs/*
+            sudo rm -rf $HOME/.config/gcloud/config_sentinel
             if type reflector >/dev/null 2>&1; then
                 sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
             fi
