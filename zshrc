@@ -742,8 +742,11 @@ if [ -z $ZSH_LOADED ]; then
             }
             "$kubectl" "$@"
         }
-        # alias kubectl=kubectl
         alias k=kubectl
+        if type kubecolor >/dev/null 2>&1; then
+            unalias k
+            alias k=kubecolor
+        fi
         alias kpall="k get pods --all-namespaces -o wide"
         alias ksall="k get svc --all-namespaces -o wide"
         alias kiall="k get ingress --all-namespaces -o wide"

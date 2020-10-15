@@ -1,6 +1,6 @@
 FROM kpango/dev-base:latest AS go-base
 
-ENV GO_VERSION 1.15.2
+ENV GO_VERSION 1.15.3
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -236,10 +236,14 @@ RUN GO111MODULE=on go get -u \
     && upx -9 ${GOPATH}/bin/gosec
 
 FROM go-base AS evans
-RUN GO111MODULE=on go get -u \
-    --ldflags "-s -w" --trimpath \
-    github.com/ktr0731/evans \
+RUN curl -fsSLO https://github.com/ktr0731/evans/releases/download/0.9.1/evans_linux_amd64.tar.gz \
+    && tar zxf evans_linux_amd64.tar.gz \
+    && mv evans ${GOPATH}/bin/evans \
     && upx -9 ${GOPATH}/bin/evans
+    # RUN GO111MODULE=on go get -u \
+    # --ldflags "-s -w" --trimpath \
+    # github.com/ktr0731/evans \
+    # && upx -9 ${GOPATH}/bin/evans
 
 FROM go-base AS sqls
 RUN GO111MODULE=on go get -u \

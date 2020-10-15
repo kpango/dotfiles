@@ -157,10 +157,12 @@ bash: link
 build: \
 	login \
 	build_base
-	# xpanes -c "@make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
-	xpanes -c "echo $(PWD) {}" go docker rust dart k8s nim gcloud env base
-	@make prod_build
-	@make prod_push
+	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
+	# @make prod
+
+prod: \
+	prod_build \
+	prod_push
 
 docker_build:
 	docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
@@ -244,7 +246,8 @@ build_and_push_go: \
 
 build_and_push_rust: \
 	build_rust \
-	push_rust
+	push_rust \
+	prod
 
 build_and_push_docker: \
 	build_docker \

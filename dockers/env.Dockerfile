@@ -19,17 +19,20 @@ RUN apt-get update -y \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends --fix-missing \
     bash \
-    exuberant-ctags \
     diffutils \
+    exuberant-ctags \
     gawk \
     gnupg \
     graphviz \
     jq \
     less \
     libhdf5-serial-dev \
+    libomp-dev \
     libprotobuf-dev \
     libprotoc-dev \
     luajit \
+    mariadb-client \
+    ncurses-term \
     neovim \
     nodejs \
     openssh-client \
@@ -37,11 +40,9 @@ RUN apt-get update -y \
     protobuf-compiler \
     python3-dev \
     python3-pip \
-    libomp-dev \
     python3-setuptools \
     python3-venv \
     ruby-dev \
-    ncurses-term \
     sed \
     tar \
     tig \
@@ -89,7 +90,7 @@ RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" 
     && rm -rf /tmp/*
 
 WORKDIR /tmp
-ENV TENSORFLOW_C_VERSION 1.15.0
+ENV TENSORFLOW_C_VERSION 2.3.0
 RUN curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
