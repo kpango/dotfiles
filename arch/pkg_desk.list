@@ -55,6 +55,7 @@ mako
 mdadm
 mesa
 mpv
+mtr
 mysql-workbench
 neofetch
 neovim
@@ -78,6 +79,7 @@ ranger
 rclone
 reflector
 ripgrep
+rmlint
 sed
 slurp
 sudo

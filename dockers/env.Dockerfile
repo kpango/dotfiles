@@ -32,6 +32,7 @@ RUN apt-get update -y \
     libprotoc-dev \
     luajit \
     mariadb-client \
+    mtr \
     ncurses-term \
     neovim \
     nodejs \
