@@ -280,6 +280,12 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv tinygo/bin/tinygo ${GOPATH}/bin/tinygo \
     && upx -9 ${GOPATH}/bin/tinygo
 
+FROM go-base AS duf
+RUN GO111MODULE=on go get -u \
+    --ldflags "-s -w" --trimpath \
+    github.com/muesli/duf \
+    && upx -9 ${GOPATH}/bin/duf
+
 FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
@@ -288,6 +294,7 @@ FROM go-base AS go-libs
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
+COPY --from=duf $GOPATH/bin/duf $GOPATH/bin/duf
 COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 COPY --from=errcheck $GOPATH/bin/errcheck $GOPATH/bin/errcheck
 COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
@@ -323,8 +330,8 @@ COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
-COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
 COPY --from=vegeta $GOPATH/bin/vegeta $GOPATH/bin/vegeta
+COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
 
 FROM scratch
 ENV GOROOT /opt/go

@@ -574,6 +574,10 @@ if [ -z $ZSH_LOADED ]; then
         alias tarunzip="tar Jxvf"
     fi
 
+    if type duf >/dev/null 2>&1; then
+        alias df='\duf'
+    fi
+
     if type ranger >/dev/null 2>&1; then
         # rng() {
         #     if [ -z "$RANGER_LEVEL" ]; then
