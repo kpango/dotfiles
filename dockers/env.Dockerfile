@@ -57,15 +57,17 @@ RUN pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-s
     && curl https://www.npmjs.com/install.sh | sh \
     && npm config set user root \
     && npm install -g \
-        n \
-        yarn \
-        neovim \
-        resume-cli \
-        markdownlint-cli \
+        bash-language-server \
         dockerfile-language-server-nodejs \
+        markdownlint-cli \
+        n \
+        neovim \
+        npm \
+        prettier \
+        resume-cli \
         typescript \
         typescript-language-server \
-        bash-language-server \
+        yarn \
     && n stable \
     && apt purge -y nodejs npm \
     && git clone https://github.com/soimort/translate-shell \
