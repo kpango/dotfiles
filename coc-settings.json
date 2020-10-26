@@ -59,7 +59,7 @@
         "staticcheck": true,
         "watchFileChanges": true,
         "lintTool": "golangci-lint",
-        "formatTool": "goimports",
+        "formatTool": "gofumports",
         "hoverKind": "FullDocumentation",
         "env": {
           "CGO_CFLAGS": "-g -O=fast -march=native",

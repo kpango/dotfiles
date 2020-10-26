@@ -116,12 +116,6 @@ RUN GO111MODULE=on go get -u  \
     github.com/nsf/gocode \
     && upx -9 ${GOPATH}/bin/gocode
 
-FROM go-base AS goimports-update-ignore
-RUN GO111MODULE=on go get -u  \
-    --ldflags "-s -w" --trimpath \
-    github.com/pwaller/goimports-update-ignore \
-    && upx -9 ${GOPATH}/bin/goimports-update-ignore
-
 FROM go-base AS godef
 RUN GO111MODULE=on go get -u  \
     --ldflags "-s -w" --trimpath \
@@ -140,11 +134,29 @@ RUN GO111MODULE=on go get -u  \
     golang.org/x/lint/golint \
     && upx -9 ${GOPATH}/bin/golint
 
+FROM go-base AS gofumpt
+RUN GO111MODULE=on go get -u  \
+    --ldflags "-s -w" --trimpath \
+    mvdan.cc/gofumpt \
+    && upx -9 ${GOPATH}/bin/gofumpt
+
+FROM go-base AS gofumports
+RUN GO111MODULE=on go get -u  \
+    --ldflags "-s -w" --trimpath \
+    mvdan.cc/gofumpt/gofumports \
+    && upx -9 ${GOPATH}/bin/gofumports
+
 FROM go-base AS goimports
 RUN GO111MODULE=on go get -u  \
     --ldflags "-s -w" --trimpath \
     golang.org/x/tools/cmd/goimports \
     && upx -9 ${GOPATH}/bin/goimports
+
+FROM go-base AS goimports-update-ignore
+RUN GO111MODULE=on go get -u  \
+    --ldflags "-s -w" --trimpath \
+    github.com/pwaller/goimports-update-ignore \
+    && upx -9 ${GOPATH}/bin/goimports-update-ignore
 
 FROM go-base AS ghz
 RUN GO111MODULE=on go get -u  \
@@ -289,7 +301,7 @@ RUN GO111MODULE=on go get -u \
 FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
-FROM go-base AS go-libs
+FROM go-base AS go-bins
 # COPY --from=diago $GOPATH/bin/diago $GOPATH/bin/diago
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
@@ -306,6 +318,8 @@ COPY --from=ghq $GOPATH/bin/ghq $GOPATH/bin/ghq
 COPY --from=ghz $GOPATH/bin/ghz $GOPATH/bin/ghz
 COPY --from=gocode $GOPATH/bin/gocode $GOPATH/bin/gocode
 COPY --from=godef $GOPATH/bin/godef $GOPATH/bin/godef
+COPY --from=gofumports $GOPATH/bin/gofumports $GOPATH/bin/gofumports
+COPY --from=gofumpt $GOPATH/bin/gofumpt $GOPATH/bin/gofumpt
 COPY --from=goimports $GOPATH/bin/goimports $GOPATH/bin/goimports
 COPY --from=goimports-update-ignore $GOPATH/bin/goimports-update-ignore $GOPATH/bin/goimports-update-ignore
 COPY --from=gojson $GOPATH/bin/gojson $GOPATH/bin/gojson
@@ -341,4 +355,4 @@ COPY --from=go $GOROOT/src $GOROOT/src
 COPY --from=go $GOROOT/lib $GOROOT/lib
 COPY --from=go $GOROOT/pkg $GOROOT/pkg
 COPY --from=go $GOROOT/misc $GOROOT/misc
-COPY --from=go-libs $GOPATH/bin $GOPATH/bin
+COPY --from=go-bins $GOPATH/bin $GOPATH/bin
