@@ -843,6 +843,7 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archback=archback
         archup() {
+            sudo su -c "chown 0 /etc/sudoers.d/kpango"
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.lck \
@@ -850,8 +851,8 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
                 /var/cache/pacman/pkg
-            sudo pacman -Scc
-            sudo pacman -Rns $(pacman -Qtdq)
+            sudo pacman -Scc --noconfirm
+            sudo pacman -Rns --noconfirm $(pacman -Qtdq)
             if type reflector >/dev/null 2>&1; then
                 sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
             fi
@@ -872,8 +873,8 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.cache/* \
                 /var/cache/pacman/pkg
             sudo rm -rf /var/lib/pacman/db.lck
-            sudo pacman -Scc
-            sudo pacman -Rns $(pacman -Qtdq)
+            sudo pacman -Scc --noconfirm
+            sudo pacman -Rns --noconfirm $(pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
             paccache -ruk0
             sudo journalctl --vacuum-time=2weeks
