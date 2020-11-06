@@ -1,6 +1,6 @@
 FROM kpango/dev-base:latest AS go-base
 
-ENV GO_VERSION 1.15.3
+ENV GO_VERSION 1.15.4
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
