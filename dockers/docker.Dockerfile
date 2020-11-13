@@ -22,13 +22,6 @@ RUN curl -fsSLO "https://downloads.dockerslim.com/releases/$(curl --silent https
         /usr/local/bin/docker-slim \
         /usr/local/bin/docker-slim-sensor
 
-FROM docker-base AS dlayer
-RUN curl -fSsLO "https://github.com/orisano/dlayer/releases/download/v$(curl --silent https://github.com/orisano/dlayer/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#'  | sed 's/v//g')/dlayer_0.2.2_Linux_x86_64.tar.gz" \
-    && tar zxvf dlayer_0.2.2_Linux_x86_64.tar.gz \
-    && mv dlayer /usr/local/bin \
-    && upx -9 \
-        /usr/local/bin/dlayer
-
 FROM docker-base AS buildx
 RUN mkdir -p /usr/lib/docker/cli-plugins \
     && BUILDX_VER="$(curl --silent https://github.com/docker/buildx/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
@@ -49,6 +42,21 @@ RUN curl -LO "https://storage.googleapis.com/container-diff/latest/container-dif
     && mv container-diff-linux-amd64 /usr/local/bin/container-diff \
     && upx -9 \
         /usr/local/bin/container-diff
+
+
+FROM golang:buster AS golang
+FROM docker-base AS docker-golang-base
+COPY --from=golang /usr/local/go /usr/local/go
+COPY --from=golang /go /go
+ENV GOPATH /go
+ENV GOROOT /usr/local/go
+ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
+
+FROM docker-golang-base AS dlayer
+RUN go get -u github.com/orisano/dlayer \
+    && mv ${GOPATH}/bin/dlayer /usr/local/bin \
+    && upx -9 \
+        /usr/local/bin/dlayer
 
 FROM docker:rc-dind AS common
 RUN apk upgrade \
