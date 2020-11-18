@@ -104,6 +104,7 @@ wget
 which
 wl-clipboard
 wlc
+wofi
 wpscan
 xf86-input-synaptics
 xfsprogs
