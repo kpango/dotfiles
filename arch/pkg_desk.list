@@ -43,6 +43,7 @@ imagemagick
 inetutils
 intel-ucode
 iptables-nft
+iwd
 kubectl
 kubectx
 less
@@ -59,7 +60,6 @@ mtr
 mysql-workbench
 neofetch
 neovim
-networkmanager
 nmap
 npm
 nvidia

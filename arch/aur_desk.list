@@ -9,6 +9,7 @@ google-cloud-sdk
 gopreload-git
 libnm-iwd
 linux-firmware-iwlwifi-git
+networkmanager-iwd
 procs-bin
 slack-desktop
 systemd-boot-pacman-hook

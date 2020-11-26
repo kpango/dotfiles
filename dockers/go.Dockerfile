@@ -98,11 +98,13 @@ RUN GO111MODULE=on go get -u  \
     github.com/rerost/dragon-imports/cmd/dragon-imports \
     && upx -9 ${GOPATH}/bin/dragon-imports
 
-FROM go-base AS grpcurl
-RUN GO111MODULE=on go get -u  \
-    --ldflags "-s -w" --trimpath \
-    github.com/fullstorydev/grpcurl/cmd/grpcurl \
-    && upx -9 ${GOPATH}/bin/grpcurl
+FROM kpango/go:latest AS grpcurl
+# FROM go-base AS grpcurl
+# RUN go get -u  \
+#     --ldflags "-s -w" --trimpath \
+#     github.com/fullstorydev/grpcurl/... \
+#     && go install github.com/fullstorydev/grpcurl/cmd/grpcurl \
+#     && upx -9 ${GOPATH}/bin/grpcurl
 
 FROM go-base AS ghq
 RUN GO111MODULE=on go get -u  \
