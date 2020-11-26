@@ -738,7 +738,7 @@ if [ -z $ZSH_LOADED ]; then
 
     if type kubectl >/dev/null 2>&1; then
         kubectl() {
-        local kubectl="$(whence -p kubectl 2> /dev/null)"
+            local kubectl="$(whence -p kubectl 2> /dev/null)"
             [ -z "$_lazy_kubectl_completion" ] && {
                 source <("$kubectl" completion zsh)
                 complete -o default -F __start_kubectl k
