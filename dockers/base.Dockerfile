@@ -32,11 +32,11 @@ RUN apt-get update -y \
     && update-alternatives --set cc $(which clang) \
     && update-alternatives --set c++ $(which clang++) \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN echo "${LANG} UTF-8" > /etc/locale.gen \
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "${LANG} UTF-8" > /etc/locale.gen \
     && ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
     && locale-gen \
     && rm /etc/localtime \
-    && dpkg-reconfigure -f noninteractive tzdata
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && apt autoremove
 

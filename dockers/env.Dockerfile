@@ -13,9 +13,8 @@ RUN echo $'/lib\n\
 /usr/lib/dart/lib\n\
 /usr/lib/node_modules/lib\n\
 /google-cloud-sdk/lib' > /etc/ld.so.conf.d/usr-local-lib.conf \
-    && echo $(ldconfig)
-
-RUN apt-get update -y \
+    && echo $(ldconfig) \
+    && apt-get update -y \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends --fix-missing \
     bash \
@@ -49,10 +48,8 @@ RUN apt-get update -y \
     tig \
     tmux \
     xclip \
-    && rm -rf /var/lib/apt/lists/*
-
-
-RUN pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
+    && rm -rf /var/lib/apt/lists/* \
+    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
     && gem install neovim -N \
     && curl https://www.npmjs.com/install.sh | sh \
     && npm config set user root \
@@ -75,7 +72,8 @@ RUN pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-s
     && make TARGET=zsh -j -C /tmp/translate-shell \
     && make install -C /tmp/translate-shell \
     && cd /tmp \
-    && rm -rf /tmp/translate-shell/
+    && rm -rf /tmp/translate-shell/ \
+    && apt autoremove
 
 WORKDIR /tmp
 ENV NGT_VERSION 1.12.2
