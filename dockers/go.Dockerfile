@@ -57,10 +57,6 @@ RUN git clone https://github.com/go-delve/delve.git $GOPATH/src/github.com/go-de
     && cd $GOPATH/src/github.com/go-delve/delve \
     && make install \
     && upx -9 ${GOPATH}/bin/dlv
-# RUN GO111MODULE=on go get -u  \
-#     --ldflags "-s -w" --trimpath \
-#     github.com/go-delve/delve/cmd/dlv \
-#     && upx -9 ${GOPATH}/bin/dlv
 
 FROM go-base AS hub
 RUN GO111MODULE=on go get -u  \
