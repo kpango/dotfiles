@@ -83,7 +83,7 @@
     program = gpg
 [user]
     name = kpango
-    email = "i.can.feel.gravity@gmail.com"
+    email = kpango@vdaas.org
     signingkey = 89013853239E4E9A
 [ghq]
     root = /go/src
