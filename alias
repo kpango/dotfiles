@@ -94,12 +94,13 @@ devrun(){
                 -v $docker_daemon:/etc/docker/daemon.json \
                 -v $docker_config:/etc/docker/config.json \
                 -v $HOME/.config/gcloud:/root/.config/gcloud \
-                -v $HOME/.netrc:/root/.netrc \
+                -v $HOME/.netrc.gpg:/root/.netrc.gpg:ro \
                 -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
                 -v $HOME/.gnupg:/root/.gnupg \
                 -v $HOME/.kube:/root/.kube \
                 -v $HOME/.ssh:/root/.ssh \
                 -v $HOME/.zsh_history:/root/.zsh_history \
+                -v $HOME/.tig_history:/root/.tig_history \
                 -v $HOME/Documents:/root/Documents \
                 -v $HOME/Downloads:/root/Downloads \
                 -v $HOME/go/src:/go/src:cached \

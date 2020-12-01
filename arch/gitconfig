@@ -80,10 +80,12 @@
 
     tree = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
 [gpg]
-    program = gpg
+    program = gpg2
 [user]
     name = kpango
     email = "i.can.feel.gravity@gmail.com"
-    signingkey = "F1138C4D7C781619"
+    signingkey = 89013853239E4E9A
 [ghq]
     root = ~/go/src
+[commit]
+    gpgsign = true
