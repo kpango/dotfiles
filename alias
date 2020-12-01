@@ -94,7 +94,7 @@ devrun(){
                 -v $docker_daemon:/etc/docker/daemon.json \
                 -v $docker_config:/etc/docker/config.json \
                 -v $HOME/.config/gcloud:/root/.config/gcloud \
-                -v $HOME/.netrc.gpg:/root/.netrc.gpg:ro \
+                -v $HOME/.netrc:/root/.netrc:ro \
                 -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
                 -v $HOME/.gnupg:/root/.gnupg \
                 -v $HOME/.kube:/root/.kube \

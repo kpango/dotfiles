@@ -84,6 +84,10 @@
 [user]
     name = kpango
     email = "i.can.feel.gravity@gmail.com"
-    signingkey = "F1138C4D7C781619"
+    signingkey = 89013853239E4E9A
 [ghq]
     root = /go/src
+[commit]
+    gpgsign = true
+[credential]
+	helper = netrc
