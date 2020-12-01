@@ -98,13 +98,17 @@ RUN GO111MODULE=on go get -u  \
     github.com/rerost/dragon-imports/cmd/dragon-imports \
     && upx -9 ${GOPATH}/bin/dragon-imports
 
-FROM kpango/go:latest AS grpcurl
-# FROM go-base AS grpcurl
-# RUN go get -u  \
-#     --ldflags "-s -w" --trimpath \
-#     github.com/fullstorydev/grpcurl/... \
-#     && go install github.com/fullstorydev/grpcurl/cmd/grpcurl \
-#     && upx -9 ${GOPATH}/bin/grpcurl
+FROM go-base AS grpcurl
+RUN set -x; cd "$(mktemp -d)" \
+    && OS="$(go env GOOS)" \
+    && NAME="grpcurl" \
+    && ORG="fullstorydev" \
+    && REPO="${ORG}/${NAME}" \
+    && GRPCURL_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fsSLO "https://github.com/${REPO}/releases/download/v${GRPCURL_VERSION}/${NAME}_${GRPCURL_VERSION}_${OS}_x86_64.tar.gz" \
+    && tar zxf "${NAME}_${GRPCURL_VERSION}_${OS}_x86_64.tar.gz" \
+    && mv ${NAME} ${GOPATH}/bin/${NAME} \
+    && upx -9 ${GOPATH}/bin/${NAME}
 
 FROM go-base AS ghq
 RUN GO111MODULE=on go get -u  \
@@ -249,11 +253,24 @@ RUN GO111MODULE=on go get -u \
     github.com/securego/gosec/cmd/gosec \
     && upx -9 ${GOPATH}/bin/gosec
 
+FROM go-base AS k6
+RUN GO111MODULE=on go get -u \
+    --ldflags "-s -w" --trimpath \
+    github.com/loadimpact/k6 \
+    && upx -9 ${GOPATH}/bin/k6
+
 FROM go-base AS evans
-RUN curl -fsSLO https://github.com/ktr0731/evans/releases/download/0.9.1/evans_linux_amd64.tar.gz \
-    && tar zxf evans_linux_amd64.tar.gz \
-    && mv evans ${GOPATH}/bin/evans \
-    && upx -9 ${GOPATH}/bin/evans
+RUN set -x; cd "$(mktemp -d)" \
+    && OS="$(go env GOOS)" \
+    && ARCH="$(go env GOARCH)" \
+    && NAME="evans" \
+    && ORG="ktr0731" \
+    && REPO="${ORG}/${NAME}" \
+    && EVANS_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fsSLO "https://github.com/${REPO}/releases/download/${EVANS_VERSION}/${NAME}_${OS}_${ARCH}.tar.gz" \
+    && tar zxf "${NAME}_${OS}_${ARCH}.tar.gz" \
+    && mv ${NAME} ${GOPATH}/bin/${NAME} \
+    && upx -9 ${GOPATH}/bin/${NAME}
 # RUN GO111MODULE=on go get -u \
 #     --ldflags "-s -w" --trimpath \
 #     github.com/ktr0731/evans \
@@ -277,9 +294,7 @@ RUN GO111MODULE=on go get -u \
     github.com/tsenart/vegeta \
     && upx -9 ${GOPATH}/bin/vegeta
 
-
 FROM go-base AS pulumi
-# RUN PULUMI_VERSION="$(curl --silent https://github.com/pulumi/pulumi/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
 RUN curl -fsSL https://get.pulumi.com | sh \
     && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
     && upx -9 ${GOPATH}/bin/pulumi
@@ -340,6 +355,7 @@ COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
+COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
