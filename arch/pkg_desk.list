@@ -14,7 +14,6 @@ axel
 bash-language-server
 bbswitch
 bluez-utils
-bumblebee
 caprine
 ccache
 chrony
@@ -63,15 +62,17 @@ neovim
 nmap
 npm
 nvidia
+nvidia-prime
+nvidia-settings
 openssh
 otf-font-awesome
 pacman-contrib
 parted
+pass
 patch
 pavucontrol
 pkgconf
 powertop
-primus
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth

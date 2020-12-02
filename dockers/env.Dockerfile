@@ -36,6 +36,7 @@ RUN echo $'/lib\n\
     neovim \
     nodejs \
     openssh-client \
+    pass \
     perl \
     protobuf-compiler \
     python3-dev \

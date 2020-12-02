@@ -97,6 +97,7 @@ devrun(){
                 -v $HOME/.netrc:/root/.netrc:ro \
                 -v $HOME/.docker/daemon.json:/root/.docker/daemon.json \
                 -v $HOME/.gnupg:/root/.gnupg \
+                -v $HOME/.password-store:/root/.password-store \
                 -v $HOME/.kube:/root/.kube \
                 -v $HOME/.ssh:/root/.ssh \
                 -v $HOME/.zsh_history:/root/.zsh_history \

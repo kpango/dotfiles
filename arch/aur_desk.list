@@ -10,6 +10,8 @@ gopreload-git
 libnm-iwd
 linux-firmware-iwlwifi-git
 networkmanager-iwd
+optimus-manager
+prime
 procs-bin
 slack-desktop
 systemd-boot-pacman-hook
