@@ -1,5 +1,6 @@
 FROM kpango/go:latest AS go
 
+
 FROM kpango/rust:latest AS rust
 
 FROM kpango/nim:latest AS nim
@@ -39,20 +40,19 @@ FROM kpango/env:latest AS env
 
 FROM env
 
-LABEL maintainer="kpango <i.can.feel.gravity@gmail.com>"
+LABEL maintainer="kpango <kpango@vdaas.org>"
 
 ENV TZ Asia/Tokyo
-ENV HOME /root
-ENV GOPATH /go
+ENV GOPATH $HOME/go
 ENV GOROOT /usr/local/go
 ENV GCLOUD_PATH /google-cloud-sdk
-ENV CARGO_PATH /root/.cargo
+ENV CARGO_PATH $HOME/.cargo
 ENV DART_PATH /usr/lib/dart
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 ENV NVIM_HOME $HOME/.config/nvim
 ENV VIM_PLUG_HOME $NVIM_HOME/plugged/vim-plug
 ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
-ENV ZPLUG_HOME $HOME/.zplug;
+ENV ZPLUG_HOME $HOME/.zplug
 
 # COPY --from=python3 /usr/local /usr/local
 # COPY --from=python2 /usr/local /usr/local
@@ -96,13 +96,13 @@ COPY --from=kube /usr/k8s/lib/ /usr/lib/
 
 COPY --from=gcloud /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk
 COPY --from=gcloud /usr/lib/google-cloud-sdk/lib /usr/lib
-COPY --from=gcloud /root/.config/gcloud /root/.config/gcloud
+COPY --from=gcloud /root/.config/gcloud $HOME/.config/gcloud
 
 COPY --from=nim /bin/nim /usr/local/bin/nim
 COPY --from=nim /bin/nimble /usr/local/bin/nimble
 COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
 COPY --from=nim /nim/lib /usr/local/lib/nim
-COPY --from=nim /root/.cache/nim /root/.cache/nim
+COPY --from=nim /root/.cache/nim $HOME/.cache/nim
 COPY --from=nim /nim /nim
 
 COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
@@ -116,7 +116,7 @@ COPY --from=go /opt/go/pkg $GOROOT/pkg
 COPY --from=go /opt/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 
-COPY --from=rust /root/.cargo /root/.cargo
+COPY --from=rust /root/.cargo $HOME/.cargo
 # COPY --from=rust /root/.rustup /root/.rustup
 # COPY --from=rust /root/.multirust /root/.multirust
 
@@ -132,25 +132,31 @@ COPY tmux.conf $HOME/.tmux.conf
 COPY vintrc.yaml $HOME/.vintrc.yaml
 COPY zshrc $HOME/.zshrc
 
-ENV SHELL /usr/bin/zsh
-
 WORKDIR $VIM_PLUG_HOME
 
-RUN rm -rf $VIM_PLUG_HOME/autoload \
-    && git clone https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload
-# RUN nvim +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +UpdateRemotePlugins +qall
-RUN npm uninstall yarn -g \
+USER root
+RUN chown -R kpango:users ${HOME} \
+    && chown -R kpango:users ${HOME}/.* \
+    && chmod -R 755 ${HOME} \
+    && chmod -R 755 ${HOME}/.* \
+    && rm -rf $VIM_PLUG_HOME/autoload \
+    && git clone https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload \
+    && npm uninstall yarn -g \
     && npm install yarn -g \
-    &&yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local
-# RUN nvim +CocInstall coc-rls coc-json coc-yaml coc-snippets coc-java coc-dictionary coc-tag coc-word coc-omni +qall
-RUN git clone https://github.com/zplug/zplug $ZPLUG_HOME \
+    && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
+    && git clone https://github.com/zplug/zplug $ZPLUG_HOME \
     && rm -rf $HOME/.cache \
     && rm -rf $HOME/.npm/_cacache \
     && rm -rf $HOME/.cargo/registry/cache \
     && rm -rf /usr/local/share/.cache \
-    && rm -rf /tmp/*
+    && rm -rf /tmp/* \
+    && chown -R kpango:users ${HOME} \
+    && chown -R kpango:users ${HOME}/.* \
+    && chmod -R 755 ${HOME} \
+    && chmod -R 755 ${HOME}/.*
 
-WORKDIR /go/src
+USER ${USER}
+WORKDIR ${HOME}
 
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["/usr/bin/zsh"]

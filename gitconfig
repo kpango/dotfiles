@@ -86,8 +86,6 @@
     email = kpango@vdaas.org
     signingkey = 89013853239E4E9A
 [ghq]
-    root = /go/src
+    root = ~/go/src
 [commit]
     gpgsign = true
-[credential]
-	helper = netrc

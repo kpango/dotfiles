@@ -1,5 +1,7 @@
 FROM ubuntu:devel AS base
 
+LABEL maintainer="kpango <kpango@vdaas.org>"
+
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
 ENV LANG en_US.UTF-8
@@ -23,6 +25,7 @@ RUN apt-get update -y \
         git \
         libtinfo5 \
         locales \
+        sudo \
         unzip \
         upx \
         wget \
@@ -39,4 +42,3 @@ RUN apt-get update -y \
     && rm /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
     && apt autoremove
-

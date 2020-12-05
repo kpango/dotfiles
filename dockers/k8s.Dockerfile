@@ -1,7 +1,7 @@
 FROM kpango/dev-base:latest AS kube-base
 
 ENV ARCH amd64
-ENV ARCH1 x86_64
+ENV XARCH x86_64
 ENV OS linux
 ENV GITHUB https://github.com
 ENV GOOGLE https://storage.googleapis.com
@@ -48,7 +48,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectx" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${ARCH1}" \
+    && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${XARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
@@ -60,7 +60,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && BIN_NAME="kubens" \
-    && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${ARCH1}" \
+    && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${XARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
@@ -136,7 +136,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="k9s" \
     && REPO="derailed/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && TAR_NAME="${BIN_NAME}_Linux_${ARCH1}" \
+    && TAR_NAME="${BIN_NAME}_Linux_${XARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
@@ -155,7 +155,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kube-profefe" \
     && REPO="profefe/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && TAR_NAME="${BIN_NAME}_v${VERSION}_Linux_${ARCH1}" \
+    && TAR_NAME="${BIN_NAME}_v${VERSION}_Linux_${XARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && BIN_NAME="kprofefe" \
@@ -238,7 +238,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="helm-docs" \
     && REPO="norwoodj/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && TAR_NAME="${BIN_NAME}_${VERSION}_Linux_${ARCH1}" \
+    && TAR_NAME="${BIN_NAME}_${VERSION}_Linux_${XARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \

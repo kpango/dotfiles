@@ -1,6 +1,24 @@
 FROM kpango/dev-base:latest AS env
 
+LABEL maintainer="kpango <kpango@vdaas.org>"
+
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
+
+
+ENV USER kpango
+ENV HOME /home/${USER}
+ENV SHELL /usr/bin/zsh
+ENV GROUP sudo,root,users,docker
+ENV UID 1000
+ENV GID 985
+
+RUN addgroup --gid ${GID} docker \
+    && useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${HOME} -G ${GROUP} ${USER} \
+    && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers \
+    && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers \
+    && visudo -c
+
 
 WORKDIR /tmp
 RUN echo $'/lib\n\
@@ -14,9 +32,9 @@ RUN echo $'/lib\n\
 /usr/lib/node_modules/lib\n\
 /google-cloud-sdk/lib' > /etc/ld.so.conf.d/usr-local-lib.conf \
     && echo $(ldconfig) \
-    && apt-get update -y \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends --fix-missing \
+    && apt update -y \
+    && apt upgrade -y \
+    && apt install -y --no-install-recommends --fix-missing \
     bash \
     diffutils \
     exuberant-ctags \
@@ -35,6 +53,7 @@ RUN echo $'/lib\n\
     ncurses-term \
     neovim \
     nodejs \
+    npm \
     openssh-client \
     pass \
     perl \
@@ -52,8 +71,7 @@ RUN echo $'/lib\n\
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
     && gem install neovim -N \
-    && curl https://www.npmjs.com/install.sh | sh \
-    && npm config set user root \
+    && npm config set user ${USER} \
     && npm install -g \
         bash-language-server \
         dockerfile-language-server-nodejs \
@@ -74,7 +92,7 @@ RUN echo $'/lib\n\
     && make install -C /tmp/translate-shell \
     && cd /tmp \
     && rm -rf /tmp/translate-shell/ \
-    && apt autoremove
+    && apt -y autoremove
 
 WORKDIR /tmp
 ENV NGT_VERSION 1.12.2
@@ -98,3 +116,5 @@ RUN curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorfl
     && rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && ldconfig \
     && rm -rf /tmp/* /var/cache
+
+WORKDIR ${HOME}

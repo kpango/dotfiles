@@ -3,6 +3,9 @@
 
 ROOTDIR = $(eval ROOTDIR := $(shell git rev-parse --show-toplevel))$(ROOTDIR)
 
+echo:
+	@echo $(ROOTDIR)
+
 all: prod_build login push profile git_push
 
 run:
@@ -165,11 +168,11 @@ prod: \
 	prod_push
 
 docker_build:
-	docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
+	sudo docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
 	# docker build --squash --no-cache --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
 
 docker_push:
-	docker push ${IMAGE_NAME}:latest
+	sudo docker push ${IMAGE_NAME}:latest
 
 prod_build:
 	@make DOCKERFILE="$(ROOTDIR)/Dockerfile" IMAGE_NAME="kpango/dev" docker_build
@@ -299,7 +302,7 @@ profile:
 	type dlayer >/dev/null 2>&1 && docker save kpango/dev:latest | dlayer >> analyze.txt
 
 login:
-	docker login -u kpango
+	sudo docker login -u kpango
 
 push:
 	docker push kpango/dev:latest

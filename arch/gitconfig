@@ -80,7 +80,7 @@
 
     tree = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
 [gpg]
-    program = gpg2
+    program = gpg
 [user]
     name = kpango
     email = kpango@vdaas.org

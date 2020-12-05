@@ -83,11 +83,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     if type go >/dev/null 2>&1; then
         #GO
-        if [ -f /.dockerenv ]; then
-            export GOPATH=/go
-        else
-            export GOPATH=$HOME/go
-        fi
+        export GOPATH=$HOME/go
         export GOROOT="$(go env GOROOT)"
         export GOOS="$(go env GOOS)"
         export GOARCH="$(go env GOARCH)"
@@ -665,7 +661,15 @@ if [ -z $ZSH_LOADED ]; then
         fi
     }
     alias gt=greptext
-
+    chperm(){
+        if [ $# -eq 3 ]; then
+            sudo chmod $1 $3
+            sudo chown $2 $3
+        elif [ $# -eq 4 ]; then
+            sudo chmod -R $2 $4
+            sudo chown -R $3 $4
+        fi
+    }
     chword() {
         if [ $# -eq 3 ]; then
             if type rg >/dev/null 2>&1; then

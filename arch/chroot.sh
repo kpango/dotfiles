@@ -50,8 +50,6 @@ passwd
 
 mkdir -p /home/${LOGIN_USER}/.zplug
 mkdir -p /home/${LOGIN_USER}/.config
-ln -sfv /home/${LOGIN_USER}/.config /root/.config
-ln -sfv /home/${LOGIN_USER}/.zplug /root/.zplug
 
 cat <<EOF >/etc/udev/rules.d/input.rules
 KERNEL=="event*", NAME="input/%k", MODE="660", GROUP="input"
