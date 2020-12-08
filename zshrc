@@ -509,6 +509,8 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     alias mkcd=mkcd
+    alias dl='\cd ~/Downloads'
+    alias dc='\cd ~/Documents'
     alias ..='\cd ../'
     alias ...='\cd ../../'
     alias ....='\cd ../../../'

@@ -1,6 +1,6 @@
 FROM kpango/dev-base:latest AS go-base
 
-ENV GO_VERSION 1.15.5
+ENV GO_VERSION 1.15.6
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -249,11 +249,11 @@ RUN GO111MODULE=on go get -u \
     github.com/securego/gosec/cmd/gosec \
     && upx -9 ${GOPATH}/bin/gosec
 
-FROM go-base AS k6
-RUN GO111MODULE=on go get -u \
-    --ldflags "-s -w" --trimpath \
-    github.com/loadimpact/k6 \
-    && upx -9 ${GOPATH}/bin/k6
+# FROM go-base AS k6
+# RUN GO111MODULE=on go get -u \
+#     --ldflags "-s -w" --trimpath \
+#     github.com/loadimpact/k6@master \
+#     && upx -9 ${GOPATH}/bin/k6
 
 FROM go-base AS evans
 RUN set -x; cd "$(mktemp -d)" \
@@ -351,7 +351,7 @@ COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
-COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
+# COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi

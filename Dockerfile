@@ -135,7 +135,11 @@ COPY zshrc $HOME/.zshrc
 WORKDIR $VIM_PLUG_HOME
 
 USER root
-RUN chown -R kpango:users ${HOME} \
+
+RUN groupadd docker \
+    && usermod -aG docker ${USER} \
+    && newgrp docker \
+    && chown -R kpango:users ${HOME} \
     && chown -R kpango:users ${HOME}/.* \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
@@ -152,8 +156,12 @@ RUN chown -R kpango:users ${HOME} \
     && rm -rf /tmp/* \
     && chown -R kpango:users ${HOME} \
     && chown -R kpango:users ${HOME}/.* \
+    && chown -R kpango:users /usr/local/lib/node_modules \
+    && chown -R kpango:users /usr/local/bin/npm \
     && chmod -R 755 ${HOME} \
-    && chmod -R 755 ${HOME}/.*
+    && chmod -R 755 ${HOME}/.* \
+    && chmod -R 755 /usr/local/lib/node_modules \
+    && chmod -R 755 /usr/local/bin/npm
 
 USER ${USER}
 WORKDIR ${HOME}

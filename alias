@@ -28,6 +28,7 @@ devrun(){
     font_dir="/System/Library/Fonts"
     docker_daemon="$HOME/Library/Containers/com.docker.helper/Data/.docker/daemon.json"
     docker_config="$HOME/Library/Containers/com.docker.helper/Data/.docker/config.json"
+    docker_sock="/var/run/docker.sock"
     container_home="/home/kpango"
     container_goroot="$container_home/go"
     image_name=kpango/dev:latest
@@ -72,7 +73,7 @@ devrun(){
                 -v $rcpath/vintrc.yaml:$container_home/.vintrc.yaml \
                 -v $rcpath/zshrc:$container_home/.zshrc \
                 -v $tz_path:/etc/localtime:ro \
-                -v /var/run/docker.sock:/var/run/docker.sock \
+                -v $docker_sock:$docker_sock \
                 -dit $image_name
                 # -v $rcpath/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
             ;;
@@ -93,12 +94,12 @@ devrun(){
                 --name $container_name \
                 --restart always \
                 --privileged=$privileged \
-                -v /var/run/docker.sock:/var/run/docker.sock \
-                -v $docker_daemon:/etc/docker/daemon.json \
-                -v $docker_config:/etc/docker/config.json \
+                -v $docker_sock:$docker_sock \
+                -v $docker_daemon:/etc/docker/daemon.json:ro \
+                -v $docker_config:/etc/docker/config.json:ro \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.netrc:$container_home/.netrc:ro \
-                -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json \
+                -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json:ro \
                 -v $HOME/.gnupg:$container_home/.gnupg \
                 -v $HOME/.password-store:$container_home/.password-store \
                 -v $HOME/.kube:$container_home/.kube \
@@ -124,7 +125,7 @@ devrun(){
                 -v $rcpath/tmux.conf:$container_home/.tmux.conf \
                 -v $rcpath/vintrc.yaml:$container_home/.vintrc.yaml \
                 -v $rcpath/zshrc:$container_home/.zshrc \
-                -v $font_dir:/usr/share/fonts:ro \
+                -v $font_dir:$font_dir:ro \
                 -v $tz_path:/etc/localtime:ro \
                 -dit $image_name
                 # -v $rcpath/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \

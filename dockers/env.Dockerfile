@@ -8,12 +8,10 @@ ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/li
 ENV USER kpango
 ENV HOME /home/${USER}
 ENV SHELL /usr/bin/zsh
-ENV GROUP sudo,root,users,docker
+ENV GROUP sudo,root,users
 ENV UID 1000
-ENV GID 985
 
-RUN addgroup --gid ${GID} docker \
-    && useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${HOME} -G ${GROUP} ${USER} \
+RUN useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${HOME} -G ${GROUP} ${USER} \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers \
     && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers \
@@ -71,12 +69,30 @@ RUN echo $'/lib\n\
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
     && gem install neovim -N \
+    && git clone https://github.com/soimort/translate-shell \
+    && cd /tmp/translate-shell/ \
+    && make TARGET=zsh -j -C /tmp/translate-shell \
+    && make install -C /tmp/translate-shell \
+    && cd /tmp \
+    && rm -rf /tmp/translate-shell/ \
+    && apt -y autoremove \
+    && chown -R kpango:users ${HOME} \
+    && chown -R kpango:users ${HOME}/.* \
+    && chmod -R 755 ${HOME} \
+    && chmod -R 755 ${HOME}/.* \
+    && npm install -g n
+
+RUN n stable \
+    && npm config set user ${USER} \
+    && chown -R kpango:users /usr/local/lib/node_modules \
+    && chown -R kpango:users /usr/local/bin/npm \
+    && chmod -R 755 /usr/local/lib/node_modules \
+    && chmod -R 755 /usr/local/bin/npm \
     && npm config set user ${USER} \
     && npm install -g \
         bash-language-server \
         dockerfile-language-server-nodejs \
         markdownlint-cli \
-        n \
         neovim \
         npm \
         prettier \
@@ -84,15 +100,11 @@ RUN echo $'/lib\n\
         typescript \
         typescript-language-server \
         yarn \
-    && n stable \
-    && apt purge -y nodejs npm \
-    && git clone https://github.com/soimort/translate-shell \
-    && cd /tmp/translate-shell/ \
-    && make TARGET=zsh -j -C /tmp/translate-shell \
-    && make install -C /tmp/translate-shell \
-    && cd /tmp \
-    && rm -rf /tmp/translate-shell/ \
-    && apt -y autoremove
+    && chown -R kpango:users /usr/local/lib/node_modules \
+    && chown -R kpango:users /usr/local/bin/npm \
+    && chmod -R 755 /usr/local/lib/node_modules \
+    && chmod -R 755 /usr/local/bin/npm \
+    && apt purge -y nodejs npm
 
 WORKDIR /tmp
 ENV NGT_VERSION 1.12.2
