@@ -886,19 +886,30 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archup=archup
     fi
-    if type gpg >/dev/null 2>&1; then
-        gpgexport() {
-            gpg -a --export $1 > $2
-            gpg -a --export-secret-keys $1 > $3
-            gpg --export-ownertrust > $4
-        }
-        alias gpge=gpgexport
 
-        gpgimport() {
-            gpg --import $1
-            gpg --import-ownertrust $2
+    if type gpg >/dev/null 2>&1; then
+        backup_dir=$HOME/gpgbackup
+        gpgbackup() {
+            sudo rm -rf $backup_dir
+            mkdir -p $backup_dir
+            gpg -a --export $1 > $backup_dir/kpango-public.key
+            gpg -a --export-secret-keys $1 > $backup_dir/kpango-secret.key
+            gpg --export-ownertrust > $backup_dir/kpango-ownertrust.txt
+            if type tar >/dev/null 2>&1; then
+                sudo tar Jcvf $HOME/Downloads/gpgbackup.tar.gz $backup_dir
+                rm -rf gpgbackup
+            fi
         }
-        alias gpge=gpgexport
+        alias gpgbu=gpgbackup
+
+        gpgrestore() {
+            if type tar >/dev/null 2>&1; then
+                tarunzip $HOME/Downloads/gpgbackup.tar.gz -C $backup_dir
+            fi
+            gpg --import $backup_dir/kpango-secret.key
+            gpg --import-ownertrust $backup_dir/kpango-ownertrust.txt
+        }
+        alias gpgrs=gpgrestore
     fi
 
     if type bumblebeed >/dev/null 2>&1; then
