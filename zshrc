@@ -372,7 +372,7 @@ if [ -z $ZSH_LOADED ]; then
         gfr() {
             git fetch --prune
             git reset --hard origin/$(tb)
-            git branch -r --merged master | grep -v -e master -e develop | sed -E 's% *origin/%%' | xargs -I% git push --delete origin %
+            git branch -r --merged master | grep -v -e master -e develop | \sed -E 's% *origin/%%' | xargs -I% git push --delete origin %
             git fetch --prune
             git reset --hard origin/$(tb)
             git branch --merged master | grep -vE '^\*|master$|develop$' | xargs -I % git branch -d %
@@ -464,10 +464,6 @@ if [ -z $ZSH_LOADED ]; then
         alias find='fd'
     fi
 
-    if type sd >/dev/null 2>&1; then
-        alias sed='sd'
-    fi
-
     if type dutree >/dev/null 2>&1; then
         alias du='dutree'
     fi
@@ -530,7 +526,7 @@ if [ -z $ZSH_LOADED ]; then
             fi
             if type rg >/dev/null 2>&1; then
                 fbr() {
-                    git branch --all | rg -v HEAD | fzf-tmux +m | sed -E "s/.* //" -e "s#remotes/[^/]*/##" | xargs git checkout
+                    git branch --all | rg -v HEAD | fzf-tmux +m | \sed -E "s/.* //" -e "s#remotes/[^/]*/##" | xargs git checkout
                 }
                 alias fbr=fbr
                 sshf() {
@@ -675,25 +671,25 @@ if [ -z $ZSH_LOADED ]; then
     chword() {
         if [ $# -eq 3 ]; then
             if type rg >/dev/null 2>&1; then
-                rg -l $2 $1 | xargs -t -P $CPUCORES sed -i -E "s/$2/$3/g"
+                rg -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r |
-                    xargs -t -P $CPUCORES sed -i -E "s/$2/$3/g"
+                    xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             else
                 find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
                     -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
-                    -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i -E "s/$2/$3/g"
+                    -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             fi
         elif [ $# -eq 4 ]; then
             if type rg >/dev/null 2>&1; then
-                rg -l $2 $1 | xargs -t -P $CPUCORES sed -i -E "s$4$2$4$3$4g"
+                rg -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r |
-                    xargs -t -P $CPUCORES sed -i -E "s$4$2$4$3$4g"
+                    xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             else
                 find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
                     -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' \) \
-                    -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES sed -i -E "s$4$2$4$3$4g"
+                    -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             fi
         else
             echo "Not enough arguments"
@@ -881,7 +877,7 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
                 /var/cache/pacman/pkg
-            sudo rm -rf /var/lib/pacman/db.lck
+            sudo rm -rf /var/lib/pacman/db.l*
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
@@ -889,6 +885,20 @@ if [ -z $ZSH_LOADED ]; then
             sudo journalctl --vacuum-time=2weeks
         }
         alias archup=archup
+    fi
+    if type gpg >/dev/null 2>&1; then
+        gpgexport() {
+            gpg -a --export $1 > $2
+            gpg -a --export-secret-keys $1 > $3
+            gpg --export-ownertrust > $4
+        }
+        alias gpge=gpgexport
+
+        gpgimport() {
+            gpg --import $1
+            gpg --import-ownertrust $2
+        }
+        alias gpge=gpgexport
     fi
 
     if type bumblebeed >/dev/null 2>&1; then

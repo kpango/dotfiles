@@ -104,13 +104,13 @@ devrun(){
                 -v $HOME/.password-store:$container_home/.password-store \
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.ssh:$container_home/.ssh \
-                -v $HOME/.zsh_history:$container_home/.zsh_history \
+                -v $HOME/.zsh_history:$container_home/.zsh_history:cached \
                 -v $HOME/.tig_history:$container_home/.tig_history \
                 -v $HOME/Documents:$container_home/Documents \
                 -v $HOME/Downloads:$container_home/Downloads \
                 -v $HOME/go/src:$container_goroot/src:cached \
-                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf \
-                -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
+                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf:ro \
+                -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro \
                 -v $rcpath/coc-settings.json:$container_home/.config/nvim/coc-settings.json \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/efm-lsp-conf.yaml:$container_home/.config/nvim/efm-lsp-conf.yaml \
@@ -124,7 +124,7 @@ devrun(){
                 -v $rcpath/tmux-kube:$container_home/.tmux-kube \
                 -v $rcpath/tmux.conf:$container_home/.tmux.conf \
                 -v $rcpath/vintrc.yaml:$container_home/.vintrc.yaml \
-                -v $rcpath/zshrc:$container_home/.zshrc \
+                -v $rcpath/zshrc:$container_home/.zshrc:ro,cached \
                 -v $font_dir:$font_dir:ro \
                 -v $tz_path:/etc/localtime:ro \
                 -dit $image_name
