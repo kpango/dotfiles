@@ -904,7 +904,7 @@ if [ -z $ZSH_LOADED ]; then
 
         gpgrestore() {
             if type tar >/dev/null 2>&1; then
-                tarunzip $HOME/Downloads/gpgbackup.tar.gz -C $backup_dir
+                tar Jxvf $HOME/Downloads/gpgbackup.tar.gz -C $backup_dir
             fi
             gpg --import $backup_dir/kpango-secret.key
             gpg --import-ownertrust $backup_dir/kpango-ownertrust.txt
