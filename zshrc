@@ -565,10 +565,6 @@ if [ -z $ZSH_LOADED ]; then
         alias tarunzip="\tar Jxvf"
     fi
 
-    if type sd >/dev/null 2>&1; then
-        alias sed='\sd'
-    fi
-
     if type duf >/dev/null 2>&1; then
         alias df='\duf'
     fi
@@ -770,6 +766,66 @@ if [ -z $ZSH_LOADED ]; then
                 "$kind" "$@"
             }
             alias kind=kind
+        fi
+
+        if type k3d >/dev/null 2>&1; then
+            k3d() {
+                local k3d="$(whence -p k3d 2>/dev/null)"
+                [ -z "$_lazy_k3d_completion" ] && {
+                    source <("$k3d" completion zsh)
+                    _lazy_k3d_completion=1
+                }
+                "$k3d" "$@"
+            }
+            alias k3d=k3d
+        fi
+
+        if type helm >/dev/null 2>&1; then
+            helm() {
+                local helm="$(whence -p helm 2>/dev/null)"
+                [ -z "$_lazy_helm_completion" ] && {
+                    source <("$helm" completion zsh)
+                    _lazy_helm_completion=1
+                }
+                "$helm" "$@"
+            }
+            alias helm=helm
+        fi
+
+        if type skaffold >/dev/null 2>&1; then
+            skaffold() {
+                local skaffold="$(whence -p skaffold 2>/dev/null)"
+                [ -z "$_lazy_skaffold_completion" ] && {
+                    source <("$skaffold" completion zsh)
+                    _lazy_skaffold_completion=1
+                }
+                "$skaffold" "$@"
+            }
+            alias skaffold=skaffold
+        fi
+
+        if type linkerd >/dev/null 2>&1; then
+            linkerd() {
+                local linkerd="$(whence -p linkerd 2>/dev/null)"
+                [ -z "$_lazy_linkerd_completion" ] && {
+                    source <("$linkerd" completion zsh)
+                    _lazy_linkerd_completion=1
+                }
+                "$linkerd" "$@"
+            }
+            alias linkerd=linkerd
+        fi
+
+        if type kustomize >/dev/null 2>&1; then
+            kustomize() {
+                local kustomize="$(whence -p kustomize 2>/dev/null)"
+                [ -z "$_lazy_kustomize_completion" ] && {
+                    source <("$kustomize" completion zsh)
+                    _lazy_kustomize_completion=1
+                }
+                "$kustomize" "$@"
+            }
+            alias kustomize=kustomize
         fi
     fi
 
