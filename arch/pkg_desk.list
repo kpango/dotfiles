@@ -43,7 +43,6 @@ inetutils
 intel-ucode
 iptables-nft
 iwd
-kubectl
 kubectx
 less
 light
@@ -110,7 +109,7 @@ wofi
 wpscan
 xf86-input-synaptics
 xfsprogs
-xorg-server-xwayland
+xorg-xwayland
 yarn
 youtube-dl
 zsh
