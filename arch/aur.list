@@ -1,12 +1,16 @@
 bluez-firmware
 boostnote-bin
 chrome-remote-desktop
+downgrade
+duf
 ghq
 google-chrome-beta
 google-cloud-sdk
 gopreload-git
+kubectl-bin
 libnm-iwd
 linux-firmware-iwlwifi-git
+networkmanager-iwd
 procs-bin
 slack-desktop
 systemd-boot-pacman-hook
@@ -15,8 +19,6 @@ thinkfan
 tracktion-waveform
 tzupdate
 wdisplays
-wofi-hg
-workstyle-git
 yay
 zoom
 zsa-wally
