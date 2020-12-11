@@ -566,7 +566,7 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type sd >/dev/null 2>&1; then
-        alias sd='\sed'
+        alias sed='\sd'
     fi
 
     if type duf >/dev/null 2>&1; then
