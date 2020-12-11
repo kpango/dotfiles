@@ -561,8 +561,12 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type tar >/dev/null 2>&1; then
-        alias tarzip="tar Jcvf"
-        alias tarunzip="tar Jxvf"
+        alias tarzip="\tar Jcvf"
+        alias tarunzip="\tar Jxvf"
+    fi
+
+    if type sd >/dev/null 2>&1; then
+        alias sd='\sed'
     fi
 
     if type duf >/dev/null 2>&1; then
