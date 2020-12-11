@@ -151,33 +151,27 @@ fi
 if [ -z $ZSH_LOADED ]; then
     ########################################
     #Zplug Settings
-    if [[ -f ~/.zplug/init.zsh ]]; then
-        source "$HOME/.zplug/init.zsh"
-
-        zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
-        zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
-        zplug "zchee/go-zsh-completions"
-        zplug "zsh-users/zsh-autosuggestions"
-        zplug "zsh-users/zsh-completions", as:plugin, use:"src"
-        zplug "zsh-users/zsh-history-substring-search"
-        zplug "auscompgeek/fast-syntax-highlighting", defer:2
-        zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
-        zplug "greymd/tmux-xpanes"
-        zplug "felixr/docker-zsh-completion"
-        # zplug "plugins/kubectl", from:oh-my-zsh, defer:2
-        # zplug "bonnefoa/kubectl-fzf", defer:3
-
-        if ! zplug check --verbose; then
-            zplug install
-        fi
-
-        zplug load
-    else
+    if [[ ! -f ~/.zplug/init.zsh ]]; then
         rm -rf $ZPLUG_HOME
         git clone https://github.com/zplug/zplug $ZPLUG_HOME
-        source "$HOME/.zshrc"
-        return 0
     fi
+    source "$HOME/.zplug/init.zsh"
+    zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
+    zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
+    zplug "zchee/go-zsh-completions"
+    zplug "zsh-users/zsh-autosuggestions"
+    zplug "zsh-users/zsh-completions", as:plugin, use:"src"
+    zplug "zsh-users/zsh-history-substring-search"
+    zplug "auscompgeek/fast-syntax-highlighting", defer:2
+    zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
+    zplug "greymd/tmux-xpanes"
+    zplug "felixr/docker-zsh-completion"
+    # zplug "plugins/kubectl", from:oh-my-zsh, defer:2
+    # zplug "bonnefoa/kubectl-fzf", defer:3
+    if ! zplug check --verbose; then
+        zplug install
+    fi
+    zplug load
 
     # 色を使用出来るようにする
     autoload -Uz colors
@@ -895,6 +889,8 @@ if [ -z $ZSH_LOADED ]; then
             gpg -a --export $1 > $backup_dir/kpango-public.key
             gpg -a --export-secret-keys $1 > $backup_dir/kpango-secret.key
             gpg --export-ownertrust > $backup_dir/kpango-ownertrust.txt
+            sudo chmod -R 777 $backup_dir
+            sudo chown -R $(USER) $backup_dir
             if type tar >/dev/null 2>&1; then
                 sudo tar Jcvf $HOME/Downloads/gpgbackup.tar.gz $backup_dir
                 rm -rf gpgbackup
@@ -904,7 +900,7 @@ if [ -z $ZSH_LOADED ]; then
 
         gpgrestore() {
             if type tar >/dev/null 2>&1; then
-                tar Jxvf $HOME/Downloads/gpgbackup.tar.gz -C $backup_dir
+                sudo tar Jxvf $HOME/Downloads/gpgbackup.tar.gz
             fi
             gpg --import $backup_dir/kpango-secret.key
             gpg --import-ownertrust $backup_dir/kpango-ownertrust.txt
