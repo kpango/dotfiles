@@ -3,7 +3,7 @@
     autocrlf = input                 # CRLFを自動変換
     editor = nvim
     excludesfile = ~/.gitignore  # globalな.gitignoreの指定
-    filemode = false
+    fileMode = false
     precomposeunicode = true
     quotepath = false
 [color]
