@@ -40,7 +40,6 @@ devrun(){
             docker run \
                 --cap-add=ALL \
                 --name $container_name \
-                --hostname $container_name.kpango \
                 --restart always \
                 --privileged=$privileged \
                 -p $port_range:$port_range \
@@ -94,7 +93,6 @@ devrun(){
                 --network=host \
                 --cap-add=ALL \
                 --name $container_name \
-                --hostname $container_name.kpango \
                 --restart always \
                 --privileged=$privileged \
                 -v $docker_sock:$docker_sock \
@@ -104,7 +102,7 @@ devrun(){
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.netrc:$container_home/.netrc:ro \
                 -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json:ro \
-                -v $HOME/.gnupg:$container_home/.gnupg:ro,cached \
+                -v $HOME/.gnupg:$container_home/.gnupg:cached \
                 -v $HOME/.password-store:$container_home/.password-store \
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.ssh:$container_home/.ssh \
