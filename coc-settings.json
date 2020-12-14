@@ -21,7 +21,9 @@
     "source": {
       "around.enable": false,
       "neco.enable": false,
-      "buffer.disableSyntaxes": ["go"]
+      "buffer.disableSyntaxes": [
+        "go"
+      ]
     }
   },
   "signature": {
@@ -48,8 +50,15 @@
   "languageserver": {
     "golang": {
       "command": "gopls",
-      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
-      "filetypes": ["go"],
+      "rootPatterns": [
+        "go.mod",
+        ".vim/",
+        ".git/",
+        ".hg/"
+      ],
+      "filetypes": [
+        "go"
+      ],
       "initializationOptions": {
         "completeUnimported": true,
         "usePlaceholders": true,
@@ -72,29 +81,52 @@
     },
     "nix": {
       "command": "nix-lsp",
-      "filetypes": ["nix"],
+      "filetypes": [
+        "nix"
+      ],
       "args": []
     },
     "dockerfile": {
       "command": "docker-langserver",
-      "filetypes": ["dockerfile"],
-      "args": ["--stdio"]
+      "filetypes": [
+        "dockerfile"
+      ],
+      "args": [
+        "--stdio"
+      ]
     },
     "bash": {
       "command": "bash-language-server",
-      "args": ["start"],
-      "filetypes": ["sh", "zsh", "bash"],
-      "ignoredRootPaths": ["~"]
+      "args": [
+        "start"
+      ],
+      "filetypes": [
+        "sh",
+        "zsh",
+        "bash"
+      ],
+      "ignoredRootPaths": [
+        "~"
+      ]
     },
     "python": {
       "command": "pyls",
-      "filetypes": ["python"],
+      "filetypes": [
+        "python"
+      ],
       "args": []
     },
     "efm": {
       "command": "efm-langserver",
-      "args": ["-c", "$HOME/.config/nvim/efm-lsp-conf.yaml"],
-      "filetypes": ["vim", "eruby", "markdown"]
+      "args": [
+        "-c",
+        "$HOME/.config/nvim/efm-lsp-conf.yaml"
+      ],
+      "filetypes": [
+        "vim",
+        "eruby",
+        "markdown"
+      ]
     }
   },
   "go.goplsOptions": {
