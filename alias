@@ -86,6 +86,7 @@ devrun(){
             tz_path="/etc/localtime"
             docker_daemon="/etc/docker/daemon.json"
             docker_config="/etc/docker/config.json"
+	    resolve_config="/etc/resolv.conf"
             # -e DISPLAY \
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
             docker run \
@@ -95,12 +96,13 @@ devrun(){
                 --restart always \
                 --privileged=$privileged \
                 -v $docker_sock:$docker_sock \
-                -v $docker_daemon:/etc/docker/daemon.json:ro \
-                -v $docker_config:/etc/docker/config.json:ro \
+                -v $docker_daemon:$docker_daemon:ro,cached \
+                -v $docker_config:$docker_config:ro,cached \
+                -v $resolve_config:$resolve_config:ro \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.netrc:$container_home/.netrc:ro \
                 -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json:ro \
-                -v $HOME/.gnupg:$container_home/.gnupg \
+                -v $HOME/.gnupg:$container_home/.gnupg:cached \
                 -v $HOME/.password-store:$container_home/.password-store \
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.ssh:$container_home/.ssh \
@@ -109,8 +111,8 @@ devrun(){
                 -v $HOME/Documents:$container_home/Documents \
                 -v $HOME/Downloads:$container_home/Downloads \
                 -v $HOME/go/src:$container_goroot/src:cached \
-                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf:ro \
-                -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro \
+                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf:ro,cached \
+                -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
                 -v $rcpath/coc-settings.json:$container_home/.config/nvim/coc-settings.json \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/efm-lsp-conf.yaml:$container_home/.config/nvim/efm-lsp-conf.yaml \
@@ -125,8 +127,8 @@ devrun(){
                 -v $rcpath/tmux.conf:$container_home/.tmux.conf \
                 -v $rcpath/vintrc.yaml:$container_home/.vintrc.yaml \
                 -v $rcpath/zshrc:$container_home/.zshrc:ro,cached \
-                -v $font_dir:$font_dir:ro \
-                -v $tz_path:/etc/localtime:ro \
+                -v $font_dir:$font_dir:ro,cached \
+                -v $tz_path:/etc/localtime:ro,cached \
                 -dit $image_name
                 # -v $rcpath/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
                 # -dit kpango/dev:latest $zsh_path -c "tmux -2 new-session -nroot -sroot@$HOST"
