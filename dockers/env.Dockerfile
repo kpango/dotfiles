@@ -1,22 +1,17 @@
 FROM kpango/dev-base:latest AS env
-
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
-
-
 ENV USER kpango
 ENV HOME /home/${USER}
 ENV SHELL /usr/bin/zsh
 ENV GROUP sudo,root,users
 ENV UID 1000
-
 RUN useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${HOME} -G ${GROUP} ${USER} \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers \
     && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers \
     && visudo -c
-
 
 WORKDIR /tmp
 RUN echo $'/lib\n\
@@ -33,28 +28,33 @@ RUN echo $'/lib\n\
     && apt update -y \
     && apt upgrade -y \
     && apt install -y --no-install-recommends --fix-missing \
+    automake \
     bash \
     diffutils \
     exuberant-ctags \
     gawk \
     gnupg \
     graphviz \
+    gettext \
     jq \
     less \
     libhdf5-serial-dev \
+    libncurses5-dev \
     libomp-dev \
     libprotobuf-dev \
     libprotoc-dev \
+    libtool \
+    libtool-bin \
     luajit \
     mariadb-client \
     mtr \
     ncurses-term \
-    neovim \
     nodejs \
     npm \
     openssh-client \
     pass \
     perl \
+    pkg-config \
     protobuf-compiler \
     python3-dev \
     python3-pip \
@@ -67,6 +67,12 @@ RUN echo $'/lib\n\
     tmux \
     xclip \
     && rm -rf /var/lib/apt/lists/* \
+    && git clone https://github.com/neovim/neovim \
+    && cd neovim \
+    && rm -rf build \
+    && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX:PATH=/usr" CMAKE_BUILD_TYPE=Release \
+    && make install \
+    && cd /tmp && rm -rf /tmp/neovim \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
     && gem install neovim -N \
     && git clone https://github.com/soimort/translate-shell \
@@ -112,6 +118,7 @@ ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
 # ENV CPPFLAGS="-I/usr/local/opt/llvm/include"
+
 RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" \
     && tar zxf "v${NGT_VERSION}.tar.gz" -C /tmp \
     && cd "/tmp/NGT-${NGT_VERSION}" \
