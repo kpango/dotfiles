@@ -99,7 +99,7 @@ devrun(){
                 -v $docker_sock:$docker_sock \
                 -v $docker_daemon:$docker_daemon:ro,cached \
                 -v $docker_config:$docker_config:ro,cached \
-                -v $resolve_config:$resolve_config:ro \
+                --mount type=bind,source=$resolve_config,destination=$resolve_config,readonly \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.netrc:$container_home/.netrc:ro \
                 -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json:ro \
