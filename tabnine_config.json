@@ -1,12 +1,13 @@
 {
+  "version": "3.2.28",
   "hide_promotional_message": false,
   "beta_enabled": "No",
-  "ignore_all_lsp": true,
+  "ignore_all_lsp": false,
   "creation_time": "2020-12-14T06:48:07.017484436Z",
   "semantic_status": {
     "go": "Enabled"
   },
-  "enable_telemetry": false,
+  "enable_telemetry": true,
   "user_understands_that_enabling_tabnine_cloud_sends_code_to_tabnine_servers": false,
   "hosted_deep_completions_enabled": "Disabled",
   "tabnine_cloud_host": null,
