@@ -160,22 +160,22 @@ call plug#end()
 " --------------------------------------
 " ---- Plugin Dependencies Settings ----
 " --------------------------------------
-" if !has('python') && !has('pip')
-"     call system('pip install --upgrade pip')
-"     call system('pip install neovim --upgrade')
-" endif
+if !has('python') && !has('pip')
+    call system('pip install --upgrade pip')
+    call system('pip install neovim --upgrade')
+endif
 
-" if !has('python3') && !has('pip3')
-"     call system('pip3 install --upgrade pip')
-"     call system('pip3 install neovim --upgrade')
-" endif
+if !has('python3') && !has('pip3')
+    call system('pip3 install --upgrade pip')
+    call system('pip3 install neovim --upgrade')
+endif
 
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
 let g:python3_host_skip_check = 1
 
-if executable('python2')
-    let g:python_host_prog=system('which python2')
+if executable('python')
+    let g:python_host_prog=system('which python')
 endif
 
 if executable('python3')
@@ -293,56 +293,56 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 let g:coc_global_extensions = [
-      \ 'coc-emoji',
-      \ 'coc-tsserver',
-      \ 'coc-html',
+      \ 'coc-actions',
+      \ 'coc-angular',
+      \ 'coc-calc',
+      \ 'coc-clock',
+      \ 'coc-cspell-dicts',
       \ 'coc-css',
-      \ 'coc-json',
+      \ 'coc-diagnostic',
+      \ 'coc-emmet',
+      \ 'coc-emoji',
       \ 'coc-eslint',
-      \ 'coc-tslint-plugin',
-      \ 'coc-prettier',
-      \ 'coc-stylelint',
-      \ 'coc-pyls',
+      \ 'coc-explorer',
+      \ 'coc-flutter',
+      \ 'coc-git',
+      \ 'coc-gitignore',
+      \ 'coc-go',
+      \ 'coc-highlight',
+      \ 'coc-html',
+      \ 'coc-imselect',
       \ 'coc-java',
+      \ 'coc-jest',
+      \ 'coc-json',
+      \ 'coc-lists',
+      \ 'coc-marketplace',
+      \ 'coc-pairs',
+      \ 'coc-post',
+      \ 'coc-prettier',
+      \ 'coc-project',
+      \ 'coc-pyls',
       \ 'coc-rls',
+      \ 'coc-smartf',
+      \ 'coc-snippets',
       \ 'coc-solargraph',
+      \ 'coc-spell-checker',
+      \ 'coc-stylelint',
+      \ 'coc-svelte',
+      \ 'coc-svg',
+      \ 'coc-tabnine',
+      \ 'coc-tailwindcss',
+      \ 'coc-tslint-plugin',
+      \ 'coc-tsserver',
       \ 'coc-vetur',
+      \ 'coc-vimlsp',
+      \ 'coc-webpack',
       \ 'coc-wxml',
       \ 'coc-yaml',
-      \ 'coc-highlight',
-      \ 'coc-emmet',
-      \ 'coc-vimlsp',
-      \ 'coc-tailwindcss',
-      \ 'coc-svg',
-      \ 'coc-angular',
-      \ 'coc-snippets',
-      \ 'coc-imselect',
       \ 'coc-yank',
-      \ 'coc-pairs',
-      \ 'coc-git',
-      \ 'coc-go',
-      \ 'coc-lists',
-      \ 'coc-diagnostic',
-      \ 'coc-gitignore',
-      \ 'coc-project',
-      \ 'coc-post',
-      \ 'coc-clock',
-      \ 'coc-marketplace',
-      \ 'coc-smartf',
-      \ 'coc-jest',
-      \ 'coc-calc',
-      \ 'coc-webpack',
-      \ 'coc-explorer',
-      \ 'coc-svelte',
-      \ 'coc-flutter',
       \ 'coc-zi',
-      \ 'coc-spell-checker',
-      \ 'coc-cspell-dicts',
-      \ 'coc-actions',
-      \ 'https://github.com/xabikos/vscode-react',
-      \ 'https://github.com/xabikos/vscode-javascript'
+      \ 'https://github.com/xabikos/vscode-javascript',
+      \ 'https://github.com/xabikos/vscode-react'
       \]
-      "\ 'coc-tabnine',
 
 " -------------------------
 " ---- Denite settings ----
