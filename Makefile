@@ -241,7 +241,8 @@ build_and_push_base: \
 
 build_and_push_env: \
 	build_env \
-	push_env
+	push_env \
+	prod
 
 build_and_push_go: \
 	build_go \
