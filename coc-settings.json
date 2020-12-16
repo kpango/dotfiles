@@ -20,10 +20,7 @@
     },
     "source": {
       "around.enable": false,
-      "neco.enable": false,
-      "buffer.disableSyntaxes": [
-        "go"
-      ]
+      "neco.enable": false
     }
   },
   "signature": {
@@ -62,20 +59,26 @@
       ],
       "initializationOptions": {
         "completeUnimported": true,
-        "usePlaceholders": true,
-        "deepCompletion": true,
         "completionDocumentation": true,
-        "fuzzyMatching": true,
-        "staticcheck": true,
-        "watchFileChanges": true,
-        "lintTool": "golangci-lint",
+        "deepCompletion": true,
+        "experimentalWorkspaceModule": true,
+        "gofumpt": true,
         "hoverKind": "FullDocumentation",
+        "linkTarget": "pkg.go.dev",
+        "staticcheck": true,
+        "usePlaceholders": true,
         "env": {
           "CGO_CFLAGS": "-g -O=fast -march=native",
           "CGO_CPPFLAGS": "-g -O=fast -march=native",
           "CGO_CXXFLAGS": "-g -O=fast -march=native",
           "CGO_FFLAGS": "-g -O=fast -march=native",
           "CGO_LDFLAGS": "-g -O=fast -march=native"
+        },
+        "analyses": {
+          "nonewvars": true,
+          "fieldalignment": true,
+          "unreachable": true,
+          "unusedparams": true
         }
       }
     },
@@ -130,7 +133,28 @@
     }
   },
   "go.goplsOptions": {
-    "completeUnimported": true
+    "completeUnimported": true,
+    "completionDocumentation": true,
+    "deepCompletion": true,
+    "experimentalWorkspaceModule": true,
+    "gofumpt": true,
+    "hoverKind": "FullDocumentation",
+    "linkTarget": "pkg.go.dev",
+    "staticcheck": true,
+    "usePlaceholders": true,
+    "env": {
+      "CGO_CFLAGS": "-g -O=fast -march=native",
+      "CGO_CPPFLAGS": "-g -O=fast -march=native",
+      "CGO_CXXFLAGS": "-g -O=fast -march=native",
+      "CGO_FFLAGS": "-g -O=fast -march=native",
+      "CGO_LDFLAGS": "-g -O=fast -march=native"
+    },
+    "analyses": {
+      "nonewvars": true,
+      "fieldalignment": true,
+      "unreachable": true,
+      "unusedparams": true
+    }
   },
   "cSpell": {
     "fixSpellingWithRenameProvider": true,
