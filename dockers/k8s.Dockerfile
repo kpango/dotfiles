@@ -12,7 +12,7 @@ ENV BIN_PATH ${LOCAL}/bin
 ENV TELEPRESENCE_VERSION 0.108
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.8 \
+    python3.9 \
     python3-setuptools \
     python3-pip \
     python3-venv \
@@ -78,9 +78,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && "${PWD}/${BIN_NAME}-${OS}_${ARCH}" install --manifest="${BIN_NAME}.yaml" --archive="${BIN_NAME}.tar.gz" \
     && BIN_NAME="kubectl-krew" \
     && "/root/.krew/bin/${BIN_NAME}" update \
-    && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
-    # && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    # && upx -9 "${BIN_PATH}/${BIN_NAME}"
+    && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+    # && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubebox
 RUN set -x; cd "$(mktemp -d)" \
@@ -103,12 +103,13 @@ FROM kube-base AS kubebuilder
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubebuilder" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && VERSION="2.3.1" \
     && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${TAR_NAME}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
+    # && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
 
 FROM kube-base AS kind
 RUN set -x; cd "$(mktemp -d)" \

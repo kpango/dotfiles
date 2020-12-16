@@ -329,7 +329,6 @@ let g:coc_global_extensions = [
       \ 'coc-stylelint',
       \ 'coc-svelte',
       \ 'coc-svg',
-      \ 'coc-tabnine',
       \ 'coc-tailwindcss',
       \ 'coc-tslint-plugin',
       \ 'coc-tsserver',
@@ -343,6 +342,7 @@ let g:coc_global_extensions = [
       \ 'https://github.com/xabikos/vscode-javascript',
       \ 'https://github.com/xabikos/vscode-react'
       \]
+      "\ 'coc-tabnine',
 
 " -------------------------
 " ---- Denite settings ----

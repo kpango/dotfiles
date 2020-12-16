@@ -52,6 +52,7 @@
       "command": "gopls",
       "rootPatterns": [
         "go.mod",
+        "go.sum",
         ".vim/",
         ".git/",
         ".hg/"
