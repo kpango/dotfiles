@@ -1,6 +1,9 @@
 FROM kpango/dev-base:latest AS go-base
 
-ENV GO_VERSION 1.15.6
+ARG TARGETOS
+ARG TARGETARCH
+
+ENV GO_VERSION 1.16beta1
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -10,9 +13,9 @@ ENV GOPATH /go
 ENV GOFLAGS "-ldflags=-w -ldflags=-s"
 
 WORKDIR /opt
-RUN curl -sSL -O "https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz" \
-    && tar zxf "go${GO_VERSION}.linux-amd64.tar.gz" \
-    && rm "go${GO_VERSION}.linux-amd64.tar.gz" \
+RUN curl -sSL -O "https://dl.google.com/go/go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz" \
+    && tar zxf "go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz" \
+    && rm "go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz" \
     && ln -s /opt/go/bin/go /usr/bin/ \
     && mkdir -p ${GOPATH}/bin
 
@@ -94,17 +97,17 @@ RUN GO111MODULE=on go get -u  \
     github.com/rerost/dragon-imports/cmd/dragon-imports \
     && upx -9 ${GOPATH}/bin/dragon-imports
 
-FROM go-base AS grpcurl
-RUN set -x; cd "$(mktemp -d)" \
-    && OS="$(go env GOOS)" \
-    && NAME="grpcurl" \
-    && ORG="fullstorydev" \
-    && REPO="${ORG}/${NAME}" \
-    && GRPCURL_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLO "https://github.com/${REPO}/releases/download/v${GRPCURL_VERSION}/${NAME}_${GRPCURL_VERSION}_${OS}_x86_64.tar.gz" \
-    && tar zxf "${NAME}_${GRPCURL_VERSION}_${OS}_x86_64.tar.gz" \
-    && mv ${NAME} ${GOPATH}/bin/${NAME} \
-    && upx -9 ${GOPATH}/bin/${NAME}
+# FROM go-base AS grpcurl
+# RUN set -x; cd "$(mktemp -d)" \
+#     && OS="$(go env GOOS)" \
+#     && NAME="grpcurl" \
+#     && ORG="fullstorydev" \
+#     && REPO="${ORG}/${NAME}" \
+#     && GRPCURL_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+#     && curl -fsSLO "https://github.com/${REPO}/releases/download/v${GRPCURL_VERSION}/${NAME}_${GRPCURL_VERSION}_${OS}_x86_64.tar.gz" \
+#     && tar zxf "${NAME}_${GRPCURL_VERSION}_${OS}_x86_64.tar.gz" \
+#     && mv ${NAME} ${GOPATH}/bin/${NAME} \
+#     && upx -9 ${GOPATH}/bin/${NAME}
 
 FROM go-base AS ghq
 RUN GO111MODULE=on go get -u  \
@@ -256,21 +259,21 @@ RUN GO111MODULE=on go get -u \
 #     && upx -9 ${GOPATH}/bin/k6
 
 FROM go-base AS evans
-RUN set -x; cd "$(mktemp -d)" \
-    && OS="$(go env GOOS)" \
-    && ARCH="$(go env GOARCH)" \
-    && NAME="evans" \
-    && ORG="ktr0731" \
-    && REPO="${ORG}/${NAME}" \
-    && EVANS_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLO "https://github.com/${REPO}/releases/download/${EVANS_VERSION}/${NAME}_${OS}_${ARCH}.tar.gz" \
-    && tar zxf "${NAME}_${OS}_${ARCH}.tar.gz" \
-    && mv ${NAME} ${GOPATH}/bin/${NAME} \
-    && upx -9 ${GOPATH}/bin/${NAME}
-# RUN GO111MODULE=on go get -u \
-#     --ldflags "-s -w" --trimpath \
-#     github.com/ktr0731/evans \
-#     && upx -9 ${GOPATH}/bin/evans
+# RUN set -x; cd "$(mktemp -d)" \
+#     && OS="$(go env GOOS)" \
+#     && ARCH="$(go env GOARCH)" \
+#     && NAME="evans" \
+#     && ORG="ktr0731" \
+#     && REPO="${ORG}/${NAME}" \
+#     && EVANS_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+#     && curl -fsSLO "https://github.com/${REPO}/releases/download/${EVANS_VERSION}/${NAME}_${OS}_${ARCH}.tar.gz" \
+#     && tar zxf "${NAME}_${OS}_${ARCH}.tar.gz" \
+#     && mv ${NAME} ${GOPATH}/bin/${NAME} \
+#     && upx -9 ${GOPATH}/bin/${NAME}
+RUN GO111MODULE=on go get -u \
+    --ldflags "-s -w" --trimpath \
+    github.com/ktr0731/evans \
+    && upx -9 ${GOPATH}/bin/evans
 
 FROM go-base AS sqls
 RUN GO111MODULE=on go get -u \
@@ -290,15 +293,15 @@ RUN GO111MODULE=on go get -u \
     github.com/tsenart/vegeta \
     && upx -9 ${GOPATH}/bin/vegeta
 
-FROM go-base AS pulumi
-RUN curl -fsSL https://get.pulumi.com | sh \
-    && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
-    && upx -9 ${GOPATH}/bin/pulumi
+# FROM go-base AS pulumi
+# RUN curl -fsSL https://get.pulumi.com | sh \
+#     && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
+#     && upx -9 ${GOPATH}/bin/pulumi
 
 FROM go-base AS tinygo
 RUN set -x; cd "$(mktemp -d)" \
     && OS="$(go env GOOS)" \
-    && ARCH="$(go env GOARCH)" \
+    && ARCH="$(go env GOARCH | sed 's/arm64/arm/')" \
     && TINYGO_VERSION="$(curl --silent https://github.com/tinygo-org/tinygo/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && curl -fsSLO "https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
     && tar zxf "tinygo${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
@@ -345,7 +348,7 @@ COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
 COPY --from=gosec $GOPATH/bin/gosec $GOPATH/bin/gosec
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
-COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
+# COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
 COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
@@ -354,7 +357,7 @@ COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 # COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
-COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
+# COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo

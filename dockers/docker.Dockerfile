@@ -43,26 +43,30 @@ RUN curl -LO "https://storage.googleapis.com/container-diff/latest/container-dif
     && upx -9 \
         /usr/local/bin/container-diff
 
-
-FROM golang:buster AS golang
-FROM docker-base AS docker-golang-base
-COPY --from=golang /usr/local/go /usr/local/go
-COPY --from=golang /go /go
-ENV GOPATH /go
-ENV GOROOT /usr/local/go
-ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
-
-FROM docker-golang-base AS dlayer
+FROM golang:buster AS dlayer-base
 RUN go get -u github.com/orisano/dlayer \
-    && mv ${GOPATH}/bin/dlayer /usr/local/bin \
-    && upx -9 \
-        /usr/local/bin/dlayer
+    && mv ${GOPATH}/bin/dlayer /usr/local/bin/dlayer
 
-FROM docker:rc-dind AS common
-RUN apk upgrade \
-    && apk add --no-cache \
-    upx \
-    && upx -9 \
+FROM docker-base AS dlayer
+COPY --from=dlayer-base /usr/local/bin/dlayer /usr/local/bin/dlayer
+RUN upx -9 /usr/local/bin/dlayer
+
+FROM docker:rc-dind AS common-base
+
+FROM docker-base AS common
+COPY --from=common-base /usr/local/bin/containerd /usr/local/bin/containerd
+COPY --from=common-base /usr/local/bin/containerd-shim /usr/local/bin/containerd-shim
+COPY --from=common-base /usr/local/bin/ctr /usr/local/bin/ctr
+COPY --from=common-base /usr/local/bin/dind /usr/local/bin/dind
+COPY --from=common-base /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=common-base /usr/local/bin/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY --from=common-base /usr/local/bin/docker-init /usr/local/bin/docker-init
+COPY --from=common-base /usr/local/bin/docker-proxy /usr/local/bin/docker-proxy
+COPY --from=common-base /usr/local/bin/dockerd /usr/local/bin/dockerd
+COPY --from=common-base /usr/local/bin/dockerd-entrypoint.sh /usr/local/bin/dockerd-entrypoint.sh
+COPY --from=common-base /usr/local/bin/modprobe /usr/local/bin/modprobe
+COPY --from=common-base /usr/local/bin/runc /usr/local/bin/runc
+RUN upx -9 \
         /usr/local/bin/containerd \
         /usr/local/bin/containerd-shim \
         /usr/local/bin/ctr \
