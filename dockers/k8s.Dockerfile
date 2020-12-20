@@ -22,7 +22,9 @@ FROM kube-base AS kubectl
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl" \
     && VERSION="$(curl -s ${GOOGLE}/kubernetes-release/release/stable.txt)" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/kubernetes-release/release/${VERSION}/bin/${OS}/${ARCH}/${BIN_NAME}" \
+    && URL="${GOOGLE}/kubernetes-release/release/${VERSION}/bin/${OS}/${ARCH}/${BIN_NAME}" \
+    && echo ${URL} \
+    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}" \
     && "${BIN_PATH}/${BIN_NAME}" version --client
@@ -39,7 +41,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="helmfile" \
     && REPO="roboll/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}_${OS}_${ARCH}" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}_${OS}_${ARCH}" \
+    && echo ${URL} \
+    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}" 
 
@@ -49,7 +53,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${XARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && echo ${URL} \
+    && curl -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
@@ -61,7 +67,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && BIN_NAME="kubens" \
     && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${XARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && echo ${URL} \
+    && curl -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
@@ -79,8 +87,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-krew" \
     && "/root/.krew/bin/${BIN_NAME}" update \
     && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
-    # && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    # && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubebox
 RUN set -x; cd "$(mktemp -d)" \
@@ -148,7 +154,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="telepresenceio/${BIN_NAME}" \
     && curl -fsSLO "${GITHUB}/${REPO}/archive/${TELEPRESENCE_VERSION}.tar.gz" \
     && tar -zxvf "${TELEPRESENCE_VERSION}.tar.gz" \
-    && env PREFIX="${LOCAL}" "telepresence-${TELEPRESENCE_VERSION}/install.sh"
+    && env PREFIX="${LOCAL}" "${BIN_NAME}-${TELEPRESENCE_VERSION}/install.sh"
 
 FROM kube-base AS kube-profefe-base
 RUN set -x; cd "$(mktemp -d)" \
@@ -292,7 +298,7 @@ FROM kube-base AS kustomize
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kustomize" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
-    && wget -q -O - "https://raw.githubusercontent.com/${REPO}/master/hack/install_kustomize.sh" | bash \
+    && wget -q -O - "https://raw.githubusercontent.com/${REPO}/master/hack/install_${BIN_NAME}.sh" | bash \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 

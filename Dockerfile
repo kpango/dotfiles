@@ -70,27 +70,8 @@ ENV ZPLUG_HOME $HOME/.zplug
 # COPY --from=ruby /usr/local/lib/libruby* /usr/lib/
 # COPY --from=ruby /usr/local/bundle /usr/bundle
 
-COPY --from=docker /usr/bin/dind /usr/bin/dind
-COPY --from=docker /usr/bin/dive /usr/bin/dive
-COPY --from=docker /usr/bin/dlayer /usr/bin/dlayer
-COPY --from=docker /usr/bin/docker /usr/bin/docker
-COPY --from=docker /usr/bin/docker-containerd /usr/bin/docker-containerd
-COPY --from=docker /usr/bin/docker-containerd-ctr /usr/bin/docker-containerd-ctr
-COPY --from=docker /usr/bin/docker-containerd-shim /usr/bin/docker-containerd-shim
-COPY --from=docker /usr/bin/docker-entrypoint /usr/bin/docker-entrypoint
-COPY --from=docker /usr/bin/docker-init /usr/bin/docker-init
-COPY --from=docker /usr/bin/docker-proxy /usr/bin/docker-proxy
-COPY --from=docker /usr/bin/docker-runc /usr/bin/docker-runc
-COPY --from=docker /usr/bin/docker-slim /usr/bin/docker-slim
-COPY --from=docker /usr/bin/docker-slim-sensor /usr/bin/docker-slim-sensor
-COPY --from=docker /usr/bin/dockerd /usr/bin/dockerd
-COPY --from=docker /usr/bin/dockerd-entrypoint /usr/bin/dockerd-entrypoint
-COPY --from=docker /usr/bin/dockfmt /usr/bin/dockfmt
-COPY --from=docker /usr/bin/dockle /usr/bin/dockle
-COPY --from=docker /usr/bin/container-diff /usr/bin/container-diff
-COPY --from=docker /usr/bin/modprobe /usr/bin/modprobe
-COPY --from=docker /usr/bin/trivy /usr/bin/trivy
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
+COPY --from=docker /usr/docker/bin/ /usr/bin/
 COPY --from=kube /usr/k8s/bin/ /usr/bin/
 COPY --from=kube /usr/k8s/lib/ /usr/lib/
 
