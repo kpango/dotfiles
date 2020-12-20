@@ -41,8 +41,11 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="docker/${NAME}" \
     && BIN_NAME="docker-credential-pass" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
-    && chmod a+x ${BIN_PATH}/${BIN_NAME}
+    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
+    && tar -xvf "${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
+    && mv ${BIN_NAME} ${BIN_PATH}/${BIN_NAME} \
+    && chmod a+x ${BIN_PATH}/${BIN_NAME} \
+    && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM docker-base AS buildx
 ENV CLI_LIB_PATH /usr/lib/docker/cli-plugins

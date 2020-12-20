@@ -363,18 +363,22 @@ if [ -z $ZSH_LOADED ]; then
             git symbolic-ref --short HEAD | tr -d "\n"
         }
         alias tb=gitthisrepo
+        gitdefaultbranch(){
+            git remote show origin | grep 'HEAD' | cut -d':' -f2 | sed -e 's/^ *//g' -e 's/ *$//g'
+        }
+        alias gitdb=gitdefaultbranch
         gfr() {
             git fetch --prune
             git reset --hard origin/$(tb)
-            git branch -r --merged master | grep -v -e master -e develop | \sed -E 's% *origin/%%' | xargs -I% git push --delete origin %
+            git branch -r --merged $(gitdb) | grep -v -e $(gitdb) -e develop | \sed -E 's% *origin/%%' | xargs -I% git push --delete origin %
             git fetch --prune
             git reset --hard origin/$(tb)
-            git branch --merged master | grep -vE '^\*|master$|develop$' | xargs -I % git branch -d %
+            git branch --merged $(gitdb) | grep -vE '^\*|master$|develop$|main$' | xargs -I % git branch -d %
         }
         alias gfr=gfr
         gfrs() {
             gfr
-            git submodule foreach git pull origin master
+            git submodule foreach git pull origin $(gitdb)
         }
         alias gfrs=gfrs
         gitpull() {
@@ -406,12 +410,12 @@ if [ -z $ZSH_LOADED ]; then
         git-remote-add-merge() {
             git remote add upstream $1
             git fetch upstream
-            git merge upstream/master
+            git merge upstream/$(gitdb)
         }
         alias grfa=git-remote-add-merge
         git-remote-merge() {
             git fetch upstream
-            git merge upstream/master
+            git merge upstream/$(gitdb)
         }
         alias grf=git-remote-merge
     fi
