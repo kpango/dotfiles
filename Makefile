@@ -160,8 +160,8 @@ bash: link
 build: \
 	login \
 	build_base
-	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_{}" go docker rust dart k8s nim gcloud env base
-	# @xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
+	# @xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_{}" go docker rust dart k8s nim gcloud env base
+	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
 	# @make prod
 
 prod: \
@@ -169,10 +169,10 @@ prod: \
 	prod_push
 
 docker_build:
-	sudo docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
+	# sudo docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
 	# sudo docker buildx build --platform linux/amd64,linux/arm64 --push -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
 	# sudo docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
-	# docker build --squash --no-cache --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
+	docker build --squash --no-cache --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
 
 docker_push:
 	sudo docker push ${IMAGE_NAME}:latest

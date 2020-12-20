@@ -22,7 +22,9 @@ FROM kube-base AS kubectl
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl" \
     && VERSION="$(curl -s ${GOOGLE}/kubernetes-release/release/stable.txt)" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/kubernetes-release/release/${VERSION}/bin/${OS}/${ARCH}/${BIN_NAME}" \
+    && URL="${GOOGLE}/kubernetes-release/release/${VERSION}/bin/${OS}/${ARCH}/${BIN_NAME}" \
+    && echo ${URL} \
+    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}" \
     && "${BIN_PATH}/${BIN_NAME}" version --client
@@ -39,7 +41,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="helmfile" \
     && REPO="roboll/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}_${OS}_${ARCH}" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}_${OS}_${ARCH}" \
+    && echo ${URL} \
+    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}" 
 
@@ -49,7 +53,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${XARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && echo ${URL} \
+    && curl -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
@@ -61,7 +67,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && BIN_NAME="kubens" \
     && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${XARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && echo ${URL} \
+    && curl -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
@@ -79,8 +87,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-krew" \
     && "/root/.krew/bin/${BIN_NAME}" update \
     && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
-    # && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    # && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubebox
 RUN set -x; cd "$(mktemp -d)" \
@@ -148,7 +154,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="telepresenceio/${BIN_NAME}" \
     && curl -fsSLO "${GITHUB}/${REPO}/archive/${TELEPRESENCE_VERSION}.tar.gz" \
     && tar -zxvf "${TELEPRESENCE_VERSION}.tar.gz" \
-    && env PREFIX="${LOCAL}" "telepresence-${TELEPRESENCE_VERSION}/install.sh"
+    && env PREFIX="${LOCAL}" "${BIN_NAME}-${TELEPRESENCE_VERSION}/install.sh"
 
 FROM kube-base AS kube-profefe-base
 RUN set -x; cd "$(mktemp -d)" \
@@ -292,9 +298,19 @@ FROM kube-base AS kustomize
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kustomize" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
-    && wget -q -O - "https://raw.githubusercontent.com/${REPO}/master/hack/install_kustomize.sh" | bash \
+    && wget -q -O - "https://raw.githubusercontent.com/${REPO}/master/hack/install_${BIN_NAME}.sh" | bash \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
+FROM kube-base AS wasme
+RUN set -x; cd "$(mktemp -d)" \
+    && NAME="wasme" \
+    && REPO="solo-io/wasm" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && BIN_NAME="${NAME}-${OS}-${ARCH}" \
+    && curl -fsSLo "${BIN_PATH}/${NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}" \
+    && chmod a+x "${BIN_PATH}/${NAME}" \
+    && upx -9 "${BIN_PATH}/${NAME}"
 
 FROM golang:buster AS golang
 FROM kube-base AS kube-golang-base
@@ -338,11 +354,11 @@ COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
 COPY --from=kpt ${BIN_PATH}/kpt ${K8S_PATH}/kpt
 COPY --from=krew ${BIN_PATH}/kubectl-krew ${K8S_PATH}/kubectl-krew
 COPY --from=krew /root/.krew/index $/root/.krew/index
+COPY --from=kube-linter ${BIN_PATH}/kube-linter ${K8S_PATH}/kube-linter
+COPY --from=kube-linter ${BIN_PATH}/kube-linter ${K8S_PATH}/kubectl-lint
 COPY --from=kubebox ${BIN_PATH}/kubebox ${K8S_PATH}/kubebox
 COPY --from=kubebuilder ${BIN_PATH}/kubebuilder ${K8S_PATH}/kubebuilder
 COPY --from=kubecolor ${BIN_PATH}/kubecolor ${K8S_PATH}/kubecolor
-COPY --from=kube-linter ${BIN_PATH}/kube-linter ${K8S_PATH}/kube-linter
-COPY --from=kube-linter ${BIN_PATH}/kube-linter ${K8S_PATH}/kubectl-lint
 COPY --from=kubectl ${BIN_PATH}/kubectl ${K8S_PATH}/kubectl
 COPY --from=kubectl-fzf ${BIN_PATH}/cache_builder ${K8S_PATH}/cache_builder
 COPY --from=kubectl-gadget ${BIN_PATH}/kubectl-gadget ${K8S_PATH}/kubectl-gadget
@@ -360,3 +376,4 @@ COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${K8S_PATH}/telepresence
 COPY --from=telepresence ${LIB_PATH}/sshuttle-telepresence ${K8S_LIB_PATH}/sshuttle-telepresence
+COPY --from=wasme ${BIN_PATH}/wasme ${K8S_PATH}/wasme
