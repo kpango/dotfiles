@@ -1,4 +1,4 @@
-FROM ubuntu:devel AS base
+FROM --platform=$BUILDPLATFORM ubuntu:devel AS base
 
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
@@ -15,6 +15,7 @@ ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
 
 RUN apt-get update -y \
     && apt-get upgrade -y \
+    && apt-get dist-upgrade -y \
     && apt-get install -y --no-install-recommends --fix-missing \
         clang \
         axel \

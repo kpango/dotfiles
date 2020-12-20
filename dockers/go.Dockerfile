@@ -1,4 +1,4 @@
-FROM kpango/dev-base:latest AS go-base
+FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS go-base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -10,6 +10,8 @@ ENV INITRD No
 ENV LANG en_US.UTF-8
 ENV GOROOT /opt/go
 ENV GOPATH /go
+ENV GOARCH=$TARGETARCH
+ENV GOOS=$TARGETOS
 ENV GOFLAGS "-ldflags=-w -ldflags=-s"
 
 WORKDIR /opt
@@ -258,22 +260,23 @@ RUN GO111MODULE=on go get -u \
 #     github.com/loadimpact/k6@master \
 #     && upx -9 ${GOPATH}/bin/k6
 
-FROM go-base AS evans
+# FROM go-base AS evans
 # RUN set -x; cd "$(mktemp -d)" \
 #     && OS="$(go env GOOS)" \
 #     && ARCH="$(go env GOARCH)" \
 #     && NAME="evans" \
 #     && ORG="ktr0731" \
 #     && REPO="${ORG}/${NAME}" \
-#     && EVANS_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-#     && curl -fsSLO "https://github.com/${REPO}/releases/download/${EVANS_VERSION}/${NAME}_${OS}_${ARCH}.tar.gz" \
-#     && tar zxf "${NAME}_${OS}_${ARCH}.tar.gz" \
-#     && mv ${NAME} ${GOPATH}/bin/${NAME} \
-#     && upx -9 ${GOPATH}/bin/${NAME}
-RUN GO111MODULE=on go get -u \
-    --ldflags "-s -w" --trimpath \
-    github.com/ktr0731/evans \
-    && upx -9 ${GOPATH}/bin/evans
+#     && GO111MODULE=on go get -u \
+#     --ldflags "-s -w" --trimpath \
+#     github.com/ktr0731/evans@master \
+#     && upx -9 ${GOPATH}/bin/evans
+
+#    && EVANS_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+#    && curl -fsSLO "https://github.com/${REPO}/releases/download/${EVANS_VERSION}/${NAME}_${OS}_${ARCH}.tar.gz" \
+#    && tar zxf "${NAME}_${OS}_${ARCH}.tar.gz" \
+#    && mv ${NAME} ${GOPATH}/bin/${NAME} \
+#    && upx -9 ${GOPATH}/bin/${NAME}
 
 FROM go-base AS sqls
 RUN GO111MODULE=on go get -u \
@@ -325,7 +328,7 @@ COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=duf $GOPATH/bin/duf $GOPATH/bin/duf
 COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 COPY --from=errcheck $GOPATH/bin/errcheck $GOPATH/bin/errcheck
-COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
+# COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
 COPY --from=fillstruct $GOPATH/bin/fillstruct $GOPATH/bin/fillstruct
 COPY --from=flamegraph $GOPATH/bin/flamegraph.pl $GOPATH/bin/flamegraph.pl
 COPY --from=flamegraph $GOPATH/bin/stackcollapse-go.pl $GOPATH/bin/stackcollapse-go.pl
