@@ -271,7 +271,6 @@ RUN GO111MODULE=on go get -u \
 #     --ldflags "-s -w" --trimpath \
 #     github.com/ktr0731/evans@master \
 #     && upx -9 ${GOPATH}/bin/evans
-
 #    && EVANS_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
 #    && curl -fsSLO "https://github.com/${REPO}/releases/download/${EVANS_VERSION}/${NAME}_${OS}_${ARCH}.tar.gz" \
 #    && tar zxf "${NAME}_${OS}_${ARCH}.tar.gz" \
