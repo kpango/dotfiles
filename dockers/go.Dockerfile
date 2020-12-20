@@ -3,6 +3,9 @@ FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS go-base
 ARG TARGETOS
 ARG TARGETARCH
 
+ENV OS=${TARGETOS}
+ENV ARCH=${TARGETARCH}
+ENV XARCH x86_64
 ENV GO_VERSION 1.16beta1
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
@@ -106,8 +109,9 @@ RUN GO111MODULE=on go get -u  \
 #     && ORG="fullstorydev" \
 #     && REPO="${ORG}/${NAME}" \
 #     && GRPCURL_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-#     && curl -fsSLO "https://github.com/${REPO}/releases/download/v${GRPCURL_VERSION}/${NAME}_${GRPCURL_VERSION}_${OS}_x86_64.tar.gz" \
-#     && tar zxf "${NAME}_${GRPCURL_VERSION}_${OS}_x86_64.tar.gz" \
+#     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+#     && curl -fsSLO "https://github.com/${REPO}/releases/download/v${GRPCURL_VERSION}/${NAME}_${GRPCURL_VERSION}_${OS}_${ARCH}.tar.gz" \
+#     && tar zxf "${NAME}_${GRPCURL_VERSION}_${OS}_${ARCH}.tar.gz" \
 #     && mv ${NAME} ${GOPATH}/bin/${NAME} \
 #     && upx -9 ${GOPATH}/bin/${NAME}
 

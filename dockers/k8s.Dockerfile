@@ -3,9 +3,9 @@ FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS kube-base
 ARG TARGETOS
 ARG TARGETARCH
 
-ENV ARCH ${TARGETARCH}
+ENV OS=${TARGETOS}
+ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
-ENV OS ${TARGETOS}
 ENV GITHUB https://github.com
 ENV GOOGLE https://storage.googleapis.com
 ENV RELEASE_DL releases/download
@@ -55,7 +55,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectx" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && ARCH=$(${ARCH} | sed "s/amd64/${XARCH}/") \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${ARCH}" \
     && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && echo ${URL} \
@@ -70,7 +70,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && BIN_NAME="kubens" \
-    && ARCH=$(${ARCH} | sed "s/amd64/${XARCH}/") \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && TAR_NAME="${BIN_NAME}_v${VERSION}_${OS}_${ARCH}" \
     && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && echo ${URL} \
@@ -147,7 +147,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="k9s" \
     && REPO="derailed/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && ARCH=$(${ARCH} | sed "s/amd64/${XARCH}/") \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && TAR_NAME="${BIN_NAME}_Linux_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
@@ -167,7 +167,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kube-profefe" \
     && REPO="profefe/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && ARCH=$(${ARCH} | sed "s/amd64/${XARCH}/") \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && TAR_NAME="${BIN_NAME}_v${VERSION}_Linux_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
@@ -251,7 +251,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="helm-docs" \
     && REPO="norwoodj/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && ARCH=$(${ARCH} | sed "s/amd64/${XARCH}/") \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && TAR_NAME="${BIN_NAME}_${VERSION}_Linux_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \

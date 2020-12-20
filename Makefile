@@ -171,8 +171,8 @@ prod: \
 docker_build:
 	# sudo docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
 	# sudo docker buildx build --platform linux/amd64,linux/arm64 --push -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
-	# sudo docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
-	docker build --squash --no-cache --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
+	sudo docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
+	# docker build --squash --no-cache --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
 
 docker_push:
 	sudo docker push ${IMAGE_NAME}:latest
