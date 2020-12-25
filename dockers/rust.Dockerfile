@@ -56,6 +56,16 @@ FROM rust-base AS sd
 RUN cargo +nightly install --force --no-default-features \
     sd
 
+FROM rust-base AS sad
+RUN git clone https://github.com/ms-jpq/sad \
+    && cargo +nightly install --locked --all-features --path sad
+# RUN cargo +nightly install --force --no-default-features \
+    # sad
+
+FROM rust-base AS delta
+RUN cargo +nightly install --force --no-default-features \
+    git-delta
+
 FROM rust-base AS bottom
 RUN rustup update stable \
     && rustup default stable \
@@ -82,4 +92,6 @@ COPY --from=procs /root/.cargo/bin/procs /root/.cargo/bin/procs
 COPY --from=rg /root/.cargo/bin/rg /root/.cargo/bin/rg
 COPY --from=rust-base /root/.cargo /root/.cargo
 COPY --from=sd /root/.cargo/bin/sd /root/.cargo/bin/sd
+COPY --from=sad /root/.cargo/bin/sad /root/.cargo/bin/sad
+COPY --from=delta /root/.cargo/bin/delta /root/.cargo/bin/delta
 COPY --from=tokei /root/.cargo/bin/tokei /root/.cargo/bin/tokei

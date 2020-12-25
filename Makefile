@@ -305,7 +305,7 @@ profile:
 	type dlayer >/dev/null 2>&1 && docker save kpango/dev:latest | dlayer >> analyze.txt
 
 login:
-	docker login -u kpango
+	docker login
 
 push:
 	docker push kpango/dev:latest
