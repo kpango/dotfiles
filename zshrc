@@ -1,22 +1,5 @@
 #!/usr/bin/zsh
 
-if type tmux >/dev/null 2>&1; then
-    if [ -z $TMUX ]; then
-        echo "welcome to tmux"
-        USER=$(whoami)
-        HOST=$(hostname)
-        ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
-        # if [[ -z $ID && -z "$WINDOW" && ! -z "$PS1" ]]; then # if not available create a new one
-        if [[ -z $ID ]]; then # if not available create a new one
-            echo "creating new tmux session"
-            tmux -2 new-session -n$USER -s$USER@$HOST \; source-file ~/.tmux.new-session && echo "created new tmux session"
-        else
-            echo "attaching tmux session $ID"
-            tmux -2 attach-session -t "$ID" && echo "attached tmux session $ID"
-        fi
-    fi
-fi
-
 if [ -z $DOTENV_LOADED ]; then
     if type neofetch >/dev/null 2>&1; then
         neofetch
@@ -270,11 +253,11 @@ if [ -z $ZSH_LOADED ]; then
     zstyle ':vcs_info:*' formats '(%s)-[%b]'
     zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
 
-    # precmd() {
-    #     if [ ! -z $TMUX ]; then
-    #         tmux refresh-client -S
-    #     fi
-    # }
+    precmd() {
+        if [ ! -z $TMUX ]; then
+            tmux refresh-client -S
+        fi
+    }
     _update_vcs_info_msg() {
         vcs_info
         # RPROMPT="%F{046}${vcs_info_msg_0_} %F{102}[%D{%Y-%m-%d %H:%M:%S}]"
@@ -1027,3 +1010,21 @@ if [ -z $ZSH_LOADED ]; then
     fi
     export ZSH_LOADED=1;
 fi
+
+if type tmux >/dev/null 2>&1; then
+    if [ -z $TMUX ]; then
+        echo "welcome to tmux"
+        USER=$(whoami)
+        HOST=$(hostname)
+        ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
+        # if [[ -z $ID && -z "$WINDOW" && ! -z "$PS1" ]]; then # if not available create a new one
+        if [[ -z $ID ]]; then # if not available create a new one
+            echo "creating new tmux session"
+            tmux -2 new-session -n$USER -s$USER@$HOST \; source-file ~/.tmux.new-session && echo "created new tmux session"
+        else
+            echo "attaching tmux session $ID"
+            tmux -2 attach-session -t "$ID" && echo "attached tmux session $ID"
+        fi
+    fi
+fi
+
