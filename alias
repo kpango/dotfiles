@@ -103,12 +103,7 @@ devrun(){
                 --mount type=bind,source=$resolve_config,destination=$resolve_config,readonly \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.netrc:$container_home/.netrc:ro \
-                -v $HOME/.docker/.token_seed:$container_root/.docker/.token_seed \
-                -v $HOME/.docker/config.json:$container_root/.docker/config.json \
-                -v $HOME/.docker/daemon.json:$container_root/.docker/daemon.json:ro \
-                -v $HOME/.docker/.token_seed:$container_home/.docker/.token_seed \
-                -v $HOME/.docker/config.json:$container_home/.docker/config.json \
-                -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json:ro \
+                -v $HOME/.docker:$container_root/.docker \
                 -v $HOME/.docker:$container_home/.docker \
                 -v $HOME/.gnupg:$container_root/.gnupg \
                 -v $HOME/.password-store:$container_root/.password-store \

@@ -52,7 +52,10 @@ if [ -z $DOTENV_LOADED ]; then
 
     export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
 
-    export PYTHON_CONFIGURE_OPTS="--enable-shared"
+    if type python3 >/dev/null 2>&1; then
+        export PYTHON_CONFIGURE_OPTS="--enable-shared"
+        export PYTHONIOENCODING="utf-8";
+    fi
 
     if type nvim >/dev/null 2>&1; then
         export VIM=$(which nvim)
@@ -101,6 +104,14 @@ if [ -z $DOTENV_LOADED ]; then
         export CGO_LDFLAGS="-g -Ofast -march=native"
     fi
 
+    DOTFILE_URL="github.com/kpango/dotfiles"
+    if type ghq >/dev/null 2>&1; then
+        export DOTFILES_DIR="$(ghq root)/$DOTFILE_URL"
+    elif [ -d "$HOME/go/src/$DOTFILE_URL" ]; then
+        export DOTFILES_DIR="$HOME/go/src/$DOTFILE_URL"
+    else
+        export DOTFILES_DIR="$HOME/dotfiles"
+    fi
 
     if [ -z $TMUX ]; then
         export TERM="xterm-256color"
@@ -637,7 +648,12 @@ if [ -z $ZSH_LOADED ]; then
     }
     alias zstime=zstime
 
-    alias zedit="$EDITOR $HOME/.zshrc"
+
+    if { [ -L "$HOME/.zshrc" ] || [ -f "/.dockerenv" ] ;} && [ -f "$DOTFILES_DIR/zshrc" ]; then
+        alias zedit="$EDITOR $DOTFILES_DIR/zshrc"
+    else
+        alias zedit="$EDITOR $HOME/.zshrc"
+    fi
 
     alias zsback="cp $HOME/.zshrc $HOME/.zshrc.back"
 
@@ -735,9 +751,9 @@ if [ -z $ZSH_LOADED ]; then
     alias xedit="$EDITOR $HOME/.Xdefaults"
     alias wedit="$EDITOR $HOME/.config/sway/config"
 
-    if type thefuck >/dev/null 2>&1; then
-        eval $(thefuck --alias --enable-experimental-instant-mode)
-    fi
+    # if type thefuck >/dev/null 2>&1; then
+    #     eval $(thefuck --alias --enable-experimental-instant-mode)
+    # fi
 
     if type kubectl >/dev/null 2>&1; then
         kubectl() {
@@ -892,16 +908,16 @@ if [ -z $ZSH_LOADED ]; then
             echo $family_name
             if [[ $family_name =~ "P1" ]]; then
                 echo "backup ThinkPad P1 Gen 2 packages"
-                sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/pkg_desk.list
-                sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur_desk.list
-                pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg_desk.list
-                pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur_desk.list
+                sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_desk.list
+                sudo chmod -R 777 $DOTFILES_DIR/arch/aur_desk.list
+                pacman -Qqen > $DOTFILES_DIR/arch/pkg_desk.list
+                pacman -Qqem > $DOTFILES_DIR/arch/aur_desk.list
             else
                 echo "backup packages"
-                sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
-                sudo chmod -R 777 $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
-                pacman -Qqen > $HOME/go/src/github.com/kpango/dotfiles/arch/pkg.list
-                pacman -Qqem > $HOME/go/src/github.com/kpango/dotfiles/arch/aur.list
+                sudo chmod -R 777 $DOTFILES_DIR/arch/pkg.list
+                sudo chmod -R 777 $DOTFILES_DIR/arch/aur.list
+                pacman -Qqen > $DOTFILES_DIR/arch/pkg.list
+                pacman -Qqem > $DOTFILES_DIR/arch/aur.list
             fi
         }
         alias archback=archback
@@ -996,6 +1012,7 @@ if [ -z $ZSH_LOADED ]; then
     if type systemctl >/dev/null 2>&1; then
       alias checkkm="sudo systemctl status systemd-modules-load.service"
     fi
+
 
     if type vcs_info >/dev/null 2>&1; then
         vcs_info
