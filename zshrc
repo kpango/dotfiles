@@ -1019,6 +1019,9 @@ if type tmux >/dev/null 2>&1; then
         ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
         # if [[ -z $ID && -z "$WINDOW" && ! -z "$PS1" ]]; then # if not available create a new one
         if [[ -z $ID ]]; then # if not available create a new one
+            if [ -f /.dockerenv ]; then
+                sudo chown -R root:docker /var/run/docker.sock
+            fi
             echo "creating new tmux session"
             tmux -2 new-session -n$USER -s$USER@$HOST \; source-file ~/.tmux.new-session && echo "created new tmux session"
         else
