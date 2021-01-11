@@ -1,4 +1,5 @@
 [core]
+    pager = delta
     attributesfile = ~/.gitattributes
     autocrlf = input                 # CRLFを自動変換
     editor = nvim
@@ -6,6 +7,7 @@
     fileMode = false
     precomposeunicode = true
     quotepath = false
+
 [color]
     ui = auto
     branch = auto
@@ -13,15 +15,20 @@
     grep = auto
     interactive = auto
     status = auto
+
 [push]
     default = tracking
+
 [diff]
     mnemonicprefix = yes
     patience = true
+
 [http]
     postBuffer = 524288000
+
 [help]
     autocorrect = 0
+
 [alias]
     ad = add
     cam = commit -a --amend  # 直前のcommitを修正
@@ -79,13 +86,34 @@
     ss = stash save
 
     tree = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
+
 [gpg]
     program = gpg
+
 [user]
     name = kpango
     email = kpango@vdaas.org
     signingkey = 89013853239E4E9A
+
 [ghq]
     root = ~/go/src
+
 [commit]
     gpgsign = true
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    features = side-by-side line-numbers decorations
+    whitespace-error-style = 22 reverse
+    syntax-theme = Monokai Extended
+    side-by-side = true
+    line-numbers-left-format = ""
+    line-numbers-right-format = "│ "
+
+[delta "decorations"]
+    commit-decoration-style = bold yellow box ul
+    file-style = bold yellow ul
+    file-decoration-style = none
+    hunk-header-decoration-style = cyan box ul
