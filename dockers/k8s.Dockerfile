@@ -7,6 +7,7 @@ ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
 ENV GITHUB https://github.com
+ENV RAWGITHUB https://raw.githubusercontent.com
 ENV GOOGLE https://storage.googleapis.com
 ENV RELEASE_DL releases/download
 ENV RELEASE_LATEST releases/latest
@@ -34,7 +35,7 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM kube-base AS helm
 RUN set -x; cd "$(mktemp -d)" \
-    && curl "https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3" | bash \
+    && curl "${RAWGITHUB}/helm/helm/master/scripts/get-helm-3" | bash \
     && BIN_NAME="helm" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
@@ -49,6 +50,20 @@ RUN set -x; cd "$(mktemp -d)" \
     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}" 
+
+FROM kube-base AS kubefwd
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="kubefwd" \
+    && REPO="txn2/${BIN_NAME}" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && TAR_NAME="${BIN_NAME}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.gz" \
+    && echo ${URL} \
+    && curl -fsSLO "${URL}" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubectx
 RUN set -x; cd "$(mktemp -d)" \
@@ -148,7 +163,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="derailed/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-    && TAR_NAME="${BIN_NAME}_Linux_${ARCH}" \
+    && TAR_NAME="${BIN_NAME}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
@@ -168,7 +183,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="profefe/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-    && TAR_NAME="${BIN_NAME}_v${VERSION}_Linux_${ARCH}" \
+    && TAR_NAME="${BIN_NAME}_v${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && BIN_NAME="kprofefe" \
@@ -209,7 +224,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="octant" \
     && REPO="vmware-tanzu/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && TAR_NAME="${BIN_NAME}_${VERSION}_Linux-64bit" \
+    && TAR_NAME="${BIN_NAME}_${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')-64bit" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
@@ -252,7 +267,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="norwoodj/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-    && TAR_NAME="${BIN_NAME}_${VERSION}_Linux_${ARCH}" \
+    && TAR_NAME="${BIN_NAME}_${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
@@ -299,14 +314,14 @@ FROM kube-base AS k3d
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="k3d" \
     && REPO="rancher/${BIN_NAME}" \
-    && wget -q -O - "https://raw.githubusercontent.com/${REPO}/main/install.sh" | bash \
+    && wget -q -O - "${RAWGITHUB}/${REPO}/main/install.sh" | bash \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kustomize
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kustomize" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
-    && wget -q -O - "https://raw.githubusercontent.com/${REPO}/master/hack/install_${BIN_NAME}.sh" | bash \
+    && wget -q -O - "${RAWGITHUB}/${REPO}/master/hack/install_${BIN_NAME}.sh" | bash \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -358,6 +373,8 @@ COPY --from=istio ${BIN_PATH}/istioctl ${K8S_PATH}/istioctl
 COPY --from=k3d ${BIN_PATH}/k3d ${K8S_PATH}/k3d
 COPY --from=k9s ${BIN_PATH}/k9s ${K8S_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${K8S_PATH}/kind
+COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubefwd
+COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubectl-fwd
 COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
 COPY --from=kpt ${BIN_PATH}/kpt ${K8S_PATH}/kpt
 COPY --from=krew ${BIN_PATH}/kubectl-krew ${K8S_PATH}/kubectl-krew
