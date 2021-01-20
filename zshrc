@@ -688,7 +688,7 @@ if [ -z $ZSH_LOADED ]; then
     chword() {
         if [ $# -eq 3 ]; then
             if type rg >/dev/null 2>&1; then
-                rg -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
+                rg --multiline -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude '(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|(^|\/)tags$' -l -r |
                     xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
