@@ -108,6 +108,20 @@ RUN set -x; cd "$(mktemp -d)" \
     && "/root/.krew/bin/${BIN_NAME}" update \
     && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
+FROM kube-base AS check-ownerreferences
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="kubectl-check-ownerreferences" \
+    && REPO="kubernetes-sigs/${BIN_NAME}" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && TAR_NAME="${BIN_NAME}-${OS}-${ARCH}" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && echo ${URL} \
+    && curl -fsSLO "${URL}" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
 FROM kube-base AS kubebox
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubebox" \
@@ -366,6 +380,7 @@ ENV LIB_PATH /usr/local/libexec
 ENV K8S_PATH /usr/k8s/bin
 ENV K8S_LIB_PATH /usr/k8s/lib
 
+COPY --from=check-ownerreferences ${BIN_PATH}/kubectl-check-ownerreferences ${K8S_PATH}/kubectl-check-ownerreferences
 COPY --from=helm ${BIN_PATH}/helm ${K8S_PATH}/helm
 COPY --from=helm-docs ${BIN_PATH}/helm-docs ${K8S_PATH}/helm-docs
 COPY --from=helmfile ${BIN_PATH}/helmfile ${K8S_PATH}/helmfile
@@ -373,8 +388,6 @@ COPY --from=istio ${BIN_PATH}/istioctl ${K8S_PATH}/istioctl
 COPY --from=k3d ${BIN_PATH}/k3d ${K8S_PATH}/k3d
 COPY --from=k9s ${BIN_PATH}/k9s ${K8S_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${K8S_PATH}/kind
-COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubefwd
-COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubectl-fwd
 COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
 COPY --from=kpt ${BIN_PATH}/kpt ${K8S_PATH}/kpt
 COPY --from=krew ${BIN_PATH}/kubectl-krew ${K8S_PATH}/kubectl-krew
@@ -392,6 +405,8 @@ COPY --from=kubectl-rolesum ${BIN_PATH}/kubectl-rolesum ${K8S_PATH}/kubectl-role
 COPY --from=kubectl-trace ${BIN_PATH}/kubectl-trace ${K8S_PATH}/kubectl-trace
 COPY --from=kubectl-tree ${BIN_PATH}/kubectl-tree ${K8S_PATH}/kubectl-tree
 COPY --from=kubectx ${BIN_PATH}/kubectx ${K8S_PATH}/kubectx
+COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubectl-fwd
+COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubefwd
 COPY --from=kubens ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
 COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize
