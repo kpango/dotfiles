@@ -310,6 +310,17 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
+FROM kube-base AS kubeletctl
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="kubeletctl" \
+    && REPO="cyberark/${BIN_NAME}" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && FILE_NAME="${BIN_NAME}_${OS}_${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${FILE_NAME}" \
+    && mv "${FILE_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
 FROM kube-base AS istio
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="istioctl" \
@@ -407,6 +418,7 @@ COPY --from=kubectl-tree ${BIN_PATH}/kubectl-tree ${K8S_PATH}/kubectl-tree
 COPY --from=kubectx ${BIN_PATH}/kubectx ${K8S_PATH}/kubectx
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubectl-fwd
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubefwd
+COPY --from=kubeletctl ${BIN_PATH}/kubeletctl ${K8S_PATH}/kubeletctl
 COPY --from=kubens ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
 COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize
