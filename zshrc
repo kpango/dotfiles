@@ -167,7 +167,7 @@ if [ -z $ZSH_LOADED ]; then
     #Zplug Settings
     if [[ ! -f ~/.zplug/init.zsh ]]; then
         rm -rf $ZPLUG_HOME
-        git clone https://github.com/zplug/zplug $ZPLUG_HOME
+        git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME
     fi
     source "$HOME/.zplug/init.zsh"
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
@@ -939,7 +939,7 @@ if [ -z $ZSH_LOADED ]; then
                 sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
             fi
             sudo rm -rf /var/lib/pacman/db.lck
-            git clone https://aur.archlinux.org/yay.git
+            git clone --depth 1 https://aur.archlinux.org/yay.git
             cd yay
             makepkg -si --noconfirm
             cd ..

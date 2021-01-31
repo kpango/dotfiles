@@ -58,13 +58,9 @@
         "go"
       ],
       "initializationOptions": {
-        "completeUnimported": true,
-        "completionDocumentation": true,
         "deepCompletion": true,
         "experimentalWorkspaceModule": true,
-        "gofumpt": true,
         "hoverKind": "FullDocumentation",
-        "linkTarget": "pkg.go.dev",
         "staticcheck": true,
         "usePlaceholders": true,
         "env": {

@@ -124,11 +124,11 @@ RUN groupadd docker \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && rm -rf $VIM_PLUG_HOME/autoload \
-    && git clone https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload \
+    && git clone --depth 1 https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload \
     && npm uninstall yarn -g \
     && npm install yarn -g \
     && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
-    && git clone https://github.com/zplug/zplug $ZPLUG_HOME \
+    && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME \
     && rm -rf $HOME/.cache \
     && rm -rf $HOME/.npm/_cacache \
     && rm -rf $HOME/.cargo/registry/cache \

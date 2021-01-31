@@ -67,7 +67,7 @@ RUN echo $'/lib\n\
     tmux \
     xclip \
     && rm -rf /var/lib/apt/lists/* \
-    && git clone https://github.com/neovim/neovim \
+    && git clone --depth 1 https://github.com/neovim/neovim \
     && cd neovim \
     && rm -rf build \
     && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX:PATH=/usr" CMAKE_BUILD_TYPE=Release \
@@ -75,7 +75,7 @@ RUN echo $'/lib\n\
     && cd /tmp && rm -rf /tmp/neovim \
     && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
     && gem install neovim -N \
-    && git clone https://github.com/soimort/translate-shell \
+    && git clone --depth 1 https://github.com/soimort/translate-shell \
     && cd /tmp/translate-shell/ \
     && make TARGET=zsh -j -C /tmp/translate-shell \
     && make install -C /tmp/translate-shell \

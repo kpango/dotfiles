@@ -134,6 +134,7 @@ devrun(){
                 -v $rcpath/zshrc:$container_home/.zshrc:ro,cached \
                 -v $font_dir:$font_dir:ro,cached \
                 -v $tz_path:/etc/localtime:ro,cached \
+                -v /mnt:/mnt \
                 -dit $image_name
                 # -v $rcpath/TabNine.toml:$container_home/.config/TabNine/TabNine.toml \
                 # -v $rcpath/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \

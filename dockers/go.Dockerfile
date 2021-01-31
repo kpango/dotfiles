@@ -8,7 +8,7 @@ ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
 
 # ENV GO_VERSION 1.15.6
-ENV GO_VERSION 1.16beta1
+ENV GO_VERSION 1.16rc1
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -63,7 +63,7 @@ RUN GO111MODULE=on go get -u  \
     && upx -9 ${GOPATH}/bin/chidley
 
 FROM go-base AS dlv
-RUN git clone https://github.com/go-delve/delve.git $GOPATH/src/github.com/go-delve/delve \
+RUN git clone --depth 1 https://github.com/go-delve/delve.git $GOPATH/src/github.com/go-delve/delve \
     && cd $GOPATH/src/github.com/go-delve/delve \
     && make install \
     && upx -9 ${GOPATH}/bin/dlv
@@ -134,6 +134,12 @@ RUN GO111MODULE=on go get -u  \
     --ldflags "-s -w" --trimpath \
     github.com/rogpeppe/godef \
     && upx -9 ${GOPATH}/bin/godef
+
+FROM go-base AS act
+RUN GO111MODULE=on go get -u  \
+    --ldflags "-s -w" --trimpath \
+    github.com/nektos/act \
+    && upx -9 ${GOPATH}/bin/act
 
 FROM go-base AS efm
 RUN GO111MODULE=on go get -u  \
@@ -249,7 +255,7 @@ COPY --from=golangci-lint-base /usr/bin/golangci-lint $GOPATH/bin/golangci-lint
 RUN upx -9 ${GOPATH}/bin/golangci-lint
 
 FROM go-base AS flamegraph
-RUN git clone https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
+RUN git clone --depth 1 https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
     && cp /tmp/FlameGraph/flamegraph.pl ${GOPATH}/bin/ \
     && cp /tmp/FlameGraph/stackcollapse.pl ${GOPATH}/bin/ \
     && cp /tmp/FlameGraph/stackcollapse-go.pl ${GOPATH}/bin/
@@ -327,13 +333,17 @@ RUN upx -9 ${GOROOT}/bin/*
 
 FROM go-base AS go-bins
 # COPY --from=diago $GOPATH/bin/diago $GOPATH/bin/diago
+# COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
+# COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
+# COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
+# COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
+COPY --from=dlv $GOPATH/bin/act $GOPATH/bin/act
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=duf $GOPATH/bin/duf $GOPATH/bin/duf
 COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 COPY --from=errcheck $GOPATH/bin/errcheck $GOPATH/bin/errcheck
-# COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
 COPY --from=fillstruct $GOPATH/bin/fillstruct $GOPATH/bin/fillstruct
 COPY --from=flamegraph $GOPATH/bin/flamegraph.pl $GOPATH/bin/flamegraph.pl
 COPY --from=flamegraph $GOPATH/bin/stackcollapse-go.pl $GOPATH/bin/stackcollapse-go.pl
@@ -356,16 +366,13 @@ COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
 COPY --from=gosec $GOPATH/bin/gosec $GOPATH/bin/gosec
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
-# COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
 COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
-# COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
-# COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo

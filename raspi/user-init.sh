@@ -1,5 +1,5 @@
 #!/bin/sh
-git clone https://aur.archlinux.org/yay.git
+git clone --depth 1 https://aur.archlinux.org/yay.git
 cd yay
 makepkg -si
 cd -

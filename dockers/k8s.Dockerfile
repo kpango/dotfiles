@@ -6,7 +6,8 @@ ARG TARGETARCH
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
-ENV GITHUB https://github.com
+ENV GITHUBCOM github.com
+ENV GITHUB https://${GITHUBCOM}
 ENV RAWGITHUB https://raw.githubusercontent.com
 ENV GOOGLE https://storage.googleapis.com
 ENV RELEASE_DL releases/download
@@ -372,7 +373,7 @@ FROM kube-golang-base AS kubecolor
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubecolor" \
     && REPO="dty1er/${BIN_NAME}" \
-    && go get -u "github.com/${REPO}/cmd/${BIN_NAME}" \
+    && go get -u "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -380,7 +381,7 @@ FROM kube-golang-base AS kubectl-trace
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-trace" \
     && REPO="iovisor/${BIN_NAME}" \
-    && go get -u "github.com/${REPO}/cmd/${BIN_NAME}" \
+    && go get -u "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 

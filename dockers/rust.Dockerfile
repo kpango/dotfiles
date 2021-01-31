@@ -61,7 +61,7 @@ RUN cargo +nightly install --force --no-default-features \
     gping
 
 FROM rust-base AS sad
-RUN git clone https://github.com/ms-jpq/sad \
+RUN git clone --depth 1 https://github.com/ms-jpq/sad \
     && cargo +nightly install --locked --all-features --path sad
 # RUN cargo +nightly install --force --no-default-features \
     # sad
