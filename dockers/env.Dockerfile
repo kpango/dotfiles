@@ -82,18 +82,16 @@ RUN echo $'/lib\n\
     && cd /tmp \
     && rm -rf /tmp/translate-shell/ \
     && apt -y autoremove \
-    && chown -R kpango:users ${HOME} \
-    && chown -R kpango:users ${HOME}/.* \
+    && chown -R ${USER}:users ${HOME} \
+    && chown -R ${USER}:users ${HOME}/.* \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && npm install -g n
 
-RUN n stable \
+RUN n latest \
     && npm config set user ${USER} \
-    && chown -R kpango:users /usr/local/lib/node_modules \
-    && chown -R kpango:users /usr/local/bin/npm \
-    && chmod -R 755 /usr/local/lib/node_modules \
-    && chmod -R 755 /usr/local/bin/npm \
+    && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
+    && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && npm config set user ${USER} \
     && npm install -g \
         bash-language-server \
@@ -103,14 +101,14 @@ RUN n stable \
         npm \
         prettier \
         resume-cli \
+        terminalizer \
         typescript \
         typescript-language-server \
         yarn \
-    && chown -R kpango:users /usr/local/lib/node_modules \
-    && chown -R kpango:users /usr/local/bin/npm \
-    && chmod -R 755 /usr/local/lib/node_modules \
-    && chmod -R 755 /usr/local/bin/npm \
-    && apt purge -y nodejs npm
+    && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
+    && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
+    && apt purge -y nodejs npm \
+    && apt -y autoremove
 
 WORKDIR /tmp
 ENV NGT_VERSION 1.13.1
@@ -129,7 +127,7 @@ RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" 
     && rm -rf /tmp/*
 
 WORKDIR /tmp
-ENV TENSORFLOW_C_VERSION 2.3.0
+ENV TENSORFLOW_C_VERSION 2.4.0
 RUN curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
     && rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
