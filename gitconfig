@@ -107,14 +107,15 @@
     diffFilter = delta --color-only
 
 [delta]
+    # features = side-by-side line-numbers decorations
     features = unobtrusive-line-numbers decorations
     whitespace-error-style = 22 reverse
     syntax-theme = Monokai Extended
     side-by-side = true
     line-numbers-left-format = ""
     line-numbers-right-format = "│ "
-    inspect-raw-lines = false
-    navigate = true
+    inspect-raw-lines = true
+    navigate = false
 
 [delta "decorations"]
     commit-decoration-style = bold yellow box ul
@@ -131,4 +132,3 @@
     line-numbers-right-format = "{np:>4}│"
     line-numbers-left-style = blue
     line-numbers-right-style = blue
-
