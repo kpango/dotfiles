@@ -1,0 +1,103 @@
+hostname: k3s-master
+write_files:
+  - path: /var/lib/connman/default.config
+    content: |-
+      [service_eth0]
+      Type=ethernet
+      IPv4=10.1.0.1/255.255.0.0/10.1.0.1
+      IPv6=off
+      Nameservers=10.1.0.1
+
+k3os:
+  sysctl:
+    fs.aio-max-nr: 19349474
+    fs.aio-nr: 0
+    fs.epoll.max_user_watches: 39688724
+    fs.file-max: 19349474
+    fs.file-nr: 288019349474
+    kernel.shmmax: 17179869184
+    kernel.panic: 30
+    kernel.perf_event_paranoid: 0
+    kernel.threads-max: 4000000
+    kernel.printk: "4 4 1 7"
+    kernel.kptr_restrict: "1"
+    net.core.default_qdisc: fq
+    net.core.netdev_max_backlog: 16384
+    net.core.optmem_max: 40960
+    net.core.rmem_default: 16777216
+    net.core.rmem_max: 16777216
+    net.core.somaxconn: 65535
+    net.core.wmem_default: 16777216
+    net.core.wmem_max: 16777216
+    net.ipv4.conf.all.accept_source_route: 0
+    net.ipv4.conf.all.rp_filter: 1
+    net.ipv4.conf.default.accept_redirects: 0
+    net.ipv4.conf.default.accept_source_route: 0
+    net.ipv4.conf.lo.accept_redirects: 0
+    net.ipv4.conf.lo.accept_source_route: 0
+    net.ipv4.icmp_echo_ignore_broadcasts: 1
+    net.ipv4.ip_forward: 1
+    net.ipv4.ip_local_port_range: "1024 65535"
+    net.ipv4.tcp_abort_on_overflow: 1
+    net.ipv4.tcp_allowed_congestion_control: "bbr reno"
+    net.ipv4.tcp_congestion_control: bbr
+    net.ipv4.tcp_ecn: 1
+    net.ipv4.tcp_fack: 1
+    net.ipv4.tcp_fastopen: 3
+    net.ipv4.tcp_fin_timeout: 30
+    net.ipv4.tcp_keepalive_intvl: 5
+    net.ipv4.tcp_keepalive_probes: 4
+    net.ipv4.tcp_keepalive_time: 20
+    net.ipv4.tcp_low_latency: 0
+    net.ipv4.tcp_max_syn_backlog: 65535
+    net.ipv4.tcp_max_tw_buckets: 2000000
+    net.ipv4.tcp_moderate_rcvbuf: 1
+    net.ipv4.tcp_no_metrics_save: 1
+    net.ipv4.tcp_orphan_retries: 3
+    net.ipv4.tcp_rfc1337: 1
+    net.ipv4.tcp_rmem: "4096 87380 16777216"
+    net.ipv4.tcp_sack: 1
+    net.ipv4.tcp_slow_start_after_idle: 0
+    net.ipv4.tcp_syncookies: 1
+    net.ipv4.tcp_timestamps: 0
+    net.ipv4.tcp_tw_reuse: 1
+    net.ipv4.tcp_window_scaling: 1
+    net.ipv4.tcp_wmem: "4096 87380 16777216"
+    net.ipv4.udp_rmem_min: 8192
+    net.ipv4.udp_wmem_min: 8192
+    vm.max_map_count: 262144
+    vm.overcommit_memory: 2
+    vm.overcommit_ratio: 99
+    vm.panic_on_oom: 1
+    vm.swappiness: 1
+    vm.vfs_cache_pressure: 10000
+  dns_nameservers:
+    - 10.0.1.1
+    - 1.1.1.1
+    - 8.8.8.8
+    - 9.9.9.9
+    - 1.0.0.1
+    - 8.8.4.4
+    - 149.112.112.112
+  ntp_servers:
+    - 0.jp.pool.ntp.org
+    - 1.jp.pool.ntp.org
+    - 2.jp.pool.ntp.org
+    - 3.jp.pool.ntp.org
+    - ntp.dnsbalance.ring.gr.jp
+    - ntp.jst.mfeed.ad.jp
+    - ntp.nict.jp
+    - ntp.ring.gr.jp
+    - ntp1.jst.mfeed.ad.jp
+    - ntp1.v6.mfeed.ad.jp
+    - ntp2.jst.mfeed.ad.jp
+    - ntp2.v6.mfeed.ad.jp
+    - ntp3.jst.mfeed.ad.jp
+    - ntp3.v6.mfeed.ad.jp
+    - s2csntp.miz.nao.ac.jp
+    - time.google.com
+  password: kpango
+  k3s_args:
+    - server
+    - "--cluster-init"
+    - "--disable=traefik,servicelb"

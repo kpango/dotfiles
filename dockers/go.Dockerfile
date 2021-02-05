@@ -135,11 +135,11 @@ RUN GO111MODULE=on go get -u  \
     github.com/rogpeppe/godef \
     && upx -9 ${GOPATH}/bin/godef
 
-FROM go-base AS act
-RUN GO111MODULE=on go get -u  \
-    --ldflags "-s -w" --trimpath \
-    github.com/nektos/act \
-    && upx -9 ${GOPATH}/bin/act
+# FROM go-base AS act
+# RUN GO111MODULE=on go get -u  \
+#     --ldflags "-s -w" --trimpath \
+#     github.com/nektos/act \
+#     && upx -9 ${GOPATH}/bin/act
 
 FROM go-base AS efm
 RUN GO111MODULE=on go get -u  \
@@ -338,7 +338,7 @@ FROM go-base AS go-bins
 # COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 # COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
-COPY --from=dlv $GOPATH/bin/act $GOPATH/bin/act
+# COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=duf $GOPATH/bin/duf $GOPATH/bin/duf
