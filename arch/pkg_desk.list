@@ -33,6 +33,7 @@ fwupd
 gettext
 git
 gnome-keyring
+go
 graphviz
 grep
 grim
@@ -42,7 +43,6 @@ imagemagick
 inetutils
 intel-ucode
 iptables-nft
-iwd
 kubectx
 less
 light
@@ -87,9 +87,11 @@ sway
 sysfsutils
 systemd
 systemd-sysvcompat
+tailscale
 tar
 thefuck
 tig
+tinygo
 tlp
 tlp-rdw
 tmux
