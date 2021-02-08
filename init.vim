@@ -31,8 +31,8 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 " ----- update self
     Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
 " ---- common plugins
-    Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': ':call coc#util#install()'}
-    " Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
+    " Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': ':call coc#util#install()'}
+    Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
     " Plug 'iamcco/coc-spell-checker', {'do': 'yarn install --frozen-lockfile'}
     Plug 'Shougo/context_filetype.vim' " auto detect filetype
     Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
@@ -292,56 +292,57 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
-" let g:coc_global_extensions = [
-"      \ 'coc-actions',
-"      \ 'coc-angular',
-"      \ 'coc-calc',
-"      \ 'coc-clock',
-"      \ 'coc-cspell-dicts',
-"      \ 'coc-css',
-"      \ 'coc-diagnostic',
-"      \ 'coc-emmet',
-"      \ 'coc-emoji',
-"      \ 'coc-eslint',
-"      \ 'coc-explorer',
-"      \ 'coc-flutter',
-"      \ 'coc-git',
-"      \ 'coc-gitignore',
-"      \ 'coc-go',
-"      \ 'coc-highlight',
-"      \ 'coc-html',
-"      \ 'coc-imselect',
-"      \ 'coc-java',
-"      \ 'coc-jest',
-"      \ 'coc-json',
-"      \ 'coc-lists',
-"      \ 'coc-marketplace',
-"      \ 'coc-pairs',
-"      \ 'coc-post',
-"      \ 'coc-prettier',
-"      \ 'coc-project',
-"      \ 'coc-pyls',
-"      \ 'coc-rls',
-"      \ 'coc-smartf',
-"      \ 'coc-snippets',
-"      \ 'coc-solargraph',
-"      \ 'coc-spell-checker',
-"      \ 'coc-stylelint',
-"      \ 'coc-svelte',
-"      \ 'coc-svg',
-"      \ 'coc-tailwindcss',
-"      \ 'coc-tslint-plugin',
-"      \ 'coc-tsserver',
-"      \ 'coc-vetur',
-"      \ 'coc-vimlsp',
-"      \ 'coc-webpack',
-"      \ 'coc-wxml',
-"      \ 'coc-yaml',
-"      \ 'coc-yank',
-"      \ 'coc-zi',
-"      \ 'https://github.com/xabikos/vscode-javascript',
-"      \ 'https://github.com/xabikos/vscode-react'
-"      \]
+let g:coc_global_extensions = [
+     \ 'coc-actions',
+     \ 'coc-angular',
+     \ 'coc-calc',
+     \ 'coc-clock',
+     \ 'coc-cspell-dicts',
+     \ 'coc-css',
+     \ 'coc-diagnostic',
+     \ 'coc-emmet',
+     \ 'coc-emoji',
+     \ 'coc-eslint',
+     \ 'coc-explorer',
+     \ 'coc-flutter',
+     \ 'coc-git',
+     \ 'coc-gitignore',
+     \ 'coc-go',
+     \ 'coc-highlight',
+     \ 'coc-html',
+     \ 'coc-imselect',
+     \ 'coc-java',
+     \ 'coc-jest',
+     \ 'coc-json',
+     \ 'coc-lists',
+     \ 'coc-marketplace',
+     \ 'coc-pairs',
+     \ 'coc-post',
+     \ 'coc-prettier',
+     \ 'coc-project',
+     \ 'coc-pyls',
+     \ 'coc-rls',
+     \ 'coc-rust-analyzer',
+     \ 'coc-smartf',
+     \ 'coc-snippets',
+     \ 'coc-solargraph',
+     \ 'coc-spell-checker',
+     \ 'coc-stylelint',
+     \ 'coc-svelte',
+     \ 'coc-svg',
+     \ 'coc-tailwindcss',
+     \ 'coc-tslint-plugin',
+     \ 'coc-tsserver',
+     \ 'coc-vetur',
+     \ 'coc-vimlsp',
+     \ 'coc-webpack',
+     \ 'coc-wxml',
+     \ 'coc-yaml',
+     \ 'coc-yank',
+     \ 'coc-zi',
+     \ 'https://github.com/xabikos/vscode-javascript',
+     \ 'https://github.com/xabikos/vscode-react'
+     \]
       "\ 'coc-tabnine',
 
 " -------------------------

@@ -97,8 +97,7 @@ COPY --from=go /opt/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 
 COPY --from=rust /root/.cargo $HOME/.cargo
-# COPY --from=rust /root/.rustup /root/.rustup
-# COPY --from=rust /root/.multirust /root/.multirust
+COPY --from=rust /root/.rustup /root/.rustup
 
 COPY coc-settings.json $NVIM_HOME/coc-settings.json
 COPY efm-lsp-conf.yaml $NVIM_HOME/efm-lsp-conf.yaml
