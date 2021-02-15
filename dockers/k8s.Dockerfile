@@ -59,7 +59,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && TAR_NAME="${BIN_NAME}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
-    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.gz" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && echo ${URL} \
     && curl -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
