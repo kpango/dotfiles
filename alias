@@ -62,7 +62,7 @@ devrun(){
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/efm-lsp-conf.yaml:$container_home/.config/nvim/efm-lsp-conf.yaml \
                 -v $rcpath/gitattributes:$container_home/.gitattributes \
-                -v $rcpath/gitconfig:$container_home/.gitconfig \
+                -v $HOME/.gitconfig:$container_home/.gitconfig \
                 -v $rcpath/gitignore:$container_home/.gitignore \
                 -v $rcpath/go.vim:$container_home/.config/nvim/syntax/go.vim \
                 -v $rcpath/init.vim:$container_home/.config/nvim/init.vim \
