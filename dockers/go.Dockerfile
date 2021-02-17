@@ -7,8 +7,7 @@ ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
 
-ENV GO_VERSION 1.15.8
-# ENV GO_VERSION 1.16rc1
+ENV GO_VERSION 1.16
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -27,81 +26,82 @@ RUN curl -sSL -O "https://dl.google.com/go/go${GO_VERSION}.${TARGETOS}-${TARGETA
     && mkdir -p ${GOPATH}/bin
 
 FROM go-base AS gojson
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/ChimeraCoder/gojson/gojson \
+    github.com/ChimeraCoder/gojson/gojson@latest \
     && upx -9 ${GOPATH}/bin/gojson
 
 FROM go-base AS syncmap
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/a8m/syncmap \
+    github.com/a8m/syncmap@latest \
     && upx -9 ${GOPATH}/bin/syncmap
 
 FROM go-base AS gotests
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/cweill/gotests/gotests \
+    github.com/cweill/gotests/gotests@latest \
     && upx -9 ${GOPATH}/bin/gotests
 
 FROM go-base AS fillstruct
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/davidrjenni/reftools/cmd/fillstruct \
+    github.com/davidrjenni/reftools/cmd/fillstruct@latest \
     && upx -9 ${GOPATH}/bin/fillstruct
 
 FROM go-base AS gomodifytags
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/fatih/gomodifytags \
+    github.com/fatih/gomodifytags@latest \
     && upx -9 ${GOPATH}/bin/gomodifytags
 
 FROM go-base AS chidley
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/gnewton/chidley \
+    github.com/gnewton/chidley@latest \
     && upx -9 ${GOPATH}/bin/chidley
 
 FROM go-base AS dlv
-RUN git clone --depth 1 https://github.com/go-delve/delve.git $GOPATH/src/github.com/go-delve/delve \
-    && cd $GOPATH/src/github.com/go-delve/delve \
+RUN git clone --depth 1 https://github.com/go-delve/delve.git \
+    ${GOPATH}/src/github.com/go-delve/delve \
+    && cd ${GOPATH}/src/github.com/go-delve/delve \
     && make install \
     && upx -9 ${GOPATH}/bin/dlv
 
 FROM go-base AS hub
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/github/hub \
+    github.com/github/hub@latest \
     && upx -9 ${GOPATH}/bin/hub
 
 FROM go-base AS impl
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/josharian/impl \
+    github.com/josharian/impl@latest \
     && upx -9 ${GOPATH}/bin/impl
 
 FROM go-base AS gotags
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/jstemmer/gotags \
+    github.com/jstemmer/gotags@latest \
     && upx -9 ${GOPATH}/bin/gotags
 
 FROM go-base AS errcheck
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/kisielk/errcheck \
+    github.com/kisielk/errcheck@latest \
     && upx -9 ${GOPATH}/bin/errcheck
 
 FROM go-base AS iferr
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/koron/iferr \
+    github.com/koron/iferr@latest \
     && upx -9 ${GOPATH}/bin/iferr
 
 FROM go-base AS dragon-imports
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/rerost/dragon-imports/cmd/dragon-imports \
+    github.com/rerost/dragon-imports/cmd/dragon-imports@latest \
     && upx -9 ${GOPATH}/bin/dragon-imports
 
 # FROM go-base AS grpcurl
@@ -118,99 +118,99 @@ RUN GO111MODULE=on go get -u  \
 #     && upx -9 ${GOPATH}/bin/${NAME}
 
 FROM go-base AS ghq
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/x-motemen/ghq \
+    github.com/x-motemen/ghq@latest \
     && upx -9 ${GOPATH}/bin/ghq
 
 FROM go-base AS gocode
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/nsf/gocode \
+    github.com/nsf/gocode@latest \
     && upx -9 ${GOPATH}/bin/gocode
 
 FROM go-base AS godef
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/rogpeppe/godef \
+    github.com/rogpeppe/godef@latest \
     && upx -9 ${GOPATH}/bin/godef
 
 # FROM go-base AS act
-# RUN GO111MODULE=on go get -u  \
+# RUN GO111MODULE=on go install  \
 #     --ldflags "-s -w" --trimpath \
 #     github.com/nektos/act \
 #     && upx -9 ${GOPATH}/bin/act
 
 FROM go-base AS efm
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/mattn/efm-langserver \
+    github.com/mattn/efm-langserver@latest \
     && upx -9 ${GOPATH}/bin/efm-langserver
 
 FROM go-base AS golint
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    golang.org/x/lint/golint \
+    golang.org/x/lint/golint@latest \
     && upx -9 ${GOPATH}/bin/golint
 
 FROM go-base AS gofumpt
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    mvdan.cc/gofumpt \
+    mvdan.cc/gofumpt@latest \
     && upx -9 ${GOPATH}/bin/gofumpt
 
 FROM go-base AS gofumports
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    mvdan.cc/gofumpt/gofumports \
+    mvdan.cc/gofumpt/gofumports@latest \
     && upx -9 ${GOPATH}/bin/gofumports
 
 FROM go-base AS goimports
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    golang.org/x/tools/cmd/goimports \
+    golang.org/x/tools/cmd/goimports@latest \
     && upx -9 ${GOPATH}/bin/goimports
 
 FROM go-base AS goimports-update-ignore
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/pwaller/goimports-update-ignore \
+    github.com/pwaller/goimports-update-ignore@latest \
     && upx -9 ${GOPATH}/bin/goimports-update-ignore
 
 FROM go-base AS ghz
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/bojand/ghz/cmd/ghz \
+    github.com/bojand/ghz/cmd/ghz@latest \
     && upx -9 ${GOPATH}/bin/ghz
 
 FROM go-base AS gopls
-RUN GO111MODULE=on go get \
+RUN GO111MODULE=on go install \
     --ldflags "-s -w" --trimpath \
     golang.org/x/tools/gopls@latest \
     && upx -9 ${GOPATH}/bin/gopls
 
 FROM go-base AS gorename
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    golang.org/x/tools/cmd/gorename \
+    golang.org/x/tools/cmd/gorename@latest \
     && upx -9 ${GOPATH}/bin/gorename
 
 FROM go-base AS guru
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    golang.org/x/tools/cmd/guru \
+    golang.org/x/tools/cmd/guru@latest \
     && upx -9 ${GOPATH}/bin/guru
 
 FROM go-base AS keyify
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    honnef.co/go/tools/cmd/keyify \
+    honnef.co/go/tools/cmd/keyify@latest \
     && upx -9 ${GOPATH}/bin/keyify
 
 FROM go-base AS goreturns
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    sourcegraph.com/sqs/goreturns \
+    sourcegraph.com/sqs/goreturns@latest \
     && upx -9 ${GOPATH}/bin/goreturns
 
 # FROM go-base AS diago
@@ -226,7 +226,7 @@ RUN GO111MODULE=on go get -u  \
     # CGO_FFLAGS="-g -Ofast -march=native" \
     # CGO_LDFLAGS="-g -Ofast -march=native" \
     # GO111MODULE=on \
-    # go get -u \
+    # go install \
     # --ldflags "-s -w -linkmode 'external' \
     # -extldflags '-static -fPIC -m64 -pthread -fopenmp -std=c++17 -lstdc++ -lm'" \
     # -a \
@@ -244,7 +244,7 @@ RUN git clone https://github.com/gohugoio/hugo --depth 1 \
     && upx -9 ${GOPATH}/bin/hugo
 
 FROM go-base AS prototool
-RUN GO111MODULE=on go get -u \
+RUN GO111MODULE=on go install \
     --ldflags "-s -w" --trimpath \
     github.com/uber/prototool/cmd/prototool@dev \
     && upx -9 ${GOPATH}/bin/prototool
@@ -261,15 +261,15 @@ RUN git clone --depth 1 https://github.com/brendangregg/FlameGraph /tmp/FlameGra
     && cp /tmp/FlameGraph/stackcollapse-go.pl ${GOPATH}/bin/
 
 FROM go-base AS gosec
-RUN GO111MODULE=on go get -u \
+RUN GO111MODULE=on go install \
     --ldflags "-s -w" --trimpath \
-    github.com/securego/gosec/cmd/gosec \
+    github.com/securego/gosec/cmd/gosec@latest \
     && upx -9 ${GOPATH}/bin/gosec
 
 # FROM go-base AS k6
-# RUN GO111MODULE=on go get -u \
+# RUN GO111MODULE=on go install \
 #     --ldflags "-s -w" --trimpath \
-#     github.com/loadimpact/k6@master \
+#     github.com/loadimpact/k6@latest \
 #     && upx -9 ${GOPATH}/bin/k6
 
 # FROM go-base AS evans
@@ -279,9 +279,9 @@ RUN GO111MODULE=on go get -u \
 #     && NAME="evans" \
 #     && ORG="ktr0731" \
 #     && REPO="${ORG}/${NAME}" \
-#     && GO111MODULE=on go get -u \
+#     && GO111MODULE=on go install \
 #     --ldflags "-s -w" --trimpath \
-#     github.com/ktr0731/evans@master \
+#     github.com/ktr0731/evans@latest \
 #     && upx -9 ${GOPATH}/bin/evans
 #    && EVANS_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
 #    && curl -fsSLO "https://github.com/${REPO}/releases/download/${EVANS_VERSION}/${NAME}_${OS}_${ARCH}.tar.gz" \
@@ -290,21 +290,21 @@ RUN GO111MODULE=on go get -u \
 #    && upx -9 ${GOPATH}/bin/${NAME}
 
 FROM go-base AS sqls
-RUN GO111MODULE=on go get -u \
+RUN GO111MODULE=on go install \
     --ldflags "-s -w" --trimpath \
-    github.com/lighttiger2505/sqls \
+    github.com/lighttiger2505/sqls@latest \
     && upx -9 ${GOPATH}/bin/sqls
 
 FROM go-base AS vgrun
-RUN GO111MODULE=on go get -u \
+RUN GO111MODULE=on go install \
     --ldflags "-s -w" --trimpath \
-    github.com/vugu/vgrun \
+    github.com/vugu/vgrun@latest \
     && upx -9 ${GOPATH}/bin/vgrun
 
 FROM go-base AS vegeta
-RUN GO111MODULE=on go get -u \
+RUN GO111MODULE=on go install \
     --ldflags "-s -w" --trimpath \
-    github.com/tsenart/vegeta \
+    github.com/tsenart/vegeta@latest \
     && upx -9 ${GOPATH}/bin/vegeta
 
 # FROM go-base AS pulumi
@@ -323,9 +323,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 ${GOPATH}/bin/tinygo
 
 FROM go-base AS duf
-RUN GO111MODULE=on go get -u \
+RUN GO111MODULE=on go install \
     --ldflags "-s -w" --trimpath \
-    github.com/muesli/duf \
+    github.com/muesli/duf@latest \
     && upx -9 ${GOPATH}/bin/duf
 
 FROM go-base AS go

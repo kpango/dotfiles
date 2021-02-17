@@ -145,9 +145,12 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubebuilder" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && FILE_NAME="${BIN_NAME}_${OS}_${ARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${FILE_NAME}" \
-    && mv "${FILE_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && echo ${URL} \
+    && curl -fsSLO "${URL}" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv "${TAR_NAME}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -373,17 +376,21 @@ FROM kube-golang-base AS kubecolor
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubecolor" \
     && REPO="dty1er/${BIN_NAME}" \
-    && go get -u "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-golang-base AS kubectl-trace
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="kubectl-trace" \
-    && REPO="iovisor/${BIN_NAME}" \
-    && go get -u "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}" \
-    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+# FROM kube-golang-base AS kubectl-trace
+# RUN set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="kubectl-trace" \
+#     && REPO="iovisor/${BIN_NAME}" \
+#     &&GO111MODULE=on go install  \
+#       --ldflags "-s -w" --trimpath \
+#       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}" \
+#     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM scratch AS kube
 
@@ -414,7 +421,7 @@ COPY --from=kubectl-fzf ${BIN_PATH}/cache_builder ${K8S_PATH}/cache_builder
 COPY --from=kubectl-gadget ${BIN_PATH}/kubectl-gadget ${K8S_PATH}/kubectl-gadget
 COPY --from=kubectl-profefe ${BIN_PATH}/kubectl-profefe ${K8S_PATH}/kubectl-profefe
 COPY --from=kubectl-rolesum ${BIN_PATH}/kubectl-rolesum ${K8S_PATH}/kubectl-rolesum
-COPY --from=kubectl-trace ${BIN_PATH}/kubectl-trace ${K8S_PATH}/kubectl-trace
+# COPY --from=kubectl-trace ${BIN_PATH}/kubectl-trace ${K8S_PATH}/kubectl-trace
 COPY --from=kubectl-tree ${BIN_PATH}/kubectl-tree ${K8S_PATH}/kubectl-tree
 COPY --from=kubectx ${BIN_PATH}/kubectx ${K8S_PATH}/kubectx
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubectl-fwd

@@ -81,9 +81,9 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM golang:buster AS dlayer-base
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
-RUN GO111MODULE=on go get -u  \
+RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/orisano/dlayer \
+    github.com/orisano/dlayer@latest \
     && mv ${GOPATH}/bin/dlayer ${BIN_PATH}/dlayer
 
 FROM docker-base AS dlayer
