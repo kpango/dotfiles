@@ -9,8 +9,19 @@ font:
     family: HackGen
     style: Italic
   size: 13.5
+  # offset:
+   # x: 0
+   # y: 0
+  # glyph_offset:
+   # x: 0
+   # y: 7
+  use_thin_strokes: true
 
 background_opacity: 1.2
+
+window:
+  dynamic_padding: true
+  # startup_mode: Fullscreen
 
 #highlight Normal ctermbg=NONE guibg=NONE
 #highlight NonText ctermbg=NONE guibg=NONE
@@ -21,6 +32,12 @@ url:
     program: xdg-open
 
 custom_cursor_colors: true
+
+selection:
+  semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
+  save_to_clipboard: true
+
+live_config_reload: true
 
 colors:
   # Default Colors
