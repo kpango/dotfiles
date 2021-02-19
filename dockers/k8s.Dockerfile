@@ -14,7 +14,7 @@ ENV RELEASE_DL releases/download
 ENV RELEASE_LATEST releases/latest
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
-ENV TELEPRESENCE_VERSION 0.108
+ENV TELEPRESENCE_VERSION 0.109
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.9 \
