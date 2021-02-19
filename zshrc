@@ -908,6 +908,25 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias comprestart=comprestart
     fi
+
+    if type apt >/dev/null 2>&1; then
+        aptup(){
+          sudo du -sh /var/cache/apt/archives
+          sudo rm -rf /var/cache/apt
+          sudo mkdir -p /var/cache/apt/archives/partial
+          sudo apt autoclean
+          sudo apt autoremove
+          sudo apt update
+          sudo apt upgrade
+          sudo apt full-upgrade
+          sudo apt autoclean
+          sudo apt autoremove --purge
+          sudo du -sh /var/cache/apt/archives
+          sudo rm -rf /var/cache/apt
+          sudo mkdir -p /var/cache/apt/archives/partial
+        }
+    fi
+
     if type yay >/dev/null 2>&1; then
         archback() {
             family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
