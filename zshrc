@@ -914,17 +914,18 @@ if [ -z $ZSH_LOADED ]; then
           sudo du -sh /var/cache/apt/archives
           sudo rm -rf /var/cache/apt
           sudo mkdir -p /var/cache/apt/archives/partial
-          sudo apt autoclean
+          sudo apt clean
           sudo apt autoremove
           sudo apt update
           sudo apt upgrade
           sudo apt full-upgrade
-          sudo apt autoclean
+          sudo apt clean
           sudo apt autoremove --purge
           sudo du -sh /var/cache/apt/archives
           sudo rm -rf /var/cache/apt
           sudo mkdir -p /var/cache/apt/archives/partial
         }
+        alias aptup=aptup
     fi
 
     if type yay >/dev/null 2>&1; then
