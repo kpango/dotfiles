@@ -71,7 +71,9 @@ pass
 patch
 pavucontrol
 pkgconf
+powerline-fonts
 powertop
+procs
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth
@@ -96,7 +98,7 @@ tlp
 tlp-rdw
 tmux
 tpacpi-bat
-ttf-nerd-fonts-symbols
+ttf-fira-code
 udisks2
 unrar
 unzip

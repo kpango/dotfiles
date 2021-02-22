@@ -12,12 +12,12 @@ iwd-git
 kubectl-bin
 libnm-iwd
 linux-firmware-iwlwifi-git
+nerd-fonts-complete
 networkmanager-iwd
 notion-app
 nushell
 optimus-manager
 prime
-procs-bin
 slack-desktop
 stern
 systemd-boot-pacman-hook
