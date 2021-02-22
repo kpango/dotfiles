@@ -132,7 +132,7 @@ devrun(){
                 -v $rcpath/tmux.conf:$container_home/.tmux.conf \
                 -v $rcpath/vintrc.yaml:$container_home/.vintrc.yaml \
                 -v $rcpath/zshrc:$container_home/.zshrc:ro,cached \
-                -v $font_dir:$font_dir:ro,cached \
+                -v $font_dir:$font_dir \
                 -v $tz_path:/etc/localtime:ro,cached \
                 -v /mnt:/mnt \
                 -dit $image_name
