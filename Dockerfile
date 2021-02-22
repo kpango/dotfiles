@@ -47,11 +47,11 @@ ENV GOROOT /usr/local/go
 ENV GCLOUD_PATH /google-cloud-sdk
 ENV CARGO_PATH $HOME/.cargo
 ENV DART_PATH /usr/lib/dart
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 ENV NVIM_HOME $HOME/.config/nvim
 ENV VIM_PLUG_HOME $NVIM_HOME/plugged/vim-plug
 ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
 ENV ZPLUG_HOME $HOME/.zplug
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 
 # COPY --from=python3 /usr/local /usr/local
 # COPY --from=python2 /usr/local /usr/local
@@ -85,9 +85,9 @@ COPY --from=nim /nim/lib /usr/local/lib/nim
 COPY --from=nim /root/.cache/nim $HOME/.cache/nim
 COPY --from=nim /nim /nim
 
-COPY --from=dart /usr/lib/dart/bin /usr/lib/dart/bin
-COPY --from=dart /usr/lib/dart/lib /usr/lib/dart/lib
-COPY --from=dart /usr/lib/dart/include /usr/lib/dart/include
+COPY --from=dart ${DART_PATH}/bin ${DART_PATH}/bin
+COPY --from=dart ${DART_PATH}/lib ${DART_PATH}/lib
+COPY --from=dart ${DART_PATH}/include ${DART_PATH}/include
 
 COPY --from=go /opt/go/bin $GOROOT/bin
 COPY --from=go /opt/go/src $GOROOT/src
@@ -96,7 +96,7 @@ COPY --from=go /opt/go/pkg $GOROOT/pkg
 COPY --from=go /opt/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 
-COPY --from=rust /root/.cargo $HOME/.cargo
+COPY --from=rust /root/.cargo ${CARGO_PATH}
 COPY --from=rust /root/.rustup /root/.rustup
 
 COPY coc-settings.json $NVIM_HOME/coc-settings.json

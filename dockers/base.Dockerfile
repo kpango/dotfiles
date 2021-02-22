@@ -17,22 +17,27 @@ RUN apt-get update -y \
     && apt-get upgrade -y \
     && apt-get dist-upgrade -y \
     && apt-get install -y --no-install-recommends --fix-missing \
-        clang \
         axel \
         build-essential \
         ca-certificates \
+        clang \
         cmake \
         curl \
         git \
+        libssl-dev \
         libtinfo5 \
+        libx11-dev \
+        libxcb-composite0-dev \
         locales \
+        pkg-config \
+        python3 \
         sudo \
+        tzdata \
         unzip \
         upx \
         wget \
         xz-utils \
         zsh \
-        tzdata \
     && update-alternatives --set cc $(which clang) \
     && update-alternatives --set c++ $(which clang++) \
     && apt-get clean \

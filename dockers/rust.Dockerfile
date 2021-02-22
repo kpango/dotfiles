@@ -22,9 +22,13 @@ RUN rustup install stable \
 
 RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
-# FROM rust-base AS nix-lsp
-# RUN cargo install --force --no-default-features \
-#     --git https://gitlab.com/jD91mZM2/nix-lsp
+FROM rust-base AS rnix-lsp
+RUN cargo install --force --no-default-features \
+    --git https://github.com/nix-community/rnix-lsp
+
+FROM rust-base AS nushell
+RUN cargo install --force --features=extra \
+    --git https://github.com/nushell/nushell nu
 
 FROM rust-base AS cargo-bloat
 RUN cargo install --force --no-default-features \
@@ -34,9 +38,9 @@ FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
 # 
-# FROM rust-base AS starship
-# RUN cargo install --force --no-default-features \
-#     --git https://github.com/starship/starship
+FROM rust-base AS starship
+RUN cargo install --force --no-default-features \
+    --git https://github.com/starship/starship
 
 FROM rust-base AS exa
 RUN cargo +nightly install --force \
@@ -70,15 +74,10 @@ FROM rust-base AS gping
 RUN cargo +nightly install --force --no-default-features \
     gping
 
-# FROM rust-base AS sad
-# RUN rustup update stable \
-#     && rustup default stable \
-#     && cargo install --force --no-default-features \
-#     --git https://github.com/ms-jpq/sad --branch senpai
-# RUN git clone --depth 1 https://github.com/ms-jpq/sad \
-    # && cargo install --force --no-default-features --locked --all-features --path sad
-# RUN cargo +nightly install --force --no-default-features \
-    # sad
+FROM rust-base AS sad
+RUN git clone --depth 1 https://github.com/ms-jpq/sad \
+    && cd sad \
+    && cargo install --force --locked --all-features --path .
 
 FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
@@ -126,33 +125,38 @@ FROM rust-base AS cargo-check
 RUN cargo install cargo-check
 
 FROM scratch AS rust
+ENV HOME /root
+ENV RUSTUP ${HOME}/.rustup
+ENV CARGO ${HOME}/.cargo
+ENV BIN_PATH ${CARGO}/bin
 
-# COPY --from=nix-lsp /root/.cargo/bin/nix-lsp /root/.cargo/bin/nix-lsp
-# COPY --from=sad /root/.cargo/bin/sad /root/.cargo/bin/sad
-# COPY --from=starship /root/.cargo/bin/starship /root/.cargo/bin/starship
-COPY --from=bat /root/.cargo/bin/bat /root/.cargo/bin/bat
-COPY --from=bottom /root/.cargo/bin/btm /root/.cargo/bin/btm
-COPY --from=cargo-asm /root/.cargo/bin/cargo-asm /root/.cargo/bin/cargo-asm
-COPY --from=cargo-binutils /root/.cargo/bin/cargo-* /root/.cargo/bin/
-COPY --from=cargo-binutils /root/.cargo/bin/rust-* /root/.cargo/bin/
-COPY --from=cargo-check /root/.cargo/bin/cargo-check /root/.cargo/bin/cargo-check
-COPY --from=cargo-expand /root/.cargo/bin/cargo-expand /root/.cargo/bin/cargo-expand
-# COPY --from=cargo-src /root/.cargo/bin/cargo-src /root/.cargo/bin/cargo-src
-COPY --from=cargo-tree /root/.cargo/bin/cargo-tree /root/.cargo/bin/cargo-tree
-COPY --from=cargo-watch /root/.cargo/bin/cargo-watch /root/.cargo/bin/cargo-watch
-COPY --from=delta /root/.cargo/bin/delta /root/.cargo/bin/delta
-COPY --from=dutree /root/.cargo/bin/dutree /root/.cargo/bin/dutree
-COPY --from=exa /root/.cargo/bin/exa /root/.cargo/bin/exa
-COPY --from=fd /root/.cargo/bin/fd /root/.cargo/bin/fd
-COPY --from=gping /root/.cargo/bin/gping /root/.cargo/bin/gping
-COPY --from=hyperfine /root/.cargo/bin/hyperfine /root/.cargo/bin/hyperfine
-COPY --from=procs /root/.cargo/bin/procs /root/.cargo/bin/procs
-# COPY --from=racer /root/.cargo/bin/racer /root/.cargo/bin/racer
-COPY --from=rg /root/.cargo/bin/rg /root/.cargo/bin/rg
-COPY --from=rust-base /root/.cargo /root/.cargo
-COPY --from=sd /root/.cargo/bin/sd /root/.cargo/bin/sd
-COPY --from=tokei /root/.cargo/bin/tokei /root/.cargo/bin/tokei
-COPY --from=rust-base /root/.cargo/bin/rustc /root/.cargo/bin/rustc
-COPY --from=rust-base /root/.cargo/bin/rustup /root/.cargo/bin/rustup
-COPY --from=rust-base /root/.rustup/settings.toml /root/.rustup/settings.toml
-COPY --from=rust-base /root/.rustup/toolchains /root/.rustup/toolchains
+# COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
+# COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
+COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
+COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
+COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
+COPY --from=cargo-asm ${BIN_PATH}/cargo-asm ${BIN_PATH}/cargo-asm
+COPY --from=cargo-binutils ${BIN_PATH}/cargo-* ${BIN_PATH}/
+COPY --from=cargo-binutils ${BIN_PATH}/rust-* ${BIN_PATH}/
+COPY --from=cargo-check ${BIN_PATH}/cargo-check ${BIN_PATH}/cargo-check
+COPY --from=cargo-expand ${BIN_PATH}/cargo-expand ${BIN_PATH}/cargo-expand
+COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
+COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
+COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
+COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
+COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
+COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
+COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
+COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
+COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
+COPY --from=procs ${BIN_PATH}/procs ${BIN_PATH}/procs
+COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
+COPY --from=rnix-lsp ${BIN_PATH}/rnix-lsp ${BIN_PATH}/rnix-lsp
+COPY --from=rust-base ${BIN_PATH}/rustc ${BIN_PATH}/rustc
+COPY --from=rust-base ${BIN_PATH}/rustup ${BIN_PATH}/rustup
+COPY --from=rust-base ${CARGO} ${CARGO}
+COPY --from=rust-base ${RUSTUP}/settings.toml ${RUSTUP}/settings.toml
+COPY --from=rust-base ${RUSTUP}/toolchains ${RUSTUP}/toolchains
+COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
+COPY --from=starship ${BIN_PATH}/starship ${BIN_PATH}/starship
+COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei

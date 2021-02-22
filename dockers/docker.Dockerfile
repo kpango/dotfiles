@@ -13,7 +13,7 @@ FROM aquasec/trivy:latest AS trivy
 
 FROM goodwithtech/dockle:latest AS dockle-base
 FROM docker-base AS dockle
-COPY --from=dockle-base ${BIN_PATH}/dockle ${BIN_PATH}/dockle
+COPY --from=dockle-base /usr/bin/dockle ${BIN_PATH}/dockle
 RUN upx -9 ${BIN_PATH}/dockle
 
 FROM wagoodman/dive:latest AS dive-base
