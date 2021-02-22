@@ -180,7 +180,7 @@ if [ -z $ZSH_LOADED ]; then
     zplug "zsh-users/zsh-completions", as:plugin, use:"src"
     zplug "zsh-users/zsh-history-substring-search"
     zplug "auscompgeek/fast-syntax-highlighting", defer:2
-    zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
+    # zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
     zplug "greymd/tmux-xpanes"
     zplug "felixr/docker-zsh-completion"
     # zplug "plugins/kubectl", from:oh-my-zsh, defer:2
@@ -206,10 +206,10 @@ if [ -z $ZSH_LOADED ]; then
     setopt hist_save_no_dups
     LISTMAX=1000
     WORDCHARS="$WORDCHARS|:"
-    export PROMPT_COMMAND='hcmd=$(history 1); hcmd="${hcmd# *[0-9]*  }"; if [[ ${hcmd%% *} == "cd" ]]; then pwd=$OLDPWD; else pwd=$PWD; fi; hcmd=$(echo -e "cd $pwd && $hcmd"); history -s "$hcmd"'
+    # export PROMPT_COMMAND='hcmd=$(history 1); hcmd="${hcmd# *[0-9]*  }"; if [[ ${hcmd%% *} == "cd" ]]; then pwd=$OLDPWD; else pwd=$PWD; fi; hcmd=$(echo -e "cd $pwd && $hcmd"); history -s "$hcmd"'
 
     # プロンプト
-    PROMPT="%F{045}%/ $ %f"
+    # PROMPT="%F{045}%/ $ %f"
     # PS1="%{${fg[green]}%}%/#%{${reset_color}%} %"
 
     # 単語の区切り文字を指定する
@@ -244,10 +244,10 @@ if [ -z $ZSH_LOADED ]; then
     zstyle ':completion:*:-tilde-:*' group-order 'named-directories' 'path-directories' 'expand'
     zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
     zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
-    zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+    # zstyle ':completion:*:default' list-prompt '%S%M matches%s'
     zstyle ':completion:*:default' menu select=1
     zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
-    zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec)|prompt_*)'
+    # zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec)|prompt_*)'
     zstyle ':completion:*:history-words' list false
     zstyle ':completion:*:history-words' menu yes
     zstyle ':completion:*:history-words' remove-all-dups yes
@@ -264,9 +264,9 @@ if [ -z $ZSH_LOADED ]; then
     zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
     zstyle ':completion::complete:*' cache-path "${ZDOTDIR:-${HOME}}/.zcompcache"
     zstyle ':completion::complete:*' use-cache on
-    zstyle ':zsh-kubectl-prompt:' separator ' | ns: '
-    zstyle ':zsh-kubectl-prompt:' preprompt 'ctx: '
-    zstyle ':zsh-kubectl-prompt:' postprompt ''
+    # zstyle ':zsh-kubectl-prompt:' separator ' | ns: '
+    # zstyle ':zsh-kubectl-prompt:' preprompt 'ctx: '
+    # zstyle ':zsh-kubectl-prompt:' postprompt ''
 
     ########################################
     # vcs_info
@@ -284,7 +284,7 @@ if [ -z $ZSH_LOADED ]; then
     _update_vcs_info_msg() {
         vcs_info
         # RPROMPT="%F{046}${vcs_info_msg_0_} %F{102}[%D{%Y-%m-%d %H:%M:%S}]"
-        RPROMPT="%F{green}${vcs_info_msg_0_} %{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
+        # RPROMPT="%F{green}${vcs_info_msg_0_} %{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
     }
     add-zsh-hook precmd _update_vcs_info_msg
 

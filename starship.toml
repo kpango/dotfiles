@@ -1,3 +1,60 @@
+add_newline = false
+
+format = """
+$time\
+$username\
+$hostname\
+$shlvl\
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$hg_branch\
+$docker_context\
+$package\
+$cmake\
+$dart\
+$dotnet\
+$elixir\
+$elm\
+$erlang\
+$golang\
+$helm\
+$java\
+$julia\
+$kotlin\
+$nim\
+$nodejs\
+$ocaml\
+$perl\
+$php\
+$purescript\
+$python\
+$ruby\
+$rust\
+$swift\
+$terraform\
+$vagrant\
+$zig\
+$nix_shell\
+$conda\
+$memory_usage\
+$aws\
+$gcloud\
+$kubernetes\
+$openstack\
+$env_var\
+$crystal\
+$custom\
+$cmd_duration\
+$line_break\
+$lua\
+$jobs\
+$battery\
+$status\
+$character"""
+
 [directory]
 truncate_to_repo = false
 truncation_length = 30
@@ -11,8 +68,29 @@ symbol = " "
 [dart]
 symbol = " "
 
-[docker]
+[docker_context]
 symbol = " "
+disabled = false
+
+# [shlvl]
+# disabled = false
+# format = "$shlvl level(s) down"
+# threshold = 3
+
+[username]
+style_user = "green bold"
+style_root = "red bold"
+format = "[@$user]($style) "
+disabled = false
+show_always = true
+
+
+[time]
+disabled = false
+format = '$symbol[\[$time\]](cyan) '
+time_format = "%Y-%m-%d %H:%M:%S"
+utc_time_offset = "+9"
+# time_range = "10:00:00-24:00:00"
 
 [elixir]
 symbol = " "
@@ -67,3 +145,23 @@ symbol = " "
 
 [swift]
 symbol = "ﯣ "
+
+[gcloud]
+symbol = "️🇬️ "
+format = 'on [$symbol $active(\($project\))]($style) '
+
+[git_status]
+conflicted = "🏳"
+ahead = "🏎💨"
+behind = "😰"
+diverged = "😵"
+untracked = "🤷‍"
+stashed = "📦"
+modified = "📝"
+staged = '[++\($count\)](green)'
+renamed = "👅"
+deleted = "🗑"
+
+[kubernetes]
+format = 'on [$symbol $context \($namespace\)]($style) '
+disabled = false

@@ -79,6 +79,10 @@ RUN git clone --depth 1 https://github.com/ms-jpq/sad \
     && cd sad \
     && cargo install --force --locked --all-features --path .
 
+FROM rust-base AS lsd
+RUN cargo install --force --no-default-features \
+    --git https://github.com/Peltoche/lsd --branch master
+
 FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
     git-delta
@@ -132,7 +136,6 @@ ENV BIN_PATH ${CARGO}/bin
 
 # COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
 # COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
-COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
 COPY --from=cargo-asm ${BIN_PATH}/cargo-asm ${BIN_PATH}/cargo-asm
@@ -148,6 +151,7 @@ COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
+COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
 COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
 COPY --from=procs ${BIN_PATH}/procs ${BIN_PATH}/procs
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
@@ -157,6 +161,7 @@ COPY --from=rust-base ${BIN_PATH}/rustup ${BIN_PATH}/rustup
 COPY --from=rust-base ${CARGO} ${CARGO}
 COPY --from=rust-base ${RUSTUP}/settings.toml ${RUSTUP}/settings.toml
 COPY --from=rust-base ${RUSTUP}/toolchains ${RUSTUP}/toolchains
+COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
 COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
 COPY --from=starship ${BIN_PATH}/starship ${BIN_PATH}/starship
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
