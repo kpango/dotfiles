@@ -495,7 +495,16 @@ if [ -z $ZSH_LOADED ]; then
         alias top=htop
     fi
 
-    if type exa >/dev/null 2>&1; then
+    if type lsd >/dev/null 2>&1; then
+        alias ks="lsd"
+        alias l="lsd"
+        alias ll='lsd -l'
+        alias la='lsd -aAlLh'
+        alias lla='lsd -aAlLhi'
+        alias tree='lsd --tree'
+        alias ls='lsd'
+        alias lg='lsd -aAlLh | rg'
+    elif type exa >/dev/null 2>&1; then
         alias ks="exa -G"
         alias l="exa -G "
         alias ll='exa -l'
