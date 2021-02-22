@@ -51,7 +51,6 @@ $cmd_duration\
 $line_break\
 $lua\
 $jobs\
-$battery\
 $status\
 $character"""
 

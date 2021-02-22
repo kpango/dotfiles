@@ -6,7 +6,6 @@ if type tmux >/dev/null 2>&1; then
         USER=$(whoami)
         HOST=$(hostname)
         ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
-        # if [[ -z $ID && -z "$WINDOW" && ! -z "$PS1" ]]; then # if not available create a new one
         if [[ -z $ID ]]; then # if not available create a new one
             if [ -f /.dockerenv ]; then
                 sudo chown -R root:docker /var/run/docker.sock
@@ -141,8 +140,7 @@ fi
 
 if type zplug >/dev/null 2>&1; then
     if zplug check junegunn/fzf; then
-        # export FZF_DEFAULT_COMMAND='rg --files --hidden --smartcase --glob "!.git/*"'
-        export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+        export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --smartcase --glob "!.git/*"'
         export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
     fi
 
@@ -175,16 +173,11 @@ if [ -z $ZSH_LOADED ]; then
     source "$HOME/.zplug/init.zsh"
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
     zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
-    zplug "zchee/go-zsh-completions"
     zplug "zsh-users/zsh-autosuggestions"
     zplug "zsh-users/zsh-completions", as:plugin, use:"src"
     zplug "zsh-users/zsh-history-substring-search"
     zplug "auscompgeek/fast-syntax-highlighting", defer:2
-    # zplug "superbrothers/zsh-kubectl-prompt", as:plugin, from:github, use:"kubectl.zsh"
     zplug "greymd/tmux-xpanes"
-    zplug "felixr/docker-zsh-completion"
-    # zplug "plugins/kubectl", from:oh-my-zsh, defer:2
-    # zplug "bonnefoa/kubectl-fzf", defer:3
     if ! zplug check --verbose; then
         zplug install
     fi
