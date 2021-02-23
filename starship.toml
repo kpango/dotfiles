@@ -59,7 +59,7 @@ truncate_to_repo = false
 truncation_length = 30
 
 [aws]
-symbol = " "
+symbol = " "
 
 [conda]
 symbol = " "
@@ -146,11 +146,11 @@ symbol = " "
 symbol = "ﯣ "
 
 [gcloud]
-symbol = "️🇬️ "
+symbol = "️"
 format = 'on [$symbol $active(\($project\))]($style) '
 
 [git_status]
-conflicted = "🏳"
+conflicted = "🏳 "
 ahead = "🏎💨"
 behind = "😰"
 diverged = "😵"
