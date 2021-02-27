@@ -912,18 +912,34 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type brew >/dev/null 2>&1; then
+        brew() {
+            local brew="$(whence -p brew 2>/dev/null)"
+            [ -z "$_lazy_brew_completion" ] && {
+                if type brew &>/dev/null; then
+                    HOMEBREW_PREFIX="$(brew --prefix)"
+                    if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
+                        source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
+                    else
+                        for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
+                            [[ -r "$COMPLETION" ]] && source "$COMPLETION"
+                        done
+                    fi
+                fi
+                _lazy_brew_completion=1
+            }
+            "$brew" "$@"
+        }
+        alias brew=brew
         brewup() {
-            git config --global pull.ff only
-            cd `brew --prefix`
+            cd `brew --prefix`/Homebrew
+            gfr
             git fetch origin
             git reset --hard origin/master
             cd -
-            brew prune
             brew cleanup
             brew update
             brew upgrade
             brew cleanup
-            brew prune
             brew doctor
             sudo pmset -a hibernatemode 0
             sudo rm -rf /private/var/vm/sleepimage
