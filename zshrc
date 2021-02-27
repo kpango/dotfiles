@@ -928,9 +928,8 @@ if [ -z $ZSH_LOADED ]; then
           sudo mkdir -p /var/cache/apt/archives/partial
         }
         alias aptup=aptup
-    fi
-
-    if type yay >/dev/null 2>&1; then
+        alias up=aptup
+    elif type yay >/dev/null 2>&1; then
         archback() {
             family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
             echo $family_name
@@ -987,6 +986,38 @@ if [ -z $ZSH_LOADED ]; then
             sudo journalctl --vacuum-time=2weeks
         }
         alias archup=archup
+        alias up=archup
+    elif type brew >/dev/null 2>&1; then
+        brewup() {
+            git config --global pull.ff only
+            cd `brew --prefix`
+            git fetch origin
+            git reset --hard origin/master
+            cd -
+            brew prune
+            brew cleanup
+            brew update
+            brew upgrade
+            brew cleanup
+            brew prune
+            brew doctor
+            sudo pmset -a hibernatemode 0
+            sudo rm -rf /private/var/vm/sleepimage
+            sudo touch /private/var/vm/sleepimage
+            sudo chmod 000 /private/var/vm/sleepimage
+            # sudo pmset -a hibernatemode 3
+            # sudo rm /private/var/vm/sleepimage
+            sudo rm -rf /System/Library/Speech/Voices/*
+            sudo rm -rf /private/var/log/*
+            sudo rm -rf /private/var/folders/
+            sudo rm -rf /usr/share/emacs/
+            sudo rm -rf /private/var/tmp/TM*
+            sudo rm -rf $HOME/Library/Caches/*
+            sudo rm -rf /private/tmp/junk
+            purge
+        }
+        alias brewup=brewup
+        alias up=brewup
     fi
 
     if type gpg >/dev/null 2>&1; then
