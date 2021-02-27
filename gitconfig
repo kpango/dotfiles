@@ -19,6 +19,9 @@
 [push]
     default = tracking
 
+[pull]
+    ff = only
+
 [diff]
     mnemonicprefix = yes
     patience = true
@@ -132,5 +135,3 @@
     line-numbers-right-format = "{np:>4}│"
     line-numbers-left-style = blue
     line-numbers-right-style = blue
-[pull]
-	ff = only
