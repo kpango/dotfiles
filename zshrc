@@ -39,7 +39,10 @@ if [ -z $DOTENV_LOADED ]; then
     export MANLANG=ja_JP.${CHARSET}
     export LC_TIME=en_US.${CHARSET}
 
-    [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+    [ -z "$_lazy_fzf_zsh" ] && {
+        [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+        _lazy_fzf_zsh=1
+    }
 
     export SHELL=$(which zsh)
     export USER=$(whoami)
