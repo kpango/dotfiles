@@ -766,6 +766,9 @@ if [ -z $ZSH_LOADED ]; then
     if type kubectl >/dev/null 2>&1; then
         kubectl() {
             local kubectl="$(whence -p kubectl 2> /dev/null)"
+            if type kubecolor >/dev/null 2>&1; then
+                local kubectl="$(whence -p kubecolor 2> /dev/null)"
+            fi
             [ -z "$_lazy_kubectl_completion" ] && {
                 source <("$kubectl" completion zsh)
                 complete -o default -F __start_kubectl k
@@ -774,10 +777,6 @@ if [ -z $ZSH_LOADED ]; then
             "$kubectl" "$@"
         }
         alias k=kubectl
-        if type kubecolor >/dev/null 2>&1; then
-            unalias k
-            alias k=kubecolor
-        fi
         alias kpall="k get pods --all-namespaces -o wide"
         alias ksall="k get svc --all-namespaces -o wide"
         alias kiall="k get ingress --all-namespaces -o wide"
@@ -912,24 +911,6 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type brew >/dev/null 2>&1; then
-        brew() {
-            local brew="$(whence -p brew 2>/dev/null)"
-            [ -z "$_lazy_brew_completion" ] && {
-                if type brew &>/dev/null; then
-                    HOMEBREW_PREFIX="$(brew --prefix)"
-                    if [[ -r "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh" ]]; then
-                        source "${HOMEBREW_PREFIX}/etc/profile.d/bash_completion.sh"
-                    else
-                        for COMPLETION in "${HOMEBREW_PREFIX}/etc/bash_completion.d/"*; do
-                            [[ -r "$COMPLETION" ]] && source "$COMPLETION"
-                        done
-                    fi
-                fi
-                _lazy_brew_completion=1
-            }
-            "$brew" "$@"
-        }
-        alias brew=brew
         brewup() {
             cd `brew --prefix`/Homebrew
             gfr
