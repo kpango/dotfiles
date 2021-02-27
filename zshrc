@@ -1081,6 +1081,7 @@ if [ -z $ZSH_LOADED ]; then
     if type chrome >/dev/null 2>&1; then
         alias chrome="chrome --audio-buffer-size=4096"
     fi
+
     export ZSH_LOADED=1;
 fi
 
