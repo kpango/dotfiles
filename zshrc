@@ -911,24 +911,37 @@ if [ -z $ZSH_LOADED ]; then
         alias comprestart=comprestart
     fi
 
-    if type apt >/dev/null 2>&1; then
-        aptup(){
-          sudo du -sh /var/cache/apt/archives
-          sudo rm -rf /var/cache/apt
-          sudo mkdir -p /var/cache/apt/archives/partial
-          sudo apt clean
-          sudo apt autoremove
-          sudo apt update
-          sudo apt upgrade
-          sudo apt full-upgrade
-          sudo apt clean
-          sudo apt autoremove --purge
-          sudo du -sh /var/cache/apt/archives
-          sudo rm -rf /var/cache/apt
-          sudo mkdir -p /var/cache/apt/archives/partial
+    if type brew >/dev/null 2>&1; then
+        brewup() {
+            git config --global pull.ff only
+            cd `brew --prefix`
+            git fetch origin
+            git reset --hard origin/master
+            cd -
+            brew prune
+            brew cleanup
+            brew update
+            brew upgrade
+            brew cleanup
+            brew prune
+            brew doctor
+            sudo pmset -a hibernatemode 0
+            sudo rm -rf /private/var/vm/sleepimage
+            sudo touch /private/var/vm/sleepimage
+            sudo chmod 000 /private/var/vm/sleepimage
+            # sudo pmset -a hibernatemode 3
+            # sudo rm /private/var/vm/sleepimage
+            sudo rm -rf /System/Library/Speech/Voices/*
+            sudo rm -rf /private/var/log/*
+            sudo rm -rf /private/var/folders/
+            sudo rm -rf /usr/share/emacs/
+            sudo rm -rf /private/var/tmp/TM*
+            sudo rm -rf $HOME/Library/Caches/*
+            sudo rm -rf /private/tmp/junk
+            purge
         }
-        alias aptup=aptup
-        alias up=aptup
+        alias brewup=brewup
+        alias up=brewup
     elif type yay >/dev/null 2>&1; then
         archback() {
             family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
@@ -987,37 +1000,24 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archup=archup
         alias up=archup
-    elif type brew >/dev/null 2>&1; then
-        brewup() {
-            git config --global pull.ff only
-            cd `brew --prefix`
-            git fetch origin
-            git reset --hard origin/master
-            cd -
-            brew prune
-            brew cleanup
-            brew update
-            brew upgrade
-            brew cleanup
-            brew prune
-            brew doctor
-            sudo pmset -a hibernatemode 0
-            sudo rm -rf /private/var/vm/sleepimage
-            sudo touch /private/var/vm/sleepimage
-            sudo chmod 000 /private/var/vm/sleepimage
-            # sudo pmset -a hibernatemode 3
-            # sudo rm /private/var/vm/sleepimage
-            sudo rm -rf /System/Library/Speech/Voices/*
-            sudo rm -rf /private/var/log/*
-            sudo rm -rf /private/var/folders/
-            sudo rm -rf /usr/share/emacs/
-            sudo rm -rf /private/var/tmp/TM*
-            sudo rm -rf $HOME/Library/Caches/*
-            sudo rm -rf /private/tmp/junk
-            purge
+    elif type apt >/dev/null 2>&1; then
+        aptup(){
+          sudo du -sh /var/cache/apt/archives
+          sudo rm -rf /var/cache/apt
+          sudo mkdir -p /var/cache/apt/archives/partial
+          sudo apt clean
+          sudo apt autoremove
+          sudo apt update
+          sudo apt upgrade
+          sudo apt full-upgrade
+          sudo apt clean
+          sudo apt autoremove --purge
+          sudo du -sh /var/cache/apt/archives
+          sudo rm -rf /var/cache/apt
+          sudo mkdir -p /var/cache/apt/archives/partial
         }
-        alias brewup=brewup
-        alias up=brewup
+        alias aptup=aptup
+        alias up=aptup
     fi
 
     if type gpg >/dev/null 2>&1; then
