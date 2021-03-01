@@ -29,7 +29,10 @@ if [ -z $DOTENV_LOADED ]; then
     setopt no_global_rcs
     if [ -x /usr/libexec/path_helper ]; then
         PATH=""
-        eval "$(/usr/libexec/path_helper -s)"
+        [ -z "$_lazy_path_helper" ] && {
+            eval "$(/usr/libexec/path_helper -s)"
+            _lazy_path_helper=1
+        }
     fi
 
     # environment var
@@ -287,7 +290,10 @@ if [ -z $ZSH_LOADED ]; then
     add-zsh-hook precmd _update_vcs_info_msg
 
     if type starship >/dev/null 2>&1; then
-        eval "$(starship init zsh)"
+        [ -z "$_lazy_starship" ] && {
+            eval "$(starship init zsh)"
+            _lazy_starship=1
+        }
     fi
 
     ########################################
