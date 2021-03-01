@@ -916,6 +916,7 @@ if [ -z $ZSH_LOADED ]; then
         brewup() {
             cd `brew --prefix`/Homebrew
             gfr
+            git config --local pull.ff only
             git fetch origin
             git reset --hard origin/master
             cd -
