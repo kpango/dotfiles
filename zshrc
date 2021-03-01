@@ -11,7 +11,7 @@ if type tmux >/dev/null 2>&1; then
                 sudo chown -R root:docker /var/run/docker.sock
             fi
             echo "creating new tmux session"
-            tmux -2 new-session -n$USER -s$USER@$HOST \; source-file ~/.tmux.new-session && echo "created new tmux session"
+            tmux -2 new-session -n$USER -s$USER@$HOST \; source-file $HOME/.tmux.new-session && echo "created new tmux session"
         else
             echo "attaching tmux session $ID"
             tmux -2 attach-session -t "$ID" && echo "attached tmux session $ID"
@@ -40,7 +40,7 @@ if [ -z $DOTENV_LOADED ]; then
     export LC_TIME=en_US.${CHARSET}
 
     [ -z "$_lazy_fzf_zsh" ] && {
-        [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+        [ -f $HOME/.fzf.zsh ] && source $HOME/.fzf.zsh
         _lazy_fzf_zsh=1
     }
 
@@ -168,11 +168,14 @@ fi
 if [ -z $ZSH_LOADED ]; then
     ########################################
     #Zplug Settings
-    if [[ ! -f ~/.zplug/init.zsh ]]; then
+    if [[ ! -f $HOME/.zplug/init.zsh ]]; then
         rm -rf $ZPLUG_HOME
         git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME
     fi
-    source "$HOME/.zplug/init.zsh"
+    [ -z "$_lazy_zplug_zsh" ] && {
+        [ -f "$HOME/.zplug/init.zsh" ] && source "$HOME/.zplug/init.zsh"
+        _lazy_zplug_zsh=1
+    }
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
     zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
     zplug "zsh-users/zsh-autosuggestions"
@@ -345,7 +348,10 @@ if [ -z $ZSH_LOADED ]; then
         export DOCKER_CLI_EXPERIMENTAL="enabled"
         alias dls='docker ps'
         alias dsh='docker run -it '
-        [ -f $HOME/.aliases ] && source $HOME/.aliases
+        [ -z "$_lazy_docker_aliases" ] && {
+            [ -f $HOME/.aliases ] && source $HOME/.aliases
+            _lazy_docker_aliases=1
+        }
     fi
 
     if type octant >/dev/null 2>&1; then
@@ -436,18 +442,6 @@ if [ -z $ZSH_LOADED ]; then
         alias grep=rg
     fi
 
-    mkcd() {
-        if [[ -d $1 ]]; then
-            \cd $1
-        else
-            printf "Confirm to Make Directory? $1 [y/N]: "
-            if read -q; then
-                echo
-                \mkdir -p $1 && \cd $1
-            fi
-        fi
-    }
-
     # エイリアス
     alias cp='cp -r'
     alias mv='mv -i'
@@ -523,9 +517,21 @@ if [ -z $ZSH_LOADED ]; then
         alias lg='ls -a | rg'
     fi
 
+    mkcd() {
+        if [[ -d $1 ]]; then
+            \cd $1
+        else
+            printf "Confirm to Make Directory? $1 [y/N]: "
+            if read -q; then
+                echo
+                \mkdir -p $1 && \cd $1
+            fi
+        fi
+    }
+
     alias mkcd=mkcd
-    alias dl='\cd ~/Downloads'
-    alias dc='\cd ~/Documents'
+    alias dl="\cd $HOME/Downloads"
+    alias dc="\cd $HOME/Documents"
     alias ..='\cd ../'
     alias ...='\cd ../../'
     alias ....='\cd ../../../'
