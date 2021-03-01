@@ -19,9 +19,6 @@
 [push]
     default = tracking
 
-[pull]
-    ff = only
-
 [diff]
     mnemonicprefix = yes
     patience = true
