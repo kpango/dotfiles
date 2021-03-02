@@ -184,9 +184,10 @@ RUN GO111MODULE=on go install  \
     && upx -9 ${GOPATH}/bin/ghz
 
 FROM go-base AS gopls
-RUN GO111MODULE=on go install \
+RUN GO111MODULE=on go get \
     --ldflags "-s -w" --trimpath \
-    golang.org/x/tools/gopls@latest \
+    golang.org/x/tools/gopls@master \
+    golang.org/x/tools@master \
     && upx -9 ${GOPATH}/bin/gopls
 
 FROM go-base AS gorename
