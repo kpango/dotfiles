@@ -1032,6 +1032,18 @@ if [ -z $ZSH_LOADED ]; then
         alias up=aptup
     fi
 
+    if type fwupdmgr >/dev/null 2>&1; then
+        fup(){
+            sudo fwupdmgr clear-history
+            sudo fwupdmgr clear-offline
+            sudo fwupdmgr refresh --force
+            sudo fwupdmgr get-updates --force
+            sudo fwupdmgr get-upgrades --force
+            sudo fwupdmgr update
+        }
+        alias fup=fup
+    fi
+
     if type gpg >/dev/null 2>&1; then
         backup_dir=$HOME/gpgbackup
         gpgbackup() {
