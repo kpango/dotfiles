@@ -16,7 +16,9 @@
         "markdown",
         "python"
       ],
-      "useQuickfixForLocations": true
+      "listOfWorkspaceEdit": "location",
+      "useQuickfixForLocations": false,
+      "jumpCommand": "tabe"
     },
     "source": {
       "around.enable": false,
