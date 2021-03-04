@@ -94,8 +94,9 @@ RUN n latest \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && npm config set user ${USER} \
     && npm install -g \
+	diagnostic-languageserver \
+	dockerfile-language-server-nodejs \
         bash-language-server \
-        dockerfile-language-server-nodejs \
         markdownlint-cli \
         neovim \
         npm \

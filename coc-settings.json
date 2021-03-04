@@ -44,21 +44,13 @@
     "snippetIndicator": "",
     "triggerAfterInsertEnter": true,
     "echodocSupport": true,
-    "timeout": 5000
+    "timeout":1000
   },
   "languageserver": {
     "golang": {
       "command": "gopls",
-      "rootPatterns": [
-        "go.mod",
-        "go.sum",
-        ".vim/",
-        ".git/",
-        ".hg/"
-      ],
-      "filetypes": [
-        "go"
-      ],
+      "rootPatterns": ["go.mod", "go.sum", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"],
       "initializationOptions": {
         "deepCompletion": true,
         "experimentalWorkspaceModule": true,
@@ -82,76 +74,63 @@
     },
     "nix": {
       "command": "nix-lsp",
-      "filetypes": [
-        "nix"
-      ],
+      "filetypes": ["nix"],
       "args": []
     },
     "dockerfile": {
       "command": "docker-langserver",
-      "filetypes": [
-        "dockerfile"
-      ],
-      "args": [
-        "--stdio"
-      ]
+      "filetypes": ["dockerfile"],
+      "args": ["--stdio"]
     },
     "bash": {
       "command": "bash-language-server",
-      "args": [
-        "start"
-      ],
-      "filetypes": [
-        "sh",
-        "zsh",
-        "bash"
-      ],
-      "ignoredRootPaths": [
-        "~"
-      ]
+      "args": ["start"],
+      "filetypes": ["sh", "zsh", "bash"],
+      "ignoredRootPaths": ["~"]
     },
     "python": {
       "command": "pyls",
-      "filetypes": [
-        "python"
-      ],
+      "filetypes": ["python"],
       "args": []
     },
     "efm": {
       "command": "efm-langserver",
-      "args": [
-        "-c",
-        "$HOME/.config/nvim/efm-lsp-conf.yaml"
-      ],
-      "filetypes": [
-        "vim",
-        "eruby",
-        "markdown"
-      ]
-    }
-  },
-  "go.goplsOptions": {
-    "completeUnimported": true,
-    "completionDocumentation": true,
-    "deepCompletion": true,
-    "experimentalWorkspaceModule": true,
-    "gofumpt": true,
-    "hoverKind": "FullDocumentation",
-    "linkTarget": "pkg.go.dev",
-    "staticcheck": true,
-    "usePlaceholders": true,
-    "env": {
-      "CGO_CFLAGS": "-g -O=fast -march=native",
-      "CGO_CPPFLAGS": "-g -O=fast -march=native",
-      "CGO_CXXFLAGS": "-g -O=fast -march=native",
-      "CGO_FFLAGS": "-g -O=fast -march=native",
-      "CGO_LDFLAGS": "-g -O=fast -march=native"
+      "args": ["-c", "$HOME/.config/nvim/efm-lsp-conf.yaml"],
+      "filetypes": ["vim", "eruby", "markdown"]
     },
-    "analyses": {
-      "nonewvars": true,
-      "fieldalignment": true,
-      "unreachable": true,
-      "unusedparams": true
+    "dls": {
+      "command": "diagnostic-languageserver",
+      "args": ["--stdio"],
+      "filetypes": ["go"],
+      "initializationOptions": {
+        "linters": {
+          "golint": {
+            "command": "golint",
+            "rootPatterns": [],
+            "isStdout": true,
+            "isStderr": false,
+            "debounce": 100,
+            "args": ["%filepath"],
+            "offsetLine": 0,
+            "offsetColumn": 0,
+            "sourceName": "golint",
+            "formatLines": 1,
+            "formatPattern": [
+              "^[^:]+:(\\d+):(\\d+):\\s(.*)$",
+              {
+                "line": 1,
+                "column": 2,
+                "message": [3]
+              }
+            ]
+          }
+        },
+        "formatters": {},
+        "filetypes": {
+          "go": "golint"
+        },
+        "formatFiletypes": {}
+      }
     }
   },
   "cSpell": {
