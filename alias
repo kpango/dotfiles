@@ -148,8 +148,6 @@ devrun(){
             echo 'other OS'
             ;;
     esac
-
-    docker exec -d $container_name $zsh_path nvup
 }
 
 alias devrun="devrun"
