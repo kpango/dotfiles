@@ -329,6 +329,13 @@ RUN GO111MODULE=on go install \
     github.com/muesli/duf@latest \
     && upx -9 ${GOPATH}/bin/duf
 
+
+FROM go-base AS ruleguard
+RUN GO111MODULE=on go install \
+    --ldflags "-s -w" --trimpath \
+    github.com/quasilyte/go-ruleguard/cmd/ruleguard@latest \
+    && upx -9 ${GOPATH}/bin/ruleguard
+
 FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
@@ -372,6 +379,7 @@ COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
+COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls

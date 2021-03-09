@@ -47,31 +47,6 @@
     "timeout":1000
   },
   "languageserver": {
-    "golang": {
-      "command": "gopls",
-      "rootPatterns": ["go.mod", "go.sum", ".vim/", ".git/", ".hg/"],
-      "filetypes": ["go"],
-      "initializationOptions": {
-        "deepCompletion": true,
-        "experimentalWorkspaceModule": true,
-        "hoverKind": "FullDocumentation",
-        "staticcheck": true,
-        "usePlaceholders": true,
-        "env": {
-          "CGO_CFLAGS": "-g -O=fast -march=native",
-          "CGO_CPPFLAGS": "-g -O=fast -march=native",
-          "CGO_CXXFLAGS": "-g -O=fast -march=native",
-          "CGO_FFLAGS": "-g -O=fast -march=native",
-          "CGO_LDFLAGS": "-g -O=fast -march=native"
-        },
-        "analyses": {
-          "nonewvars": true,
-          "fieldalignment": true,
-          "unreachable": true,
-          "unusedparams": true
-        }
-      }
-    },
     "nix": {
       "command": "nix-lsp",
       "filetypes": ["nix"],
