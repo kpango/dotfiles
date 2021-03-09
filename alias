@@ -135,7 +135,7 @@ devrun(){
                 -v $font_dir:$font_dir \
                 -v $tz_path:/etc/localtime:ro,cached \
                 -v /mnt:/mnt \
-                -dit $image_name
+                -dt $image_name
                 # -v $rcpath/TabNine.toml:$container_home/.config/TabNine/TabNine.toml \
                 # -v $rcpath/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
             ;;
@@ -152,7 +152,7 @@ devrun(){
 
 alias devrun="devrun"
 
-alias devin="docker exec -it $container_name $zsh_path -c \"tmux -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -nroot -sroot@$HOST\""
+alias devin="docker exec -it $container_name $zsh_path -c \"tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST\""
 # alias devin="docker exec -it $container_name $zsh_path"
 
 devkill(){

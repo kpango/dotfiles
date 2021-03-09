@@ -5,16 +5,20 @@ if type tmux >/dev/null 2>&1; then
         echo "welcome to tmux"
         USER=$(whoami)
         HOST=$(hostname)
-        ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
-        if [[ -z $ID ]]; then # if not available create a new one
+        TMUX_SOCK=/tmp/tmux.sock
+        TMUX_TMPDIR=/tmp 
+        # ID="$(tmux -S /tmp/tmux.sock ls | grep attached | cut -d: -f1)" # get the id of a deattached session
+        # if [[ -z $ID ]]; then # if not available create a new one
+        if [[ ! -f $TMUX_SOCK ]]; then
             if [ -f /.dockerenv ]; then
                 sudo chown -R root:docker /var/run/docker.sock
             fi
             echo "creating new tmux session"
-            tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST \; source-file $HOME/.tmux.new-session && echo "created new tmux session"
+            TMUX_TMPDIR=/tmp tmux -S $TMUX_SOCK -2 new-session -n$USER -s$USER@$HOST && echo "created new tmux session"
         else
+            ID="$(tmux -S /tmp/tmux.sock ls | grep attached | cut -d: -f1)" # get the id of a deattached session
             echo "attaching tmux session $ID"
-            tmux -S /tmp/tmux.sock -2 attach-session -t "$ID" && echo "attached tmux session $ID"
+            TMUX_TMPDIR=/tmp tmux -S $TMUX_SOCK -2 attach-session -t "$ID" && echo "attached tmux session $ID"
         fi
     fi
 fi
