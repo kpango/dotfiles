@@ -11,10 +11,10 @@ if type tmux >/dev/null 2>&1; then
                 sudo chown -R root:docker /var/run/docker.sock
             fi
             echo "creating new tmux session"
-            tmux -2 new-session -n$USER -s$USER@$HOST \; source-file $HOME/.tmux.new-session && echo "created new tmux session"
+            tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST \; source-file $HOME/.tmux.new-session && echo "created new tmux session"
         else
             echo "attaching tmux session $ID"
-            tmux -2 attach-session -t "$ID" && echo "attached tmux session $ID"
+            tmux -S /tmp/tmux.sock -2 attach-session -t "$ID" && echo "attached tmux session $ID"
         fi
     fi
 fi
@@ -53,9 +53,9 @@ if [ -z $DOTENV_LOADED ]; then
     export CPUCORES="$(getconf _NPROCESSORS_ONLN)"
 
     if type alacritty >/dev/null 2>&1; then
-        export TERMCMD="alacritty -e $SHELL -c tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -n$USER -s$USER@$HOST"
+        export TERMCMD="alacritty -e $SHELL -c tmux -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST"
     elif type urxvtc >/dev/null 2>&1; then
-        export TERMCMD="urxvtc -e $SHELL -c tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -n$USER -s$USER@$HOST"
+        export TERMCMD="urxvtc -e $SHELL -c tmux -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST"
     fi
 
     export XDG_CONFIG_HOME=$HOME/.config
@@ -620,12 +620,12 @@ if [ -z $ZSH_LOADED ]; then
 
     if type tmux >/dev/null 2>&1; then
         export TMUX_TMPDIR=/tmp
-        alias tmls='\tmux list-sessions'
-        alias tmlc='\tmux list-clients'
-        alias tkill='\tmux kill-server'
-        alias tmkl='\tmux kill-session'
-        alias tmaw='\tmux main-horizontal'
-        alias tmuxa='\tmux -2 a -t'
+        alias tkill='\tmux -S /tmp/tmux.sock kill-server'
+        alias tmls='\tmux -S /tmp/tmux.sock list-sessions'
+        alias tmlc='\tmux -S /tmp/tmux.sock list-clients'
+        alias tmkl='\tmux -S /tmp/tmux.sock kill-session'
+        alias tmaw='\tmux -S /tmp/tmux.sock main-horizontal'
+        alias tmuxa='\tmux -S /tmp/tmux.sock -2 a -t'
 
         if [ -f /.dockerenv ]; then
             tmux unbind C-b

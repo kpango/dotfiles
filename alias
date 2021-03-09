@@ -154,8 +154,7 @@ devrun(){
 
 alias devrun="devrun"
 
-alias devin="docker exec -it $container_name $zsh_path -c \"tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -nroot -sroot@$HOST\""
-# alias devin="docker exec -it $container_name $zsh_path -c \"tmux -q has-session && exec tmux -2 attach-session -d || exec tmux -2 new-session -nroot -sroot@$HOST\""
+alias devin="docker exec -it $container_name $zsh_path -c \"tmux -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -nroot -sroot@$HOST\""
 # alias devin="docker exec -it $container_name $zsh_path"
 
 devkill(){
