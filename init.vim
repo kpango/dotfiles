@@ -292,12 +292,13 @@ nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 let g:coc_global_extensions = [
+     \ 'coc-cspell-dicts',
+     \ 'coc-diagnostic',
      \ 'coc-git',
      \ 'coc-gitignore',
-     \ 'coc-tabnine',
-     \ 'coc-cspell-dicts',
+     \ 'coc-go',
      \ 'coc-spell-checker',
-     \ 'coc-diagnostic',
+     \ 'coc-tabnine',
      \]
 " let g:coc_global_extensions = [
 "     \ 'coc-actions',
