@@ -32,6 +32,7 @@ fwupd
 gettext
 git
 gnome-keyring
+go
 graphviz
 grep
 grim
@@ -41,7 +42,6 @@ imagemagick
 inetutils
 intel-ucode
 iptables-nft
-iwd
 kubectx
 less
 light
@@ -57,14 +57,16 @@ mysql-workbench
 neofetch
 neovim
 nmap
+noto-fonts-emoji
 openssh
-otf-font-awesome
 pacman-contrib
 parted
+pass
 patch
 pavucontrol
 pkgconf
 powertop
+procs
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth
@@ -80,6 +82,7 @@ sway
 sysfsutils
 systemd
 systemd-sysvcompat
+tailscale
 tar
 thefuck
 tig
@@ -87,7 +90,6 @@ tlp
 tlp-rdw
 tmux
 tpacpi-bat
-ttf-nerd-fonts-symbols
 udisks2
 unrar
 unzip
