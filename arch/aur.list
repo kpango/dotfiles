@@ -14,12 +14,9 @@ libnm-iwd
 linux-firmware-iwlwifi-git
 networkmanager-iwd
 slack-desktop
-starship
 stern
 systemd-boot-pacman-hook
-tailscale
 thinkfan
-tmux-xpanes
 tracktion-waveform
 tzupdate
 wdisplays
