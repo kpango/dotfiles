@@ -83,6 +83,7 @@ ripgrep
 rmlint
 sed
 slurp
+starship
 sudo
 sway
 sysfsutils
