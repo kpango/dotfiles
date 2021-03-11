@@ -5,6 +5,7 @@ docker-credential-pass-bin
 downgrade
 duf
 ghq
+git-delta-bin
 google-chrome-beta
 google-cloud-sdk
 gopreload-git
@@ -21,7 +22,6 @@ slack-desktop
 stern
 systemd-boot-pacman-hook
 thinkfan
-tmux-xpanes
 tracktion-waveform
 tzupdate
 wdisplays
