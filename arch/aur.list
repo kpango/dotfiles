@@ -5,6 +5,7 @@ docker-credential-pass-bin
 downgrade
 duf
 ghq
+git-delta-bin
 google-chrome-beta
 google-cloud-sdk
 gopreload-git
