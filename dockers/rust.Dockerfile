@@ -36,7 +36,7 @@ RUN cargo install --force --no-default-features \
 FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
-#
+
 FROM rust-base AS starship
 RUN cargo install --force --no-default-features \
     --git https://github.com/starship/starship
