@@ -14,11 +14,10 @@ RUN rustup install stable \
     && rustup update \
     && rustup component add \
        rustfmt \
-       rls \
        rust-analysis \
        rust-src \
        clippy \
-       --toolchain nightly 
+       --toolchain nightly
 
 RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
@@ -37,7 +36,7 @@ RUN cargo install --force --no-default-features \
 FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
-# 
+#
 FROM rust-base AS starship
 RUN cargo install --force --no-default-features \
     --git https://github.com/starship/starship
