@@ -14,7 +14,6 @@ ENV RELEASE_DL releases/download
 ENV RELEASE_LATEST releases/latest
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
-ENV TELEPRESENCE_VERSION 0.109
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3.9 \
@@ -50,7 +49,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && echo ${URL} \
     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}" 
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubefwd
 RUN set -x; cd "$(mktemp -d)" \
@@ -59,7 +58,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && TAR_NAME="${BIN_NAME}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
-    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.gz" \
     && echo ${URL} \
     && curl -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
@@ -145,9 +144,12 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubebuilder" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}_${OS}_${ARCH}" \
+    && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && echo ${URL} \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
+    && curl -fsSLO "${URL}" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv "${TAR_NAME}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -183,14 +185,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
-FROM kube-base AS telepresence
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="telepresence" \
-    && REPO="telepresenceio/${BIN_NAME}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/archive/${TELEPRESENCE_VERSION}.tar.gz" \
-    && tar -zxvf "${TELEPRESENCE_VERSION}.tar.gz" \
-    && env PREFIX="${LOCAL}" "${BIN_NAME}-${TELEPRESENCE_VERSION}/install.sh"
 
 FROM kube-base AS kube-profefe-base
 RUN set -x; cd "$(mktemp -d)" \
@@ -361,6 +355,15 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${NAME}" \
     && upx -9 "${BIN_PATH}/${NAME}"
 
+FROM kube-base AS telepresence
+ENV TELEPRESENCE_VERSION 0.109
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="telepresence" \
+    && REPO="telepresenceio/${BIN_NAME}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/archive/${TELEPRESENCE_VERSION}.tar.gz" \
+    && tar -zxvf "${TELEPRESENCE_VERSION}.tar.gz" \
+    && env PREFIX="${LOCAL}" "${BIN_NAME}-${TELEPRESENCE_VERSION}/install.sh"
+
 FROM golang:buster AS golang
 FROM kube-base AS kube-golang-base
 COPY --from=golang /usr/local/go /usr/local/go
@@ -379,6 +382,22 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
+# FROM kube-golang-base AS telepresence
+# ENV TELEPRESENCE_VERSION v2.1.0
+# RUN set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="telepresence" \
+#     && REPO="telepresenceio/${BIN_NAME}" \
+#     && git clone --depth 1 --branch ${TELEPRESENCE_VERSION} "${GITHUB}/${REPO}" \
+#     && cd ${BIN_NAME} \
+#     && rm -rf go.mod go.sum \
+#     && go mod init ${GITHUBCOM}/${REPO}/v2 \
+#     && go mod tidy \
+#     && cd cmd/${BIN_NAME} \
+#     &&GO111MODULE=on go build  \
+#       --ldflags "-s -w" --trimpath main.go \
+#     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
+      # "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@${TELEPRESENCE_VERSION}" \
 # FROM kube-golang-base AS kubectl-trace
 # RUN set -x; cd "$(mktemp -d)" \
 #     && BIN_NAME="kubectl-trace" \
@@ -432,5 +451,5 @@ COPY --from=octant ${BIN_PATH}/octant ${K8S_PATH}/octant
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${K8S_PATH}/telepresence
-COPY --from=telepresence ${LIB_PATH}/sshuttle-telepresence ${K8S_LIB_PATH}/sshuttle-telepresence
+# COPY --from=telepresence ${LIB_PATH}/sshuttle-telepresence ${K8S_LIB_PATH}/sshuttle-telepresence
 COPY --from=wasme ${BIN_PATH}/wasme ${K8S_PATH}/wasme
