@@ -13,7 +13,9 @@ iwd-git
 kubectl-bin
 libnm-iwd
 linux-firmware-iwlwifi-git
+milcheck-bin
 networkmanager-iwd
+scaramanga
 slack-desktop
 stern
 systemd-boot-pacman-hook
