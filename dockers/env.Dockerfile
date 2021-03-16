@@ -33,7 +33,6 @@ RUN echo $'/lib\n\
     diffutils \
     exuberant-ctags \
     gawk \
-    gnupg \
     graphviz \
     gettext \
     jq \

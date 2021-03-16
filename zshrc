@@ -988,8 +988,15 @@ if [ -z $ZSH_LOADED ]; then
                 /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
-            if type reflector >/dev/null 2>&1; then
-                sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+            if type scaramanga >/dev/null 2>&1; then
+                sudo scaramanga mirrorlist
+                sudo mv mirrorlist /etc/pacman.d/mirrorlist
+                sudo chown root:root /etc/pacman.d/mirrorlist
+                sudo chmod 700 /etc/pacman.d/mirrorlist
+                yay -Syy
+                if type milcheck >/dev/null 2>&1; then
+                    sudo milcheck
+                fi
             fi
             sudo rm -rf /var/lib/pacman/db.lck
             git clone --depth 1 https://aur.archlinux.org/yay.git
