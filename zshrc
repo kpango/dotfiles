@@ -989,10 +989,11 @@ if [ -z $ZSH_LOADED ]; then
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
             if type scaramanga >/dev/null 2>&1; then
-                sudo scaramanga mirrorlist
+                sudo scaramanga > mirrorlist
+                sudo rm -rf /etc/pacman.d/mirrorlist
                 sudo mv mirrorlist /etc/pacman.d/mirrorlist
+                sudo chmod 777 /etc/pacman.d/mirrorlist
                 sudo chown root:root /etc/pacman.d/mirrorlist
-                sudo chmod 700 /etc/pacman.d/mirrorlist
                 yay -Syy
                 if type milcheck >/dev/null 2>&1; then
                     sudo milcheck
