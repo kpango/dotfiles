@@ -1,10 +1,7 @@
 {
-  "auths": {
-    "https://index.docker.io/v1/": {}
-  },
-  "HttpHeaders": {
-    "User-Agent": "Docker-Client/20.10.1 (linux)"
-  },
-  "credsStore": "pass",
-  "experimental": "enabled"
+	"auths": {
+		"https://index.docker.io/v1/": {}
+	},
+	"credsStore": "pass",
+	"experimental": "enabled"
 }

@@ -1,0 +1,5 @@
+http = false
+https = true
+ipv4 = true
+ipv6 = true
+countries = ["Japan", "Taiwan", "China", "United States", "Germany", "India", "Indonesia", "Australia"]

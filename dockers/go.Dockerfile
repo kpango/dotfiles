@@ -28,7 +28,7 @@ RUN curl -sSL -O "https://dl.google.com/go/go${GO_VERSION}.${TARGETOS}-${TARGETA
 FROM go-base AS gojson
 RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/ChimeraCoder/gojson/gojson@latest \
+    github.com/y4v8/gojson/gojson@latest \
     && upx -9 ${GOPATH}/bin/gojson
 
 FROM go-base AS syncmap

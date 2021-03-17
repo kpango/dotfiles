@@ -207,9 +207,11 @@ lsblk
 # wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
 # wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 # wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg_desk.list
+# wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/scaramanga.toml
 # pacman -Sy --noconfirm
-# pacman -S --noconfirm archlinux-keyring reflector
-# reflector --age 24 --latest 200 --number 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+# pacman -S --noconfirm archlinux-keyring scaramanga
+# mv scaramanaga.toml /etc/scaramanga/config.toml
+# scaramanga > /etc/pacman.d/mirrorlist
 # echo "deps downloaded"
 # ls -la
 # echo "start pacstrap"

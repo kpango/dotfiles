@@ -987,9 +987,17 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.cache/* \
                 /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
-            sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
-            if type reflector >/dev/null 2>&1; then
-                sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+            sudo pacman -Rns --noconfirm $(pacman -Qtdq)
+            if type scaramanga >/dev/null 2>&1; then
+                sudo scaramanga > mirrorlist
+                sudo rm -rf /etc/pacman.d/mirrorlist
+                sudo mv mirrorlist /etc/pacman.d/mirrorlist
+                sudo chmod 777 /etc/pacman.d/mirrorlist
+                sudo chown root:root /etc/pacman.d/mirrorlist
+                yay -Syy
+                if type milcheck >/dev/null 2>&1; then
+                    sudo milcheck
+                fi
             fi
             sudo rm -rf /var/lib/pacman/db.l*
             yay -Syu --noanswerdiff --noanswerclean --noconfirm

@@ -24,6 +24,7 @@ RUN apt-get update -y \
         cmake \
         curl \
         git \
+        gnupg \
         libssl-dev \
         libtinfo5 \
         libx11-dev \

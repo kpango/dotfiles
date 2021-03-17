@@ -55,7 +55,8 @@ RUN cargo install --force --no-default-features \
 
 FROM rust-base AS bat
 RUN cargo install --force --locked \
-    --git https://github.com/sharkdp/bat
+    bat
+    # --git https://github.com/sharkdp/bat
 
 FROM rust-base AS dutree
 RUN cargo +nightly install --force --no-default-features \
