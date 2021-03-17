@@ -19,6 +19,7 @@ ccache
 chrony
 clang
 cmake
+code
 discord
 dnsmasq
 docker
@@ -34,6 +35,7 @@ gettext
 git
 gnome-keyring
 go
+gopls
 graphviz
 grep
 grim
@@ -78,7 +80,6 @@ pulseaudio-alsa
 pulseaudio-bluetooth
 ranger
 rclone
-reflector
 ripgrep
 rmlint
 sed
