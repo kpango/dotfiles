@@ -572,7 +572,9 @@ vmap <C-C> <Plug>(caw:hatpos:toggle)
 " -------------------------
 " ---- Golang settings ----
 " -------------------------
-Autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
+" command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
+" Autocmd BufWritePre *.go :OR
+" Autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
 
 " ------------------------
 " ---- Clang settings ----

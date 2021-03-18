@@ -101,6 +101,11 @@ FROM rust-base AS rustfix
 RUN cargo +nightly install --force --no-default-features \
     rustfix
 
+FROM rust-base AS frawk
+RUN cargo install --force \
+    --features use_jemalloc,allow_avx2,unstable \
+    --git https://github.com/ezrosent/frawk frawk
+
 # FROM rust-base AS racer
 # RUN cargo +nightly install --force  \
 #     racer
@@ -149,6 +154,7 @@ COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
+COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
