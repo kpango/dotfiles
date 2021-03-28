@@ -985,7 +985,7 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
-		/tmp/makepkg/* \
+                /tmp/makepkg/* \
                 /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
@@ -1009,7 +1009,7 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
-		/tmp/makepkg/* \
+                /tmp/makepkg/* \
                 /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
