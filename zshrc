@@ -985,6 +985,7 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
+		/tmp/makepkg/* \
                 /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
@@ -1008,11 +1009,12 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
+		/tmp/makepkg/* \
                 /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
-            paccache -ruk0
+            sudo paccache -ruk0
             sudo journalctl --vacuum-time=2weeks
         }
         alias archup=archup
