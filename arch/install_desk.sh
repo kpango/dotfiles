@@ -9,11 +9,13 @@ RAID0=/dev/md0
 RAID1=/dev/md1
 # BOOT_PART=${RAID1}p1
 BOOT_PART=${DEVICE1}p1
-BOOT1_PART=${DEVICE2}p1
+SWAP_PART=${DEVICE2}p1
 ROOT_PART=${RAID0}p1
 ROOT=/mnt
 BOOT=${ROOT}/boot
-ESP_SIZE=72GiB
+SWAP=${ROOT}/swapfile
+ESP_SIZE=64GiB
+SWAP_SIZE=${ESP_SIZE}
 FILESYS=xfs
 
 unmount(){
@@ -21,7 +23,7 @@ unmount(){
     umount -f ${ROOT} && sync
     umount -f ${ROOT_PART} && sync
     umount -f ${BOOT_PART} && sync
-    umount -f ${BOOT1_PART} && sync
+    umount -f ${SWAP_PART} && sync
     umount -f ${RAID0} && sync
     umount -f ${RAID1} && sync
     umount -f ${RAID1_PART1} && sync
@@ -35,7 +37,7 @@ unmount(){
 unmdadm(){
     mdadm -S ${ROOT_PART} && sync
     mdadm -S ${BOOT_PART} && sync
-    mdadm -S ${BOOT1_PART} && sync
+    mdadm -S ${SWAP_PART} && sync
     mdadm -S ${RAID0} && sync
     mdadm -S ${RAID1} && sync
     mdadm -S ${RAID1_PART1} && sync
@@ -46,7 +48,7 @@ unmdadm(){
     mdadm -S ${DEVICE2} && sync
     mdadm --misc --zero-superblock ${ROOT_PART} && sync
     mdadm --misc --zero-superblock ${BOOT_PART} && sync
-    mdadm --misc --zero-superblock ${BOOT1_PART} && sync
+    mdadm --misc --zero-superblock ${SWAP_PART} && sync
     mdadm --misc --zero-superblock ${RAID1} && sync
     mdadm --misc --zero-superblock ${RAID0} && sync
     mdadm --misc --zero-superblock ${RAID1_PART1} && sync
@@ -77,23 +79,21 @@ w" | fdisk $1
 
 partition(){
     parted -s -a optimal ${DEVICE1} -- mklabel gpt mkpart ESP fat32 0% ${ESP_SIZE} set 1 boot on && sync
-    parted -s -a optimal ${DEVICE2} -- mklabel gpt mkpart ESP fat32 0% ${ESP_SIZE} set 1 boot on && sync
+    parted -s -a optimal ${DEVICE2} -- mklabel swap mkpart primary linux-swap 0% ${SWAP_SIZE} set 1 swap on && sync
     parted -s -a optimal ${DEVICE1} -- mkpart primary ${FILESYS} ${ESP_SIZE} 100% set 2 raid on && sync
     parted -s -a optimal ${DEVICE2} -- mkpart primary ${FILESYS} ${ESP_SIZE} 100% set 2 raid on && sync
 }
 
 mkraid(){
-    # mdadm --create ${RAID1} --verbose --level=raid1 --chunk=256 --raid-devices=2 ${RAID1_PART1} ${RAID1_PART2} && sync
     mdadm --create ${RAID0} --verbose --level=raid0 --chunk=512 --raid-devices=2 ${RAID0_PART1} ${RAID0_PART2} && sync
 }
 
 partraid(){
-    # parted -s -a optimal ${RAID1} -- mklabel gpt mkpart ESP fat32 0% 100% set 1 boot on && sync
     parted -s -a optimal ${RAID0} -- mklabel gpt mkpart primary ${FILESYS} 0% 100% && sync
 }
 
 ip a
-rm -rf ${ROOT}
+rm -rf ${ROOT}/*
 lsblk
 
 echo "unmount volumes"
@@ -128,7 +128,7 @@ lsblk
 # shred -n 1 -z ${DEVICE1} && sync
 # echo "${DEVICE1} shredded"
 # lsblk
-# 
+#
 # echo "shred nvme1n1"
 # shred -n 1 -z ${DEVICE2} && sync
 # echo "${DEVICE2} shredded"
@@ -139,7 +139,7 @@ lsblk
 # lvremove ${DEVICE2} && sync
 # echo "lvremoved"
 # lsblk
-# 
+#
 # echo "pvremove"
 # pvremove ${DEVICE1} && sync
 # pvremove ${DEVICE2} && sync
@@ -169,61 +169,62 @@ sleep 15
 cat /proc/mdstat
 lsblk
 
-# echo "raid partitioning"
-# partraid
-# echo "raid partitioned"
-# sleep 10
-# lsblk
-# 
-# echo "raid formatting"
-# mkfs.vfat -cvIF32 ${BOOT_PART} && sync
-# mkfs.vfat -cvIF32 ${BOOT1_PART} && sync
-# mkfs.${FILESYS} -f ${ROOT_PART} && sync
-# echo "raid formatted"
-# sleep 10
-# lsblk
-# 
-# sleep 20
-# echo "raid mount"
-# rm -rf ${ROOT}
-# mkdir ${ROOT}
-# mount ${ROOT_PART} ${ROOT} && sync
-# sleep 10
-# rm -rf ${BOOT}
-# mkdir -p ${BOOT}
-# mount ${BOOT_PART} ${BOOT} && sync
-# echo "raid mounted"
-# sleep 20
+echo "raid partitioning"
+partraid
+echo "raid partitioned"
+sleep 10
+lsblk
 
-# mkdir -p ${ROOT}/home/kpango
-# df -aT
-# echo "download deps"
-# mkdir -p ${ROOT}/home/kpango/go/src/github.com/kpango
-# echo "mounted"
-# df -aT
-# echo "download deps"
-# rm -rf chroot.sh locale.gen
-# wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot_desk.sh
-# wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
-# wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
-# wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg_desk.list
-# wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/scaramanga.toml
-# pacman -Sy --noconfirm
-# pacman -S --noconfirm archlinux-keyring scaramanga
-# mv scaramanaga.toml /etc/scaramanga/config.toml
-# scaramanga > /etc/pacman.d/mirrorlist
-# echo "deps downloaded"
-# ls -la
-# echo "start pacstrap"
-# pacstrap -i ${ROOT} - < pkg_desk.list
-# echo "pacstrap finished"
-# 
-# genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
-# cp /etc/pacman.d/mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
-# cp ./locale.gen ${ROOT}/etc/locale.gen
-# cp ./chroot_desk.sh ${ROOT}/chroot.sh
-# cp ./user-init.sh ${ROOT}/user-init.sh
-# echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
-# mdadm --detail --scan >> ${ROOT}/etc/mdadm.conf
-# arch-chroot ${ROOT}
-# unmount
+echo "raid formatting"
+mkfs.vfat -cvIF32 ${BOOT_PART} && sync
+# mkswap ${SWAP_PART} && sync
+mkfs.${FILESYS} -f ${ROOT_PART} && sync
+echo "raid formatted"
+sleep 10
+lsblk
+
+sleep 20
+echo "raid mount"
+rm -rf ${root}
+mkdir ${ROOT}
+mount ${ROOT_PART} ${ROOT} && sync
+sleep 10
+rm -rf ${BOOT}
+mkdir -p ${BOOT}
+mount ${BOOT_PART} ${BOOT} && sync
+echo "raid mounted"
+sleep 20
+
+mkdir -p ${ROOT}/home/kpango
+df -aT
+echo "download deps"
+mkdir -p ${ROOT}/home/kpango/go/src/github.com/kpango
+echo "mounted"
+df -aT
+echo "download deps"
+rm -rf chroot.sh locale.gen
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot_desk.sh
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg_desk.list
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/scaramanga.toml
+pacman -Sy --noconfirm
+pacman -S --noconfirm archlinux-keyring scaramanga
+mv scaramanaga.toml /etc/scaramanga/config.toml
+scaramanga > /etc/pacman.d/mirrorlist
+echo "deps downloaded"
+ls -la
+echo "start pacstrap"
+pacstrap -i ${ROOT} - < pkg_desk.list
+echo "pacstrap finished"
+
+genfstab -U -p ${ROOT} >> ${ROOT}/etc/fstab
+cp /etc/pacman.d/mirrorlist ${ROOT}/etc/pacman.d/mirrorlist
+cp ./locale.gen ${ROOT}/etc/locale.gen
+cp ./chroot_desk.sh ${ROOT}/chroot.sh
+cp ./user-init.sh ${ROOT}/user-init.sh
+echo LANG=en_US.UTF-8 > ${ROOT}/etc/locale.conf
+mdadm --detail --scan >> ${ROOT}/etc/mdadm.conf
+arch-chroot ${ROOT}
+unmount
+echo "volumes unmounted"

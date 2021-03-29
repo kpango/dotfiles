@@ -46,15 +46,11 @@ echo "unmount volumes"
 unmount
 echo "volumes unmounted"
 lsblk
-echo "mdadm clear"
-unmdadm
-unmdadm
-echo "mdadm cleared"
-lsblk
 echo "unmount volumes"
 unmount
 echo "volumes unmounted"
 lsblk
+
 echo "remove partition"
 rmpart ${DEVICE}
 echo "partition removed"

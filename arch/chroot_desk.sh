@@ -1,4 +1,23 @@
 #!/bin/sh
+DEVICE1=/dev/nvme0n1
+DEVICE2=/dev/nvme1n1
+RAID1_PART1=${DEVICE1}p1
+RAID1_PART2=${DEVICE2}p1
+RAID0_PART1=${DEVICE1}p2
+RAID0_PART2=${DEVICE2}p2
+RAID0=/dev/md0
+RAID1=/dev/md1
+# BOOT_PART=${RAID1}p1
+BOOT_PART=${DEVICE1}p1
+SWAP_PART=${DEVICE2}p1
+ROOT_PART=${RAID0}p1
+ROOT=/mnt
+BOOT=${ROOT}/boot
+SWAP=${ROOT}/swapfile
+ESP_SIZE=64GiB
+SWAP_SIZE=${ESP_SIZE}
+FILESYS=xfs
+
 sed -i -e "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
 sed -i -e "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j9\"/g" /etc/makepkg.conf
 sed -i -e "s/#BUILDDIR/BUILDDIR/g" /etc/makepkg.conf
@@ -23,14 +42,14 @@ echo LANG=en_US.UTF-8 >>/etc/locale.conf
 timedatectl set-timezone Asia/Tokyo
 
 # https://itsfoss.com/swap-size/
-fallocate -l 72G /swapfile
-chmod 600 /swapfile
-mkswap /swapfile
-swapon /swapfile
-echo "/swapfile     	none    	swap    	defaults,noatime    	0 0" | tee -a /etc/fstab
+# fallocate -l 72G /swapfile
+# chmod 600 /swapfile
+mkswap ${SWAP_PART} && sync
+swapon ${SWAP_PART} && sync
+echo "${SWAP_PART}     	none    	swap    	defaults,noatime    	0 0" | tee -a /etc/fstab
 SWAP_PHYS_OFFSET=`filefrag -v /swapfile | grep "0:" | head -1 | awk '{print $4}' | sed "s/\.\.//g"`
 
-sed -i -e "s/#DNS=/DNS=1.1.1.1 9.9.9.10 8.8.8.8 8.8.4.4/g" /etc/systemd/resolved.conf
+sed -i -e "s/#DNS=/DNS=1.1.1.1 8.8.8.8 9.9.9.10 8.8.4.4/g" /etc/systemd/resolved.conf
 sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf
 
 LOGIN_USER=kpango
