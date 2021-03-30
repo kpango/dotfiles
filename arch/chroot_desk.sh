@@ -11,9 +11,8 @@ RAID1=/dev/md1
 BOOT_PART=${DEVICE1}p1
 SWAP_PART=${DEVICE2}p1
 ROOT_PART=${RAID0}p1
-ROOT=/mnt
-BOOT=${ROOT}/boot
-SWAP=${ROOT}/swapfile
+ROOT=/
+BOOT=${ROOT}boot
 ESP_SIZE=64GiB
 SWAP_SIZE=${ESP_SIZE}
 FILESYS=xfs
@@ -47,7 +46,6 @@ timedatectl set-timezone Asia/Tokyo
 mkswap ${SWAP_PART} && sync
 swapon ${SWAP_PART} && sync
 echo "${SWAP_PART}     	none    	swap    	defaults,noatime    	0 0" | tee -a /etc/fstab
-SWAP_PHYS_OFFSET=`filefrag -v /swapfile | grep "0:" | head -1 | awk '{print $4}' | sed "s/\.\.//g"`
 
 sed -i -e "s/#DNS=/DNS=1.1.1.1 8.8.8.8 9.9.9.10 8.8.4.4/g" /etc/systemd/resolved.conf
 sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf
@@ -96,17 +94,17 @@ systemctl enable fstrim.timer
 sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/FILES=()/FILES=(\"\/etc\/mdadm.conf\")/g" /etc/mkinitcpio.conf
-sed -i -e "s/block filesystems/block mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
+sed -i -e "s/block filesystems/block mdadm mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
 
 mkinitcpio -p linux
 
-rm -rf /boot/efi /boot/loader
-mkdir -p /boot/efi/EFI
-mkdir -p /boot/loader/entries
-bootctl --esp-path=/boot/efi --path=/boot install
+rm -rf ${BOOT}/efi ${BOOT}/loader
+mkdir -p ${BOOT}/efi/EFI
+mkdir -p ${BOOT}/loader/entries
+bootctl --esp-path=${BOOT}/efi --path=${BOOT} install
 DEVICE_ID=`blkid -o export ${ROOT_PART} | grep '^PARTUUID' | sed -e "s/PARTUUID=//g"`
 echo ${DEVICE_ID}
-cat <<EOF >/boot/loader/entries/arch.conf
+cat <<EOF >${BOOT}/loader/entries/arch.conf
 title   Arch Linux
 linux   /vmlinuz-linux
 initrd  /intel-ucode.img
@@ -114,8 +112,8 @@ initrd  /initramfs-linux.img
 options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 i915.enable_execlists=0 iommu=force,merge,nopanic,nopt intel_iommu=on nvidia-drm.modeset=1 amd_iommu=on swiotlb=noforce resume=${SWAP_PART} quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 i8042.nomux=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0
 EOF
 
-rm -rf /boot/loader/loader.conf
-cat <<EOF >/boot/loader/loader.conf
+rm -rf ${BOOT}/loader/loader.conf
+cat <<EOF >${BOOT}/loader/loader.conf
 default arch
 timeout 0
 editor no

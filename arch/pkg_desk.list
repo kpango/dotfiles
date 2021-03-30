@@ -49,6 +49,7 @@ kubectx
 less
 light
 linux
+linux-headers
 lshw
 lsof
 make
