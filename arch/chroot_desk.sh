@@ -92,18 +92,20 @@ systemctl enable tlp
 systemctl enable tlp-sleep
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
-systemctl enable tlp
 
 sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
-sed -i -e "s/BINARIES=()/BINARIES=(\"\/usr\/bin\/mdmon\")/g" /etc/mkinitcpio.conf
-sed -i -e "s/block filesystems/block resume mdadm_udev filesystems/g" /etc/mkinitcpio.conf
+sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
+sed -i -e "s/FILES=()/FILES=(\"\/etc\/mdadm.conf\")/g" /etc/mkinitcpio.conf
+sed -i -e "s/block filesystems/block mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
 
 mkinitcpio -p linux
 
+rm -rf /boot/efi /boot/loader
 mkdir -p /boot/efi/EFI
-DEVICE_ID=`blkid -o export /dev/md0p1 | grep '^PARTUUID' | sed -e "s/PARTUUID=//g"`
+mkdir -p /boot/loader/entries
+bootctl --esp-path=/boot/efi --path=/boot install
+DEVICE_ID=`blkid -o export ${ROOT_PART} | grep '^PARTUUID' | sed -e "s/PARTUUID=//g"`
 echo ${DEVICE_ID}
-bootctl --path=/boot install
 cat <<EOF >/boot/loader/entries/arch.conf
 title   Arch Linux
 linux   /vmlinuz-linux
@@ -121,8 +123,8 @@ EOF
 bootctl update
 bootctl list
 
-mkdir -p /etc/pacman.d/hooks
-ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
+# mkdir -p /etc/pacman.d/hooks
+# ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
 
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
 mkdir -p /go/src/github.com/kpango

@@ -79,7 +79,7 @@ w" | fdisk $1
 
 partition(){
     parted -s -a optimal ${DEVICE1} -- mklabel gpt mkpart ESP fat32 0% ${ESP_SIZE} set 1 boot on && sync
-    parted -s -a optimal ${DEVICE2} -- mklabel swap mkpart primary linux-swap 0% ${SWAP_SIZE} set 1 swap on && sync
+    parted -s -a optimal ${DEVICE2} -- mklabel gpt mkpart primary linux-swap 0% ${SWAP_SIZE} set 1 swap on && sync
     parted -s -a optimal ${DEVICE1} -- mkpart primary ${FILESYS} ${ESP_SIZE} 100% set 2 raid on && sync
     parted -s -a optimal ${DEVICE2} -- mkpart primary ${FILESYS} ${ESP_SIZE} 100% set 2 raid on && sync
 }

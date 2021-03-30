@@ -74,6 +74,7 @@ systemctl enable fstrim.timer
 
 sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block resume filesystems/g" /etc/mkinitcpio.conf
+
 mkinitcpio -p linux
 
 mkdir -p /boot/efi/EFI
@@ -87,6 +88,7 @@ initrd  /intel-ucode.img
 initrd  /initramfs-linux.img
 options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1
 EOF
+
 rm -rf /boot/loader/loader.conf
 cat <<EOF >/boot/loader/loader.conf
 default arch
