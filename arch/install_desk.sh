@@ -1,12 +1,12 @@
 #!/bin/sh
 DEVICE1=/dev/nvme0n1
 DEVICE2=/dev/nvme1n1
-RAID1_PART1=${DEVICE1}p1
-RAID1_PART2=${DEVICE2}p1
+# RAID1_PART1=${DEVICE1}p1
+# RAID1_PART2=${DEVICE2}p1
 RAID0_PART1=${DEVICE1}p2
 RAID0_PART2=${DEVICE2}p2
 RAID0=/dev/md0
-RAID1=/dev/md1
+# RAID1=/dev/md1
 # BOOT_PART=${RAID1}p1
 BOOT_PART=${DEVICE1}p1
 SWAP_PART=${DEVICE2}p1
@@ -25,9 +25,9 @@ unmount(){
     umount -f ${BOOT_PART} && sync
     umount -f ${SWAP_PART} && sync
     umount -f ${RAID0} && sync
-    umount -f ${RAID1} && sync
-    umount -f ${RAID1_PART1} && sync
-    umount -f ${RAID1_PART2} && sync
+    # umount -f ${RAID1} && sync
+    # umount -f ${RAID1_PART1} && sync
+    # umount -f ${RAID1_PART2} && sync
     umount -f ${RAID0_PART1} && sync
     umount -f ${RAID0_PART2} && sync
     umount -f ${DEVICE1} && sync
@@ -38,10 +38,10 @@ unmdadm(){
     mdadm -S ${ROOT_PART} && sync
     mdadm -S ${BOOT_PART} && sync
     mdadm -S ${SWAP_PART} && sync
+    # mdadm -S ${RAID1} && sync
+    # mdadm -S ${RAID1_PART1} && sync
+    # mdadm -S ${RAID1_PART2} && sync
     mdadm -S ${RAID0} && sync
-    mdadm -S ${RAID1} && sync
-    mdadm -S ${RAID1_PART1} && sync
-    mdadm -S ${RAID1_PART2} && sync
     mdadm -S ${RAID0_PART1} && sync
     mdadm -S ${RAID0_PART2} && sync
     mdadm -S ${DEVICE1} && sync
@@ -49,10 +49,10 @@ unmdadm(){
     mdadm --misc --zero-superblock ${ROOT_PART} && sync
     mdadm --misc --zero-superblock ${BOOT_PART} && sync
     mdadm --misc --zero-superblock ${SWAP_PART} && sync
-    mdadm --misc --zero-superblock ${RAID1} && sync
+    # mdadm --misc --zero-superblock ${RAID1} && sync
+    # mdadm --misc --zero-superblock ${RAID1_PART1} && sync
+    # mdadm --misc --zero-superblock ${RAID1_PART2} && sync
     mdadm --misc --zero-superblock ${RAID0} && sync
-    mdadm --misc --zero-superblock ${RAID1_PART1} && sync
-    mdadm --misc --zero-superblock ${RAID1_PART2} && sync
     mdadm --misc --zero-superblock ${RAID0_PART1} && sync
     mdadm --misc --zero-superblock ${RAID0_PART2} && sync
     mdadm --misc --zero-superblock ${DEVICE1} && sync
@@ -124,27 +124,27 @@ wipefs -a ${DEVICE2} && sync
 echo "disks wiped"
 lsblk
 
-# echo "shred nvme0n1"
-# shred -n 1 -z ${DEVICE1} && sync
-# echo "${DEVICE1} shredded"
-# lsblk
-#
-# echo "shred nvme1n1"
-# shred -n 1 -z ${DEVICE2} && sync
-# echo "${DEVICE2} shredded"
-# lsblk
+echo "shred nvme0n1"
+shred -n 1 -z ${DEVICE1} && sync
+echo "${DEVICE1} shredded"
+lsblk
 
-# echo "lvremove"
-# lvremove ${DEVICE1} && sync
-# lvremove ${DEVICE2} && sync
-# echo "lvremoved"
-# lsblk
-#
-# echo "pvremove"
-# pvremove ${DEVICE1} && sync
-# pvremove ${DEVICE2} && sync
-# echo "pvremoved"
-# lsblk
+echo "shred nvme1n1"
+shred -n 1 -z ${DEVICE2} && sync
+echo "${DEVICE2} shredded"
+lsblk
+
+echo "lvremove"
+lvremove ${DEVICE1} && sync
+lvremove ${DEVICE2} && sync
+echo "lvremoved"
+lsblk
+
+echo "pvremove"
+pvremove ${DEVICE1} && sync
+pvremove ${DEVICE2} && sync
+echo "pvremoved"
+lsblk
 
 echo "mdadm clear"
 unmdadm
@@ -203,6 +203,7 @@ echo "mounted"
 df -aT
 echo "download deps"
 rm -rf chroot.sh locale.gen
+pacman -S wget
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot_desk.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
