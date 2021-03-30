@@ -14,11 +14,10 @@ RUN rustup install stable \
     && rustup update \
     && rustup component add \
        rustfmt \
-       rls \
        rust-analysis \
        rust-src \
        clippy \
-       --toolchain nightly 
+       --toolchain nightly
 
 RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
@@ -37,7 +36,7 @@ RUN cargo install --force --no-default-features \
 FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
-# 
+
 FROM rust-base AS starship
 RUN cargo install --force --no-default-features \
     --git https://github.com/starship/starship
@@ -56,7 +55,8 @@ RUN cargo install --force --no-default-features \
 
 FROM rust-base AS bat
 RUN cargo install --force --locked \
-    --git https://github.com/sharkdp/bat
+    bat
+    # --git https://github.com/sharkdp/bat
 
 FROM rust-base AS dutree
 RUN cargo +nightly install --force --no-default-features \
@@ -101,6 +101,11 @@ FROM rust-base AS rustfix
 RUN cargo +nightly install --force --no-default-features \
     rustfix
 
+# FROM rust-base AS frawk
+# RUN cargo install --force \
+#     --features use_jemalloc,allow_avx2,unstable \
+#     --git https://github.com/ezrosent/frawk frawk
+
 # FROM rust-base AS racer
 # RUN cargo +nightly install --force  \
 #     racer
@@ -136,6 +141,7 @@ ENV BIN_PATH ${CARGO}/bin
 
 # COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
 # COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
+# COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
 COPY --from=cargo-asm ${BIN_PATH}/cargo-asm ${BIN_PATH}/cargo-asm

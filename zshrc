@@ -5,16 +5,20 @@ if type tmux >/dev/null 2>&1; then
         echo "welcome to tmux"
         USER=$(whoami)
         HOST=$(hostname)
-        ID="$(tmux ls | grep -vm1 attached | cut -d: -f1)" # get the id of a deattached session
-        if [[ -z $ID ]]; then # if not available create a new one
+        TMUX_SOCK=/tmp/tmux.sock
+        TMUX_TMPDIR=/tmp
+        # ID="$(tmux -S /tmp/tmux.sock ls | grep attached | cut -d: -f1)" # get the id of a deattached session
+        # if [[ -z $ID ]]; then # if not available create a new one
+        if [[ ! -f $TMUX_SOCK ]]; then
             if [ -f /.dockerenv ]; then
                 sudo chown -R root:docker /var/run/docker.sock
             fi
             echo "creating new tmux session"
-            tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST \; source-file $HOME/.tmux.new-session && echo "created new tmux session"
+            TMUX_TMPDIR=/tmp tmux -S $TMUX_SOCK -2 new-session -n$USER -s$USER@$HOST && echo "created new tmux session"
         else
+            ID="$(tmux -S /tmp/tmux.sock ls | grep attached | cut -d: -f1)" # get the id of a deattached session
             echo "attaching tmux session $ID"
-            tmux -S /tmp/tmux.sock -2 attach-session -t "$ID" && echo "attached tmux session $ID"
+            TMUX_TMPDIR=/tmp tmux -S $TMUX_SOCK -2 attach-session -t "$ID" && echo "attached tmux session $ID"
         fi
     fi
 fi
@@ -977,37 +981,40 @@ if [ -z $ZSH_LOADED ]; then
             sudo su -c "chown 0 /etc/sudoers.d/kpango"
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
-            sudo rm -rf /var/lib/pacman/db.lck \
+            sudo rm -rf /var/lib/pacman/db.l* \
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
+                /tmp/makepkg/* \
                 /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
-            if type reflector >/dev/null 2>&1; then
-                sudo reflector --age 24 --latest 200 --number 20 --threads $CPUCORES --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+            if type scaramanga >/dev/null 2>&1; then
+                sudo scaramanga > mirrorlist
+                sudo rm -rf /etc/pacman.d/mirrorlist
+                sudo mv mirrorlist /etc/pacman.d/mirrorlist
+                sudo chmod 777 /etc/pacman.d/mirrorlist
+                sudo chown root:root /etc/pacman.d/mirrorlist
+                yay -Syy
+                if type milcheck >/dev/null 2>&1; then
+                    sudo milcheck
+                fi
             fi
-            sudo rm -rf /var/lib/pacman/db.lck
-            git clone --depth 1 https://aur.archlinux.org/yay.git
-            cd yay
-            makepkg -si --noconfirm
-            cd ..
-            sudo rm -rf ./yay
-            sudo rm -rf /var/lib/pacman/db.lck
+            sudo rm -rf /var/lib/pacman/db.l*
             yay -Syu --noanswerdiff --noanswerclean --noconfirm
-            sudo rm -rf /var/lib/pacman/db.lck
+            sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
-            sudo rm -rf /var/lib/pacman/db.lck \
+            sudo rm -rf /var/lib/pacman/db.l* \
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
+                /tmp/makepkg/* \
                 /var/cache/pacman/pkg
-            sudo rm -rf /var/lib/pacman/db.l*
             sudo pacman -Scc --noconfirm
-            sudo pacman -Rns --noconfirm $(pacman -Qtdq)
+            sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
-            paccache -ruk0
+            sudo paccache -ruk0
             sudo journalctl --vacuum-time=2weeks
         }
         alias archup=archup

@@ -6,7 +6,13 @@ makepkg -si
 cd -
 rm -r yay
 
-curl https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur.list -o aur.list
+family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
+echo $family_name
+if [[ $family_name =~ "P1" ]]; then
+    curl https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur_desk.list -o aur.list
+else
+    curl https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur.list -o aur.list
+fi
 pacman -Rs go
 yay -Syu - < aur.list
 HACKGEN_VERSION="$(curl --silent https://github.com/yuru7/HackGen/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')"

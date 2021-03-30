@@ -46,15 +46,11 @@ echo "unmount volumes"
 unmount
 echo "volumes unmounted"
 lsblk
-echo "mdadm clear"
-unmdadm
-unmdadm
-echo "mdadm cleared"
-lsblk
 echo "unmount volumes"
 unmount
 echo "volumes unmounted"
 lsblk
+
 echo "remove partition"
 rmpart ${DEVICE}
 echo "partition removed"
@@ -104,9 +100,11 @@ wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg.list
+wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/scaramanga.toml
 pacman -Sy --noconfirm
-pacman -S --noconfirm archlinux-keyring reflector
-reflector --age 24 --latest 200 --number 10 --protocol http --protocol https --sort rate --save /etc/pacman.d/mirrorlist
+pacman -S --noconfirm archlinux-keyring scaramanga
+mv scaramanaga.toml /etc/scaramanga/config.toml
+scaramanga > /etc/pacman.d/mirrorlist
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"

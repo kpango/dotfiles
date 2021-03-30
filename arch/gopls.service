@@ -1,0 +1,10 @@
+[Unit]
+Description=Gopls Daemon Server
+
+[Service]
+Type=simple
+ExecStart=/bin/bash -c 'PATH=$HOME/go/bin:$PATH gopls -listen=:37374 -logfile=/tmp/gopls.daemon.log'
+Restart=always
+
+[Install]
+WantedBy=default.target

@@ -128,6 +128,7 @@ RUN groupadd docker \
     && npm install yarn -g \
     && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
     && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME \
+    && zsh -ic zplug install \
     && rm -rf $HOME/.cache \
     && rm -rf $HOME/.npm/_cacache \
     && rm -rf $HOME/.cargo/registry/cache \
