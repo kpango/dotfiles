@@ -10,7 +10,9 @@
  <array>
    <string>/bin/sh</string>
    <string>-c</string>
-   <string>/usr/local/bin/brew update &amp;&amp;
+   <string>/usr/bin/xcode-select --install &amp;&amp;
+     /usr/local/bin/brew update &amp;&amp;
+     /usr/local/bin/brew update &amp;&amp;
      /usr/local/bin/brew upgrade &amp;&amp;
      /usr/local/bin/brew cleanup &amp;&amp;
      /usr/local/bin/terminal-notifier -title 'Homebrew' -message 'Homebrew upgraded'
