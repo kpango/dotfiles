@@ -254,7 +254,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="instrumenta/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && TAR_NAME="${BIN_NAME}-${OS}-${ARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.gz" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
@@ -397,7 +397,8 @@ RUN set -x; cd "$(mktemp -d)" \
 #       --ldflags "-s -w" --trimpath main.go \
 #     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
 #     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-      # "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@${TELEPRESENCE_VERSION}" \
+#     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@${TELEPRESENCE_VERSION}" \
+
 # FROM kube-golang-base AS kubectl-trace
 # RUN set -x; cd "$(mktemp -d)" \
 #     && BIN_NAME="kubectl-trace" \
