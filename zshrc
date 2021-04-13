@@ -1026,6 +1026,14 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archup=archup
         alias up=archup
+        if type shutdown >/dev/null 2>&1; then
+            shutdown() {
+                up
+                fup
+                sudo shutdown now
+            }
+            alias shutdown=shutdown
+        fi
     elif type apt >/dev/null 2>&1; then
         aptup(){
           sudo du -sh /var/cache/apt/archives
@@ -1107,9 +1115,8 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type systemctl >/dev/null 2>&1; then
-      alias checkkm="sudo systemctl status systemd-modules-load.service"
+        alias checkkm="sudo systemctl status systemd-modules-load.service"
     fi
-
 
     if type vcs_info >/dev/null 2>&1; then
         vcs_info
