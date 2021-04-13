@@ -986,6 +986,7 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
                 /tmp/makepkg/* \
+                /usr/share/man/man5/gemfile* \
                 /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
@@ -1000,7 +1001,13 @@ if [ -z $ZSH_LOADED ]; then
                     sudo milcheck
                 fi
             fi
-            sudo rm -rf /var/lib/pacman/db.l*
+            sudo rm -rf /var/lib/pacman/db.l* \
+                $HOME/.config/gcloud/logs/* \
+                $HOME/.config/gcloud/config_sentinel \
+                $HOME/.cache/* \
+                /tmp/makepkg/* \
+                /usr/share/man/man5/gemfile* \
+                /var/cache/pacman/pkg
             yay -Syu --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
