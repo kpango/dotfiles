@@ -415,7 +415,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="derailed/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+      "${GITHUBCOM}/${REPO}@latest" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
