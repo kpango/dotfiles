@@ -23,6 +23,7 @@ RUN apt-get update -y \
         clang \
         cmake \
         curl \
+        ffmpeg \
         git \
         gnupg \
         libssl-dev \
@@ -30,7 +31,9 @@ RUN apt-get update -y \
         libx11-dev \
         libxcb-composite0-dev \
         locales \
+        pandoc \
         pkg-config \
+        poppler-utils \
         python3 \
         sudo \
         tzdata \

@@ -144,14 +144,25 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubebuilder" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
-    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && TARGET_NAME="${BIN_NAME}_${OS}_${ARCH}" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TARGET_NAME}" \
     && echo ${URL} \
     && curl -fsSLO "${URL}" \
-    && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv "${TAR_NAME}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && mv "${TARGET_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
+# RUN set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="kubebuilder" \
+#     && REPO="kubernetes-sigs/${BIN_NAME}" \
+#     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+#     && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
+#     && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+#     && echo ${URL} \
+#     && curl -fsSLO "${URL}" \
+#     && tar -zxvf "${TAR_NAME}.tar.gz" \
+#     && mv "${TAR_NAME}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+#     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
+#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kind
 RUN set -x; cd "$(mktemp -d)" \
@@ -355,14 +366,19 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${NAME}" \
     && upx -9 "${BIN_PATH}/${NAME}"
 
+# FROM kube-base AS telepresence
+# ENV TELEPRESENCE_VERSION 0.109
+# RUN set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="telepresence" \
+#     && REPO="telepresenceio/${BIN_NAME}" \
+#     && curl -fsSLO "${GITHUB}/${REPO}/archive/${TELEPRESENCE_VERSION}.tar.gz" \
+#     && tar -zxvf "${TELEPRESENCE_VERSION}.tar.gz" \
+#     && env PREFIX="${LOCAL}" "${BIN_NAME}-${TELEPRESENCE_VERSION}/install.sh"
+
 FROM kube-base AS telepresence
-ENV TELEPRESENCE_VERSION 0.109
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="telepresence" \
-    && REPO="telepresenceio/${BIN_NAME}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/archive/${TELEPRESENCE_VERSION}.tar.gz" \
-    && tar -zxvf "${TELEPRESENCE_VERSION}.tar.gz" \
-    && env PREFIX="${LOCAL}" "${BIN_NAME}-${TELEPRESENCE_VERSION}/install.sh"
+RUN curl -fL https://app.getambassador.io/download/tel2/linux/amd64/latest/telepresence -o "${BIN_PATH}/telepresence" \
+    && chmod a+x "${BIN_PATH}/telepresence" \
+    && upx -9 "${BIN_PATH}/telepresence"
 
 FROM golang:buster AS golang
 FROM kube-base AS kube-golang-base
@@ -452,5 +468,5 @@ COPY --from=octant ${BIN_PATH}/octant ${K8S_PATH}/octant
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${K8S_PATH}/telepresence
-COPY --from=telepresence ${LIB_PATH}/sshuttle-telepresence ${K8S_LIB_PATH}/sshuttle-telepresence
+# COPY --from=telepresence ${LIB_PATH}/sshuttle-telepresence ${K8S_LIB_PATH}/sshuttle-telepresence
 COPY --from=wasme ${BIN_PATH}/wasme ${K8S_PATH}/wasme
