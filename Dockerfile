@@ -72,7 +72,7 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PA
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
 COPY --from=docker /usr/docker/bin/ /usr/bin/
 COPY --from=kube /usr/k8s/bin/ /usr/bin/
-COPY --from=kube /usr/k8s/lib/ /usr/lib/
+# COPY --from=kube /usr/k8s/lib/ /usr/lib/
 
 COPY --from=gcloud /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk
 COPY --from=gcloud /usr/lib/google-cloud-sdk/lib /usr/lib

@@ -221,6 +221,17 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-profefe" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
+FROM kube-base AS conftest
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="conftest" \
+    && REPO="open-policy-agent/${BIN_NAME}" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && TAR_NAME="${BIN_NAME}_${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
 FROM kube-base AS kubectl-tree
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-tree" \
@@ -398,22 +409,15 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-# FROM kube-golang-base AS telepresence
-# ENV TELEPRESENCE_VERSION v2.1.0
-# RUN set -x; cd "$(mktemp -d)" \
-#     && BIN_NAME="telepresence" \
-#     && REPO="telepresenceio/${BIN_NAME}" \
-#     && git clone --depth 1 --branch ${TELEPRESENCE_VERSION} "${GITHUB}/${REPO}" \
-#     && cd ${BIN_NAME} \
-#     && rm -rf go.mod go.sum \
-#     && go mod init ${GITHUBCOM}/${REPO}/v2 \
-#     && go mod tidy \
-#     && cd cmd/${BIN_NAME} \
-#     &&GO111MODULE=on go build  \
-#       --ldflags "-s -w" --trimpath main.go \
-#     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-#     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@${TELEPRESENCE_VERSION}" \
+FROM kube-golang-base AS popeye
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="popeye" \
+    && REPO="derailed/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 # FROM kube-golang-base AS kubectl-trace
 # RUN set -x; cd "$(mktemp -d)" \
@@ -459,6 +463,7 @@ COPY --from=kubectl-tree ${BIN_PATH}/kubectl-tree ${K8S_PATH}/kubectl-tree
 COPY --from=kubectx ${BIN_PATH}/kubectx ${K8S_PATH}/kubectx
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubectl-fwd
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubefwd
+COPY --from=popeye ${BIN_PATH}/popeye ${K8S_PATH}/popeye
 COPY --from=kubeletctl ${BIN_PATH}/kubeletctl ${K8S_PATH}/kubeletctl
 COPY --from=kubens ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
@@ -468,5 +473,4 @@ COPY --from=octant ${BIN_PATH}/octant ${K8S_PATH}/octant
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${K8S_PATH}/telepresence
-# COPY --from=telepresence ${LIB_PATH}/sshuttle-telepresence ${K8S_LIB_PATH}/sshuttle-telepresence
 COPY --from=wasme ${BIN_PATH}/wasme ${K8S_PATH}/wasme
