@@ -96,7 +96,7 @@ sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/FILES=()/FILES=(\"\/etc\/mdadm.conf\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block mdadm mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
 
-mkinitcpio -p linux
+mkinitcpio -p linux-zen
 
 rm -rf ${BOOT}/efi ${BOOT}/loader
 mkdir -p ${BOOT}/efi/EFI
@@ -106,9 +106,9 @@ DEVICE_ID=`blkid -o export ${ROOT_PART} | grep '^PARTUUID' | sed -e "s/PARTUUID=
 echo ${DEVICE_ID}
 cat <<EOF >${BOOT}/loader/entries/arch.conf
 title   Arch Linux
-linux   /vmlinuz-linux
+linux   /vmlinuz-linux-zen
 initrd  /intel-ucode.img
-initrd  /initramfs-linux.img
+initrd  /initramfs-linux-zen.img
 options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 i915.enable_execlists=0 iommu=force,merge,nopanic,nopt intel_iommu=on nvidia-drm.modeset=1 amd_iommu=on swiotlb=noforce resume=${SWAP_PART} quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 i8042.nomux=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0
 EOF
 
