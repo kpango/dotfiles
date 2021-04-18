@@ -1,4 +1,5 @@
 acpi
+acpi_call-dkms
 alacritty
 alsa-utils
 android-tools
@@ -45,7 +46,8 @@ iptables-nft
 kubectx
 less
 light
-linux
+linux-zen
+linux-zen-headers
 lshw
 lsof
 make
@@ -89,7 +91,6 @@ tig
 tlp
 tlp-rdw
 tmux
-tpacpi-bat
 udisks2
 unrar
 unzip
