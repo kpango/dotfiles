@@ -75,7 +75,7 @@ systemctl enable fstrim.timer
 sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block resume filesystems/g" /etc/mkinitcpio.conf
 
-mkinitcpio -p linux
+mkinitcpio -p linux-zen
 
 mkdir -p /boot/efi/EFI
 bootctl --path=/boot install
@@ -83,9 +83,9 @@ DEVICE_ID=`lsblk -f | grep p2 | awk '{print $3}'`
 echo ${DEVICE_ID}
 cat <<EOF >/boot/loader/entries/arch.conf
 title   Arch Linux
-linux   /vmlinuz-linux
+linux   /vmlinuz-linux-zen
 initrd  /intel-ucode.img
-initrd  /initramfs-linux.img
+initrd  /initramfs-linux-zen.img
 options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1
 EOF
 
