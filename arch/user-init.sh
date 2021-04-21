@@ -23,3 +23,6 @@ sudo mv ${HACKGEN_FILENAME}/* /usr/share/fonts/TTF/
 sudo cp /usr/bin/google-chrome-stable /usr/bin/chrome
 rm -rg HackGen*
 fc-cache -f -v
+if [[ $family_name =~ "P1" ]]; then
+    systemctl --user enable psd.service
+fi

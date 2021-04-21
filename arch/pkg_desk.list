@@ -75,6 +75,7 @@ pavucontrol
 pkgconf
 powertop
 procs
+profile-sync-daemon
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth

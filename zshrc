@@ -978,6 +978,12 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archback=archback
         archup() {
+            sync \
+            && sudo sysctl -w vm.drop_caches=3 \
+                && sudo swapoff -a \
+                && sudo swapon -a \
+                && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
+                && free
             sudo su -c "chown 0 /etc/sudoers.d/kpango"
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
@@ -1023,6 +1029,12 @@ if [ -z $ZSH_LOADED ]; then
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
             sudo journalctl --vacuum-time=2weeks
+            sync \
+            && sudo sysctl -w vm.drop_caches=3 \
+                && sudo swapoff -a \
+                && sudo swapon -a \
+                && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
+                && free
         }
         alias archup=archup
         alias up=archup

@@ -51,6 +51,7 @@ sed -i -e "s/#DNS=/DNS=1.1.1.1 8.8.8.8 9.9.9.10 8.8.4.4/g" /etc/systemd/resolved
 sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf
 
 LOGIN_USER=kpango
+HOME=/home/${LOGIN_USER}
 
 groupadd ${LOGIN_USER}
 groupadd sshd
@@ -67,8 +68,17 @@ sed -e '/%wheel ALL=(ALL) ALL/s/^# //' /etc/sudoers | EDITOR=tee visudo >/dev/nu
 sed -e '/%wheel ALL=(ALL) NOPASSWORD: ALL/s/^# %wheel/kpango/' /etc/sudoers | EDITOR=tee visudo >/dev/null
 passwd
 
-mkdir -p /home/${LOGIN_USER}/.zplug
-mkdir -p /home/${LOGIN_USER}/.config
+mkdir -p ${HOME}/.zplug
+mkdir -p ${HOME}/.config
+mkdir -p ${HOME}/.cache
+
+echo "tmpfs /tmp tmpfs nodiratime,noatime,nosuid,nodev,size=1g 0 0" | tee -a /etc/fstab
+echo "tmpfs /var/tmp tmpfs nodiratime,noatime,nosuid,nodev,size=64m 0 0" | tee -a /etc/fstab
+echo "tmpfs /var/cache tmpfs nodiratime,noatime,nosuid,nodev,size=64m 0 0" | tee -a /etc/fstab
+echo "tmpfs /home/kpango/.cache/fontconfig tmpfs nodiratime,noatime,nosuid,nodev,size=10m 0 0" | tee -a /etc/fstab
+echo "tmpfs /home/kpango/.cache/mesa_shader_cache tmpfs nodiratime,noatime,nosuid,nodev,size=10m 0 0" | tee -a /etc/fstab
+echo "tmpfs /home/kpango/.cache/google-chrome-beta tmpfs nodiratime,noatime,nosuid,nodev,size=2g 0 0" | tee -a /etc/fstab
+
 
 cat <<EOF >/etc/udev/rules.d/input.rules
 KERNEL=="event*", NAME="input/%k", MODE="660", GROUP="input"
@@ -127,8 +137,8 @@ bootctl list
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
 mkdir -p /go/src/github.com/kpango
 cd /go/src/github.com/kpango && git clone --depth 1 https://github.com/kpango/dotfiles
-ln -sfv /go /home/${LOGIN_USER}/go
-chmod -R 755 /home/${LOGIN_USER}
-chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
+ln -sfv /go ${HOME}/go
+chmod -R 755 ${HOME}
+chown -R $LOGIN_USER:wheel ${HOME}
 chmod -R 755 /go
 chown -R $LOGIN_USER:wheel /go

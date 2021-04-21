@@ -128,10 +128,10 @@ FROM rust-base AS xh
 RUN cargo +nightly install --force --no-default-features \
     xh
 
-FROM rust-base AS frawk
-RUN cargo install --locked --force \
-    --features use_jemalloc,allow_avx2,unstable \
-    --git https://github.com/ezrosent/frawk frawk
+# FROM rust-base AS frawk
+# RUN cargo install --locked --force \
+#     --features use_jemalloc,allow_avx2,unstable \
+#     --git https://github.com/ezrosent/frawk frawk
 
 # FROM rust-base AS racer
 # RUN cargo +nightly install --force  \
@@ -168,7 +168,7 @@ ENV BIN_PATH ${CARGO}/bin
 
 # COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
 # COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
-COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
+# COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
