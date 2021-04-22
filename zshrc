@@ -994,6 +994,7 @@ if [ -z $ZSH_LOADED ]; then
                 /tmp/makepkg/* \
                 /usr/share/man/man5/gemfile* \
                 /var/cache/pacman/pkg
+            sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
             if type scaramanga >/dev/null 2>&1; then
@@ -1014,6 +1015,7 @@ if [ -z $ZSH_LOADED ]; then
                 /tmp/makepkg/* \
                 /usr/share/man/man5/gemfile* \
                 /var/cache/pacman/pkg
+            sudo mkdir -p /var/cache/pacman/pkg
             yay -Syu --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
@@ -1024,6 +1026,7 @@ if [ -z $ZSH_LOADED ]; then
                 $HOME/.cache/* \
                 /tmp/makepkg/* \
                 /var/cache/pacman/pkg
+            sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
