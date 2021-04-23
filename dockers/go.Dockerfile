@@ -104,6 +104,39 @@ RUN GO111MODULE=on go install  \
     github.com/rerost/dragon-imports/cmd/dragon-imports@latest \
     && upx -9 ${GOPATH}/bin/dragon-imports
 
+
+FROM go-base AS dbmate
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/amacneil/dbmate@latest \
+    && upx -9 ${GOPATH}/bin/iferr
+
+FROM go-base AS air
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/cosmtrek/air@latest \
+    && upx -9 ${GOPATH}/bin/air
+
+FROM go-base AS swagger
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/go-swagger/go-swagger/cmd/swagger@latest \
+    && upx -9 ${GOPATH}/bin/swagger
+
+FROM go-base AS mockgen
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/golang/mock/mockgen@latest \
+    && upx -9 ${GOPATH}/bin/mockgen
+
+FROM go-base AS xo
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/yyoshiki41/xo@latest \
+    && upx -9 ${GOPATH}/bin/xo
+    # github.com/xo/xo@latest \
+
+
 # FROM go-base AS grpcurl
 # RUN set -x; cd "$(mktemp -d)" \
 #     && OS="$(go env GOOS)" \
@@ -340,13 +373,15 @@ FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
 FROM go-base AS go-bins
+# COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
 # COPY --from=diago $GOPATH/bin/diago $GOPATH/bin/diago
 # COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
 # COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
 # COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 # COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
+COPY --from=air $GOPATH/bin/air $GOPATH/bin/air
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
-# COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
+COPY --from=dbmate $GOPATH/bin/dbmate $GOPATH/bin/dbmate
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=duf $GOPATH/bin/duf $GOPATH/bin/duf
@@ -379,14 +414,17 @@ COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
-COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
+COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
+COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
+COPY --from=swagger $GOPATH/bin/swagger $GOPATH/bin/swagger
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
 COPY --from=vegeta $GOPATH/bin/vegeta $GOPATH/bin/vegeta
 COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
+COPY --from=xo $GOPATH/bin/xo $GOPATH/bin/xo
 
 FROM scratch
 ENV GOROOT /opt/go

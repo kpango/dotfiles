@@ -78,6 +78,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
+FROM docker-base AS docker-compose
+RUN set -x; cd "$(mktemp -d)" \
+    && ORG="docker"\
+    && NAME="compose" \
+    && REPO="${ORG}/${NAME}" \
+    && BIN_NAME="compose" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
+    && chmod a+x ${BIN_PATH}/${BIN_NAME}
+
 FROM golang:buster AS dlayer-base
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
@@ -130,6 +140,7 @@ COPY --from=common ${BIN_PATH}/containerd-shim ${DOCKER_PATH}/docker-containerd-
 COPY --from=common ${BIN_PATH}/ctr ${DOCKER_PATH}/docker-containerd-ctr
 COPY --from=common ${BIN_PATH}/dind ${DOCKER_PATH}/dind
 COPY --from=common ${BIN_PATH}/docker ${DOCKER_PATH}/docker
+COPY --from=common ${BIN_PATH}/docker-compose ${DOCKER_PATH}/docker-compose
 COPY --from=common ${BIN_PATH}/docker-entrypoint.sh ${DOCKER_PATH}/docker-entrypoint
 COPY --from=common ${BIN_PATH}/docker-init ${DOCKER_PATH}/docker-init
 COPY --from=common ${BIN_PATH}/docker-proxy ${DOCKER_PATH}/docker-proxy
