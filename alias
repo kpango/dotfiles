@@ -50,6 +50,7 @@ devrun(){
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.netrc:$container_home/.netrc \
                 -v $HOME/.ssh:$container_home/.ssh \
+                -v $HOME/.aws:$container_home/.aws \
                 -v $HOME/.zsh_history:$container_home/.zsh_history \
                 -v $HOME/Documents:$container_home/Documents \
                 -v $HOME/Downloads:$container_home/Downloads \
@@ -112,6 +113,7 @@ devrun(){
                 -v $HOME/.password-store:$container_home/.password-store \
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.ssh:$container_home/.ssh \
+                -v $HOME/.aws:$container_home/.aws \
                 -v $HOME/.zsh_history:$container_home/.zsh_history:cached \
                 -v $HOME/.tig_history:$container_home/.tig_history \
                 -v $HOME/Documents:$container_home/Documents \
