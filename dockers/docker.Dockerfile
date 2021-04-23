@@ -1,7 +1,11 @@
 FROM kpango/dev-base:latest AS docker-base
 
-ENV ARCH amd64
-ENV OS linux
+ARG TARGETOS
+ARG TARGETARCH
+
+ENV OS=${TARGETOS}
+ENV ARCH=${TARGETARCH}
+ENV XARCH x86_64
 ENV GITHUB https://github.com
 ENV GOOGLE https://storage.googleapis.com
 ENV RELEASE_DL releases/download
@@ -83,9 +87,10 @@ RUN set -x; cd "$(mktemp -d)" \
     && ORG="docker"\
     && NAME="compose" \
     && REPO="${ORG}/${NAME}" \
-    && BIN_NAME="compose" \
+    && BIN_NAME="${ORG}-${NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${BIN_NAME}-$(echo ${OS} | sed 's/.*/\u&/')-${ARCH}" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME}
 
 FROM golang:buster AS dlayer-base
@@ -140,7 +145,6 @@ COPY --from=common ${BIN_PATH}/containerd-shim ${DOCKER_PATH}/docker-containerd-
 COPY --from=common ${BIN_PATH}/ctr ${DOCKER_PATH}/docker-containerd-ctr
 COPY --from=common ${BIN_PATH}/dind ${DOCKER_PATH}/dind
 COPY --from=common ${BIN_PATH}/docker ${DOCKER_PATH}/docker
-COPY --from=common ${BIN_PATH}/docker-compose ${DOCKER_PATH}/docker-compose
 COPY --from=common ${BIN_PATH}/docker-entrypoint.sh ${DOCKER_PATH}/docker-entrypoint
 COPY --from=common ${BIN_PATH}/docker-init ${DOCKER_PATH}/docker-init
 COPY --from=common ${BIN_PATH}/docker-proxy ${DOCKER_PATH}/docker-proxy
@@ -148,6 +152,7 @@ COPY --from=common ${BIN_PATH}/dockerd ${DOCKER_PATH}/dockerd
 COPY --from=common ${BIN_PATH}/dockerd-entrypoint.sh ${DOCKER_PATH}/dockerd-entrypoint
 COPY --from=common ${BIN_PATH}/modprobe ${DOCKER_PATH}/modprobe
 COPY --from=common ${BIN_PATH}/runc ${DOCKER_PATH}/docker-runc
+COPY --from=docker-compose ${BIN_PATH}/docker-compose ${DOCKER_PATH}/docker-compose
 COPY --from=container-diff ${BIN_PATH}/container-diff ${DOCKER_PATH}/container-diff
 COPY --from=dive ${BIN_PATH}/dive ${DOCKER_PATH}/dive
 COPY --from=dlayer ${BIN_PATH}/dlayer ${DOCKER_PATH}/dlayer

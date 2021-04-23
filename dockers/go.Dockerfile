@@ -109,7 +109,7 @@ FROM go-base AS dbmate
 RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
     github.com/amacneil/dbmate@latest \
-    && upx -9 ${GOPATH}/bin/iferr
+    && upx -9 ${GOPATH}/bin/dbmate
 
 FROM go-base AS air
 RUN GO111MODULE=on go install  \
