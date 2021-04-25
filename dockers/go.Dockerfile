@@ -104,6 +104,39 @@ RUN GO111MODULE=on go install  \
     github.com/rerost/dragon-imports/cmd/dragon-imports@latest \
     && upx -9 ${GOPATH}/bin/dragon-imports
 
+
+FROM go-base AS dbmate
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/amacneil/dbmate@latest \
+    && upx -9 ${GOPATH}/bin/dbmate
+
+FROM go-base AS air
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/cosmtrek/air@latest \
+    && upx -9 ${GOPATH}/bin/air
+
+FROM go-base AS swagger
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/go-swagger/go-swagger/cmd/swagger@latest \
+    && upx -9 ${GOPATH}/bin/swagger
+
+FROM go-base AS mockgen
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/golang/mock/mockgen@latest \
+    && upx -9 ${GOPATH}/bin/mockgen
+
+FROM go-base AS xo
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/yyoshiki41/xo@latest \
+    && upx -9 ${GOPATH}/bin/xo
+    # github.com/xo/xo@latest \
+
+
 # FROM go-base AS grpcurl
 # RUN set -x; cd "$(mktemp -d)" \
 #     && OS="$(go env GOOS)" \
@@ -400,9 +433,11 @@ COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
+COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
+COPY --from=swagger $GOPATH/bin/swagger $GOPATH/bin/swagger
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
 COPY --from=vegeta $GOPATH/bin/vegeta $GOPATH/bin/vegeta

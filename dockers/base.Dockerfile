@@ -35,6 +35,7 @@ RUN apt-get update -y \
         pkg-config \
         poppler-utils \
         python3 \
+        python2 \
         sudo \
         tzdata \
         unzip \

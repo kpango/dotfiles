@@ -1,7 +1,11 @@
 FROM kpango/dev-base:latest AS docker-base
 
-ENV ARCH amd64
-ENV OS linux
+ARG TARGETOS
+ARG TARGETARCH
+
+ENV OS=${TARGETOS}
+ENV ARCH=${TARGETARCH}
+ENV XARCH x86_64
 ENV GITHUB https://github.com
 ENV GOOGLE https://storage.googleapis.com
 ENV RELEASE_DL releases/download
@@ -78,6 +82,17 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
+FROM docker-base AS docker-compose
+RUN set -x; cd "$(mktemp -d)" \
+    && ORG="docker"\
+    && NAME="compose" \
+    && REPO="${ORG}/${NAME}" \
+    && BIN_NAME="${ORG}-${NAME}" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${BIN_NAME}-$(echo ${OS} | sed 's/.*/\u&/')-${ARCH}" \
+    && chmod a+x ${BIN_PATH}/${BIN_NAME}
+
 FROM golang:buster AS dlayer-base
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
@@ -137,6 +152,7 @@ COPY --from=common ${BIN_PATH}/dockerd ${DOCKER_PATH}/dockerd
 COPY --from=common ${BIN_PATH}/dockerd-entrypoint.sh ${DOCKER_PATH}/dockerd-entrypoint
 COPY --from=common ${BIN_PATH}/modprobe ${DOCKER_PATH}/modprobe
 COPY --from=common ${BIN_PATH}/runc ${DOCKER_PATH}/docker-runc
+COPY --from=docker-compose ${BIN_PATH}/docker-compose ${DOCKER_PATH}/docker-compose
 COPY --from=container-diff ${BIN_PATH}/container-diff ${DOCKER_PATH}/container-diff
 COPY --from=dive ${BIN_PATH}/dive ${DOCKER_PATH}/dive
 COPY --from=dlayer ${BIN_PATH}/dlayer ${DOCKER_PATH}/dlayer
