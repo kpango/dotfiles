@@ -111,12 +111,6 @@ RUN GO111MODULE=on go install  \
     github.com/amacneil/dbmate@latest \
     && upx -9 ${GOPATH}/bin/dbmate
 
-FROM go-base AS air
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/cosmtrek/air@latest \
-    && upx -9 ${GOPATH}/bin/air
-
 FROM go-base AS swagger
 RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
@@ -247,23 +241,11 @@ RUN GO111MODULE=on go install  \
     sourcegraph.com/sqs/goreturns@latest \
     && upx -9 ${GOPATH}/bin/goreturns
 
-FROM go-base AS xo
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/xo/xo@latest \
-    && upx -9 ${GOPATH}/bin/xo
-
 FROM go-base AS air
 RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
     github.com/cosmtrek/air@latest \
     && upx -9 ${GOPATH}/bin/air
-
-FROM go-base AS dbmate
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/amacneil/dbmate@latest \
-    && upx -9 ${GOPATH}/bin/dbmate
 
 # FROM go-base AS diago
 # ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
