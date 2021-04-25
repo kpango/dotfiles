@@ -1129,6 +1129,10 @@ if [ -z $ZSH_LOADED ]; then
         alias integrated=integrated
     fi
 
+    if type direnv >/dev/null 2>&1; then
+        eval "$(direnv hook zsh)"
+    fi
+
     if type systemctl >/dev/null 2>&1; then
         alias checkkm="sudo systemctl status systemd-modules-load.service"
     fi
