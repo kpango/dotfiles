@@ -71,6 +71,7 @@ procs
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth
+python2
 ranger
 rclone
 ripgrep
