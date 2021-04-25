@@ -37,6 +37,12 @@ RUN GO111MODULE=on go install  \
     github.com/a8m/syncmap@latest \
     && upx -9 ${GOPATH}/bin/syncmap
 
+FROM go-base AS direnv
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/direnv/direnv@master \
+    && upx -9 ${GOPATH}/bin/direnv
+
 FROM go-base AS gotests
 RUN GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
@@ -131,18 +137,11 @@ RUN GO111MODULE=on go install  \
     # github.com/xo/xo@latest \
 
 
-# FROM go-base AS grpcurl
-# RUN set -x; cd "$(mktemp -d)" \
-#     && OS="$(go env GOOS)" \
-#     && NAME="grpcurl" \
-#     && ORG="fullstorydev" \
-#     && REPO="${ORG}/${NAME}" \
-#     && GRPCURL_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-#     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-#     && curl -fsSLO "https://github.com/${REPO}/releases/download/v${GRPCURL_VERSION}/${NAME}_${GRPCURL_VERSION}_${OS}_${ARCH}.tar.gz" \
-#     && tar zxf "${NAME}_${GRPCURL_VERSION}_${OS}_${ARCH}.tar.gz" \
-#     && mv ${NAME} ${GOPATH}/bin/${NAME} \
-#     && upx -9 ${GOPATH}/bin/${NAME}
+FROM go-base AS grpcurl
+RUN GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    github.com/fullstorydev/grpcurl/cmd/grpcurl@master \
+    && upx -9 ${GOPATH}/bin/grpcurl
 
 FROM go-base AS ghq
 RUN GO111MODULE=on go install  \
@@ -300,28 +299,18 @@ RUN GO111MODULE=on go install \
     github.com/securego/gosec/cmd/gosec@latest \
     && upx -9 ${GOPATH}/bin/gosec
 
-# FROM go-base AS k6
-# RUN GO111MODULE=on go install \
-#     --ldflags "-s -w" --trimpath \
-#     github.com/loadimpact/k6@latest \
-#     && upx -9 ${GOPATH}/bin/k6
+FROM go-base AS k6
+RUN GO111MODULE=on go install \
+    --ldflags "-s -w" --trimpath \
+    github.com/loadimpact/k6@master \
+    # github.com/k6io/k6@master \
+    && upx -9 ${GOPATH}/bin/k6
 
-# FROM go-base AS evans
-# RUN set -x; cd "$(mktemp -d)" \
-#     && OS="$(go env GOOS)" \
-#     && ARCH="$(go env GOARCH)" \
-#     && NAME="evans" \
-#     && ORG="ktr0731" \
-#     && REPO="${ORG}/${NAME}" \
-#     && GO111MODULE=on go install \
-#     --ldflags "-s -w" --trimpath \
-#     github.com/ktr0731/evans@latest \
-#     && upx -9 ${GOPATH}/bin/evans
-#    && EVANS_VERSION="$(curl --silent https://github.com/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-#    && curl -fsSLO "https://github.com/${REPO}/releases/download/${EVANS_VERSION}/${NAME}_${OS}_${ARCH}.tar.gz" \
-#    && tar zxf "${NAME}_${OS}_${ARCH}.tar.gz" \
-#    && mv ${NAME} ${GOPATH}/bin/${NAME} \
-#    && upx -9 ${GOPATH}/bin/${NAME}
+FROM go-base AS evans
+RUN GO111MODULE=on go install \
+    --ldflags "-s -w" --trimpath \
+    github.com/ktr0731/evans@master \
+    && upx -9 ${GOPATH}/bin/evans
 
 FROM go-base AS sqls
 RUN GO111MODULE=on go install \
@@ -341,10 +330,14 @@ RUN GO111MODULE=on go install \
     github.com/tsenart/vegeta@latest \
     && upx -9 ${GOPATH}/bin/vegeta
 
-# FROM go-base AS pulumi
-# RUN curl -fsSL https://get.pulumi.com | sh \
-#     && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
-#     && upx -9 ${GOPATH}/bin/pulumi
+FROM go-base AS pulumi
+RUN curl -fsSL https://get.pulumi.com | sh \
+    && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
+    && upx -9 ${GOPATH}/bin/pulumi
+# RUN GO111MODULE=on go install \
+    # --ldflags "-s -w" --trimpath \
+    # github.com/pulumi/pulumi/pkg/cmd/pulumi@master \
+    # && upx -9 ${GOPATH}/bin/pulumi
 
 FROM go-base AS tinygo
 RUN set -x; cd "$(mktemp -d)" \
@@ -375,16 +368,17 @@ RUN upx -9 ${GOROOT}/bin/*
 FROM go-base AS go-bins
 # COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
 # COPY --from=diago $GOPATH/bin/diago $GOPATH/bin/diago
-# COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
-# COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
-# COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
-# COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
+COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
+COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
+COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
+COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=air $GOPATH/bin/air $GOPATH/bin/air
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 COPY --from=dbmate $GOPATH/bin/dbmate $GOPATH/bin/dbmate
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=duf $GOPATH/bin/duf $GOPATH/bin/duf
+COPY --from=direnv $GOPATH/bin/direnv $GOPATH/bin/direnv
 COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 COPY --from=errcheck $GOPATH/bin/errcheck $GOPATH/bin/errcheck
 COPY --from=fillstruct $GOPATH/bin/fillstruct $GOPATH/bin/fillstruct
