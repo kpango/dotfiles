@@ -8,29 +8,6 @@ FROM kpango/dart:latest AS dart
 
 FROM kpango/docker:latest AS docker
 
-# FROM node:13-alpine AS node
-
-# RUN npm config set user  root \
-#     && npm install -g neovim resume-cli
-
-# FROM python:3.8-alpine AS python3
-
-# RUN apk add --no-cache --virtual .build-deps gcc musl-dev
-# RUN pip3 install --upgrade pip neovim
-# RUN apk del .build-deps gcc musl-dev
-
-# FROM python:2.7-alpine AS python2
-
-# RUN apk add --no-cache --virtual .build-deps gcc musl-dev
-# RUN pip2 install --upgrade pip neovim
-# RUN apk del .build-deps gcc musl-dev
-
-# FROM ruby:alpine AS ruby
-#
-# RUN apk add --no-cache --virtual .build-deps gcc make musl-dev
-# RUN gem install neovim -no-ri-no-rdoc
-# RUN apk del .build-deps gcc musl-dev
-
 FROM kpango/kube:latest AS kube
 
 FROM kpango/gcloud:latest AS gcloud
@@ -53,26 +30,9 @@ ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
 ENV ZPLUG_HOME $HOME/.zplug
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 
-# COPY --from=python3 /usr/local /usr/local
-# COPY --from=python2 /usr/local /usr/local
-
-# COPY --from=node /usr/local/bin/node /usr/bin/node
-# COPY --from=node /usr/local/bin/npm /usr/bin/npm
-# COPY --from=node /usr/local/bin/yarn /usr/bin/yarn
-# COPY --from=node /usr/local/bin/neovim-node-host /usr/bin/neovim-node-host
-# COPY --from=node /usr/local/bin/resume /usr/bin/resume
-# COPY --from=node /usr/local/lib/node_modules /usr/lib/node_modules
-
-# COPY --from=ruby /usr/local/bin/ruby /usr/bin/ruby
-# COPY --from=ruby /usr/local/bin/gem /usr/bin/gem
-# COPY --from=ruby /usr/local/lib/ruby /usr/lib/ruby
-# COPY --from=ruby /usr/local/lib/libruby* /usr/lib/
-# COPY --from=ruby /usr/local/bundle /usr/bundle
-
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
 COPY --from=docker /usr/docker/bin/ /usr/bin/
 COPY --from=kube /usr/k8s/bin/ /usr/bin/
-# COPY --from=kube /usr/k8s/lib/ /usr/lib/
 
 COPY --from=gcloud /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk
 COPY --from=gcloud /usr/lib/google-cloud-sdk/lib /usr/lib

@@ -377,15 +377,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${NAME}" \
     && upx -9 "${BIN_PATH}/${NAME}"
 
-# FROM kube-base AS telepresence
-# ENV TELEPRESENCE_VERSION 0.109
-# RUN set -x; cd "$(mktemp -d)" \
-#     && BIN_NAME="telepresence" \
-#     && REPO="telepresenceio/${BIN_NAME}" \
-#     && curl -fsSLO "${GITHUB}/${REPO}/archive/${TELEPRESENCE_VERSION}.tar.gz" \
-#     && tar -zxvf "${TELEPRESENCE_VERSION}.tar.gz" \
-#     && env PREFIX="${LOCAL}" "${BIN_NAME}-${TELEPRESENCE_VERSION}/install.sh"
-
 FROM kube-base AS telepresence
 RUN curl -fL https://app.getambassador.io/download/tel2/linux/amd64/latest/telepresence -o "${BIN_PATH}/telepresence" \
     && chmod a+x "${BIN_PATH}/telepresence" \
