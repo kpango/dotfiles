@@ -20,10 +20,10 @@ libnm-iwd
 linux-firmware-iwlwifi-git
 milcheck-bin
 networkmanager-iwd
-notion-app
 nushell
 optimus-manager
 prime
+python-pillow-simd
 scaramanga
 slack-desktop
 stern

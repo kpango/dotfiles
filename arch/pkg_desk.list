@@ -41,6 +41,7 @@ grim
 gzip
 htop
 imagemagick
+imv
 inetutils
 intel-ucode
 iptables-nft
@@ -100,6 +101,7 @@ tlp
 tlp-rdw
 tmux
 udisks2
+ueberzug
 unrar
 unzip
 usbutils
