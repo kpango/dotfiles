@@ -17,371 +17,567 @@ ENV GOPATH /go
 ENV GOARCH=$TARGETARCH
 ENV GOOS=$TARGETOS
 ENV GOFLAGS "-ldflags=-w -ldflags=-s"
+ENV GITHUBCOM github.com
+ENV GITHUB https://${GITHUBCOM}
+ENV PATH ${PATH}:${GOROOT}/bin:${GOPATH}/bin
 
 WORKDIR /opt
-RUN curl -sSL -O "https://dl.google.com/go/go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz" \
-    && tar zxf "go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz" \
-    && rm "go${GO_VERSION}.${TARGETOS}-${TARGETARCH}.tar.gz" \
-    && ln -s /opt/go/bin/go /usr/bin/ \
-    && mkdir -p ${GOPATH}/bin
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="go" \
+    && TAR_NAME="${BIN_NAME}${GO_VERSION}.${OS}-${ARCH}.tar.gz" \
+    && curl -sSL -O "https://golang.org/dl/${TAR_NAME}" \
+    && tar zxf "${TAR_NAME}" \
+    && rm "${TAR_NAME}" \
+    && mv ${BIN_NAME} /opt/${BIN_NAME} \
+    && mkdir -p ${GOPATH}/bin \
+    && ${BIN_NAME} version
 
-FROM go-base AS gojson
-RUN GO111MODULE=on go install  \
+FROM go-base AS act
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="act" \
+    && REPO="nektos/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/y4v8/gojson/gojson@latest \
-    && upx -9 ${GOPATH}/bin/gojson
-
-FROM go-base AS syncmap
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/a8m/syncmap@latest \
-    && upx -9 ${GOPATH}/bin/syncmap
-
-FROM go-base AS direnv
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/direnv/direnv@master \
-    && upx -9 ${GOPATH}/bin/direnv
-
-FROM go-base AS gotests
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/cweill/gotests/gotests@latest \
-    && upx -9 ${GOPATH}/bin/gotests
-
-FROM go-base AS fillstruct
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/davidrjenni/reftools/cmd/fillstruct@latest \
-    && upx -9 ${GOPATH}/bin/fillstruct
-
-FROM go-base AS gomodifytags
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/fatih/gomodifytags@latest \
-    && upx -9 ${GOPATH}/bin/gomodifytags
-
-FROM go-base AS chidley
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/gnewton/chidley@latest \
-    && upx -9 ${GOPATH}/bin/chidley
-
-FROM go-base AS dlv
-RUN git clone --depth 1 https://github.com/go-delve/delve.git \
-    ${GOPATH}/src/github.com/go-delve/delve \
-    && cd ${GOPATH}/src/github.com/go-delve/delve \
-    && make install \
-    && upx -9 ${GOPATH}/bin/dlv
-
-FROM go-base AS hub
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/github/hub@latest \
-    && upx -9 ${GOPATH}/bin/hub
-
-FROM go-base AS impl
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/josharian/impl@latest \
-    && upx -9 ${GOPATH}/bin/impl
-
-FROM go-base AS gotags
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/jstemmer/gotags@latest \
-    && upx -9 ${GOPATH}/bin/gotags
-
-FROM go-base AS errcheck
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/kisielk/errcheck@latest \
-    && upx -9 ${GOPATH}/bin/errcheck
-
-FROM go-base AS iferr
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/koron/iferr@latest \
-    && upx -9 ${GOPATH}/bin/iferr
-
-FROM go-base AS dragon-imports
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/rerost/dragon-imports/cmd/dragon-imports@latest \
-    && upx -9 ${GOPATH}/bin/dragon-imports
-
-
-FROM go-base AS dbmate
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/amacneil/dbmate@latest \
-    && upx -9 ${GOPATH}/bin/dbmate
-
-FROM go-base AS swagger
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/go-swagger/go-swagger/cmd/swagger@latest \
-    && upx -9 ${GOPATH}/bin/swagger
-
-FROM go-base AS mockgen
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/golang/mock/mockgen@latest \
-    && upx -9 ${GOPATH}/bin/mockgen
-
-FROM go-base AS xo
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/yyoshiki41/xo@latest \
-    && upx -9 ${GOPATH}/bin/xo
-    # github.com/xo/xo@latest \
-
-
-FROM go-base AS grpcurl
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/fullstorydev/grpcurl/cmd/grpcurl@master \
-    && upx -9 ${GOPATH}/bin/grpcurl
-
-FROM go-base AS ghq
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/x-motemen/ghq@latest \
-    && upx -9 ${GOPATH}/bin/ghq
-
-FROM go-base AS gocode
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/nsf/gocode@latest \
-    && upx -9 ${GOPATH}/bin/gocode
-
-FROM go-base AS godef
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/rogpeppe/godef@latest \
-    && upx -9 ${GOPATH}/bin/godef
-
-# FROM go-base AS act
-# RUN GO111MODULE=on go install  \
-#     --ldflags "-s -w" --trimpath \
-#     github.com/nektos/act \
-#     && upx -9 ${GOPATH}/bin/act
-
-FROM go-base AS efm
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/mattn/efm-langserver@latest \
-    && upx -9 ${GOPATH}/bin/efm-langserver
-
-FROM go-base AS golint
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    golang.org/x/lint/golint@latest \
-    && upx -9 ${GOPATH}/bin/golint
-
-FROM go-base AS gofumpt
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    mvdan.cc/gofumpt@latest \
-    && upx -9 ${GOPATH}/bin/gofumpt
-
-FROM go-base AS gofumports
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    mvdan.cc/gofumpt/gofumports@latest \
-    && upx -9 ${GOPATH}/bin/gofumports
-
-FROM go-base AS goimports
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    golang.org/x/tools/cmd/goimports@latest \
-    && upx -9 ${GOPATH}/bin/goimports
-
-FROM go-base AS goimports-update-ignore
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/pwaller/goimports-update-ignore@latest \
-    && upx -9 ${GOPATH}/bin/goimports-update-ignore
-
-FROM go-base AS ghz
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/bojand/ghz/cmd/ghz@latest \
-    && upx -9 ${GOPATH}/bin/ghz
-
-FROM go-base AS gopls
-RUN GO111MODULE=on go get \
-    --ldflags "-s -w" --trimpath \
-    golang.org/x/tools/gopls@master \
-    golang.org/x/tools@master \
-    && upx -9 ${GOPATH}/bin/gopls
-
-FROM go-base AS gorename
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    golang.org/x/tools/cmd/gorename@latest \
-    && upx -9 ${GOPATH}/bin/gorename
-
-FROM go-base AS guru
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    golang.org/x/tools/cmd/guru@latest \
-    && upx -9 ${GOPATH}/bin/guru
-
-FROM go-base AS keyify
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    honnef.co/go/tools/cmd/keyify@latest \
-    && upx -9 ${GOPATH}/bin/keyify
-
-FROM go-base AS goreturns
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    sourcegraph.com/sqs/goreturns@latest \
-    && upx -9 ${GOPATH}/bin/goreturns
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS air
-RUN GO111MODULE=on go install  \
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="air" \
+    && REPO="cosmtrek/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/cosmtrek/air@latest \
-    && upx -9 ${GOPATH}/bin/air
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-# FROM go-base AS diago
-# ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
-# RUN apt-get update -y \
-    # && apt-get upgrade -y \
-    # && apt-get install -y --no-install-recommends --fix-missing \
-    # mesa-utils \
-    # && GOOS="$(go env GOOS)" \
-    # && GOARCH="$(go env GOARCH)" \
-    # && CGO_ENABLED=1 \
-    # && CGO_CXXFLAGS="-g -Ofast -march=native" \
-    # CGO_FFLAGS="-g -Ofast -march=native" \
-    # CGO_LDFLAGS="-g -Ofast -march=native" \
-    # GO111MODULE=on \
-    # go install \
-    # --ldflags "-s -w -linkmode 'external' \
-    # -extldflags '-static -fPIC -m64 -pthread -fopenmp -std=c++17 -lstdc++ -lm'" \
-    # -a \
-    # -tags "cgo netgo" \
-    # -trimpath \
-    # -installsuffix "cgo netgo" \
-    # github.com/remeh/diago \
-    # && upx -9 ${GOPATH}/bin/diago
-
-FROM go-base AS hugo
-RUN git clone https://github.com/gohugoio/hugo --depth 1 \
-    && cd hugo \
-    && go install \
+FROM go-base AS chidley
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="chidley" \
+    && REPO="gnewton/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    && upx -9 ${GOPATH}/bin/hugo
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM go-base AS prototool
-RUN GO111MODULE=on go install \
+FROM go-base AS dbmate
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="dbmate" \
+    && REPO="amacneil/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/uber/prototool/cmd/prototool@dev \
-    && upx -9 ${GOPATH}/bin/prototool
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS direnv
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="direnv" \
+    && REPO="direnv/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS dlv
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="dlv" \
+    && REPO="go-delve/delve" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS dragon-imports
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="dragon-imports" \
+    && REPO="rerost/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS duf
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="duf" \
+    && REPO="muesli/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS efm
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="efm-langserver" \
+    && REPO="mattn/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS errcheck
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="errcheck" \
+    && REPO="kisielk/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS evans
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="evans" \
+    && REPO="ktr0731/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS fillstruct
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="fillstruct" \
+    && REPO="davidrjenni/reftools" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS fillswitch
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="fillswitch" \
+    && REPO="davidrjenni/reftools" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS fixplurals
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="fixplurals" \
+    && REPO="davidrjenni/reftools" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS flamegraph
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="FlameGraph" \
+    && REPO="brendangregg/${BIN_NAME}" \
+    && TMPDIR="/tmp/${BIN_NAME}" \
+    && git clone --depth 1 \
+        "${GITHUB}/${REPO}" \
+        "${TMPDIR}" \
+    && chmod -R a+x "${TMPDIR}" \
+    && cp ${TMPDIR}/flamegraph.pl ${GOPATH}/bin/ \
+    && cp ${TMPDIR}/stackcollapse.pl ${GOPATH}/bin/ \
+    && cp ${TMPDIR}/stackcollapse-go.pl ${GOPATH}/bin/
+
+FROM go-base AS ghq
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="ghq" \
+    && REPO="x-motemen/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS ghz
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="ghz" \
+    && REPO="bojand/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gocode
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gocode" \
+    && REPO="nsf/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS godef
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="godef" \
+    && REPO="rogpeppe/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gofumpt
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gofumpt" \
+    && REPO="mvdan.cc/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gofumports
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gofumports" \
+    && REPO="mvdan.cc/gofumpt/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS goimports
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="goimports" \
+    && REPO="golang.org/x/tools" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS goimports-update-ignore
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="goimports-update-ignore" \
+    && REPO="pwaller/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gojson
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gojson" \
+    && REPO="y4v8/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM golangci/golangci-lint:latest AS golangci-lint-base
 FROM go-base AS golangci-lint
-COPY --from=golangci-lint-base /usr/bin/golangci-lint $GOPATH/bin/golangci-lint
-RUN upx -9 ${GOPATH}/bin/golangci-lint
+ENV BIN_NAME golangci-lint
+COPY --from=golangci-lint-base /usr/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME}
+RUN upx -9 ${GOPATH}/bin/${BIN_NAME}
 
-FROM go-base AS flamegraph
-RUN git clone --depth 1 https://github.com/brendangregg/FlameGraph /tmp/FlameGraph \
-    && cp /tmp/FlameGraph/flamegraph.pl ${GOPATH}/bin/ \
-    && cp /tmp/FlameGraph/stackcollapse.pl ${GOPATH}/bin/ \
-    && cp /tmp/FlameGraph/stackcollapse-go.pl ${GOPATH}/bin/
+FROM go-base AS golint
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="golint" \
+    && REPO="golang.org/x/lint" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gomodifytags
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gomodifytags" \
+    && REPO="fatih/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gopls
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gopls" \
+    && REPO="golang.org/x/tools" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gorename
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gorename" \
+    && REPO="golang.org/x/tools" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS goreturns
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="goreturns" \
+    && REPO="sqs/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "sourcegraph.com/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS gosec
-RUN GO111MODULE=on go install \
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gosec" \
+    && REPO="securego/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/securego/gosec/cmd/gosec@latest \
-    && upx -9 ${GOPATH}/bin/gosec
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gotags
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gotags" \
+    && REPO="jstemmer/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gotests
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gotests" \
+    && REPO="cweill/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS grpcurl
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="grpcurl" \
+    && REPO="fullstorydev/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS guru
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="guru" \
+    && REPO="golang.org/x/tools" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS hub
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="hub" \
+    && REPO="github/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS hugo
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="hugo" \
+    && REPO="gohugoio/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS iferr
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="iferr" \
+    && REPO="koron/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS impl
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="impl" \
+    && REPO="josharian/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS k6
-RUN GO111MODULE=on go install \
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="k6" \
+    && REPO="loadimpact/${BIN_NAME}" \
+    # && REPO="k6io/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/loadimpact/k6@master \
-    # github.com/k6io/k6@master \
-    && upx -9 ${GOPATH}/bin/k6
+    "${GITHUBCOM}/${REPO}@master" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM go-base AS evans
-RUN GO111MODULE=on go install \
+FROM go-base AS keyify
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="keyify" \
+    && REPO="honnef.co/go/tools" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/ktr0731/evans@master \
-    && upx -9 ${GOPATH}/bin/evans
+    "${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM go-base AS sqls
-RUN GO111MODULE=on go install \
+FROM go-base AS mockgen
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="mockgen" \
+    && REPO="golang/mock" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/lighttiger2505/sqls@latest \
-    && upx -9 ${GOPATH}/bin/sqls
+    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM go-base AS vgrun
-RUN GO111MODULE=on go install \
+FROM go-base AS prototool
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="prototool" \
+    && REPO="uber/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/vugu/vgrun@latest \
-    && upx -9 ${GOPATH}/bin/vgrun
-
-FROM go-base AS vegeta
-RUN GO111MODULE=on go install \
-    --ldflags "-s -w" --trimpath \
-    github.com/tsenart/vegeta@latest \
-    && upx -9 ${GOPATH}/bin/vegeta
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@dev" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS pulumi
 RUN curl -fsSL https://get.pulumi.com | sh \
     && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
     && upx -9 ${GOPATH}/bin/pulumi
-# RUN GO111MODULE=on go install \
-    # --ldflags "-s -w" --trimpath \
-    # github.com/pulumi/pulumi/pkg/cmd/pulumi@master \
-    # && upx -9 ${GOPATH}/bin/pulumi
+
+FROM go-base AS reddit2wallpaper
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="reddit2wallpaper" \
+    && REPO="mattiamari/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS ruleguard
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="ruleguard" \
+    && REPO="quasilyte/go-${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS sqls
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="sqls" \
+    && REPO="lighttiger2505/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS swagger
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="swagger" \
+    && REPO="go-${BIN_NAME}/go-${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS syncmap
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="syncmap" \
+    && REPO="a8m/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS tinygo
 RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="tinygo" \
+    && REPO="${BIN_NAME}-org/${BIN_NAME}" \
     && OS="$(go env GOOS)" \
     && ARCH="$(go env GOARCH | sed 's/arm64/arm/')" \
-    && TINYGO_VERSION="$(curl --silent https://github.com/tinygo-org/tinygo/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLO "https://github.com/tinygo-org/tinygo/releases/download/v${TINYGO_VERSION}/tinygo${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
-    && tar zxf "tinygo${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
-    && mv tinygo/bin/tinygo ${GOPATH}/bin/tinygo \
-    && upx -9 ${GOPATH}/bin/tinygo
+    && TINYGO_VERSION="$(curl --silent ${GITHUB}/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && curl -fsSLO "${GITHUB}/${REPO}/releases/download/v${TINYGO_VERSION}/${BIN_NAME}${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
+    && tar zxf "${BIN_NAME}${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
+    && mv ${BIN_NAME}/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
+    && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
-FROM go-base AS duf
-RUN GO111MODULE=on go install \
+FROM go-base AS vegeta
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="vegeta" \
+    && REPO="tsenart/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/muesli/duf@latest \
-    && upx -9 ${GOPATH}/bin/duf
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-
-FROM go-base AS ruleguard
-RUN GO111MODULE=on go install \
+FROM go-base AS vgrun
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="vgrun" \
+    && REPO="vugu/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    github.com/quasilyte/go-ruleguard/cmd/ruleguard@latest \
-    && upx -9 ${GOPATH}/bin/ruleguard
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS xo
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="xo" \
+    && REPO="yyoshiki41/${BIN_NAME}" \
+    # && REPO="xo/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
 FROM go-base AS go-bins
-# COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
-# COPY --from=diago $GOPATH/bin/diago $GOPATH/bin/diago
-COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
-COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
-COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
-COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
+COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
 COPY --from=air $GOPATH/bin/air $GOPATH/bin/air
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 COPY --from=dbmate $GOPATH/bin/dbmate $GOPATH/bin/dbmate
+COPY --from=direnv $GOPATH/bin/direnv $GOPATH/bin/direnv
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=duf $GOPATH/bin/duf $GOPATH/bin/duf
-COPY --from=direnv $GOPATH/bin/direnv $GOPATH/bin/direnv
 COPY --from=efm $GOPATH/bin/efm-langserver $GOPATH/bin/efm-langserver
 COPY --from=errcheck $GOPATH/bin/errcheck $GOPATH/bin/errcheck
+COPY --from=evans $GOPATH/bin/evans $GOPATH/bin/evans
 COPY --from=fillstruct $GOPATH/bin/fillstruct $GOPATH/bin/fillstruct
+COPY --from=fillswitch $GOPATH/bin/fillswitch $GOPATH/bin/fillswitch
+COPY --from=fixplurals $GOPATH/bin/fixplurals $GOPATH/bin/fixplurals
 COPY --from=flamegraph $GOPATH/bin/flamegraph.pl $GOPATH/bin/flamegraph.pl
 COPY --from=flamegraph $GOPATH/bin/stackcollapse-go.pl $GOPATH/bin/stackcollapse-go.pl
 COPY --from=flamegraph $GOPATH/bin/stackcollapse.pl $GOPATH/bin/stackcollapse.pl
@@ -403,14 +599,18 @@ COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
 COPY --from=gosec $GOPATH/bin/gosec $GOPATH/bin/gosec
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
+COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
 COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
 COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
+COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
+COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
+COPY --from=reddit2wallpaper $GOPATH/bin/reddit2wallpaper $GOPATH/bin/reddit2wallpaper
 COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 COPY --from=swagger $GOPATH/bin/swagger $GOPATH/bin/swagger
