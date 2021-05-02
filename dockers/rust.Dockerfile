@@ -54,7 +54,8 @@ RUN cargo +nightly install --force --no-default-features \
     shellharden
 
 FROM rust-base AS rg
-RUN cargo +nightly install --force --no-default-features \
+RUN RUSTFLAGS="-C target-cpu=native" \
+    cargo +nightly install --force --features 'pcre2 simd-accel' \
     ripgrep
 
 FROM rg AS rga
