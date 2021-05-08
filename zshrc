@@ -914,6 +914,21 @@ if [ -z $ZSH_LOADED ]; then
             fi
         }
         alias nmcliwifi=nmcliwifi
+        nmclr() {
+            if [ $# -eq 1 ]; then
+                nmcli d
+                nmcli r wifi
+                nmcli d wifi list
+		nmcli c show
+                sudo nmcli c down $1
+		sudo nmcli r wifi off
+		sudo nmcli r wifi on
+                sudo nmcli c up $1
+            else
+                echo "invalid argument, SSID and PSK is required"
+            fi
+        }
+        alias nmclr=nmclr
     fi
 
     if type xdg-open >/dev/null 2>&1; then

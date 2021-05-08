@@ -29,7 +29,7 @@ FROM docker-base AS slim
 
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="docker-slim" \
-    && REPO="docker-slim/${BIN_NAME}" \
+    && REPO="${BIN_NAME}/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && DOCKER_SLIM_RELEASES="https://downloads.dockerslim.com/releases" \
     && curl -fsSLO "${DOCKER_SLIM_RELEASES}/$VERSION/dist_${OS}.tar.gz" \
@@ -41,9 +41,10 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM docker-base AS docker-credential-pass
 RUN set -x; cd "$(mktemp -d)" \
-    && NAME="docker-credential-helpers" \
-    && REPO="docker/${NAME}" \
-    && BIN_NAME="docker-credential-pass" \
+    && ORG="docker" \
+    && NAME="${ORG}-credential-helpers" \
+    && REPO="${ORG}/${NAME}" \
+    && BIN_NAME="${ORG}-credential-pass" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
     && tar -xvf "${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
@@ -83,15 +84,26 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM docker-base AS docker-compose
+# RUN set -x; cd "$(mktemp -d)" \
+#     && ORG="docker"\
+#     && NAME="compose-cli" \
+#     && REPO="${ORG}/${NAME}" \
+#     && BIN_NAME="${ORG}-${NAME}" \
+#     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+#     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+#     && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${BIN_NAME}-$(echo ${OS} | sed 's/.*/\u&/')-${ARCH}" \
+#     && chmod a+x ${BIN_PATH}/${BIN_NAME}
 RUN set -x; cd "$(mktemp -d)" \
     && ORG="docker"\
     && NAME="compose" \
-    && REPO="${ORG}/${NAME}" \
+    && REPO="${ORG}/${NAME}-cli" \
     && BIN_NAME="${ORG}-${NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-    && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${BIN_NAME}-$(echo ${OS} | sed 's/.*/\u&/')-${ARCH}" \
-    && chmod a+x ${BIN_PATH}/${BIN_NAME}
+    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${OS}-${ARCH}.tar.gz" \
+    && tar -xvf "${ORG}-${OS}-${ARCH}.tar.gz" \
+    && mv ${ORG}/${BIN_NAME} ${BIN_PATH}/${BIN_NAME} \
+    && chmod a+x ${BIN_PATH}/${BIN_NAME} \
+    && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM golang:buster AS dlayer-base
 ENV LOCAL /usr/local
@@ -152,10 +164,10 @@ COPY --from=common ${BIN_PATH}/dockerd ${DOCKER_PATH}/dockerd
 COPY --from=common ${BIN_PATH}/dockerd-entrypoint.sh ${DOCKER_PATH}/dockerd-entrypoint
 COPY --from=common ${BIN_PATH}/modprobe ${DOCKER_PATH}/modprobe
 COPY --from=common ${BIN_PATH}/runc ${DOCKER_PATH}/docker-runc
-COPY --from=docker-compose ${BIN_PATH}/docker-compose ${DOCKER_PATH}/docker-compose
 COPY --from=container-diff ${BIN_PATH}/container-diff ${DOCKER_PATH}/container-diff
 COPY --from=dive ${BIN_PATH}/dive ${DOCKER_PATH}/dive
 COPY --from=dlayer ${BIN_PATH}/dlayer ${DOCKER_PATH}/dlayer
+COPY --from=docker-compose ${BIN_PATH}/docker-compose ${DOCKER_LIB_PATH}/cli-plugins/docker-compose
 COPY --from=docker-credential-pass ${BIN_PATH}/docker-credential-pass ${DOCKER_PATH}/docker-credential-pass
 COPY --from=dockfmt ${BIN_PATH}/dockfmt ${DOCKER_PATH}/dockfmt
 COPY --from=dockle ${BIN_PATH}/dockle ${DOCKER_PATH}/dockle

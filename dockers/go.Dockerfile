@@ -7,7 +7,7 @@ ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
 
-ENV GO_VERSION 1.16.3
+ENV GO_VERSION 1.16.4
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -361,6 +361,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS gowrap
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gowrap" \
+    && REPO="hexdigest/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS grpcurl
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="grpcurl" \
@@ -449,6 +459,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
     "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS panicparse
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="pp" \
+    && REPO="maruel/panicparse" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
@@ -599,6 +619,7 @@ COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
 COPY --from=gosec $GOPATH/bin/gosec $GOPATH/bin/gosec
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
+COPY --from=gowrap $GOPATH/bin/gowrap $GOPATH/bin/gowrap
 COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
 COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
@@ -608,6 +629,7 @@ COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
 COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen
+COPY --from=panicparse $GOPATH/bin/pp $GOPATH/bin/pp
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=reddit2wallpaper $GOPATH/bin/reddit2wallpaper $GOPATH/bin/reddit2wallpaper

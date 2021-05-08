@@ -31,6 +31,7 @@ ENV ZPLUG_HOME $HOME/.zplug
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
+COPY --from=docker /usr/lib/docker/cli-plugins/docker-compose /usr/lib/docker/cli-plugins/docker-compose
 COPY --from=docker /usr/docker/bin/ /usr/bin/
 COPY --from=kube /usr/k8s/bin/ /usr/bin/
 

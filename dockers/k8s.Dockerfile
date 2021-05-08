@@ -382,6 +382,13 @@ RUN curl -fL https://app.getambassador.io/download/tel2/linux/amd64/latest/telep
     && chmod a+x "${BIN_PATH}/telepresence" \
     && upx -9 "${BIN_PATH}/telepresence"
 
+FROM kube-base AS pixie
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="pixie" \
+    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-prod-artifacts/cli/latest/cli_${OS}_${ARCH}" \
+    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
 FROM golang:buster AS golang
 FROM kube-base AS kube-golang-base
 COPY --from=golang /usr/local/go /usr/local/go
@@ -410,20 +417,20 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-# FROM kube-golang-base AS kubectl-trace
-# RUN set -x; cd "$(mktemp -d)" \
-#     && BIN_NAME="kubectl-trace" \
-#     && REPO="iovisor/${BIN_NAME}" \
-#     &&GO111MODULE=on go install  \
-#       --ldflags "-s -w" --trimpath \
-#       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}" \
-#     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
 FROM kube-golang-base AS kubectl-trace
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-trace" \
     && REPO="iovisor/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
+FROM kube-golang-base AS k8sviz
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="k8sviz" \
+    && REPO="mkimuram/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
@@ -443,6 +450,7 @@ COPY --from=helm-docs ${BIN_PATH}/helm-docs ${K8S_PATH}/helm-docs
 COPY --from=helmfile ${BIN_PATH}/helmfile ${K8S_PATH}/helmfile
 COPY --from=istio ${BIN_PATH}/istioctl ${K8S_PATH}/istioctl
 COPY --from=k3d ${BIN_PATH}/k3d ${K8S_PATH}/k3d
+COPY --from=k8sviz ${BIN_PATH}/k8sviz ${K8S_PATH}/k8sviz
 COPY --from=k9s ${BIN_PATH}/k9s ${K8S_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${K8S_PATH}/kind
 COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
@@ -464,13 +472,14 @@ COPY --from=kubectl-tree ${BIN_PATH}/kubectl-tree ${K8S_PATH}/kubectl-tree
 COPY --from=kubectx ${BIN_PATH}/kubectx ${K8S_PATH}/kubectx
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubectl-fwd
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubefwd
-COPY --from=popeye ${BIN_PATH}/popeye ${K8S_PATH}/popeye
 COPY --from=kubeletctl ${BIN_PATH}/kubeletctl ${K8S_PATH}/kubeletctl
 COPY --from=kubens ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
 COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize
 COPY --from=linkerd ${BIN_PATH}/linkerd ${K8S_PATH}/linkerd
 COPY --from=octant ${BIN_PATH}/octant ${K8S_PATH}/octant
+COPY --from=pixie ${BIN_PATH}/pixie ${K8S_PATH}/pixie
+COPY --from=popeye ${BIN_PATH}/popeye ${K8S_PATH}/popeye
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${K8S_PATH}/telepresence
