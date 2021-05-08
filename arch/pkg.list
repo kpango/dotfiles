@@ -23,6 +23,7 @@ discord
 dnsmasq
 docker
 dosfstools
+dropbear
 exa
 fakeroot
 fcitx
