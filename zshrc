@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
 
 if type tmux >/dev/null 2>&1; then
-    if [ -z $TMUX ]; then
+    if ([ -z "$SSH_CLIENT" ] || [ -z "$SSH_TTY" ]) && [ -z $TMUX ]; then
         echo "welcome to tmux"
         USER=$(whoami)
         HOST=$(hostname)
@@ -631,20 +631,7 @@ if [ -z $ZSH_LOADED ]; then
         alias tmaw='\tmux -S /tmp/tmux.sock main-horizontal'
         alias tmuxa='\tmux -S /tmp/tmux.sock -2 a -t'
 
-        if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
-            SESSION_TYPE=remote/ssh
-            if [ -f /.dockerenv ]; then
-                tmux unbind C-b
-                tmux unbind C-w
-                tmux unbind C-i
-                tmux set -g prefix C-i
-            else
-                tmux unbind C-b
-                tmux unbind C-w
-                tmux unbind C-j
-                tmux set -g prefix C-j
-            fi
-        elif [ -f /.dockerenv ]; then
+        if [ -f /.dockerenv ]; then
             tmux unbind C-b
             tmux set -g prefix C-w
         fi
