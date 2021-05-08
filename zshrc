@@ -631,7 +631,20 @@ if [ -z $ZSH_LOADED ]; then
         alias tmaw='\tmux -S /tmp/tmux.sock main-horizontal'
         alias tmuxa='\tmux -S /tmp/tmux.sock -2 a -t'
 
-        if [ -f /.dockerenv ]; then
+        if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+            SESSION_TYPE=remote/ssh
+            if [ -f /.dockerenv ]; then
+                tmux unbind C-b
+                tmux unbind C-w
+                tmux unbind C-i
+                tmux set -g prefix C-i
+            else
+                tmux unbind C-b
+                tmux unbind C-w
+                tmux unbind C-j
+                tmux set -g prefix C-j
+            fi
+        elif [ -f /.dockerenv ]; then
             tmux unbind C-b
             tmux set -g prefix C-w
         fi
@@ -919,10 +932,10 @@ if [ -z $ZSH_LOADED ]; then
                 nmcli d
                 nmcli r wifi
                 nmcli d wifi list
-		nmcli c show
+                nmcli c show
                 sudo nmcli c down $1
-		sudo nmcli r wifi off
-		sudo nmcli r wifi on
+                sudo nmcli r wifi off
+                sudo nmcli r wifi on
                 sudo nmcli c up $1
             else
                 echo "invalid argument, SSID and PSK is required"
