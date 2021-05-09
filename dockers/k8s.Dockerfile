@@ -133,9 +133,14 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM kube-base AS stern
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="stern" \
-    && REPO="wercker/${BIN_NAME}" \
+    && REPO="${BIN_NAME}/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${BIN_NAME}_${OS}_${ARCH}" \
+    && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && curl -fsSLO "${URL}" \
+    && echo ${URL} \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv "${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -151,18 +156,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${TARGET_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-# RUN set -x; cd "$(mktemp -d)" \
-#     && BIN_NAME="kubebuilder" \
-#     && REPO="kubernetes-sigs/${BIN_NAME}" \
-#     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-#     && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
-#     && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
-#     && echo ${URL} \
-#     && curl -fsSLO "${URL}" \
-#     && tar -zxvf "${TAR_NAME}.tar.gz" \
-#     && mv "${TAR_NAME}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-#     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kind
 RUN set -x; cd "$(mktemp -d)" \
