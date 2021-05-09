@@ -322,10 +322,10 @@ pull:
 	docker pull kpango/dev:latest
 
 perm:
-	chmod -R 755 $(ROOTDIR)/*
-	chmod -R 755 $(ROOTDIR)/.*
-	chown -R 1000:985 $(ROOTDIR)/*
-	chown -R 1000:985 $(ROOTDIR)/.*
+	sudo chmod -R 755 $(ROOTDIR)/*
+	sudo chmod -R 755 $(ROOTDIR)/.*
+	sudo chown -R 1000:985 $(ROOTDIR)/*
+	sudo chown -R 1000:985 $(ROOTDIR)/.*
 
 git_push:
 	git add -A
