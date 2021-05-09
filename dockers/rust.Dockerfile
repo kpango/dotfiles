@@ -123,7 +123,7 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM rust-base AS watchexec
 RUN cargo +nightly install --force --no-default-features \
-    watchexec
+    watchexec-cli
 
 FROM rust-base AS xh
 RUN cargo +nightly install --force --no-default-features \

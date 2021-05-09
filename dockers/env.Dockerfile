@@ -2,19 +2,20 @@ FROM kpango/dev-base:latest AS env
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
+ENV BASE_DIR /home
 ENV USER kpango
-ENV HOME /home/${USER}
+ENV HOME ${BASE_DIR}/${USER}
 ENV SHELL /usr/bin/zsh
 ENV GROUP sudo,root,users
 ENV UID 1000
-RUN useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${HOME} -G ${GROUP} ${USER} \
+RUN useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${BASE_DIR} -G ${GROUP} ${USER} \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers \
     && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers \
     && visudo -c
 
 WORKDIR /tmp
-RUN echo $'/lib\n\
+RUN echo '/lib\n\
 /lib64\n\
 /var/lib\n\
 /usr/lib\n\
