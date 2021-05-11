@@ -8,7 +8,7 @@ ENV HOME ${BASE_DIR}/${USER}
 ENV SHELL /usr/bin/zsh
 ENV GROUP sudo,root,users
 ENV UID 1000
-RUN useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${BASE_DIR} -G ${GROUP} ${USER} \
+RUN useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${BASE_DIR} --home ${HOME} -G ${GROUP} ${USER} \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers \
     && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers \
