@@ -434,11 +434,10 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM go-base AS k6
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="k6" \
-    && REPO="loadimpact/${BIN_NAME}" \
-    # && REPO="k6io/${BIN_NAME}" \
+    && REPO="go.k6.io/${BIN_NAME}" \
     && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}@master" \
+    "${REPO}@master" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
@@ -524,16 +523,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
-    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
-    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
-
-FROM go-base AS sx
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="sx" \
-    && REPO="v-byte-cpu/${BIN_NAME}" \
-    && GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
@@ -646,7 +635,6 @@ COPY --from=reddit2wallpaper $GOPATH/bin/reddit2wallpaper $GOPATH/bin/reddit2wal
 COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 COPY --from=swagger $GOPATH/bin/swagger $GOPATH/bin/swagger
-COPY --from=sx $GOPATH/bin/sx $GOPATH/bin/sx
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
 COPY --from=vegeta $GOPATH/bin/vegeta $GOPATH/bin/vegeta
