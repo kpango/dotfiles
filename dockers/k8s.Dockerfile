@@ -157,15 +157,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kind
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="kind" \
-    && REPO="kubernetes-sigs/${BIN_NAME}" \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
-    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
 FROM kube-base AS kubectl-fzf
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-fzf" \
@@ -429,6 +420,25 @@ RUN set -x; cd "$(mktemp -d)" \
       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
+FROM kube-golang-base AS kind
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="kind" \
+    && REPO="sigs.k8s.io/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${REPO}/cmd/${BIN_NAME}@master" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
+# FROM kube-base AS kind
+# RUN set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="kind" \
+#     && REPO="kubernetes-sigs/${BIN_NAME}" \
+#     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+#     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
+#     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
+#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM scratch AS kube
 
