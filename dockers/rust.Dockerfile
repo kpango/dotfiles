@@ -2,7 +2,12 @@ FROM kpango/dev-base:latest AS rust-base
 
 ARG TOOLCHAIN=nightly
 
-ENV PATH /root/.cargo/bin:$PATH
+
+ENV HOME /root
+ENV RUSTUP ${HOME}/.rustup
+ENV CARGO ${HOME}/.cargo
+ENV BIN_PATH ${CARGO}/bin
+ENV PATH ${BIN_PATH}:$PATH
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
@@ -53,12 +58,14 @@ FROM rust-base AS shellharden
 RUN cargo +nightly install --force --no-default-features \
     shellharden
 
-FROM rust-base AS rg
-RUN RUSTFLAGS="-C target-cpu=native" \
-    cargo +nightly install --force --features 'pcre2 simd-accel' \
-    ripgrep
+FROM kpango/rust:latest AS rg
+# FROM rust-base AS rg
+# RUN RUSTFLAGS="-C target-cpu=native" \
+#     cargo +nightly install --force --features 'pcre2 simd-accel' \
+#     ripgrep
 
-FROM rg AS rga
+FROM rust-base AS rga
+COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
 RUN cargo install --locked --force --no-default-features \
     ripgrep_all
 
