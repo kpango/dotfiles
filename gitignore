@@ -120,3 +120,4 @@ vim-plug/
 
 .envrc
 .env
+.air.*
