@@ -121,3 +121,4 @@ vim-plug/
 .envrc
 .env
 .air.*
+.air.*.conf
