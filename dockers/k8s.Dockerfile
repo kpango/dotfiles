@@ -15,12 +15,7 @@ ENV RELEASE_LATEST releases/latest
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3.9 \
-    python3-setuptools \
-    python3-pip \
-    python3-venv \
-    && mkdir -p "${BIN_PATH}"
+RUN mkdir -p "${BIN_PATH}"
 
 FROM kube-base AS kubectl
 RUN set -x; cd "$(mktemp -d)" \
