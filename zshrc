@@ -431,7 +431,7 @@ if [ -z $ZSH_LOADED ]; then
         gfp() {
             git add -A
             git commit --signoff --amend
-            git push -f
+            git push --force-with-lease
         }
         alias gfp=gfp
         alias gedit="$EDITOR $HOME/.gitconfig"
