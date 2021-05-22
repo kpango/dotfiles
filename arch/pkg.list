@@ -26,9 +26,11 @@ dosfstools
 dropbear
 exa
 fakeroot
-fcitx
-fcitx-configtool
+fcitx5
+fcitx5-configtool
+fcitx5-mozc
 fd
+fprintd
 fwupd
 gettext
 git
@@ -46,6 +48,7 @@ iptables-nft
 kubectx
 less
 light
+linux-firmware
 linux-zen
 linux-zen-headers
 lshw
@@ -69,9 +72,7 @@ pavucontrol
 pkgconf
 powertop
 procs
-pulseaudio
 pulseaudio-alsa
-pulseaudio-bluetooth
 python2
 ranger
 rclone
@@ -79,6 +80,7 @@ ripgrep
 rmlint
 sed
 slurp
+sof-firmware
 starship
 sudo
 sway
@@ -98,6 +100,7 @@ unzip
 usbutils
 waybar
 wayland
+wf-recorder
 wget
 which
 wl-clipboard

@@ -1,5 +1,5 @@
-export DefaultImModule=fcitx
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
-export XMODIFIERS="@im=fcitx"
-export XMODIFIER="@im=fcitx"
+export DefaultImModule=fcitx5
+export GTK_IM_MODULE=fcitx5
+export QT_IM_MODULE=fcitx5
+export XMODIFIERS="@im=fcitx5"
+export XMODIFIER="@im=fcitx5"
