@@ -47,7 +47,7 @@ RUN cargo install --force --no-default-features \
     --git https://github.com/starship/starship
 
 FROM rust-base AS exa
-RUN cargo +nightly install --force \
+RUN cargo install --force \
     exa
 
 FROM rust-base AS bandwhich
