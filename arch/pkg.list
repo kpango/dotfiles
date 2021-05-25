@@ -42,6 +42,7 @@ grim
 gzip
 htop
 imagemagick
+imv
 inetutils
 intel-ucode
 iptables-nft
@@ -73,6 +74,7 @@ pavucontrol
 pkgconf
 powertop
 procs
+profile-sync-daemon
 pulseaudio-alsa
 python2
 ranger
