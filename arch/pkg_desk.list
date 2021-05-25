@@ -27,8 +27,9 @@ dosfstools
 dropbear
 exa
 fakeroot
-fcitx
-fcitx-configtool
+fcitx5
+fcitx5-configtool
+fcitx5-mozc
 fd
 fwupd
 gettext
@@ -68,6 +69,7 @@ npm
 nvidia-dkms
 nvidia-prime
 nvidia-settings
+nvme-cli
 openssh
 pacman-contrib
 parted
@@ -87,6 +89,7 @@ ripgrep
 rmlint
 sed
 slurp
+smartmontools
 starship
 sudo
 sway
@@ -103,6 +106,7 @@ tlp-rdw
 tmux
 udisks2
 ueberzug
+ufw
 unrar
 unzip
 usbutils

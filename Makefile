@@ -48,6 +48,7 @@ arch_link: \
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.conf $(HOME)/.config/fcitx5/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.profile $(HOME)/.config/fcitx5/profile
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/psd.conf $(HOME)/.config/psd/psd.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.conf $(HOME)/.config/waybar/config
@@ -72,7 +73,6 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json $(HOME)/.docker/config.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json /etc/docker/config.json
-	sudo mkdir -p /root/.docker
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json /root/.docker/config.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
@@ -82,6 +82,7 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
+	sudo mkdir -p /root/.docker
 	sudo modprobe -rv thinkpad_acpi
 	sudo modprobe -v thinkpad_acpi
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
@@ -96,7 +97,6 @@ arch_p1_link: \
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
 	rm -rf $(HOME)/.config/psd
 	mkdir $(HOME)/.config/psd
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/psd.conf $(HOME)/.config/psd/psd.conf
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
 	sudo systemctl daemon-reload

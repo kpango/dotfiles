@@ -6,7 +6,6 @@ chromedriver-beta
 docker-credential-pass-bin
 downgrade
 duf
-fcitx-mozc-ut-unified-full
 geekbench
 ghq
 git-delta
@@ -20,11 +19,11 @@ libnm-iwd
 linux-firmware-iwlwifi-git
 milcheck-bin
 networkmanager-iwd
+ngrok
 nushell
 optimus-manager
 prime
 python-pillow-simd
-rancher-k3d-bin
 scaramanga
 slack-desktop
 stern
