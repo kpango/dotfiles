@@ -37,7 +37,7 @@ arch_link: \
 	clean \
 	link
 	mkdir -p ${HOME}/.config/alacritty
-	mkdir -p ${HOME}/.config/fcitx/conf
+	mkdir -p ${HOME}/.config/fcitx5
 	mkdir -p ${HOME}/.config/sway
 	mkdir -p ${HOME}/.config/waybar
 	mkdir -p ${HOME}/.config/wofi
@@ -46,7 +46,8 @@ arch_link: \
 	mkdir -p /etc/docker
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx-classic-ui.config $(HOME)/.config/fcitx/conf/fcitx-classic-ui.config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.conf $(HOME)/.config/fcitx5/config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.profile $(HOME)/.config/fcitx5/profile
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.conf $(HOME)/.config/waybar/config
@@ -111,7 +112,8 @@ clean:
 		$(HOME)/.config/TabNine \
 		$(HOME)/.config/alacritty \
 		$(HOME)/.config/compton \
-		$(HOME)/.config/fcitx \
+		$(HOME)/.config/fcitx5/config \
+		$(HOME)/.config/fcitx5/profile \
 		$(HOME)/.config/i3 \
 		$(HOME)/.config/i3status \
 		$(HOME)/.config/nvim \
