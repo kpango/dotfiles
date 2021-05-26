@@ -43,7 +43,9 @@ arch_link: \
 	mkdir -p ${HOME}/.config/wofi
 	mkdir -p ${HOME}/.config/workstyle
 	mkdir -p ${HOME}/.docker
-	mkdir -p /etc/docker
+	sudo mkdir -p /etc/docker
+	sudo mkdir -p /etc/scaramanga
+	sudo mkdir -p /root/.docker
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.conf $(HOME)/.config/fcitx5/config
@@ -70,6 +72,7 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/thinkfan.conf /etc/thinkfan.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/tlp /etc/default/tlp
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/tlp /etc/tlp.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/scaramanga.toml /etc/scaramanga/config.toml
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json $(HOME)/.docker/config.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json /etc/docker/config.json
@@ -82,7 +85,6 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
-	sudo mkdir -p /root/.docker
 	sudo modprobe -rv thinkpad_acpi
 	sudo modprobe -v thinkpad_acpi
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
@@ -143,6 +145,7 @@ clean:
 		/etc/docker/config.json \
 		/etc/docker/daemon.json \
 		/etc/environment \
+		/etc/scaramanga \
 		/etc/lightdm \
 		/etc/modprobe.d/bbswitch.conf \
 		/etc/modprobe.d/thinkfan.conf \
