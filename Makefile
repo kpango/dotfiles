@@ -41,6 +41,7 @@ arch_link: \
 	mkdir -p ${HOME}/.config/sway
 	mkdir -p ${HOME}/.config/waybar
 	mkdir -p ${HOME}/.config/wofi
+	mkdir -p ${HOME}/.config/psd
 	mkdir -p ${HOME}/.config/workstyle
 	mkdir -p ${HOME}/.docker
 	sudo mkdir -p /etc/docker
