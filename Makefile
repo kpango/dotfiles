@@ -54,6 +54,7 @@ arch_link: \
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/psd.conf $(HOME)/.config/psd/psd.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/swaylock.sh $(HOME)/.config/sway/swaylock.sh
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.conf $(HOME)/.config/waybar/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.css $(HOME)/.config/waybar/style.css
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/wofi/style.css $(HOME)/.config/wofi/style.css
