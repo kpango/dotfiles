@@ -58,11 +58,10 @@ FROM rust-base AS shellharden
 RUN cargo +nightly install --force --no-default-features \
     shellharden
 
-FROM kpango/rust:latest AS rg
-# FROM rust-base AS rg
-# RUN RUSTFLAGS="-C target-cpu=native" \
-#     cargo +nightly install --force --features 'pcre2 simd-accel' \
-#     ripgrep
+FROM rust-base AS rg
+RUN RUSTFLAGS="-C target-cpu=native" \
+    cargo +nightly install --force --features 'pcre2 simd-accel' \
+    ripgrep
 
 FROM rust-base AS rga
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
@@ -74,7 +73,9 @@ RUN cargo install --force --no-default-features \
     --git https://github.com/dalance/procs
 
 FROM rust-base AS bat
-RUN cargo install --force --locked \
+RUN rustup update stable \
+    && rustup default stable \
+    && cargo install --force --locked \
     bat
 
 FROM rust-base AS dutree
