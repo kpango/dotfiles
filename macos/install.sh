@@ -22,20 +22,35 @@ cat <<EOF >$HOME/.docker/config.json
 EOF
 cat <<EOF >$HOME/.docker/daemon.json
 {
-   "debug":false,
-   "log-opts":{
-      "max-file":"3",
-      "max-size":"10m"
-   },
-   "experimental":true,
-   "log-driver":"json-file",
-   "features":{
-      "buildkit":true
-   },
-   "live-restore":true,
-   "dns-opts":[
-      "timeout:1"
-   ]
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "20GB",
+      "enabled": true
+    }
+  },
+  "debug":false,
+  "log-opts":{
+    "max-file":"3",
+    "max-size":"10m"
+  },
+  "live-restore":true,
+  "log-driver":"json-file",
+  "experimental":true,
+
+  "features": {
+    "buildkit": true
+  },
+
+  "dns": [
+    "1.1.1.1",
+    "8.8.8.8"
+  ],
+  "dns-opts":[
+    "timeout:1"
+  ],
+  "registry-mirrors": [
+    "https://mirror.gcr.io"
+  ]
 }
 EOF
 
@@ -49,4 +64,3 @@ curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/local
 cp ./localhost.homebrew-autoupdate.plist $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 plutil -lint $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 launchctl load $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
-
