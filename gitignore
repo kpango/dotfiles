@@ -117,6 +117,8 @@ build/
 
 vim-plug
 vim-plug/
+*vim-plug
+vim-plug/*
 
 .envrc
 .env
