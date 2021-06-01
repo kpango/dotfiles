@@ -79,7 +79,6 @@ devrun(){
                 -v $rcpath/zshrc:$container_home/.zshrc \
                 -v $tz_path:/etc/localtime:ro \
                 -dit $image_name
-                # -v $rcpath/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
             ;;
 
         Linux)
