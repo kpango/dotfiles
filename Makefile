@@ -176,8 +176,8 @@ bash: link
 build: \
 	login \
 	build_base
-	# @xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_()" go docker rust dart k8s nim gcloud env base
-	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_()" go docker rust dart k8s nim gcloud env base
+	# @xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_{} go docker rust dart k8s nim gcloud env base
+	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
 	# @make prod
 
 prod: \
