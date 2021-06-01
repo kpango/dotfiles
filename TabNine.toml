@@ -1,4 +1,0 @@
-[language.go]
-command = "gopls"
-args = ["serve"]
-install = [["go", "get", "-u", "golang.org/x/tools/gopls@latest"]]
