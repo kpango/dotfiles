@@ -296,9 +296,9 @@ let g:coc_global_extensions = [
      \ 'coc-diagnostic',
      \ 'coc-git',
      \ 'coc-gitignore',
-     \ 'coc-go',
      \ 'coc-spell-checker',
      \ 'coc-tabnine',
+     \ 'coc-go',
      \]
 " let g:coc_global_extensions = [
 "     \ 'coc-actions',

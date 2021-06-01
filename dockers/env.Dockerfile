@@ -12,7 +12,7 @@ ENV USER ${WHOAMI}
 ENV HOME ${BASE_DIR}/${USER}
 ENV SHELL /usr/bin/zsh
 ENV GROUP sudo,root,users
-ENV UID ${USER_ID}}
+ENV UID ${USER_ID}
 
 RUN useradd --uid ${USER_ID} --create-home --shell ${SHELL} --base-dir ${BASE_DIR} --home ${HOME} -G ${GROUP_IDS} ${USER} \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
