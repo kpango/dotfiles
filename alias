@@ -77,6 +77,7 @@ devrun(){
                 -v $rcpath/vintrc.yaml:$container_home/.vintrc.yaml \
                 -v $rcpath/zshrc:$container_home/.zshrc \
                 -v $tz_path:/etc/localtime:ro \
+		--workdir $container_home \
                 -dit $image_name
                 # -v $rcpath/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
             ;;
@@ -94,12 +95,14 @@ devrun(){
             # -e DISPLAY \
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
             docker run \
-                --network=host \
+		--workdir $container_home \
                 --cap-add=ALL \
-                --name $container_name \
-                --restart always \
-                --privileged=$privileged \
                 --mount type=bind,source=$resolve_dnsmasq_config,destination=$resolve_config,readonly \
+                --name $container_name \
+                --network=host \
+                --privileged=$privileged \
+                --restart always \
+                -u "$(id -u $USER):$(id -g $USER)" \
                 -v $HOME/.aws:$container_home/.aws \
                 -v $HOME/.config/TabNine/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
@@ -138,10 +141,10 @@ devrun(){
                 -v $rcpath/vintrc.yaml:$container_home/.vintrc.yaml \
                 -v $rcpath/zshrc:$container_home/.zshrc:ro,cached \
                 -v $tz_path:/etc/localtime:ro,cached \
+                -v /etc/group:/etc/group:ro \
+                -v /etc/passwd:/etc/passwd:ro \
                 -v /mnt:/mnt \
                 -dt $image_name
-                # -v $rcpath/TabNine.toml:$container_home/.config/TabNine/TabNine.toml \
-                # -v $rcpath/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
             ;;
 
         CYGWIN*|MINGW32*|MSYS*)
@@ -157,7 +160,6 @@ devrun(){
 alias devrun="devrun"
 
 alias devin="docker exec -it $container_name $zsh_path -c \"tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST\""
-# alias devin="docker exec -it $container_name $zsh_path"
 
 devkill(){
     docker update --restart=no $container_name \

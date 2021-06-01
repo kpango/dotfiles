@@ -18,6 +18,9 @@ FROM env
 
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
+ARG USER_ID
+ARG GROUP_ID
+
 ENV TZ Asia/Tokyo
 ENV GOPATH $HOME/go
 ENV GOROOT /usr/local/go
@@ -76,11 +79,12 @@ WORKDIR $VIM_PLUG_HOME
 
 USER root
 
-RUN groupadd docker \
-    && usermod -aG docker ${USER} \
-    && newgrp docker \
-    && chown -R kpango:users ${HOME} \
-    && chown -R kpango:users ${HOME}/.* \
+# RUN groupadd docker \
+    # && usermod -aG docker ${USER} \
+    # && newgrp docker \
+    # && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
+RUN chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
+    && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && rm -rf $VIM_PLUG_HOME/autoload \
@@ -95,16 +99,16 @@ RUN groupadd docker \
     && rm -rf ${HOME}/.cargo/registry/cache \
     && rm -rf /usr/local/share/.cache \
     && rm -rf /tmp/* \
-    && chown -R kpango:users ${HOME} \
-    && chown -R kpango:users ${HOME}/.* \
-    && chown -R kpango:users /usr/local/lib/node_modules \
-    && chown -R kpango:users /usr/local/bin/npm \
+    && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
+    && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* \
+    && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules \
+    && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && chmod -R 755 /usr/local/lib/node_modules \
     && chmod -R 755 /usr/local/bin/npm
 
-USER ${USER}
+USER ${USER_ID}
 WORKDIR ${HOME}
 
 ENTRYPOINT ["docker-entrypoint"]

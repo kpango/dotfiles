@@ -2,6 +2,10 @@
 
 
 ROOTDIR = $(eval ROOTDIR := $(shell git rev-parse --show-toplevel))$(ROOTDIR)
+USER = $(eval USER := $(shell whoami))$(USER)
+USER_ID = $(eval USER_ID := $(shell id -u $(USER)))$(USER_ID)
+GROUP_ID = $(eval GROUP_ID := $(shell id -g $(USER)))$(GROUP_ID)
+GROUP_IDS = $(eval GROUP_IDS := $(shell id -G $(USER)))$(GROUP_IDS)
 
 echo:
 	@echo $(ROOTDIR)
@@ -12,10 +16,10 @@ run:
 	source $(ROOTDIR)/alias && devrun
 
 link:
-	mkdir -p ${HOME}/.config/nvim/colors
-	mkdir -p ${HOME}/.config/nvim/syntax
-	mkdir -p ${HOME}/.config/TabNine
-	mkdir -p ${HOME}/.docker
+	mkdir -p $(HOME)/.config/nvim/colors
+	mkdir -p $(HOME)/.config/nvim/syntax
+	mkdir -p $(HOME)/.config/TabNine
+	mkdir -p $(HOME)/.docker
 	sudo mkdir -p /etc/docker
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))alias $(HOME)/.aliases
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))coc-settings.json $(HOME)/.config/nvim/coc-settings.json
@@ -41,13 +45,13 @@ link:
 arch_link: \
 	clean \
 	link
-	mkdir -p ${HOME}/.config/alacritty
-	mkdir -p ${HOME}/.config/fcitx5
-	mkdir -p ${HOME}/.config/sway
-	mkdir -p ${HOME}/.config/waybar
-	mkdir -p ${HOME}/.config/wofi
-	mkdir -p ${HOME}/.config/psd
-	mkdir -p ${HOME}/.config/workstyle
+	mkdir -p $(HOME)/.config/alacritty
+	mkdir -p $(HOME)/.config/fcitx5
+	mkdir -p $(HOME)/.config/sway
+	mkdir -p $(HOME)/.config/waybar
+	mkdir -p $(HOME)/.config/wofi
+	mkdir -p $(HOME)/.config/psd
+	mkdir -p $(HOME)/.config/workstyle
 	sudo mkdir -p /etc/scaramanga
 	sudo mkdir -p /root/.docker
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
@@ -172,8 +176,8 @@ bash: link
 build: \
 	login \
 	build_base
-	# @xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_{}" go docker rust dart k8s nim gcloud env base
-	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
+	# @xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_()" go docker rust dart k8s nim gcloud env base
+	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_()" go docker rust dart k8s nim gcloud env base
 	# @make prod
 
 prod: \
@@ -181,13 +185,19 @@ prod: \
 	prod_push
 
 docker_build:
-	# sudo docker buildx build --platform linux/amd64 --push -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
-	# sudo docker buildx build --platform linux/amd64,linux/arm64 --push -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
-	docker build --squash --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
-	# docker build --squash --no-cache --network=host -t ${IMAGE_NAME}:latest -f ${DOCKERFILE} .
+	# sudo docker buildx build --platform linux/amd64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
+	# sudo docker buildx build --squash --network=host --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --platform linux/amd64,linux/arm64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
+	docker build --squash --network=host \
+	  --build-arg USER_ID="$(USER_ID)" \
+	  --build-arg GROUP_ID="$(GROUP_ID)" \
+	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
+	  --build-arg WHOAMI="$(USER)" \
+	  -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
+	# docker build --squash --no-cache --network=host --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
+	# docker build --squash --no-cache --network=host -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
 
 docker_push:
-	docker push ${IMAGE_NAME}:latest
+	docker push $(IMAGE_NAME):latest
 
 prod_build:
 	@make DOCKERFILE="$(ROOTDIR)/Dockerfile" IMAGE_NAME="kpango/dev" docker_build

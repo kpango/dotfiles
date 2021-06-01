@@ -1,14 +1,20 @@
 FROM kpango/dev-base:latest AS env
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
+ARG USER_ID=1000
+ARG GROUP_ID=984
+ARG GROUP_IDS=${GROUP_ID}
+ARG WHOAMI=kpango
+
 ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 ENV BASE_DIR /home
-ENV USER kpango
+ENV USER ${WHOAMI}
 ENV HOME ${BASE_DIR}/${USER}
 ENV SHELL /usr/bin/zsh
 ENV GROUP sudo,root,users
-ENV UID 1000
-RUN useradd --uid ${UID} --create-home --shell ${SHELL} --base-dir ${BASE_DIR} --home ${HOME} -G ${GROUP} ${USER} \
+ENV UID ${USER_ID}}
+
+RUN useradd --uid ${USER_ID} --create-home --shell ${SHELL} --base-dir ${BASE_DIR} --home ${HOME} -G ${GROUP_IDS} ${USER} \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers \
     && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers \
