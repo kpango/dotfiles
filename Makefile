@@ -46,7 +46,7 @@ arch_link: \
 	clean \
 	link
 	mkdir -p $(HOME)/.config/alacritty
-	mkdir -p $(HOME)/.config/fcitx5
+	mkdir -p $(HOME)/.config/fcitx5/conf
 	mkdir -p $(HOME)/.config/sway
 	mkdir -p $(HOME)/.config/waybar
 	mkdir -p $(HOME)/.config/wofi
@@ -58,6 +58,7 @@ arch_link: \
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.conf $(HOME)/.config/fcitx5/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.profile $(HOME)/.config/fcitx5/profile
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.classicui.conf $(HOME)/.config/fcitx5/conf/classicui.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/psd.conf $(HOME)/.config/psd/psd.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
