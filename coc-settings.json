@@ -44,9 +44,18 @@
     "snippetIndicator": "",
     "triggerAfterInsertEnter": true,
     "echodocSupport": true,
-    "timeout":1000
+    "timeout": 1000
   },
   "languageserver": {
+    "golang": {
+      "command": "gopls",
+      "filetypes": ["go"],
+      "initializationOptions": {
+        "gocodeCompletionEnabled": true,
+        "diagnosticsEnabled": true,
+        "lintTool": "golint"
+      }
+    },
     "nix": {
       "command": "nix-lsp",
       "filetypes": ["nix"],
