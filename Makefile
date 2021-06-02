@@ -121,6 +121,7 @@ clean:
 		$(HOME)/.config/compton \
 		$(HOME)/.config/fcitx5/config \
 		$(HOME)/.config/fcitx5/profile \
+		$(HOME)/.config/fcitx5/conf/classicui.conf \
 		$(HOME)/.config/i3 \
 		$(HOME)/.config/i3status \
 		$(HOME)/.config/nvim \
