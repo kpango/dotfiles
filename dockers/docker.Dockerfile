@@ -99,9 +99,8 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="${ORG}/${NAME}-cli" \
     && BIN_NAME="${ORG}-${NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${OS}-${ARCH}.tar.gz" \
-    && tar -xvf "${ORG}-${OS}-${ARCH}.tar.gz" \
-    && mv ${ORG}/${BIN_NAME} ${BIN_PATH}/${BIN_NAME} \
+    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${OS}-${ARCH}" \
+    && mv "${ORG}-${OS}-${ARCH}" ${BIN_PATH}/${BIN_NAME} \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
