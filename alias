@@ -140,6 +140,7 @@ devrun(){
                 -v $rcpath/zshrc:$container_home/.zshrc:ro,cached \
                 -v $tz_path:/etc/localtime:ro,cached \
                 -v /etc/group:/etc/group:ro \
+                -v /etc/shadow:/etc/shadow:ro \
                 -v /etc/passwd:/etc/passwd:ro \
                 -v /mnt:/mnt \
                 -dt $image_name
