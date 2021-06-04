@@ -25,8 +25,13 @@ RUN groupadd --non-unique --gid ${GROUP_ID} docker \
         --home ${HOME} \
         --groups ${GROUP} ${USER} \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
+    && echo "${USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers \
     && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers \
     && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers \
+    && chown -R 0:0 /etc/sudoers.d \
+    && chown -R 0:0 /etc/sudoers \
+    && chmod -R 0440 /etc/sudoers.d \
+    && chmod -R 0440 /etc/sudoers \
     && visudo -c
 
 WORKDIR /tmp
