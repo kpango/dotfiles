@@ -103,7 +103,6 @@ devrun(){
                 --workdir $container_home \
                 -u "$(id -u $USER):$(id -g $USER)" \
                 -v $HOME/.aws:$container_home/.aws \
-                -v $HOME/.config/TabNine/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.docker:$container_home/.docker \
                 -v $HOME/.docker:$container_root/.docker \
@@ -144,6 +143,7 @@ devrun(){
                 -v /etc/passwd:/etc/passwd:ro \
                 -v /mnt:/mnt \
                 -dt $image_name
+                # -v $HOME/.config/TabNine/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
             ;;
 
         CYGWIN*|MINGW32*|MSYS*)
