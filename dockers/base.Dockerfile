@@ -7,8 +7,8 @@ ENV INITRD No
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 ENV TZ Asia/Tokyo
-ENV CC clang
-ENV CXX clang++
+ENV CC /usr/bin/clang
+ENV CXX /usr/bin/clang++
 ENV CLANG_PATH /usr/local/clang
 ENV PATH ${PATH}:${CLANG_PATH}/bin
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib

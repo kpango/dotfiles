@@ -18,8 +18,8 @@ FROM env
 
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
-ARG USER_ID
-ARG GROUP_ID
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 
 ENV TZ Asia/Tokyo
 ENV GOPATH $HOME/go
@@ -95,6 +95,8 @@ RUN chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
     && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME \
     && zsh -ic zplug install \
     && rm -rf ${HOME}/.cache \
+    && rm -rf ${HOME}/.zplug/cache/* \
+    && rm -rf ${HOME}/.zplug/log/* \
     && rm -rf ${HOME}/.npm/_cacache \
     && rm -rf ${HOME}/.cargo/registry/cache \
     && rm -rf /usr/local/share/.cache \

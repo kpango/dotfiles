@@ -2,7 +2,7 @@ FROM kpango/dev-base:latest AS env
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
 ARG USER_ID=1000
-ARG GROUP_ID=985
+ARG GROUP_ID=1000
 ARG GROUP_IDS=${GROUP_ID}
 ARG WHOAMI=kpango
 
@@ -14,7 +14,15 @@ ENV SHELL /usr/bin/zsh
 ENV GROUP sudo,root,users
 ENV UID ${USER_ID}
 
-RUN useradd --uid ${USER_ID} --create-home --shell ${SHELL} --base-dir ${BASE_DIR} --home ${HOME} ${USER} \
+RUN groupadd --non-unique --gid ${GROUP_ID} docker \
+    && groupmod --non-unique --gid ${GROUP_ID} users \
+    && useradd --uid ${USER_ID} \
+        --gid ${GROUP_ID} \
+        --non-unique --create-home \
+        --shell ${SHELL} \
+        --base-dir ${BASE_DIR} \
+        --home ${HOME} \
+        --groups ${GROUP} ${USER} \
     && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers \
     && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers \
