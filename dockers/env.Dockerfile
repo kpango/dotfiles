@@ -11,10 +11,11 @@ ENV BASE_DIR /home
 ENV USER ${WHOAMI}
 ENV HOME ${BASE_DIR}/${USER}
 ENV SHELL /usr/bin/zsh
-ENV GROUP sudo,root,users
+ENV GROUP sudo,root,users,docker,wheel
 ENV UID ${USER_ID}
 
 RUN groupadd --non-unique --gid ${GROUP_ID} docker \
+    && groupadd --non-unique --gid ${GROUP_ID} wheel \
     && groupmod --non-unique --gid ${GROUP_ID} users \
     && useradd --uid ${USER_ID} \
         --gid ${GROUP_ID} \

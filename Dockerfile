@@ -20,8 +20,11 @@ LABEL maintainer="kpango <kpango@vdaas.org>"
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
+ARG WHOAMI=kpango
 
+ENV GROUP sudo,root,users,docker,wheel
 ENV TZ Asia/Tokyo
+ENV HOME /home/${WHOAMI}
 ENV GOPATH $HOME/go
 ENV GOROOT /usr/local/go
 ENV GCLOUD_PATH /google-cloud-sdk
@@ -80,10 +83,10 @@ WORKDIR $VIM_PLUG_HOME
 USER root
 
 # RUN groupadd docker \
-    # && usermod -aG docker ${USER} \
     # && newgrp docker \
     # && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
-RUN chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
+RUN usermod -aG ${GROUP} ${WHOAMI} \
+    && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
