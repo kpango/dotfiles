@@ -95,6 +95,10 @@ arch_link: \
 	sudo modprobe -v thinkpad_acpi
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo chown -R 0:0 /ets/sudoers.d
+	sudo chmod -R 0440 /ets/sudoers.d
+	sudo chown -R 0:0 $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers
+	sudo chmod -R 0440 $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers
 	sudo sysctl -p
 	sudo systemctl daemon-reload
 
