@@ -82,7 +82,13 @@ window#waybar.chromium {
 }
 
 #disk {
-    padding: 0 10px;
+    padding: 0 1px;
+    margin: 0 4px;
+    background-color: #64727D;
+}
+
+#custom-ssd {
+    padding: 1 5px;
     margin: 0 4px;
     background-color: #64727D;
 }
