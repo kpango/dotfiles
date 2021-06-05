@@ -146,8 +146,10 @@ RUN cargo +nightly install --force --no-default-features \
 # RUN cargo +nightly install --force  \
 #     racer
 
-FROM rust-base AS cargo-watch
-RUN cargo install cargo-watch
+# FROM watchexec AS cargo-watch
+# RUN cargo +nightly install --force --no-default-features \
+#     cargo-watch
+# RUN cargo install cargo-watch
 
 FROM rust-base AS cargo-tree
 RUN cargo install cargo-tree
@@ -188,7 +190,7 @@ COPY --from=cargo-binutils ${BIN_PATH}/rust-* ${BIN_PATH}/
 COPY --from=cargo-check ${BIN_PATH}/cargo-check ${BIN_PATH}/cargo-check
 COPY --from=cargo-expand ${BIN_PATH}/cargo-expand ${BIN_PATH}/cargo-expand
 COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
-COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
+# COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
 COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
