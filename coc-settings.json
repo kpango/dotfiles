@@ -22,7 +22,8 @@
     },
     "source": {
       "around.enable": false,
-      "neco.enable": false
+      "neco.enable": false,
+      "golang.priority": 999999
     }
   },
   "signature": {
@@ -37,6 +38,7 @@
   "suggest": {
     "noselect": true,
     "preferCompleteThanJumpPlaceholder": true,
+    "removeDuplicateItems": true,
     "detailField": "abbr",
     "enablePreview": true,
     "enablePreselect": false,
