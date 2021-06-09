@@ -281,6 +281,17 @@ ENV BIN_NAME golangci-lint
 COPY --from=golangci-lint-base /usr/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME}
 RUN upx -9 ${GOPATH}/bin/${BIN_NAME}
 
+
+FROM go-base AS golines
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="golines" \
+    && REPO="segmentio/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS golint
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="golint" \
@@ -620,6 +631,7 @@ COPY --from=goimports $GOPATH/bin/goimports $GOPATH/bin/goimports
 COPY --from=goimports-update-ignore $GOPATH/bin/goimports-update-ignore $GOPATH/bin/goimports-update-ignore
 COPY --from=gojson $GOPATH/bin/gojson $GOPATH/bin/gojson
 COPY --from=golangci-lint $GOPATH/bin/golangci-lint $GOPATH/bin/golangci-lint
+COPY --from=golines $GOPATH/bin/golines $GOPATH/bin/golines
 COPY --from=golint $GOPATH/bin/golint $GOPATH/bin/golint
 COPY --from=gomodifytags $GOPATH/bin/gomodifytags $GOPATH/bin/gomodifytags
 COPY --from=gopls $GOPATH/bin/gopls $GOPATH/bin/gopls

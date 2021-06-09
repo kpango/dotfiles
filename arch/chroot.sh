@@ -9,6 +9,7 @@ cat <<EOF >>/etc/pacman.conf
 Include = /etc/pacman.d/mirrorlist
 EOF
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
+echo "blacklist iTCO_wdt" > /etc/modprobe.d/nowatchdog.conf
 
 HOST="archpango"
 echo ${HOST} >>/etc/hostname
@@ -87,7 +88,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /intel-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1
+options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1 iommu=force,merge,nopanic,nopt intel_iommu=on nowatchdog
 EOF
 
 rm -rf /boot/loader/loader.conf
