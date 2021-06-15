@@ -8,13 +8,13 @@ font:
   italic:
     family: HackGenNerdConsole
     style: Italic
-  size: 10.5
-  # offset:
-  # x: 0
-  # y: 0
-  # glyph_offset:
-  # x: 0
-  # y: 7
+  size: 18
+    # offset:
+    #   x: 1
+    #   y: 0
+    # glyph_offset:
+    #   x: 0
+    #   y: 7
   use_thin_strokes: true
 
 background_opacity: 1.2

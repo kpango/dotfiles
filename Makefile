@@ -187,6 +187,7 @@ build: \
 	# @make prod
 
 prod: \
+	login \
 	prod_build \
 	prod_push
 

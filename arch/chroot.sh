@@ -90,6 +90,8 @@ initrd  /intel-ucode.img
 initrd  /initramfs-linux-zen.img
 options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1 iommu=force,merge,nopanic,nopt intel_iommu=on nowatchdog
 EOF
+# options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1 iommu=force,merge,nopanic,nopt intel_iommu=on i915.enable_psr=0 i915.enable_fbc=1 i915.fastboot=1 i915.semaphores=1 i915.enable_rc6=0 nowatchdog
+# EOF
 
 rm -rf /boot/loader/loader.conf
 cat <<EOF >/boot/loader/loader.conf

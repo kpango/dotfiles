@@ -51,12 +51,7 @@
   "languageserver": {
     "golang": {
       "command": "gopls",
-      "filetypes": ["go"],
-      "initializationOptions": {
-        "gocodeCompletionEnabled": true,
-        "diagnosticsEnabled": true,
-        "lintTool": "golint"
-      }
+      "filetypes": ["go"]
     },
     "nix": {
       "command": "nix-lsp",
