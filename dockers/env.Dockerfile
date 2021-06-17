@@ -51,6 +51,9 @@ RUN echo '/lib\n\
     && apt install -y --no-install-recommends --fix-missing \
     automake \
     bash \
+    ccls \
+    clangd \
+    clang-format \
     diffutils \
     exuberant-ctags \
     gawk \

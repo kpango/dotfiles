@@ -36,19 +36,31 @@
     "refreshOnInsertMode": true
   },
   "suggest": {
+    "detailField": "abbr",
+    "echodocSupport": true,
+    "enablePreselect": false,
+    "enablePreview": true,
+    "floatEnable": true,
+    "keepCompleteopt": false,
     "noselect": true,
     "preferCompleteThanJumpPlaceholder": true,
     "removeDuplicateItems": true,
-    "detailField": "abbr",
-    "enablePreview": true,
-    "enablePreselect": false,
-    "floatEnable": true,
     "snippetIndicator": "",
-    "triggerAfterInsertEnter": true,
-    "echodocSupport": true,
-    "timeout": 1000
+    "timeout": 1000,
+    "triggerAfterInsertEnter": true
+
   },
   "languageserver": {
+    "ccls": {
+      "command": "ccls",
+      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      "rootPatterns": [".ccls-root", "compile_commands.json", ".git"],
+      "initializationOptions": {
+        "cache": {
+          "directory": "/tmp/ccls-cache"
+        }
+      }
+    },
     "golang": {
       "command": "gopls",
       "filetypes": ["go"]
