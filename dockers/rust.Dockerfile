@@ -2,7 +2,6 @@ FROM kpango/dev-base:latest AS rust-base
 
 ARG TOOLCHAIN=nightly
 
-
 ENV HOME /root
 ENV RUSTUP ${HOME}/.rustup
 ENV CARGO ${HOME}/.cargo
