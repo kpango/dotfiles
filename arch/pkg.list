@@ -46,6 +46,7 @@ imv
 inetutils
 intel-ucode
 iptables-nft
+kanshi
 kubectx
 less
 light
@@ -109,6 +110,7 @@ which
 wl-clipboard
 wlc
 wofi
+wol
 wpscan
 xf86-input-synaptics
 xfsprogs
