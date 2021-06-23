@@ -1010,6 +1010,9 @@ if [ -z $ZSH_LOADED ]; then
                 /usr/share/man/man5/gemfile* \
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
+            # sudo pacman-key --init
+            sudo pacman-key --populate archlinux
+            # sudo pacman-key --refresh-keys
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
             if type scaramanga >/dev/null 2>&1; then
