@@ -105,7 +105,7 @@
     root = ~/go/src
 
 [commit]
-    gpgsign = true
+    gpgsign = false
 
 [interactive]
     diffFilter = delta --color-only
