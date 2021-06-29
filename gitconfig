@@ -30,6 +30,7 @@
 
 [http]
     postBuffer = 524288000
+    cookiefile = ~/.gitcookies
 
 [help]
     autocorrect = 0
