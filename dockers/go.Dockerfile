@@ -205,6 +205,26 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS git-codereview
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="git-codereview" \
+    && REPO="golang.org/x/review" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS go-contrib-init
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="go-contrib-init" \
+    && REPO="golang.org/x/tools" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS gocode
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="gocode" \
@@ -623,6 +643,8 @@ COPY --from=flamegraph $GOPATH/bin/stackcollapse-go.pl $GOPATH/bin/stackcollapse
 COPY --from=flamegraph $GOPATH/bin/stackcollapse.pl $GOPATH/bin/stackcollapse.pl
 COPY --from=ghq $GOPATH/bin/ghq $GOPATH/bin/ghq
 COPY --from=ghz $GOPATH/bin/ghz $GOPATH/bin/ghz
+COPY --from=git-codereview $GOPATH/bin/git-codereview $GOPATH/bin/git-codereview
+COPY --from=go-contrib-init $GOPATH/bin/go-contrib-init $GOPATH/bin/go-contrib-init
 COPY --from=gocode $GOPATH/bin/gocode $GOPATH/bin/gocode
 COPY --from=godef $GOPATH/bin/godef $GOPATH/bin/godef
 COPY --from=gofumports $GOPATH/bin/gofumports $GOPATH/bin/gofumports
