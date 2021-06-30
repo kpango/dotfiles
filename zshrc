@@ -1167,6 +1167,10 @@ if [ -z $ZSH_LOADED ]; then
         alias chrome="chrome --audio-buffer-size=4096"
     fi
 
+    if [ -d "$GOPATH/src/github.com/vdaas/vald" ]; then
+        alias valdup="make update && make license && make format && fd \".go$\" | rg -v apis | xargs gofumports -w && make format/go"
+    fi
+
     export ZSH_LOADED=1;
 fi
 
