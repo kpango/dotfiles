@@ -392,6 +392,17 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS gotip
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gotip" \
+    && ORG="golang.org/dl" \
+    && REPO="${ORG}/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS gowrap
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="gowrap" \
@@ -662,6 +673,7 @@ COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
 COPY --from=gosec $GOPATH/bin/gosec $GOPATH/bin/gosec
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
+COPY --from=gotip $GOPATH/bin/gotip $GOPATH/bin/gotip
 COPY --from=gowrap $GOPATH/bin/gowrap $GOPATH/bin/gowrap
 COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
