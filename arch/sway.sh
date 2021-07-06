@@ -27,4 +27,3 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     WLR_DRM_DEVICES=/dev/dri/card1:/dev/dri/card0 \
     exec sway
 fi
-# sway
