@@ -10,6 +10,10 @@
   },
   "log-driver": "json-file",
   "log-opts": {
+    "cache-disabled": "false",
+    "cache-max-file": "5",
+    "cache-max-size": "20m",
+    "cache-compress": "true",
     "max-size": "10m",
     "max-file": "3"
   },
@@ -19,8 +23,19 @@
   "features": {
     "buildkit": true
   },
+  "max-concurrent-downloads": 12,
+  "max-concurrent-uploads": 12,
+  "max-download-attempts": 12,
+  "mtu": 9000,
+  "shutdown-timeout": 10,
+  "selinux-enabled": false,
   "storage-driver": "overlay2",
   "default-ulimits": {
+    "nofile": {
+      "name": "nofile",
+      "hard": -1,
+      "soft": -1
+    },
     "memlock": {
       "name": "memlock",
       "hard": -1,
@@ -32,5 +47,22 @@
       "base": "192.168.0.0/16",
       "size": 24
     }
+  ],
+  "ipv6": true,
+  "fixed-cidr-v6": "2001:db8:1::/64",
+  "dns": [
+    "2606:4700:4700::1111",
+    "2606:4700:4700::1001",
+    "1.1.1.1",
+    "1.0.0.1",
+    "8.8.8.8",
+    "8.8.4.4",
+    "9.9.9.10"
+  ],
+  "dns-opts":[
+    "timeout:1"
+  ],
+  "registry-mirrors": [
+    "https://mirror.gcr.io"
   ]
 }
