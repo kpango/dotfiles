@@ -23,6 +23,7 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     XMODIFIERS="@im=fcitx5" \
     XKB_DEFAULT_OPTIONS=ctrl:nocaps \
     XKB_DEFAULT_LAYOUT=us \
+    LIBSEAT_BACKEND=logind \
     WLR_DRM_DEVICES=/dev/dri/card1:/dev/dri/card0 \
     exec sway
 fi
