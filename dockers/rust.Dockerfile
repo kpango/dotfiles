@@ -29,9 +29,9 @@ FROM rust-base AS rnix-lsp
 RUN cargo install --force --no-default-features \
     --git https://github.com/nix-community/rnix-lsp
 
-FROM rust-base AS nushell
-RUN cargo install --force --features=extra \
-    --git https://github.com/nushell/nushell nu
+# FROM rust-base AS nushell
+# RUN cargo install --force --features=extra \
+#     --git https://github.com/nushell/nushell nu
 
 FROM rust-base AS cargo-bloat
 RUN cargo install --force --no-default-features \
@@ -57,10 +57,14 @@ FROM rust-base AS shellharden
 RUN cargo +nightly install --force --no-default-features \
     shellharden
 
-FROM rust-base AS rg
-RUN RUSTFLAGS="-C target-cpu=native" \
-    cargo +nightly install --force --features 'pcre2 simd-accel' \
-    ripgrep
+FROM kpango/rust:latest AS rg
+# FROM rust-base AS rg
+# # RUN RUSTFLAGS="-C target-cpu=native" \
+#     # cargo +nightly install --force --features 'pcre2 simd-accel' \
+# RUN rustup update stable \
+#     && RUSTFLAGS="-C target-cpu=native" \
+#     cargo install --force --features 'pcre2 simd-accel' \
+#     ripgrep
 
 FROM rust-base AS rga
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
@@ -198,7 +202,7 @@ COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
-COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
+# COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
 COPY --from=procs ${BIN_PATH}/procs ${BIN_PATH}/procs
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
 COPY --from=rga ${BIN_PATH}/rga ${BIN_PATH}/rga

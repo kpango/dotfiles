@@ -118,7 +118,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="mattn/${BIN_NAME}" \
     && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@master" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
