@@ -23,9 +23,9 @@
   "features": {
     "buildkit": true
   },
-  "max-concurrent-downloads": 12,
-  "max-concurrent-uploads": 12,
-  "max-download-attempts": 12,
+  "max-concurrent-downloads": 24,
+  "max-concurrent-uploads": 24,
+  "max-download-attempts": 24,
   "mtu": 9000,
   "shutdown-timeout": 10,
   "selinux-enabled": false,
@@ -33,8 +33,8 @@
   "default-ulimits": {
     "nofile": {
       "name": "nofile",
-      "hard": -1,
-      "soft": -1
+      "hard": 6048576,
+      "soft": 6048576 
     },
     "memlock": {
       "name": "memlock",
