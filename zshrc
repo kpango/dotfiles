@@ -118,6 +118,19 @@ if [ -z $DOTENV_LOADED ]; then
         export CGO_LDFLAGS="-g -Ofast -march=native"
     fi
 
+    if type clang >/dev/null 2>&1; then
+        export CC=/usr/bin/clang
+        export CPP=/usr/bin/clang++
+        export CXX=/usr/bin/clang++
+        export LD=/usr/bin/lld
+        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/clang/*/lib
+        export CFLAGS="-g -Ofast -march=native -ffp-contract=fast"
+        export CPPFLAGS="-g -Ofast -march=native -ffp-contract=fast"
+        export CXXFLAGS="-g -Ofast -march=native -ffp-contract=fast"
+        export FFLAGS="-g -Ofast -march=native -ffp-contract=fast"
+        export LDFLAGS="-g -Ofast -march=native -ffp-contract=fast"
+    fi
+
     DOTFILE_URL="github.com/kpango/dotfiles"
     if type ghq >/dev/null 2>&1; then
         export DOTFILES_DIR="$(ghq root)/$DOTFILE_URL"
