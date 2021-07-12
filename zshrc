@@ -120,7 +120,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     if type clang >/dev/null 2>&1; then
         export CC=$(which clang)
-	export CPP=$(which clang++)
+        export CPP=$(which clang++)
         export CXX=$CPP
         export LD=/usr/bin/lld
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/clang/*/lib
