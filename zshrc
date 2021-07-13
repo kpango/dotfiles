@@ -958,6 +958,13 @@ if [ -z $ZSH_LOADED ]; then
         alias comprestart=comprestart
     fi
 
+    if type osascript >/dev/null 2>&1; then
+        ciscovpn(){
+            osascript $DOTFILES_DIR/macos/AnyConnect.scpt
+        }
+        alias ciscovpn=ciscovpn
+    fi
+
     if type brew >/dev/null 2>&1; then
         brewup() {
             cd `brew --prefix`/Homebrew
