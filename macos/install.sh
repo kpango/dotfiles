@@ -64,3 +64,6 @@ curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/local
 cp ./localhost.homebrew-autoupdate.plist $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 plutil -lint $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 launchctl load $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
+
+echo "please input Cisco AnyConnect VPN password"
+security add-generic-password -a $(whoami) -s mac_login_pass -w
