@@ -120,7 +120,7 @@ if [ -z $DOTENV_LOADED ]; then
         export CC=$(which clang)
         export CPP=$(which clang++)
         export CXX=$CPP
-        export LD=/usr/bin/lld
+        export LD=/usr/bin/ldd
         export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/clang/*/lib
         export CFLAGS="-g -Ofast -march=native -ffp-contract=fast"
         export CPPFLAGS="-g -Ofast -march=native -ffp-contract=fast"
