@@ -202,7 +202,6 @@ docker_build:
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
 	  --build-arg WHOAMI="$(USER)" \
 	  -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
-	# docker build --squash --no-cache --network=host -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
 
 docker_push:
 	docker push $(IMAGE_NAME):latest
