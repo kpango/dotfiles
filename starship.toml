@@ -6,10 +6,12 @@ $username\
 $hostname\
 $shlvl\
 $directory\
+$vcsh\
 $git_branch\
 $git_commit\
 $git_state\
 $git_status\
+$git_metrics\
 $hg_branch\
 $docker_context\
 $package\
@@ -148,6 +150,9 @@ symbol = "ﯣ "
 [gcloud]
 symbol = "️"
 format = 'on [$symbol $active(\($project\))]($style) '
+
+[git_metrics]
+disabled = false
 
 [git_status]
 conflicted = "🏳 "

@@ -7,8 +7,6 @@ if type tmux >/dev/null 2>&1; then
         HOST=$(hostname)
         TMUX_SOCK=/tmp/tmux.sock
         TMUX_TMPDIR=/tmp
-        # ID="$(tmux -S /tmp/tmux.sock ls | grep attached | cut -d: -f1)" # get the id of a deattached session
-        # if [[ -z $ID ]]; then # if not available create a new one
         if [[ ! -f $TMUX_SOCK ]]; then
             if [ -f /.dockerenv ]; then
                 sudo chown -R root:docker /var/run/docker.sock
