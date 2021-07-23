@@ -93,8 +93,8 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
 	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
-	sudo modprobe -rv thinkpad_acpi
-	sudo modprobe -v thinkpad_acpi
+	# sudo modprobe -rv thinkpad_acpi
+	# sudo modprobe -v thinkpad_acpi
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chown -R 0:0 /etc/sudoers.d
