@@ -35,17 +35,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS helmfile
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="helmfile" \
-    && REPO="roboll/${BIN_NAME}" \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}_${OS}_${ARCH}" \
-    && echo ${URL} \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
-    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
 FROM kube-base AS kubefwd
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubefwd" \
@@ -368,13 +357,23 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM golang:buster AS golang
+FROM kpango/go:latest AS golang
 FROM kube-base AS kube-golang-base
 COPY --from=golang /usr/local/go /usr/local/go
 COPY --from=golang /go /go
 ENV GOPATH /go
 ENV GOROOT /usr/local/go
 ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
+
+FROM kube-golang-base AS helmfile
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="helmfile" \
+    && REPO="roboll/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/@latest" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-golang-base AS kubecolor
 RUN set -x; cd "$(mktemp -d)" \
