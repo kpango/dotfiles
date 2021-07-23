@@ -359,7 +359,7 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM kpango/go:latest AS golang
 FROM kube-base AS kube-golang-base
-COPY --from=golang /usr/local/go /usr/local/go
+COPY --from=golang /opt/go /usr/local/go
 COPY --from=golang /go /go
 ENV GOPATH /go
 ENV GOROOT /usr/local/go
@@ -371,7 +371,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="roboll/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}/@latest" \
+      "${GITHUBCOM}/${REPO}@latest" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
