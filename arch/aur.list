@@ -17,11 +17,13 @@ networkmanager-iwd
 scaramanga
 slack-desktop
 stern
+swaybg-git
 thinkfan
-tp_smapi-dkms
+tpacpi-bat-git
 ttf-hackgen-nerd
 tzupdate
 wdisplays-git
+wf-recorder-git
 yay
 zoom
 zsa-wally-bin
