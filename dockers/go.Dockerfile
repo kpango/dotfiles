@@ -215,6 +215,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS glice
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="glice" \
+    && REPO="ribice/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS go-contrib-init
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="go-contrib-init" \
@@ -493,6 +503,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS licenses
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="go-licenses" \
+    && REPO="google/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@master" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS markdown2medium
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="markdown2medium" \
@@ -655,6 +675,7 @@ COPY --from=flamegraph $GOPATH/bin/stackcollapse.pl $GOPATH/bin/stackcollapse.pl
 COPY --from=ghq $GOPATH/bin/ghq $GOPATH/bin/ghq
 COPY --from=ghz $GOPATH/bin/ghz $GOPATH/bin/ghz
 COPY --from=git-codereview $GOPATH/bin/git-codereview $GOPATH/bin/git-codereview
+COPY --from=glice $GOPATH/bin/glice $GOPATH/bin/glice
 COPY --from=go-contrib-init $GOPATH/bin/go-contrib-init $GOPATH/bin/go-contrib-init
 COPY --from=gocode $GOPATH/bin/gocode $GOPATH/bin/gocode
 COPY --from=godef $GOPATH/bin/godef $GOPATH/bin/godef
@@ -683,6 +704,7 @@ COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
+COPY --from=licenses $GOPATH/bin/licenses $GOPATH/bin/licenses
 COPY --from=markdown2medium $GOPATH/bin/markdown2medium $GOPATH/bin/markdown2medium
 COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen
 COPY --from=panicparse $GOPATH/bin/pp $GOPATH/bin/pp
