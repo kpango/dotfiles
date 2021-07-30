@@ -284,6 +284,17 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
+FROM kube-base AS kdash
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="kdash" \
+    && REPO="${BIN_NAME}-rs/${BIN_NAME}" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && TAR_NAME="${BIN_NAME}-${OS}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
 FROM kube-base AS kubectl-rolesum
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-rolesum" \
@@ -452,6 +463,7 @@ COPY --from=k9s ${BIN_PATH}/k9s ${K8S_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${K8S_PATH}/kind
 COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
 COPY --from=kpt ${BIN_PATH}/kpt ${K8S_PATH}/kpt
+COPY --from=kdash ${BIN_PATH}/kdash ${K8S_PATH}/kdash
 COPY --from=krew ${BIN_PATH}/kubectl-krew ${K8S_PATH}/kubectl-krew
 COPY --from=krew /root/.krew/index $/root/.krew/index
 COPY --from=kube-linter ${BIN_PATH}/kube-linter ${K8S_PATH}/kube-linter
