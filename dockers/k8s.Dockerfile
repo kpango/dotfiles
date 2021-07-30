@@ -292,8 +292,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && TAR_NAME="${BIN_NAME}-${OS}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubectl-rolesum
 RUN set -x; cd "$(mktemp -d)" \
