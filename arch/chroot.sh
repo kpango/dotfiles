@@ -1,6 +1,6 @@
 #!/bin/sh
 sed -i -e "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
-sed -i -e "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j9\"/g" /etc/makepkg.conf
+sed -i -e "s/#MAKEFLAGS=\"-j2\"/MAKEFLAGS=\"-j8\"/g" /etc/makepkg.conf
 sed -i -e "s/#BUILDDIR/BUILDDIR/g" /etc/makepkg.conf
 sed -i -e "s/#Color/Color\nILoveCandy/g" /etc/pacman.conf
 cat <<EOF >>/etc/pacman.conf
