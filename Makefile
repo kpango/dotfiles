@@ -55,16 +55,16 @@ arch_link: \
 	mkdir -p $(HOME)/.config/workstyle
 	sudo mkdir -p /etc/scaramanga
 	sudo mkdir -p /root/.docker
+	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/swaylock.sh $(HOME)/.config/sway/swaylock.sh
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.classicui.conf $(HOME)/.config/fcitx5/conf/classicui.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.conf $(HOME)/.config/fcitx5/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.profile $(HOME)/.config/fcitx5/profile
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.classicui.conf $(HOME)/.config/fcitx5/conf/classicui.conf
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/psd.conf $(HOME)/.config/psd/psd.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/kanshi.conf $(HOME)/.config/kanshi/config
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/psd.conf $(HOME)/.config/psd/psd.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/swaylock.sh $(HOME)/.config/sway/swaylock.sh
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.conf $(HOME)/.config/waybar/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.css $(HOME)/.config/waybar/style.css
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/wofi/style.css $(HOME)/.config/wofi/style.css
@@ -78,13 +78,15 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/default.pa /etc/pulse/default.pa
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/makepkg.conf /etc/makepkg.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pacman.conf /etc/pacman.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/scaramanga.toml /etc/scaramanga/config.toml
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers /etc/sudoers.d/kpango
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.sh /etc/profile.d/sway.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/thinkfan.conf /etc/thinkfan.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/tlp /etc/default/tlp
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/tlp /etc/tlp.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/scaramanga.toml /etc/scaramanga/config.toml
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json /root/.docker/config.json
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /root/.docker/daemon.json
@@ -157,16 +159,18 @@ clean:
 		/etc/docker/config.json \
 		/etc/docker/daemon.json \
 		/etc/environment \
-		/etc/scaramanga \
 		/etc/lightdm \
+		/etc/makepkg.conf \
 		/etc/modprobe.d/bbswitch.conf \
 		/etc/modprobe.d/thinkfan.conf \
 		/etc/modules-load.d/bbr.conf \
+		/etc/pacman.conf \
 		/etc/profile.d/fcitx.sh \
 		/etc/profile.d/sway.sh \
 		/etc/pulse/default.pa \
-		/etc/sudoers.d/kpango \
+		/etc/scaramanga \
 		/etc/scaramanga/config.toml \
+		/etc/sudoers.d/kpango \
 		/etc/sysctl.conf \
 		/etc/systemd/system/NetworkManager-dispatcher.service \
 		/etc/systemd/system/nvidia-disable-resume.service \
@@ -345,8 +349,8 @@ pull:
 perm:
 	sudo chmod -R 755 $(ROOTDIR)/*
 	sudo chmod -R 755 $(ROOTDIR)/.*
-	sudo chown -R 1000:985 $(ROOTDIR)/*
-	sudo chown -R 1000:985 $(ROOTDIR)/.*
+	sudo chown -R kpango:users $(ROOTDIR)/*
+	sudo chown -R kpango:users $(ROOTDIR)/.*
 
 git_push:
 	git add -A
