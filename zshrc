@@ -1013,6 +1013,7 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archback=archback
         archup() {
+            sudo chown 0 /etc/sudoers.d/kpango
             sync \
             && sudo sysctl -w vm.drop_caches=3 \
                 && sudo swapoff -a \
