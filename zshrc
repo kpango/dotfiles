@@ -1034,13 +1034,14 @@ if [ -z $ZSH_LOADED ]; then
             # sudo pacman-key --init
             sudo pacman-key --populate archlinux
             # sudo pacman-key --refresh-keys
+	    sudo pacman-db-upgrade
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
             if type scaramanga >/dev/null 2>&1; then
                 sudo scaramanga > mirrorlist
                 sudo rm -rf /etc/pacman.d/mirrorlist
                 sudo mv mirrorlist /etc/pacman.d/mirrorlist
-                sudo chmod 777 /etc/pacman.d/mirrorlist
+                sudo chmod 600 /etc/pacman.d/mirrorlist
                 sudo chown root:root /etc/pacman.d/mirrorlist
                 yay -Syy
                 if type milcheck >/dev/null 2>&1; then
@@ -1055,6 +1056,7 @@ if [ -z $ZSH_LOADED ]; then
                 /usr/share/man/man5/gemfile* \
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
+	    sudo pacman-db-upgrade
             yay -Syu --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
@@ -1070,6 +1072,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
+            sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
             sync \
             && sudo sysctl -w vm.drop_caches=3 \
