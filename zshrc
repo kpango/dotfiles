@@ -1042,7 +1042,7 @@ if [ -z $ZSH_LOADED ]; then
                 sudo scaramanga > mirrorlist
                 sudo rm -rf /etc/pacman.d/mirrorlist
                 sudo mv mirrorlist /etc/pacman.d/mirrorlist
-                sudo chmod 600 /etc/pacman.d/mirrorlist
+                sudo chmod 755 /etc/pacman.d/mirrorlist
                 sudo chown root:root /etc/pacman.d/mirrorlist
                 yay -Syy
                 if type milcheck >/dev/null 2>&1; then
