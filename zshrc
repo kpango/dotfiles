@@ -1031,6 +1031,7 @@ if [ -z $ZSH_LOADED ]; then
                 /usr/share/man/man5/gemfile* \
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
+            sudo gpgconf --kill all
             # sudo pacman-key --init
             sudo pacman-key --populate archlinux
             # sudo pacman-key --refresh-keys
