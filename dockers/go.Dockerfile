@@ -620,6 +620,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv ${BIN_NAME}/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
     && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
+FROM go-base AS tparse
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="tparse" \
+    && REPO="mfridman/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS vegeta
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="vegeta" \
@@ -716,6 +726,7 @@ COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 COPY --from=swagger $GOPATH/bin/swagger $GOPATH/bin/swagger
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
+COPY --from=tparse $GOPATH/bin/tparse $GOPATH/bin/tparse
 COPY --from=vegeta $GOPATH/bin/vegeta $GOPATH/bin/vegeta
 COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
 COPY --from=xo $GOPATH/bin/xo $GOPATH/bin/xo
