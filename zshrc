@@ -1024,6 +1024,12 @@ if [ -z $ZSH_LOADED ]; then
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_desk.list
                 pacman -Qqen > $DOTFILES_DIR/arch/pkg_desk.list
                 pacman -Qqem > $DOTFILES_DIR/arch/aur_desk.list
+            elif [[ $family_name =~ "Gen 5" ]]; then
+                echo "backup ThinkPad X1 Carbon Gen 5 packages"
+                sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_nc.list
+                sudo chmod -R 777 $DOTFILES_DIR/arch/aur_nc.list
+                pacman -Qqen > $DOTFILES_DIR/arch/pkg_nc.list
+                pacman -Qqem > $DOTFILES_DIR/arch/aur_nc.list
             else
                 echo "backup packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg.list
@@ -1121,6 +1127,15 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archup=archup
         alias up=archup
+
+        if type reboot >/dev/null 2>&1; then
+            reboot() {
+                archup
+                fup
+                sudo reboot
+            }
+            alias reboot=reboot
+        fi
 
         if type shutdown >/dev/null 2>&1; then
             shutdown() {
