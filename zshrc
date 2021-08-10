@@ -963,6 +963,23 @@ if [ -z $ZSH_LOADED ]; then
         alias ciscovpn=ciscovpn
     fi
 
+    if type fwupdmgr >/dev/null 2>&1; then
+        fup(){
+            sudo systemctl reload dbus.service
+            sudo systemctl restart fwupd.service
+            sudo lsusb
+            sudo fwupdmgr get-devices
+            sudo fwupdmgr clear-history
+            sudo fwupdmgr clear-offline
+            sudo fwupdmgr refresh --force
+            sudo fwupdmgr get-updates --force
+            sudo fwupdmgr get-upgrades --force
+            sudo fwupdmgr update
+        }
+        alias fup=fup
+    fi
+
+
     if type brew >/dev/null 2>&1; then
         brewup() {
             cd `brew --prefix`/Homebrew
@@ -1035,7 +1052,7 @@ if [ -z $ZSH_LOADED ]; then
             # sudo pacman-key --init
             sudo pacman-key --populate archlinux
             # sudo pacman-key --refresh-keys
-	    sudo pacman-db-upgrade
+            sudo pacman-db-upgrade
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
             if type scaramanga >/dev/null 2>&1; then
@@ -1057,7 +1074,7 @@ if [ -z $ZSH_LOADED ]; then
                 /usr/share/man/man5/gemfile* \
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
-	    sudo pacman-db-upgrade
+            sudo pacman-db-upgrade
             yay -Syu --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
@@ -1084,6 +1101,7 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archup=archup
         alias up=archup
+
         if type shutdown >/dev/null 2>&1; then
             shutdown() {
                 up
@@ -1113,18 +1131,6 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias aptup=aptup
         alias up=aptup
-    fi
-
-    if type fwupdmgr >/dev/null 2>&1; then
-        fup(){
-            sudo fwupdmgr clear-history
-            sudo fwupdmgr clear-offline
-            sudo fwupdmgr refresh --force
-            sudo fwupdmgr get-updates --force
-            sudo fwupdmgr get-upgrades --force
-            sudo fwupdmgr update
-        }
-        alias fup=fup
     fi
 
     if type gpg >/dev/null 2>&1; then
