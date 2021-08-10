@@ -1124,7 +1124,7 @@ if [ -z $ZSH_LOADED ]; then
 
         if type shutdown >/dev/null 2>&1; then
             shutdown() {
-                up
+                archup
                 fup
                 sudo shutdown now
             }
