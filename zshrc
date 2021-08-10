@@ -52,7 +52,11 @@ if [ -z $DOTENV_LOADED ]; then
     export SHELL=$(which zsh)
     export USER=$(whoami)
 
-    export CPUCORES="$(getconf _NPROCESSORS_ONLN)"
+    if type nproc >/dev/null 2>&1; then
+        export CPUCORES="$(nproc)"
+    else
+        export CPUCORES="$(getconf _NPROCESSORS_ONLN)"
+    fi
 
     if type alacritty >/dev/null 2>&1; then
         export TERMCMD="WINIT_UNIX_BACKEND=x11 alacritty -e $SHELL -c tmux -S /tmp/tmux.sock -q has-session  && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST"
