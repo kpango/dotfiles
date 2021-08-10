@@ -32,6 +32,7 @@ fcitx5-mozc
 fd
 fprintd
 fwupd
+fwupd-efi
 gettext
 git
 gnome-keyring

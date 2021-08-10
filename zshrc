@@ -1094,6 +1094,22 @@ if [ -z $ZSH_LOADED ]; then
             sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
+            CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
+                yay -Syu --noanswerdiff --noanswerclean --noconfirm
+            sudo rm -rf /var/lib/pacman/db.l*
+            sudo chmod -R 777 $HOME/.config/gcloud
+            sudo chown -R $(whoami) $HOME/.config/gcloud
+            sudo rm -rf /var/lib/pacman/db.l* \
+                $HOME/.config/gcloud/logs/* \
+                $HOME/.config/gcloud/config_sentinel \
+                $HOME/.cache/* \
+                /tmp/makepkg/* \
+                /var/cache/pacman/pkg
+            sudo mkdir -p /var/cache/pacman/pkg
+            sudo pacman -Scc --noconfirm
+            sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
+            sudo rm -rf /var/lib/pacman/db.lck
+            sudo paccache -ruk0
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
             sync \
