@@ -74,7 +74,7 @@ systemctl enable tlp-sleep
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
-sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress)/g" /etc/mkinitcpio.conf
+sed -i -e "s/MODULES=()/MODULES=(lz4 lz4_compress zstd)/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block resume filesystems/g" /etc/mkinitcpio.conf
 
 mkinitcpio -p linux-zen
