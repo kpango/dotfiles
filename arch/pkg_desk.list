@@ -34,6 +34,7 @@ fd
 fwupd
 gettext
 git
+git-delta
 gnome-keyring
 go
 gopls
