@@ -71,11 +71,14 @@ FROM rust-base AS procs
 RUN cargo install --force --no-default-features \
     --git https://github.com/dalance/procs
 
+# FROM kpango/rust:latest AS bat
 FROM rust-base AS bat
-RUN rustup update stable \
-    && rustup default stable \
-    && cargo install --force --locked \
+RUN cargo install --locked --force --no-default-features \
     bat
+# RUN rustup update stable \
+#     && rustup default stable \
+#     && cargo install --force --locked \
+#     bat
 
 FROM rust-base AS dutree
 RUN cargo +nightly install --force --no-default-features \
