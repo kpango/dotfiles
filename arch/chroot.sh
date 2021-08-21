@@ -98,6 +98,9 @@ cat <<EOF >/boot/loader/loader.conf
 default arch
 timeout 0
 editor no
+auto-entries 0
+auto-firmware 0
+console-mode max
 EOF
 bootctl update
 bootctl list
