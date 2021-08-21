@@ -1061,9 +1061,9 @@ if [ -z $ZSH_LOADED ]; then
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
             sudo gpgconf --kill all
-            sudo pacman-key --init
+            # sudo pacman-key --init
             sudo pacman-key --populate archlinux
-            sudo pacman-key --refresh-keys
+            # sudo pacman-key --refresh-keys
             sudo pacman-db-upgrade
             sudo pacman -Scc --noconfirm
             sudo pacman -Rns --noconfirm $(pacman -Qtdq)
@@ -1118,7 +1118,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
-	    sudo bootclt update
+            sudo bootclt update
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
             sync \
