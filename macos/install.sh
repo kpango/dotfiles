@@ -40,7 +40,28 @@ cat <<EOF >$HOME/.docker/daemon.json
   "features": {
     "buildkit": true
   },
-
+  "default-address-pools": [
+    {
+      "base": "192.168.0.0/16",
+      "size": 24
+    },
+    {
+      "base" : "10.201.0.0/16",
+      "size" : 24
+    },
+    {
+      "base" : "10.202.0.0/16",
+      "size" : 24
+    },
+    {
+      "base" : "10.203.0.0/16",
+      "size" : 24
+    },
+    {
+      "base" : "10.27.16.0/22",
+      "size" : 24
+    }
+  ],
   "dns": [
     "1.1.1.1",
     "8.8.8.8"
