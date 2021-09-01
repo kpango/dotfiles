@@ -1135,7 +1135,7 @@ if [ -z $ZSH_LOADED ]; then
             reboot() {
                 archup
                 fup
-                sudo reboot
+                sudo reboot && exit
             }
             alias reboot=reboot
         fi
@@ -1144,7 +1144,7 @@ if [ -z $ZSH_LOADED ]; then
             shutdown() {
                 archup
                 fup
-                sudo shutdown now
+                sudo shutdown now && exit
             }
             alias shutdown=shutdown
         fi
