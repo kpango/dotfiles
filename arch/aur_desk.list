@@ -10,11 +10,11 @@ google-chrome-beta
 google-cloud-sdk
 gopreload-git
 kubectl-bin
-libnm
-milcheck
-networkmanager
+milcheck-bin
+ngrok
+python-pillow-simd
 scaramanga
-slack-desktop
+slack-wayland
 stern
 swaybg-git
 ttf-hackgen-nerd
