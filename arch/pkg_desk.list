@@ -1,4 +1,6 @@
 acpi
+networkmanager
+libnm
 acpi_call-dkms
 alacritty
 alsa-utils
