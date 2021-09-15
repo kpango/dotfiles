@@ -61,11 +61,10 @@ groupadd input
 groupadd uinput
 groupadd pulse
 groupadd pulse-access
-groupadd bumblebee
 
 
 groupmod -g 1000 -o users
-useradd -m -o -u 1000 -g users -G wheel,users,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,bumblebee,uinput -s /usr/bin/zsh ${LOGIN_USER}
+useradd -m -o -u 1000 -g users -G wheel,users,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,uinput -s /usr/bin/zsh ${LOGIN_USER}
 passwd ${LOGIN_USER}
 sed -e '/%wheel ALL=(ALL) ALL/s/^# //' /etc/sudoers | EDITOR=tee visudo >/dev/null
 sed -e '/%wheel ALL=(ALL) NOPASSWORD: ALL/s/^# %wheel/kpango/' /etc/sudoers | EDITOR=tee visudo >/dev/null
@@ -90,21 +89,13 @@ cat <<EOF >/etc/udev/rules.d/uinput.rules
 KERNEL=="uinput", GROUP="uinput"
 EOF
 
-cat <<EOF >/etc/udev/hwdb.d/90-thinkpad-keyboard.hwdb
-evdev:name:ThinkPad Extra Buttons:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*
- KEYBOARD_KEY_45=prog1
- KEYBOARD_KEY_49=prog2
-EOF
-
 systemctl enable chronyd
 systemctl start chronyd
 systemctl enable docker
-systemctl enable tlp
-systemctl enable tlp-sleep
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
-sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
+sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/FILES=()/FILES=(\"\/etc\/mdadm.conf\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block mdadm mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
@@ -120,9 +111,9 @@ echo ${DEVICE_ID}
 cat <<EOF >${BOOT}/loader/entries/arch.conf
 title   Arch Linux
 linux   /vmlinuz-linux-zen
-initrd  /intel-ucode.img
+initrd  /amd-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt intel_iommu=on nvidia-drm.modeset=1 amd_iommu=on swiotlb=noforce resume=${SWAP_PART} quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 i8042.nomux=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0 nowatchdog
+options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt amd_iommu=on nvidia-drm.modeset=1 amd_iommu=on swiotlb=noforce resume=${SWAP_PART} quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 i8042.nomux=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0 nowatchdog
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf
