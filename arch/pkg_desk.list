@@ -25,6 +25,7 @@ dnsmasq
 docker
 dosfstools
 dropbear
+duf
 exa
 fakeroot
 fcitx5

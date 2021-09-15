@@ -5,7 +5,6 @@ chrome-remote-desktop
 chromedriver-beta
 docker-credential-pass-bin
 downgrade
-duf
 fcitx5-skin-arc
 geekbench
 ghq
@@ -13,6 +12,7 @@ goland
 google-chrome-beta
 google-cloud-sdk
 gopreload-git
+intelmetool-git
 iwd-git
 kubectl-bin
 libnm-iwd
