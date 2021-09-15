@@ -9,9 +9,11 @@ rm -r yay
 family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
 echo $family_name
 if [[ $family_name =~ "P1" ]]; then
-    curl https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur_desk.list -o aur.list
-else
+    curl https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur_p1.list -o aur.list
+elif [[ $family_name =~ "X1" ]]; then
     curl https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur.list -o aur.list
+else
+    curl https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur_desk.list -o aur.list
 fi
 pacman -Rs go
 yay -Syu - < aur.list
