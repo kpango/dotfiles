@@ -13,8 +13,6 @@ SWAP_PART=${DEVICE2}p1
 ROOT_PART=${RAID0}p1
 ROOT=/
 BOOT=${ROOT}boot
-ESP_SIZE=64GiB
-SWAP_SIZE=${ESP_SIZE}
 FILESYS=xfs
 
 sed -i -e "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
