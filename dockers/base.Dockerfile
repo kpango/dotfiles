@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM ubuntu:devel AS base
+FROM --platform=$BUILDPLATFORM ubuntu:latest AS base
 
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
