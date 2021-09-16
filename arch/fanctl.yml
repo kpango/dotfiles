@@ -1,0 +1,105 @@
+interval: 1000
+log_interval: 300
+inputs:
+  gpu_temp:
+    HwmonSensor:
+      hwmon: amdgpu
+      label: junction
+  gpu_mem_temp:
+    HwmonSensor:
+      hwmon: amdgpu
+      label: mem
+    # HwmonSensor:
+    #   path: /sys/class/drm/card1/device/hwmon/hwmon*/temp3_label
+  cpu_temp:
+    HwmonSensor:
+      hwmon: k10temp
+      label: Tdie
+  cpu_ctl_temp:
+    HwmonSensor:
+      hwmon: k10temp
+      label: Tctl
+  cpu_ccd1:
+    HwmonSensor:
+      hwmon: k10temp
+      label: Tccd1
+  cpu_ccd3:
+    HwmonSensor:
+      hwmon: k10temp
+      label: Tccd3
+  cpu_ccd5:
+    HwmonSensor:
+      hwmon: k10temp
+      label: Tccd5
+  cpu_ccd7:
+    HwmonSensor:
+      hwmon: k10temp
+      label: Tccd7
+outputs:
+  gpu_fan:
+    PwmFan:
+      hwmon: amdgpu
+      name: pwm1
+  # gpu_fan:
+  #   AmdgpuFan:
+  #     path: /sys/class/drm/card1/device/hwmon/hwmon*
+  #     prefix: fan1
+  radiator_fans:
+    PwmFan:
+      path: /sys/class/hwmon/hwmon6
+      name: pwm1
+rules:
+  - outputs:
+      - gpu_fan
+    rule:
+      Maximum:
+        - GateCritical:
+            input: gpu_temp
+            value: 1.0
+        - Static: 0.45
+        - Curve:
+            input: gpu_temp
+            keys: 
+              - input: 0.0
+                output: 0.0
+              - input: 30.0
+                output: 0.25
+              - input: 53.0
+                output: 0.8
+              - input: 70
+                output: 1.0
+        - GateStatic:
+            input: gpu_mem_temp
+            threshold: 65.0
+            value: 1.0
+  - outputs:
+      - radiator_fans
+    rule:
+      Maximum:
+        - Static: 0.45
+        - Curve:
+            input: cpu_temp
+            keys: &curve_keys
+              - input: 0.0
+                output: 0.0
+              - input: 30.0
+                output: 0.25
+              - input: 53.0
+                output: 0.8
+              - input: 70
+                output: 1.0
+        - Curve:
+            keys: *curve_keys
+            input: cpu_ctl_temp
+        - Curve:
+            keys: *curve_keys
+            input: cpu_ccd1
+        - Curve:
+            keys: *curve_keys
+            input: cpu_ccd3
+        - Curve:
+            keys: *curve_keys
+            input: cpu_ccd5
+        - Curve:
+            keys: *curve_keys
+            input: cpu_ccd7

@@ -1,9 +1,8 @@
 acpi
-networkmanager
-libnm
 acpi_call-dkms
 alacritty
 alsa-utils
+amd-ucode
 archlinux-keyring
 autoconf
 automake
@@ -33,6 +32,7 @@ fwupd
 fwupd-efi
 gettext
 git
+git-delta
 gnome-keyring
 go
 graphviz
@@ -42,10 +42,11 @@ gzip
 htop
 imagemagick
 inetutils
-amd-ucode
 iptables-nft
+kanshi
 kubectx
 less
+libnm
 light
 linux-firmware
 linux-zen
@@ -61,6 +62,7 @@ mtr
 mysql-workbench
 neofetch
 neovim
+networkmanager
 nmap
 noto-fonts-emoji
 nvme-cli
@@ -74,6 +76,7 @@ pkgconf
 powertop
 procs
 profile-sync-daemon
+psensor
 pulseaudio-alsa
 python2
 ranger
@@ -109,6 +112,7 @@ wlc
 wofi
 wol
 wpscan
+xf86-video-nouveau
 xfsprogs
 xorg-xwayland
 yarn
