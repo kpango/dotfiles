@@ -8,6 +8,7 @@ export DefaultImModule=fcitx5
 export GTK_IM_MODULE=fcitx5
 export QT_IM_MODULE=fcitx5
 export XMODIFIERS="@im=fcitx5"
+export SDL_IM_MODULE=fcitx5
 
 export XKB_DEFAULT_OPTIONS=ctrl:nocaps
 export XKB_DEFAULT_LAYOUT=us
@@ -31,6 +32,7 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     GTK_IM_MODULE=fcitx5 \
     QT_IM_MODULE=fcitx5 \
     XMODIFIERS="@im=fcitx5" \
+    SDL_IM_MODULE=fcitx5 \
     XKB_DEFAULT_OPTIONS=ctrl:nocaps \
     XKB_DEFAULT_LAYOUT=us \
     XDG_SESSION_TYPE=wayland \
