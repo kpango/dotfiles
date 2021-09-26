@@ -9,7 +9,8 @@ if type tmux >/dev/null 2>&1; then
         TMUX_TMPDIR=/tmp
         if [[ ! -f $TMUX_SOCK ]]; then
             if [ -f /.dockerenv ]; then
-                sudo chown -R root:docker /var/run/docker.sock
+                group=$(id -g)
+                sudo chown -R $USER:$group /var/run/docker.sock
             fi
             echo "creating new tmux session"
             TMUX_TMPDIR=/tmp tmux -S $TMUX_SOCK -2 new-session -n$USER -s$USER@$HOST && echo "created new tmux session"
