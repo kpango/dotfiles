@@ -149,7 +149,7 @@ if [ -z $DOTENV_LOADED ]; then
         export TERM="tmux-256color"
     fi
 
-    export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.cargo/bin:$GCLOUD_PATH/bin:$PATH"
+    export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.cargo/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
 
     export ZPLUG_HOME=$HOME/.zplug
 

@@ -84,23 +84,15 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM docker-base AS docker-compose
-# RUN set -x; cd "$(mktemp -d)" \
-#     && ORG="docker"\
-#     && NAME="compose-cli" \
-#     && REPO="${ORG}/${NAME}" \
-#     && BIN_NAME="${ORG}-${NAME}" \
-#     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-#     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-#     && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${BIN_NAME}-$(echo ${OS} | sed 's/.*/\u&/')-${ARCH}" \
-#     && chmod a+x ${BIN_PATH}/${BIN_NAME}
 RUN set -x; cd "$(mktemp -d)" \
     && ORG="docker"\
     && NAME="compose" \
-    && REPO="${ORG}/${NAME}-cli" \
+    && REPO="${ORG}/${NAME}" \
     && BIN_NAME="${ORG}-${NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${OS}-${ARCH}" \
-    && mv "${ORG}-${OS}-${ARCH}" ${BIN_PATH}/${BIN_NAME} \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${NAME}-${OS}-${ARCH}" \
+    && mv "${ORG}-${NAME}-${OS}-${ARCH}" ${BIN_PATH}/${BIN_NAME} \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 

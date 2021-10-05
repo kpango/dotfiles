@@ -62,6 +62,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS dataloaden
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="dataloaden" \
+    && REPO="vektah/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS dbmate
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="dbmate" \
@@ -234,6 +244,18 @@ RUN set -x; cd "$(mktemp -d)" \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS go-task
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="task" \
+    && REPO="go-${BIN_NAME}/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/v3/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+
 
 FROM go-base AS gocode
 RUN set -x; cd "$(mktemp -d)" \
@@ -420,6 +442,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS gqlgen
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gqlgen" \
+    && REPO="99designs/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
@@ -668,6 +700,7 @@ FROM go-base AS go-bins
 COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
 COPY --from=air $GOPATH/bin/air $GOPATH/bin/air
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
+COPY --from=dataloaden $GOPATH/bin/dataloaden $GOPATH/bin/dataloaden
 COPY --from=dbmate $GOPATH/bin/dbmate $GOPATH/bin/dbmate
 COPY --from=direnv $GOPATH/bin/direnv $GOPATH/bin/direnv
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
@@ -687,6 +720,7 @@ COPY --from=ghz $GOPATH/bin/ghz $GOPATH/bin/ghz
 COPY --from=git-codereview $GOPATH/bin/git-codereview $GOPATH/bin/git-codereview
 COPY --from=glice $GOPATH/bin/glice $GOPATH/bin/glice
 COPY --from=go-contrib-init $GOPATH/bin/go-contrib-init $GOPATH/bin/go-contrib-init
+COPY --from=go-task $GOPATH/bin/task $GOPATH/bin/task
 COPY --from=gocode $GOPATH/bin/gocode $GOPATH/bin/gocode
 COPY --from=godef $GOPATH/bin/godef $GOPATH/bin/godef
 COPY --from=gofumports $GOPATH/bin/gofumports $GOPATH/bin/gofumports
@@ -706,6 +740,7 @@ COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
 COPY --from=gotip $GOPATH/bin/gotip $GOPATH/bin/gotip
 COPY --from=gowrap $GOPATH/bin/gowrap $GOPATH/bin/gowrap
+COPY --from=gqlgen $GOPATH/bin/gqlgen $GOPATH/bin/gqlgen
 COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
 COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
