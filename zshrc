@@ -1247,7 +1247,20 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if [ -d "$GOPATH/src/github.com/vdaas/vald" ]; then
-        alias valdup="make update && make license && make format && fd \".go$\" | rg -v apis | xargs gofumports -w && make format/go"
+        valdup(){
+            make helm/schema/vald
+	    make helm/schema/crd/vald
+	    make helm/schema/vald-helm-operator
+	    make helm/schema/crd/vald-helm-operator
+	    make k8s/manifest/update
+	    make k8s/manifest/helm-operator/update
+	    make update \
+	      && make license \
+	      && make format \
+	      && fd \".go$\" | rg -v apis | xargs gofumports -w \
+	      && make format/go
+        }
+        alias valdup=valdup
     fi
 
     export ZSH_LOADED=1;
