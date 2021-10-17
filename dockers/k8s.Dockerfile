@@ -78,16 +78,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-
 FROM kube-base AS krew
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="krew" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && TAR_NAME="${BIN_NAME}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.{tar.gz,yaml}" \
+    && TAR_NAME="${BIN_NAME}-${OS}_${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && "${PWD}/${BIN_NAME}-${OS}_${ARCH}" install --manifest="${BIN_NAME}.yaml" --archive="${BIN_NAME}.tar.gz" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}.yaml" \
+    && "${PWD}/${TAR_NAME}" install --manifest="${BIN_NAME}.yaml" --archive="${TAR_NAME}.tar.gz" \
     && BIN_NAME="kubectl-krew" \
     && "/root/.krew/bin/${BIN_NAME}" update \
     && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
