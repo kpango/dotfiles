@@ -126,12 +126,13 @@ COPY --from=common-base ${BIN_PATH}/runc ${BIN_PATH}/runc
 RUN upx -9 \
         ${BIN_PATH}/containerd \
         ${BIN_PATH}/containerd-shim \
-        ${BIN_PATH}/ctr \
         ${BIN_PATH}/docker \
         ${BIN_PATH}/docker-init \
         ${BIN_PATH}/docker-proxy \
         ${BIN_PATH}/dockerd \
         ${BIN_PATH}/runc \
+    && upx -9 --force-pie \
+        ${BIN_PATH}/ctr \
     && chmod a+x ${BIN_PATH}/docker-entrypoint.sh \
     && chmod a+x ${BIN_PATH}/dockerd-entrypoint.sh
 
