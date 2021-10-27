@@ -85,10 +85,13 @@ curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/local
 cp ./localhost.homebrew-autoupdate.plist $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 plutil -lint $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 launchctl load $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
+
 curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/ulimit.plist
-cp ./localhost.homebrew-autoupdate.plist $HOME/Library/LaunchAgents/ulimit.plist
-plutil -lint  $HOME/Library/LaunchAgents/ulimit.plist
-launchctl load -w $HOME/Library/LaunchAgents/ulimit.plist
+cp ./ulimit.plist $HOME/Library/LaunchAgents/ulimit.plist
+sudo chown root:wheel $HOME/Library/LaunchAgents/ulimit.plist
+sudo chmod 600 $HOME/Library/LaunchAgents/ulimit.plist
+sudo plutil -lint  $HOME/Library/LaunchAgents/ulimit.plist
+sudo launchctl load -w $HOME/Library/LaunchAgents/ulimit.plist
 
 echo "please input Cisco AnyConnect VPN password"
 security add-generic-password -a $(whoami) -s mac_login_pass -w
