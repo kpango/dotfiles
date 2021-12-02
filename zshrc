@@ -1262,7 +1262,7 @@ if [ -z $ZSH_LOADED ]; then
             make k8s/manifest/update
             make k8s/manifest/helm-operator/update
             make update \
-              && fd \".go$\" | rg -v apis | xargs gofumports -w \
+              && fd \".go$\" | rg -v apis | xargs gofumpt -w \
               && make format
         }
         alias valdup=valdup

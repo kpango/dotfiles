@@ -287,16 +287,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM go-base AS gofumports
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="gofumports" \
-    && REPO="mvdan.cc/gofumpt/${BIN_NAME}" \
-    && GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    "${REPO}@latest" \
-    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
-    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
-
 FROM go-base AS goimports
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="goimports" \
@@ -723,7 +713,6 @@ COPY --from=go-contrib-init $GOPATH/bin/go-contrib-init $GOPATH/bin/go-contrib-i
 COPY --from=go-task $GOPATH/bin/task $GOPATH/bin/task
 COPY --from=gocode $GOPATH/bin/gocode $GOPATH/bin/gocode
 COPY --from=godef $GOPATH/bin/godef $GOPATH/bin/godef
-COPY --from=gofumports $GOPATH/bin/gofumports $GOPATH/bin/gofumports
 COPY --from=gofumpt $GOPATH/bin/gofumpt $GOPATH/bin/gofumpt
 COPY --from=goimports $GOPATH/bin/goimports $GOPATH/bin/goimports
 COPY --from=goimports-update-ignore $GOPATH/bin/goimports-update-ignore $GOPATH/bin/goimports-update-ignore
