@@ -1250,8 +1250,14 @@ if [ -z $ZSH_LOADED ]; then
         valdup(){
             cd "$GOPATH/src/github.com/vdaas/vald"
             make helm/schema/vald
-            make helm/schema/crd/vald
             make helm/schema/vald-helm-operator
+            make helm/schema/crd/vald
+            make helm/schema/crd/vald-helm-operator
+            make k8s/manifest/update
+            make k8s/manifest/helm-operator/update
+            make helm/schema/vald
+            make helm/schema/vald-helm-operator
+            make helm/schema/crd/vald
             make helm/schema/crd/vald-helm-operator
             make k8s/manifest/update
             make k8s/manifest/helm-operator/update
