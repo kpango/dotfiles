@@ -174,3 +174,5 @@ devkill(){
 alias devkill="devkill"
 
 alias devres="devkill && devrun"
+
+alias devref="devkill && dockerrm && devrun"

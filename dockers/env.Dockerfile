@@ -89,7 +89,7 @@ RUN echo '/lib\n\
     tar \
     tig \
     tmux \
-    ugrep \
+    # ugrep \
     xclip \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 https://github.com/neovim/neovim \
