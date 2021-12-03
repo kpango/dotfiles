@@ -299,6 +299,7 @@ let g:coc_global_extensions = [
      \ 'coc-spell-checker',
      \ 'coc-tabnine',
      \ 'coc-go',
+     \ 'coc-rust-analyzer',
      \]
 " let g:coc_global_extensions = [
 "     \ 'coc-actions',
@@ -328,7 +329,6 @@ let g:coc_global_extensions = [
 "     \ 'coc-project',
 "     \ 'coc-pyls',
 "     \ 'coc-rls',
-"     \ 'coc-rust-analyzer',
 "     \ 'coc-smartf',
 "     \ 'coc-snippets',
 "     \ 'coc-solargraph',

@@ -18,6 +18,7 @@ chrony
 clang
 cmake
 discord
+dmidecode
 dnsmasq
 docker
 dosfstools
@@ -39,7 +40,9 @@ graphviz
 grep
 grim
 gzip
+helvum
 htop
+ifenslave
 imagemagick
 inetutils
 iptables-nft
@@ -72,6 +75,7 @@ parted
 pass
 patch
 pavucontrol
+pipewire
 pkgconf
 powertop
 procs
@@ -90,6 +94,7 @@ smartmontools
 starship
 sudo
 sway
+sysbench
 sysfsutils
 systemd
 systemd-sysvcompat
@@ -105,7 +110,6 @@ unzip
 usbutils
 waybar
 wayland
-wget
 which
 wl-clipboard
 wlc
