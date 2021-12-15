@@ -998,6 +998,7 @@ if [ -z $ZSH_LOADED ]; then
             brew upgrade
             brew cleanup
             brew doctor
+            softwareupdate --all --install --force
             sudo pmset -a hibernatemode 0
             sudo rm -rf /private/var/vm/sleepimage
             sudo touch /private/var/vm/sleepimage
