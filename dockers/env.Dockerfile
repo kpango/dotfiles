@@ -49,18 +49,18 @@ RUN echo '/lib\n\
     && apt update -y \
     && apt upgrade -y \
     && apt install -y --no-install-recommends --fix-missing \
+    # ugrep \
     automake \
     bash \
     ccls \
-    clangd \
     clang-format \
+    clangd \
     diffutils \
     exuberant-ctags \
     gawk \
-    graphviz \
     gettext \
+    graphviz \
     jq \
-    sass \
     less \
     libhdf5-serial-dev \
     libncurses5-dev \
@@ -85,11 +85,11 @@ RUN echo '/lib\n\
     python3-setuptools \
     python3-venv \
     ruby-dev \
+    sass \
     sed \
     tar \
     tig \
     tmux \
-    # ugrep \
     xclip \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 https://github.com/neovim/neovim \

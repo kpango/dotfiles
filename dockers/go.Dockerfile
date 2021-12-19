@@ -525,6 +525,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS kratos
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="kratos" \
+    && REPO="go-kratos/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/kratos@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS licenses
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="go-licenses" \
@@ -738,6 +748,7 @@ COPY --from=iferr $GOPATH/bin/iferr $GOPATH/bin/iferr
 COPY --from=impl $GOPATH/bin/impl $GOPATH/bin/impl
 COPY --from=k6 $GOPATH/bin/k6 $GOPATH/bin/k6
 COPY --from=keyify $GOPATH/bin/keyify $GOPATH/bin/keyify
+COPY --from=kratos $GOPATH/bin/kratos $GOPATH/bin/kratos
 COPY --from=licenses $GOPATH/bin/go-licenses $GOPATH/bin/licenses
 COPY --from=markdown2medium $GOPATH/bin/markdown2medium $GOPATH/bin/markdown2medium
 COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen

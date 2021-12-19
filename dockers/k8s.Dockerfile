@@ -124,7 +124,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && curl -fsSLO "${URL}" \
     && echo ${URL} \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv "${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -434,15 +434,6 @@ RUN set -x; cd "$(mktemp -d)" \
       "${REPO}/cmd/${BIN_NAME}@master" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
-# FROM kube-base AS kind
-# RUN set -x; cd "$(mktemp -d)" \
-#     && BIN_NAME="kind" \
-#     && REPO="kubernetes-sigs/${BIN_NAME}" \
-#     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-#     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
-#     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM scratch AS kube
 

@@ -131,8 +131,8 @@ RUN upx -9 \
         ${BIN_PATH}/docker-proxy \
         ${BIN_PATH}/dockerd \
         ${BIN_PATH}/runc \
-    && upx -9 --force-pie \
-        ${BIN_PATH}/ctr \
+    # && upx -9 --force-pie \
+        # ${BIN_PATH}/ctr \
     && chmod a+x ${BIN_PATH}/docker-entrypoint.sh \
     && chmod a+x ${BIN_PATH}/dockerd-entrypoint.sh
 
