@@ -523,7 +523,7 @@ if [ -z $ZSH_LOADED ]; then
         alias ll='lsd -l'
         alias la='lsd -aAlLh'
         alias lla='lsd -aAlLhi'
-        alias tree='lsd --tree'
+        alias tree='lsd --tree --total-size --human-readable'
         alias ls='lsd'
         alias lg='lsd -aAlLh | rg'
     elif type exa >/dev/null 2>&1; then
