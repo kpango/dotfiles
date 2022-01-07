@@ -42,8 +42,10 @@ RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
 
 FROM rust-base AS starship
-RUN cargo install --force --no-default-features \
-    --git https://github.com/starship/starship
+RUN rustup update stable \
+    && rustup default stable \
+    && cargo install --force --no-default-features \
+    starship
 
 FROM rust-base AS exa
 RUN cargo install --force \
