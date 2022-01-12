@@ -112,15 +112,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM go-base AS duf
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="duf" \
-    && REPO="muesli/${BIN_NAME}" \
-    && GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}@latest" \
-    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
-    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+FROM kpango/go:latest AS duf
+# FROM go-base AS duf
+# RUN set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="duf" \
+#     && REPO="muesli/${BIN_NAME}" \
+#     && GO111MODULE=on go install  \
+#     --ldflags "-s -w" --trimpath \
+#     "${GITHUBCOM}/${REPO}@latest" \
+#     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+#     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS efm
 RUN set -x; cd "$(mktemp -d)" \
@@ -254,8 +255,6 @@ RUN set -x; cd "$(mktemp -d)" \
     "${GITHUBCOM}/${REPO}/v3/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
-
-
 
 FROM go-base AS gocode
 RUN set -x; cd "$(mktemp -d)" \
