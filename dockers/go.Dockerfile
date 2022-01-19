@@ -619,6 +619,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS strictgoimports
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="strictgoimports" \
+    && REPO="momotaro98/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS swagger
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="swagger" \
@@ -757,6 +767,7 @@ COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=reddit2wallpaper $GOPATH/bin/reddit2wallpaper $GOPATH/bin/reddit2wallpaper
 COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
+COPY --from=strictgoimports $GOPATH/bin/strictgoimports $GOPATH/bin/strictgoimports
 COPY --from=swagger $GOPATH/bin/swagger $GOPATH/bin/swagger
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
