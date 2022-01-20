@@ -213,6 +213,9 @@ docker_push:
 prod_build:
 	@make DOCKERFILE="$(ROOTDIR)/Dockerfile" IMAGE_NAME="kpango/dev" docker_build
 
+build_mkl:
+	@make DOCKERFILE="$(ROOTDIR)/dockers/mkl.Dockerfile" IMAGE_NAME="kpango/mkl" docker_build
+
 build_go:
 	@make DOCKERFILE="$(ROOTDIR)/dockers/go.Dockerfile" IMAGE_NAME="kpango/go" docker_build
 
