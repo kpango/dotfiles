@@ -60,9 +60,14 @@ RUN cargo +nightly install --force --no-default-features \
     shellharden
 
 FROM rust-base AS rg
-RUN RUSTFLAGS="-C target-cpu=native" \
-    cargo +nightly install --force --features 'pcre2 simd-accel' \
+RUN rustup update stable \
+    && rustup default stable \
+    && RUSTFLAGS="-C target-cpu=native" \
+    RUSTC_BOOTSTRAP=1 \
+    cargo install --force --features 'pcre2 simd-accel' \
     ripgrep
+    # cargo +nightly install --force --features 'pcre2 simd-accel' \
+    # ripgrep
 
 FROM rust-base AS rga
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
