@@ -65,8 +65,6 @@ RUN echo '/lib\n\
     libhdf5-serial-dev \
     libncurses5-dev \
     libomp-dev \
-    libprotobuf-dev \
-    libprotoc-dev \
     libtool \
     libtool-bin \
     luajit \
@@ -79,7 +77,6 @@ RUN echo '/lib\n\
     pass \
     perl \
     pkg-config \
-    protobuf-compiler \
     python3-dev \
     python3-pip \
     python3-setuptools \
@@ -137,7 +134,19 @@ RUN n latest \
     && apt -y autoremove
 
 WORKDIR /tmp
-ENV NGT_VERSION 1.13.7
+ENV PROTOBUF_VERSION 3.19.3
+ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
+ENV CXXFLAGS ${CFLAGS}
+
+RUN curl -L \
+    "https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOBUF_VERSION)/protoc-$(PROTOBUF_VERSION)-linux-x86_64.zip" \
+    -o /tmp/protoc.zip \
+    && unzip -o /tmp/protoc.zip -d /usr/local bin/protoc \
+    && unzip -o /tmp/protoc.zip -d /usr/local 'include/*' \
+    && rm -f /tmp/protoc.zip
+
+WORKDIR /tmp
+ENV NGT_VERSION 1.13.8
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
