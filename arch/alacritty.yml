@@ -17,10 +17,9 @@ font:
     #   y: 7
   use_thin_strokes: true
 
-background_opacity: 1.2
-
 window:
   dynamic_padding: true
+  opacity: 1.2
   # startup_mode: Fullscreen
 
 #highlight Normal ctermbg=NONE guibg=NONE
