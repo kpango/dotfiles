@@ -117,7 +117,6 @@ arch_p1_link: \
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
 	sudo systemctl daemon-reload
 
-
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.zshrc
