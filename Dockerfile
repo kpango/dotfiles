@@ -108,10 +108,12 @@ RUN usermod -aG ${GROUP} ${WHOAMI} \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* \
     && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules \
     && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm \
+    && chown -R ${USER_ID}:${GROUP_ID} /usr/local/include/google/protobuf \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && chmod -R 755 /usr/local/lib/node_modules \
-    && chmod -R 755 /usr/local/bin/npm
+    && chmod -R 755 /usr/local/bin/npm \
+    && chmod -R 755 /usr/local/include/google/protobuf
 
 USER ${USER_ID}
 WORKDIR ${HOME}
