@@ -436,6 +436,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM scratch AS kube
+LABEL maintainer="kpango <kpango@vdaas.org>"
 
 ENV BIN_PATH /usr/local/bin
 ENV LIB_PATH /usr/local/libexec

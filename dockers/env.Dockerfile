@@ -1,4 +1,20 @@
-FROM kpango/dev-base:latest AS env
+FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS env-base
+
+ARG TARGETOS
+ARG TARGETARCH
+
+ENV OS=${TARGETOS}
+ENV ARCH=${TARGETARCH}
+ENV XARCH x86_64
+ENV GITHUBCOM github.com
+ENV GITHUB https://${GITHUBCOM}
+ENV RAWGITHUB https://raw.githubusercontent.com
+ENV GOOGLE https://storage.googleapis.com
+ENV RELEASE_DL releases/download
+ENV RELEASE_LATEST releases/latest
+ENV LOCAL /usr/local
+ENV BIN_PATH ${LOCAL}/bin
+
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
 ARG USER_ID=1000
@@ -133,25 +149,29 @@ RUN n latest \
     && apt purge -y nodejs npm \
     && apt -y autoremove
 
+
+FROM env-base AS protoc
 WORKDIR /tmp
-ENV PROTOBUF_VERSION 3.19.3
-ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
-ENV CXXFLAGS ${CFLAGS}
+RUN set -x; cd "$(mktemp -d)" \
+    && REPO_NAME="protobuf" \
+    && BIN_NAME="protoc" \
+    && REPO="protocolbuffers/${REPO_NAME}" \
+    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && ZIP_NAME="${BIN_NAME}-${VERSION}-${OS}-${ARCH}" \
+    && curl -fsSL "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ZIP_NAME}.zip" -o "/tmp/${BIN_NAME}.zip" \
+    && unzip -o "/tmp/${BIN_NAME}.zip" -d /usr/local "bin/${BIN_NAME}" \
+    && unzip -o "/tmp/${BIN_NAME}.zip" -d /usr/local 'include/*' \
+    && rm -f /tmp/protoc.zip \
+    && rm -rf /tmp/*
 
-RUN curl -L \
-    "https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOBUF_VERSION)/protoc-$(PROTOBUF_VERSION)-linux-x86_64.zip" \
-    -o /tmp/protoc.zip \
-    && unzip -o /tmp/protoc.zip -d /usr/local bin/protoc \
-    && unzip -o /tmp/protoc.zip -d /usr/local 'include/*' \
-    && rm -f /tmp/protoc.zip
-
+FROM env-base AS ngt
 WORKDIR /tmp
 ENV NGT_VERSION 1.13.8
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
 # ENV CPPFLAGS="-I/usr/local/opt/llvm/include"
-
 RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" \
     && tar zxf "v${NGT_VERSION}.tar.gz" -C /tmp \
     && cd "/tmp/NGT-${NGT_VERSION}" \
@@ -161,12 +181,33 @@ RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" 
     && cd /tmp \
     && rm -rf /tmp/*
 
+FROM env-base AS tensorflow
 WORKDIR /tmp
 ENV TENSORFLOW_C_VERSION 2.7.0
-RUN curl -LO https://storage.googleapis.com/tensorflow/libtensorflow/libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
-    && tar -C /usr/local -xzf libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
-    && rm -f libtensorflow-cpu-linux-x86_64-${TENSORFLOW_C_VERSION}.tar.gz \
-    && ldconfig \
+RUN set -x; cd "$(mktemp -d)" \
+    && REPO_NAME="tensorflow" \
+    && BIN_NAME="lib${REPO_NAME}" \
+    && REPO="${REPO_NAME}/${BIN_NAME}" \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && URL="${GOOGLE}/${REPO}/${BIN_NAME}-cpu-${OS}-${ARCH}-${TENSORFLOW_C_VERSION}.tar.gz" \
+    && echo "${URL}" \
+    && curl -fsSLo "/tmp/${BIN_NAME}.tar.gz" "${URL}" \
+    && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
+    && rm -rf /tmp/*
+
+FROM env-base AS env
+
+LABEL maintainer="kpango <kpango@vdaas.org>"
+
+COPY --from=ngt ${BIN_PATH}/ng* ${BIN_PATH}/
+COPY --from=ngt ${LOCAL}/include/NGT ${LOCAL}/include/NGT
+COPY --from=ngt ${LOCAL}/lib/libngt.* ${LOCAL}/lib/
+COPY --from=tensorflow ${LOCAL}/include/tensorflow ${LOCAL}/include/tensorflow
+COPY --from=tensorflow ${LOCAL}/lib/libtensorflow* ${LOCAL}/lib/
+COPY --from=protoc ${BIN_PATH}/protoc ${BIN_PATH}/protoc
+COPY --from=protoc ${LOCAL}/include/google/protobuf ${LOCAL}/include/google/protobuf
+
+RUN ldconfig \
     && rm -rf /tmp/* /var/cache
 
 WORKDIR ${HOME}
