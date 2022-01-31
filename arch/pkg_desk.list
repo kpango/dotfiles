@@ -42,7 +42,6 @@ grim
 gzip
 helvum
 htop
-ifenslave
 imagemagick
 inetutils
 iptables-nft
@@ -120,5 +119,5 @@ xf86-video-nouveau
 xfsprogs
 xorg-xwayland
 yarn
-youtube-dl
+yt-dlp
 zsh

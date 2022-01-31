@@ -10,6 +10,7 @@ ghq
 google-chrome-beta
 google-cloud-sdk
 gopreload-git
+ifenslave
 igb
 kubectl-bin
 milcheck
@@ -23,4 +24,5 @@ tzupdate
 wd719x-firmware
 wdisplays
 yay
+youtube-music
 zoom
