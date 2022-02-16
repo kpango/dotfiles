@@ -74,6 +74,8 @@ parted
 pass
 patch
 pavucontrol
+pipewire-alsa
+pipewire-x11-bell
 pkgconf
 powertop
 procs
