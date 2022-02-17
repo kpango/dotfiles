@@ -167,7 +167,7 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM env-base AS ngt
 WORKDIR /tmp
-ENV NGT_VERSION 1.13.8
+ENV NGT_VERSION 1.14.1
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
