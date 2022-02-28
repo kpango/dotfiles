@@ -112,6 +112,7 @@ wayland
 which
 wl-clipboard
 wlc
+wlroots
 wofi
 wol
 wpscan
