@@ -234,7 +234,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="skaffold" \
     && REPO="GoogleContainerTools/${BIN_NAME}" \
     && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
+    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}/releases/v${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -326,7 +326,7 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM kube-base AS kpt
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kpt" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/kpt-dev/latest/${OS}_${ARCH}/${BIN_NAME}" \
+    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-dev/latest/${OS}_${ARCH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
