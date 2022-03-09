@@ -23,7 +23,7 @@ RUN rustup install stable \
        clippy \
        --toolchain nightly
 
-RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
+# RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
 FROM rust-base AS rnix-lsp
 RUN cargo install --force --no-default-features \
@@ -48,7 +48,9 @@ RUN rustup update stable \
     starship
 
 FROM rust-base AS exa
-RUN cargo install --force \
+RUN rustup update stable \
+    && rustup default stable \
+    && cargo install --force --no-default-features \
     exa
 
 FROM rust-base AS bandwhich
