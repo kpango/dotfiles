@@ -584,10 +584,10 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-# FROM go-base AS pulumi
-# RUN curl -fsSL https://get.pulumi.com | sh \
-#     && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
-#     && upx -9 ${GOPATH}/bin/pulumi
+FROM go-base AS pulumi
+RUN curl -fsSL https://get.pulumi.com | sh \
+    && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
+    && upx -9 ${GOPATH}/bin/pulumi
 
 FROM go-base AS reddit2wallpaper
 RUN set -x; cd "$(mktemp -d)" \
@@ -763,7 +763,7 @@ COPY --from=markdown2medium $GOPATH/bin/markdown2medium $GOPATH/bin/markdown2med
 COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen
 COPY --from=panicparse $GOPATH/bin/pp $GOPATH/bin/pp
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
-# COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
+COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=reddit2wallpaper $GOPATH/bin/reddit2wallpaper $GOPATH/bin/reddit2wallpaper
 COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
