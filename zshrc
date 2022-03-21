@@ -444,6 +444,16 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias gcp=gcp
         alias gfix="gcp fix"
+        gitcompushf() {
+            git add -A
+            git commit --signoff -m $1
+            git push --force-with-lease --set-upstream origin $2
+        }
+        alias gitcompushf=gitcompushf
+        gcpf() {
+            gitcompushf $1 "$(tb)"
+        }
+        alias gcpf=gcpf
         gfp() {
             git add -A
             git commit --signoff --amend
