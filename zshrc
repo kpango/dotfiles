@@ -460,6 +460,19 @@ if [ -z $ZSH_LOADED ]; then
             git push --force-with-lease
         }
         alias gfp=gfp
+	grsp() {
+	    branch="$(tb)"
+	    msg="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
+	    git checkout $1
+	    gfr
+	    git checkout -b tmp
+	    git merge --squash $branch
+	    git branch -D $branch
+	    git branch -m $branch
+	    gcpf $msg
+	}
+        alias grsp=grsp
+
         alias gedit="$EDITOR $HOME/.gitconfig"
         git-remote-add-merge() {
             git remote add upstream $1
