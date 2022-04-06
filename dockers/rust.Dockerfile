@@ -110,8 +110,14 @@ RUN cargo +nightly install --force --no-default-features \
     sd
 
 FROM rust-base AS gping
-RUN cargo +nightly install --force --no-default-features \
+# RUN cargo +nightly install --force --no-default-features \
+#     gping
+RUN rustup update stable \
+    && rustup default stable \
+    && cargo install --force --no-default-features \
     gping
+
+
 
 FROM rust-base AS sad
 RUN git clone --depth 1 https://github.com/ms-jpq/sad \
