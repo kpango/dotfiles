@@ -461,15 +461,20 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias gfp=gfp
         grsp() {
-            branch="$(tb)"
-            msg="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
-            git checkout $1
-            gfr
-            git checkout -b tmp
-            git merge --squash $branch
-            git branch -D $branch
-            git branch -m $branch
-            gcpf $msg
+            if [ $# -eq 1 ]; then
+                branch="$(tb)"
+                msg="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
+                git checkout $1
+                gfr
+                git checkout -b tmp
+                git merge --squash $branch
+                git branch -D $branch
+                git branch -m $branch
+                gcpf $msg
+            else
+                echo "invalid argument, rebase branch name required"
+            fi
+
         }
         alias grsp=grsp
 
