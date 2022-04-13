@@ -295,6 +295,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS goimports-reviser
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="goimports-reviser" \
+    && REPO="incu6us/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS goimports-update-ignore
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="goimports-update-ignore" \
@@ -733,6 +743,7 @@ COPY --from=gocode $GOPATH/bin/gocode $GOPATH/bin/gocode
 COPY --from=godef $GOPATH/bin/godef $GOPATH/bin/godef
 COPY --from=gofumpt $GOPATH/bin/gofumpt $GOPATH/bin/gofumpt
 COPY --from=goimports $GOPATH/bin/goimports $GOPATH/bin/goimports
+COPY --from=goimports-reviser $GOPATH/bin/goimports-reviser $GOPATH/bin/goimports-reviser
 COPY --from=goimports-update-ignore $GOPATH/bin/goimports-update-ignore $GOPATH/bin/goimports-update-ignore
 COPY --from=gojson $GOPATH/bin/gojson $GOPATH/bin/gojson
 COPY --from=golangci-lint $GOPATH/bin/golangci-lint $GOPATH/bin/golangci-lint
