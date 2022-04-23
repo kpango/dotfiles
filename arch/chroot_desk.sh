@@ -60,7 +60,6 @@ groupadd uinput
 groupadd pulse
 groupadd pulse-access
 
-
 groupmod -g 1000 -o users
 useradd -m -o -u 1000 -g users -G wheel,users,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,uinput -s /usr/bin/zsh ${LOGIN_USER}
 passwd ${LOGIN_USER}

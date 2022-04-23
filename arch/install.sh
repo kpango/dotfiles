@@ -10,8 +10,8 @@ FILESYS=xfs
 unmount(){
     umount -f ${BOOT} && sync
     umount -f ${ROOT} && sync
-    umount -f ${BOOT_PART} && sync
     umount -f ${ROOT_PART} && sync
+    umount -f ${BOOT_PART} && sync
     umount -f ${DEVICE} && sync
 }
 
@@ -88,7 +88,10 @@ echo "$ROOT_PART formatted"
 sleep 10
 lsblk -a
 echo "mount"
+rm -rf ${ROOT}
+mkdir -p ${ROOT}
 mount ${ROOT_PART} ${ROOT} && sync
+rm -rf ${BOOT}
 mkdir -p ${BOOT}
 mount ${BOOT_PART} ${BOOT} && sync
 mkdir -p ${ROOT}/home/kpango/go/src/github.com/kpango
@@ -100,11 +103,8 @@ wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg.list
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/scaramanga.toml
 pacman -Sy --noconfirm
-pacman -S --noconfirm archlinux-keyring scaramanga
-mv scaramanaga.toml /etc/scaramanga/config.toml
-scaramanga > /etc/pacman.d/mirrorlist
+pacman -S --noconfirm archlinux-keyring
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"
