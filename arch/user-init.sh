@@ -16,8 +16,8 @@ elif [[ $family_name =~ "X1" ]]; then
 else
     curl https://raw.githubusercontent.com/kpango/dotfiles/master/arch/aur_desk.list -o aur.list
 fi
-sudo pacman -Rs go
-yay -Syu - < aur.list
+sudo pacman -Rsucn go
+yay -Syu --noanswerdiff --noanswerclean --noconfirm - < aur.list
 sudo cp /usr/bin/google-chrome-stable /usr/bin/chrome
 fc-cache -f -v
 if [[ $family_name =~ "P1" ]]; then
