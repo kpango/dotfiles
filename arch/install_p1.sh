@@ -203,16 +203,12 @@ echo "mounted"
 df -aT
 echo "download deps"
 rm -rf chroot.sh locale.gen
-pacman -S wget
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot_p1.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
 wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg_p1.list
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/scaramanga.toml
 pacman -Sy --noconfirm
-pacman -S --noconfirm archlinux-keyring scaramanga
-mv scaramanaga.toml /etc/scaramanga/config.toml
-scaramanga > /etc/pacman.d/mirrorlist
+pacman -S --noconfirm archlinux-keyring
 echo "deps downloaded"
 ls -la
 echo "start pacstrap"
