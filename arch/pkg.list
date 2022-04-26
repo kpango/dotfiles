@@ -23,6 +23,7 @@ dnsmasq
 docker
 dosfstools
 dropbear
+duf
 exa
 fakeroot
 fcitx5
@@ -42,11 +43,11 @@ gzip
 htop
 imagemagick
 inetutils
+intel-ucode
 iptables-nft
 kanshi
 kubectx
 less
-libnm
 light
 linux-firmware
 linux-zen
@@ -96,7 +97,6 @@ tar
 thefuck
 tig
 tlp
-tlp-rdw
 tmux
 udisks2
 ufw
