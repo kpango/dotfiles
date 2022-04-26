@@ -11,14 +11,15 @@ google-cloud-sdk
 gopreload-git
 igb-dkms
 intelmetool-git
+iwd-git
 kubectl-bin
 libnm-iwd
 milcheck
-netrc
 networkmanager-iwd
 ngrok
 scaramanga
 slack-wayland
+swaybg-git
 thinkfan
 tpacpi-bat-git
 ttf-hackgen-nerd
