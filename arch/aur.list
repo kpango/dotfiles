@@ -11,8 +11,10 @@ google-cloud-sdk
 gopreload-git
 igb-dkms
 kubectl-bin
+libnm-iwd
 milcheck
 netrc
+networkmanager-iwd
 ngrok
 scaramanga
 slack-wayland

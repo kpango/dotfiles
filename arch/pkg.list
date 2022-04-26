@@ -45,6 +45,7 @@ imagemagick
 inetutils
 intel-ucode
 iptables-nft
+iwd
 kanshi
 kubectx
 less
@@ -61,7 +62,6 @@ mtr
 mysql-workbench
 neofetch
 neovim
-networkmanager
 nmap
 noto-fonts-emoji
 nvme-cli
