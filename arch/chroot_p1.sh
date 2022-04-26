@@ -95,6 +95,8 @@ evdev:name:ThinkPad Extra Buttons:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*
  KEYBOARD_KEY_45=prog1
  KEYBOARD_KEY_49=prog2
 EOF
+udevadm hwdb --update
+udevadm trigger --sysname-match="event*"
 
 systemctl enable chronyd
 systemctl start chronyd
@@ -122,7 +124,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /intel-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt intel_iommu=on nvidia-drm.modeset=1 amd_iommu=on swiotlb=noforce resume=${SWAP_PART} quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 i8042.nomux=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0 nowatchdog
+options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw acpi.ec_no_wakeup=1 acpi_backlight=native acpi_osi=! acpi_osi="Windows 2013" iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce nvidia-drm.modeset=1 loglevel=1 nowatchdog psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.compressor=lz4 zswap.max_pool_percent=25 systemd.unified_cgroup_hierarchy=1 cgroup_no_v1=all i8042.reset=1 i8042.nomux=1
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf
@@ -136,9 +138,6 @@ console-mode max
 EOF
 bootctl update
 bootctl list
-
-# mkdir -p /etc/pacman.d/hooks
-# ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
 
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
 mkdir -p /go/src/github.com/kpango

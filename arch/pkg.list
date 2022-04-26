@@ -2,7 +2,6 @@ acpi
 acpi_call-dkms
 alacritty
 alsa-utils
-android-tools
 archlinux-keyring
 autoconf
 automake
@@ -31,6 +30,7 @@ fcitx5-configtool
 fcitx5-mozc
 fd
 fwupd
+fwupd-efi
 gettext
 git
 git-delta

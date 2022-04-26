@@ -108,7 +108,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /amd-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce resume=${SWAP_PART} quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 i8042.nomux=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0 nowatchdog
+options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw acpi_osi=! acpi_osi="Windows 2013" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce loglevel=1 nowatchdog psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet sysrq_always_enabled=1 rd.systemd.show_status=auto rd.udev.log_priority=3 vt.global_cursor_default=0 zswap.enabled=1 zswap.compressor=zstd zswap.zpool=z3fold zswap.max_pool_percent=25 i8042.reset=1 i8042.nomux=1 systemd.unified_cgroup_hierarchy=1 cgroup_no_v1=all
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf
@@ -123,14 +123,13 @@ EOF
 bootctl update
 bootctl list
 
-# mkdir -p /etc/pacman.d/hooks
-# ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
-
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
 mkdir -p /go/src/github.com/kpango
 cd /go/src/github.com/kpango && git clone --depth 1 https://github.com/kpango/dotfiles
-ln -sfv /go /home/${LOGIN_USER}/go
-chmod -R 755 /home/${LOGIN_USER}
-chown -R $LOGIN_USER:wheel /home/${LOGIN_USER}
+ln -sfv /go ${HOME}/go
+chmod -R 755 ${HOME}
+chown -R $LOGIN_USER:wheel ${HOME}
 chmod -R 755 /go
 chown -R $LOGIN_USER:wheel /go
+chown -R $LOGIN_USER:wheel /tmp
+chmod -R 777 /tmp

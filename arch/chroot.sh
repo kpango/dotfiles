@@ -82,6 +82,8 @@ evdev:name:ThinkPad Extra Buttons:dmi:bvn*:bvr*:bd*:svnLENOVO*:pn*
  KEYBOARD_KEY_45=prog1
  KEYBOARD_KEY_49=prog2
 EOF
+udevadm hwdb --update
+udevadm trigger --sysname-match="event*"
 
 systemctl enable chronyd
 systemctl start chronyd
@@ -107,11 +109,8 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /intel-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1 iommu=force,merge,nopanic,nopt intel_iommu=on nowatchdog
-options root=PARTUUID=${DEVICE_ID} rw acpi_osi=! acpi_osi="Windows 2009" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce resume=${SWAP_PART} quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 i8042.reset=1 i8042.nomux=1 psmouse.synaptics_intertouch=1 psmouse.elantech_smbus=0 nowatchdog
+options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} resume_offset=${SWAP_PHYS_OFFSET} rw acpi_osi=! acpi_osi="Windows 2013" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce i915.enable_fbc=1 i915.enable_guc=2 i915.enable_ips=0 i915.enable_psr=0 i915.enable_rc6=0 i915.fastboot=1 i915.semaphores=1 loglevel=1 mitigations=off nowatchdog psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet sysrq_always_enabled=1 rd.systemd.show_status=auto rd.udev.log_priority=3 vt.global_cursor_default=0 zswap.enabled=1 zswap.compressor=zstd zswap.zpool=z3fold zswap.max_pool_percent=25 systemd.unified_cgroup_hierarchy=1 cgroup_no_v1=all
 EOF
-# options root=UUID=${DEVICE_ID} rw resume=/dev/nvme0n1p2 quiet loglevel=1 rd.systemd.show_status=auto rd.udev.log_priority=3 resume_offset=${SWAP_PHYS_OFFSET} zswap.enabled=1 zswap.max_pool_percent=25 zswap.compressor=lz4 psmouse.synaptics_intertouch=1 iommu=force,merge,nopanic,nopt intel_iommu=on i915.enable_psr=0 i915.enable_fbc=1 i915.fastboot=1 i915.semaphores=1 i915.enable_rc6=0 nowatchdog
-# EOF
 
 rm -rf ${BOOT}/loader/loader.conf
 cat <<EOF >${BOOT}/loader/loader.conf
@@ -125,9 +124,6 @@ EOF
 bootctl update
 bootctl list
 
-# mkdir -p /etc/pacman.d/hooks
-# ln -sfv /usr/share/doc/fwupdate/esp-as-boot.hook /etc/pacman.d/hooks/fwupdate-efi-copy.hook
-
 sed -i -e "s/#HandleLidSwitch/HandleLidSwitch/g" /etc/systemd/logind.conf
 mkdir -p /go/src/github.com/kpango
 cd /go/src/github.com/kpango && git clone --depth 1 https://github.com/kpango/dotfiles
@@ -136,3 +132,5 @@ chmod -R 755 ${HOME}
 chown -R $LOGIN_USER:wheel ${HOME}
 chmod -R 755 /go
 chown -R $LOGIN_USER:wheel /go
+chown -R $LOGIN_USER:wheel /tmp
+chmod -R 777 /tmp
