@@ -1054,7 +1054,7 @@ if [ -z $ZSH_LOADED ]; then
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_p1.list
                 pacman -Qqen > $DOTFILES_DIR/arch/pkg_p1.list
                 pacman -Qqem > $DOTFILES_DIR/arch/aur_p1.list
-            elif [[ $family_name =~ "Gen 5" ]]; then
+            elif [[ $family_name =~ "5th" ]]; then
                 echo "backup ThinkPad X1 Carbon Gen 5 packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_nc.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_nc.list
