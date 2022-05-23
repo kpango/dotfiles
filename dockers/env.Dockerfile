@@ -156,7 +156,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO_NAME="protobuf" \
     && BIN_NAME="protoc" \
     && REPO="protocolbuffers/${REPO_NAME}" \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && ZIP_NAME="${BIN_NAME}-${VERSION}-${OS}-${ARCH}" \
     && curl -fsSL "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ZIP_NAME}.zip" -o "/tmp/${BIN_NAME}.zip" \
@@ -167,7 +167,7 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM env-base AS ngt
 WORKDIR /tmp
-ENV NGT_VERSION 1.14.3
+ENV NGT_VERSION 1.14.5
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
@@ -183,7 +183,7 @@ RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" 
 
 FROM env-base AS tensorflow
 WORKDIR /tmp
-ENV TENSORFLOW_C_VERSION 2.7.0
+ENV TENSORFLOW_C_VERSION 2.9.0
 RUN set -x; cd "$(mktemp -d)" \
     && REPO_NAME="tensorflow" \
     && BIN_NAME="lib${REPO_NAME}" \

@@ -7,7 +7,7 @@ ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
 
-ENV GO_VERSION 1.18.1
+ENV GO_VERSION 1.18.2
 ENV GO111MODULE on
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
@@ -18,8 +18,11 @@ ENV GOARCH=$TARGETARCH
 ENV GOOS=$TARGETOS
 ENV GOFLAGS "-ldflags=-w -ldflags=-s"
 ENV GITHUBCOM github.com
+ENV API_GITHUB https://api.github.com/repos
 ENV GITHUB https://${GITHUBCOM}
 ENV PATH ${PATH}:${GOROOT}/bin:${GOPATH}/bin
+ENV RELEASE_DL releases/download
+ENV RELEASE_LATEST releases/latest
 
 WORKDIR /opt
 RUN set -x; cd "$(mktemp -d)" \
@@ -664,9 +667,10 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="${BIN_NAME}-org/${BIN_NAME}" \
     && OS="$(go env GOOS)" \
     && ARCH="$(go env GOARCH | sed 's/arm64/arm/')" \
-    && TINYGO_VERSION="$(curl --silent ${GITHUB}/${REPO}/releases/latest | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
-    && curl -fsSLO "${GITHUB}/${REPO}/releases/download/v${TINYGO_VERSION}/${BIN_NAME}${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
-    && tar zxf "${BIN_NAME}${TINYGO_VERSION}.${OS}-${ARCH}.tar.gz" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && TAR_NAME="${BIN_NAME}${VERSION}.${OS}-${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv ${BIN_NAME}/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
     && upx -9 ${GOPATH}/bin/${BIN_NAME}
 

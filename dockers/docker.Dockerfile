@@ -7,6 +7,7 @@ ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
 ENV GITHUB https://github.com
+ENV API_GITHUB https://api.github.com/repos
 ENV GOOGLE https://storage.googleapis.com
 ENV RELEASE_DL releases/download
 ENV RELEASE_LATEST releases/latest
@@ -30,7 +31,7 @@ FROM docker-base AS slim
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="docker-slim" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && DOCKER_SLIM_RELEASES="https://downloads.dockerslim.com/releases" \
     && curl -fsSLO "${DOCKER_SLIM_RELEASES}/$VERSION/dist_${OS}.tar.gz" \
     && tar zxvf dist_${OS}.tar.gz \
@@ -45,7 +46,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
     && BIN_NAME="${ORG}-credential-pass" \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
     && tar -xvf "${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
     && mv ${BIN_NAME} ${BIN_PATH}/${BIN_NAME} \
@@ -59,7 +60,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && NAME="buildx" \
     && REPO="docker/${NAME}" \
     && BIN_NAME="docker-buildx" \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && curl -fSsLo ${CLI_LIB_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-v${VERSION}.${OS}-${ARCH}" \
     && chmod a+x ${CLI_LIB_PATH}/${BIN_NAME} \
     && upx -9 ${CLI_LIB_PATH}/${BIN_NAME}
@@ -69,7 +70,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && NAME="dockfmt" \
     && REPO="jessfraz/${NAME}" \
     && BIN_NAME=${NAME} \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-${OS}-${ARCH}" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
@@ -89,7 +90,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && NAME="compose" \
     && REPO="${ORG}/${NAME}" \
     && BIN_NAME="${ORG}-${NAME}" \
-    && VERSION="$(curl --silent ${GITHUB}/${REPO}/${RELEASE_LATEST} | sed 's#.*tag/\(.*\)\".*#\1#' | sed 's/v//g')" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${NAME}-${OS}-${ARCH}" \
     && mv "${ORG}-${NAME}-${OS}-${ARCH}" ${BIN_PATH}/${BIN_NAME} \
