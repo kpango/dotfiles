@@ -48,14 +48,15 @@ RUN rustup update stable \
     starship
 
 FROM rust-base AS exa
-RUN rustup update stable \
-    && rustup default stable \
-    && cargo install --force --no-default-features \
-    exa
-
-FROM rust-base AS bandwhich
 RUN cargo +nightly install --force --no-default-features \
-    bandwhich
+# RUN rustup update stable \
+#     && rustup default stable \
+#     && cargo install --force --no-default-features \
+#     exa
+
+# FROM rust-base AS bandwhich
+# RUN cargo +nightly install --force --no-default-features \
+#     bandwhich
 
 FROM rust-base AS shellharden
 RUN cargo +nightly install --force --no-default-features \
@@ -197,7 +198,7 @@ ENV BIN_PATH ${CARGO}/bin
 # COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
 # COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
 # COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
-COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
+# COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
 COPY --from=broot ${BIN_PATH}/broot ${BIN_PATH}/broot

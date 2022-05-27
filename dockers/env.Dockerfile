@@ -8,6 +8,7 @@ ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
 ENV GITHUBCOM github.com
 ENV GITHUB https://${GITHUBCOM}
+ENV API_GITHUB https://api.${GITHUBCOM}/repos
 ENV RAWGITHUB https://raw.githubusercontent.com
 ENV GOOGLE https://storage.googleapis.com
 ENV RELEASE_DL releases/download
@@ -96,7 +97,6 @@ RUN echo '/lib\n\
     python3-dev \
     python3-pip \
     python3-setuptools \
-    python3-venv \
     ruby-dev \
     sass \
     sed \
