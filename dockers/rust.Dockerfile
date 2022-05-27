@@ -58,9 +58,9 @@ RUN cargo +nightly install --force --no-default-features \
 # RUN cargo +nightly install --force --no-default-features \
 #     bandwhich
 
-FROM rust-base AS shellharden
-RUN cargo +nightly install --force --no-default-features \
-    shellharden
+# FROM rust-base AS shellharden
+# RUN cargo +nightly install --force --no-default-features \
+#     shellharden
 
 FROM rust-base AS rg
 RUN rustup update stable \
@@ -229,7 +229,7 @@ COPY --from=rust-base ${RUSTUP}/settings.toml ${RUSTUP}/settings.toml
 COPY --from=rust-base ${RUSTUP}/toolchains ${RUSTUP}/toolchains
 COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
 COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
-COPY --from=shellharden ${BIN_PATH}/shellharden ${BIN_PATH}/shellharden
+# COPY --from=shellharden ${BIN_PATH}/shellharden ${BIN_PATH}/shellharden
 COPY --from=starship ${BIN_PATH}/starship ${BIN_PATH}/starship
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
 COPY --from=watchexec ${BIN_PATH}/watchexec ${BIN_PATH}/watchexec
