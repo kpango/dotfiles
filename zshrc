@@ -1089,6 +1089,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
+                /var/lib/pacman/sync/* \
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
@@ -1115,6 +1116,7 @@ if [ -z $ZSH_LOADED ]; then
                 fi
             fi
             sudo rm -rf /var/lib/pacman/db.l* \
+                /var/lib/pacman/sync/* \
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
@@ -1128,6 +1130,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
+                /var/lib/pacman/sync/* \
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
@@ -1144,6 +1147,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
+                /var/lib/pacman/sync/* \
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
                 $HOME/.cache/* \
