@@ -129,7 +129,6 @@ RUN upx -9 \
         ${BIN_PATH}/containerd-shim \
         ${BIN_PATH}/docker \
         ${BIN_PATH}/docker-init \
-        ${BIN_PATH}/docker-proxy \
         ${BIN_PATH}/dockerd \
         ${BIN_PATH}/runc \
     # && upx -9 --force-pie \
