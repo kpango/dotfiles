@@ -1324,7 +1324,9 @@ if [ -z $ZSH_LOADED ]; then
                 && echo ")" >> hack/go.mod.default3 \
                 && rm -rf go.mod go.sum \
                 && mv /tmp/go.mod /tmp/go.sum .
-
+	    vim -d hack/go.mod.default hack/go.mod.default2
+	    vim -d hack/go.mod.default hack/go.mod.default3
+	    cd -
         }
     fi
 
