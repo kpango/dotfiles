@@ -1304,7 +1304,7 @@ if [ -z $ZSH_LOADED ]; then
         valddep(){
             cd "$GOPATH/src/github.com/vdaas/vald"
 	    rm -rf go.mod go.sum \
-	        && cp hack/go.mod.default go.mod
+	        && cp hack/go.mod.default go.mod \
                 && GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
             rm -rf hack/go.mod.default2 \
                 && cat hack/go.mod.default | head -n 5 >> hack/go.mod.default2 \
