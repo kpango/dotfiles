@@ -198,8 +198,8 @@ prod: \
 
 docker_build:
 	# sudo docker buildx build --platform linux/amd64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
-	# sudo docker buildx build --squash --network=host --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --platform linux/amd64,linux/arm64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
-	docker build --squash --network=host \
+	# sudo docker buildx build --network=host --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --platform linux/amd64,linux/arm64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
+	docker build --network=host \
 	  --build-arg USER_ID="$(USER_ID)" \
 	  --build-arg GROUP_ID="$(GROUP_ID)" \
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
