@@ -1331,6 +1331,7 @@ if [ -z $ZSH_LOADED ]; then
             $EDITOR -d hack/go.mod.default hack/go.mod.default3
             cd -
         }
+        alias valddep=valddep
     fi
 
     export ZSH_LOADED=1;
