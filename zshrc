@@ -1313,7 +1313,6 @@ if [ -z $ZSH_LOADED ]; then
                 && echo ")" >> hack/go.mod.default2
             rm -rf hack/go.mod.default3 \
                 && cat hack/go.mod.default | head -n 5 >> hack/go.mod.default3 \
-                && cat hack/go.mod.default | rg tensorflow >> hack/go.mod.default3 \
                 && cat hack/go.mod.default | rg k8s >> hack/go.mod.default3 \
                 && echo ")" >> hack/go.mod.default3 \
                 && rm -rf /tmp/go.mod /tmp/go.sum \
