@@ -22,7 +22,6 @@ dmidecode
 dnsmasq
 docker
 dosfstools
-dropbear
 exa
 fakeroot
 fcitx5
@@ -34,7 +33,6 @@ fwupd-efi
 gettext
 git
 git-delta
-gnome-keyring
 go
 graphviz
 grep
@@ -68,7 +66,6 @@ networkmanager
 nmap
 noto-fonts-emoji
 nvme-cli
-openssh
 pacman-contrib
 parted
 pass
