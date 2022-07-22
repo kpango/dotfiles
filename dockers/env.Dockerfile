@@ -167,7 +167,7 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM env-base AS ngt
 WORKDIR /tmp
-ENV NGT_VERSION 1.14.6
+ENV NGT_VERSION 1.14.7
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
@@ -183,7 +183,7 @@ RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" 
 
 FROM env-base AS tensorflow
 WORKDIR /tmp
-ENV TENSORFLOW_C_VERSION 2.9.0
+ENV TENSORFLOW_C_VERSION 2.9.1
 RUN set -x; cd "$(mktemp -d)" \
     && REPO_NAME="tensorflow" \
     && BIN_NAME="lib${REPO_NAME}" \
