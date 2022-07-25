@@ -638,7 +638,7 @@ if [ -z $ZSH_LOADED ]; then
             rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
         }
         alias sshls=sshls
-        alias sshinit="rm -rf $HOME/.ssh/known_hosts;rm -rf $HOME/.ssh/master_kpango@192.168.2.*;chmod 600 $HOME/.ssh/config"
+        alias sshinit="rm -rf $HOME/.ssh/known_hosts;rm -rf $HOME/.ssh/master_kpango@192.168.2.*;sudo chmod -R 700 $HOME/.ssh;sudo chmod -R 600 $HOME/.ssh/*"
     fi
 
     if type rails >/dev/null 2>&1; then
