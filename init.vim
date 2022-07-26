@@ -158,10 +158,11 @@ call ddc#custom#patch_global('sourceOptions', {
 " --------------------------
 call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'around', 'file'])
 call ddc#custom#patch_global('sourceOptions', {
-      \ '_': {
-      \   'matchers': ['matcher_head'],
-      \   'sorters': ['sorter_rank'],
-      \   'converters': ['converter_remove_overlap'],
+      \   '_': {
+      \     'matchers': ['matcher_fuzzy'],
+      \     'sorters': ['sorter_fuzzy'],
+      \     'converters': ['converter_fuzzy']
+      \   }
       \ },
       \ 'tabnine': {
       \   'mark': 'TN',
@@ -181,34 +182,21 @@ call ddc#custom#patch_global('sourceOptions', {
       \ }})
 
 
- call ddc#custom#patch_global('sourceParams', {
+call ddc#custom#patch_global('sourceParams', {
       \ 'around': {'maxSize': 500},
+      \ 'nvim-lsp': { 'kindLabels': { 'Class': 'c' } },
       \ })
 
- inoremap <silent><expr> <TAB>
+inoremap <silent><expr> <TAB>
       \ ddc#map#pum_visible() ? '<C-n>' :
       \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
       \ '<TAB>' : ddc#map#manual_complete()
- inoremap <expr><S-TAB>  ddc#map#pum_visible() ? '<C-p>' : '<C-h>'
-
- call ddc#enable()
-
-" Use Customized labels
-call ddc#custom#patch_global('sourceParams', {
-      \ 'nvim-lsp': { 'kindLabels': { 'Class': 'c' } },
-      \ })
+inoremap <expr><S-TAB>  ddc#map#pum_visible() ? '<C-p>' : '<C-h>'
 
 " ----------------------------
 " ---- ddc fuzzy settings ----
 " ----------------------------
 call ddc#custom#patch_global('completionMenu', 'pum.vim')
-call ddc#custom#patch_global('sourceOptions', {
-  \   '_': {
-  \     'matchers': ['matcher_fuzzy'],
-  \     'sorters': ['sorter_fuzzy'],
-  \     'converters': ['converter_fuzzy']
-  \   }
-  \ })
 call ddc#custom#patch_global('filterParams', {
   \   'matcher_fuzzy': {
   \     'splitMode': 'word'
