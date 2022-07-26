@@ -151,6 +151,10 @@ if [ -z $DOTENV_LOADED ]; then
 
     export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.cargo/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
 
+    if type deno >/dev/null 2>&1; then
+        export PATH="$(which deno):$PATH"
+    fi
+
     export ZPLUG_HOME=$HOME/.zplug
 
     if [ -e $ZPLUG_HOME/repos/zsh-users/zsh-completions ]; then

@@ -28,6 +28,7 @@ endif
 packadd vim-jetpack
 call jetpack#begin(expand('$NVIM_HOME'))
     Jetpack 'LumaKernel/ddc-file'
+    Jetpack 'LumaKernel/ddc-tabnine'
     Jetpack 'Shougo/ddc-around' " sources
     Jetpack 'Shougo/ddc-converter_remove_overlap'
     Jetpack 'Shougo/ddc-matcher_head' " filters
@@ -45,8 +46,8 @@ call jetpack#begin(expand('$NVIM_HOME'))
     Jetpack 'tani/vim-jetpack', {'opt': 1}
     Jetpack 'tyru/caw.vim' " comment out
     Jetpack 'vim-denops/denops.vim'
-    Jetpack 'williamboman/mason.nvim'
     Jetpack 'williamboman/mason-lspconfig.nvim'
+    Jetpack 'williamboman/mason.nvim'
 call jetpack#end()
 
 " --------------------------------------
@@ -155,19 +156,24 @@ call ddc#custom#patch_global('sourceOptions', {
 " --------------------------
 " ---- ddc lsp settings ----
 " --------------------------
-call ddc#custom#patch_global('sources', ['nvim-lsp', 'around', 'file'])
+call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'around', 'file'])
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {
       \   'matchers': ['matcher_head'],
       \   'sorters': ['sorter_rank'],
       \   'converters': ['converter_remove_overlap'],
       \ },
-      \ 'around': {'mark': 'A'},
+      \ 'tabnine': {
+      \   'mark': 'TN',
+      \   'maxCandidates': 5,
+      \   'isVolatile': v:true,
+      \ },
       \ 'nvim-lsp': {
       \   'mark': 'lsp',
       \   'matchers': ['matcher_head'],
       \   'forceCompletionPattern': '\.\w*|:\w*|->\w*'
       \ },
+      \ 'around': {'mark': 'A'},
       \ 'file': {
       \   'mark': 'file',
       \   'isVolatile': v:true,
