@@ -27,12 +27,26 @@ endif
 " -------------------------
 packadd vim-jetpack
 call jetpack#begin(expand('$NVIM_HOME'))
-    Jetpack 'tani/vim-jetpack', {'opt': 1}
+    Jetpack 'LumaKernel/ddc-file'
+    Jetpack 'Shougo/ddc-around' " sources
+    Jetpack 'Shougo/ddc-converter_remove_overlap'
+    Jetpack 'Shougo/ddc-matcher_head' " filters
+    Jetpack 'Shougo/ddc-nvim-lsp'
+    Jetpack 'Shougo/ddc-sorter_rank' " filters
+    Jetpack 'Shougo/ddc.vim'
+    Jetpack 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
+    Jetpack 'Shougo/pum.vim'
     Jetpack 'airblade/vim-gitgutter'
-    Jetpack 'sbdchd/neoformat'
     Jetpack 'editorconfig/editorconfig-vim'
-    Jetpack 'tyru/caw.vim' " comment out
     Jetpack 'mattn/vim-goimports', {'for': 'go'}
+    Jetpack 'neovim/nvim-lspconfig'
+    Jetpack 'sbdchd/neoformat'
+    Jetpack 'tani/ddc-fuzzy'
+    Jetpack 'tani/vim-jetpack', {'opt': 1}
+    Jetpack 'tyru/caw.vim' " comment out
+    Jetpack 'vim-denops/denops.vim'
+    Jetpack 'williamboman/mason.nvim'
+    Jetpack 'williamboman/mason-lspconfig.nvim'
 call jetpack#end()
 
 " --------------------------------------
@@ -97,6 +111,206 @@ Autocmd BufNewFile,BufRead *.{[Dd]ockerfile,[Dd]ock} set filetype=dockerfile
 Autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
 Autocmd BufNewFile,BufRead *.rasi set filetype=css
 
+" ----------------------
+" ---- ddc settings ----
+" ----------------------
+lua << EOF
+ local mason = require('mason')
+ mason.setup({
+   ui = {
+     icons = {
+       package_installed = "✓",
+       package_pending = "➜",
+       package_uninstalled = "✗"
+     }
+   }
+ })
+
+ local nvim_lsp = require('lspconfig')
+ local mason_lspconfig = require('mason-lspconfig')
+ mason_lspconfig.setup_handlers({ function(server_name)
+   local opts = {}
+   opts.on_attach = function(_, bufnr)
+     local bufopts = { silent = true, buffer = bufnr }
+     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+     vim.keymap.set('n', 'gtD', vim.lsp.buf.type_definition, bufopts)
+     vim.keymap.set('n', 'grf', vim.lsp.buf.references, bufopts)
+     vim.keymap.set('n', '<space>p', vim.lsp.buf.format, bufopts)
+  end
+   nvim_lsp[server_name].setup(opts)
+ end })
+ require'lspconfig'.gopls.setup{}
+EOF
+
+" ----------------------
+" ---- ddc settings ----
+" ----------------------
+" Use matcher_head and sorter_rank.
+call ddc#custom#patch_global('sourceOptions', {
+      \ '_': {
+      \   'matchers': ['matcher_head'],
+      \   'sorters': ['sorter_rank']},
+      \ })
+
+" --------------------------
+" ---- ddc lsp settings ----
+" --------------------------
+call ddc#custom#patch_global('sources', ['nvim-lsp', 'around', 'file'])
+call ddc#custom#patch_global('sourceOptions', {
+ \ '_': {
+ \   'matchers': ['matcher_head'],
+ \   'sorters': ['sorter_rank'],
+ \   'converters': ['converter_remove_overlap'],
+ \ },
+ \ 'around': {'mark': 'A'},
+ \ 'nvim-lsp': {
+ \   'mark': 'lsp',
+ \   'matchers': ['matcher_head'],
+ \   'forceCompletionPattern': '\.\w*|:\w*|->\w*'
+ \ },
+ \ 'file': {
+ \   'mark': 'file',
+ \   'isVolatile': v:true,
+ \   'forceCompletionPattern': '\S/\S*'
+ \ }})
+
+
+ call ddc#custom#patch_global('sourceParams', {
+      \ 'around': {'maxSize': 500},
+      \ })
+
+ inoremap <silent><expr> <TAB>
+      \ ddc#map#pum_visible() ? '<C-n>' :
+      \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
+      \ '<TAB>' : ddc#map#manual_complete()
+ inoremap <expr><S-TAB>  ddc#map#pum_visible() ? '<C-p>' : '<C-h>'
+
+ call ddc#enable()
+
+" Use Customized labels
+call ddc#custom#patch_global('sourceParams', {
+      \ 'nvim-lsp': { 'kindLabels': { 'Class': 'c' } },
+      \ })
+
+" ----------------------------
+" ---- ddc fuzzy settings ----
+" ----------------------------
+call ddc#custom#patch_global('completionMenu', 'pum.vim')
+call ddc#custom#patch_global('sourceOptions', {
+  \   '_': {
+  \     'matchers': ['matcher_fuzzy'],
+  \     'sorters': ['sorter_fuzzy'],
+  \     'converters': ['converter_fuzzy']
+  \   }
+  \ })
+call ddc#custom#patch_global('filterParams', {
+  \   'matcher_fuzzy': {
+  \     'splitMode': 'word'
+  \   }
+  \ })
+call ddc#custom#patch_global('filterParams', {
+  \   'converter_fuzzy': {
+  \     'hlGroup': 'SpellBad'
+  \   }
+  \ })
+
+" -----------------------------------------------------------------
+" ---- ddc completion selector settings with ddc-fuzzy and pum ----
+" -----------------------------------------------------------------
+inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+inoremap <C-p>   <Cmd>call pum#map#select_relative(-1)<CR>
+inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+inoremap <PageDown> <Cmd>call pum#map#insert_relative_page(+1)<CR>
+inoremap <PageUp>   <Cmd>call pum#map#insert_relative_page(-1)<CR>
+inoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+
+inoremap <silent><expr> <TAB>
+      \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+      \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
+      \ '<TAB>' : ddc#manual_complete()
+
+inoremap <silent><expr> <Down>
+      \ pum#visible() ? '<Cmd>call pum#map#select_relative(+1)<CR>' :
+      \ '<Down>'
+inoremap <silent><expr> <Up>
+      \ pum#visible() ? '<Cmd>call pum#map#select_relative(-1)<CR>' :
+      \ '<Up>'
+inoremap <silent><expr> <CR>
+      \ pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' :
+      \ '<CR>'
+
+call ddc#custom#patch_global('autoCompleteEvents', [
+    \ 'InsertEnter', 'TextChangedI', 'TextChangedP',
+    \ 'CmdlineEnter', 'CmdlineChanged',
+    \ ])
+
+nnoremap :       <Cmd>call CommandlinePre()<CR>:
+
+function! CommandlinePre() abort
+  " Note: It disables default command line completion!
+  cnoremap <expr> <Tab>
+  \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+  \ ddc#manual_complete()
+  cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+  cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+  cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+
+  " Overwrite sources
+  if !exists('b:prev_buffer_config')
+    let b:prev_buffer_config = ddc#custom#get_buffer()
+  endif
+  call ddc#custom#patch_buffer('sources',
+          \ ['cmdline', 'cmdline-history', 'around'])
+
+  autocmd User DDCCmdlineLeave ++once call CommandlinePost()
+  autocmd InsertEnter <buffer> ++once call CommandlinePost()
+
+  " Enable command line completion
+  call ddc#enable_cmdline_completion()
+endfunction
+function! CommandlinePost() abort
+  cunmap <Tab>
+  cunmap <S-Tab>
+  cunmap <C-y>
+  cunmap <C-e>
+
+  " Restore sources
+  if exists('b:prev_buffer_config')
+    call ddc#custom#set_buffer(b:prev_buffer_config)
+    unlet b:prev_buffer_config
+  else
+    call ddc#custom#set_buffer({})
+  endif
+endfunction
+
+" --------------------
+" ---- enable ddc ----
+" --------------------
+call ddc#enable()
+
+" --------------------------
+" ---- deoppet settings ----
+" --------------------------
+call deoppet#initialize()
+call deoppet#custom#option('snippets',
+\ map(globpath(&runtimepath, 'neosnippets', 1, 1),
+\     { _, val -> { 'path': val } }))
+
+imap <C-k>  <Plug>(deoppet_expand)
+imap <C-f>  <Plug>(deoppet_jump_forward)
+imap <C-b>  <Plug>(deoppet_jump_backward)
+smap <C-f>  <Plug>(deoppet_jump_forward)
+smap <C-b>  <Plug>(deoppet_jump_backward)
+
+" Use deoppet source.
+call ddc#custom#patch_global('sources', ['deoppet'])
+
+" Change source options
+call ddc#custom#patch_global('sourceOptions', {
+      \ 'deoppet': {'dup': v:true, 'mark': 'dp'},
+      \ })
+
 " ----------------------------
 " ---- gitgutter settings ----
 " ----------------------------
@@ -118,6 +332,8 @@ vmap <C-C> <Plug>(caw:hatpos:toggle)
 
 set completeopt=menu,preview,noinsert
 
+set helplang=ja
+
 " ---- Enable Word Wrap
 set wrap
 
@@ -126,7 +342,7 @@ set synmaxcol=2000
 
 " ---- highlight both bracket
 set showmatch matchtime=2
-set list listchars=tab:>\ ,trail:_,eol:↲,extends:»,precedes:«,nbsp:%
+set listchars=tab:>\ ,trail:_,eol:↲,extends:»,precedes:«,nbsp:%
 
 set display=lastline
 " ---- 2spaces width for ambient
@@ -194,6 +410,7 @@ set smarttab
 set softtabstop=0
 set autoindent
 set smartindent
+set showbreak=↪
 
 " ---- Indentation shiftwidth width
 set shiftround
@@ -276,12 +493,19 @@ nnoremap <silent> j gj
 nnoremap <silent> k gk
 nnoremap <silent> gj j
 nnoremap <silent> gk k
+inoremap <silent> jj <Esc>
+inoremap <silent> っj <ESC>
 
 " ウィンドウの移動をCtrlキーと方向指定でできるように
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-h> <Left>
+inoremap <C-l> <Right>
 
 " Esc2回で検索のハイライトを消す
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
@@ -298,6 +522,15 @@ noremap ; :
 inoremap <C-j> <esc>
 inoremap <C-s> <esc>:w<CR>
 nnoremap <C-q> :qall<CR>
+
+inoremap { {}<LEFT>
+inoremap [ []<LEFT>
+inoremap ( ()<LEFT>
+inoremap " ""<LEFT>
+inoremap ' ''<LEFT>
+let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+inoremap <Esc> <Esc>lh
 
 " ---- Enable Filetype
 filetype plugin indent on
