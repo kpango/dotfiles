@@ -157,22 +157,22 @@ call ddc#custom#patch_global('sourceOptions', {
 " --------------------------
 call ddc#custom#patch_global('sources', ['nvim-lsp', 'around', 'file'])
 call ddc#custom#patch_global('sourceOptions', {
- \ '_': {
- \   'matchers': ['matcher_head'],
- \   'sorters': ['sorter_rank'],
- \   'converters': ['converter_remove_overlap'],
- \ },
- \ 'around': {'mark': 'A'},
- \ 'nvim-lsp': {
- \   'mark': 'lsp',
- \   'matchers': ['matcher_head'],
- \   'forceCompletionPattern': '\.\w*|:\w*|->\w*'
- \ },
- \ 'file': {
- \   'mark': 'file',
- \   'isVolatile': v:true,
- \   'forceCompletionPattern': '\S/\S*'
- \ }})
+      \ '_': {
+      \   'matchers': ['matcher_head'],
+      \   'sorters': ['sorter_rank'],
+      \   'converters': ['converter_remove_overlap'],
+      \ },
+      \ 'around': {'mark': 'A'},
+      \ 'nvim-lsp': {
+      \   'mark': 'lsp',
+      \   'matchers': ['matcher_head'],
+      \   'forceCompletionPattern': '\.\w*|:\w*|->\w*'
+      \ },
+      \ 'file': {
+      \   'mark': 'file',
+      \   'isVolatile': v:true,
+      \   'forceCompletionPattern': '\S/\S*'
+      \ }})
 
 
  call ddc#custom#patch_global('sourceParams', {
@@ -269,6 +269,7 @@ function! CommandlinePre() abort
   " Enable command line completion
   call ddc#enable_cmdline_completion()
 endfunction
+
 function! CommandlinePost() abort
   cunmap <Tab>
   cunmap <S-Tab>
