@@ -18,6 +18,7 @@
 
 [push]
     default = tracking
+	autoSetupRemote = true
 
 [pull]
     rebase = true
@@ -137,3 +138,8 @@
     line-numbers-right-format = "{np:>4}│"
     line-numbers-left-style = blue
     line-numbers-right-style = blue
+[safe]
+	directory = /home/kpango/go/src/github.com/vdaas/vald
+	directory = /home/kpango/go/src/github.com/vdaas/vald-client-go
+	directory = /home/kpango/go/src/github.com/kpango/glg
+	directory = /home/kpango/go/src/github.com/kpango/gache
