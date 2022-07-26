@@ -140,18 +140,7 @@ lua << EOF
   end
    nvim_lsp[server_name].setup(opts)
  end })
- require'lspconfig'.gopls.setup{}
 EOF
-
-" ----------------------
-" ---- ddc settings ----
-" ----------------------
-" Use matcher_head and sorter_rank.
-call ddc#custom#patch_global('sourceOptions', {
-      \ '_': {
-      \   'matchers': ['matcher_head'],
-      \   'sorters': ['sorter_rank']},
-      \ })
 
 " --------------------------
 " ---- ddc lsp settings ----
@@ -159,8 +148,8 @@ call ddc#custom#patch_global('sourceOptions', {
 call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'around', 'file'])
 call ddc#custom#patch_global('sourceOptions', {
       \   '_': {
-      \     'matchers': ['matcher_fuzzy'],
-      \     'sorters': ['sorter_fuzzy'],
+      \     'matchers': ['matcher_fuzzy', 'matcher_head'],
+      \     'sorters': ['sorter_fuzzy', 'sorter_rank'],
       \     'converters': ['converter_fuzzy']
       \   }
       \ },
@@ -327,7 +316,7 @@ vmap <C-C> <Plug>(caw:hatpos:toggle)
 
 set completeopt=menu,preview,noinsert
 
-set helplang=ja
+" set helplang=ja
 
 " ---- Enable Word Wrap
 set wrap
