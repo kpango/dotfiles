@@ -15,8 +15,8 @@ filetype plugin indent off
 " ---- Install jetpack ----
 " --------------------------
 if has('vim_starting')
-    let s:jetpackfile = expand('$NVIM_HOME') . 'plugin/pack/jetpack/opt/vim-jetpack/plugin/jetpack.vim'
-    let s:jetpackurl = "https://raw.githubusercontent.com/tani/vim-jetpack/master/plugin/jetpack.vim"
+    let s:jetpackfile = expand('<sfile>:p:h') .. '/pack/jetpack/opt/vim-jetpack/plugin/jetpack.vim'
+    let s:jetpackurl = "https://raw.githubusercontent.com/tani/vim-jetpack/main/plugin/jetpack.vim"
     if !filereadable(s:jetpackfile)
       call system(printf('curl -fsSLo %s --create-dirs %s', s:jetpackfile, s:jetpackurl))
     endif
@@ -26,8 +26,7 @@ endif
 " ---- Plugins Install ----
 " -------------------------
 packadd vim-jetpack
-call jetpack#begin()
-"call jetpack#begin(expand('$NVIM_HOME') . 'plugin')
+call jetpack#begin(expand('$NVIM_HOME'))
     Jetpack 'tani/vim-jetpack', {'opt': 1}
     Jetpack 'airblade/vim-gitgutter'
     Jetpack 'sbdchd/neoformat'
@@ -110,6 +109,8 @@ let g:gitgutter_git_executable = '/usr/bin/git'
 let g:caw_hatpos_skip_blank_line = 0
 let g:caw_no_default_keymappings = 1
 let g:caw_operator_keymappings = 0
+nmap <C-C> <Plug>(caw:hatpos:toggle)
+vmap <C-C> <Plug>(caw:hatpos:toggle)
 
 " -------------------------
 " ---- Default Setting ----
