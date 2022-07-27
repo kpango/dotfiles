@@ -30,131 +30,131 @@ endif
 packadd vim-jetpack
 call jetpack#begin(expand('$NVIM_HOME'))
 " ----- update self
-    Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
+    Jetpack 'tani/vim-jetpack', {'opt': 1}
 " ---- common plugins
-    " Plug 'neoclide/coc.nvim', {'branch': 'release', 'do': ':call coc#util#install()'}
-    Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
-    Plug 'Shougo/context_filetype.vim' " auto detect filetype
-    " Plug 'Shougo/denite.nvim', {'do': ':UpdateRemotePlugins' }
-    " Plug 'Shougo/neoyank.vim'
-    Plug 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
-    " Plug 'Shougo/neomru.vim'
-    Plug 'cohama/lexima.vim' " auto close bracket
-    Plug 'airblade/vim-gitgutter'
-    Plug 'itchyny/lightline.vim'
-    " Plug 'janko-m/vim-test', {'for': ['go','rust','elixir','python','ruby','javascript','sh','lua','php','perl','java']}
-    Plug 'sbdchd/neoformat'
-    Plug 'editorconfig/editorconfig-vim'
-    " Plug 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
-    " Plug 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
-    " Plug 'lilydjwg/colorizer', {'do': 'make'} " colorize rgb rgba texts
-    " Plug 'chrisbra/Colorizer'
-    " Plug 'majutsushi/tagbar' " tag bar toggle
-    " Plug 'nathanaelkane/vim-indent-guides' " show indent guide
-    " Plug 'Yggdroot/indentLine'
-    " Plug 'w0rp/ale' " lint plugin
-    Plug 'tyru/caw.vim' " comment out
-    " Plug 'rizzatti/dash.vim', {'on': 'Dash'}
-    " Plug 'terryma/vim-multiple-cursors' " multiple cursors
-    " Plug 'tpope/vim-surround'
-    " Plug 'vim-scripts/sudo.vim'
-    " Plug 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
-    " Plug 'ozelentok/denite-gtags'
-    " Plug 'jsfaint/gen_tags.vim'
-    " Plug 'vim-scripts/gtags.vim'
-    " Plug 'autozimu/LanguageClient-neovim', {
+    " Jetpack 'neoclide/coc.nvim', {'branch': 'release', 'do': ':call coc#util#install()'}
+    Jetpack 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+    Jetpack 'Shougo/context_filetype.vim' " auto detect filetype
+    " Jetpack 'Shougo/denite.nvim', {'do': ':UpdateRemoteJetpackins' }
+    " Jetpack 'Shougo/neoyank.vim'
+    Jetpack 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/pack/vimproc.vim', 'do': 'make' }
+    " Jetpack 'Shougo/neomru.vim'
+    Jetpack 'cohama/lexima.vim' " auto close bracket
+    Jetpack 'airblade/vim-gitgutter'
+    Jetpack 'itchyny/lightline.vim'
+    " Jetpack 'janko-m/vim-test', {'for': ['go','rust','elixir','python','ruby','javascript','sh','lua','php','perl','java']}
+    Jetpack 'sbdchd/neoformat'
+    Jetpack 'editorconfig/editorconfig-vim'
+    " Jetpack 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/pack/fzf', 'do': expand('$NVIM_HOME') . '/pack/fzf/install --all' }
+    " Jetpack 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
+    " Jetpack 'lilydjwg/colorizer', {'do': 'make'} " colorize rgb rgba texts
+    " Jetpack 'chrisbra/Colorizer'
+    " Jetpack 'majutsushi/tagbar' " tag bar toggle
+    " Jetpack 'nathanaelkane/vim-indent-guides' " show indent guide
+    " Jetpack 'Yggdroot/indentLine'
+    " Jetpack 'w0rp/ale' " lint plugin
+    Jetpack 'tyru/caw.vim' " comment out
+    " Jetpack 'rizzatti/dash.vim', {'on': 'Dash'}
+    " Jetpack 'terryma/vim-multiple-cursors' " multiple cursors
+    " Jetpack 'tpope/vim-surround'
+    " Jetpack 'vim-scripts/sudo.vim'
+    " Jetpack 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
+    " Jetpack 'ozelentok/denite-gtags'
+    " Jetpack 'jsfaint/gen_tags.vim'
+    " Jetpack 'vim-scripts/gtags.vim'
+    " Jetpack 'autozimu/LanguageClient-neovim', {
         "\ 'branch': 'next',
         "\ 'do': 'zsh install.sh',
         "\ }
-    " Plug 'prabirshrestha/async.vim'
-    " Plug 'prabirshrestha/vim-lsp'
-    " Plug 'prabirshrestha/asyncomplete.vim'
-    " Plug 'prabirshrestha/asyncomplete-lsp.vim'
-    " Plug 'natebosch/vim-lsc'
-    " Plug 'echuraev/translate-shell.vim' ", { 'do': 'wget -O /usr/local/bin/trans git.io/trans && chmod a+x /usr/local/bin/trans' }
+    " Jetpack 'prabirshrestha/async.vim'
+    " Jetpack 'prabirshrestha/vim-lsp'
+    " Jetpack 'prabirshrestha/asyncomplete.vim'
+    " Jetpack 'prabirshrestha/asyncomplete-lsp.vim'
+    " Jetpack 'natebosch/vim-lsc'
+    " Jetpack 'echuraev/translate-shell.vim' ", { 'do': 'wget -O /usr/local/bin/trans git.io/trans && chmod a+x /usr/local/bin/trans' }
 " ---- Vim Setting
-    " Plug 'Shougo/neco-vim', {'for': 'vim'}
-    " Plug 'Shougo/neco-syntax', {'for': 'vim'}
+    " Jetpack 'Shougo/neco-vim', {'for': 'vim'}
+    " Jetpack 'Shougo/neco-syntax', {'for': 'vim'}
 " ---- Yaml Setting
-    " Plug 'stephpy/vim-yaml', {'for': ['yaml','yml']}
+    " Jetpack 'stephpy/vim-yaml', {'for': ['yaml','yml']}
 " ---- Clang Setting
-    " Plug 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
+    " Jetpack 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
 " ---- Golang Setting
-    Plug 'mattn/vim-goimports', {'for': 'go'}
-    " Plug 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
-    Plug 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
+    Jetpack 'mattn/vim-goimports', {'for': 'go'}
+    " Jetpack 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
+    Jetpack 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
 " ---- Proto
-    " Plug 'uber/prototool', {'for': 'proto', 'rtp':'vim/prototool'}
+    " Jetpack 'uber/prototool', {'for': 'proto', 'rtp':'vim/prototool'}
 " ---- HTML
-"     Plug 'digitaltoad/vim-jade', { 'for': ['jade', 'pug'] }
-"     Plug 'gregsexton/MatchTag', { 'for': ['html','php'] }
-"     Plug 'hokaccha/vim-html5validator', {'for': ['html', 'php']}
-"     Plug 'mattn/emmet-vim', {'for': ['html', 'php']}
-"     Plug 'mustache/vim-mustache-handlebars', { 'for': ['html','php','haml'] }
-"     Plug 'othree/html5.vim', {'for': ['html', 'php']}
-"     Plug 'tpope/vim-haml', {'for': 'haml'}
+"     Jetpack 'digitaltoad/vim-jade', { 'for': ['jade', 'pug'] }
+"     Jetpack 'gregsexton/MatchTag', { 'for': ['html','php'] }
+"     Jetpack 'hokaccha/vim-html5validator', {'for': ['html', 'php']}
+"     Jetpack 'mattn/emmet-vim', {'for': ['html', 'php']}
+"     Jetpack 'mustache/vim-mustache-handlebars', { 'for': ['html','php','haml'] }
+"     Jetpack 'othree/html5.vim', {'for': ['html', 'php']}
+"     Jetpack 'tpope/vim-haml', {'for': 'haml'}
 " " ---- LESS SASS CSS
-"     Plug 'ap/vim-css-color', {'for': ['css','less','sass','scss','stylus'] }
-"     Plug 'cakebaker/scss-syntax.vim', { 'for': ['sass','scss'] }
-"     Plug 'groenewege/vim-less', {'for': 'less'}
-"     Plug 'hail2u/vim-css3-syntax', {'for': ['css','less','sass','scss','stylus'] }
-"     Plug 'wavded/vim-stylus', {'for': ['stylus']}
+"     Jetpack 'ap/vim-css-color', {'for': ['css','less','sass','scss','stylus'] }
+"     Jetpack 'cakebaker/scss-syntax.vim', { 'for': ['sass','scss'] }
+"     Jetpack 'groenewege/vim-less', {'for': 'less'}
+"     Jetpack 'hail2u/vim-css3-syntax', {'for': ['css','less','sass','scss','stylus'] }
+"     Jetpack 'wavded/vim-stylus', {'for': ['stylus']}
 " " ---- JavaScript
-"     " Plug 'ryanolsonx/vim-lsp-javascript', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-"     " Plug 'ryanolsonx/vim-lsp-typescript', { 'for': 'typescript' }
-"     " Plug 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
-"     " Plug 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
-"     " Plug 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
-"     " Plug 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
-"     " Plug 'kchmck/vim-coffee-script', {'for': 'coffee'}
-"     " Plug 'leafgarland/typescript-vim', { 'for': 'typescript' }
-"     " Plug 'mhartington/deoplete-typescript', { 'for': 'typescript' }
-"     " Plug 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
-"     " Plug 'posva/vim-vue', { 'for': ['vue'] }
-"     " Plug 'othree/jspc.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-"     " Plug 'othree/yajs.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-"     " Plug 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
-"     " Plug 'ramitos/jsctags', {'for': ['javascript', 'javascript.jsx', 'json']}
+"     " Jetpack 'ryanolsonx/vim-lsp-javascript', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+"     " Jetpack 'ryanolsonx/vim-lsp-typescript', { 'for': 'typescript' }
+"     " Jetpack 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
+"     " Jetpack 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
+"     " Jetpack 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
+"     " Jetpack 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
+"     " Jetpack 'kchmck/vim-coffee-script', {'for': 'coffee'}
+"     " Jetpack 'leafgarland/typescript-vim', { 'for': 'typescript' }
+"     " Jetpack 'mhartington/deoplete-typescript', { 'for': 'typescript' }
+"     " Jetpack 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
+"     " Jetpack 'posva/vim-vue', { 'for': ['vue'] }
+"     " Jetpack 'othree/jspc.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+"     " Jetpack 'othree/yajs.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
+"     " Jetpack 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
+"     " Jetpack 'ramitos/jsctags', {'for': ['javascript', 'javascript.jsx', 'json']}
 " " ---- Dart
-"     Plug 'dart-lang/dart-vim-plugin', {'for': 'dart'}
-"     Plug 'miyakogi/vim-dartanalyzer', {'for': 'dart'}
+"     Jetpack 'dart-lang/dart-vim-plugin', {'for': 'dart'}
+"     Jetpack 'miyakogi/vim-dartanalyzer', {'for': 'dart'}
 " " ---- Crystal
-"     Plug 'rhysd/vim-crystal', {'for': ['crystal'] }
+"     Jetpack 'rhysd/vim-crystal', {'for': ['crystal'] }
 " " ---- Nim
-"     Plug 'zah/nim.vim', {'for': 'nim'}
+"     Jetpack 'zah/nim.vim', {'for': 'nim'}
 " " ---- Rust
-    Plug 'rust-lang/rust.vim', {'for': 'rust'}
-"     " Plug 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
-"     Plug 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
+    Jetpack 'rust-lang/rust.vim', {'for': 'rust'}
+"     " Jetpack 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
+"     Jetpack 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
 " " ---- Python
-"     " Plug 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi;pip3 install jedi'}
-"     " Plug 'ryanolsonx/vim-lsp-python', {'for': ['python', 'python3','djangohtml'] }
+"     " Jetpack 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi;pip3 install jedi'}
+"     " Jetpack 'ryanolsonx/vim-lsp-python', {'for': ['python', 'python3','djangohtml'] }
 " " ---- Lisp
-"     Plug 'vim-scripts/slimv.vim', {'for': 'lisp'}
+"     Jetpack 'vim-scripts/slimv.vim', {'for': 'lisp'}
 " " ---- Lua
-"     Plug 'xolox/vim-misc', {'for': 'lua'}
-"     Plug 'xolox/vim-lua-ftplugin', {'for': 'lua'}
-"     Plug 'xolox/vim-lua-inspect', {'for': 'lua'}
+"     Jetpack 'xolox/vim-misc', {'for': 'lua'}
+"     Jetpack 'xolox/vim-lua-ftplugin', {'for': 'lua'}
+"     Jetpack 'xolox/vim-lua-inspect', {'for': 'lua'}
 " " ---- Swift
-"     Plug 'keith/swift.vim', {'for': 'swift'}
-"     Plug 'kballard/vim-swift', {'for': 'swift'}
-" "     Plug 'landaire/deoplete-swift', {'for': 'swift'}
-"     Plug 'mitsuse/autocomplete-swift', {'for': 'swift'}
+"     Jetpack 'keith/swift.vim', {'for': 'swift'}
+"     Jetpack 'kballard/vim-swift', {'for': 'swift'}
+" "     Jetpack 'landaire/deoplete-swift', {'for': 'swift'}
+"     Jetpack 'mitsuse/autocomplete-swift', {'for': 'swift'}
 " " ---- Markdown
-"     Plug 'previm/previm', {'for': 'markdown'}
-"     Plug 'plasticboy/vim-markdown', {'for': 'markdown'}
-"     Plug 'shinespark/vim-list2tree', {'for': 'markdown', 'on': 'List2Tree'}
-"     Plug 'tyru/open-browser.vim', {'for': 'markdown'}
+"     Jetpack 'previm/previm', {'for': 'markdown'}
+"     Jetpack 'plasticboy/vim-markdown', {'for': 'markdown'}
+"     Jetpack 'shinespark/vim-list2tree', {'for': 'markdown', 'on': 'List2Tree'}
+"     Jetpack 'tyru/open-browser.vim', {'for': 'markdown'}
 " " ---- SQL
-"     Plug 'JarrodCTaylor/vim-sql-suggest', { 'for': 'sql' }
+"     Jetpack 'JarrodCTaylor/vim-sql-suggest', { 'for': 'sql' }
 " " ---- TOML
-"     Plug 'cespare/vim-toml', {'for': 'toml'}
+"     Jetpack 'cespare/vim-toml', {'for': 'toml'}
 " " ---- LLVM
-"     Plug 'qnighy/llvm.vim', {'for': 'llvm'}
+"     Jetpack 'qnighy/llvm.vim', {'for': 'llvm'}
 " " ---- ZSH
-"     " Plug 'zchee/deoplete-zsh', {'for': 'zsh'}
+"     " Jetpack 'zchee/deoplete-zsh', {'for': 'zsh'}
 " " ---- Nix
-"     Plug 'LnL7/vim-nix', {'for': 'nix'}
+"     Jetpack 'LnL7/vim-nix', {'for': 'nix'}
 call jetpack#end()
 
 " --------------------------------------

@@ -31,7 +31,6 @@ ENV GCLOUD_PATH /google-cloud-sdk
 ENV CARGO_PATH $HOME/.cargo
 ENV DART_PATH /usr/lib/dart
 ENV NVIM_HOME $HOME/.config/nvim
-ENV VIM_PLUG_HOME $NVIM_HOME/plugged/vim-plug
 ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
 ENV ZPLUG_HOME $HOME/.zplug
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
@@ -78,8 +77,6 @@ COPY tmux.conf $HOME/.tmux.conf
 COPY vintrc.yaml $HOME/.vintrc.yaml
 COPY zshrc $HOME/.zshrc
 
-WORKDIR $VIM_PLUG_HOME
-
 USER root
 
 # RUN groupadd docker \
@@ -91,7 +88,6 @@ RUN usermod -aG ${GROUP} ${WHOAMI} \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && rm -rf $VIM_PLUG_HOME/autoload \
-    && git clone --depth 1 https://github.com/junegunn/vim-plug.git $VIM_PLUG_HOME/autoload \
     && npm uninstall yarn -g \
     && npm install yarn -g \
     && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
