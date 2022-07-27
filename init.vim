@@ -22,139 +22,33 @@ if has('vim_starting')
     endif
 endif
 
-" let g:ale_completion_enabled = 1
-
 " -------------------------
 " ---- Plugins Install ----
 " -------------------------
 packadd vim-jetpack
 call jetpack#begin(expand('$NVIM_HOME'))
-" ----- update self
-    Jetpack 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
-" ---- common plugins
-    " Jetpack 'neoclide/coc.nvim', {'branch': 'release', 'do': ':call coc#util#install()'}
-    Jetpack 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
-    Jetpack 'Shougo/context_filetype.vim' " auto detect filetype
-    " Jetpack 'Shougo/denite.nvim', {'do': ':UpdateRemoteJetpackins' }
-    " Jetpack 'Shougo/neoyank.vim'
-    Jetpack 'Shougo/vimproc.vim', {'dir': expand('$NVIM_HOME') . '/plugged/vimproc.vim', 'do': 'make' }
-    " Jetpack 'Shougo/neomru.vim'
-    Jetpack 'cohama/lexima.vim' " auto close bracket
+    Jetpack 'LumaKernel/ddc-file'
+    Jetpack 'LumaKernel/ddc-tabnine'
+    Jetpack 'Shougo/ddc-around' " sources
+    Jetpack 'Shougo/ddc-converter_remove_overlap'
+    Jetpack 'Shougo/ddc-matcher_head' " filters
+    Jetpack 'Shougo/ddc-nvim-lsp'
+    Jetpack 'Shougo/ddc-sorter_rank' " filters
+    Jetpack 'Shougo/ddc.vim'
+    Jetpack 'Shougo/deoppet.nvim', { 'do': ':UpdateRemotePlugins' }
+    Jetpack 'Shougo/pum.vim'
     Jetpack 'airblade/vim-gitgutter'
-    Jetpack 'itchyny/lightline.vim'
-    " Jetpack 'janko-m/vim-test', {'for': ['go','rust','elixir','python','ruby','javascript','sh','lua','php','perl','java']}
-    Jetpack 'sbdchd/neoformat'
     Jetpack 'editorconfig/editorconfig-vim'
-    " Jetpack 'junegunn/fzf', { 'dir': expand('$NVIM_HOME') . '/plugged/fzf', 'do': expand('$NVIM_HOME') . '/plugged/fzf/install --all' }
-    " Jetpack 'junegunn/vim-easy-align', {'on': 'EasyAlign'}
-    " Jetpack 'lilydjwg/colorizer', {'do': 'make'} " colorize rgb rgba texts
-    " Jetpack 'chrisbra/Colorizer'
-    " Jetpack 'majutsushi/tagbar' " tag bar toggle
-    " Jetpack 'nathanaelkane/vim-indent-guides' " show indent guide
-    " Jetpack 'Yggdroot/indentLine'
-    " Jetpack 'w0rp/ale' " lint plugin
-    Jetpack 'tyru/caw.vim' " comment out
-    " Jetpack 'rizzatti/dash.vim', {'on': 'Dash'}
-    " Jetpack 'terryma/vim-multiple-cursors' " multiple cursors
-    " Jetpack 'tpope/vim-surround'
-    " Jetpack 'vim-scripts/sudo.vim'
-    " Jetpack 'glacambre/firenvim', { 'do': { _ -> firenvim#install(0) } }
-    " Jetpack 'ozelentok/denite-gtags'
-    " Jetpack 'jsfaint/gen_tags.vim'
-    " Jetpack 'vim-scripts/gtags.vim'
-    " Jetpack 'autozimu/LanguageClient-neovim', {
-        "\ 'branch': 'next',
-        "\ 'do': 'zsh install.sh',
-        "\ }
-    " Jetpack 'prabirshrestha/async.vim'
-    " Jetpack 'prabirshrestha/vim-lsp'
-    " Jetpack 'prabirshrestha/asyncomplete.vim'
-    " Jetpack 'prabirshrestha/asyncomplete-lsp.vim'
-    " Jetpack 'natebosch/vim-lsc'
-    " Jetpack 'echuraev/translate-shell.vim' ", { 'do': 'wget -O /usr/local/bin/trans git.io/trans && chmod a+x /usr/local/bin/trans' }
-" ---- Vim Setting
-    " Jetpack 'Shougo/neco-vim', {'for': 'vim'}
-    " Jetpack 'Shougo/neco-syntax', {'for': 'vim'}
-" ---- Yaml Setting
-    " Jetpack 'stephpy/vim-yaml', {'for': ['yaml','yml']}
-" ---- Clang Setting
-    " Jetpack 'zchee/deoplete-clang', {'for': ['c', 'cpp', 'cxx', 'cmake', 'clang']}
-" ---- Golang Setting
     Jetpack 'mattn/vim-goimports', {'for': 'go'}
-    " Jetpack 'jodosha/vim-godebug', {'for': 'go'} " delve Debuger
-    Jetpack 'tweekmonster/hl-goimport.vim', {'for': 'go'} " highlight package name
-" ---- Proto
-    " Jetpack 'uber/prototool', {'for': 'proto', 'rtp':'vim/prototool'}
-" ---- HTML
-"     Jetpack 'digitaltoad/vim-jade', { 'for': ['jade', 'pug'] }
-"     Jetpack 'gregsexton/MatchTag', { 'for': ['html','php'] }
-"     Jetpack 'hokaccha/vim-html5validator', {'for': ['html', 'php']}
-"     Jetpack 'mattn/emmet-vim', {'for': ['html', 'php']}
-"     Jetpack 'mustache/vim-mustache-handlebars', { 'for': ['html','php','haml'] }
-"     Jetpack 'othree/html5.vim', {'for': ['html', 'php']}
-"     Jetpack 'tpope/vim-haml', {'for': 'haml'}
-" " ---- LESS SASS CSS
-"     Jetpack 'ap/vim-css-color', {'for': ['css','less','sass','scss','stylus'] }
-"     Jetpack 'cakebaker/scss-syntax.vim', { 'for': ['sass','scss'] }
-"     Jetpack 'groenewege/vim-less', {'for': 'less'}
-"     Jetpack 'hail2u/vim-css3-syntax', {'for': ['css','less','sass','scss','stylus'] }
-"     Jetpack 'wavded/vim-stylus', {'for': ['stylus']}
-" " ---- JavaScript
-"     " Jetpack 'ryanolsonx/vim-lsp-javascript', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-"     " Jetpack 'ryanolsonx/vim-lsp-typescript', { 'for': 'typescript' }
-"     " Jetpack 'ternjs/tern_for_vim', { 'for': ['javascript', 'javascript.jsx'] }
-"     " Jetpack 'carlitux/deoplete-ternjs', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'], 'do': 'npm install -g tern' }
-"     " Jetpack 'itspriddle/vim-jquery', {'for': ['javascript', 'javascript.jsx', 'html']}
-"     " Jetpack 'jason0x43/vim-js-indent', { 'for': ['javascript', 'javascript.jsx', 'typescript', 'html'] }
-"     " Jetpack 'kchmck/vim-coffee-script', {'for': 'coffee'}
-"     " Jetpack 'leafgarland/typescript-vim', { 'for': 'typescript' }
-"     " Jetpack 'mhartington/deoplete-typescript', { 'for': 'typescript' }
-"     " Jetpack 'mxw/vim-jsx', { 'for': ['javascript.jsx'] }
-"     " Jetpack 'posva/vim-vue', { 'for': ['vue'] }
-"     " Jetpack 'othree/jspc.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-"     " Jetpack 'othree/yajs.vim', { 'for': ['js', 'javascript', 'javascript.jsx', 'json', 'vue'] }
-"     " Jetpack 'pangloss/vim-javascript', { 'for': ['javascript', 'javascript.jsx'] }
-"     " Jetpack 'ramitos/jsctags', {'for': ['javascript', 'javascript.jsx', 'json']}
-" " ---- Dart
-"     Jetpack 'dart-lang/dart-vim-plugin', {'for': 'dart'}
-"     Jetpack 'miyakogi/vim-dartanalyzer', {'for': 'dart'}
-" " ---- Crystal
-"     Jetpack 'rhysd/vim-crystal', {'for': ['crystal'] }
-" " ---- Nim
-"     Jetpack 'zah/nim.vim', {'for': 'nim'}
-" " ---- Rust
-    Jetpack 'rust-lang/rust.vim', {'for': 'rust'}
-"     " Jetpack 'sebastianmarkow/deoplete-rust', {'for': 'rust'}
-"     Jetpack 'rhysd/rust-doc.vim', {'for': 'rust', 'on': ['RustDoc', 'Denite']}
-" " ---- Python
-"     " Jetpack 'zchee/deoplete-jedi', {'for': ['python', 'python3','djangohtml'], 'do': 'pip install jedi;pip3 install jedi'}
-"     " Jetpack 'ryanolsonx/vim-lsp-python', {'for': ['python', 'python3','djangohtml'] }
-" " ---- Lisp
-"     Jetpack 'vim-scripts/slimv.vim', {'for': 'lisp'}
-" " ---- Lua
-"     Jetpack 'xolox/vim-misc', {'for': 'lua'}
-"     Jetpack 'xolox/vim-lua-ftplugin', {'for': 'lua'}
-"     Jetpack 'xolox/vim-lua-inspect', {'for': 'lua'}
-" " ---- Swift
-"     Jetpack 'keith/swift.vim', {'for': 'swift'}
-"     Jetpack 'kballard/vim-swift', {'for': 'swift'}
-" "     Jetpack 'landaire/deoplete-swift', {'for': 'swift'}
-"     Jetpack 'mitsuse/autocomplete-swift', {'for': 'swift'}
-" " ---- Markdown
-"     Jetpack 'previm/previm', {'for': 'markdown'}
-"     Jetpack 'plasticboy/vim-markdown', {'for': 'markdown'}
-"     Jetpack 'shinespark/vim-list2tree', {'for': 'markdown', 'on': 'List2Tree'}
-"     Jetpack 'tyru/open-browser.vim', {'for': 'markdown'}
-" " ---- SQL
-"     Jetpack 'JarrodCTaylor/vim-sql-suggest', { 'for': 'sql' }
-" " ---- TOML
-"     Jetpack 'cespare/vim-toml', {'for': 'toml'}
-" " ---- LLVM
-"     Jetpack 'qnighy/llvm.vim', {'for': 'llvm'}
-" " ---- ZSH
-"     " Jetpack 'zchee/deoplete-zsh', {'for': 'zsh'}
-" " ---- Nix
-"     Jetpack 'LnL7/vim-nix', {'for': 'nix'}
+    Jetpack 'neovim/nvim-lspconfig'
+    Jetpack 'sbdchd/neoformat'
+    Jetpack 'tani/ddc-fuzzy'
+    Jetpack 'tani/vim-jetpack', {'opt': 1}
+    Jetpack 'tyru/caw.vim' " comment out
+    Jetpack 'vim-denops/denops.vim', { 'branch': 'master' }
+    Jetpack 'williamboman/mason-lspconfig.nvim'
+    Jetpack 'williamboman/mason.nvim'
+    Jetpack 'editorconfig/editorconfig-vim'
 call jetpack#end()
 
 " --------------------------------------
@@ -200,225 +94,6 @@ augroup END
 command! -nargs=* Autocmd autocmd AutoGroup <args>
 command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
 
-" ----------------------
-" ---- Ale settings ----
-" ----------------------
-" let g:ale_enabled = 1
-" let g:ale_keep_list_window_open = 0
-" let g:ale_list_window_size = 5
-" let g:ale_open_list = 1
-" let g:ale_set_highlights = 1
-" " let g:ale_set_loclist = 0
-" " let g:ale_set_quickfix = 1
-" let g:ale_warn_about_trailing_whitespace = 0
-" let g:ale_linters = {
-"        \   'c': ['clang'],
-"        \   'cpp': ['clang++'],
-"        \   'css': ['csslint', 'stylelint'],
-"        \   'go': ['go build', 'golangci-lint'],
-"        \   'html': ['tidy', 'htmlhint'],
-"        \   'javascript': ['eslint_d'],
-"        \   'nim': ['nim', 'nimsuggest'],
-"        \   'php': ['php', 'phpcs', 'phpmd'],
-"        \   'python': ['python', 'pyflakes', 'flake8'],
-"        \   'rust': ['rustc'],
-"        \   'shell': ['sh', 'shellcheck'],
-"        \   'sql': ['sqlint'],
-"        \   'swift': ['swiftc'],
-"        \   'vim': ['vint'],
-"        \   'zsh': ['zsh'],
-"        \}
-"         "\   'proto': ['prototool'],
-" let g:ale_lint_on_text_changed = 'never'
-" let g:ale_lint_on_save = 1
-" let g:ale_lint_on_enter = 1
-" let g:ale_sign_column_always = 1
-" let g:ale_sign_error = '⨉'
-" let g:ale_sign_warning = '⚠'
-" let g:ale_sign_info = 'i'
-" let g:ale_statusline_format = ['%d error(s)', '%d warning(s)', 'OK']
-" let g:ale_echo_cursor = 1
-" let g:ale_echo_msg_error_str = 'ERROR'
-" let g:ale_echo_msg_warning_str = 'WARNING'
-" let g:ale_echo_msg_format = '[%linter%] %s [%severity%]'
-" nnoremap <silent> <C-k> <Plug>(ale_previous_wrap)
-" nnoremap <silent> <C-j> <Plug>(ale_next_wrap)
-" " Close Quickfix list when file leave
-" Autocmd WinEnter * if (winnr('$') == 1) && (getbufvar(winbufnr(0), '&buftype')) == 'quickfix' | quit | endif
-"
-" AutocmdFT go let g:ale_go_golangci_lint_options = '--enable-all --disable=gochecknoglobals --disable=gochecknoinits --disable=typecheck --disable=lll --enable=gosec --enable=prealloc'
-
-" --------------------------------------------------
-" ---- Language Server Protocol Client settings ----
-" --------------------------------------------------
-
-" Tab補完
-function! s:completion_check_bs()
-    let l:col = col('.') - 1
-    return !l:col || getline('.')[l:col - 1] =~? '\s'
-endfunction
-
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>completion_check_bs() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>
-nmap <silent> [c <Plug>(coc-diagnostic-prev)
-nmap <silent> ]c <Plug>(coc-diagnostic-next)
-
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-Autocmd CursorHold * silent call CocActionAsync('highlight')
-" Remap for rename current word
-nmap <leader>rn <Plug>(coc-rename)
-
-" Remap for format selected region
-vmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-
-vmap <leader>a <Plug>(coc-codeaction-selected)
-nmap <leader>a <Plug>(coc-codeaction-selected)
-
-" Using CocList
-" Show all diagnostics
-nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions
-nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-" Show commands
-nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document
-nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols
-nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list
-nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
-
-let g:coc_global_extensions = [
-     \ 'coc-cspell-dicts',
-     \ 'coc-diagnostic',
-     \ 'coc-git',
-     \ 'coc-gitignore',
-     \ 'coc-spell-checker',
-     \ 'coc-tabnine',
-     \ 'coc-go',
-     \ 'coc-rust-analyzer',
-     \]
-" let g:coc_global_extensions = [
-"     \ 'coc-actions',
-"     \ 'coc-angular',
-"     \ 'coc-calc',
-"     \ 'coc-clock',
-"     \ 'coc-css',
-"     \ 'coc-emmet',
-"     \ 'coc-emoji',
-"     \ 'coc-eslint',
-"     \ 'coc-explorer',
-"     \ 'coc-flutter',
-"     \ 'coc-git',
-"     \ 'coc-gitignore',
-"     \ 'coc-go',
-"     \ 'coc-highlight',
-"     \ 'coc-html',
-"     \ 'coc-imselect',
-"     \ 'coc-java',
-"     \ 'coc-jest',
-"     \ 'coc-json',
-"     \ 'coc-lists',
-"     \ 'coc-marketplace',
-"     \ 'coc-pairs',
-"     \ 'coc-post',
-"     \ 'coc-prettier',
-"     \ 'coc-project',
-"     \ 'coc-pyls',
-"     \ 'coc-rls',
-"     \ 'coc-smartf',
-"     \ 'coc-snippets',
-"     \ 'coc-solargraph',
-"     \ 'coc-spell-checker',
-"     \ 'coc-stylelint',
-"     \ 'coc-svelte',
-"     \ 'coc-svg',
-"     \ 'coc-tailwindcss',
-"     \ 'coc-tslint-plugin',
-"     \ 'coc-tsserver',
-"     \ 'coc-vetur',
-"     \ 'coc-vimlsp',
-"     \ 'coc-webpack',
-"     \ 'coc-wxml',
-"     \ 'coc-yaml',
-"     \ 'coc-yank',
-"     \ 'coc-zi',
-"     \ 'https://github.com/xabikos/vscode-javascript',
-"     \ 'https://github.com/xabikos/vscode-react'
-"     \]
-"       "\ 'coc-tabnine',
-
-" -------------------------
-" ---- Denite settings ----
-" -------------------------
-" nnoremap <silent> <C-k><C-f> :<C-u>Denite file_rec<CR>
-" nnoremap <silent> <C-k><C-g> :<C-u>Denite grep -mode=normal -buffer-name=search-buffer-denite<CR>
-" nnoremap <silent> <C-k><C-r> :<C-u>Denite -resume -buffer-name=search-buffer-denite<CR>
-" nnoremap <silent> <C-k><C-n> :<C-u>Denite -resume -buffer-name=search-buffer-denite -select=+1 -immediately<CR>
-" nnoremap <silent> <C-k><C-p> :<C-u>Denite -resume -buffer-name=search-buffer-denite -select=-1 -immediately<CR>
-" nnoremap <silent> <C-k><C-l> :<C-u>Denite line<CR>
-" nnoremap <silent> <C-k><C-u> :<C-u>Denite file_mru -mode=normal buffer<CR>
-" nnoremap <silent> <C-k><C-y> :<C-u>Denite neoyank<CR>
-" nnoremap <silent> <C-k><C-b> :<C-u>Denite buffer<CR>
-"
-" " 選択しているファイルをsplitで開く
-" call denite#custom#map('_', '<C-h>','<denite:do_action:split>')
-" call denite#custom#map('insert', '<C-h>','<denite:do_action:split>')
-" " 選択しているファイルをvsplitで開く
-" call denite#custom#map('_', '<C-v>','<denite:do_action:vsplit>')
-" call denite#custom#map('insert','<C-v>', '<denite:do_action:vsplit>')
-" " jjコマンドで標準モードに戻る
-" call denite#custom#map('insert', 'jj', '<denite:enter_mode:normal>')
-" " ESCキーでdeniteを終了
-" call denite#custom#map('insert', '<esc>', '<denite:enter_mode:normal>', 'noremap')
-" call denite#custom#map('normal', '<esc>', '<denite:quit>', 'noremap')
-"
-" if executable('rg')
-"     call denite#custom#var('file_rec', 'command', ['rg', '--files', '--glob', '!.git'])
-"     call denite#custom#var('grep', 'command', ['rg'])
-"     call denite#custom#var('grep', 'recursive_opts', [])
-"     call denite#custom#var('grep', 'final_opts', [])
-"     call denite#custom#var('grep', 'separator', ['--'])
-"     call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
-" else
-"     call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
-" endif
-" "
-" プロンプトの左端に表示される文字を指定
-" call denite#custom#option('default', 'prompt', '>')
-" deniteの起動位置をtopに変更
-" call denite#custom#option('default', 'direction', 'top')
-"
-" let g:trans_bin = '/usr/local/bin'
-"
-" let s:undo_dir = expand('$NVIM_HOME/cache/undo')
-" if !isdirectory(s:undo_dir)
-"   call mkdir(s:undo_dir, 'p')
-" endif
-" if has('persistent_undo')
-"   let &undodir = s:undo_dir
-"   set undofile
-" endif
-
-" ------------------------------
-" ---- Status line settings ----
-" ------------------------------
-" set statusline+=%#warningmsg#
-" set statusline+=%{ALEGetStatusLine()}
-" set statusline+=%*
-
 " ----------------------------
 " ---- File type settings ----
 " ----------------------------
@@ -438,130 +113,228 @@ Autocmd BufNewFile,BufRead *.{[Dd]ockerfile,[Dd]ock} set filetype=dockerfile
 Autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
 Autocmd BufNewFile,BufRead *.rasi set filetype=css
 
-" ------------------------------
-" ---- Indentation settings ----
-" ------------------------------
-" let g:indent_guides_enable_on_vim_startup=1
-" let g:indent_guides_start_level=2
-" let g:indent_guides_auto_colors=0
-" let g:indent_guides_color_change_percent = 30
-" let g:indent_guides_guide_size = 1
-" let g:indentLine_faster = 1
-" nmap <silent><Leader>i :<C-u>IndentLinesToggle<CR>
+" ----------------------------
+" ---- lspconfig settings ----
+" ----------------------------
+lua << EOF
+local nvim_lsp = require('lspconfig')
 
-" AutocmdFT coffee,javascript,javascript.jsx,jsx,json setlocal sw=2 sts=2 ts=2 expandtab completeopt=menu,preview omnifunc=nodejscomplete#CompleteJS omnifunc=lsp#complete
-" AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview omnifunc=lspcomplete
-" AutocmdFT go setlocal noexpandtab sw=4 ts=4 completeopt=menu,menuone,preview,noselect,noinsert
-" AutocmdFT html,xhtml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
-" AutocmdFT nim setlocal noexpandtab sw=4 ts=4 completeopt=menu,preview
-" AutocmdFT python setlocal smartindent expandtab sw=4 ts=8 sts=4 colorcolumn=79 completeopt=menu,preview formatoptions+=croq cinwords=if,elif,else,for,while,try,except,finally,def,class,with omnifunc=lsp#complete
-" AutocmdFT rust setlocal smartindent expandtab ts=4 sw=4 sts=4 completeopt=menu,preview omnifunc=lsp#complete
-" AutocmdFT sh,zsh,markdown setlocal expandtab ts=4 sts=4 sw=4 completeopt=menu,preview
-" AutocmdFT xml setlocal smartindent expandtab ts=2 sw=2 sts=2 completeopt=menu,preview
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+  --Enable completion triggered by <c-x><c-o>
+  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  local opts = { noremap=true, silent=true }
+
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+end
+
+nvim_lsp.rust_analyzer.setup{
+    on_attach = on_attach,
+}
+
+nvim_lsp.gopls.setup{
+    on_attach = on_attach,
+}
+
+-- ----------------------
+-- ---- ddc settings ----
+-- ----------------------
+ local mason = require('mason')
+ mason.setup({
+   ui = {
+     icons = {
+       package_installed = "✓",
+       package_pending = "➜",
+       package_uninstalled = "✗"
+     }
+   }
+ })
+
+ local mason_lspconfig = require('mason-lspconfig')
+ mason_lspconfig.setup_handlers({ function(server_name)
+   local opts = {}
+   opts.on_attach = function(_, bufnr)
+     local bufopts = { silent = true, buffer = bufnr }
+     vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+     vim.keymap.set('n', 'gtD', vim.lsp.buf.type_definition, bufopts)
+     vim.keymap.set('n', 'grf', vim.lsp.buf.references, bufopts)
+     vim.keymap.set('n', '<space>p', vim.lsp.buf.format, bufopts)
+  end
+   nvim_lsp[server_name].setup(opts)
+ end })
+EOF
 
 " --------------------------
-" ---- Tag bar settings ----
+" ---- ddc lsp settings ----
 " --------------------------
-" nmap <F8> :TagbarToggle<CR>
-" set updatetime=300
-"
-" let g:tagbar_left = 0
-" let g:tagbar_autofocus = 1
-" AutocmdFT go let g:tagbar_type_go = {
-"                \ 'ctagstype' : 'go',
-"                \ 'kinds'     : [
-"                    \ 'p:package',
-"                    \ 'i:imports',
-"                    \ 'c:constants',
-"                    \ 'v:variables',
-"                    \ 't:types',
-"                    \ 'n:interfaces',
-"                    \ 'w:fields',
-"                    \ 'e:embedded',
-"                    \ 'm:methods',
-"                    \ 'r:constructor',
-"                    \ 'f:functions'
-"                \ ],
-"                \ 'sro' : '.',
-"                \ 'kind2scope' : {
-"                    \ 't' : 'ctype',
-"                    \ 'n' : 'ntype'
-"                \ },
-"                \ 'scope2kind' : {
-"                    \ 'ctype' : 't',
-"                    \ 'ntype' : 'n'
-"                \ },
-"                \ 'ctagsbin'  : 'gotags',
-"                \ 'ctagsargs' : '-sort -silent'
-"            \ }
-" AutocmdFT nim let g:tagbar_type_nim = {
-"            \ 'ctagstype' : 'nim',
-"            \ 'kinds' : [
-"            \   'h:Headline',
-"            \   't:class',
-"            \   't:enum',
-"            \   't:tuple',
-"            \   't:subrange',
-"            \   't:proctype',
-"            \   'f:procedure',
-"            \   'f:method',
-"            \   'o:operator',
-"            \   't:template',
-"            \   'm:macro',
-"            \ ],
-"            \ }
-" AutocmdFT ruby let g:tagbar_type_ruby = {
-"            \ 'ctagstype' : 'ruby',
-"            \ 'kinds' : [
-"            \   'm:modules',
-"            \   'c:classes',
-"            \   'd:describes',
-"            \   'C:contexts',
-"            \   'f:methods',
-"            \   'F:singleton methods'
-"            \ ]
-"            \}
-"
-" " -------------------------
-" " ---- Format settings ----
-" " -------------------------
-" "  JSON Formatter
-" if executable('jq')
-"     function! s:jq(has_bang, ...) abort range
-"         execute 'silent' a:firstline ',' a:lastline '!jq' string(a:0 == 0 ? '.' : a:1)
-"         if !v:shell_error || a:has_bang
-"             return
-"         endif
-"         let l:error_lines = filter(getline('1', '$'), 'v:val =~# "^parse error: "')
-"         " 範囲指定している場合のために，行番号を置き換える
-"         let l:error_lines = map(l:error_lines, 'substitute(v:val, "line \\zs\\(\\d\\+\\)\\ze,", "\\=(submatch(1) + a:firstline - 1)", "")')
-"         let l:winheight = len(l:error_lines) > 10 ? 10 : len(l:error_lines)
-"         " カレントバッファがエラーメッセージになっているので，元に戻す
-"         undo
-"         " カレントバッファの下に新たにウィンドウを作り，エラーメッセージを表示するバッファを作成する
-"         execute 'botright' l:winheight 'new'
-"         setlocal nobuflisted bufhidden=unload buftype=nofile
-"         call setline(1, l:error_lines)
-"         " エラーメッセージ用バッファのundo履歴を削除(エラーメッセージをundoで消去しないため)
-"         let l:save_undolevels = &l:undolevels
-"         setlocal undolevels=-1
-"         execute "normal! a \<BS>\<Esc>"
-"         setlocal nomodified
-"         let &l:undolevels = l:save_undolevels
-"         " エラーメッセージ用バッファは読み取り専用にしておく
-"         setlocal readonly
-"     endfunction
-"     command! -bar -bang -range=% -nargs=? Jq <line1>,<line2>call s:jq(<bang>0, <f-args>)
-" endif
+call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'around', 'file'])
+call ddc#custom#patch_global('sourceOptions', {
+      \ '_': {
+      \   'matchers': ['matcher_fuzzy', 'matcher_head'],
+      \   'sorters': ['sorter_fuzzy', 'sorter_rank'],
+      \   'converters': ['converter_fuzzy']
+      \ },
+      \ 'tabnine': {
+      \   'mark': 'TN',
+      \   'maxCandidates': 5,
+      \   'isVolatile': v:true,
+      \ },
+      \ 'nvim-lsp': {
+      \   'mark': 'lsp',
+      \   'matchers': ['matcher_head'],
+      \   'forceCompletionPattern': '\.\w*|:\w*|->\w*'
+      \ },
+      \ 'around': {'mark': 'A'},
+      \ 'file': {
+      \   'mark': 'file',
+      \   'isVolatile': v:true,
+      \   'forceCompletionPattern': '\S/\S*'
+      \ }})
 
-" -------------------------
-" ---- Lexima settings ----
-" -------------------------
-call lexima#add_rule({'char': '$', 'input_after': '$', 'filetype': 'latex'})
-call lexima#add_rule({'char': '$', 'at': '\%#\$', 'leave': 1, 'filetype': 'latex'})
-call lexima#add_rule({'char': '<BS>', 'at': '\$\%#\$', 'delete': 1, 'filetype': 'latex'})
-call lexima#add_rule({'at': '\%#.*[-0-9a-zA-Z_,:]', 'char': '{', 'input': '{'})
-call lexima#add_rule({'at': '\%#\n\s*}', 'char': '}', 'input': '}', 'delete': '}'})
+call ddc#custom#patch_global('sourceParams', {
+      \ 'around': {'maxSize': 500},
+      \ 'nvim-lsp': { 'kindLabels': { 'Class': 'c' } },
+      \ })
+
+inoremap <silent><expr> <TAB>
+      \ ddc#map#pum_visible() ? '<C-n>' :
+      \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
+      \ '<TAB>' : ddc#map#manual_complete()
+inoremap <expr><S-TAB>  ddc#map#pum_visible() ? '<C-p>' : '<C-h>'
+
+" ----------------------------
+" ---- ddc fuzzy settings ----
+" ----------------------------
+call ddc#custom#patch_global('completionMenu', 'pum.vim')
+call ddc#custom#patch_global('filterParams', {
+  \   'matcher_fuzzy': {
+  \     'splitMode': 'word'
+  \   },
+  \   'converter_fuzzy': {
+  \     'hlGroup': 'SpellBad'
+  \   }
+  \ })
+
+" -----------------------------------------------------------------
+" ---- ddc completion selector settings with ddc-fuzzy and pum ----
+" -----------------------------------------------------------------
+inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+inoremap <C-p>   <Cmd>call pum#map#select_relative(-1)<CR>
+inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+inoremap <PageDown> <Cmd>call pum#map#insert_relative_page(+1)<CR>
+inoremap <PageUp>   <Cmd>call pum#map#insert_relative_page(-1)<CR>
+inoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+
+inoremap <silent><expr> <TAB>
+      \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+      \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
+      \ '<TAB>' : ddc#manual_complete()
+
+inoremap <silent><expr> <Down>
+      \ pum#visible() ? '<Cmd>call pum#map#select_relative(+1)<CR>' :
+      \ '<Down>'
+inoremap <silent><expr> <Up>
+      \ pum#visible() ? '<Cmd>call pum#map#select_relative(-1)<CR>' :
+      \ '<Up>'
+inoremap <silent><expr> <CR>
+      \ pum#visible() ? '<Cmd>call pum#map#confirm()<CR>' :
+      \ '<CR>'
+
+call ddc#custom#patch_global('autoCompleteEvents', [
+    \ 'InsertEnter', 'TextChangedI', 'TextChangedP',
+    \ 'CmdlineEnter', 'CmdlineChanged',
+    \ ])
+
+" nnoremap :       <Cmd>call CommandlinePre()<CR>:
+"
+" function! CommandlinePre() abort
+"   " Note: It disables default command line completion!
+"   cnoremap <expr> <Tab>
+"  \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+"  \ ddc#manual_complete()
+"   cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+"   cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+"   cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+"
+"   " Overwrite sources
+"   if !exists('b:prev_buffer_config')
+"     let b:prev_buffer_config = ddc#custom#get_buffer()
+"   endif
+"   call ddc#custom#patch_buffer('sources',
+"          \ ['cmdline', 'cmdline-history', 'around'])
+"
+"   autocmd User DDCCmdlineLeave ++once call CommandlinePost()
+"   autocmd InsertEnter <buffer> ++once call CommandlinePost()
+"
+"   " Enable command line completion
+"   call ddc#enable_cmdline_completion()
+" endfunction
+"
+" function! CommandlinePost() abort
+"   cunmap <Tab>
+"   cunmap <S-Tab>
+"   cunmap <C-y>
+"   cunmap <C-e>
+"
+"   " Restore sources
+"   if exists('b:prev_buffer_config')
+"     call ddc#custom#set_buffer(b:prev_buffer_config)
+"     unlet b:prev_buffer_config
+"   else
+"     call ddc#custom#set_buffer({})
+"   endif
+" endfunction
+
+" --------------------
+" ---- enable ddc ----
+" --------------------
+call ddc#enable()
+
+" --------------------------
+" ---- deoppet settings ----
+" --------------------------
+call deoppet#initialize()
+call deoppet#custom#option('snippets',
+\ map(globpath(&runtimepath, 'neosnippets', 1, 1),
+\     { _, val -> { 'path': val } }))
+
+imap <C-k>  <Plug>(deoppet_expand)
+imap <C-f>  <Plug>(deoppet_jump_forward)
+imap <C-b>  <Plug>(deoppet_jump_backward)
+smap <C-f>  <Plug>(deoppet_jump_forward)
+smap <C-b>  <Plug>(deoppet_jump_backward)
+
+" Use deoppet source.
+call ddc#custom#patch_global('sources', ['deoppet'])
+
+" Change source options
+call ddc#custom#patch_global('sourceOptions', {
+      \ 'deoppet': {'dup': v:true, 'mark': 'dp'},
+      \ })
 
 " ----------------------------
 " ---- gitgutter settings ----
@@ -579,148 +352,12 @@ nmap <C-C> <Plug>(caw:hatpos:toggle)
 vmap <C-C> <Plug>(caw:hatpos:toggle)
 
 " -------------------------
-" ---- Golang settings ----
-" -------------------------
-" command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
-" Autocmd BufWritePre *.go :OR
-" Autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
-
-" ------------------------
-" ---- Clang settings ----
-" ------------------------
-Autocmd BufWritePre *.cpp,*.c,*.cc,*.hpp call vimproc#system_bg("clang-format -style='Google' -i " . expand("%"))
-
-" ---------------------------
-" ---- protobuf settings ----
-" ---------------------------
-Autocmd BufWritePre *.proto,*.pb,*.protobuf Neoformat
-
-" ----------------------
-" ---- Nim settings ----
-" ----------------------
-AutocmdFT nim let g:nvim_nim_enable_async = 0
-
-" -----------------------
-" ---- Rust settings ----
-" -----------------------
-" Autocmd BufWritePre *.rust RustFmt
-" AutocmdFT BufWritePost *.rs QuickRun -type syntax/rust
-" AutocmdFT rust let g:rustfmt_autosave = 1
-" AutocmdFT rust let g:rustfmt_command = system('which rustfmt')
-" AutocmdFT rust let g:rustfmt_options = "--write-mode=overwrite"
-" AutocmdFT rust let g:racer_cmd = system('which racer')
-
-" -----------------------
-" ---- Swift settings ----
-" -----------------------
-" AutocmdFT swift let g:neomake_swift_swiftc_maker = {
-"                \ 'exe': 'swiftc',
-"                \ 'args': ['-parse'],
-"                \ 'errorformat': {
-"                \ '%E%f:%l:%c: error: %m,' .
-"                \ '%W%f:%l:%c: warning: %m,' .
-"                \ '%Z%\s%#^~%#,' .
-"                \ '%-G%.%#'
-"                \ },
-"                \ }
-" AutocmdFT swift let g:quickrun_config['swift'] = {
-"                \ 'command': 'xcrun',
-"                \ 'cmdopt': 'swift',
-"                \ 'exec': '%c %o %s',
-"                \}
-
-" -----------------------
-" ---- Ruby settings ----
-" -----------------------
-" AutocmdFT ruby let g:rubycomplete_buffer_loading = 1
-" AutocmdFT ruby let g:rubycomplete_classes_in_global = 1
-" AutocmdFT ruby let g:rubycomplete_rails = 1
-" AutocmdFT ruby map <Leader>t :call RunCurrentSpecFile()<CR>
-" AutocmdFT ruby map <Leader>s :call RunNearestSpec()<CR>
-" AutocmdFT ruby map <Leader>l :call RunLastSpec()<CR>
-" AutocmdFT ruby map <Leader>a :call RunAllSpecs()<CR>
-" AutocmdFT ruby nnoremap <leader>rap  :RAddParameter<cr>
-" AutocmdFT ruby nnoremap <leader>rcpc :RConvertPostConditional<cr>
-" AutocmdFT ruby nnoremap <leader>rel  :RExtractLet<cr>
-" AutocmdFT ruby vnoremap <leader>rec  :RExtractConstant<cr>
-" AutocmdFT ruby vnoremap <leader>relv :RExtractLocalVariable<cr>
-" AutocmdFT ruby nnoremap <leader>rit  :RInlineTemp<cr>
-" AutocmdFT ruby vnoremap <leader>rrlv :RRenameLocalVariable<cr>
-" AutocmdFT ruby vnoremap <leader>rriv :RRenameInstanceVariable<cr>
-" AutocmdFT ruby vnoremap <leader>rem  :RExtractMethod<cr>
-
-" -----------------------------
-" ---- JavaScript settings ----
-" -----------------------------
-" Autocmd BufWritePre *.js,*.jsx,*.coffee EsFix
-" Autocmd BufWritePre *.js,*.jsx,*.coffee Neoformat
-" AutocmdFT coffee,javascript,javascript.jsx,json let g:node_usejscomplete = 1
-" AutocmdFT coffee,javascript,javascript.jsx,json let g:tern_request_timeout = 1
-" AutocmdFT coffee,javascript,javascript.jsx,json let g:tern_show_signature_in_pum = '0'
-" AutocmdFT coffee,javascript,javascript.jsx,json let g:jsx_ext_required = 1        " ファイルタイプがjsxのとき読み込む．
-" AutocmdFT coffee,javascript,javascript.jsx,json let g:js_indent_typescript = 1
-" AutocmdFT coffee,javascript,javascript.jsx,json let g:tagbar_type_javascript = {'ctagsbin' : system('which jsctags')}
-" AutocmdFT coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
-" Autocmd VimLeave *.js  !eslint_d stop
-
-" -----------------------------
-" ---- TypeScript settings ----
-" -----------------------------
-" Autocmd BufWritePre *.ts EsFix
-" Autocmd BufWritePre *.ts Neoformat
-" AutocmdFT coffee,javascript,javascript.jsx,json command! EsFix :call vimproc#system_bg("eslint --fix " . expand("%"))
-" AutocmdFT typescript let g:neomake_typescript_tsc_maker = {
-"                \ 'args': [
-"                \ '--project', getcwd(), '--noEmit'
-"                \ ],
-"                \ 'append_file': 0,
-"                \ 'errorformat':
-"                \ '%E%f %#(%l\,%c): error %m,' .
-"                \ '%E%f %#(%l\,%c): %m,' .
-"                \ '%Eerror %m,' .
-"                \ '%C%\s%\+%m'
-"                \ }
-" Autocmd VimLeave *.ts  !eslint_d stop
-
-" -----------------------
-" ---- HTML settings ----
-" -----------------------
-" AutocmdFT html,xhtml imap <buffer><expr><tab> emmet#isExpandable() ? "\<plug>(emmet-expand-abbr)" : "\<tab>"
-
-" ---------------------------
-" ---- Markdown settings ----
-" ---------------------------
-" AutocmdFT md,markdown let g:previm_open_cmd = 'open -a Google\ Chrome'
-" AutocmdFT md,markdown let g:vim_markdown_folding_disabled = 1
-
-" ------------------------
-" ---- Shell settings ----
-" ------------------------
-" AutocmdFT *.zsh,*.bash,*.sh,zshrc let g:neoformat_zsh_shfmt = {
-"      \   'exe': 'shfmt',
-"      \   'args': ['-l','-w','-s','-i', 4],
-"      \   'stdin': 1,
-"      \ }
-" Autocmd BufWritePre *.zsh,*.bash,*.sh,zshrc Neoformat
-
-" ------------------------
-" ---- Other settings ----
-" ------------------------
-" ---- Enable Binary Mode
-" Autocmd BufReadPre  *.bin let &binary = 1
-" Autocmd BufReadPost * if &binary | silent %!xxd -g 1
-" Autocmd BufReadPost * set ft=xxd | endif
-" Autocmd BufWritePre * if &binary | %!xxd -r | endif
-" Autocmd BufWritePost * if &binary | silent %!xxd -g 1
-" Autocmd BufWritePost * set nomod | endif
-
-" -------------------------
 " ---- Default Setting ----
 " -------------------------
 
 set completeopt=menu,preview,noinsert
 
-set helplang=ja
+" set helplang=ja
 
 " ---- Enable Word Wrap
 set wrap
