@@ -12,14 +12,14 @@ filetype off
 filetype plugin indent off
 
 " --------------------------
-" ---- Install vim-plug ----
+" ---- Install jetpack ----
 " --------------------------
 if has('vim_starting')
-    set runtimepath+=~/.config/nvim/plugged/vim-plug
-    if !isdirectory(expand('$NVIM_HOME') . '/plugged/vim-plug')
-        call system('mkdir -p ~/.config/nvim/plugged/vim-plug')
-        call system('git clone --depth 1 https://github.com/junegunn/vim-plug.git ', expand('$NVIM_HOME/plugged/vim-plug/autoload'))
-    end
+    let s:jetpackfile = expand('<sfile>:p:h') .. '/pack/jetpack/opt/vim-jetpack/plugin/jetpack.vim'
+    let s:jetpackurl = "https://raw.githubusercontent.com/tani/vim-jetpack/main/plugin/jetpack.vim"
+    if !filereadable(s:jetpackfile)
+      call system(printf('curl -fsSLo %s --create-dirs %s', s:jetpackfile, s:jetpackurl))
+    endif
 endif
 
 " let g:ale_completion_enabled = 1
@@ -27,7 +27,8 @@ endif
 " -------------------------
 " ---- Plugins Install ----
 " -------------------------
-call plug#begin(expand('$NVIM_HOME') . '/plugged')
+packadd vim-jetpack
+call jetpack#begin(expand('$NVIM_HOME'))
 " ----- update self
     Plug 'junegunn/vim-plug', {'dir': expand('$NVIM_HOME') . '/plugged/vim-plug/autoload'}
 " ---- common plugins
@@ -154,20 +155,20 @@ call plug#begin(expand('$NVIM_HOME') . '/plugged')
 "     " Plug 'zchee/deoplete-zsh', {'for': 'zsh'}
 " " ---- Nix
 "     Plug 'LnL7/vim-nix', {'for': 'nix'}
-call plug#end()
+call jetpack#end()
 
 " --------------------------------------
 " ---- Plugin Dependencies Settings ----
 " --------------------------------------
-if !has('python') && !has('pip')
-    call system('pip install --upgrade pip')
-    call system('pip install neovim --upgrade')
-endif
-
-if !has('python3') && !has('pip3')
-    call system('pip3 install --upgrade pip')
-    call system('pip3 install neovim --upgrade')
-endif
+" if !has('python') && !has('pip')
+"     call system('pip install --upgrade pip')
+"     call system('pip install neovim --upgrade')
+" endif
+"
+" if !has('python3') && !has('pip3')
+"     call system('pip3 install --upgrade pip')
+"     call system('pip3 install neovim --upgrade')
+" endif
 
 let g:python_host_skip_check = 1
 let g:python2_host_skip_check = 1
@@ -180,6 +181,14 @@ endif
 if executable('python3')
     let g:python3_host_prog=system('which python3')
 endif
+
+let g:jetpack#optimization = 1
+for name in jetpack#names()
+  if !jetpack#tap(name)
+    call jetpack#sync()
+    break
+  endif
+endfor
 
 " ----------------------------
 " ---- AutoGroup Settings ----
@@ -711,6 +720,8 @@ AutocmdFT nim let g:nvim_nim_enable_async = 0
 
 set completeopt=menu,preview,noinsert
 
+set helplang=ja
+
 " ---- Enable Word Wrap
 set wrap
 
@@ -719,7 +730,7 @@ set synmaxcol=2000
 
 " ---- highlight both bracket
 set showmatch matchtime=2
-set list listchars=tab:>\ ,trail:_,eol:↲,extends:»,precedes:«,nbsp:%
+set listchars=tab:>\ ,trail:_,eol:↲,extends:»,precedes:«,nbsp:%
 
 set display=lastline
 " ---- 2spaces width for ambient
@@ -787,6 +798,7 @@ set smarttab
 set softtabstop=0
 set autoindent
 set smartindent
+set showbreak=↪
 
 " ---- Indentation shiftwidth width
 set shiftround
@@ -869,12 +881,19 @@ nnoremap <silent> j gj
 nnoremap <silent> k gk
 nnoremap <silent> gj j
 nnoremap <silent> gk k
+inoremap <silent> jj <Esc>
+inoremap <silent> っj <ESC>
 
 " ウィンドウの移動をCtrlキーと方向指定でできるように
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-h> <Left>
+inoremap <C-l> <Right>
 
 " Esc2回で検索のハイライトを消す
 nnoremap <silent> <Esc><Esc> :<C-u>nohlsearch<CR>
@@ -891,6 +910,15 @@ noremap ; :
 inoremap <C-j> <esc>
 inoremap <C-s> <esc>:w<CR>
 nnoremap <C-q> :qall<CR>
+
+inoremap { {}<LEFT>
+inoremap [ []<LEFT>
+inoremap ( ()<LEFT>
+inoremap " ""<LEFT>
+inoremap ' ''<LEFT>
+let &t_SI = "\<Esc>]50;CursorShape=1\x7"
+let &t_EI = "\<Esc>]50;CursorShape=0\x7"
+inoremap <Esc> <Esc>lh
 
 " ---- Enable Filetype
 filetype plugin indent on

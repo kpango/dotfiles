@@ -357,7 +357,7 @@ vmap <C-C> <Plug>(caw:hatpos:toggle)
 
 set completeopt=menu,preview,noinsert
 
-" set helplang=ja
+set helplang=ja
 
 " ---- Enable Word Wrap
 set wrap
