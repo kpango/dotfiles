@@ -45,9 +45,10 @@ call jetpack#begin(expand('$NVIM_HOME'))
     Jetpack 'tani/ddc-fuzzy'
     Jetpack 'tani/vim-jetpack', {'opt': 1}
     Jetpack 'tyru/caw.vim' " comment out
-    Jetpack 'vim-denops/denops.vim'
+    Jetpack 'vim-denops/denops.vim', { 'branch': 'master' }
     Jetpack 'williamboman/mason-lspconfig.nvim'
     Jetpack 'williamboman/mason.nvim'
+    Jetpack 'editorconfig/editorconfig-vim'
 call jetpack#end()
 
 " --------------------------------------
@@ -112,10 +113,55 @@ Autocmd BufNewFile,BufRead *.{[Dd]ockerfile,[Dd]ock} set filetype=dockerfile
 Autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
 Autocmd BufNewFile,BufRead *.rasi set filetype=css
 
-" ----------------------
-" ---- ddc settings ----
-" ----------------------
+" ----------------------------
+" ---- lspconfig settings ----
+" ----------------------------
 lua << EOF
+local nvim_lsp = require('lspconfig')
+
+-- Use an on_attach function to only map the following keys
+-- after the language server attaches to the current buffer
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+  local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+  --Enable completion triggered by <c-x><c-o>
+  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  -- Mappings.
+  local opts = { noremap=true, silent=true }
+
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<space>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+  buf_set_keymap("n", "<space>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+end
+
+nvim_lsp.rust_analyzer.setup{
+    on_attach = on_attach,
+}
+
+nvim_lsp.gopls.setup{
+    on_attach = on_attach,
+}
+
+-- ----------------------
+-- ---- ddc settings ----
+-- ----------------------
  local mason = require('mason')
  mason.setup({
    ui = {
@@ -127,7 +173,6 @@ lua << EOF
    }
  })
 
- local nvim_lsp = require('lspconfig')
  local mason_lspconfig = require('mason-lspconfig')
  mason_lspconfig.setup_handlers({ function(server_name)
    local opts = {}
@@ -147,11 +192,10 @@ EOF
 " --------------------------
 call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'around', 'file'])
 call ddc#custom#patch_global('sourceOptions', {
-      \   '_': {
-      \     'matchers': ['matcher_fuzzy', 'matcher_head'],
-      \     'sorters': ['sorter_fuzzy', 'sorter_rank'],
-      \     'converters': ['converter_fuzzy']
-      \   }
+      \ '_': {
+      \   'matchers': ['matcher_fuzzy', 'matcher_head'],
+      \   'sorters': ['sorter_fuzzy', 'sorter_rank'],
+      \   'converters': ['converter_fuzzy']
       \ },
       \ 'tabnine': {
       \   'mark': 'TN',
@@ -169,7 +213,6 @@ call ddc#custom#patch_global('sourceOptions', {
       \   'isVolatile': v:true,
       \   'forceCompletionPattern': '\S/\S*'
       \ }})
-
 
 call ddc#custom#patch_global('sourceParams', {
       \ 'around': {'maxSize': 500},
@@ -189,9 +232,7 @@ call ddc#custom#patch_global('completionMenu', 'pum.vim')
 call ddc#custom#patch_global('filterParams', {
   \   'matcher_fuzzy': {
   \     'splitMode': 'word'
-  \   }
-  \ })
-call ddc#custom#patch_global('filterParams', {
+  \   },
   \   'converter_fuzzy': {
   \     'hlGroup': 'SpellBad'
   \   }
@@ -228,45 +269,45 @@ call ddc#custom#patch_global('autoCompleteEvents', [
     \ 'CmdlineEnter', 'CmdlineChanged',
     \ ])
 
-nnoremap :       <Cmd>call CommandlinePre()<CR>:
-
-function! CommandlinePre() abort
-  " Note: It disables default command line completion!
-  cnoremap <expr> <Tab>
-  \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
-  \ ddc#manual_complete()
-  cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
-  cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
-  cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
-
-  " Overwrite sources
-  if !exists('b:prev_buffer_config')
-    let b:prev_buffer_config = ddc#custom#get_buffer()
-  endif
-  call ddc#custom#patch_buffer('sources',
-          \ ['cmdline', 'cmdline-history', 'around'])
-
-  autocmd User DDCCmdlineLeave ++once call CommandlinePost()
-  autocmd InsertEnter <buffer> ++once call CommandlinePost()
-
-  " Enable command line completion
-  call ddc#enable_cmdline_completion()
-endfunction
-
-function! CommandlinePost() abort
-  cunmap <Tab>
-  cunmap <S-Tab>
-  cunmap <C-y>
-  cunmap <C-e>
-
-  " Restore sources
-  if exists('b:prev_buffer_config')
-    call ddc#custom#set_buffer(b:prev_buffer_config)
-    unlet b:prev_buffer_config
-  else
-    call ddc#custom#set_buffer({})
-  endif
-endfunction
+" nnoremap :       <Cmd>call CommandlinePre()<CR>:
+"
+" function! CommandlinePre() abort
+"   " Note: It disables default command line completion!
+"   cnoremap <expr> <Tab>
+"  \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
+"  \ ddc#manual_complete()
+"   cnoremap <S-Tab> <Cmd>call pum#map#insert_relative(-1)<CR>
+"   cnoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+"   cnoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+"
+"   " Overwrite sources
+"   if !exists('b:prev_buffer_config')
+"     let b:prev_buffer_config = ddc#custom#get_buffer()
+"   endif
+"   call ddc#custom#patch_buffer('sources',
+"          \ ['cmdline', 'cmdline-history', 'around'])
+"
+"   autocmd User DDCCmdlineLeave ++once call CommandlinePost()
+"   autocmd InsertEnter <buffer> ++once call CommandlinePost()
+"
+"   " Enable command line completion
+"   call ddc#enable_cmdline_completion()
+" endfunction
+"
+" function! CommandlinePost() abort
+"   cunmap <Tab>
+"   cunmap <S-Tab>
+"   cunmap <C-y>
+"   cunmap <C-e>
+"
+"   " Restore sources
+"   if exists('b:prev_buffer_config')
+"     call ddc#custom#set_buffer(b:prev_buffer_config)
+"     unlet b:prev_buffer_config
+"   else
+"     call ddc#custom#set_buffer({})
+"   endif
+" endfunction
 
 " --------------------
 " ---- enable ddc ----
