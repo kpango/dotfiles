@@ -228,6 +228,17 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS gitleaks
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gitleaks" \
+    && REPO="zricethezav/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+
 FROM go-base AS glice
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="glice" \
@@ -466,6 +477,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS grype
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="grype" \
+    && REPO="anchore/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS guru
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="guru" \
@@ -652,6 +673,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS syft
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="syft" \
+    && REPO="anchore/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS syncmap
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="syncmap" \
@@ -741,6 +772,7 @@ COPY --from=flamegraph $GOPATH/bin/stackcollapse.pl $GOPATH/bin/stackcollapse.pl
 COPY --from=ghq $GOPATH/bin/ghq $GOPATH/bin/ghq
 COPY --from=ghz $GOPATH/bin/ghz $GOPATH/bin/ghz
 COPY --from=git-codereview $GOPATH/bin/git-codereview $GOPATH/bin/git-codereview
+COPY --from=gitleaks $GOPATH/bin/gitleaks $GOPATH/bin/gitleaks
 COPY --from=glice $GOPATH/bin/glice $GOPATH/bin/glice
 COPY --from=go-contrib-init $GOPATH/bin/go-contrib-init $GOPATH/bin/go-contrib-init
 COPY --from=go-task $GOPATH/bin/task $GOPATH/bin/task
@@ -765,6 +797,7 @@ COPY --from=gotip $GOPATH/bin/gotip $GOPATH/bin/gotip
 COPY --from=gowrap $GOPATH/bin/gowrap $GOPATH/bin/gowrap
 COPY --from=gqlgen $GOPATH/bin/gqlgen $GOPATH/bin/gqlgen
 COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
+COPY --from=grype $GOPATH/bin/grype $GOPATH/bin/grype
 COPY --from=guru $GOPATH/bin/guru $GOPATH/bin/guru
 COPY --from=hub $GOPATH/bin/hub $GOPATH/bin/hub
 COPY --from=hugo $GOPATH/bin/hugo $GOPATH/bin/hugo
@@ -784,6 +817,7 @@ COPY --from=ruleguard $GOPATH/bin/ruleguard $GOPATH/bin/ruleguard
 COPY --from=sqls $GOPATH/bin/sqls $GOPATH/bin/sqls
 COPY --from=strictgoimports $GOPATH/bin/strictgoimports $GOPATH/bin/strictgoimports
 COPY --from=swagger $GOPATH/bin/swagger $GOPATH/bin/swagger
+COPY --from=syft $GOPATH/bin/syft $GOPATH/bin/syft
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
 COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
 COPY --from=tparse $GOPATH/bin/tparse $GOPATH/bin/tparse

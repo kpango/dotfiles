@@ -133,6 +133,10 @@ FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
     git-delta
 
+FROM rust-base AS deno
+RUN cargo +nightly install --force --locked --all-features \
+    deno
+
 FROM rust-base AS bottom
 RUN rustup update stable \
     && rustup default stable \
@@ -210,6 +214,7 @@ COPY --from=cargo-expand ${BIN_PATH}/cargo-expand ${BIN_PATH}/cargo-expand
 COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
 # COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
 COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
+COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa

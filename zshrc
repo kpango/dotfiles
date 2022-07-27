@@ -151,6 +151,10 @@ if [ -z $DOTENV_LOADED ]; then
 
     export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.cargo/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
 
+    if type deno >/dev/null 2>&1; then
+        export PATH="$(which deno):$PATH"
+    fi
+
     export ZPLUG_HOME=$HOME/.zplug
 
     if [ -e $ZPLUG_HOME/repos/zsh-users/zsh-completions ]; then
@@ -793,13 +797,13 @@ if [ -z $ZSH_LOADED ]; then
     alias 777='chmod -R 777'
 
     if type nvim >/dev/null 2>&1; then
-        alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +CocInstall +CocUpdate +qall;nvim +q"
+        alias nvup="nvim +UpdateRemotePlugins +JetpackSync +CocInstall +CocUpdate +qall;nvim +q"
         nvim-init() {
             rm -rf "$HOME/.config/gocode"
             rm -rf "$HOME/.config/nvim/autoload"
             rm -rf "$HOME/.config/nvim/ftplugin"
             rm -rf "$HOME/.config/nvim/log"
-            rm -rf "$HOME/.config/nvim/plugged"
+            rm -rf "$HOME/.config/nvim/pack"
             nvup
             rm "$HOME/.nvimlog"
             rm "$HOME/.viminfo"

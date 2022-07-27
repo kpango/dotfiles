@@ -19,6 +19,7 @@ ccache
 chrony
 clang
 cmake
+deno
 discord
 dnsmasq
 docker
@@ -37,6 +38,7 @@ gettext
 git
 gnome-keyring
 go
+gopls
 graphviz
 grep
 grim
