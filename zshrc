@@ -1286,6 +1286,26 @@ if [ -z $ZSH_LOADED ]; then
         alias chrome="chrome --audio-buffer-size=4096"
     fi
 
+    if type whois >/dev/null 2>&1; then
+        TRACECMD="traceroute"
+        if type mtr >/dev/null 2>&1; then
+            TRACECMD="mtr -wbc 4"
+        fi
+        checkcountry(){
+            if [ $# -eq 1 ]; then
+                $TRACECMD $1 \
+                | awk '{print $2}' \
+                | xargs -I {} whois {} \
+                | rg -i Country \
+                | awk '{print $(NF)}' \
+                | sort | uniq
+            else
+                echo "invalid argument, Domain or IP is required"
+            fi
+        }
+        alias ccnt=checkcountry
+    fi
+
     if [ -d "$GOPATH/src/github.com/vdaas/vald" ]; then
         valdup(){
             cd "$GOPATH/src/github.com/vdaas/vald"
