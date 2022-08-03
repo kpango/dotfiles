@@ -89,13 +89,13 @@ devrun(){
             tz_path="/etc/localtime"
             docker_daemon="/etc/docker/daemon.json"
             docker_config="/etc/docker/config.json"
-            resolve_config="/etc/resolv.conf"
-            resolve_dnsmasq_config="/etc/resolv.dnsmasq.conf"
+            # resolve_config="/etc/resolv.conf"
+            # resolve_dnsmasq_config="/etc/resolv.dnsmasq.conf"
             # -e DISPLAY \
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
+            # --mount type=bind,source=$resolve_dnsmasq_config,destination=$resolve_config,readonly \
             docker run \
                 --cap-add=ALL \
-                --mount type=bind,source=$resolve_dnsmasq_config,destination=$resolve_config,readonly \
                 --name $container_name \
                 --network=host \
                 --privileged=$privileged \

@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM ubuntu:devel AS base
+FROM --platform=$BUILDPLATFORM ubuntu:latest AS base
 
 LABEL maintainer="kpango <kpango@vdaas.org>"
 
@@ -19,6 +19,7 @@ RUN apt clean\
         /var/cache/* \
     && apt update -y \
     && apt upgrade -y \
+    && apt update -y \
     && apt install -y --no-install-recommends --fix-missing \
         axel \
         build-essential \
