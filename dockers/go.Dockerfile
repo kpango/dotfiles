@@ -35,15 +35,15 @@ RUN set -x; cd "$(mktemp -d)" \
     && mkdir -p ${GOPATH}/bin \
     && ${BIN_NAME} version
 
-FROM go-base AS act
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="act" \
-    && REPO="nektos/${BIN_NAME}" \
-    && GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}@master" \
-    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
-    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+# FROM go-base AS act
+# RUN set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="act" \
+#     && REPO="nektos/${BIN_NAME}" \
+#     && GO111MODULE=on go install  \
+#     --ldflags "-s -w" --trimpath \
+#     "${GITHUBCOM}/${REPO}@latest" \
+#     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+#     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS air
 RUN set -x; cd "$(mktemp -d)" \
@@ -483,7 +483,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="anchore/${BIN_NAME}" \
     && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
@@ -751,7 +751,7 @@ FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
 FROM go-base AS go-bins
-COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
+# COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
 COPY --from=air $GOPATH/bin/air $GOPATH/bin/air
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 # COPY --from=dataloaden $GOPATH/bin/dataloaden $GOPATH/bin/dataloaden

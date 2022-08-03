@@ -167,13 +167,15 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM env-base AS ngt
 WORKDIR /tmp
-ENV NGT_VERSION 1.14.7
+ENV NGT_VERSION qbg
+# ENV NGT_VERSION 1.14.7
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 # ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
 # ENV CPPFLAGS="-I/usr/local/opt/llvm/include"
-RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" \
-    && tar zxf "v${NGT_VERSION}.tar.gz" -C /tmp \
+# RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" \
+    # && tar zxf "v${NGT_VERSION}.tar.gz" -C /tmp \
+RUN git clone -b ${NGT_VERSION} --depth 1 https://github.com/yahoojapan/NGT "/tmp/NGT-${NGT_VERSION}" \
     && cd "/tmp/NGT-${NGT_VERSION}" \
     && cmake -DNGT_LARGE_DATASET=ON . \
     && make -j -C "/tmp/NGT-${NGT_VERSION}" \
