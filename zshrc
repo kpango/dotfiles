@@ -498,6 +498,20 @@ if [ -z $ZSH_LOADED ]; then
 
     if type rg >/dev/null 2>&1; then
         alias grep=rg
+        if type curl >/dev/null 2>&1; then
+            listdomains(){
+                if [ $# -eq 1 ]; then
+                    curl -fs $1 \
+                    | rg -Po '.*?//\K.*?(?=/)'\
+                    | rg -v "@" \
+                    | rg -v "\+"\
+                    | sort | uniq
+                else
+                    echo "invalid argument, Domain or url is required"
+                fi
+            }
+            alias lsdomain=listdomains
+        fi
     fi
 
     # エイリアス
@@ -1288,12 +1302,15 @@ if [ -z $ZSH_LOADED ]; then
 
     if type whois >/dev/null 2>&1; then
         TRACECMD="traceroute"
+        TRACE_ARGS=""
         if type mtr >/dev/null 2>&1; then
-            TRACECMD="mtr -wbc 4"
+            TRACECMD="mtr"
+            TRACE_ARGS="-wbc 4"
         fi
         checkcountry(){
             if [ $# -eq 1 ]; then
-                $TRACECMD $1 \
+                echo "$TRACECMD $TRACE_ARGS $1"
+                $TRACECMD $TRACE_ARGS $1 \
                 | awk '{print $2}' \
                 | xargs -I {} whois {} \
                 | rg -i Country \
