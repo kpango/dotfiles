@@ -66,7 +66,6 @@ RUN echo '/lib\n\
     && apt update -y \
     && apt upgrade -y \
     && apt install -y --no-install-recommends --fix-missing \
-    # ugrep \
     automake \
     bash \
     ccls \
@@ -79,7 +78,9 @@ RUN echo '/lib\n\
     graphviz \
     jq \
     less \
+    libblas-dev \
     libhdf5-serial-dev \
+    liblapack-dev \
     libncurses5-dev \
     libomp-dev \
     libtool \
@@ -103,6 +104,7 @@ RUN echo '/lib\n\
     tar \
     tig \
     tmux \
+    ugrep \
     xclip \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 https://github.com/neovim/neovim \
@@ -171,15 +173,17 @@ ENV NGT_VERSION qbg
 # ENV NGT_VERSION 1.14.7
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
-# ENV LDFLAGS="-L/usr/local/opt/llvm/lib"
+ENV LDFLAGS="-L/etc/altenatives"
 # ENV CPPFLAGS="-I/usr/local/opt/llvm/include"
 # RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" \
     # && tar zxf "v${NGT_VERSION}.tar.gz" -C /tmp \
-RUN git clone -b ${NGT_VERSION} --depth 1 https://github.com/yahoojapan/NGT "/tmp/NGT-${NGT_VERSION}" \
+RUN ldconfig \
+    && rm -rf /tmp/* /var/cache \
+    && git clone -b ${NGT_VERSION} --depth 1 https://github.com/yahoojapan/NGT "/tmp/NGT-${NGT_VERSION}" \
     && cd "/tmp/NGT-${NGT_VERSION}" \
-    && cmake -DNGT_LARGE_DATASET=ON . \
-    && make -j -C "/tmp/NGT-${NGT_VERSION}" \
-    && make install -C "/tmp/NGT-${NGT_VERSION}" \
+    && CC=$(which gcc) CXX=$(which g++) cmake -DNGT_LARGE_DATASET=ON . \
+    && CC=$(which gcc) CXX=$(which g++) make -j -C "/tmp/NGT-${NGT_VERSION}" \
+    && CC=$(which gcc) CXX=$(which g++) make install -C "/tmp/NGT-${NGT_VERSION}" \
     && cd /tmp \
     && rm -rf /tmp/*
 
