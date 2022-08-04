@@ -134,6 +134,8 @@ RUN n latest \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && npm config set user ${USER} \
     && npm install -g \
+        yarn \
+    && yarn global add \
         diagnostic-languageserver \
         dockerfile-language-server-nodejs \
         bash-language-server \
@@ -145,7 +147,6 @@ RUN n latest \
         terminalizer \
         typescript \
         typescript-language-server \
-        yarn \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && apt purge -y nodejs npm \
