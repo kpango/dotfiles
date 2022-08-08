@@ -43,7 +43,7 @@
     cm = commit
     co = checkout
     ft = fetch
-    rbm = rebase master      # masterへのrebaseはよく使うのでalias
+    rbm = rebase main      # masterへのrebaseはよく使うのでalias
     sh = show
     so = remote show origin
     st = status
@@ -74,7 +74,7 @@
     d5 = diff HEAD~~~~~        # HEADから5つ前とdiff
     d10 = diff HEAD~~~~~~~~~~  # HEADから10前とdiff
     dc = diff --cached         # addされているものとのdiff
-    dm = diff master           # masterとのdiff
+    dm = diff origin/main           # masterとのdiff
     ds = diff --staged         # 同上(1.6.1移行)
     dw = diff --color-words    # 単語単位でいろつけてdiff
     di = diff --word-diff

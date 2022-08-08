@@ -31,7 +31,7 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM kube-base AS helm
 RUN set -x; cd "$(mktemp -d)" \
-    && curl "${RAWGITHUB}/helm/helm/master/scripts/get-helm-3" | bash \
+    && curl "${RAWGITHUB}/helm/helm/main/scripts/get-helm-3" | bash \
     && BIN_NAME="helm" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
