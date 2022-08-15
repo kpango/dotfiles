@@ -1,4 +1,3 @@
-
 local autocmd = vim.api.nvim_create_autocmd
 local augroup = function(name)
     return vim.api.nvim_create_augroup(name, { clear = true })
@@ -100,49 +99,49 @@ autocmd({ 'BufWipeout' }, {
     end,
 })
 
--- autocmd({ 'BufReadPost' }, {
---     desc = 'Make files readonly when outside of current working dir',
---     pattern = '*',
---     callback = function()
---         if string.sub(vim.api.nvim_buf_get_name(0), 1, string.len(vim.fn.getcwd())) ~= vim.fn.getcwd() then
---             vim.bo.readonly = true
---             vim.bo.modifiable = false
---         end
---     end,
--- })
+autocmd({ 'BufReadPost' }, {
+    desc = 'Make files readonly when outside of current working dir',
+    pattern = '*',
+    callback = function()
+        if string.sub(vim.api.nvim_buf_get_name(0), 1, string.len(vim.fn.getcwd())) ~= vim.fn.getcwd() then
+            vim.bo.readonly = true
+            vim.bo.modifiable = false
+        end
+    end,
+})
 
--- local spaces_highlight_group = augroup('SpacesHighlightGroup')
--- autocmd({ 'VimEnter', 'WinNew' }, {
---     desc = 'Highlight all tabs and trailing whitespaces',
---     pattern = '*',
---     group = spaces_highlight_group,
---     callback = function()
---         vim.fn.matchadd('ExtraWhitespace', '\\s\\+$\\|\\t')
---     end,
--- })
+local spaces_highlight_group = augroup('SpacesHighlightGroup')
+autocmd({ 'VimEnter', 'WinNew' }, {
+    desc = 'Highlight all tabs and trailing whitespaces',
+    pattern = '*',
+    group = spaces_highlight_group,
+    callback = function()
+        vim.fn.matchadd('ExtraWhitespace', '\\s\\+$\\|\\t')
+    end,
+})
 
--- autocmd({ 'FileType' }, {
---     desc = 'Remove spaces highlights in selected filetypes',
---     pattern = 'help,toggleterm',
---     group = spaces_highlight_group,
---     callback = function()
---         for _, match in ipairs(vim.fn.getmatches()) do
---             if match['group'] == 'ExtraWhitespace' then
---                 vim.fn.matchdelete(match['id'])
---             end
---         end
---     end,
--- })
+autocmd({ 'FileType' }, {
+    desc = 'Remove spaces highlights in selected filetypes',
+    pattern = 'help,toggleterm',
+    group = spaces_highlight_group,
+    callback = function()
+        for _, match in ipairs(vim.fn.getmatches()) do
+            if match['group'] == 'ExtraWhitespace' then
+                vim.fn.matchdelete(match['id'])
+            end
+        end
+    end,
+})
 
--- autocmd({ 'BufWinEnter' }, {
---     desc = 'Remove spaces highlights in selected filetypes',
---     pattern = '*.txt',
---     group = spaces_highlight_group,
---     callback = function(event)
---         for _, match in ipairs(vim.fn.getmatches()) do
---             if match['group'] == 'ExtraWhitespace' then
---                 vim.fn.matchdelete(match['id'])
---             end
---         end
---     end,
--- })
+autocmd({ 'BufWinEnter' }, {
+    desc = 'Remove spaces highlights in selected filetypes',
+    pattern = '*.txt',
+    group = spaces_highlight_group,
+    callback = function(event)
+        for _, match in ipairs(vim.fn.getmatches()) do
+            if match['group'] == 'ExtraWhitespace' then
+                vim.fn.matchdelete(match['id'])
+            end
+        end
+    end,
+})

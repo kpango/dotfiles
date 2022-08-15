@@ -98,6 +98,7 @@ return packer.startup(function(use)
     use {'vim-denops/denops.vim', branch = 'main'}
     use {'williamboman/mason-lspconfig.nvim'}
     use {'williamboman/mason.nvim'}
+    use {'nathom/filetype.nvim', event = 'VimEnter'}
     use {'editorconfig/editorconfig-vim'}
     use { "SmiteshP/nvim-navic",
       requires = [
