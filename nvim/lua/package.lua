@@ -2,7 +2,8 @@ local fn = vim.fn
 local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
 if fn.empty(fn.glob(install_path)) > 0 then
     packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.cmd [[packadd packer.nvim]]
+    -- vim.cmd [[packadd packer.nvim]]
+    vim.api.nvim_command('packadd packer.nvim')
 end
 
 local status, packer = pcall(require, 'packer')
@@ -77,14 +78,17 @@ packer.init({
 
 return packer.startup(function(use)
     use {'wbthomason/packer.nvim', opt = true}
-    use {'LumaKernel/ddc-file'}
-    use {'LumaKernel/ddc-tabnine'}
-    use {'Shougo/ddc-around'}
-    use {'Shougo/ddc-converter_remove_overlap'}
-    use {'Shougo/ddc-matcher_head'}
-    use {'Shougo/ddc-nvim-lsp'}
-    use {'Shougo/ddc-sorter_rank'}
-    use {'Shougo/ddc.vim'}
+    use {'LumaKernel/ddc-file', requires = {'Shougo/ddc.vim'}}
+    use {'LumaKernel/ddc-tabnine', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc.vim', requires = {'vim-denops/denops.vim'}}
+    use {'Shougo/ddc-around', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-matcher_head', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-sorter_rank', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-converter_remove_overlap', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-matcher_head', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-sorter_rank', requires = {'Shougo/ddc.vim'}}
+    use {'tani/ddc-fuzzy', requires = {'Shougo/ddc.vim'}}
     use {'Shougo/deoppet.nvim'}
     use {'Shougo/pum.vim'}
     use {'lewis6991/gitsigns.nvim'}
@@ -93,7 +97,6 @@ return packer.startup(function(use)
     use {'mattn/vim-goimports', ft = 'go'}
     use {'neovim/nvim-lspconfig'}
     use {'sbdchd/neoformat'}
-    use {'tani/ddc-fuzzy'}
     use {'tyru/caw.vim'}
     use {'vim-denops/denops.vim', branch = 'main'}
     use {'williamboman/mason-lspconfig.nvim'}

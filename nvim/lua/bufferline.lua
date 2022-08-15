@@ -1,5 +1,8 @@
 local status, bufferline = pcall(require, "bufferline")
-if (not status) then return end
+if (not status) then
+  print("bufferline is not installed")
+  return
+end
 
 bufferline.setup({
   options = {

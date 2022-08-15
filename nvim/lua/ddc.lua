@@ -20,12 +20,12 @@ for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup {
     flags = {
       debounce_text_changes = 150,
-      },
+    },
     settings = {
       solargraph = {
         diagnostics = false
       }
-    }
+    },
     on_attach = function(client, bufnr)
         navic.attach(client, bufnr)
         -- format on save

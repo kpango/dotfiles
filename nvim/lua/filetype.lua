@@ -6,13 +6,7 @@ end
 
 filetype.setup({
     overrides = {
-        extensions = {
-            -- Set the filetype of *.pn files to potion
-	    go = go,
-	    go.mod = go,
-	    Dock = dockerfile
-	    dock = dockerfile
-        },
+        extensions = {},
         literal = {},
         complex = {
             -- Set the filetype of any full filename matching the regex to gitconfig
