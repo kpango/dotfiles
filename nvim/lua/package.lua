@@ -5,7 +5,11 @@ if fn.empty(fn.glob(install_path)) > 0 then
     vim.cmd [[packadd packer.nvim]]
 end
 
-local packer = require('packer')
+local status, packer = pcall(require, 'packer')
+if (not status) then
+  print("Packer is not installed")
+  return
+end
 
 packer.init({
   ensure_dependencies   = true, -- Should packer install plugin dependencies?
@@ -83,24 +87,56 @@ return packer.startup(function(use)
     use {'Shougo/ddc.vim'}
     use {'Shougo/deoppet.nvim'}
     use {'Shougo/pum.vim'}
-    use {'airblade/vim-gitgutter'}
+    use {'lewis6991/gitsigns.nvim'}
     use {'lambdalisue/gin.vim'}
     use {'editorconfig/editorconfig-vim'}
     use {'mattn/vim-goimports', ft = 'go'}
     use {'neovim/nvim-lspconfig'}
     use {'sbdchd/neoformat'}
     use {'tani/ddc-fuzzy'}
-    use {'tani/vim-jetpack', opt = true}
     use {'tyru/caw.vim'}
     use {'vim-denops/denops.vim', branch = 'main'}
     use {'williamboman/mason-lspconfig.nvim'}
     use {'williamboman/mason.nvim'}
     use {'editorconfig/editorconfig-vim'}
+    use { "SmiteshP/nvim-navic",
+      requires = [
+        "neovim/nvim-lspconfig",
+        "nvim-treesitter/nvim-treesitter",
+      ],
+      module = "nvim-navic",
+      config = function()
+        require("nvim-navic").setup()
+      end,
+    }
+    use {'nvim-lualine/lualine.nvim',
+        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+        event = "VimEnter",
+        config = function()
+          require("config.lualine").setup()
+        end,
+    }
+    use {'nvim-treesitter/nvim-treesitter',
+        run = ':TSUpdate'
+        config = function()
+           require("config.treesitter").setup()
+        end,
+    }
+    use {'norcalli/nvim-colorizer.lua',
+        event = "VimEnter",
+        config = function()
+           require("config.colorizer").setup()
+        end,
+    }
+    use {'nvim-telescope/telescope.nvim', tag = '0.1.0', requires = {{'nvim-lua/plenary.nvim'}}}
+    use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
+    use {"glepnir/lspsaga.nvim", branch = "main"}
 
-  if packer_bootstrap then
-    packer.sync()
-  end
+    if packer_bootstrap then
+      packer.sync()
+    end
 end,
+
 config = {
   display = {
     open_fn = function()
