@@ -1,5 +1,6 @@
 local fn = vim.fn
-local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+local install_path = fn.stdpath('data')..'/site/pack/packer/opt/packer.nvim'
+print(install_path)
 if fn.empty(fn.glob(install_path)) > 0 then
     packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
     -- vim.cmd [[packadd packer.nvim]]
@@ -11,6 +12,13 @@ if (not status) then
   print("Packer is not installed")
   return
 end
+
+vim.cmd([[
+  augroup packer_user_config
+    autocmd!
+    autocmd BufWritePost plugins.lua source <afile> | PackerCompile
+  augroup end
+]])
 
 packer.init({
   ensure_dependencies   = true, -- Should packer install plugin dependencies?
@@ -25,7 +33,7 @@ packer.init({
   disable_commands = false, -- Disable creating commands
   opt_default = false, -- Default to using opt (as opposed to start) plugins
   transitive_opt = true, -- Make dependencies of opt plugins also opt by default
-  transitive_disable = true, -- Automatically disable dependencies of disabled plugins
+  transitive_disable = true, -- Automatically disable dependencies f disabled plugins
   auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
   git = {
     cmd = 'git', -- The base command for git operations
