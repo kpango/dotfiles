@@ -12,7 +12,6 @@ google-chrome-beta
 google-cloud-sdk
 gopreload-git
 intelmetool-git
-iwd-git
 kubectl-bin
 libnm-iwd
 linux-firmware-iwlwifi-git
@@ -28,7 +27,7 @@ systemd-boot-pacman-hook
 tmux-xpanes
 tpacpi-bat-git
 tracktion-waveform
-ttf-hackgen-nerd
+ttf-hackgen
 tzupdate
 wdisplays
 yay-bin
