@@ -13,6 +13,7 @@ avr-libc
 avrdude
 axel
 bash-language-server
+bbswitch-dkms
 bluez-utils
 caprine
 ccache
