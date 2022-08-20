@@ -55,6 +55,16 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS buf
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="buf" \
+    && REPO="bufbuild/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS chidley
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="chidley" \
@@ -608,6 +618,26 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS protoc-gen-connect-go
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="protoc-gen-connect-go" \
+    && REPO="bufbuild/connect-go" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS protoc-gen-go
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="protoc-gen-go" \
+    && REPO="protobuf" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "google.golang.org/${REPO}/cmd/${BIN_NAME}@dev" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS prototool
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="prototool" \
@@ -753,6 +783,7 @@ RUN upx -9 ${GOROOT}/bin/*
 FROM go-base AS go-bins
 # COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
 COPY --from=air $GOPATH/bin/air $GOPATH/bin/air
+COPY --from=buf $GOPATH/bin/buf $GOPATH/bin/buf
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 # COPY --from=dataloaden $GOPATH/bin/dataloaden $GOPATH/bin/dataloaden
 COPY --from=dbmate $GOPATH/bin/dbmate $GOPATH/bin/dbmate
@@ -810,6 +841,8 @@ COPY --from=licenses $GOPATH/bin/go-licenses $GOPATH/bin/licenses
 COPY --from=markdown2medium $GOPATH/bin/markdown2medium $GOPATH/bin/markdown2medium
 COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen
 COPY --from=panicparse $GOPATH/bin/pp $GOPATH/bin/pp
+COPY --from=protoc-gen-connect-go $GOPATH/bin/protoc-gen-connect-go $GOPATH/bin/protoc-gen-connect-go
+COPY --from=protoc-gen-go $GOPATH/bin/protoc-gen-go $GOPATH/bin/protoc-gen-go
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool
 COPY --from=pulumi $GOPATH/bin/pulumi $GOPATH/bin/pulumi
 COPY --from=reddit2wallpaper $GOPATH/bin/reddit2wallpaper $GOPATH/bin/reddit2wallpaper
