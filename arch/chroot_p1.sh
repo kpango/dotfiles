@@ -86,7 +86,6 @@ echo "tmpfs /tmp tmpfs nodiratime,noatime,nosuid,nodev,size=1g 0 0" | tee -a /et
 echo "tmpfs /var/tmp tmpfs nodiratime,noatime,nosuid,nodev,size=64m 0 0" | tee -a /etc/fstab
 echo "tmpfs /var/cache tmpfs nodiratime,noatime,nosuid,nodev,size=64m 0 0" | tee -a /etc/fstab
 echo "tmpfs /home/kpango/.cache/fontconfig tmpfs nodiratime,noatime,nosuid,nodev,size=10m 0 0" | tee -a /etc/fstab
-echo "tmpfs /home/kpango/.cache/mesa_shader_cache tmpfs nodiratime,noatime,nosuid,nodev,size=10m 0 0" | tee -a /etc/fstab
 echo "tmpfs /home/kpango/.cache/google-chrome-beta tmpfs nodiratime,noatime,nosuid,nodev,size=2g 0 0" | tee -a /etc/fstab
 
 
