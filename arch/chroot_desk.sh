@@ -25,7 +25,12 @@ cat <<EOF >>/etc/pacman.conf
 Include = /etc/pacman.d/mirrorlist
 EOF
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
-echo "blacklist iTCO_wdt" > /etc/modprobe.d/nowatchdog.conf
+
+cat <<EOF >>/etc/modprobe.d/nowatchdog.conf
+blacklist intel_pmc_bxt
+blacklist iTCO_vendor_support
+blacklist iTCO_wdt
+EOF
 
 HOST="archpango"
 echo ${HOST} >>/etc/hostname
