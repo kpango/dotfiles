@@ -23,7 +23,6 @@ RUN rustup install stable \
        clippy \
        --toolchain nightly
 
-# RUN cargo install --force --no-default-features --git https://github.com/mozilla/sccache
 
 FROM rust-base AS rnix-lsp
 RUN cargo install --force --no-default-features \
@@ -49,18 +48,15 @@ RUN rustup update stable \
 
 FROM rust-base AS exa
 RUN cargo +nightly install --force --no-default-features \
-# RUN rustup update stable \
-#     && rustup default stable \
-#     && cargo install --force --no-default-features \
-#     exa
+    exa
 
 # FROM rust-base AS bandwhich
 # RUN cargo +nightly install --force --no-default-features \
 #     bandwhich
 
-# FROM rust-base AS shellharden
-# RUN cargo +nightly install --force --no-default-features \
-#     shellharden
+FROM rust-base AS shellharden
+RUN cargo +nightly install --force --no-default-features \
+    shellharden
 
 FROM rust-base AS rg
 RUN rustup update stable \
@@ -81,10 +77,7 @@ FROM rust-base AS procs
 RUN cargo install --force --no-default-features \
     --git https://github.com/dalance/procs
 
-# FROM kpango/rust:latest AS bat
 FROM rust-base AS bat
-# RUN cargo install --locked --force --no-default-features \
-    # bat
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --locked \
@@ -111,14 +104,10 @@ RUN cargo +nightly install --force --no-default-features \
     sd
 
 FROM rust-base AS gping
-# RUN cargo +nightly install --force --no-default-features \
-#     gping
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --no-default-features \
     gping
-
-
 
 FROM rust-base AS sad
 RUN git clone --depth 1 https://github.com/ms-jpq/sad \
@@ -160,9 +149,9 @@ RUN cargo +nightly install --force --no-default-features \
     xh
 
 # FROM rust-base AS frawk
-# RUN cargo install --locked --force \
-#     --features use_jemalloc,allow_avx2,unstable \
+# RUN cargo +nightly install --locked --force \
 #     --git https://github.com/ezrosent/frawk frawk
+#     --features use_jemalloc,allow_avx2,unstable \
 
 # FROM rust-base AS racer
 # RUN cargo +nightly install --force  \
@@ -201,7 +190,6 @@ ENV BIN_PATH ${CARGO}/bin
 
 # COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
 # COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
-# COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
@@ -219,6 +207,7 @@ COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
+# COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
@@ -234,7 +223,7 @@ COPY --from=rust-base ${RUSTUP}/settings.toml ${RUSTUP}/settings.toml
 COPY --from=rust-base ${RUSTUP}/toolchains ${RUSTUP}/toolchains
 COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
 COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
-# COPY --from=shellharden ${BIN_PATH}/shellharden ${BIN_PATH}/shellharden
+COPY --from=shellharden ${BIN_PATH}/shellharden ${BIN_PATH}/shellharden
 COPY --from=starship ${BIN_PATH}/starship ${BIN_PATH}/starship
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
 COPY --from=watchexec ${BIN_PATH}/watchexec ${BIN_PATH}/watchexec
