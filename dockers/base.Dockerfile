@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:latest
 FROM --platform=$BUILDPLATFORM ubuntu:devel AS base
 
 LABEL maintainer="kpango <kpango@vdaas.org>"
@@ -13,7 +14,12 @@ ENV CLANG_PATH /usr/local/clang
 ENV PATH ${PATH}:${CLANG_PATH}/bin
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
 
-RUN apt clean\
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+    && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
+    && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
+RUN --mount=type=bind,target=/var/lib/apt/lists,from=apt-cache,source=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt \
+    apt clean\
     && rm -rf \
         /var/lib/apt/lists/* \
         /var/cache/* \

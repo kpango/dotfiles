@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:latest
 FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS env-base
 
 ARG TARGETOS
@@ -52,7 +53,10 @@ RUN groupadd --non-unique --gid ${GROUP_ID} docker \
     && visudo -c
 
 WORKDIR /tmp
-RUN echo '/lib\n\
+
+RUN --mount=type=bind,target=/var/lib/apt/lists,from=apt-cache,source=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt \
+    echo '/lib\n\
 /lib64\n\
 /var/lib\n\
 /usr/lib\n\
