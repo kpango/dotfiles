@@ -56,6 +56,7 @@ WORKDIR /tmp
 
 RUN --mount=type=bind,target=/var/lib/apt/lists,from=apt-cache,source=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=${HOME}/.npm \
     echo '/lib\n\
 /lib64\n\
 /var/lib\n\
@@ -132,7 +133,7 @@ RUN --mount=type=bind,target=/var/lib/apt/lists,from=apt-cache,source=/var/lib/a
     && chmod -R 755 ${HOME}/.* \
     && npm install -g n
 
-RUN n latest \
+RUN --mount=type=cache,target=${HOME}/.npm n latest \
     && npm config set user ${USER} \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
