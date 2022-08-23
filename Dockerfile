@@ -79,17 +79,12 @@ COPY zshrc $HOME/.zshrc
 
 USER root
 
-# RUN groupadd docker \
-    # && newgrp docker \
-    # && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
 RUN usermod -aG ${GROUP} ${WHOAMI} \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && rm -rf $VIM_PLUG_HOME/autoload \
-    && npm uninstall yarn -g \
-    && npm install yarn -g \
     && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
     && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME \
     && zsh -ic zplug install \

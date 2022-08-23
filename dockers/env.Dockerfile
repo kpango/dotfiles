@@ -81,11 +81,11 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     graphviz \
     jq \
     less \
-    libblas-dev \
     libhdf5-serial-dev \
     liblapack-dev \
     libncurses5-dev \
     libomp-dev \
+    libopenblas-dev \
     libtool \
     libtool-bin \
     luajit \
@@ -131,7 +131,8 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && chmod -R 755 ${HOME}/.* \
     && npm install -g n
 
-RUN --mount=type=cache,target=${HOME}/.npm n latest \
+RUN --mount=type=cache,target=${HOME}/.npm \
+    n latest \
     && npm config set user ${USER} \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
@@ -174,14 +175,12 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM env-base AS ngt
 WORKDIR /tmp
 ENV NGT_VERSION qbg
-# ENV NGT_VERSION 1.14.7
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
-ENV LDFLAGS="-L/etc/altenatives"
+ENV LDFLAGS="-L/etc/altenatives ${LDFLAGS}"
 # ENV CPPFLAGS="-I/usr/local/opt/llvm/include"
-# RUN curl -LO "https://github.com/yahoojapan/NGT/archive/v${NGT_VERSION}.tar.gz" \
-    # && tar zxf "v${NGT_VERSION}.tar.gz" -C /tmp \
-RUN ldconfig \
+RUN echo $(ldconfig) \
+    && echo ${LDFLAGS} \
     && rm -rf /tmp/* /var/cache \
     && git clone -b ${NGT_VERSION} --depth 1 https://github.com/yahoojapan/NGT "/tmp/NGT-${NGT_VERSION}" \
     && cd "/tmp/NGT-${NGT_VERSION}" \
@@ -193,13 +192,15 @@ RUN ldconfig \
 
 FROM env-base AS tensorflow
 WORKDIR /tmp
-ENV TENSORFLOW_C_VERSION 2.9.1
 RUN set -x; cd "$(mktemp -d)" \
     && REPO_NAME="tensorflow" \
+    && BIN_NAME="${REPO_NAME}" \
+    && REPO="${REPO_NAME}/${BIN_NAME}" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && BIN_NAME="lib${REPO_NAME}" \
     && REPO="${REPO_NAME}/${BIN_NAME}" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-    && URL="${GOOGLE}/${REPO}/${BIN_NAME}-cpu-${OS}-${ARCH}-${TENSORFLOW_C_VERSION}.tar.gz" \
+    && URL="${GOOGLE}/${REPO}/${BIN_NAME}-cpu-${OS}-${ARCH}-${VERSION}.tar.gz" \
     && echo "${URL}" \
     && curl -fsSLo "/tmp/${BIN_NAME}.tar.gz" "${URL}" \
     && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
