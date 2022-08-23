@@ -809,7 +809,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && REPO="protobuf" \
     && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    "google.golang.org/${REPO}/cmd/${BIN_NAME}@dev" \
+    "google.golang.org/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 

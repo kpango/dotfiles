@@ -54,9 +54,7 @@ RUN groupadd --non-unique --gid ${GROUP_ID} docker \
 
 WORKDIR /tmp
 
-RUN --mount=type=bind,target=/var/lib/apt/lists,from=apt-cache,source=/var/lib/apt/lists \
-    --mount=type=cache,target=/var/cache/apt \
-    --mount=type=cache,target=${HOME}/.npm \
+RUN --mount=type=cache,target=${HOME}/.npm \
     echo '/lib\n\
 /lib64\n\
 /var/lib\n\
