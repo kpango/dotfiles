@@ -185,6 +185,7 @@ function! CommandlinePre() abort
   " Enable command line completion
   call ddc#enable_cmdline_completion()
 endfunction
+
 function! CommandlinePost() abort
   cunmap <Tab>
   cunmap <S-Tab>

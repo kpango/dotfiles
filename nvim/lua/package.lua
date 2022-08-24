@@ -16,6 +16,7 @@ vim.cmd([[
   augroup packer_user_config
     autocmd!
     autocmd BufWritePost plugins.lua source <afile> | PackerCompile
+    autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
   augroup end
 ]])
 
@@ -145,6 +146,16 @@ return packer.startup(function(use)
     use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {"glepnir/lspsaga.nvim", branch = "main"}
 
+    require('plugins.ddc').definitions(use)
+    require('plugins.caw').definitions(use)
+    require('plugins.deoppet').definitions(use)
+    require('plugins.fzf').definitions(use)
+    require('plugins.gitsigns').definitions(use)
+    require('plugins.lspsaga').definitions(use)
+    require('plugins.navic').definitions(use)
+    require('plugins.telescope').definitions(use)
+    require('plugins.treesitter').definitions(use)
+
     if packer_bootstrap then
       packer.sync()
     end
@@ -155,9 +166,12 @@ config = {
     open_fn = function()
       return require('packer.util').float({ border = 'single' })
     end
-  }
+  },
   profile = {
     enable = true,
     threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
-  }
+  },
+  max_jobs = 30, 
+  auto_reload_compiled = true, 
+  compile_on_sync = true
 })

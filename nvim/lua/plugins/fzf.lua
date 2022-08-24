@@ -4,6 +4,12 @@ if (not status) then
   return
 end
 
+local status, fzf = pcall(require, "fzf")
+if (not status) then
+  print("fzf is not installed")
+  return
+end
+
 vim.cmd[[
 nnoremap <silent> <Leader>. :<C-u>FZFFileList<CR>
 nnoremap <silent> <Leader>, :<C-u>FZFMru<CR>
