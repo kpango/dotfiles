@@ -155,6 +155,8 @@ return packer.startup(function(use)
     require('plugins.lspsaga').definitions(use)
     require('plugins.navic').definitions(use)
     require('plugins.telescope').definitions(use)
+    require('plugins.filetype').definitions(use)
+    require('plugins.bufferline').definitions(use)
     require('plugins.treesitter').definitions(use)
 
     if packer_bootstrap then
