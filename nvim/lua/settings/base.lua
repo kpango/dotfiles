@@ -1,75 +1,65 @@
-vim.o.completeopt=menu,preview,noinsert
-vim.o.helplang=ja
-vim.o.wrap=true
-vim.o.synmaxcol=2000
--- vim.o.showmatch={
---   matchtime=2
--- }
--- vim.o.listchars={
---   'tab:> ',
---   'trail:_',
---   'eol:↲',
---   'extends:»',
---   'precedes:«',
---   'nbsp:%'
--- }
-vim.o.display=lastline
-vim.o.nrformats=""
-vim.o.virtualedit=block
-vim.o.wildmenu=true
--- vim.o.wildmode={
---   list = {longest,full}
--- }
-vim.o.autoread=true
-vim.o.autowrite=true
--- vim.o.noswapfile=true
--- vim.o.nowritebackup=true
--- vim.o.nobackup=true
--- vim.o.clipboard:append('unnamedplus')
-vim.o.splitright=true
-vim.o.splitbelow=true
-vim.o.incsearch=true
-vim.o.ignorecase=true
-vim.o.wrapscan=true
-vim.o.infercase=true
-vim.o.smartcase=true
-vim.o.laststatus=2
-vim.o.showcmd=true
--- vim.o.visualbell t_vb=false
--- vim.o.novisualbell=true
--- vim.o.noerrorbells=true
-vim.o.expandtab=true
-vim.o.shiftwidth=4
-vim.o.tabstop=4
-vim.o.smarttab=true
-vim.o.softtabstop=0
-vim.o.autoindent=true
-vim.o.smartindent=true
-vim.o.showbreak='↪'
-vim.o.shiftround=true
--- vim.o.whichwrap={
---   'b',
---   's',
---   'h',
---   'l',
---   '<',
---   '>',
---   '[',
---   ']',
--- }
-vim.o.scrolloff=5
-vim.o.backspace=indent,eol,start
--- vim.o.matchpairs:append('<:>')
-vim.o.switchbuf=useopen
-vim.o.history=100
-vim.o.mouse=a
--- vim.o.guioptions:append('a')
-vim.o.lazyredraw=true
-vim.o.ttyfast=true
--- vim.o.viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!'
--- vim.o.shortmess:append('I')
-vim.o.fileformat=unix
--- vim.o.fileformats=unix,dos,mac
--- vim.o.foldmethod=manual
--- vim.o.shell=zsh
--- vim.o.ambiwidth=double
+-- vim.opt.foldmethod=manual
+-- vim.opt.guioptions:append('a')
+-- vim.opt.listchars={ 'tab:> ', 'trail:_', 'eol:↲', 'extends:»', 'precedes:«', 'nbsp:%' }
+-- vim.opt.nobackup=true
+-- vim.opt.noerrorbells=true
+-- vim.opt.noswapfile=true
+-- vim.opt.novisualbell=true
+-- vim.opt.nowritebackup=true
+-- vim.opt.viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!'
+-- vim.opt.whichwrap={ 'b', 's', 'h', 'l', '<', '>', '[', ']' }
+vim.opt.ambiwidth=double
+vim.opt.autoindent=true
+vim.opt.autoread=true
+vim.opt.autowrite=true
+vim.opt.backspace = { 'start', 'eol', 'indent' }
+vim.opt.backup = false
+vim.opt.backupskip = { '/tmp/*', '/private/tmp/*' }
+vim.opt.clipboard:append('unnamedplus')
+vim.opt.cmdheight = 1
+vim.opt.completeopt=menu,preview,noinsert
+vim.opt.display=lastline
+vim.opt.encoding = 'utf-8'
+vim.opt.expandtab=true
+vim.opt.fileencoding = 'utf-8'
+vim.opt.fileformat=unix
+vim.opt.fileformats=unix,dos,mac
+vim.opt.helplang=ja
+vim.opt.history=100
+vim.opt.hlsearch = true
+vim.opt.ignorecase=true
+vim.opt.inccommand = 'split'
+vim.opt.incsearch=true
+vim.opt.infercase=true
+vim.opt.laststatus=2
+vim.opt.lazyredraw=true
+vim.opt.matchpairs:append('<:>')
+vim.opt.mouse=a
+vim.opt.nrformats=""
+vim.opt.scrolloff=5
+vim.opt.shell=zsh
+vim.opt.shiftround=true
+vim.opt.shiftwidth=4
+vim.opt.shortmess:append('I')
+vim.opt.showbreak='↪'
+vim.opt.showcmd=true
+vim.opt.showmatch=true
+vim.opt.smartcase=true
+vim.opt.smartindent=true
+vim.opt.smarttab=true
+vim.opt.softtabstop=0
+vim.opt.splitbelow=true
+vim.opt.splitright=true
+vim.opt.switchbuf=useopen
+vim.opt.synmaxcol=2000
+vim.opt.tabstop=4
+vim.opt.title = true
+vim.opt.ttyfast=true
+vim.opt.virtualedit=block
+vim.opt.visualbell=false
+vim.opt.wildmenu=true
+vim.opt.wildmode={ list = {longest,full} }
+vim.opt.wrap=true
+vim.opt.wrapscan=true
+vim.scriptencoding = 'utf-8'
+vim.wo.number = true

@@ -2,7 +2,8 @@ local fn = vim.fn
 local install_path = fn.stdpath('data')..'/site/pack/packer/opt/packer.nvim'
 if fn.empty(fn.glob(install_path)) > 0 then
     packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.api.nvim_command('packadd packer.nvim')
+    -- vim.api.nvim_command('packadd packer.nvim')
+    vim.cmd('packadd packer.nvim')
 end
 
 local status, packer = pcall(require, 'packer')
@@ -144,6 +145,7 @@ return packer.startup(function(use)
     use {'nvim-telescope/telescope.nvim', tag = '0.1.0', requires = {{'nvim-lua/plenary.nvim'}}}
     use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {"glepnir/lspsaga.nvim", branch = "main"}
+    use {"jose-elias-alvarez/null-ls.nvim", branch = "main"}
 
     require('plugins.ddc').definitions(use)
     require('plugins.caw').definitions(use)
@@ -157,6 +159,7 @@ return packer.startup(function(use)
     require('plugins.filetype').definitions(use)
     require('plugins.bufferline').definitions(use)
     require('plugins.treesitter').definitions(use)
+    require('plugins.null-ls').definitions(use)
 
     if packer_bootstrap then
       packer.sync()
