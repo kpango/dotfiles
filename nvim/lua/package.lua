@@ -98,6 +98,8 @@ return packer.startup(function(use)
     use {'tani/ddc-fuzzy', requires = {'Shougo/ddc.vim'}}
     use {'Shougo/deoppet.nvim'}
     use {'Shougo/pum.vim'}
+    use {'junegunn/fzf', run = ":call fzf#install()"}
+    use {'junegunn/fzf.vim', requires = {'junegunn/fzf'}}
     use {'lewis6991/gitsigns.nvim'}
     use {'lambdalisue/gin.vim'}
     use {'editorconfig/editorconfig-vim'}
