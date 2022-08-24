@@ -99,7 +99,7 @@ call ddc#custom#patch_global('sourceOptions', {
       \ 'file': {
       \   'mark': 'file',
       \   'isVolatile': v:true,
-      \   'forceCompletionPattern': '\S/\S*'
+      \   'forceCompletionPattern': '\S/\S*|\.\w*|:\w*|->\w*'
       \ }})
 
 call ddc#custom#patch_global('sourceParams', {
