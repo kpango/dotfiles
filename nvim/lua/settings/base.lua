@@ -12,18 +12,21 @@ vim.opt.ambiwidth=double
 vim.opt.autoindent=true
 vim.opt.autoread=true
 vim.opt.autowrite=true
+vim.opt.background = 'dark'
 vim.opt.backspace = { 'start', 'eol', 'indent' }
 vim.opt.backup = false
 vim.opt.backupskip = { '/tmp/*', '/private/tmp/*' }
 vim.opt.clipboard:append('unnamedplus')
 vim.opt.cmdheight = 1
 vim.opt.completeopt=menu,preview,noinsert
+vim.opt.cursorline = false
 vim.opt.display=lastline
 vim.opt.encoding = 'utf-8'
 vim.opt.expandtab=true
 vim.opt.fileencoding = 'utf-8'
 vim.opt.fileformat=unix
 vim.opt.fileformats=unix,dos,mac
+vim.opt.formatoptions:append { 'r' }
 vim.opt.helplang=ja
 vim.opt.history=100
 vim.opt.hlsearch = true
@@ -36,6 +39,7 @@ vim.opt.lazyredraw=true
 vim.opt.matchpairs:append('<:>')
 vim.opt.mouse=a
 vim.opt.nrformats=""
+vim.opt.pumblend = 5
 vim.opt.scrolloff=5
 vim.opt.shell=zsh
 vim.opt.shiftround=true
@@ -53,12 +57,15 @@ vim.opt.splitright=true
 vim.opt.switchbuf=useopen
 vim.opt.synmaxcol=2000
 vim.opt.tabstop=4
+vim.opt.termguicolors = true
 vim.opt.title = true
 vim.opt.ttyfast=true
 vim.opt.virtualedit=block
 vim.opt.visualbell=false
 vim.opt.wildmenu=true
 vim.opt.wildmode={ list = {longest,full} }
+vim.opt.wildoptions = 'pum'
+vim.opt.winblend = 0
 vim.opt.wrap=true
 vim.opt.wrapscan=true
 vim.scriptencoding = 'utf-8'
