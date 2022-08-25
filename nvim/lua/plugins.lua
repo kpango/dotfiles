@@ -1,7 +1,6 @@
 local fn = vim.fn
 local stdpath = fn.stdpath('data')
 local install_path = fn.glob(stdpath .. '/site/pack/packer/opt/packer.nvim')
-print(install_path)
 if fn.empty(install_path) > 0 then
     packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
     vim.api.nvim_command('packadd packer.nvim')
@@ -17,7 +16,7 @@ end
 packer.init({
   auto_clean = true, -- During sync(), remove unused plugins
   auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
-  autoremove = false, -- Remove disabled or unused plugins without prompting the user
+  autoremove = true, -- Remove disabled or unused plugins without prompting the user
   compile_on_sync = true, -- During sync(), run packer.compile()
   compile_path = util.join_paths(fn.stdpath('config'), 'plugin', 'packer_compiled.lua'),
   disable_commands = false, -- Disable creating commands
@@ -140,6 +139,7 @@ return packer.startup(function(use)
     use {"glepnir/lspsaga.nvim", branch = "main"}
     use {"jose-elias-alvarez/null-ls.nvim", branch = "main"}
 
+    require('plugins.packer').definitions(use)
     require('plugins.ddc').definitions(use)
     require('plugins.caw').definitions(use)
     require('plugins.deoppet').definitions(use)
@@ -157,17 +157,4 @@ return packer.startup(function(use)
     if packer_bootstrap then
       packer.sync()
     end
-end
-)
-vim.cmd([[
-  command! PackerInstall packadd packer.nvim | lua packer.install()
-  command! PackerUpdate packadd packer.nvim | lua packers.update()
-  command! PackerSync packadd packer.nvim | lua packers.sync()
-  command! PackerClean packadd packer.nvim | lua packers.clean()
-  command! PackerCompile packadd packer.nvim | lua packers.compile()
-  augroup packer_user_config
-    autocmd!
-    autocmd BufWritePost plugins.lua source <afile> | PackerCompile
-    autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
-  augroup end
-]])
+end)
