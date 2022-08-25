@@ -1,9 +1,11 @@
 local fn = vim.fn
-local install_path = fn.stdpath('data')..'/site/pack/packer/opt/packer.nvim'
-if fn.empty(fn.glob(install_path)) > 0 then
+local stdpath = fn.stdpath('data')
+local install_path = fn.glob(stdpath .. '/site/pack/packer/opt/packer.nvim')
+print(install_path)
+if fn.empty(install_path) > 0 then
     packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    -- vim.api.nvim_command('packadd packer.nvim')
-    vim.cmd('packadd packer.nvim')
+    vim.api.nvim_command('packadd packer.nvim')
+    -- vim.cmd('packadd packer.nvim')
 end
 
 local status, packer = pcall(require, 'packer')
@@ -12,29 +14,22 @@ if (not status) then
   return
 end
 
-vim.cmd([[
-  augroup packer_user_config
-    autocmd!
-    autocmd BufWritePost plugins.lua source <afile> | PackerCompile
-    autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
-  augroup end
-]])
-
 packer.init({
+  auto_clean = true, -- During sync(), remove unused plugins
+  auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
+  autoremove = false, -- Remove disabled or unused plugins without prompting the user
+  compile_on_sync = true, -- During sync(), run packer.compile()
+  compile_path = util.join_paths(fn.stdpath('config'), 'plugin', 'packer_compiled.lua'),
+  disable_commands = false, -- Disable creating commands
   ensure_dependencies   = true, -- Should packer install plugin dependencies?
+  max_jobs = nil, -- Limit the number of simultaneous jobs. nil means no limit
+  opt_default = false, -- Default to using opt (as opposed to start) plugins
+  package_root   = util.join_paths(stdpath, 'site', 'pack'),
+  plugin_package = 'packer', -- The default package for plugins
   snapshot = nil, -- Name of the snapshot you would like to load at startup
   snapshot_path = join_paths(stdpath 'cache', 'packer.nvim'), -- Default save directory for snapshots
-  package_root   = util.join_paths(vim.fn.stdpath('data'), 'site', 'pack'),
-  compile_path = util.join_paths(vim.fn.stdpath('config'), 'plugin', 'packer_compiled.lua'),
-  plugin_package = 'packer', -- The default package for plugins
-  max_jobs = nil, -- Limit the number of simultaneous jobs. nil means no limit
-  auto_clean = true, -- During sync(), remove unused plugins
-  compile_on_sync = true, -- During sync(), run packer.compile()
-  disable_commands = false, -- Disable creating commands
-  opt_default = false, -- Default to using opt (as opposed to start) plugins
-  transitive_opt = true, -- Make dependencies of opt plugins also opt by default
   transitive_disable = true, -- Automatically disable dependencies f disabled plugins
-  auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
+  transitive_opt = true, -- Make dependencies of opt plugins also opt by default
   git = {
     cmd = 'git', -- The base command for git operations
     subcommands = { -- Format strings for git subcommands
@@ -56,7 +51,9 @@ packer.init({
   },
   display = {
     non_interactive = false, -- If true, disable display windows for all operations
-    open_fn  = nil, -- An optional function to open a window for packer's display
+    open_fn = function() -- An optional function to open a window for packer's display
+      return require('packer.util').float({ border = 'single' })
+    end,
     open_cmd = '65vnew \\[packer\\]', -- An optional command to open a window for packer's display
     working_sym = '⟳', -- The symbol for a plugin being installed/updated
     error_sym = '✗', -- The symbol for a plugin with an error in installation/updating
@@ -81,7 +78,6 @@ packer.init({
     enable = false,
     threshold = 1, -- integer in milliseconds, plugins which load faster than this won't be shown in profile output
   },
-  autoremove = false, -- Remove disabled or unused plugins without prompting the user
 })
 
 return packer.startup(function(use)
@@ -114,33 +110,30 @@ return packer.startup(function(use)
     use {'nathom/filetype.nvim', event = 'VimEnter'}
     use {'editorconfig/editorconfig-vim'}
     use { "SmiteshP/nvim-navic",
-      requires = [
-        "neovim/nvim-lspconfig",
-        "nvim-treesitter/nvim-treesitter",
-      ],
+      requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"},
       module = "nvim-navic",
       config = function()
         require("nvim-navic").setup()
-      end,
+      end
     }
     use {'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+        requires = { 'kyazdani42/nvim-web-devicons', opt = true },
         event = "VimEnter",
         config = function()
           require("config.lualine").setup()
-        end,
+        end
     }
     use {'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate'
+        run = ':TSUpdate',
         config = function()
            require("config.treesitter").setup()
-        end,
+        end
     }
     use {'norcalli/nvim-colorizer.lua',
         event = "VimEnter",
         config = function()
            require("config.colorizer").setup()
-        end,
+        end
     }
     use {'nvim-telescope/telescope.nvim', tag = '0.1.0', requires = {{'nvim-lua/plenary.nvim'}}}
     use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
@@ -164,19 +157,17 @@ return packer.startup(function(use)
     if packer_bootstrap then
       packer.sync()
     end
-end,
-
-config = {
-  display = {
-    open_fn = function()
-      return require('packer.util').float({ border = 'single' })
-    end
-  },
-  profile = {
-    enable = true,
-    threshold = 1 -- the amount in ms that a plugins load time must be over for it to be included in the profile
-  },
-  max_jobs = 30, 
-  auto_reload_compiled = true, 
-  compile_on_sync = true
-})
+end
+)
+vim.cmd([[
+  command! PackerInstall packadd packer.nvim | lua packer.install()
+  command! PackerUpdate packadd packer.nvim | lua packers.update()
+  command! PackerSync packadd packer.nvim | lua packers.sync()
+  command! PackerClean packadd packer.nvim | lua packers.clean()
+  command! PackerCompile packadd packer.nvim | lua packers.compile()
+  augroup packer_user_config
+    autocmd!
+    autocmd BufWritePost plugins.lua source <afile> | PackerCompile
+    autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
+  augroup end
+]])
