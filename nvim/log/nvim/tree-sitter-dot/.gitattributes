@@ -1,4 +1,0 @@
-* text eol=lf
-
-/src/** linguist-generated
-/binding.gyp linguist-detectable=false
