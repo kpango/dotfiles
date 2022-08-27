@@ -1,0 +1,29 @@
+{
+  "name": "tree-sitter-viml",
+  "version": "0.1.0",
+  "description": "A Tree-sitter VimL parser !",
+  "main": "bindings/node",
+  "scripts": {
+    "build": "tree-sitter generate",
+    "test": "tree-sitter test && ./scripts/test.py",
+    "parse": "tree-sitter parse",
+    "lint": "prettier --check grammar.js keywords.js rules/*.js",
+    "format": "prettier --write grammar.js keywords.js rules/*.js"
+  },
+  "author": "Thomas Vigouroux",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "nan": "^2.16.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.20.6",
+    "prettier": "^2.7.1"
+  },
+  "tree-sitter": [
+    {
+      "file-types": [
+        "vim"
+      ]
+    }
+  ]
+}

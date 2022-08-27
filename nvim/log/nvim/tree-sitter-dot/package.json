@@ -1,0 +1,49 @@
+{
+  "name": "tree-sitter-dot",
+  "version": "0.1.5",
+  "description": "DOT grammar for tree-sitter",
+  "main": "bindings/node",
+  "keywords": [
+    "parser",
+    "lexer",
+    "dot",
+    "graphviz"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rydesun/tree-sitter-dot.git"
+  },
+  "author": "rydesun <rydesun@gmail.com> (https://github.com/rydesun)",
+  "license": "MIT",
+  "dependencies": {
+    "nan": "^2.14.2"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.19.4"
+  },
+  "scripts": {
+    "build": "tree-sitter generate && node-gyp build",
+    "test": "tree-sitter test",
+    "parse": "tree-sitter parse"
+  },
+  "files": [
+    "/bindings/node/",
+    "/binding.gyp",
+    "/grammar.js",
+    "/queries/",
+    "/src/"
+  ],
+  "tree-sitter": [
+    {
+      "scope": "source.dot",
+      "file-types": [
+        "dot",
+        "gv"
+      ]
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/rydesun/tree-sitter-dot/issues"
+  },
+  "homepage": "https://github.com/rydesun/tree-sitter-dot#readme"
+}

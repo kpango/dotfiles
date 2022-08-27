@@ -1,0 +1,660 @@
+{
+  "name": "ocamllex",
+  "word": "_identifier",
+  "rules": {
+    "lexer_definition": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "action"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "named_regexp"
+          }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "refill_handler"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "rule"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "lexer_entry"
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "and"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "lexer_entry"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "action"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "action": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ocaml"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "named_regexp": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "let"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_regexp_name"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_regexp"
+        }
+      ]
+    },
+    "_regexp": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "STRING",
+            "value": "_"
+          },
+          "named": true,
+          "value": "any"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "STRING",
+            "value": "eof"
+          },
+          "named": true,
+          "value": "eof"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_regexp_name"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "character"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "character_set"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "regexp_difference"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "regexp_repetition"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "regexp_strict_repetition"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "regexp_option"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "regexp_alternative"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "regexp_concatenation"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "aliased_regexp"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "parenthesized_regexp"
+        }
+      ]
+    },
+    "character": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "'"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "PATTERN",
+              "value": "[^\\\\']"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "escape_sequence"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "'"
+        }
+      ]
+    },
+    "string": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "\""
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "[^\\\\\"]+"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "escape_sequence"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "\\\\u\\{[0-9A-Fa-f]+\\}"
+                },
+                "named": true,
+                "value": "escape_sequence"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "PATTERN",
+                  "value": "\\\\\\n[\\t ]*"
+                },
+                "named": true,
+                "value": "escape_sequence"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "\""
+        }
+      ]
+    },
+    "escape_sequence": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "PATTERN",
+          "value": "\\\\[\\\\\"'ntbr ]"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\[0-9][0-9][0-9]"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\x[0-9A-Fa-f][0-9A-Fa-f]"
+        },
+        {
+          "type": "PATTERN",
+          "value": "\\\\o[0-3][0-7][0-7]"
+        }
+      ]
+    },
+    "character_set": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "^"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "character"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "character_range"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "]"
+        }
+      ]
+    },
+    "character_range": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "character"
+        },
+        {
+          "type": "STRING",
+          "value": "-"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "character"
+        }
+      ]
+    },
+    "regexp_difference": {
+      "type": "PREC_LEFT",
+      "value": 6,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          },
+          {
+            "type": "STRING",
+            "value": "#"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          }
+        ]
+      }
+    },
+    "regexp_repetition": {
+      "type": "PREC",
+      "value": 5,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          },
+          {
+            "type": "STRING",
+            "value": "*"
+          }
+        ]
+      }
+    },
+    "regexp_strict_repetition": {
+      "type": "PREC",
+      "value": 5,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          },
+          {
+            "type": "STRING",
+            "value": "+"
+          }
+        ]
+      }
+    },
+    "regexp_option": {
+      "type": "PREC",
+      "value": 5,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          },
+          {
+            "type": "STRING",
+            "value": "?"
+          }
+        ]
+      }
+    },
+    "regexp_alternative": {
+      "type": "PREC_LEFT",
+      "value": 3,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          },
+          {
+            "type": "STRING",
+            "value": "|"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          }
+        ]
+      }
+    },
+    "regexp_concatenation": {
+      "type": "PREC_LEFT",
+      "value": 4,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          }
+        ]
+      }
+    },
+    "parenthesized_regexp": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_regexp"
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "aliased_regexp": {
+      "type": "PREC_RIGHT",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_regexp"
+          },
+          {
+            "type": "STRING",
+            "value": "as"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_regexp_name"
+          }
+        ]
+      }
+    },
+    "refill_handler": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "refill"
+        },
+        {
+          "type": "STRING",
+          "value": "{"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "ocaml"
+        },
+        {
+          "type": "STRING",
+          "value": "}"
+        }
+      ]
+    },
+    "lexer_entry": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_lexer_entry_name"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_lexer_argument"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "parse"
+            },
+            {
+              "type": "STRING",
+              "value": "shortest"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "|"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "lexer_case"
+            },
+            {
+              "type": "REPEAT",
+              "content": {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "|"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "lexer_case"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "lexer_case": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "_regexp"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "action"
+        }
+      ]
+    },
+    "_identifier": {
+      "type": "PATTERN",
+      "value": "[a-z_][a-zA-Z0-9_']*"
+    },
+    "_regexp_name": {
+      "type": "ALIAS",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_identifier"
+      },
+      "named": true,
+      "value": "regexp_name"
+    },
+    "_lexer_entry_name": {
+      "type": "ALIAS",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_identifier"
+      },
+      "named": true,
+      "value": "lexer_entry_name"
+    },
+    "_lexer_argument": {
+      "type": "ALIAS",
+      "content": {
+        "type": "SYMBOL",
+        "name": "_identifier"
+      },
+      "named": true,
+      "value": "lexer_argument"
+    }
+  },
+  "extras": [
+    {
+      "type": "PATTERN",
+      "value": "\\s"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "comment"
+    }
+  ],
+  "conflicts": [],
+  "precedences": [],
+  "externals": [
+    {
+      "type": "SYMBOL",
+      "name": "comment"
+    },
+    {
+      "type": "STRING",
+      "value": "\""
+    },
+    {
+      "type": "SYMBOL",
+      "name": "ocaml"
+    }
+  ],
+  "inline": [
+    "_regexp_name",
+    "_lexer_entry_name",
+    "_lexer_argument"
+  ],
+  "supertypes": []
+}
+

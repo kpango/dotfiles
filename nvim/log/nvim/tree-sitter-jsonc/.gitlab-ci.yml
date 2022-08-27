@@ -1,0 +1,11 @@
+cache:
+  key: one-key-to-rule-them-all
+  paths:
+    - node_modules/
+
+tests:
+  image: node:latest
+  before_script:
+    - yarn install
+  script:
+    - yarn test

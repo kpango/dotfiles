@@ -1,0 +1,107 @@
+===========================
+Simple expressions
+===========================
+
+rule main = parse
+  | _ {}
+  | eof {}
+  | name {}
+  | 'c' {}
+  | '\n' {}
+  | "" {}
+  | "\n" {}
+
+---
+
+(lexer_definition
+  (lexer_entry
+    (lexer_entry_name)
+    (lexer_case (any) (action (ocaml)))
+    (lexer_case (eof) (action (ocaml)))
+    (lexer_case (regexp_name) (action (ocaml)))
+    (lexer_case (character) (action (ocaml)))
+    (lexer_case (character (escape_sequence)) (action (ocaml)))
+    (lexer_case (string) (action (ocaml)))
+    (lexer_case (string (escape_sequence)) (action (ocaml)))))
+
+===========================
+Combinators
+===========================
+
+rule main = parse
+  | _ _ {}
+  | ['a' - 'z'] # 'c' {}
+  | _ * {}
+  | _ + {}
+  | _ ? {}
+  | _ | _ {}
+
+---
+
+(lexer_definition
+  (lexer_entry (lexer_entry_name)
+    (lexer_case
+      (regexp_concatenation (any) (any)) (action (ocaml)))
+    (lexer_case
+      (regexp_difference
+        (character_set (character_range (character) (character)))
+        (character))
+      (action (ocaml)))
+    (lexer_case
+      (regexp_repetition (any))
+      (action (ocaml)))
+    (lexer_case
+      (regexp_strict_repetition (any))
+      (action (ocaml)))
+    (lexer_case
+      (regexp_option (any))
+      (action (ocaml)))
+    (lexer_case
+      (regexp_alternative (any) (any))
+      (action (ocaml)))))
+
+===========================
+Aliases and parentheses
+===========================
+
+rule main = parse
+  | _ as x {}
+  | (_ as x) {}
+
+---
+
+(lexer_definition
+  (lexer_entry (lexer_entry_name)
+    (lexer_case
+      (aliased_regexp (any) (regexp_name))
+      (action (ocaml)))
+    (lexer_case
+      (parenthesized_regexp
+        (aliased_regexp (any) (regexp_name)))
+      (action (ocaml)))))
+
+===========================
+Precendence
+===========================
+
+rule main = parse
+  | _ _ _ # _ # _ * | _ as x {}
+
+---
+
+(lexer_definition
+  (lexer_entry (lexer_entry_name)
+  (lexer_case
+    (aliased_regexp
+      (regexp_alternative
+        (regexp_concatenation
+          (regexp_concatenation
+            (any)
+            (any))
+          (regexp_repetition
+            (regexp_difference
+              (regexp_difference (any) (any))
+              (any))))
+        (any))
+      (regexp_name))
+    (action (ocaml)))))

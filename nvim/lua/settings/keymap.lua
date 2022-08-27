@@ -111,3 +111,6 @@ vim.keymap.set('n', '<C-w><left>', '<C-w><')
 vim.keymap.set('n', '<C-w><right>', '<C-w>>')
 vim.keymap.set('n', '<C-w><up>', '<C-w>+')
 vim.keymap.set('n', '<C-w><down>', '<C-w>-')
+
+vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', {silent=true})
+vim.api.nvim_set_keymap('n', '<Esc><Esc>', ':nohlsearch,<CR>', {silent=true})

@@ -6,6 +6,7 @@
 -- vim.opt.noswapfile=true
 -- vim.opt.novisualbell=true
 -- vim.opt.nowritebackup=true
+-- vim.opt.relativenumber=true
 -- vim.opt.viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!'
 -- vim.opt.whichwrap={ 'b', 's', 'h', 'l', '<', '>', '[', ']' }
 vim.opt.ambiwidth=double
@@ -27,13 +28,13 @@ vim.opt.expandtab=true
 vim.opt.fileencoding = 'utf-8'
 vim.opt.fileformat=unix
 vim.opt.fileformats=unix,dos,mac
-vim.opt.formatoptions:append { 'r' }
+vim.opt.formatoptions:append('r')
 vim.opt.formatoptions:append('mM')
 vim.opt.formatoptions:remove('t')
 vim.opt.helplang=ja
 vim.opt.hidden = true
 vim.opt.history=100
-vim.opt.hlsearch = true
+vim.opt.hlsearch=true
 vim.opt.ignorecase=true
 vim.opt.inccommand = 'split'
 vim.opt.incsearch=true
@@ -41,6 +42,7 @@ vim.opt.infercase=true
 vim.opt.laststatus=2
 vim.opt.lazyredraw=true
 vim.opt.matchpairs:append('<:>')
+vim.opt.modifiable=true
 vim.opt.mouse=a
 vim.opt.nrformats = "bin,hex"
 vim.opt.number = true
@@ -62,6 +64,7 @@ vim.opt.splitright=true
 vim.opt.swapfile = false
 vim.opt.switchbuf=useopen
 vim.opt.synmaxcol=2000
+vim.opt.syntax='enable'
 vim.opt.tabstop=4
 vim.opt.termguicolors= rue
 vim.opt.title=true
@@ -69,12 +72,17 @@ vim.opt.ttyfast=true
 vim.opt.virtualedit=block
 vim.opt.visualbell=false
 vim.opt.whichwrap = "b,s,[,],<,>"
+vim.opt.wildignore = { '*.o', '*.a', '__pycache__' }
 vim.opt.wildmenu=true
 vim.opt.wildmode={ list = {longest,full} }
 vim.opt.wildoptions = 'pum'
-vim.opt.wildignore = { '*.o', '*.a', '__pycache__' }
 vim.opt.winblend = 20
 vim.opt.wrap=true
 vim.opt.wrapscan=true
 vim.scriptencoding = 'utf-8'
 vim.wo.number = true
+vim.g.shell='/usr/bin/zsh'
+vim.g.mapleader=' '
+vim.b.noswapfile=true
+vim.b.nobackup=true
+vim.b.nowritebackup=true

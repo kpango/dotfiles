@@ -1,5 +1,8 @@
 local status, null_ls = pcall(require, "null-ls")
-if (not status) then return end
+if (not status) then 
+  print('null-ls is not intalled')
+  return
+end
 
 local augroup_format = vim.api.nvim_create_augroup("Format", { clear = true })
 
@@ -10,7 +13,7 @@ null_ls.setup {
     }),
     null_ls.builtins.diagnostics.fish,
     null_ls.builtins.diagnostics.eslint,
-    null_ls.builtins.completion.spell
+    null_ls.builtins.completion.spell,
     null_ls.builtins.formatting.stylua,
     null_ls.builtins.formatting.deno_fmt.with {
       condition = function(utils)
@@ -24,7 +27,7 @@ null_ls.setup {
       prefer_local = "node_modules/.bin",
     },
   },
-  capabilities = common_config.capabilities,
+  -- capabilities = common_config.capabilities,
   on_attach = function(client, bufnr)
     if client.server_capabilities.documentFormattingProvider then
       vim.api.nvim_clear_autocmds { buffer = 0, group = augroup_format }

@@ -1,0 +1,945 @@
+[
+  {
+    "type": "action",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "ocaml",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "aliased_regexp",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "character",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_sequence",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "character_range",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "character",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "character_set",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_range",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "escape_sequence",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "lexer_case",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "action",
+          "named": true
+        },
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "lexer_definition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "action",
+          "named": true
+        },
+        {
+          "type": "lexer_entry",
+          "named": true
+        },
+        {
+          "type": "named_regexp",
+          "named": true
+        },
+        {
+          "type": "refill_handler",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "lexer_entry",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "lexer_argument",
+          "named": true
+        },
+        {
+          "type": "lexer_case",
+          "named": true
+        },
+        {
+          "type": "lexer_entry_name",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "named_regexp",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "parenthesized_regexp",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "refill_handler",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "ocaml",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "regexp_alternative",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "regexp_concatenation",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "regexp_difference",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "regexp_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "regexp_repetition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "regexp_strict_repetition",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "aliased_regexp",
+          "named": true
+        },
+        {
+          "type": "any",
+          "named": true
+        },
+        {
+          "type": "character",
+          "named": true
+        },
+        {
+          "type": "character_set",
+          "named": true
+        },
+        {
+          "type": "eof",
+          "named": true
+        },
+        {
+          "type": "parenthesized_regexp",
+          "named": true
+        },
+        {
+          "type": "regexp_alternative",
+          "named": true
+        },
+        {
+          "type": "regexp_concatenation",
+          "named": true
+        },
+        {
+          "type": "regexp_difference",
+          "named": true
+        },
+        {
+          "type": "regexp_name",
+          "named": true
+        },
+        {
+          "type": "regexp_option",
+          "named": true
+        },
+        {
+          "type": "regexp_repetition",
+          "named": true
+        },
+        {
+          "type": "regexp_strict_repetition",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "escape_sequence",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "\"",
+    "named": false
+  },
+  {
+    "type": "#",
+    "named": false
+  },
+  {
+    "type": "'",
+    "named": false
+  },
+  {
+    "type": "(",
+    "named": false
+  },
+  {
+    "type": ")",
+    "named": false
+  },
+  {
+    "type": "*",
+    "named": false
+  },
+  {
+    "type": "+",
+    "named": false
+  },
+  {
+    "type": "-",
+    "named": false
+  },
+  {
+    "type": "=",
+    "named": false
+  },
+  {
+    "type": "?",
+    "named": false
+  },
+  {
+    "type": "[",
+    "named": false
+  },
+  {
+    "type": "]",
+    "named": false
+  },
+  {
+    "type": "^",
+    "named": false
+  },
+  {
+    "type": "and",
+    "named": false
+  },
+  {
+    "type": "any",
+    "named": true
+  },
+  {
+    "type": "as",
+    "named": false
+  },
+  {
+    "type": "comment",
+    "named": true
+  },
+  {
+    "type": "eof",
+    "named": true
+  },
+  {
+    "type": "let",
+    "named": false
+  },
+  {
+    "type": "lexer_argument",
+    "named": true
+  },
+  {
+    "type": "lexer_entry_name",
+    "named": true
+  },
+  {
+    "type": "ocaml",
+    "named": true
+  },
+  {
+    "type": "parse",
+    "named": false
+  },
+  {
+    "type": "refill",
+    "named": false
+  },
+  {
+    "type": "regexp_name",
+    "named": true
+  },
+  {
+    "type": "rule",
+    "named": false
+  },
+  {
+    "type": "shortest",
+    "named": false
+  },
+  {
+    "type": "{",
+    "named": false
+  },
+  {
+    "type": "|",
+    "named": false
+  },
+  {
+    "type": "}",
+    "named": false
+  }
+]

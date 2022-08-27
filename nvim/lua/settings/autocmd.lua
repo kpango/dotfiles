@@ -10,7 +10,6 @@ vim.cmd([[
 
   command! -nargs=* Autocmd autocmd AutoGroup <args>
   command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
-  " AutocmdFT lua BufNewFile,BufWritePost package.lua source <afile> | PackerCompile
 ]])
 
 -- Update plugins on change in the plugin definitions file

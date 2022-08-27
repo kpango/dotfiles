@@ -1,0 +1,26 @@
+{
+  "name": "tree-sitter-ocamllex",
+  "version": "0.16.0",
+  "description": "OCamllex grammar for tree-sitter",
+  "keywords": [
+    "tree-sitter",
+    "parser",
+    "ocaml",
+    "ocamllex"
+  ],
+  "homepage": "https://github.com/atom-ocaml/tree-sitter-ocamllex",
+  "license": "MIT",
+  "author": "Pieter Goetschalckx",
+  "main": "index.js",
+  "repository": "github:atom-ocaml/tree-sitter-ocamllex",
+  "scripts": {
+    "build": "tree-sitter generate && node-gyp build",
+    "test": "tree-sitter test"
+  },
+  "dependencies": {
+    "nan": "^2.14.1"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.16.7"
+  }
+}

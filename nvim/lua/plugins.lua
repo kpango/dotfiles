@@ -1,15 +1,31 @@
 local fn = vim.fn
-local stdpath = fn.stdpath('data')
-local install_path = fn.glob(stdpath .. '/site/pack/packer/opt/packer.nvim')
-if fn.empty(install_path) > 0 then
-    packer_bootstrap = fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.api.nvim_command('packadd packer.nvim')
-    -- vim.cmd('packadd packer.nvim')
+local stdpath = fn.stdpath('config')
+local packer_path = stdpath .. '/site'
+local install_path = packer_path .. '/pack/packer/opt/packer.nvim'
+vim.o.packpath = vim.o.packpath .. ',' .. packer_path
+
+if fn.empty(fn.glob(install_path)) > 0 then
+  packer_bootstrap = fn.system({
+    "git",
+    "clone",
+    "--depth",
+    "1",
+    "https://github.com/wbthomason/packer.nvim",
+    install_path,
+  })
 end
+
+vim.api.nvim_command('packadd packer.nvim')
 
 local status, packer = pcall(require, 'packer')
 if (not status) then
-  print("Packer is not installed")
+  error("Packer is not installed install_path: " .. install_path.." packpath: "..vim.o.packpath)
+  return
+end
+
+local status, util =pcall(require, 'packer.util')
+if (not status) then
+  error("Packer util is not installed install_path: " .. install_path)
   return
 end
 
@@ -18,15 +34,15 @@ packer.init({
   auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
   autoremove = true, -- Remove disabled or unused plugins without prompting the user
   compile_on_sync = true, -- During sync(), run packer.compile()
-  compile_path = util.join_paths(fn.stdpath('config'), 'plugin', 'packer_compiled.lua'),
+  compile_path = util.join_paths(stdpath, 'plugin', 'packer_compiled.lua'),
   disable_commands = false, -- Disable creating commands
   ensure_dependencies   = true, -- Should packer install plugin dependencies?
   max_jobs = nil, -- Limit the number of simultaneous jobs. nil means no limit
   opt_default = false, -- Default to using opt (as opposed to start) plugins
-  package_root   = util.join_paths(stdpath, 'site', 'pack'),
+  package_root = util.join_paths(stdpath, 'site', 'pack'),
   plugin_package = 'packer', -- The default package for plugins
   snapshot = nil, -- Name of the snapshot you would like to load at startup
-  snapshot_path = join_paths(stdpath 'cache', 'packer.nvim'), -- Default save directory for snapshots
+  -- snapshot_path = util.join_paths(stdpath 'cache', 'packer.nvim'), -- Default save directory for snapshots
   transitive_disable = true, -- Automatically disable dependencies f disabled plugins
   transitive_opt = true, -- Make dependencies of opt plugins also opt by default
   git = {
@@ -51,7 +67,7 @@ packer.init({
   display = {
     non_interactive = false, -- If true, disable display windows for all operations
     open_fn = function() -- An optional function to open a window for packer's display
-      return require('packer.util').float({ border = 'single' })
+      return util.float({ border = 'single' })
     end,
     open_cmd = '65vnew \\[packer\\]', -- An optional command to open a window for packer's display
     working_sym = '⟳', -- The symbol for a plugin being installed/updated
@@ -78,6 +94,11 @@ packer.init({
     threshold = 1, -- integer in milliseconds, plugins which load faster than this won't be shown in profile output
   },
 })
+
+-- if fn.filereadable(packer.config.compile_path) ~= 1 then
+--   error("Packer compile path is not readable install_path: " .. install_path .. " compile_path: " .. packer.config.compile_path)
+--   return
+-- end
 
 return packer.startup(function(use)
     use {'wbthomason/packer.nvim', opt = true}
@@ -108,51 +129,55 @@ return packer.startup(function(use)
     use {'williamboman/mason.nvim'}
     use {'nathom/filetype.nvim', event = 'VimEnter'}
     use {'editorconfig/editorconfig-vim'}
-    use { "SmiteshP/nvim-navic",
-      requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"},
-      module = "nvim-navic",
-      config = function()
-        require("nvim-navic").setup()
-      end
-    }
-    use {'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true },
-        event = "VimEnter",
-        config = function()
-          require("config.lualine").setup()
-        end
-    }
-    use {'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate',
-        config = function()
-           require("config.treesitter").setup()
-        end
-    }
-    use {'norcalli/nvim-colorizer.lua',
-        event = "VimEnter",
-        config = function()
-           require("config.colorizer").setup()
-        end
-    }
+   --  use { "SmiteshP/nvim-navic",
+   --    requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"},
+   --    module = "nvim-navic",
+   --    config = function()
+   --      require("nvim-navic").setup()
+   --    end
+   --  }
+   --  use {'nvim-lualine/lualine.nvim',
+   --      requires = { 'kyazdani42/nvim-web-devicons', opt = true },
+   --      event = "VimEnter",
+   --      config = function()
+   --        require("config.lualine").setup({
+		 --  options = {
+			--   theme = 'dracula-nvim'
+		 --  }
+	  -- })
+   --      end
+   --  }
+   --  use {'nvim-treesitter/nvim-treesitter',
+   --      run = ':TSUpdate',
+   --      config = function()
+   --         require("config.treesitter").setup()
+   --      end
+   --  }
+   --  use {'norcalli/nvim-colorizer.lua',
+   --      event = "VimEnter",
+   --      config = function()
+   --         require("config.colorizer").setup()
+   --      end
+   --  }
     use {'nvim-telescope/telescope.nvim', tag = '0.1.0', requires = {{'nvim-lua/plenary.nvim'}}}
     use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {"glepnir/lspsaga.nvim", branch = "main"}
     use {"jose-elias-alvarez/null-ls.nvim", branch = "main"}
 
-    require('plugins.packer').definitions(use)
-    require('plugins.ddc').definitions(use)
-    require('plugins.caw').definitions(use)
-    require('plugins.deoppet').definitions(use)
-    require('plugins.lualine').definitions(use)
-    require('plugins.fzf').definitions(use)
-    require('plugins.gitsigns').definitions(use)
-    require('plugins.lspsaga').definitions(use)
-    require('plugins.navic').definitions(use)
-    require('plugins.telescope').definitions(use)
-    require('plugins.filetype').definitions(use)
-    require('plugins.bufferline').definitions(use)
-    require('plugins.treesitter').definitions(use)
-    require('plugins.null-ls').definitions(use)
+    -- require('plugins.lualine')
+    -- require('plugins.navic')
+    -- require('plugins.telescope')
+    -- require('plugins.treesitter')
+    require('plugins.bufferline')
+    require('plugins.caw')
+    require('plugins.ddc')
+    require('plugins.deoppet')
+    require('plugins.filetype')
+    require('plugins.fzf')
+    require('plugins.gitsigns')
+    require('plugins.lspsaga')
+    require('plugins.null-ls')
+    require('plugins.packer')
 
     if packer_bootstrap then
       packer.sync()
