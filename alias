@@ -63,14 +63,12 @@ devrun(){
                 -v $docker_sock:$docker_sock \
                 -v $font_dir:/usr/share/fonts:ro \
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
-                -v $rcpath/coc-settings.json:$container_home/.config/nvim/coc-settings.json \
+                -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
+                -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
+                -v $rcpath/nvim/luacheck:$container_home/.config/nvim/luacheck \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
-                -v $rcpath/efm-lsp-conf.yaml:$container_home/.config/nvim/efm-lsp-conf.yaml \
                 -v $rcpath/gitattributes:$container_home/.gitattributes \
                 -v $rcpath/gitignore:$container_home/.gitignore \
-                -v $rcpath/go.vim:$container_home/.config/nvim/syntax/go.vim \
-                -v $rcpath/init.vim:$container_home/.config/nvim/init.vim \
-                -v $rcpath/monokai.vim:$container_home/.config/nvim/colors/monokai.vim \
                 -v $rcpath/network/sysctl.conf:/etc/sysctl.conf \
                 -v $rcpath/starship.toml:$container_home/.config/starship.toml \
                 -v $rcpath/tmux-kube:$container_home/.tmux-kube \
@@ -123,6 +121,9 @@ devrun(){
                 -v $docker_sock:$docker_sock \
                 -v $font_dir:$font_dir \
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
+                -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
+                -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
+                -v $rcpath/nvim/luacheck:$container_home/.config/nvim/luacheck \
                 -v $rcpath/coc-settings.json:$container_home/.config/nvim/coc-settings.json \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/efm-lsp-conf.yaml:$container_home/.config/nvim/efm-lsp-conf.yaml \
@@ -130,7 +131,6 @@ devrun(){
                 -v $rcpath/gitconfig:$container_home/.gitconfig \
                 -v $rcpath/gitignore:$container_home/.gitignore \
                 -v $rcpath/go.vim:$container_home/.config/nvim/syntax/go.vim \
-                -v $rcpath/init.vim:$container_home/.config/nvim/init.vim \
                 -v $rcpath/monokai.vim:$container_home/.config/nvim/colors/monokai.vim \
                 -v $rcpath/network/sysctl.conf:/etc/sysctl.conf:ro,cached \
                 -v $rcpath/starship.toml:$container_home/.config/starship.toml \
@@ -144,6 +144,7 @@ devrun(){
                 -v /etc/passwd:/etc/passwd:ro \
                 -v /mnt:/mnt \
                 -dt $image_name
+                # -v $rcpath/init.vim:$container_home/.config/nvim/init.vim \
                 # -v /etc/sudoers.d:/etc/sudoers.d:ro \
                 # -v /etc/sudoers:/etc/sudoers:ro \
                 # -v $HOME/.config/TabNine/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
