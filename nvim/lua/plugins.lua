@@ -153,12 +153,12 @@ return packer.startup(function(use)
    --         require("config.treesitter").setup()
    --      end
    --  }
-   --  use {'norcalli/nvim-colorizer.lua',
-   --      event = "VimEnter",
-   --      config = function()
-   --         require("config.colorizer").setup()
-   --      end
-   --  }
+    use {'norcalli/nvim-colorizer.lua',
+        event = "VimEnter",
+        config = function()
+           -- require("config.colorizer").setup()
+        end
+    }
     use {'nvim-telescope/telescope.nvim', tag = '0.1.0', requires = {{'nvim-lua/plenary.nvim'}}}
     use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {"glepnir/lspsaga.nvim", branch = "main"}

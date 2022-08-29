@@ -8,6 +8,5 @@ vim.cmd([[
     autocmd!
     autocmd BufWritePost plugins.lua source <afile> | lua require('packer').compile()
     autocmd BufWritePost init.lua source <afile> | lua require('packer').compile()
-    autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
   augroup end
 ]])

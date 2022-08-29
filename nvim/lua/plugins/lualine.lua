@@ -1,13 +1,13 @@
 
 local status, lualine = pcall(require, 'lualine')
 if (not status) then
-  print("LuaLine is not installed")
+  error("LuaLine is not installed")
   return
 end
 
 local status, navic = pcall(require, "nvim-navic")
 if (not status) then
-  print("navic is not installed")
+  error("navic is not installed")
   return
 end
 

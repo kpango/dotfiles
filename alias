@@ -65,7 +65,7 @@ devrun(){
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
                 -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
                 -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
-                -v $rcpath/nvim/luacheck:$container_home/.config/nvim/luacheck \
+                -v $rcpath/nvim/luacheckrc:$container_home/.config/nvim/luacheckrc \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/gitattributes:$container_home/.gitattributes \
                 -v $rcpath/gitignore:$container_home/.gitignore \
@@ -123,7 +123,7 @@ devrun(){
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
                 -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
                 -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
-                -v $rcpath/nvim/luacheck:$container_home/.config/nvim/luacheck \
+                -v $rcpath/nvim/luacheckrc:$container_home/.config/nvim/luacheckrc \
                 -v $rcpath/coc-settings.json:$container_home/.config/nvim/coc-settings.json \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/efm-lsp-conf.yaml:$container_home/.config/nvim/efm-lsp-conf.yaml \
