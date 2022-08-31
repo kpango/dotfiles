@@ -129,13 +129,13 @@ return packer.startup(function(use)
     use {'williamboman/mason.nvim'}
     use {'nathom/filetype.nvim', event = 'VimEnter'}
     use {'editorconfig/editorconfig-vim'}
-   --  use { "SmiteshP/nvim-navic",
-   --    requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"},
-   --    module = "nvim-navic",
-   --    config = function()
-   --      require("nvim-navic").setup()
-   --    end
-   --  }
+    use { "SmiteshP/nvim-navic",
+      requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"},
+      module = "nvim-navic",
+      config = function()
+        require("nvim-navic").setup()
+      end
+    }
    --  use {'nvim-lualine/lualine.nvim',
    --      requires = { 'kyazdani42/nvim-web-devicons', opt = true },
    --      event = "VimEnter",
@@ -164,6 +164,12 @@ return packer.startup(function(use)
     use {"glepnir/lspsaga.nvim", branch = "main"}
     use {"jose-elias-alvarez/null-ls.nvim", branch = "main"}
 
+
+    require('plugins.packer')
+    if packer_bootstrap then
+      packer.sync()
+    end
+
     -- require('plugins.lualine')
     -- require('plugins.navic')
     -- require('plugins.telescope')
@@ -177,9 +183,4 @@ return packer.startup(function(use)
     require('plugins.gitsigns')
     require('plugins.lspsaga')
     require('plugins.null-ls')
-    require('plugins.packer')
-
-    if packer_bootstrap then
-      packer.sync()
-    end
 end)

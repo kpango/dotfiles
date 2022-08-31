@@ -34,6 +34,7 @@ vim.opt.fileencoding='utf-8'
 vim.opt.fileencodings= { 'utf-8', 'ucs-boms', 'euc-jp', 'cp932' }
 vim.opt.fileformat=unix
 vim.opt.fileformats=unix,dos,mac
+vim.opt.filetype = extension
 vim.opt.formatoptions:append('mM')
 vim.opt.formatoptions:append('r')
 vim.opt.formatoptions:remove('t')

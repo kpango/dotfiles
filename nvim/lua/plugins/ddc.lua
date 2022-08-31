@@ -5,12 +5,6 @@ if (not status) then
   return
 end
 
-local status, navic = pcall(require, "nvim-navic")
-if (not status) then
-  error("navic is not installed")
-  return
-end
-
 local servers = {
   'gopls',
   'clangd',
@@ -27,7 +21,7 @@ for _, lsp in ipairs(servers) do
       }
     },
     on_attach = function(client, bufnr)
-        navic.attach(client, bufnr)
+
         -- format on save
         if client.server_capabilities.documentFormattingProvider then
             vim.api.nvim_create_autocmd("BufWritePre", {
@@ -59,27 +53,33 @@ for _, lsp in ipairs(servers) do
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gx', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+        local status, navic = pcall(require, "nvim-navic")
+        if (not status) then
+          error("navic is not installed")
+          return
+        end
+        navic.attach(client, bufnr)
     end
   }
 end
 
-local status, lsp_installer = pcall(require, "nvim-lsp-installer")
-if (not status) then
-  error("nvim-lsp-installer is not installed")
-  return
-end
+-- local status, lsp_installer = pcall(require, "nvim-lsp-installer")
+-- if (not status) then
+--   error("nvim-lsp-installer is not installed")
+--   return
+-- end
+--
+-- lsp_installer.on_server_ready(function(server)
+--   local opts = {}
+--   server:setup(opts)
+--   vim.cmd [[ do User LspAttachBuffers ]]
+-- end)
 
-lsp_installer.on_server_ready(function(server)
-  local opts = {}
-  server:setup(opts)
-  vim.cmd [[ do User LspAttachBuffers ]]
-end)
-
-local status, ddc = pcall(require, "ddc")
-if (not status) then
-  error("ddc is not installed")
-  return
-end
+-- local status, ddc = pcall(require, "ddc")
+-- if (not status) then
+--   error("ddc is not installed")
+--   return
+-- end
 
 vim.cmd[[
 call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'deoppet', 'around', 'file'])

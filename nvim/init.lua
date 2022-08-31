@@ -1,2 +1,2 @@
-require('plugins')
 require('setting')
+require('plugins')
