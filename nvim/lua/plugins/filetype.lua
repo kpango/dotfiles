@@ -1,6 +1,6 @@
 local status, filetype = pcall(require, 'filetype')
 if (not status) then
-  print("filetype is not installed")
+  error("filetype is not installed")
   return
 end
 

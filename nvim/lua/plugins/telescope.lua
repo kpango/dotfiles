@@ -1,6 +1,6 @@
 local status, telescope = pcall(require, "telescope")
 if (not status) then
-  print("telescope is not installed")
+  error("telescope is not installed")
   return
 end
 

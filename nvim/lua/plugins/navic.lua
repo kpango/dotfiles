@@ -1,6 +1,6 @@
 local status, navic = pcall(require, "nvim-navic")
 if (not status) then
-  print("navic is not installed")
+  error("navic is not installed")
   return
 end
 

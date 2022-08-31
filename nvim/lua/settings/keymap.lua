@@ -70,7 +70,7 @@ vim.api.nvim_set_keymap( 'n', 'j', 'gj', {noremap = true} )
 vim.keymap.set( 'n', 'j', 'gj' )
 
 -- 関数
-vim.keymap.set('n', 'lhs', function() print("real lua function") end)
+vim.keymap.set('n', 'lhs', function() error("real lua function") end)
 -- vim.keymap.set('n', 'asdf', require('jkl').my_fun)
 
 -- 複数のモード

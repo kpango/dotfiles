@@ -1,12 +1,12 @@
 local status, fzf = pcall(require, "fzf")
 if (not status) then
-  print("fzf is not installed")
+  error("fzf is not installed")
   return
 end
 
 local status, fzf = pcall(require, "fzf")
 if (not status) then
-  print("fzf is not installed")
+  error("fzf is not installed")
   return
 end
 

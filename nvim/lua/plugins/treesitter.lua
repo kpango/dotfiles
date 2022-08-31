@@ -1,6 +1,6 @@
 local status, treesitter = pcall(require, 'nvim-treesitter.configs')
 if (not status) then
-  print("treesitter config is not installed")
+  error("treesitter config is not installed")
   return
 end
 
@@ -34,7 +34,7 @@ treesitter.setup {
 
 local status, parser = pcall(require, 'nvim-treesitter.parsers')
 if (not status) then
-  print("treesitter parser is not installed")
+  error("treesitter parser is not installed")
   return
 end
 

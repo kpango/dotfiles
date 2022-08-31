@@ -1,13 +1,13 @@
 
 local status, nvim_lsp = pcall(require, "lspconfig")
 if (not status) then
-  print("lspconfig is not installed")
+  error("lspconfig is not installed")
   return
 end
 
 local status, navic = pcall(require, "nvim-navic")
 if (not status) then
-  print("navic is not installed")
+  error("navic is not installed")
   return
 end
 
@@ -46,7 +46,7 @@ for _, lsp in ipairs(servers) do
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>q', '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>rn', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wa', '<Cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wl', '<Cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wl', '<Cmd>lua error(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wr', '<Cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
@@ -65,7 +65,7 @@ end
 
 local status, lsp_installer = pcall(require, "nvim-lsp-installer")
 if (not status) then
-  print("nvim-lsp-installer is not installed")
+  error("nvim-lsp-installer is not installed")
   return
 end
 
@@ -77,7 +77,7 @@ end)
 
 local status, ddc = pcall(require, "ddc")
 if (not status) then
-  print("ddc is not installed")
+  error("ddc is not installed")
   return
 end
 

@@ -1,6 +1,6 @@
 local status, saga = pcall(require, 'lspsaga')
 if (not status) then
-  print("saga is not installed")
+  error("saga is not installed")
   return
 end
 
