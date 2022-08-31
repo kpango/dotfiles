@@ -823,8 +823,7 @@ if [ -z $ZSH_LOADED ]; then
             rm "$HOME/.nvimlog"
             rm "$HOME/.viminfo"
         }
-        alias vedit="$EDITOR $HOME/.config/nvim/init.vim"
-        alias cedit="$EDITOR $HOME/.config/nvim/coc-settings.json"
+        alias vedit="$EDITOR $HOME/.config/nvim/init.lua"
         alias nvinit="nvim-init"
         alias vback="cp $HOME/.config/nvim/init.vim $HOME/.config/nvim/init.vim.back"
         alias vake="$EDITOR Makefile"

@@ -30,7 +30,9 @@ link:
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitconfig $(HOME)/.gitconfig
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitignore $(HOME)/.gitignore
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))go.vim $(HOME)/.config/nvim/syntax/go.vim
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))init.vim $(HOME)/.config/nvim/init.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))init.lua $(HOME)/.config/nvim/init.lua
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))lua $(HOME)/.config/nvim/lua
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))luacheckrc $(HOME)/.config/nvim/luacheckrc
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))monokai.vim $(HOME)/.config/nvim/colors/monokai.vim
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))starship.toml $(HOME)/.config/starship.toml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux-kube $(HOME)/.tmux-kube
