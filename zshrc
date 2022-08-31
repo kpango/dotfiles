@@ -69,6 +69,10 @@ if [ -z $DOTENV_LOADED ]; then
 
     export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
 
+    if type php >/dev/null 2>&1; then
+    export PHP_BUILD_CONFIGURE_OPTS="--with-openssl=/usr/local/opt/openssl"
+    fi
+
     if type python3 >/dev/null 2>&1; then
         export PYTHON_CONFIGURE_OPTS="--enable-shared"
         export PYTHONIOENCODING="utf-8";
@@ -126,12 +130,23 @@ if [ -z $DOTENV_LOADED ]; then
         export CPP=$(which clang++)
         export CXX=$CPP
         export LD=/usr/bin/ldd
-        export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/clang/*/lib
+        if type llvm-config >/dev/null 2>&1; then
+            export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
+            export LLVM_CONFIG_PATH=$(which llvm-config);
+        else
+            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/clang/*/lib
+        fi
         export CFLAGS="-g -Ofast -march=native -ffp-contract=fast"
         export CPPFLAGS="-g -Ofast -march=native -ffp-contract=fast"
         export CXXFLAGS="-g -Ofast -march=native -ffp-contract=fast"
         export FFLAGS="-g -Ofast -march=native -ffp-contract=fast"
         export LDFLAGS="-g -Ofast -march=native -ffp-contract=fast"
+        #CLANG
+        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
+        export CPPFLAGS=$CFLAGS;
+        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
+        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
+        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
     fi
 
     DOTFILE_URL="github.com/kpango/dotfiles"
@@ -811,8 +826,7 @@ if [ -z $ZSH_LOADED ]; then
     alias 777='chmod -R 777'
 
     if type nvim >/dev/null 2>&1; then
-        # alias nvup="nvim --headless -c 'UpdateRemotePlugins' -c 'JetpackSync' -c 'CocInstall' -c 'CocUpdate'"
-	alias nvup="nvim +UpdateRemotePlugins +PlugInstall +PlugUpdate +PlugUpgrade +PlugClean +CocInstall +CocUpdate +qall;nvim +q"
+        alias nvup="nvim --headless -c 'UpdateRemotePlugins' -c 'PackerSync' -c 'PackerCompile'"
         nvim-init() {
             rm -rf "$HOME/.config/gocode"
             rm -rf "$HOME/.config/nvim/autoload"
@@ -825,7 +839,8 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias vedit="$EDITOR $HOME/.config/nvim/init.lua"
         alias nvinit="nvim-init"
-        alias vback="cp $HOME/.config/nvim/init.vim $HOME/.config/nvim/init.vim.back"
+        alias vback="cp $HOME/.config/nvim/init.lua $HOME/.config/nvim/init.lua.back"
+        alias vrestore="cp $HOME/.config/nvim/init.lua.back $HOME/.config/nvim/init.lua"
         alias vake="$EDITOR Makefile"
         alias vocker="$EDITOR Dockerfile"
     else
@@ -840,7 +855,6 @@ if [ -z $ZSH_LOADED ]; then
     alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
     alias xedit="$EDITOR $HOME/.Xdefaults"
     alias wedit="$EDITOR $HOME/.config/sway/config"
-
     # if type thefuck >/dev/null 2>&1; then
     #     eval $(thefuck --alias --enable-experimental-instant-mode)
     # fi
@@ -1346,8 +1360,8 @@ if [ -z $ZSH_LOADED ]; then
         alias valdup=valdup
         valddep(){
             cd "$GOPATH/src/github.com/vdaas/vald"
-	    rm -rf go.mod go.sum \
-	        && cp hack/go.mod.default go.mod \
+            rm -rf go.mod go.sum \
+                && cp hack/go.mod.default go.mod \
                 && GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
             rm -rf hack/go.mod.default2 \
                 && cat hack/go.mod.default | head -n 5 >> hack/go.mod.default2 \
