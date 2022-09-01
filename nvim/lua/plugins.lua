@@ -6,11 +6,11 @@ vim.o.packpath = vim.o.packpath .. ',' .. packer_path
 
 if fn.empty(fn.glob(install_path)) > 0 then
   packer_bootstrap = fn.system({
-    "git",
-    "clone",
-    "--depth",
-    "1",
-    "https://github.com/wbthomason/packer.nvim",
+    'git',
+    'clone',
+    '--depth',
+    '1',
+    'https://github.com/wbthomason/packer.nvim',
     install_path,
   })
 end
@@ -19,13 +19,13 @@ vim.api.nvim_command('packadd packer.nvim')
 
 local status, packer = pcall(require, 'packer')
 if (not status) then
-  error("Packer is not installed install_path: " .. install_path.." packpath: "..vim.o.packpath)
+  error('Packer is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
   return
 end
 
 local status, util =pcall(require, 'packer.util')
 if (not status) then
-  error("Packer util is not installed install_path: " .. install_path)
+  error('Packer util is not installed install_path: ' .. install_path)
   return
 end
 
@@ -62,7 +62,7 @@ packer.init({
     },
     depth = 1, -- Git clone depth
     clone_timeout = 60, -- Timeout, in seconds, for git clones
-    default_url_format = 'https://github.com/%s' -- Lua format string used for "aaa/bbb" style plugins
+    default_url_format = 'https://github.com/%s' -- Lua format string used for 'aaa/bbb' style plugins
   },
   display = {
     non_interactive = false, -- If true, disable display windows for all operations
@@ -88,7 +88,7 @@ packer.init({
   luarocks = {
     python_cmd = 'python3' -- Set the python command to use for running hererocks
   },
-  log = { level = 'warn' }, -- The default print log level. One of: "trace", "debug", "info", "warn", "error", "fatal".
+  log = { level = 'warn' }, -- The default print log level. One of: 'trace', 'debug', 'info', 'warn', 'error', 'fatal'.
   profile = {
     enable = false,
     threshold = 1, -- integer in milliseconds, plugins which load faster than this won't be shown in profile output
@@ -96,60 +96,53 @@ packer.init({
 })
 
 -- if fn.filereadable(packer.config.compile_path) ~= 1 then
---   error("Packer compile path is not readable install_path: " .. install_path .. " compile_path: " .. packer.config.compile_path)
+--   error('Packer compile path is not readable install_path: ' .. install_path .. ' compile_path: ' .. packer.config.compile_path)
 --   return
 -- end
 
 return packer.startup(function(use)
-    use {'LumaKernel/ddc-file', requires = {'Shougo/ddc.vim'}}
-    use {'LumaKernel/ddc-tabnine', requires = {'Shougo/ddc.vim'}}
+    use {'wbthomason/packer.nvim', opt = true}
+    use {'Shougo/deoppet.nvim'}
+    use {'vim-denops/denops.vim', branch = 'main'}
+    use {'Shougo/ddc.vim', requires = {'vim-denops/denops.vim'}}
     use {'Shougo/ddc-around', requires = {'Shougo/ddc.vim'}}
     use {'Shougo/ddc-converter_remove_overlap', requires = {'Shougo/ddc.vim'}}
     use {'Shougo/ddc-matcher_head', requires = {'Shougo/ddc.vim'}}
-    use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim', 'neovim/nvim-lspconfig'}}
     use {'Shougo/ddc-sorter_rank', requires = {'Shougo/ddc.vim'}}
-    use {'Shougo/ddc.vim', requires = {'vim-denops/denops.vim'}}
-    use {'Shougo/deoppet.nvim'}
+    use {'LumaKernel/ddc-file', requires = {'Shougo/ddc.vim'}}
+    use {'LumaKernel/ddc-tabnine', requires = {'Shougo/ddc.vim'}}
+    use {'tani/ddc-fuzzy', requires = {'Shougo/ddc.vim'}}
     use {'Shougo/pum.vim'}
     use {'editorconfig/editorconfig-vim'}
-    use {'junegunn/fzf', run = ":call fzf#install()"}
+    use {'junegunn/fzf', run = ':call fzf#install()'}
     use {'junegunn/fzf.vim', requires = {'junegunn/fzf'}}
     use {'lambdalisue/gin.vim'}
     use {'lewis6991/gitsigns.nvim'}
-    use {'mattn/vim-goimports', ft = 'go'}
     use {'nathom/filetype.nvim'}
     use {'neovim/nvim-lspconfig'}
     use {'sbdchd/neoformat'}
-    use {'tani/ddc-fuzzy', requires = {'Shougo/ddc.vim'}}
     use {'tyru/caw.vim'}
-    use {'vim-denops/denops.vim', branch = 'main'}
-    use {'wbthomason/packer.nvim', opt = true}
-    use {'williamboman/mason-lspconfig.nvim'}
     use {'williamboman/mason.nvim'}
-    use {"SmiteshP/nvim-navic", requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"}}
-    --  use {'nvim-lualine/lualine.nvim',
-    --      requires = { 'kyazdani42/nvim-web-devicons', opt = true },
-    --      event = "VimEnter",
-    --      config = function()
-    --        require("config.lualine").setup({
-         	 --  options = {
-         		--   theme = 'dracula-nvim'
-         	 --  }
-           -- })
-    --      end
-    --  }
+    use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
     use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
     use {'navarasu/onedark.nvim', requires = {'nvim-treesitter/nvim-treesitter'}}
+    use {'SmiteshP/nvim-navic', requires = {'neovim/nvim-lspconfig', 'nvim-treesitter/nvim-treesitter'}}
+
     use {'norcalli/nvim-colorizer.lua',
         config = function()
-           require("colorizer").setup()
+           require('colorizer').setup()
         end
     }
+    use {'nvim-lua/plenary.nvim'}
     use {'nvim-telescope/telescope.nvim', branch = 'master', requires = {'nvim-lua/plenary.nvim'}}
-    use {"nvim-telescope/telescope-file-browser.nvim", requires = {'nvim-telesope/telescope.nvim', 'nvim-lua/plenary.nvim'}}
-    use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
-    use {"glepnir/lspsaga.nvim", branch = "main"}
-    use {"jose-elias-alvarez/null-ls.nvim", branch = "main"}
+    use {'nvim-telescope/telescope-file-browser.nvim', requires = {'nvim-telesope/telescope.nvim', 'nvim-lua/plenary.nvim'}}
+    use {'glepnir/lspsaga.nvim', branch = 'main'}
+    use {'jose-elias-alvarez/null-ls.nvim', branch = 'main'}
+    use {'kyazdani42/nvim-web-devicons'}
+    use {'akinsho/bufferline.nvim', tag = 'v2.*', requires = 'kyazdani42/nvim-web-devicons'}
+    --  use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
+    use {'mattn/vim-goimports', ft = 'go'}
 
     require('plugins.packer')
     if packer_bootstrap then

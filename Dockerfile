@@ -65,18 +65,14 @@ COPY --from=go /go/bin $GOPATH/bin
 COPY --from=rust /root/.cargo ${CARGO_PATH}
 COPY --from=rust /root/.rustup ${HOME}/.rustup
 
-COPY coc-settings.json $NVIM_HOME/coc-settings.json
-COPY efm-lsp-conf.yaml $NVIM_HOME/efm-lsp-conf.yaml
 COPY gitattributes $HOME/.gitattributes
 COPY gitconfig $HOME/.gitconfig
 COPY gitignore $HOME/.gitignore
 COPY nvim/init.lua $NVIM_HOME/init.lua
 COPY nvim/lua $NVIM_HOME/lua
 COPY nvim/luacheckrc $NVIM_HOME/luacheckrc
-COPY monokai.vim $NVIM_HOME/colors/monokai.vim
 COPY tmux-kube $HOME/.tmux-kube
 COPY tmux.conf $HOME/.tmux.conf
-COPY vintrc.yaml $HOME/.vintrc.yaml
 COPY zshrc $HOME/.zshrc
 
 USER root
@@ -87,7 +83,6 @@ RUN usermod -aG ${GROUP} ${WHOAMI} \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && rm -rf $VIM_PLUG_HOME/autoload \
-    && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local \
     && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME \
     && zsh -ic zplug install \
     && rm -rf ${HOME}/.cache \

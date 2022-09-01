@@ -123,6 +123,7 @@ devrun(){
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
                 -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
                 -v $rcpath/nvim/luacheckrc:$container_home/.config/nvim/luacheckrc \
+                -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/gitattributes:$container_home/.gitattributes \
                 -v $rcpath/gitconfig:$container_home/.gitconfig \
@@ -142,7 +143,6 @@ devrun(){
                 # -v /etc/sudoers.d:/etc/sudoers.d:ro \
                 # -v /etc/sudoers:/etc/sudoers:ro \
                 # -v $HOME/.config/TabNine/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
-                # -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
             ;;
 
         CYGWIN*|MINGW32*|MSYS*)
