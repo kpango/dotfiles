@@ -187,6 +187,10 @@ FROM rust-base AS tokei
 RUN cargo +nightly install --force --no-default-features \
     tokei
 
+FROM rust-base AS tree-sitter
+RUN cargo +nightly install --force --no-default-features \
+    tree-sitter-cli
+
 FROM rust-base AS watchexec
 RUN cargo +nightly install --force --no-default-features \
     watchexec-cli
@@ -244,5 +248,6 @@ COPY --from=shellharden ${BIN_PATH}/shellharden ${BIN_PATH}/shellharden
 COPY --from=starship ${BIN_PATH}/starship ${BIN_PATH}/starship
 COPY --from=t-rec ${BIN_PATH}/t-rec ${BIN_PATH}/t-rec
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
+COPY --from=tree-sitter ${BIN_PATH}/tree-sitter ${BIN_PATH}/tree-sitter
 COPY --from=watchexec ${BIN_PATH}/watchexec ${BIN_PATH}/watchexec
 COPY --from=xh ${BIN_PATH}/xh ${BIN_PATH}/xh

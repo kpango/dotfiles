@@ -23,7 +23,7 @@ treesitter.setup {
     "cuda",
     "dart",
     "dockerfile",
-    "gitignore",
+    -- "gitignore",
     "go",
     "gomod",
     "graphql",
@@ -54,8 +54,8 @@ treesitter.setup {
     "typescript",
     "v",
     "vim",
-    "yaml"
-    "zig",
+    "yaml",
+    "zig"
   },
   autotag = {
     enable = true,
