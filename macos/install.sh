@@ -4,7 +4,7 @@
 
 brew install wget
 
-curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/Brewfile
+curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/main/macos/Brewfile
 brew bundle --file Brewfile
 rm -rf Brewfile
 brew autoupdate --start --upgrade --cleanup
@@ -75,18 +75,18 @@ cat <<EOF >$HOME/.docker/daemon.json
 }
 EOF
 
-curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/monokai.terminal
+curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/main/macos/monokai.terminal
 open monokai.terminal
 rm -rf monokai.terminal
 
 mas install 1475387142
 
-curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/localhost.homebrew-autoupdate.plist
+curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/main/macos/localhost.homebrew-autoupdate.plist
 cp ./localhost.homebrew-autoupdate.plist $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 plutil -lint $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 launchctl load $HOME/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 
-curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/master/macos/ulimit.plist
+curl -fsSLO https://raw.githubusercontent.com/kpango/dotfiles/main/macos/ulimit.plist
 cp ./ulimit.plist $HOME/Library/LaunchAgents/ulimit.plist
 sudo chown root:wheel $HOME/Library/LaunchAgents/ulimit.plist
 sudo chmod 600 $HOME/Library/LaunchAgents/ulimit.plist

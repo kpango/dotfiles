@@ -203,10 +203,10 @@ echo "mounted"
 df -aT
 echo "download deps"
 rm -rf chroot.sh locale.gen
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/chroot_p1.sh
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/user-init.sh
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/locale.gen
-wget https://raw.githubusercontent.com/kpango/dotfiles/master/arch/pkg_p1.list
+wget https://raw.githubusercontent.com/kpango/dotfiles/main/arch/chroot_p1.sh
+wget https://raw.githubusercontent.com/kpango/dotfiles/main/arch/user-init.sh
+wget https://raw.githubusercontent.com/kpango/dotfiles/main/arch/locale.gen
+wget https://raw.githubusercontent.com/kpango/dotfiles/main/arch/pkg_p1.list
 pacman -Sy --noconfirm
 pacman -S --noconfirm archlinux-keyring
 echo "deps downloaded"

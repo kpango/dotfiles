@@ -5,7 +5,7 @@ makepkg -si
 cd -
 rm -r yay
 
-curl https://raw.githubusercontent.com/kpango/dotfiles/master/raspi/aur.list -o /aur.list
+curl https://raw.githubusercontent.com/kpango/dotfiles/main/raspi/aur.list -o /aur.list
 pacman -Rs go
 yay -Syu --noanswerdiff --noanswerclean --noconfirm
 yay -S --noanswerdiff --noanswerclean --noconfirm ghq
