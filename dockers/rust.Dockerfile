@@ -23,6 +23,8 @@ RUN rustup install stable \
        clippy \
        --toolchain nightly
 
+FROM kpango/rust:latest AS old
+
 FROM rust-base AS bat
 RUN rustup update stable \
     && rustup default stable \
@@ -83,6 +85,7 @@ FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
     git-delta
 
+FROM old AS deno
 # FROM rust-base AS deno
 # RUN cargo +nightly install --force --locked --all-features \
 # RUN rustup update stable \
@@ -169,11 +172,13 @@ FROM rust-base AS shellharden
 RUN cargo +nightly install --force --no-default-features \
     shellharden
 
-FROM rust-base AS starship
-RUN rustup update stable \
-    && rustup default stable \
-    && cargo install --force --no-default-features \
-    starship
+FROM old AS starship
+# FROM rust-base AS starship
+# # RUN rustup update stable \
+# #     && rustup default stable \
+# #     && cargo install --force --no-default-features \
+# RUN cargo +nightly install --force --no-default-features \
+#     starship
 
 FROM rust-base AS tokei
 RUN cargo +nightly install --force --no-default-features \
@@ -193,26 +198,29 @@ ENV RUSTUP ${HOME}/.rustup
 ENV CARGO ${HOME}/.cargo
 ENV BIN_PATH ${CARGO}/bin
 
-# COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
-# COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
 # COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
+# COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
 # COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
 # COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
-# COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
+# COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
 COPY --from=broot ${BIN_PATH}/broot ${BIN_PATH}/broot
 COPY --from=cargo-asm ${BIN_PATH}/cargo-asm ${BIN_PATH}/cargo-asm
-COPY --from=cargo-bloat ${BIN_PATH}/cargo-bloat ${BIN_PATH}/cargo-bloat
 COPY --from=cargo-binutils ${BIN_PATH}/cargo-* ${BIN_PATH}/
 COPY --from=cargo-binutils ${BIN_PATH}/rust-* ${BIN_PATH}/
+COPY --from=cargo-bloat ${BIN_PATH}/cargo-bloat ${BIN_PATH}/cargo-bloat
 COPY --from=cargo-check ${BIN_PATH}/cargo-check ${BIN_PATH}/cargo-check
-COPY --from=cargo-edit ${BIN_PATH}/cargo-edit ${BIN_PATH}/cargo-edit
+COPY --from=cargo-edit ${BIN_PATH}/cargo-add ${BIN_PATH}/cargo-add
+COPY --from=cargo-edit ${BIN_PATH}/cargo-rm ${BIN_PATH}/cargo-rm
+COPY --from=cargo-edit ${BIN_PATH}/cargo-set-version ${BIN_PATH}/cargo-set-version
+COPY --from=cargo-edit ${BIN_PATH}/cargo-upgrade ${BIN_PATH}/cargo-upgrade
 COPY --from=cargo-expand ${BIN_PATH}/cargo-expand ${BIN_PATH}/cargo-expand
 COPY --from=cargo-fix ${BIN_PATH}/cargo-fix ${BIN_PATH}/cargo-fix
 COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
 COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
+COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa

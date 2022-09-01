@@ -289,8 +289,7 @@ build_and_push_go: \
 
 build_and_push_rust: \
 	build_rust \
-	push_rust \
-	prod
+	push_rust
 
 build_and_push_docker: \
 	build_docker \
