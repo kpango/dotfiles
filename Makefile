@@ -22,18 +22,14 @@ link:
 	mkdir -p $(HOME)/.docker
 	sudo mkdir -p /etc/docker
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))alias $(HOME)/.aliases
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))coc-settings.json $(HOME)/.config/nvim/coc-settings.json
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))editorconfig $(HOME)/.editorconfig
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitattributes $(HOME)/.gitattributes
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitconfig $(HOME)/.gitconfig
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitignore $(HOME)/.gitignore
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))go.vim $(HOME)/.config/nvim/syntax/go.vim
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))init.lua $(HOME)/.config/nvim/init.lua
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))lua $(HOME)/.config/nvim/lua
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))luacheckrc $(HOME)/.config/nvim/luacheckrc
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))monokai.vim $(HOME)/.config/nvim/colors/monokai.vim
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))nvim/init.lua $(HOME)/.config/nvim/init.lua
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))nvim/lua $(HOME)/.config/nvim/lua
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))starship.toml $(HOME)/.config/starship.toml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux-kube $(HOME)/.tmux-kube
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.conf $(HOME)/.tmux.conf
