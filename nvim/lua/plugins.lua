@@ -127,43 +127,38 @@ return packer.startup(function(use)
     use {'vim-denops/denops.vim', branch = 'main'}
     use {'williamboman/mason-lspconfig.nvim'}
     use {'williamboman/mason.nvim'}
-    use {'nathom/filetype.nvim', event = 'VimEnter'}
+    use {'nathom/filetype.nvim'}
     use {'editorconfig/editorconfig-vim'}
-    use { "SmiteshP/nvim-navic",
+    use {"SmiteshP/nvim-navic",
       requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"},
       module = "nvim-navic",
       config = function()
         require("nvim-navic").setup()
       end
     }
-   --  use {'nvim-lualine/lualine.nvim',
-   --      requires = { 'kyazdani42/nvim-web-devicons', opt = true },
-   --      event = "VimEnter",
-   --      config = function()
-   --        require("config.lualine").setup({
-		 --  options = {
-			--   theme = 'dracula-nvim'
-		 --  }
-	  -- })
-   --      end
-   --  }
-   --  use {'nvim-treesitter/nvim-treesitter',
-   --      run = ':TSUpdate',
-   --      config = function()
-   --         require("config.treesitter").setup()
-   --      end
-   --  }
+    --  use {'nvim-lualine/lualine.nvim',
+    --      requires = { 'kyazdani42/nvim-web-devicons', opt = true },
+    --      event = "VimEnter",
+    --      config = function()
+    --        require("config.lualine").setup({
+         	 --  options = {
+         		--   theme = 'dracula-nvim'
+         	 --  }
+           -- })
+    --      end
+    --  }
+    use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
     use {'norcalli/nvim-colorizer.lua',
         event = "VimEnter",
         config = function()
-           -- require("config.colorizer").setup()
+           require("colorizer").setup()
         end
     }
-    use {'nvim-telescope/telescope.nvim', tag = '0.1.0', requires = {{'nvim-lua/plenary.nvim'}}}
+    use {'nvim-telescope/telescope.nvim', branch = 'master', requires = {'nvim-lua/plenary.nvim'}}
+    use {"nvim-telescope/telescope-file-browser.nvim", requires = {'nvim-telesope/telescope.nvim', 'nvim-lua/plenary.nvim'}}
     use {'akinsho/bufferline.nvim', tag = "v2.*", requires = 'kyazdani42/nvim-web-devicons'}
     use {"glepnir/lspsaga.nvim", branch = "main"}
     use {"jose-elias-alvarez/null-ls.nvim", branch = "main"}
-
 
     require('plugins.packer')
     if packer_bootstrap then
@@ -172,8 +167,8 @@ return packer.startup(function(use)
 
     -- require('plugins.lualine')
     -- require('plugins.navic')
-    -- require('plugins.telescope')
-    -- require('plugins.treesitter')
+    require('plugins.telescope')
+    require('plugins.treesitter')
     require('plugins.bufferline')
     require('plugins.caw')
     require('plugins.ddc')

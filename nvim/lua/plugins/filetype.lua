@@ -1,10 +1,9 @@
--- local status, filetype = pcall(require, 'filetype')
--- if (not status) then
---   error("filetype is not installed")
---   return
--- end
--- filetype.setup({
-require("filetype").setup({
+local status, filetype = pcall(require, 'filetype')
+if (not status) then
+  error("filetype is not installed")
+  return
+end
+filetype.setup({
     overrides = {
         extensions = {},
         literal = {},

@@ -99,7 +99,7 @@ mason.setup({
   }
 })
 
-local status, mason_lspconfig = pcall(require, 'mason_lspconfig')
+local status, mason_lspconfig = pcall(require, 'mason-lspconfig')
 if (not status) then
   error("mason_lspconfig is not installed")
   return

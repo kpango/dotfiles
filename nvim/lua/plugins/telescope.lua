@@ -21,7 +21,7 @@ vim.keymap.set("n", "sf", function()
   })
 end)
 
-local fb_actions = telescope.extensions.file_browser.file_browser.actions
+local fb_actions = telescope.extensions.file_browser.actions
 
 telescope.setup {
   defaults = {
