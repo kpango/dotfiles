@@ -68,18 +68,13 @@ FROM rust-base AS cargo-fix
 RUN cargo +nightly install --force --no-default-features \
     cargo-fix
 
-# FROM rust-base AS cargo-src
-# RUN cargo install --force --no-default-features \
-#     --verbose \
-#     --git https://github.com/rust-dev-tools/cargo-src --branch master
-
 FROM rust-base AS cargo-tree
 RUN cargo install cargo-tree
 
-# FROM watchexec AS cargo-watch
+FROM rust-base AS cargo-watch
 # RUN cargo +nightly install --force --no-default-features \
 #     cargo-watch
-# RUN cargo install cargo-watch
+RUN cargo install cargo-watch
 
 FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
@@ -109,10 +104,18 @@ FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
 
-# FROM rust-base AS frawk
-# RUN cargo +nightly install --locked --force \
-#     --git https://github.com/ezrosent/frawk frawk
-#     --features use_jemalloc,allow_avx2,unstable \
+FROM rust-base AS frawk
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - \
+    && apt update -y \
+    && apt upgrade -y \
+    && apt update -y \
+    && apt install -y --no-install-recommends --fix-missing \
+    libllvm16 \
+    llvm-16 \
+    llvm-16-dev
+RUN cargo +nightly install --locked --force \
+    --features use_jemalloc,allow_avx2,unstable \
+    --git https://github.com/ezrosent/frawk frawk
 
 FROM rust-base AS gping
 RUN rustup update stable \
@@ -135,10 +138,6 @@ RUN cargo install --force --no-default-features \
 FROM rust-base AS procs
 RUN cargo install --force --no-default-features \
     --git https://github.com/dalance/procs
-
-# FROM rust-base AS racer
-# RUN cargo +nightly install --force  \
-#     racer
 
 FROM rust-base AS rg
 RUN rustup update stable \
@@ -199,11 +198,7 @@ ENV CARGO ${HOME}/.cargo
 ENV BIN_PATH ${CARGO}/bin
 
 # COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
-# COPY --from=cargo-src ${BIN_PATH}/cargo-src ${BIN_PATH}/cargo-src
-# COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
-# COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
-# COPY --from=racer ${BIN_PATH}/racer ${BIN_PATH}/racer
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
 COPY --from=broot ${BIN_PATH}/broot ${BIN_PATH}/broot
@@ -219,12 +214,14 @@ COPY --from=cargo-edit ${BIN_PATH}/cargo-upgrade ${BIN_PATH}/cargo-upgrade
 COPY --from=cargo-expand ${BIN_PATH}/cargo-expand ${BIN_PATH}/cargo-expand
 COPY --from=cargo-fix ${BIN_PATH}/cargo-fix ${BIN_PATH}/cargo-fix
 COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
+COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
 COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
 COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
+COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
