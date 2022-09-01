@@ -9,6 +9,7 @@
 -- vim.opt.relativenumber=true
 -- vim.opt.viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!'
 -- vim.opt.whichwrap={ 'b', 's', 'h', 'l', '<', '>', '[', ']' }
+vim.g.colorscheme='aurora'
 vim.b.nobackup=true
 vim.b.noswapfile=true
 vim.b.nowritebackup=true
@@ -31,7 +32,7 @@ vim.opt.display=lastline
 vim.opt.encoding='utf-8'
 vim.opt.expandtab=true
 vim.opt.fileencoding='utf-8'
-vim.opt.fileencodings= { 'utf-8', 'ucs-boms', 'euc-jp', 'cp932' }
+vim.opt.fileencodings= { 'utf-8', 'euc-jp', 'iso-2022-jp', 'cp932', 'ucs-boms'}
 vim.opt.fileformat=unix
 vim.opt.fileformats=unix,dos,mac
 vim.opt.filetype = extension

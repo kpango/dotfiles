@@ -5,10 +5,11 @@ if (not status) then
 end
 
 local servers = {
-  'gopls',
   'clangd',
-  'rust_analyzer',
+  'gopls',
   'pylsp',
+  'rust_analyzer',
+  'sumneko_lua',
 }
 
 for _, lsp in ipairs(servers) do

@@ -101,34 +101,31 @@ packer.init({
 -- end
 
 return packer.startup(function(use)
-    use {'wbthomason/packer.nvim', opt = true}
     use {'LumaKernel/ddc-file', requires = {'Shougo/ddc.vim'}}
     use {'LumaKernel/ddc-tabnine', requires = {'Shougo/ddc.vim'}}
-    use {'Shougo/ddc.vim', requires = {'vim-denops/denops.vim'}}
     use {'Shougo/ddc-around', requires = {'Shougo/ddc.vim'}}
-    use {'Shougo/ddc-matcher_head', requires = {'Shougo/ddc.vim'}}
-    use {'Shougo/ddc-sorter_rank', requires = {'Shougo/ddc.vim'}}
-    use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim'}}
     use {'Shougo/ddc-converter_remove_overlap', requires = {'Shougo/ddc.vim'}}
     use {'Shougo/ddc-matcher_head', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim'}}
     use {'Shougo/ddc-sorter_rank', requires = {'Shougo/ddc.vim'}}
-    use {'tani/ddc-fuzzy', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc.vim', requires = {'vim-denops/denops.vim'}}
     use {'Shougo/deoppet.nvim'}
     use {'Shougo/pum.vim'}
+    use {'editorconfig/editorconfig-vim'}
     use {'junegunn/fzf', run = ":call fzf#install()"}
     use {'junegunn/fzf.vim', requires = {'junegunn/fzf'}}
-    use {'lewis6991/gitsigns.nvim'}
     use {'lambdalisue/gin.vim'}
-    use {'editorconfig/editorconfig-vim'}
+    use {'lewis6991/gitsigns.nvim'}
     use {'mattn/vim-goimports', ft = 'go'}
+    use {'nathom/filetype.nvim'}
     use {'neovim/nvim-lspconfig'}
     use {'sbdchd/neoformat'}
+    use {'tani/ddc-fuzzy', requires = {'Shougo/ddc.vim'}}
     use {'tyru/caw.vim'}
     use {'vim-denops/denops.vim', branch = 'main'}
+    use {'wbthomason/packer.nvim', opt = true}
     use {'williamboman/mason-lspconfig.nvim'}
     use {'williamboman/mason.nvim'}
-    use {'nathom/filetype.nvim'}
-    use {'editorconfig/editorconfig-vim'}
     use {"SmiteshP/nvim-navic",
       requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"},
       module = "nvim-navic",
@@ -148,6 +145,14 @@ return packer.startup(function(use)
     --      end
     --  }
     use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
+    -- use {'ray-x/aurora',
+    --     requires = {'nvim-treesitter/nvim-treesitter'},
+    --     module = 'aurora',
+    --     -- config = function()
+    --     --     require('aurora').setup()
+    --     -- end
+    -- }
+    use {'navarasu/onedark.nvim', requires = {'nvim-treesitter/nvim-treesitter'}}
     use {'norcalli/nvim-colorizer.lua',
         event = "VimEnter",
         config = function()
@@ -177,5 +182,6 @@ return packer.startup(function(use)
     require('plugins.fzf')
     require('plugins.gitsigns')
     require('plugins.lspsaga')
+    require('plugins.onedark')
     -- require('plugins.null-ls')
 end)
