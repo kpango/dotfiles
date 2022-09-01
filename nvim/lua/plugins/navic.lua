@@ -1,6 +1,7 @@
-local status, navic = pcall(require, "nvim-navic")
+local package_name = 'nvim-navic'
+local status, navic = pcall(require, package_name)
 if (not status) then
-  error("navic is not installed")
+  error(package_name.." is not installed")
   return
 end
 

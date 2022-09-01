@@ -126,13 +126,7 @@ return packer.startup(function(use)
     use {'wbthomason/packer.nvim', opt = true}
     use {'williamboman/mason-lspconfig.nvim'}
     use {'williamboman/mason.nvim'}
-    use {"SmiteshP/nvim-navic",
-      requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"},
-      module = "nvim-navic",
-      config = function()
-        require("nvim-navic").setup()
-      end
-    }
+    use {"SmiteshP/nvim-navic", requires = {"neovim/nvim-lspconfig", "nvim-treesitter/nvim-treesitter"}}
     --  use {'nvim-lualine/lualine.nvim',
     --      requires = { 'kyazdani42/nvim-web-devicons', opt = true },
     --      event = "VimEnter",
@@ -145,16 +139,8 @@ return packer.startup(function(use)
     --      end
     --  }
     use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
-    -- use {'ray-x/aurora',
-    --     requires = {'nvim-treesitter/nvim-treesitter'},
-    --     module = 'aurora',
-    --     -- config = function()
-    --     --     require('aurora').setup()
-    --     -- end
-    -- }
     use {'navarasu/onedark.nvim', requires = {'nvim-treesitter/nvim-treesitter'}}
     use {'norcalli/nvim-colorizer.lua',
-        event = "VimEnter",
         config = function()
            require("colorizer").setup()
         end
@@ -171,7 +157,7 @@ return packer.startup(function(use)
     end
 
     -- require('plugins.lualine')
-    -- require('plugins.navic')
+    require('plugins.navic')
     require('plugins.telescope')
     require('plugins.treesitter')
     require('plugins.bufferline')
