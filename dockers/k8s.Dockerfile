@@ -150,7 +150,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && TAR_NAME="${NAME}_${OS}_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv "shell/${NAME}.plugin.zsh" "${BIN_PATH}/${NAME}.zsh" \
+    && mv "shell/kubectl_fzf.plugin.zsh" "${BIN_PATH}/${NAME}.zsh" \
     && BIN_NAME="${NAME}-server" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}" \
