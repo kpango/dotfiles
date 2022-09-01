@@ -23,7 +23,7 @@ treesitter.setup {
     "cuda",
     "dart",
     "dockerfile",
-    -- "gitignore",
+    "gitignore",
     "go",
     "gomod",
     "graphql",
