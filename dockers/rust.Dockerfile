@@ -56,8 +56,15 @@ RUN cargo install --force --no-default-features \
 FROM rust-base AS cargo-check
 RUN cargo install cargo-check
 
+FROM rust-base AS cargo-edit
+RUN cargo install cargo-edit
+
 FROM rust-base AS cargo-expand
 RUN cargo install cargo-expand
+
+FROM rust-base AS cargo-fix
+RUN cargo +nightly install --force --no-default-features \
+    cargo-fix
 
 # FROM rust-base AS cargo-src
 # RUN cargo install --force --no-default-features \
@@ -76,12 +83,12 @@ FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
     git-delta
 
-FROM rust-base AS deno
+# FROM rust-base AS deno
 # RUN cargo +nightly install --force --locked --all-features \
-RUN rustup update stable \
-    && rustup default stable \
-    && cargo install --force --locked --all-features \
-    deno
+# RUN rustup update stable \
+#     && rustup default stable \
+#     && RUST_BACKTRACE=full cargo install --force --locked --no-default-features \
+#     deno
 
 FROM rust-base AS dog
 RUN cargo install --force --no-default-features \
@@ -149,10 +156,6 @@ FROM rust-base AS rnix-lsp
 RUN cargo install --force --no-default-features \
     --git https://github.com/nix-community/rnix-lsp
 
-FROM rust-base AS rustfix
-RUN cargo +nightly install --force --no-default-features \
-    rustfix
-
 FROM rust-base AS sad
 RUN git clone --depth 1 https://github.com/ms-jpq/sad \
     && cd sad \
@@ -196,6 +199,7 @@ ENV BIN_PATH ${CARGO}/bin
 # COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
 # COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
+# COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
 COPY --from=broot ${BIN_PATH}/broot ${BIN_PATH}/broot
@@ -204,10 +208,11 @@ COPY --from=cargo-bloat ${BIN_PATH}/cargo-bloat ${BIN_PATH}/cargo-bloat
 COPY --from=cargo-binutils ${BIN_PATH}/cargo-* ${BIN_PATH}/
 COPY --from=cargo-binutils ${BIN_PATH}/rust-* ${BIN_PATH}/
 COPY --from=cargo-check ${BIN_PATH}/cargo-check ${BIN_PATH}/cargo-check
+COPY --from=cargo-edit ${BIN_PATH}/cargo-edit ${BIN_PATH}/cargo-edit
 COPY --from=cargo-expand ${BIN_PATH}/cargo-expand ${BIN_PATH}/cargo-expand
+COPY --from=cargo-fix ${BIN_PATH}/cargo-fix ${BIN_PATH}/cargo-fix
 COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
 COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
-COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
@@ -224,7 +229,6 @@ COPY --from=rust-base ${BIN_PATH}/rustup ${BIN_PATH}/rustup
 COPY --from=rust-base ${CARGO} ${CARGO}
 COPY --from=rust-base ${RUSTUP}/settings.toml ${RUSTUP}/settings.toml
 COPY --from=rust-base ${RUSTUP}/toolchains ${RUSTUP}/toolchains
-COPY --from=rustfix ${BIN_PATH}/rustfix ${BIN_PATH}/rustfix
 COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
 COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
 COPY --from=shellharden ${BIN_PATH}/shellharden ${BIN_PATH}/shellharden

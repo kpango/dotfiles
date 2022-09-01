@@ -1,4 +1,3 @@
-
 local status, nvim_lsp = pcall(require, "lspconfig")
 if (not status) then
   error("lspconfig is not installed")
@@ -8,6 +7,8 @@ end
 local servers = {
   'gopls',
   'clangd',
+  'rust_analyzer',
+  'pylsp',
 }
 
 for _, lsp in ipairs(servers) do
@@ -32,6 +33,8 @@ for _, lsp in ipairs(servers) do
         end
         vim.api.nvim_buf_set_option(bufnr,'omnifunc', 'v:lua.vim.lsp.omnifunc')
         local opts = { noremap=true, silent=true }
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', "<space>f", "<Cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>D', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>ca', '<Cmd>lua vim.lsp.buf.code_action()<CR>', opts)
@@ -45,15 +48,15 @@ for _, lsp in ipairs(servers) do
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'g[', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'g]', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'g[', '<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'g]', '<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
         vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gx', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-        local status, navic = pcall(require, "nvim-navic")
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<Cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gs', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gx', '<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+        local status, navic = pcall(require, 'nvim-navic')
         if (not status) then
           error("navic is not installed")
           return
