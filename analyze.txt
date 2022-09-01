@@ -1762,13 +1762,21 @@
  2.9 kB 	 home/kpango/go/bin/stackcollapse.pl
 
 ====================================================================================================
- 481 MB 	 $ COPY /root/.cargo /home/kpango/.cargo # buildkit
+ 621 MB 	 $ COPY /root/.cargo /home/kpango/.cargo # buildkit
 ====================================================================================================
  123 MB 	 home/kpango/.cargo/bin/deno
   34 MB 	 home/kpango/.cargo/bin/rg
   16 MB 	 home/kpango/.cargo/bin/watchexec
   16 MB 	 home/kpango/.cargo/bin/xh
   16 MB 	 home/kpango/.cargo/bin/cargo
+  16 MB 	 home/kpango/.cargo/bin/cargo-clippy
+  16 MB 	 home/kpango/.cargo/bin/cargo-fmt
+  16 MB 	 home/kpango/.cargo/bin/cargo-miri
+  16 MB 	 home/kpango/.cargo/bin/rust-gdb
+  16 MB 	 home/kpango/.cargo/bin/rust-gdbgui
+  16 MB 	 home/kpango/.cargo/bin/rust-lldb
+  16 MB 	 home/kpango/.cargo/bin/rustc
+  16 MB 	 home/kpango/.cargo/bin/rustup
   14 MB 	 home/kpango/.cargo/bin/cargo-expand
   11 MB 	 home/kpango/.cargo/bin/delta
   11 MB 	 home/kpango/.cargo/bin/rga
@@ -1777,6 +1785,7 @@
  7.9 MB 	 home/kpango/.cargo/bin/rnix-lsp
  7.7 MB 	 home/kpango/.cargo/bin/bat
  7.7 MB 	 home/kpango/.cargo/bin/broot
+ 7.6 MB 	 home/kpango/.cargo/bin/t-rec
  7.6 MB 	 home/kpango/.cargo/bin/cargo-objcopy
  7.6 MB 	 home/kpango/.cargo/bin/cargo-profdata
  7.6 MB 	 home/kpango/.cargo/bin/cargo-objdump
@@ -1788,6 +1797,7 @@
  7.1 MB 	 home/kpango/.cargo/bin/gping
  6.9 MB 	 home/kpango/.cargo/bin/starship
  6.1 MB 	 home/kpango/.cargo/bin/cargo-set-version
+ 6.1 MB 	 home/kpango/.cargo/bin/cargo-watch
  6.0 MB 	 home/kpango/.cargo/bin/cargo-rm
  5.9 MB 	 home/kpango/.cargo/bin/tokei
  5.8 MB 	 home/kpango/.cargo/bin/dutree
@@ -1818,18 +1828,10 @@
  2.0 MB 	 home/kpango/.cargo/bin/lsd
  955 kB 	 home/kpango/.cargo/bin/cargo-bloat
  300  B 	 home/kpango/.cargo/env
-   0  B 	 home/kpango/.cargo/bin/cargo-clippy
-   0  B 	 home/kpango/.cargo/bin/cargo-fmt
-   0  B 	 home/kpango/.cargo/bin/cargo-miri
    0  B 	 home/kpango/.cargo/bin/clippy-driver
    0  B 	 home/kpango/.cargo/bin/rls
-   0  B 	 home/kpango/.cargo/bin/rust-gdb
-   0  B 	 home/kpango/.cargo/bin/rust-gdbgui
-   0  B 	 home/kpango/.cargo/bin/rust-lldb
-   0  B 	 home/kpango/.cargo/bin/rustc
    0  B 	 home/kpango/.cargo/bin/rustdoc
    0  B 	 home/kpango/.cargo/bin/rustfmt
-   0  B 	 home/kpango/.cargo/bin/rustup
 
 ====================================================================================================
  3.3 GB 	 $ COPY /root/.rustup /home/kpango/.rustup # buildkit
@@ -1961,9 +1963,9 @@
  1.1 kB 	 home/kpango/.gitignore
 
 ====================================================================================================
-  40  B 	 $ COPY nvim/init.lua /home/kpango/.config/nvim/init.lua # buildkit
+  38  B 	 $ COPY nvim/init.lua /home/kpango/.config/nvim/init.lua # buildkit
 ====================================================================================================
-  40  B 	 home/kpango/.config/nvim/init.lua
+  38  B 	 home/kpango/.config/nvim/init.lua
 
 ====================================================================================================
   44 kB 	 $ COPY nvim/lua /home/kpango/.config/nvim/lua # buildkit
@@ -2020,7 +2022,7 @@
   51 kB 	 home/kpango/.zshrc
 
 ====================================================================================================
- 4.3 GB 	 $ usermod -aG ${GROUP} ${WHOAMI} && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && rm -rf $VIM_PLUG_HOME/autoload && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME && zsh -ic zplug install && rm -rf ${HOME}/.cache && rm -rf ${HOME}/.zplug/cache/* && rm -rf ${HOME}/.zplug/log/* && rm -rf ${HOME}/.npm/_cacache && rm -rf ${HOME}/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp/* && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm && chown -R ${USER_ID}:${GROUP_ID} /usr/local/include/google/protobuf && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && chmod -R 755 /usr/local/lib/node_modules && chmod -R 755 /usr/local/bin/npm && chmod -R 755 /usr/local/include/google/protobuf # buildkit
+ 4.4 GB 	 $ usermod -aG ${GROUP} ${WHOAMI} && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && rm -rf $VIM_PLUG_HOME/autoload && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME && zsh -ic zplug install && rm -rf ${HOME}/.cache && rm -rf ${HOME}/.zplug/cache/* && rm -rf ${HOME}/.zplug/log/* && rm -rf ${HOME}/.npm/_cacache && rm -rf ${HOME}/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp/* && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm && chown -R ${USER_ID}:${GROUP_ID} /usr/local/include/google/protobuf && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && chmod -R 755 /usr/local/lib/node_modules && chmod -R 755 /usr/local/bin/npm && chmod -R 755 /usr/local/include/google/protobuf # buildkit
 ====================================================================================================
  570 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/rust
  564 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust
@@ -2088,6 +2090,7 @@
  7.8 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
  7.7 MB 	 home/kpango/.cargo/bin/bat
  7.7 MB 	 home/kpango/.cargo/bin/broot
+ 7.6 MB 	 home/kpango/.cargo/bin/t-rec
  7.6 MB 	 home/kpango/.cargo/bin/cargo-objcopy
  7.6 MB 	 home/kpango/.cargo/bin/cargo-profdata
  7.6 MB 	 home/kpango/.cargo/bin/cargo-objdump
@@ -2102,6 +2105,7 @@
  6.9 MB 	 home/kpango/.cargo/bin/starship
  6.2 MB 	 home/kpango/go/bin/evans
  6.1 MB 	 home/kpango/.cargo/bin/cargo-set-version
+ 6.1 MB 	 home/kpango/.cargo/bin/cargo-watch
  6.0 MB 	 home/kpango/.cargo/bin/cargo-rm
  5.9 MB 	 home/kpango/.cargo/bin/tokei
  5.9 MB 	 home/kpango/go/bin/sqls
@@ -2120,8 +2124,6 @@
  4.4 MB 	 home/kpango/.cargo/bin/procs
  4.3 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
  4.2 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
- 4.2 MB 	 home/kpango/.cargo/bin/rust-objdump
- 4.2 MB 	 home/kpango/.cargo/bin/rust-profdata
 
 ====================================================================================================
    0  B 	 $ WORKDIR /home/kpango
