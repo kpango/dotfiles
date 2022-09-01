@@ -82,7 +82,8 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM old AS deno
 # FROM rust-base AS deno
-# RUN cargo +nightly install --force --locked --all-features \
+# RUN RUST_BACKTRACE=full cargo +nightly install --force --locked --all-features \
+#     deno
 # RUN rustup update stable \
 #     && rustup default stable \
 #     && RUST_BACKTRACE=full cargo install --force --locked --no-default-features \
@@ -104,18 +105,17 @@ FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
 
-FROM rust-base AS frawk
-RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add - \
-    && apt update -y \
-    && apt upgrade -y \
-    && apt update -y \
-    && apt install -y --no-install-recommends --fix-missing \
-    libllvm16 \
-    llvm-16 \
-    llvm-16-dev
-RUN cargo +nightly install --locked --force \
-    --features use_jemalloc,allow_avx2,unstable \
-    --git https://github.com/ezrosent/frawk frawk
+# FROM rust-base AS frawk
+# RUN apt update -y \
+#     && apt upgrade -y \
+#     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+#     && apt install -y --no-install-recommends --fix-missing \
+#     libllvm16 \
+#     llvm-16 \
+#     llvm-16-dev
+# RUN cargo +nightly install --locked --force \
+#     --features use_jemalloc,allow_avx2,unstable \
+#     --git https://github.com/ezrosent/frawk frawk
 
 FROM rust-base AS gping
 RUN rustup update stable \
@@ -179,6 +179,10 @@ FROM old AS starship
 # RUN cargo +nightly install --force --no-default-features \
 #     starship
 
+FROM rust-base AS t-rec
+RUN cargo +nightly install --force --no-default-features \
+    t-rec
+
 FROM rust-base AS tokei
 RUN cargo +nightly install --force --no-default-features \
     tokei
@@ -198,6 +202,7 @@ ENV CARGO ${HOME}/.cargo
 ENV BIN_PATH ${CARGO}/bin
 
 # COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
+# COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
@@ -221,7 +226,6 @@ COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
-COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
@@ -238,6 +242,7 @@ COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
 COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
 COPY --from=shellharden ${BIN_PATH}/shellharden ${BIN_PATH}/shellharden
 COPY --from=starship ${BIN_PATH}/starship ${BIN_PATH}/starship
+COPY --from=t-rec ${BIN_PATH}/t-rec ${BIN_PATH}/t-rec
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
 COPY --from=watchexec ${BIN_PATH}/watchexec ${BIN_PATH}/watchexec
 COPY --from=xh ${BIN_PATH}/xh ${BIN_PATH}/xh
