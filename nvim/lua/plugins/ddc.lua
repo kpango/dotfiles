@@ -84,6 +84,38 @@ end
 --   return
 -- end
 
+local status, mason = pcall(require, 'mason')
+if (not status) then
+  error("mason is not installed")
+  return
+end
+mason.setup({
+  ui = {
+    icons = {
+      package_installed = "✓",
+      package_pending = "➜",
+      package_uninstalled = "✗"
+    }
+  }
+})
+
+local status, mason_lspconfig = pcall(require, 'mason_lspconfig')
+if (not status) then
+  error("mason_lspconfig is not installed")
+  return
+end
+mason_lspconfig.setup_handlers({ function(server_name)
+  local opts = {}
+  opts.on_attach = function(_, bufnr)
+    local bufopts = { silent = true, buffer = bufnr }
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+    vim.keymap.set('n', 'gtD', vim.lsp.buf.type_definition, bufopts)
+    vim.keymap.set('n', 'grf', vim.lsp.buf.references, bufopts)
+    vim.keymap.set('n', '<space>p', vim.lsp.buf.format, bufopts)
+ end
+  nvim_lsp[server_name].setup(opts)
+end })
+
 vim.cmd[[
 call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'deoppet', 'around', 'file'])
 call ddc#custom#patch_global('sourceOptions', {
