@@ -102,6 +102,7 @@ autocmd({ 'BufReadPost' }, {
     desc = 'Make files readonly when outside of current working dir',
     pattern = '*',
     callback = function()
+        vim.api.nvim_exec('silent! normal! g`"zv', false)
         if string.sub(vim.api.nvim_buf_get_name(0), 1, string.len(vim.fn.getcwd())) ~= vim.fn.getcwd() then
             vim.bo.readonly = true
             vim.bo.modifiable = false
