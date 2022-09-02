@@ -25,15 +25,15 @@ RUN rustup install stable \
 
 FROM kpango/rust:latest AS old
 
+FROM rust-base AS bandwhich
+RUN cargo +nightly install --force --no-default-features \
+    bandwhich
+
 FROM rust-base AS bat
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --locked \
     bat
-
-# FROM rust-base AS bandwhich
-# RUN cargo +nightly install --force --no-default-features \
-#     bandwhich
 
 FROM rust-base AS bottom
 RUN rustup update stable \
@@ -72,22 +72,15 @@ FROM rust-base AS cargo-tree
 RUN cargo install cargo-tree
 
 FROM rust-base AS cargo-watch
-# RUN cargo +nightly install --force --no-default-features \
-#     cargo-watch
 RUN cargo install cargo-watch
 
 FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
     git-delta
 
-FROM old AS deno
-# FROM rust-base AS deno
-# RUN RUST_BACKTRACE=full cargo +nightly install --force --locked --all-features \
-#     deno
-# RUN rustup update stable \
-#     && rustup default stable \
-#     && RUST_BACKTRACE=full cargo install --force --locked --no-default-features \
-#     deno
+FROM rust-base AS deno
+RUN RUST_BACKTRACE=full cargo +nightly install --force --locked --all-features \
+    deno
 
 FROM rust-base AS dog
 RUN cargo install --force --no-default-features \
@@ -144,10 +137,8 @@ RUN rustup update stable \
     && rustup default stable \
     && RUSTFLAGS="-C target-cpu=native" \
     RUSTC_BOOTSTRAP=1 \
-    cargo install --force --features 'pcre2 simd-accel' \
+    cargo +nightly install --force --features 'pcre2 simd-accel' \
     ripgrep
-    # cargo +nightly install --force --features 'pcre2 simd-accel' \
-    # ripgrep
 
 FROM rust-base AS rga
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
@@ -205,9 +196,9 @@ ENV RUSTUP ${HOME}/.rustup
 ENV CARGO ${HOME}/.cargo
 ENV BIN_PATH ${CARGO}/bin
 
-# COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
 # COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
+COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
 COPY --from=broot ${BIN_PATH}/broot ${BIN_PATH}/broot
