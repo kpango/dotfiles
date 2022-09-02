@@ -141,7 +141,7 @@ return packer.startup(function(use)
     use {'kyazdani42/nvim-web-devicons'}
     use {'akinsho/bufferline.nvim', tag = 'v2.*', requires = 'kyazdani42/nvim-web-devicons'}
     use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
-    use {'mattn/vim-goimports', ft = 'go'}
+    -- use {'mattn/vim-goimports', ft = 'go'}
 
     require('plugins.packer')
     if packer_bootstrap then
