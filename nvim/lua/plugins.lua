@@ -104,19 +104,19 @@ return packer.startup(function(use)
     use {'wbthomason/packer.nvim', opt = true}
     use {'Shougo/deoppet.nvim'}
     use {'vim-denops/denops.vim', branch = 'main'}
-    use {'Shougo/ddc.vim', requires = {'vim-denops/denops.vim'}}
-    use {'Shougo/ddc-around', requires = {'Shougo/ddc.vim'}}
-    use {'Shougo/ddc-converter_remove_overlap', requires = {'Shougo/ddc.vim'}}
-    use {'Shougo/ddc-matcher_head', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc.vim', requires = 'vim-denops/denops.vim'}
+    use {'Shougo/ddc-around', requires = 'Shougo/ddc.vim'}
+    use {'Shougo/ddc-converter_remove_overlap', requires = 'Shougo/ddc.vim'}
+    use {'Shougo/ddc-matcher_head', requires = 'Shougo/ddc.vim'}
     use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim', 'neovim/nvim-lspconfig'}}
-    use {'Shougo/ddc-sorter_rank', requires = {'Shougo/ddc.vim'}}
-    use {'LumaKernel/ddc-file', requires = {'Shougo/ddc.vim'}}
-    use {'LumaKernel/ddc-tabnine', requires = {'Shougo/ddc.vim'}}
-    use {'tani/ddc-fuzzy', requires = {'Shougo/ddc.vim'}}
+    use {'Shougo/ddc-sorter_rank', requires = 'Shougo/ddc.vim'}
+    use {'LumaKernel/ddc-file', requires = 'Shougo/ddc.vim'}
+    use {'LumaKernel/ddc-tabnine', requires = 'Shougo/ddc.vim'}
+    use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
     use {'Shougo/pum.vim'}
     use {'editorconfig/editorconfig-vim'}
     use {'junegunn/fzf', run = ':call fzf#install()'}
-    use {'junegunn/fzf.vim', requires = {'junegunn/fzf'}}
+    use {'junegunn/fzf.vim', requires = 'junegunn/fzf'}
     use {'lambdalisue/gin.vim'}
     use {'lewis6991/gitsigns.nvim'}
     use {'nathom/filetype.nvim'}
@@ -126,22 +126,21 @@ return packer.startup(function(use)
     use {'williamboman/mason.nvim'}
     use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
     use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
-    use {'navarasu/onedark.nvim', requires = {'nvim-treesitter/nvim-treesitter'}}
+    use {'navarasu/onedark.nvim', requires = 'nvim-treesitter/nvim-treesitter'}
     use {'SmiteshP/nvim-navic', requires = {'neovim/nvim-lspconfig', 'nvim-treesitter/nvim-treesitter'}}
-
     use {'norcalli/nvim-colorizer.lua',
         config = function()
            require('colorizer').setup()
         end
     }
     use {'nvim-lua/plenary.nvim'}
-    use {'nvim-telescope/telescope.nvim', branch = 'master', requires = {'nvim-lua/plenary.nvim'}}
+    use {'nvim-telescope/telescope.nvim', branch = 'master', requires = 'nvim-lua/plenary.nvim'}
     use {'nvim-telescope/telescope-file-browser.nvim', requires = {'nvim-telesope/telescope.nvim', 'nvim-lua/plenary.nvim'}}
-    use {'glepnir/lspsaga.nvim', branch = 'main'}
+    use {'glepnir/lspsaga.nvim', branch = 'main', requires = 'neovim/nvim-lspconfig'}
     use {'jose-elias-alvarez/null-ls.nvim', branch = 'main'}
     use {'kyazdani42/nvim-web-devicons'}
     use {'akinsho/bufferline.nvim', tag = 'v2.*', requires = 'kyazdani42/nvim-web-devicons'}
-    --  use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
+    use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
     use {'mattn/vim-goimports', ft = 'go'}
 
     require('plugins.packer')
@@ -149,7 +148,6 @@ return packer.startup(function(use)
       packer.sync()
     end
 
-    -- require('plugins.lualine')
     require('plugins.navic')
     require('plugins.telescope')
     require('plugins.treesitter')
@@ -161,6 +159,7 @@ return packer.startup(function(use)
     require('plugins.fzf')
     require('plugins.gitsigns')
     require('plugins.lspsaga')
+    require('plugins.lualine')
     require('plugins.onedark')
     -- require('plugins.null-ls')
 end)

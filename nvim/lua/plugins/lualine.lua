@@ -1,4 +1,3 @@
-
 local status, lualine = pcall(require, 'lualine')
 if (not status) then
   error("LuaLine is not installed")
