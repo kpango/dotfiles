@@ -1762,38 +1762,32 @@
  2.9 kB 	 home/kpango/go/bin/stackcollapse.pl
 
 ====================================================================================================
- 621 MB 	 $ COPY /root/.cargo /home/kpango/.cargo # buildkit
+ 524 MB 	 $ COPY /root/.cargo /home/kpango/.cargo # buildkit
 ====================================================================================================
- 123 MB 	 home/kpango/.cargo/bin/deno
-  34 MB 	 home/kpango/.cargo/bin/rg
+ 126 MB 	 home/kpango/.cargo/bin/deno
+  35 MB 	 home/kpango/.cargo/bin/rg
+  17 MB 	 home/kpango/.cargo/bin/tree-sitter
   16 MB 	 home/kpango/.cargo/bin/watchexec
   16 MB 	 home/kpango/.cargo/bin/xh
   16 MB 	 home/kpango/.cargo/bin/cargo
-  16 MB 	 home/kpango/.cargo/bin/cargo-clippy
-  16 MB 	 home/kpango/.cargo/bin/cargo-fmt
-  16 MB 	 home/kpango/.cargo/bin/cargo-miri
-  16 MB 	 home/kpango/.cargo/bin/rust-gdb
-  16 MB 	 home/kpango/.cargo/bin/rust-gdbgui
-  16 MB 	 home/kpango/.cargo/bin/rust-lldb
-  16 MB 	 home/kpango/.cargo/bin/rustc
-  16 MB 	 home/kpango/.cargo/bin/rustup
   14 MB 	 home/kpango/.cargo/bin/cargo-expand
   11 MB 	 home/kpango/.cargo/bin/delta
   11 MB 	 home/kpango/.cargo/bin/rga
  8.2 MB 	 home/kpango/.cargo/bin/sad
  8.1 MB 	 home/kpango/.cargo/bin/cargo-upgrade
+ 7.9 MB 	 home/kpango/.cargo/bin/bandwhich
  7.9 MB 	 home/kpango/.cargo/bin/rnix-lsp
  7.7 MB 	 home/kpango/.cargo/bin/bat
  7.7 MB 	 home/kpango/.cargo/bin/broot
  7.6 MB 	 home/kpango/.cargo/bin/t-rec
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-objcopy
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-profdata
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-objdump
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-readobj
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-strip
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-size
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-cov
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-nm
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-profdata
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-objcopy
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-objdump
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-readobj
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-strip
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-size
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-cov
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-nm
  7.1 MB 	 home/kpango/.cargo/bin/gping
  6.9 MB 	 home/kpango/.cargo/bin/starship
  6.1 MB 	 home/kpango/.cargo/bin/cargo-set-version
@@ -1812,11 +1806,11 @@
  4.2 MB 	 home/kpango/.cargo/bin/rust-readobj
  4.2 MB 	 home/kpango/.cargo/bin/rust-objcopy
  4.2 MB 	 home/kpango/.cargo/bin/rust-strip
- 4.2 MB 	 home/kpango/.cargo/bin/rust-cov
- 4.2 MB 	 home/kpango/.cargo/bin/rust-lld
  4.2 MB 	 home/kpango/.cargo/bin/rust-size
  4.2 MB 	 home/kpango/.cargo/bin/rust-ar
+ 4.2 MB 	 home/kpango/.cargo/bin/rust-cov
  4.2 MB 	 home/kpango/.cargo/bin/rust-ld
+ 4.2 MB 	 home/kpango/.cargo/bin/rust-lld
  4.2 MB 	 home/kpango/.cargo/bin/rust-nm
  4.1 MB 	 home/kpango/.cargo/bin/cargo-check
  4.1 MB 	 home/kpango/.cargo/bin/shellharden
@@ -1824,14 +1818,22 @@
  3.7 MB 	 home/kpango/.cargo/bin/hyperfine
  3.5 MB 	 home/kpango/.cargo/bin/sd
  2.5 MB 	 home/kpango/.cargo/bin/exa
- 2.1 MB 	 home/kpango/.cargo/bin/dog
+ 2.2 MB 	 home/kpango/.cargo/bin/dog
  2.0 MB 	 home/kpango/.cargo/bin/lsd
  955 kB 	 home/kpango/.cargo/bin/cargo-bloat
  300  B 	 home/kpango/.cargo/env
+   0  B 	 home/kpango/.cargo/bin/cargo-clippy
+   0  B 	 home/kpango/.cargo/bin/cargo-fmt
+   0  B 	 home/kpango/.cargo/bin/cargo-miri
    0  B 	 home/kpango/.cargo/bin/clippy-driver
    0  B 	 home/kpango/.cargo/bin/rls
+   0  B 	 home/kpango/.cargo/bin/rust-gdb
+   0  B 	 home/kpango/.cargo/bin/rust-gdbgui
+   0  B 	 home/kpango/.cargo/bin/rust-lldb
+   0  B 	 home/kpango/.cargo/bin/rustc
    0  B 	 home/kpango/.cargo/bin/rustdoc
    0  B 	 home/kpango/.cargo/bin/rustfmt
+   0  B 	 home/kpango/.cargo/bin/rustup
 
 ====================================================================================================
  3.3 GB 	 $ COPY /root/.rustup /home/kpango/.rustup # buildkit
@@ -1839,11 +1841,11 @@
  570 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/rust
  564 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust
  533 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/rust
- 225 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
- 182 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 226 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
  168 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 167 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
  127 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/librustc_driver-ecd9222d1327d717.so
- 127 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/librustc_driver-a23c878f15bb2983.so
+ 127 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/librustc_driver-3165c5877b275e8b.so
  123 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/librustc_driver-d680884a73809b24.so
  110 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.65.0-nightly.so
  107 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libLLVM-14-rust-1.63.0-stable.so
@@ -1852,31 +1854,31 @@
   26 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo
   26 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo
   24 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src
-  17 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustfmt
   17 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustfmt
+  17 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustfmt
   16 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustfmt
-  15 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustdoc
+  14 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustdoc
   14 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustdoc
   14 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc
   12 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/clippy-driver
   12 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/clippy-driver
   12 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/clippy-driver
-  11 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libstd-005d707108103aba.so
   11 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libstd-4393e7d07259b8a4.so
+  10 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libstd-005d707108103aba.so
  9.7 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libstd-8f1929c73c3f8167.so
- 8.2 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
- 7.8 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
- 5.5 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 8.1 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
+ 7.7 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
  5.4 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 5.3 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-fmt
  5.2 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-fmt
- 4.3 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
  4.2 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
- 4.1 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-clippy
+ 4.2 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
  4.1 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
  4.1 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-clippy
+ 4.0 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-clippy
  4.0 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-clippy
- 3.2 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libtest-32adb0d0686647db.so
  3.1 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libtest-da913cdf5d7548fa.so
+ 2.9 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libtest-32adb0d0686647db.so
  2.9 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libtest-50b9616eedb811b7.so
  2.8 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc
  2.8 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustc
@@ -1938,16 +1940,6 @@
  142  B 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rustfmt-preview-x86_64-unknown-linux-gnu
 
 ====================================================================================================
- 4.8 kB 	 $ COPY coc-settings.json /home/kpango/.config/nvim/coc-settings.json # buildkit
-====================================================================================================
- 4.8 kB 	 home/kpango/.config/nvim/coc-settings.json
-
-====================================================================================================
- 304  B 	 $ COPY efm-lsp-conf.yaml /home/kpango/.config/nvim/efm-lsp-conf.yaml # buildkit
-====================================================================================================
- 304  B 	 home/kpango/.config/nvim/efm-lsp-conf.yaml
-
-====================================================================================================
  443  B 	 $ COPY gitattributes /home/kpango/.gitattributes # buildkit
 ====================================================================================================
  443  B 	 home/kpango/.gitattributes
@@ -1968,38 +1960,34 @@
   38  B 	 home/kpango/.config/nvim/init.lua
 
 ====================================================================================================
-  44 kB 	 $ COPY nvim/lua /home/kpango/.config/nvim/lua # buildkit
+  45 kB 	 $ COPY nvim/lua /home/kpango/.config/nvim/lua # buildkit
 ====================================================================================================
- 8.2 kB 	 home/kpango/.config/nvim/lua/plugins/ddc.lua
- 7.9 kB 	 home/kpango/.config/nvim/lua/plugins.lua
+ 9.1 kB 	 home/kpango/.config/nvim/lua/plugins/ddc.lua
+ 7.6 kB 	 home/kpango/.config/nvim/lua/plugins.lua
  4.3 kB 	 home/kpango/.config/nvim/lua/settings/autocmd.lua
  3.4 kB 	 home/kpango/.config/nvim/lua/plugins/telescope.lua
- 3.3 kB 	 home/kpango/.config/nvim/lua/settings/keymap.lua
+ 3.2 kB 	 home/kpango/.config/nvim/lua/settings/keymap.lua
  2.9 kB 	 home/kpango/.config/nvim/lua/plugins/gitsigns.lua
  2.6 kB 	 home/kpango/.config/nvim/lua/settings/base.lua
  2.0 kB 	 home/kpango/.config/nvim/lua/plugins/lualine.lua
  1.6 kB 	 home/kpango/.config/nvim/lua/plugins/fzf.lua
- 1.4 kB 	 home/kpango/.config/nvim/lua/plugins/filetype.lua
  1.3 kB 	 home/kpango/.config/nvim/lua/plugins/null-ls.lua
+ 1.1 kB 	 home/kpango/.config/nvim/lua/plugins/treesitter.lua
  1.1 kB 	 home/kpango/.config/nvim/lua/plugins/navic.lua
- 793  B 	 home/kpango/.config/nvim/lua/plugins/treesitter.lua
+ 1.1 kB 	 home/kpango/.config/nvim/lua/plugins/filetype.lua
  788  B 	 home/kpango/.config/nvim/lua/plugins/bufferline.lua
- 648  B 	 home/kpango/.config/nvim/lua/settings/skip_default.lua
  646  B 	 home/kpango/.config/nvim/lua/plugins/lspsaga.lua
  623  B 	 home/kpango/.config/nvim/lua/plugins/packer.lua
- 185  B 	 home/kpango/.config/nvim/lua/plugins/deoppet.lua
- 175  B 	 home/kpango/.config/nvim/lua/plugins/caw.lua
+ 612  B 	 home/kpango/.config/nvim/lua/settings/skip_default.lua
+ 401  B 	 home/kpango/.config/nvim/lua/plugins/deoppet.lua
+ 188  B 	 home/kpango/.config/nvim/lua/plugins/onedark.lua
+ 174  B 	 home/kpango/.config/nvim/lua/plugins/caw.lua
  113  B 	 home/kpango/.config/nvim/lua/setting.lua
 
 ====================================================================================================
   79  B 	 $ COPY nvim/luacheckrc /home/kpango/.config/nvim/luacheckrc # buildkit
 ====================================================================================================
   79  B 	 home/kpango/.config/nvim/luacheckrc
-
-====================================================================================================
-  20 kB 	 $ COPY monokai.vim /home/kpango/.config/nvim/colors/monokai.vim # buildkit
-====================================================================================================
-  20 kB 	 home/kpango/.config/nvim/colors/monokai.vim
 
 ====================================================================================================
  3.6 kB 	 $ COPY tmux-kube /home/kpango/.tmux-kube # buildkit
@@ -2012,33 +2000,28 @@
  3.9 kB 	 home/kpango/.tmux.conf
 
 ====================================================================================================
- 292  B 	 $ COPY vintrc.yaml /home/kpango/.vintrc.yaml # buildkit
-====================================================================================================
- 292  B 	 home/kpango/.vintrc.yaml
-
-====================================================================================================
   51 kB 	 $ COPY zshrc /home/kpango/.zshrc # buildkit
 ====================================================================================================
   51 kB 	 home/kpango/.zshrc
 
 ====================================================================================================
- 4.4 GB 	 $ usermod -aG ${GROUP} ${WHOAMI} && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && rm -rf $VIM_PLUG_HOME/autoload && yarn global add https://github.com/neoclide/coc.nvim --prefix /usr/local && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME && zsh -ic zplug install && rm -rf ${HOME}/.cache && rm -rf ${HOME}/.zplug/cache/* && rm -rf ${HOME}/.zplug/log/* && rm -rf ${HOME}/.npm/_cacache && rm -rf ${HOME}/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp/* && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm && chown -R ${USER_ID}:${GROUP_ID} /usr/local/include/google/protobuf && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && chmod -R 755 /usr/local/lib/node_modules && chmod -R 755 /usr/local/bin/npm && chmod -R 755 /usr/local/include/google/protobuf # buildkit
+ 4.4 GB 	 $ usermod -aG ${GROUP} ${WHOAMI} && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && rm -rf $VIM_PLUG_HOME/autoload && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME && zsh -ic zplug install && rm -rf ${HOME}/.cache && rm -rf ${HOME}/.zplug/cache/* && rm -rf ${HOME}/.zplug/log/* && rm -rf ${HOME}/.npm/_cacache && rm -rf ${HOME}/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp/* && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm && chown -R ${USER_ID}:${GROUP_ID} /usr/local/include/google/protobuf && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && chmod -R 755 /usr/local/lib/node_modules && chmod -R 755 /usr/local/bin/npm && chmod -R 755 /usr/local/include/google/protobuf # buildkit
 ====================================================================================================
  570 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/rust
  564 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust
  533 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/rust
- 225 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
- 182 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 226 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
  168 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 167 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
  127 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/librustc_driver-ecd9222d1327d717.so
- 127 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/librustc_driver-a23c878f15bb2983.so
+ 127 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/librustc_driver-3165c5877b275e8b.so
+ 126 MB 	 home/kpango/.cargo/bin/deno
  123 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/librustc_driver-d680884a73809b24.so
- 123 MB 	 home/kpango/.cargo/bin/deno
  110 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.65.0-nightly.so
  107 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libLLVM-14-rust-1.63.0-stable.so
  105 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libLLVM-14-rust-1.64.0-beta.so
   66 MB 	 home/kpango/go/bin/tinygo
-  34 MB 	 home/kpango/.cargo/bin/rg
+  35 MB 	 home/kpango/.cargo/bin/rg
   31 MB 	 home/kpango/go/bin/pulumi
   26 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo
   26 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo
@@ -2047,8 +2030,9 @@
   20 MB 	 home/kpango/go/bin/grype
   20 MB 	 home/kpango/go/bin/syft
   18 MB 	 home/kpango/go/bin/hugo
-  17 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustfmt
+  17 MB 	 home/kpango/.cargo/bin/tree-sitter
   17 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustfmt
+  17 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustfmt
   16 MB 	 home/kpango/.cargo/bin/watchexec
   16 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustfmt
   16 MB 	 home/kpango/.cargo/bin/xh
@@ -2065,7 +2049,7 @@
   16 MB 	 home/kpango/.cargo/bin/rustdoc
   16 MB 	 home/kpango/.cargo/bin/rustfmt
   16 MB 	 home/kpango/.cargo/bin/rustup
-  15 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustdoc
+  14 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustdoc
   14 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustdoc
   14 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc
   14 MB 	 home/kpango/.cargo/bin/cargo-expand
@@ -2073,32 +2057,33 @@
   12 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/clippy-driver
   12 MB 	 home/kpango/go/bin/licenses
   12 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/clippy-driver
-  11 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libstd-005d707108103aba.so
   11 MB 	 home/kpango/.cargo/bin/delta
   11 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libstd-4393e7d07259b8a4.so
   11 MB 	 home/kpango/.cargo/bin/rga
   10 MB 	 home/kpango/go/bin/k6
+  10 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libstd-005d707108103aba.so
  9.7 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libstd-8f1929c73c3f8167.so
  9.5 MB 	 home/kpango/go/bin/golangci-lint
  8.7 MB 	 home/kpango/go/bin/buf
  8.7 MB 	 home/kpango/go/bin/swagger
- 8.2 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
  8.2 MB 	 home/kpango/.cargo/bin/sad
  8.1 MB 	 home/kpango/go/bin/ghz
+ 8.1 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
  8.1 MB 	 home/kpango/.cargo/bin/cargo-upgrade
+ 7.9 MB 	 home/kpango/.cargo/bin/bandwhich
  7.9 MB 	 home/kpango/.cargo/bin/rnix-lsp
- 7.8 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
  7.7 MB 	 home/kpango/.cargo/bin/bat
+ 7.7 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
  7.7 MB 	 home/kpango/.cargo/bin/broot
  7.6 MB 	 home/kpango/.cargo/bin/t-rec
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-objcopy
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-profdata
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-objdump
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-readobj
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-strip
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-size
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-cov
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-nm
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-profdata
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-objcopy
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-objdump
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-readobj
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-strip
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-size
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-cov
+ 7.5 MB 	 home/kpango/.cargo/bin/cargo-nm
  7.5 MB 	 home/kpango/go/bin/gopls
  7.4 MB 	 home/kpango/go/bin/grpcurl
  7.1 MB 	 home/kpango/.cargo/bin/gping
@@ -2111,8 +2096,8 @@
  5.9 MB 	 home/kpango/go/bin/sqls
  5.8 MB 	 home/kpango/.cargo/bin/dutree
  5.5 MB 	 home/kpango/.cargo/bin/cargo-fix
- 5.5 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-fmt
  5.4 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 5.3 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-fmt
  5.3 MB 	 usr/local/lib/node_modules/yarn/lib/cli.js
  5.2 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-fmt
  5.2 MB 	 home/kpango/.cargo/bin/cargo-asm
@@ -2122,8 +2107,6 @@
  4.6 MB 	 home/kpango/.cargo/bin/fd
  4.4 MB 	 home/kpango/go/bin/prototool
  4.4 MB 	 home/kpango/.cargo/bin/procs
- 4.3 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
- 4.2 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
 
 ====================================================================================================
    0  B 	 $ WORKDIR /home/kpango
