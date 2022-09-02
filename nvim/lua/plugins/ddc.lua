@@ -1,90 +1,3 @@
-local status, nvim_lsp = pcall(require, "lspconfig")
-if (not status) then
-  error("lspconfig is not installed")
-  return
-end
-
-local servers = {
-  'clangd',
-  'gopls',
-  'pylsp',
-  'rust_analyzer',
-  'sumneko_lua',
-}
-
-for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup {
-    flags = {
-      debounce_text_changes = 150,
-    },
-    settings = {
-      solargraph = {
-        diagnostics = false
-      }
-    },
-    on_attach = function(client, bufnr)
-
-        -- format on save
-        if client.server_capabilities.documentFormattingProvider then
-            vim.api.nvim_create_autocmd("BufWritePre", {
-                group = vim.api.nvim_create_augroup("Format", { clear = true }),
-                buffer = bufnr,
-                callback = function() vim.lsp.buf.format() end
-            })
-        end
-        vim.api.nvim_buf_set_option(bufnr,'omnifunc', 'v:lua.vim.lsp.omnifunc')
-        local opts = { noremap=true, silent=true }
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', "<space>f", "<Cmd>lua vim.lsp.buf.formatting()<CR>", opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>D', '<Cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>ca', '<Cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>e', '<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', '<Cmd>lua vim.lsp.buf.formatting()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>q', '<Cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>rn', '<Cmd>lua vim.lsp.buf.rename()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wa', '<Cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wl', '<Cmd>lua error(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wr', '<Cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'g[', '<Cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'g]', '<Cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<Cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gs', '<Cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gx', '<Cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-        local status, navic = pcall(require, 'nvim-navic')
-        if (not status) then
-          error("navic is not installed")
-          return
-        end
-        navic.attach(client, bufnr)
-    end
-  }
-end
-
--- local status, lsp_installer = pcall(require, "nvim-lsp-installer")
--- if (not status) then
---   error("nvim-lsp-installer is not installed")
---   return
--- end
---
--- lsp_installer.on_server_ready(function(server)
---   local opts = {}
---   server:setup(opts)
---   vim.cmd [[ do User LspAttachBuffers ]]
--- end)
-
--- local status, ddc = pcall(require, "ddc")
--- if (not status) then
---   error("ddc is not installed")
---   return
--- end
-
 local status, mason = pcall(require, 'mason')
 if (not status) then
   error("mason is not installed")
@@ -105,16 +18,73 @@ if (not status) then
   error("mason_lspconfig is not installed")
   return
 end
+
+local status, nvim_lsp = pcall(require, "lspconfig")
+if (not status) then
+  error("lspconfig is not installed")
+  return
+end
+
 mason_lspconfig.setup_handlers({ function(server_name)
-  local opts = {}
-  opts.on_attach = function(_, bufnr)
-    local bufopts = { silent = true, buffer = bufnr }
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-    vim.keymap.set('n', 'gtD', vim.lsp.buf.type_definition, bufopts)
-    vim.keymap.set('n', 'grf', vim.lsp.buf.references, bufopts)
-    vim.keymap.set('n', '<space>p', vim.lsp.buf.format, bufopts)
- end
-  nvim_lsp[server_name].setup(opts)
+  local settings = {
+      solargraph = {
+        diagnostics = false
+      }
+  }
+  if server_name == "sumneko_lua" then
+      opts.settings = {
+          Lua = {
+              diagnostics = { globals = { 'vim' } },
+          }
+      }
+  end
+  nvim_lsp[server_name].setup{
+    flags = {
+      debounce_text_changes = 150,
+    },
+    settings = settings,
+    on_attach = function(client, bufnr)
+        -- format on save
+        if client.server_capabilities.documentFormattingProvider then
+            vim.api.nvim_create_autocmd("BufWritePre", {
+                group = vim.api.nvim_create_augroup("Format", { clear = true }),
+                buffer = bufnr,
+                callback = function() vim.lsp.buf.format() end
+            })
+        end
+        vim.api.nvim_buf_set_option(bufnr,'omnifunc', 'v:lua.vim.lsp.omnifunc')
+        local opts = { noremap=true, silent=true }
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', "<space>f", vim.lsp.buf.formatting, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', vim.lsp.buf.signature_help, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>D', vim.lsp.buf.type_definition, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>ca', vim.lsp.buf.code_action, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>e', vim.lsp.diagnostic.show_line_diagnostics, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>f', vim.lsp.buf.formatting, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>q', vim.lsp.diagnostic.set_loclist, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>rn', vim.lsp.buf.rename, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wa', vim.lsp.buf.add_workspace_folder, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '<space>wr', vim.lsp.buf.remove_workspace_folder, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', vim.lsp.buf.hover, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', vim.lsp.diagnostic.goto_prev, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', vim.lsp.diagnostic.goto_next, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', vim.lsp.buf.declaration, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'g[', vim.lsp.diagnostic.goto_prev, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'g]', vim.lsp.diagnostic.goto_next, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', vim.lsp.buf.definition, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gtD', vim.lsp.buf.type_definition, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', vim.lsp.buf.implementation, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', vim.lsp.buf.references, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'grf', vim.lsp.buf.references, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gs', vim.lsp.buf.signature_help, opts)
+        vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gx', vim.lsp.diagnostic.show_line_diagnostics, opts)
+        local status, navic = pcall(require, 'nvim-navic')
+        if (not status) then
+          error("navic is not installed")
+          return
+        end
+        navic.attach(client, bufnr)
+    end
+  }
 end })
 
 vim.cmd[[
@@ -236,5 +206,6 @@ function! CommandlinePost() abort
     call ddc#custom#set_buffer({})
   endif
 endfunction
+
 call ddc#enable()
 ]]
