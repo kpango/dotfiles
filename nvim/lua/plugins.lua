@@ -111,6 +111,7 @@ return packer.startup(function(use)
     use {'Shougo/ddc.vim', requires = 'vim-denops/denops.vim'}
     use {'Shougo/deoppet.nvim'}
     use {'Shougo/pum.vim'}
+    use {'terrortylor/nvim-comment'}
     use {'SmiteshP/nvim-navic', requires = {'neovim/nvim-lspconfig', 'nvim-treesitter/nvim-treesitter'}}
     use {'editorconfig/editorconfig-vim'}
     use {'lambdalisue/gin.vim'}
@@ -121,9 +122,8 @@ return packer.startup(function(use)
     use {'navarasu/onedark.nvim', requires = 'nvim-treesitter/nvim-treesitter'}
     use {'neovim/nvim-lspconfig'}
     use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
-    use {'sbdchd/neoformat'}
     use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
-    use {'tyru/caw.vim'}
+    use {'mhartington/formatter.nvim'}
     use {'vim-denops/denops.vim', branch = 'main'}
     use {'wbthomason/packer.nvim', opt = true}
     use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
@@ -152,7 +152,7 @@ return packer.startup(function(use)
     require('plugins.telescope')
     require('plugins.treesitter')
     require('plugins.bufferline')
-    require('plugins.caw')
+    require('plugins.comment')
     require('plugins.ddc')
     require('plugins.deoppet')
     require('plugins.filetype')
