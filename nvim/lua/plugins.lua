@@ -101,33 +101,33 @@ packer.init({
 -- end
 
 return packer.startup(function(use)
-    use {'wbthomason/packer.nvim', opt = true}
-    use {'Shougo/deoppet.nvim'}
-    use {'vim-denops/denops.vim', branch = 'main'}
-    use {'Shougo/ddc.vim', requires = 'vim-denops/denops.vim'}
+    use {'LumaKernel/ddc-file', requires = 'Shougo/ddc.vim'}
+    use {'LumaKernel/ddc-tabnine', requires = 'Shougo/ddc.vim'}
     use {'Shougo/ddc-around', requires = 'Shougo/ddc.vim'}
     use {'Shougo/ddc-converter_remove_overlap', requires = 'Shougo/ddc.vim'}
     use {'Shougo/ddc-matcher_head', requires = 'Shougo/ddc.vim'}
     use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim', 'neovim/nvim-lspconfig'}}
     use {'Shougo/ddc-sorter_rank', requires = 'Shougo/ddc.vim'}
-    use {'LumaKernel/ddc-file', requires = 'Shougo/ddc.vim'}
-    use {'LumaKernel/ddc-tabnine', requires = 'Shougo/ddc.vim'}
-    use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
+    use {'Shougo/ddc.vim', requires = 'vim-denops/denops.vim'}
+    use {'Shougo/deoppet.nvim'}
     use {'Shougo/pum.vim'}
+    use {'SmiteshP/nvim-navic', requires = {'neovim/nvim-lspconfig', 'nvim-treesitter/nvim-treesitter'}}
     use {'editorconfig/editorconfig-vim'}
-    use {'junegunn/fzf', run = ':call fzf#install()'}
-    use {'junegunn/fzf.vim', requires = 'junegunn/fzf'}
     use {'lambdalisue/gin.vim'}
     use {'lewis6991/gitsigns.nvim'}
+    use {'matsui54/denops-popup-preview.vim', requires = {'vim-denops/denops.vim', 'Shougo/pum.vim', 'Shougo/ddc-nvim-lsp'}, run = ':call popup_preview#enable()'}
+    use {'matsui54/denops-signature_help', requires = {'vim-denops/denops.vim', 'Shougo/pum.vim', 'Shougo/ddc-nvim-lsp'}, run = ':call signature_help#enable()'}
     use {'nathom/filetype.nvim'}
-    use {'neovim/nvim-lspconfig'}
-    use {'sbdchd/neoformat'}
-    use {'tyru/caw.vim'}
-    use {'williamboman/mason.nvim'}
-    use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
-    use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
     use {'navarasu/onedark.nvim', requires = 'nvim-treesitter/nvim-treesitter'}
-    use {'SmiteshP/nvim-navic', requires = {'neovim/nvim-lspconfig', 'nvim-treesitter/nvim-treesitter'}}
+    use {'neovim/nvim-lspconfig'}
+    use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
+    use {'sbdchd/neoformat'}
+    use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
+    use {'tyru/caw.vim'}
+    use {'vim-denops/denops.vim', branch = 'main'}
+    use {'wbthomason/packer.nvim', opt = true}
+    use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
+    use {'williamboman/mason.nvim'}
     use {'norcalli/nvim-colorizer.lua',
         config = function()
            require('colorizer').setup()
@@ -156,7 +156,6 @@ return packer.startup(function(use)
     require('plugins.ddc')
     require('plugins.deoppet')
     require('plugins.filetype')
-    require('plugins.fzf')
     require('plugins.gitsigns')
     require('plugins.lspsaga')
     require('plugins.lualine')
