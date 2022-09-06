@@ -88,8 +88,9 @@ mason_lspconfig.setup_handlers({ function(server_name)
   }
 end })
 
+
 vim.cmd[[
-call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'deoppet', 'around', 'file'])
+call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'deoppet', 'around', 'file', 'cmdline-history'])
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {
       \   'matchers': ['matcher_fuzzy', 'matcher_head'],
@@ -106,6 +107,7 @@ call ddc#custom#patch_global('sourceOptions', {
       \   'maxCandidates': 5,
       \   'isVolatile': v:true,
       \ },
+      \ 'cmdline-history': {'mark': 'history'},
       \ 'deoppet': {'dup': v:true, 'mark': 'dp'},
       \ 'around': {'mark': 'A'},
       \ 'file': {
@@ -153,6 +155,8 @@ inoremap <silent><expr> <TAB>
       \ pum#visible() ? '<Cmd>call pum#map#insert_relative(+1)<CR>' :
       \ (col('.') <= 1 <Bar><Bar> getline('.')[col('.') - 2] =~# '\s') ?
       \ '<TAB>' : ddc#manual_complete()
+
+inoremap <silent><expr> <S-TAB> '<Cmd>call pum#map#insert_relative(-1)<CR>'
 
 inoremap <silent><expr> <Down>
       \ pum#visible() ? '<Cmd>call pum#map#select_relative(+1)<CR>' :
