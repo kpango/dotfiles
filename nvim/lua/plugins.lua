@@ -123,7 +123,6 @@ return packer.startup(function(use)
     use {'neovim/nvim-lspconfig'}
     use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
     use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
-    use {'mhartington/formatter.nvim'}
     use {'vim-denops/denops.vim', branch = 'main'}
     use {'wbthomason/packer.nvim', opt = true}
     use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
@@ -141,7 +140,6 @@ return packer.startup(function(use)
     use {'kyazdani42/nvim-web-devicons'}
     use {'akinsho/bufferline.nvim', tag = 'v2.*', requires = 'kyazdani42/nvim-web-devicons'}
     use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
-    -- use {'mattn/vim-goimports', ft = 'go'}
 
     require('plugins.packer')
     if packer_bootstrap then
@@ -160,5 +158,5 @@ return packer.startup(function(use)
     require('plugins.lspsaga')
     require('plugins.lualine')
     require('plugins.onedark')
-    -- require('plugins.null-ls')
+    require('plugins.null-ls')
 end)
