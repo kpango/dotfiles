@@ -20,24 +20,25 @@ autocmd({ 'BufWritePost' }, {
     group = augroup('PackerUserConfig'),
 })
 
-local cmp_load_group = augroup('CustomCMPLoad')
+-- local cmp_load_group = augroup('CustomCMPLoad')
+--
+-- autocmd({ 'FileType' }, {
+--     desc = 'Load auto completion for crates only when a toml file is open',
+--     pattern = 'toml',
+--     callback = function()
+--         require('cmp').setup.buffer({ sources = { { name = 'crates' } } })
+--     end,
+--     group = cmp_load_group,
+-- })
 
-autocmd({ 'FileType' }, {
-    desc = 'Load auto completion for crates only when a toml file is open',
-    pattern = 'toml',
-    callback = function()
-        require('cmp').setup.buffer({ sources = { { name = 'crates' } } })
-    end,
-    group = cmp_load_group,
-})
-autocmd({ 'FileType' }, {
-    desc = 'Load auto completion using the buffer only for md files',
-    pattern = 'markdown',
-    callback = function()
-        require('cmp').setup.buffer({ sources = { { name = 'buffer' } } })
-    end,
-    group = cmp_load_group,
-})
+-- autocmd({ 'FileType' }, {
+--     desc = 'Load auto completion using the buffer only for md files',
+--     pattern = 'markdown',
+--     callback = function()
+--         require('cmp').setup.buffer({ sources = { { name = 'buffer' } } })
+--     end,
+--     group = cmp_load_group,
+-- })
 
 -- autocmd({ 'ModeChanged' }, {
 --     desc = 'Stop snippets when you leave to normal mode',
