@@ -127,6 +127,7 @@ return packer.startup(function(use)
     use {'wbthomason/packer.nvim', opt = true}
     use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
     use {'williamboman/mason.nvim', requires = 'neovim/nvim-lspconfig'}
+    use {'gpanders/editorconfig.nvim'}
     use {'norcalli/nvim-colorizer.lua',
         config = function()
            require('colorizer').setup()
