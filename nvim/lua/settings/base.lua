@@ -26,7 +26,7 @@ vim.opt.backupdir=os.getenv("HOME") .. '/.vim/backup'
 vim.opt.backupskip={ '/tmp/*', '/private/tmp/*' }
 vim.opt.clipboard:append('unnamedplus')
 vim.opt.cmdheight=1
-vim.opt.completeopt=menu,preview,noinsert
+vim.opt.completeopt=menu,preview,noselect
 vim.opt.cursorline=false
 vim.opt.display=lastline
 vim.opt.encoding='utf-8'

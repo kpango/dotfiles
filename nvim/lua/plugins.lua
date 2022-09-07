@@ -101,29 +101,38 @@ packer.init({
 -- end
 
 return packer.startup(function(use)
-    use {'LumaKernel/ddc-file', requires = 'Shougo/ddc.vim'}
-    use {'LumaKernel/ddc-tabnine', requires = 'Shougo/ddc.vim'}
-    use {'Shougo/ddc-around', requires = 'Shougo/ddc.vim'}
-    use {'Shougo/ddc-converter_remove_overlap', requires = 'Shougo/ddc.vim'}
-    use {'Shougo/ddc-matcher_head', requires = 'Shougo/ddc.vim'}
-    use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim', 'neovim/nvim-lspconfig'}}
-    use {'Shougo/ddc-sorter_rank', requires = 'Shougo/ddc.vim'}
-    use {'Shougo/ddc.vim', requires = 'vim-denops/denops.vim'}
-    use {'Shougo/deoppet.nvim'}
+    -- use {'VonHeikemen/lsp-zero.nvim', requires = {}}
+    use {'hrsh7th/nvim-cmp', requires = 'neovim/nvim-lspconfig'}
+    use {'hrsh7th/cmp-nvim-lsp', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    use {'hrsh7th/cmp-nvim-lua', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    use {'hrsh7th/cmp-buffer', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    use {'hrsh7th/cmp-path', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    use {'hrsh7th/cmp-cmdline', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    use {'tzachar/cmp-tabnine', run='./install.sh', requires = 'hrsh7th/nvim-cmp'}
+
+    -- use {'LumaKernel/ddc-file', requires = 'Shougo/ddc.vim'}
+    -- use {'LumaKernel/ddc-tabnine', requires = 'Shougo/ddc.vim'}
+    -- use {'Shougo/ddc-around', requires = 'Shougo/ddc.vim'}
+    -- use {'Shougo/ddc-converter_remove_overlap', requires = 'Shougo/ddc.vim'}
+    -- use {'Shougo/ddc-matcher_head', requires = 'Shougo/ddc.vim'}
+    -- use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim', 'neovim/nvim-lspconfig'}}
+    -- use {'Shougo/ddc-sorter_rank', requires = 'Shougo/ddc.vim'}
+    -- use {'Shougo/ddc.vim', requires = 'vim-denops/denops.vim'}
+    -- use {'Shougo/deoppet.nvim'}
     use {'Shougo/pum.vim'}
     use {'terrortylor/nvim-comment'}
     use {'SmiteshP/nvim-navic', requires = {'neovim/nvim-lspconfig', 'nvim-treesitter/nvim-treesitter'}}
     use {'editorconfig/editorconfig-vim'}
     use {'lambdalisue/gin.vim'}
     use {'lewis6991/gitsigns.nvim'}
-    use {'matsui54/denops-popup-preview.vim', requires = {'vim-denops/denops.vim', 'Shougo/pum.vim', 'Shougo/ddc-nvim-lsp'}, run = ':call popup_preview#enable()'}
-    use {'matsui54/denops-signature_help', requires = {'vim-denops/denops.vim', 'Shougo/pum.vim', 'Shougo/ddc-nvim-lsp'}, run = ':call signature_help#enable()'}
+    -- use {'matsui54/denops-popup-preview.vim', requires = {'vim-denops/denops.vim', 'Shougo/pum.vim', 'Shougo/ddc-nvim-lsp'}, run = ':call popup_preview#enable()'}
+    -- use {'matsui54/denops-signature_help', requires = {'vim-denops/denops.vim', 'Shougo/pum.vim', 'Shougo/ddc-nvim-lsp'}, run = ':call signature_help#enable()'}
     use {'nathom/filetype.nvim'}
     use {'navarasu/onedark.nvim', requires = 'nvim-treesitter/nvim-treesitter'}
     use {'neovim/nvim-lspconfig'}
     use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
-    use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
-    use {'vim-denops/denops.vim', branch = 'main'}
+    -- use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
+    -- use {'vim-denops/denops.vim', branch = 'main'}
     use {'wbthomason/packer.nvim', opt = true}
     use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
     use {'williamboman/mason.nvim', requires = 'neovim/nvim-lspconfig'}
@@ -152,8 +161,10 @@ return packer.startup(function(use)
     require('plugins.treesitter')
     require('plugins.bufferline')
     require('plugins.comment')
-    require('plugins.ddc')
-    require('plugins.deoppet')
+    require('plugins.mason')
+    require('plugins.cmp')
+    -- require('plugins.ddc')
+    -- require('plugins.deoppet')
     require('plugins.filetype')
     require('plugins.gitsigns')
     require('plugins.lspsaga')
