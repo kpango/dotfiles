@@ -1352,6 +1352,8 @@ if [ -z $ZSH_LOADED ]; then
             make helm/schema/crd/vald-helm-operator
             make k8s/manifest/update
             make k8s/manifest/helm-operator/update
+            make helm/docs/vald
+            make helm/docs/vald-helm-operator
             make update \
               && fd -e go | rg -v apis | xargs gofumpt -w \
               && make go/example/deps \
