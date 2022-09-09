@@ -1,12 +1,12 @@
 font:
   normal:
-    family: HackGenNerdConsole
+    family: HackGenNFConsole
     style: Regular
   bold:
-    family: HackGenNerdConsole
+    family: HackGenNFConsole
     style: Bold
   italic:
-    family: HackGenNerdConsole
+    family: HackGenNFConsole
     style: Italic
   size: 15.5
   # offset:
