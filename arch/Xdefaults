@@ -25,7 +25,7 @@ URxvt.preeditType:          OnTheSpot
 
 ! Fonts
 URxvt.allow_bold:           false
-URxvt*font: xft:HackGenNerd:Regular:size=11.5:antialias=true
+URxvt*font: xft:HackGen35ConsoleNF:Regular:size=11.5:antialias=true
 ! Fix font space
 URxvt*letterSpace: -5
 
