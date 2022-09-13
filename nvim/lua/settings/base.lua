@@ -49,6 +49,7 @@ vim.opt.incsearch=true
 vim.opt.infercase=true
 vim.opt.laststatus=2
 vim.opt.lazyredraw=true
+vim.opt.redrawtime=6000
 vim.opt.matchpairs:append('<:>')
 vim.opt.modifiable=true
 vim.opt.mouse=a

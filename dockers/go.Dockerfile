@@ -551,6 +551,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS gotestfmt
+RUN --mount=type=cache,target="${GOPATH}/pkg" \
+    --mount=type=cache,target="${HOME}/.cache/go-build" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="gotestfmt" \
+    && REPO="haveyoudebuggedit/${BIN_NAME}" \
+    && GO111MODULE=on go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS gotests
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
@@ -560,7 +573,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && REPO="cweill/${BIN_NAME}" \
     && GO111MODULE=on go install  \
     --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/v2/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
@@ -1037,6 +1050,7 @@ COPY --from=gorename $GOPATH/bin/gorename $GOPATH/bin/gorename
 COPY --from=goreturns $GOPATH/bin/goreturns $GOPATH/bin/goreturns
 COPY --from=gosec $GOPATH/bin/gosec $GOPATH/bin/gosec
 COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
+COPY --from=gotestfmt $GOPATH/bin/gotestfmt $GOPATH/bin/gotestfmt
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
 COPY --from=gotip $GOPATH/bin/gotip $GOPATH/bin/gotip
 COPY --from=gowrap $GOPATH/bin/gowrap $GOPATH/bin/gowrap
