@@ -747,7 +747,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && REPO="go-kratos/${BIN_NAME}" \
     && go install  \
     --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}/cmd/kratos@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
