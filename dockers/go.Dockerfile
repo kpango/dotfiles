@@ -563,7 +563,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && REPO="haveyoudebuggedit/${BIN_NAME}" \
     && go install  \
     --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/v2/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
@@ -576,7 +576,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && REPO="cweill/${BIN_NAME}" \
     && go install  \
     --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}/v2/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
