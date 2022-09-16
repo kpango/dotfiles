@@ -25,6 +25,7 @@ dnsmasq
 docker
 dosfstools
 dropbear
+duf
 exa
 fakeroot
 fcitx5
@@ -36,6 +37,7 @@ fwupd
 fwupd-efi
 gettext
 git
+git-delta
 gnome-keyring
 go
 gopls
@@ -50,6 +52,7 @@ inetutils
 intel-media-driver
 intel-ucode
 iptables-nft
+iwd
 kanshi
 kubectx
 less
@@ -122,4 +125,5 @@ xfsprogs
 xorg-xwayland
 yarn
 yt-dlp
+zsa-wally
 zsh
