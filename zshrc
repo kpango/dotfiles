@@ -219,7 +219,6 @@ if [ -z $ZSH_LOADED ]; then
         _lazy_zplug_zsh=1
     }
     zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
-    zplug "junegunn/fzf-bin", as:command, from:gh-r, rename-to:fzf
     zplug "zsh-users/zsh-autosuggestions"
     zplug "zsh-users/zsh-completions", as:plugin, use:"src"
     zplug "zsh-users/zsh-history-substring-search"
