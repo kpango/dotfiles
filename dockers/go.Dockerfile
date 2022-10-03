@@ -260,6 +260,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && cp ${TMPDIR}/stackcollapse.pl ${GOPATH}/bin/ \
     && cp ${TMPDIR}/stackcollapse-go.pl ${GOPATH}/bin/
 
+FROM go-base AS fzf
+RUN --mount=type=cache,target="${GOPATH}/pkg" \
+    --mount=type=cache,target="${HOME}/.cache/go-build" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="fzf" \
+    && REPO="junegunn/${BIN_NAME}" \
+    && go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS ghq
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
@@ -1030,6 +1043,7 @@ COPY --from=fixplurals $GOPATH/bin/fixplurals $GOPATH/bin/fixplurals
 COPY --from=flamegraph $GOPATH/bin/flamegraph.pl $GOPATH/bin/flamegraph.pl
 COPY --from=flamegraph $GOPATH/bin/stackcollapse-go.pl $GOPATH/bin/stackcollapse-go.pl
 COPY --from=flamegraph $GOPATH/bin/stackcollapse.pl $GOPATH/bin/stackcollapse.pl
+COPY --from=fzf $GOPATH/bin/fzf $GOPATH/bin/fzf
 COPY --from=ghq $GOPATH/bin/ghq $GOPATH/bin/ghq
 COPY --from=ghz $GOPATH/bin/ghz $GOPATH/bin/ghz
 COPY --from=git-codereview $GOPATH/bin/git-codereview $GOPATH/bin/git-codereview
