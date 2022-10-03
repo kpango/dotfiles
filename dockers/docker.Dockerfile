@@ -45,11 +45,22 @@ RUN set -x; cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
-    && BIN_NAME="${ORG}-credential-pass" \
     && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
-    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
-    && tar -xvf "${BIN_NAME}-v${VERSION}-${ARCH}.tar.gz" \
-    && mv ${BIN_NAME} ${BIN_PATH}/${BIN_NAME} \
+    && BIN_NAME="${ORG}-credential-pass" \
+    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
+    && mv ${BIN_NAME}-v${VERSION}.${OS}-${ARCH} ${BIN_PATH}/${BIN_NAME} \
+    && chmod a+x ${BIN_PATH}/${BIN_NAME} \
+    && upx -9 ${BIN_PATH}/${BIN_NAME}
+
+FROM docker-base AS docker-credential-secretservice
+RUN set -x; cd "$(mktemp -d)" \
+    && ORG="docker" \
+    && NAME="${ORG}-credential-helpers" \
+    && REPO="${ORG}/${NAME}" \
+    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && BIN_NAME="${ORG}-credential-secretservice" \
+    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
+    && mv ${BIN_NAME}-v${VERSION}.${OS}-${ARCH} ${BIN_PATH}/${BIN_NAME} \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
@@ -161,6 +172,7 @@ COPY --from=dive ${BIN_PATH}/dive ${DOCKER_PATH}/dive
 COPY --from=dlayer ${BIN_PATH}/dlayer ${DOCKER_PATH}/dlayer
 COPY --from=docker-compose ${BIN_PATH}/docker-compose ${DOCKER_LIB_PATH}/cli-plugins/docker-compose
 COPY --from=docker-credential-pass ${BIN_PATH}/docker-credential-pass ${DOCKER_PATH}/docker-credential-pass
+COPY --from=docker-credential-secretservice ${BIN_PATH}/docker-credential-secretservice ${DOCKER_PATH}/docker-credential-secretservice
 COPY --from=dockfmt ${BIN_PATH}/dockfmt ${DOCKER_PATH}/dockfmt
 COPY --from=dockle ${BIN_PATH}/dockle ${DOCKER_PATH}/dockle
 COPY --from=slim ${BIN_PATH}/docker-slim ${DOCKER_PATH}/docker-slim
