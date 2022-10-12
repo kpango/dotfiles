@@ -1136,7 +1136,7 @@ if [ -z $ZSH_LOADED ]; then
             # sudo pacman-key --refresh-keys
             sudo pacman-db-upgrade
             sudo pacman -Scc --noconfirm
-            sudo pacman -Rns --noconfirm $(pacman -Qtdq)
+            sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
             if type scaramanga >/dev/null 2>&1; then
                 sudo scaramanga > mirrorlist
                 sudo rm -rf /etc/pacman.d/mirrorlist
@@ -1171,7 +1171,7 @@ if [ -z $ZSH_LOADED ]; then
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman -Scc --noconfirm
-            sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
+            sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
             CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \

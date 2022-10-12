@@ -14,6 +14,7 @@ ifenslave
 igb
 kubectl-bin
 milcheck
+mkinitcpio-firmware
 netrc
 ngrok
 scaramanga
