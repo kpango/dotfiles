@@ -78,7 +78,6 @@ procs
 profile-sync-daemon
 psensor
 pulseaudio-alsa
-python2
 ranger
 rclone
 ripgrep

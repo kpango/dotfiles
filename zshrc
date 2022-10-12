@@ -1190,7 +1190,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
-            sudo bootclt update
+            sudo bootctl update
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
             sync \
