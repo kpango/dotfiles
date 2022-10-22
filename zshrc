@@ -1323,7 +1323,7 @@ if [ -z $ZSH_LOADED ]; then
         checkcountry(){
             if [ $# -eq 1 ]; then
                 echo "$TRACECMD $TRACE_ARGS $1"
-                $TRACECMD $TRACE_ARGS $1 \
+                sudo $TRACECMD $TRACE_ARGS $1 \
                 | awk '{print $2}' \
                 | xargs -I {} whois {} \
                 | rg -i Country \
