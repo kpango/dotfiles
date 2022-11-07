@@ -1,7 +1,5 @@
 # /etc/profile
 sudo rm -rf /tmp/* \
-    /var/cache \
-    $HOME/.cache \
     $HOME/.ccache
 
 export DefaultImModule=fcitx5
