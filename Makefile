@@ -6,6 +6,7 @@ USER = $(eval USER := $(shell whoami))$(USER)
 USER_ID = $(eval USER_ID := $(shell id -u $(USER)))$(USER_ID)
 GROUP_ID = $(eval GROUP_ID := $(shell id -g $(USER)))$(GROUP_ID)
 GROUP_IDS = $(eval GROUP_IDS := $(shell id -G $(USER)))$(GROUP_IDS)
+GITHUB_ACCESS_TOKEN = $(eval GITHUB_ACCESS_TOKEN := $(shell pass github.api.token))$(GITHUB_ACCESS_TOKEN)
 
 echo:
 	@echo $(ROOTDIR)
@@ -202,6 +203,7 @@ docker_build:
 	  --build-arg GROUP_ID="$(GROUP_ID)" \
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
 	  --build-arg WHOAMI="$(USER)" \
+	  --build-arg GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
 	  -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
 
 docker_push:

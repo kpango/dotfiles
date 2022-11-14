@@ -3,6 +3,7 @@ FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS go-base
 
 ARG TARGETOS
 ARG TARGETARCH
+ARG GITHUB_ACCESS_TOKEN
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
@@ -960,7 +961,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && REPO="${BIN_NAME}-org/${BIN_NAME}" \
     && OS="$(go env GOOS)" \
     && ARCH="$(go env GOARCH | sed 's/arm64/arm/')" \
-    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && TAR_NAME="${BIN_NAME}${VERSION}.${OS}-${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \

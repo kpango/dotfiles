@@ -3,6 +3,7 @@ FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS env-base
 
 ARG TARGETOS
 ARG TARGETARCH
+ARG GITHUB_ACCESS_TOKEN
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
@@ -163,7 +164,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO_NAME="protobuf" \
     && BIN_NAME="protoc" \
     && REPO="protocolbuffers/${REPO_NAME}" \
-    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && ZIP_NAME="${BIN_NAME}-${VERSION}-${OS}-${ARCH}" \
     && curl -fsSL "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ZIP_NAME}.zip" -o "/tmp/${BIN_NAME}.zip" \
@@ -196,7 +197,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO_NAME="tensorflow" \
     && BIN_NAME="${REPO_NAME}" \
     && REPO="${REPO_NAME}/${BIN_NAME}" \
-    && VERSION="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && BIN_NAME="lib${REPO_NAME}" \
     && REPO="${REPO_NAME}/${BIN_NAME}" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
