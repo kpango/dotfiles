@@ -38,7 +38,15 @@ cmp.setup({
     -- { name = 'luasnip' }, -- For luasnip users.
     -- { name = 'ultisnips' }, -- For ultisnips users.
     -- { name = 'snippy' }, -- For snippy users.
-  }, {
+    {
+      name = 'look',
+      keyword_length = 2,
+      option = {
+          convert_case = true,
+          loud = true
+          --dict = '/usr/share/dict/words'
+      }
+    },
     { name = 'buffer' },
   })
 })

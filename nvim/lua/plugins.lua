@@ -102,14 +102,16 @@ packer.init({
 
 return packer.startup(function(use)
     -- use {'VonHeikemen/lsp-zero.nvim', requires = {}}
-    use {'hrsh7th/nvim-cmp', requires = 'neovim/nvim-lspconfig'}
-    use {'hrsh7th/cmp-nvim-lsp', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    use {'hrsh7th/cmp-nvim-lua', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    use {'hrsh7th/cmp-buffer', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    use {'hrsh7th/cmp-path', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    use {'hrsh7th/cmp-cmdline', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    use {'tzachar/cmp-tabnine', run='./install.sh', requires = 'hrsh7th/nvim-cmp'}
+    -- use {'hrsh7th/nvim-cmp', requires = 'neovim/nvim-lspconfig'}
+    -- use {'hrsh7th/cmp-nvim-lsp', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    -- use {'hrsh7th/cmp-nvim-lua', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    -- use {'hrsh7th/cmp-buffer', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    -- use {'hrsh7th/cmp-path', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    -- use {'hrsh7th/cmp-cmdline', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
+    -- use {'tzachar/cmp-tabnine', run='./install.sh', requires = 'hrsh7th/nvim-cmp'}
 
+    use {'ms-jpq/coq_nvim', branch = 'coq'}
+    use {'ms-jpq/coq.artifacts', branch = 'artifacts'}
     -- use {'LumaKernel/ddc-file', requires = 'Shougo/ddc.vim'}
     -- use {'LumaKernel/ddc-tabnine', requires = 'Shougo/ddc.vim'}
     -- use {'Shougo/ddc-around', requires = 'Shougo/ddc.vim'}
@@ -162,7 +164,7 @@ return packer.startup(function(use)
     require('plugins.bufferline')
     require('plugins.comment')
     require('plugins.mason')
-    require('plugins.cmp')
+    -- require('plugins.cmp')
     -- require('plugins.ddc')
     -- require('plugins.deoppet')
     require('plugins.filetype')
