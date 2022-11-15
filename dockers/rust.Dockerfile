@@ -187,7 +187,7 @@ RUN cargo +nightly install --force --no-default-features \
     watchexec-cli
 
 FROM rust-base AS xh
-RUN cargo +nightly install --force --no-default-features \
+RUN cargo +nightly install --force --locked --all-features \
     xh
 
 FROM scratch AS rust
