@@ -34,7 +34,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && DOCKER_SLIM_RELEASES="https://downloads.dockerslim.com/releases" \
-    && curl -fsSLO "${DOCKER_SLIM_RELEASES}/$VERSION/dist_${OS}.tar.gz" \
+    && curl -fsSLO "${DOCKER_SLIM_RELEASES}/${VERSION}/dist_${OS}.tar.gz" \
     && tar zxvf dist_${OS}.tar.gz \
     && mv dist_${OS}/docker* ${BIN_PATH} \
     && upx -9 \
