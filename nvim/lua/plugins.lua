@@ -111,7 +111,8 @@ return packer.startup(function(use)
     -- use {'tzachar/cmp-tabnine', run='./install.sh', requires = 'hrsh7th/nvim-cmp'}
 
     use {'ms-jpq/coq_nvim', branch = 'coq'}
-    use {'ms-jpq/coq.artifacts', branch = 'artifacts'}
+    use {'ms-jpq/coq.artifacts', branch = 'artifacts', requires = 'ms-jpq/coq_nvim'}
+    use {'ms-jpq/coq.thirdparty', branch = '3p', requires = 'ms-jpq/coq_nvim'}
     -- use {'LumaKernel/ddc-file', requires = 'Shougo/ddc.vim'}
     -- use {'LumaKernel/ddc-tabnine', requires = 'Shougo/ddc.vim'}
     -- use {'Shougo/ddc-around', requires = 'Shougo/ddc.vim'}
@@ -132,6 +133,8 @@ return packer.startup(function(use)
     use {'nathom/filetype.nvim'}
     use {'navarasu/onedark.nvim', requires = 'nvim-treesitter/nvim-treesitter'}
     use {'neovim/nvim-lspconfig'}
+    use {'ray-x/lsp_signature.nvim', requires = 'neovim/nvim-lspconfig'}
+
     use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
     -- use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
     -- use {'vim-denops/denops.vim', branch = 'main'}

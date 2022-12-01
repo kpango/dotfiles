@@ -19,10 +19,25 @@ if (not status) then
   return
 end
 
--- mason_lspconfig.setup({
---     ensure_installed = all,
---     automatic_installation = false,
--- })
+mason_lspconfig.setup({
+    ensure_installed = all,
+    automatic_installation = false,
+})
+
+local status, lsp_signature = pcall(require, 'mason-lspconfig')
+if (not status) then
+  error("lsp_signature is not installed")
+  return
+end
+
+lsp_signature.setup({
+  bind = true, -- This is mandatory, otherwise border config won't get registered.
+  handler_opts = {
+    border = "none"
+  },
+  padding = " ",
+  toggle_key = "<C-x>",
+})
 
 -- local status, cmp_nvim_lsp = pcall(require, 'cmp_nvim_lsp')
 -- if (not status) then
@@ -33,6 +48,12 @@ end
 local status, nvim_lsp = pcall(require, "lspconfig")
 if (not status) then
   error("lspconfig is not installed")
+  return
+end
+
+local status, coq = pcall(require, "coq")
+if (not status) then
+  error("coq.nvim is not installed")
   return
 end
 
@@ -49,7 +70,7 @@ mason_lspconfig.setup_handlers({ function(server_name)
           }
       }
   end
-  nvim_lsp[server_name].setup{
+  nvim_lsp[server_name].setup(coq.lsp_ensure_capabilities({
     flags = {
       debounce_text_changes = 150,
     },
@@ -97,5 +118,5 @@ mason_lspconfig.setup_handlers({ function(server_name)
         end
         navic.attach(client, bufnr)
     end
-  }
+  }))
 end })
