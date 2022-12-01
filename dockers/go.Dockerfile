@@ -574,7 +574,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x; cd "$(mktemp -d)" \
     && BIN_NAME="gotestfmt" \
-    && REPO="haveyoudebuggedit/${BIN_NAME}" \
+    && REPO="gotesttools/${BIN_NAME}" \
     && go install  \
     --ldflags "-s -w" --trimpath \
     "${GITHUBCOM}/${REPO}/v2/cmd/${BIN_NAME}@latest" \
