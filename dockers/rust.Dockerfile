@@ -78,9 +78,9 @@ FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
     git-delta
 
-FROM rust-base AS deno
-RUN RUST_BACKTRACE=full cargo +nightly install --force --locked --all-features \
-    deno
+# FROM rust-base AS deno
+# RUN RUST_BACKTRACE=full cargo install --force --locked --all-features \
+#     deno
 
 FROM rust-base AS dog
 RUN cargo install --force --no-default-features \
@@ -162,13 +162,14 @@ FROM rust-base AS shellharden
 RUN cargo +nightly install --force --no-default-features \
     shellharden
 
-FROM old AS starship
-# FROM rust-base AS starship
+# FROM old AS starship
+FROM rust-base AS starship
 # # RUN rustup update stable \
 # #     && rustup default stable \
 # #     && cargo install --force --no-default-features \
 # RUN cargo +nightly install --force --no-default-features \
-#     starship
+RUN cargo install --locked \
+    starship
 
 FROM rust-base AS t-rec
 RUN cargo +nightly install --force --no-default-features \
@@ -216,7 +217,7 @@ COPY --from=cargo-fix ${BIN_PATH}/cargo-fix ${BIN_PATH}/cargo-fix
 COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
 COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
 COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
-COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
+# COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
