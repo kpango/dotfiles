@@ -121,12 +121,34 @@ FROM docker-base AS dlayer
 COPY --from=dlayer-base ${BIN_PATH}/dlayer ${BIN_PATH}/dlayer
 RUN upx -9 ${BIN_PATH}/dlayer
 
+FROM docker-base AS containerd
+RUN set -x; cd "$(mktemp -d)" \
+    && NAME="containerd" \
+    && REPO="${NAME}/${NAME}" \
+    && BIN_NAME=${NAME} \
+    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && TAR_NAME="${NAME}-${VERSION}-${OS}-${ARCH}.tar.gz" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}" \
+    && echo ${URL} \
+    && curl -fsSLO "${URL}" \
+    && tar -zxvf "${TAR_NAME}" \
+    && mv "bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && mv "bin/${BIN_NAME}-shim" "${BIN_PATH}/${BIN_NAME}-shim" \
+    && mv "bin/${BIN_NAME}-shim-runc-v1" "${BIN_PATH}/${BIN_NAME}-shim-runc-v1" \
+    && mv "bin/${BIN_NAME}-shim-runc-v2" "${BIN_PATH}/${BIN_NAME}-shim-runc-v2" \
+    && mv "bin/${BIN_NAME}-stress" "${BIN_PATH}/${BIN_NAME}-stress" \
+    && mv "bin/ctr" "${BIN_PATH}/ctr" \
+    && upx -9 \
+        "${BIN_PATH}/${BIN_NAME}" \
+        "${BIN_PATH}/${BIN_NAME}-shim" \
+        "${BIN_PATH}/${BIN_NAME}-shim-runc-v1" \
+        "${BIN_PATH}/${BIN_NAME}-shim-runc-v2" \
+        "${BIN_PATH}/${BIN_NAME}-stress" \
+        "${BIN_PATH}/ctr"
+
 FROM docker:rc-dind AS common-base
 
 FROM docker-base AS common
-COPY --from=common-base ${BIN_PATH}/containerd ${BIN_PATH}/containerd
-COPY --from=common-base ${BIN_PATH}/containerd-shim ${BIN_PATH}/containerd-shim
-COPY --from=common-base ${BIN_PATH}/ctr ${BIN_PATH}/ctr
 COPY --from=common-base ${BIN_PATH}/dind ${BIN_PATH}/dind
 COPY --from=common-base ${BIN_PATH}/docker ${BIN_PATH}/docker
 COPY --from=common-base ${BIN_PATH}/docker-entrypoint.sh ${BIN_PATH}/docker-entrypoint.sh
@@ -137,8 +159,6 @@ COPY --from=common-base ${BIN_PATH}/dockerd-entrypoint.sh ${BIN_PATH}/dockerd-en
 COPY --from=common-base ${BIN_PATH}/modprobe ${BIN_PATH}/modprobe
 COPY --from=common-base ${BIN_PATH}/runc ${BIN_PATH}/runc
 RUN upx -9 \
-        ${BIN_PATH}/containerd \
-        ${BIN_PATH}/containerd-shim \
         ${BIN_PATH}/docker \
         ${BIN_PATH}/docker-init \
         ${BIN_PATH}/dockerd \
@@ -156,9 +176,6 @@ ENV DOCKER_PATH /usr/docker/bin
 ENV DOCKER_LIB_PATH /usr/lib/docker
 
 COPY --from=buildx ${DOCKER_LIB_PATH}/cli-plugins/docker-buildx ${DOCKER_LIB_PATH}/cli-plugins/docker-buildx
-COPY --from=common ${BIN_PATH}/containerd ${DOCKER_PATH}/docker-containerd
-COPY --from=common ${BIN_PATH}/containerd-shim ${DOCKER_PATH}/docker-containerd-shim
-COPY --from=common ${BIN_PATH}/ctr ${DOCKER_PATH}/docker-containerd-ctr
 COPY --from=common ${BIN_PATH}/dind ${DOCKER_PATH}/dind
 COPY --from=common ${BIN_PATH}/docker ${DOCKER_PATH}/docker
 COPY --from=common ${BIN_PATH}/docker-entrypoint.sh ${DOCKER_PATH}/docker-entrypoint
@@ -169,6 +186,18 @@ COPY --from=common ${BIN_PATH}/dockerd-entrypoint.sh ${DOCKER_PATH}/dockerd-entr
 COPY --from=common ${BIN_PATH}/modprobe ${DOCKER_PATH}/modprobe
 COPY --from=common ${BIN_PATH}/runc ${DOCKER_PATH}/docker-runc
 COPY --from=container-diff ${BIN_PATH}/container-diff ${DOCKER_PATH}/container-diff
+COPY --from=containerd ${BIN_PATH}/containerd ${DOCKER_PATH}/containerd
+COPY --from=containerd ${BIN_PATH}/containerd ${DOCKER_PATH}/docker-containerd
+COPY --from=containerd ${BIN_PATH}/containerd-shim ${DOCKER_PATH}/containerd-shim
+COPY --from=containerd ${BIN_PATH}/containerd-shim ${DOCKER_PATH}/docker-containerd-shim
+COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v1 ${DOCKER_PATH}/containerd-shim-runc-v1
+COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v1 ${DOCKER_PATH}/docker-containerd-shim-runc-v1
+COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v2 ${DOCKER_PATH}/containerd-shim-runc-v2
+COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v2 ${DOCKER_PATH}/docker-containerd-shim-runc-v2
+COPY --from=containerd ${BIN_PATH}/containerd-stress ${DOCKER_PATH}/containerd-stress
+COPY --from=containerd ${BIN_PATH}/containerd-stress ${DOCKER_PATH}/docker-containerd-stress
+COPY --from=containerd ${BIN_PATH}/ctr ${DOCKER_PATH}/ctr
+COPY --from=containerd ${BIN_PATH}/ctr ${DOCKER_PATH}/docker-containerd-ctr
 COPY --from=dive ${BIN_PATH}/dive ${DOCKER_PATH}/dive
 COPY --from=dlayer ${BIN_PATH}/dlayer ${DOCKER_PATH}/dlayer
 COPY --from=docker-compose ${BIN_PATH}/docker-compose ${DOCKER_LIB_PATH}/cli-plugins/docker-compose
