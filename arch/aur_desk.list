@@ -1,4 +1,3 @@
-afancontrol
 boostnote-bin
 chrome-remote-desktop
 docker-credential-pass-bin
@@ -11,12 +10,12 @@ google-chrome-beta
 google-cloud-sdk
 gopreload-git
 ifenslave
-igb
 kubectl-bin
 milcheck
 mkinitcpio-firmware
 netrc
 ngrok
+paru-git
 scaramanga
 slack-desktop
 swaybg-git
@@ -24,6 +23,5 @@ ttf-hackgen
 tzupdate
 wd719x-firmware
 wdisplays
-yay
 youtube-music
 zoom
