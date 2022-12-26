@@ -1,3 +1,3 @@
 ## sudoers permissions
 
-kpango ALL=(ALL)NOPASSWD:/usr/bin/light,/usr/bin/yay,/usr/bin/pacman,/usr/bin/sway,/usr/bin/nvme,/usr/bin/psd-overlay-helper
+kpango ALL=(ALL)NOPASSWD:/usr/bin/light,/usr/bin/paru,/usr/bin/pacman,/usr/bin/sway,/usr/bin/nvme,/usr/bin/psd-overlay-helper

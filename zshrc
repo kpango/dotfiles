@@ -1077,7 +1077,7 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias brewup=brewup
         alias up=brewup
-    elif type yay >/dev/null 2>&1; then
+    elif type paru >/dev/null 2>&1; then
         archback() {
             family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
             echo $family_name
@@ -1143,7 +1143,7 @@ if [ -z $ZSH_LOADED ]; then
                 sudo mv mirrorlist /etc/pacman.d/mirrorlist
                 sudo chmod 755 /etc/pacman.d/mirrorlist
                 sudo chown root:root /etc/pacman.d/mirrorlist
-                yay -Syy
+                paru -Syy
                 if type milcheck >/dev/null 2>&1; then
                     sudo milcheck
                 fi
@@ -1158,7 +1158,7 @@ if [ -z $ZSH_LOADED ]; then
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman-db-upgrade
-            yay -Syu --noanswerdiff --noanswerclean --noconfirm
+            paru -Syu --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
@@ -1175,7 +1175,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
             CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
-                yay -Syu --noanswerdiff --noanswerclean --noconfirm
+                paru -Syu --noanswerdiff --noanswerclean --noconfirm
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
