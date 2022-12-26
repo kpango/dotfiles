@@ -66,6 +66,7 @@ networkmanager
 nmap
 noto-fonts-emoji
 nvme-cli
+openssl-1.1
 pacman-contrib
 parted
 pass

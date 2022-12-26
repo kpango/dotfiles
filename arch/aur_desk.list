@@ -1,15 +1,13 @@
-boostnote-bin
 chrome-remote-desktop
 docker-credential-pass-bin
 downgrade
-duf-bin
+duf-git
 fanctl
 fcitx5-skin-arc
 ghq
 google-chrome-beta
-google-cloud-sdk
+google-cloud-sdk-gke-gcloud-auth-plugin
 gopreload-git
-ifenslave
 kubectl-bin
 milcheck
 mkinitcpio-firmware
