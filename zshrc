@@ -68,9 +68,10 @@ if [ -z $DOTENV_LOADED ]; then
     export XDG_CONFIG_HOME=$HOME/.config
 
     export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
+    export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
     if type php >/dev/null 2>&1; then
-    export PHP_BUILD_CONFIGURE_OPTS="--with-openssl=/usr/local/opt/openssl"
+        export PHP_BUILD_CONFIGURE_OPTS="--with-openssl=/usr/local/opt/openssl"
     fi
 
     if type python3 >/dev/null 2>&1; then
@@ -1158,7 +1159,7 @@ if [ -z $ZSH_LOADED ]; then
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman-db-upgrade
-            paru -Syu --noanswerdiff --noanswerclean --noconfirm
+            paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop --sign --signdb
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
@@ -1175,7 +1176,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
             CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
-                paru -Syu --noanswerdiff --noanswerclean --noconfirm
+	        paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop --sign --signdb
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
