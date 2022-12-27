@@ -22,7 +22,7 @@ ENV GOFLAGS "-ldflags=-w -ldflags=-s"
 ENV GOORG "golang.org"
 ENV GODEV "https://go.dev"
 ENV GITHUBCOM github.com
-ENV API_GITHUB https://api.github.com/repos
+ENV API_GITHUB https://api.${GITHUBCOM}/repos
 ENV GITHUB https://${GITHUBCOM}
 ENV PATH ${PATH}:${GOROOT}/bin:${GOPATH}/bin
 ENV RELEASE_DL releases/download
