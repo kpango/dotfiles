@@ -1,7 +1,9 @@
 # syntax = docker/dockerfile:latest
 FROM --platform=$BUILDPLATFORM ubuntu:devel AS base
 
-LABEL maintainer="kpango <kpango@vdaas.org>"
+ARG EMAIL=kpango@vdaas.org
+ARG WHOAMI=kpango
+LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No

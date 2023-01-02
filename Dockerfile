@@ -16,11 +16,13 @@ FROM kpango/env:latest AS env
 
 FROM env
 
-LABEL maintainer="kpango <kpango@vdaas.org>"
 
+ARG EMAIL=kpango@vdaas.org
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG WHOAMI=kpango
+
+LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
 ENV GROUP sudo,root,users,docker,wheel
 ENV TZ Asia/Tokyo

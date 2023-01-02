@@ -4,6 +4,10 @@ FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS env-base
 ARG TARGETOS
 ARG TARGETARCH
 ARG GITHUB_ACCESS_TOKEN
+ARG EMAIL=kpango@vdaas.org
+ARG WHOAMI=kpango
+LABEL maintainer="${WHOAMI} <${EMAIL}>"
+
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
@@ -17,8 +21,6 @@ ENV RELEASE_DL releases/download
 ENV RELEASE_LATEST releases/latest
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
-
-LABEL maintainer="kpango <kpango@vdaas.org>"
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -134,10 +136,12 @@ RUN --mount=type=cache,target=${HOME}/.npm \
 
 RUN --mount=type=cache,target=${HOME}/.npm \
     n latest \
-    && npm config set user ${USER} \
+    && npm config set username=${USER} \
+    && npm config set email=${EMAIL} \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && npm config set user ${USER} \
+    && npm config set username=${USER} \
+    && npm config set email=${EMAIL} \
     && npm install -g \
         yarn \
     && yarn global add \
@@ -209,7 +213,9 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM env-base AS env
 
-LABEL maintainer="kpango <kpango@vdaas.org>"
+ARG EMAIL=kpango@vdaas.org
+ARG WHOAMI=kpango
+LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
 COPY --from=ngt ${BIN_PATH}/ng* ${BIN_PATH}/
 COPY --from=ngt ${LOCAL}/include/NGT ${LOCAL}/include/NGT

@@ -394,7 +394,7 @@ RUN set -x; cd "$(mktemp -d)" \
 FROM kube-golang-base AS kubecolor
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubecolor" \
-    && REPO="dty1er/${BIN_NAME}" \
+    && REPO="hidetatz/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
@@ -442,7 +442,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM scratch AS kube
-LABEL maintainer="kpango <kpango@vdaas.org>"
+ARG EMAIL=kpango@vdaas.org
+ARG WHOAMI=kpango
+LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
 ENV BIN_PATH /usr/local/bin
 ENV LIB_PATH /usr/local/libexec
