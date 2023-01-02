@@ -136,12 +136,8 @@ RUN --mount=type=cache,target=${HOME}/.npm \
 
 RUN --mount=type=cache,target=${HOME}/.npm \
     n latest \
-    && npm config set username=${USER} \
-    && npm config set email=${EMAIL} \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && npm config set username=${USER} \
-    && npm config set email=${EMAIL} \
     && npm install -g \
         yarn \
     && yarn global add \
