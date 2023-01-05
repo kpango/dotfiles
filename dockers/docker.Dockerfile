@@ -31,7 +31,7 @@ FROM docker-base AS slim
 
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="docker-slim" \
-    && REPO="${BIN_NAME}/${BIN_NAME}" \
+    && REPO="slimtoolkit/slim" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && DOCKER_SLIM_RELEASES="https://downloads.dockerslim.com/releases" \
     && curl -fsSLO "${DOCKER_SLIM_RELEASES}/${VERSION}/dist_${OS}.tar.gz" \
