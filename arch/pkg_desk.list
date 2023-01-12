@@ -22,6 +22,7 @@ dmidecode
 dnsmasq
 docker
 dosfstools
+ethtool
 exa
 fakeroot
 fcitx5
