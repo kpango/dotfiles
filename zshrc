@@ -1,11 +1,15 @@
 #!/usr/bin/zsh
 
 if type tmux >/dev/null 2>&1; then
-    if ([ -z "$SSH_CLIENT" ] || [ -z "$SSH_TTY" ]) && [ -z $TMUX ]; then
+    if [ -z $TMUX ]; then
         echo "welcome to tmux"
         USER=$(whoami)
         HOST=$(hostname)
         TMUX_SOCK=/tmp/tmux.sock
+        if [ -z "$SSH_CLIENT" ] || [ -z "$SSH_TTY" ]; then
+            echo "starting tmux for ssh $SSH_TTY from $SSH_CLIENT"
+            TMUX_SOCK=/tmp/tmux-ssh-$(echo $SSH_CLIENT | awk '{print $1}').sock
+        fi
         TMUX_TMPDIR=/tmp
         if [[ ! -f $TMUX_SOCK ]]; then
             if [ -f /.dockerenv ]; then
@@ -1176,7 +1180,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
             CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
-	        paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop --sign --signdb
+                paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop --sign --signdb
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
