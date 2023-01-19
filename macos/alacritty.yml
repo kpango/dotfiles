@@ -1,0 +1,72 @@
+font:
+  normal:
+    family: HackGen35 Console NF
+    style: Regular
+  bold:
+    family: HackGen35 Console NF
+    style: Bold
+  italic:
+    family: HackGen35 Console NF
+    style: Italic
+  size: 14
+    # offset:
+    #   x: 1
+    #   y: 0
+    # glyph_offset:
+    #   x: 0
+    #   y: 7
+
+window:
+  dynamic_padding: true
+  opacity: 1.2
+  # startup_mode: Fullscreen
+
+#highlight Normal ctermbg=NONE guibg=NONE
+#highlight NonText ctermbg=NONE guibg=NONE
+#highlight SpecialKey ctermbg=NONE guibg=NONE
+#highlight EndOfBuffer ctermbg=NONE guibg=NONE
+url:
+  launcher:
+    program: xdg-open
+
+custom_cursor_colors: true
+
+selection:
+  semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
+  save_to_clipboard: true
+
+live_config_reload: true
+
+colors:
+  # Default Colors
+  primary:
+    background: "#2c292a"
+    foreground: "#f1f1f1"
+  # Normal colors
+  normal:
+    black: "#212121"
+    red: "#c30771"
+    green: "#10ff78"
+    yellow: "#a89c14"
+    blue: "#006eff"
+    magenta: "#ff3c79"
+    cyan: "#10cfdf"
+    white: "#e0e0e0"
+  # Bright colors
+  bright:
+    black: "#212121"
+    red: "#fb007a"
+    green: "#5fffaf"
+    yellow: "#f3e430"
+    blue: "#20bbfc"
+    magenta: "#ff55de"
+    cyan: "#4fb8cc"
+    white: "#f1f1f1"
+
+  cursor:
+    text: "#000000"
+    cursor: "#00ff00"
+
+  selection:
+    text: "0xeaeaea"
+    background: "0x404040"
