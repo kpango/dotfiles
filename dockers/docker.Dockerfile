@@ -30,13 +30,13 @@ RUN upx -9 ${BIN_PATH}/dive
 FROM docker-base AS slim
 
 RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="docker-slim" \
-    && REPO="slimtoolkit/slim" \
+    && BIN_NAME="slim" \
+    && REPO="${BIN_NAME}toolkit/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && DOCKER_SLIM_RELEASES="https://downloads.dockerslim.com/releases" \
     && curl -fsSLO "${DOCKER_SLIM_RELEASES}/${VERSION}/dist_${OS}.tar.gz" \
     && tar zxvf dist_${OS}.tar.gz \
-    && mv dist_${OS}/docker* ${BIN_PATH} \
+    && mv dist_${OS}/* ${BIN_PATH} \
     && upx -9 \
         ${BIN_PATH}/${BIN_NAME} \
         ${BIN_PATH}/${BIN_NAME}-sensor
@@ -205,6 +205,8 @@ COPY --from=docker-credential-pass ${BIN_PATH}/docker-credential-pass ${DOCKER_P
 COPY --from=docker-credential-secretservice ${BIN_PATH}/docker-credential-secretservice ${DOCKER_PATH}/docker-credential-secretservice
 COPY --from=dockfmt ${BIN_PATH}/dockfmt ${DOCKER_PATH}/dockfmt
 COPY --from=dockle ${BIN_PATH}/dockle ${DOCKER_PATH}/dockle
-COPY --from=slim ${BIN_PATH}/docker-slim ${DOCKER_PATH}/docker-slim
-COPY --from=slim ${BIN_PATH}/docker-slim-sensor ${DOCKER_PATH}/docker-slim-sensor
+COPY --from=slim ${BIN_PATH}/slim ${DOCKER_PATH}/docker-slim
+COPY --from=slim ${BIN_PATH}/slim-sensor ${DOCKER_PATH}/docker-slim-sensor
+COPY --from=slim ${BIN_PATH}/slim ${DOCKER_PATH}/slim
+COPY --from=slim ${BIN_PATH}/slim-sensor ${DOCKER_PATH}/slim-sensor
 COPY --from=trivy ${BIN_PATH}/trivy ${DOCKER_PATH}/trivy

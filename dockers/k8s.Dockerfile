@@ -224,17 +224,6 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv ${HOME}/.linkerd2/bin/${BIN_NAME}-* "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS octant
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="octant" \
-    && REPO="vmware-tanzu/${BIN_NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
-    && TAR_NAME="${BIN_NAME}_${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')-64bit" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
-    && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv "${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
 FROM kube-base AS skaffold
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="skaffold" \
@@ -487,7 +476,6 @@ COPY --from=kubens ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
 COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize
 COPY --from=linkerd ${BIN_PATH}/linkerd ${K8S_PATH}/linkerd
-COPY --from=octant ${BIN_PATH}/octant ${K8S_PATH}/octant
 COPY --from=pixie ${BIN_PATH}/pixie ${K8S_PATH}/pixie
 COPY --from=popeye ${BIN_PATH}/popeye ${K8S_PATH}/popeye
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
