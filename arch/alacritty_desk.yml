@@ -70,3 +70,7 @@ colors:
   selection:
     text: "0xeaeaea"
     background: "0x404040"
+
+key_bindings:
+  - { key: C,              mods: Super,       action: Copy }
+  - { key: V,              mods: Super,       action: Paste }
