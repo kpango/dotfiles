@@ -71,8 +71,10 @@ if [ -z $DOTENV_LOADED ]; then
 
     export XDG_CONFIG_HOME=$HOME/.config
 
-    export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
-    export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+    if type gcloud >/dev/null 2>&1; then
+        export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
+        export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+    fi
 
     if type php >/dev/null 2>&1; then
         export PHP_BUILD_CONFIGURE_OPTS="--with-openssl=/usr/local/opt/openssl"
