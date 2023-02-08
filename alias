@@ -6,10 +6,10 @@ dockerrm(){
     docker ps -aq | xargs docker rm -f
     docker container prune -f
     docker images -aq | xargs docker rmi -f;
-    docker image prune -a
+    docker image prune -a -f
     docker volume prune -f
     docker network prune -f
-    docker system prune -a
+    docker system prune -a -f
 }
 
 alias dockerrm="dockerrm"
