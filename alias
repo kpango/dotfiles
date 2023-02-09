@@ -138,6 +138,7 @@ devrun(){
                 -v /etc/group:/etc/group:ro \
                 -v /etc/shadow:/etc/shadow:ro \
                 -v /etc/passwd:/etc/passwd:ro \
+                -v /usr/lib/modules:/lib/modules:ro \
                 -v /mnt:/mnt \
                 -dt $image_name
                 # -v /etc/sudoers.d:/etc/sudoers.d:ro \
