@@ -22,6 +22,7 @@
 
 [pull]
     rebase = true
+    ff = only
 
 [diff]
     mnemonicprefix = yes
