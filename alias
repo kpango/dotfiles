@@ -91,14 +91,15 @@ devrun(){
             resolve_dnsmasq_config="/etc/resolv.dnsmasq.conf"
             # -e DISPLAY \
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
-                # --network=host \
             docker run \
                 --cap-add=ALL \
                 --name $container_name \
                 --privileged=$privileged \
                 --restart always \
                 --workdir $container_home \
+                --network=host \
                 --mount type=bind,source=$resolve_dnsmasq_config,destination=$resolve_config,readonly \
+                --add-host=host.docker.internal:host-gateway \
                 -u "$(id -u $USER):$(id -g $USER)" \
                 -v $HOME/.aws:$container_home/.aws \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \

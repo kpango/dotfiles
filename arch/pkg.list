@@ -24,7 +24,6 @@ discord
 dnsmasq
 docker
 dosfstools
-dropbear
 duf
 exa
 fakeroot
@@ -61,7 +60,6 @@ linux-firmware
 linux-zen
 linux-zen-headers
 lshw
-lsof
 make
 mako
 mdadm
@@ -73,6 +71,7 @@ neovim
 noto-fonts-emoji
 nvme-cli
 openssh
+openssl-1.1
 pacman-contrib
 parted
 pass
@@ -83,7 +82,6 @@ pkgconf
 powertop
 procs
 profile-sync-daemon
-python2
 ranger
 rclone
 ripgrep

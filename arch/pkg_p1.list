@@ -60,7 +60,6 @@ linux-firmware
 linux-zen
 linux-zen-headers
 lshw
-lsof
 make
 mako
 mdadm

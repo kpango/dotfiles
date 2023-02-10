@@ -119,7 +119,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX:PATH=/usr" CMAKE_BUILD_TYPE=Release \
     && make install \
     && cd /tmp && rm -rf /tmp/neovim \
-    && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
+    && pip3 install --upgrade --break-system-packages pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
     && gem install neovim -N \
     && git clone --depth 1 https://github.com/soimort/translate-shell \
     && cd /tmp/translate-shell/ \

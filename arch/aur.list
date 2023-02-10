@@ -11,6 +11,7 @@ kubectl-bin
 libnm-iwd
 milcheck
 networkmanager-iwd
+paru-git
 scaramanga
 slack-desktop
 swaybg-git
@@ -19,5 +20,4 @@ ttf-hackgen
 tzupdate
 wdisplays-git
 wf-recorder-git
-paru-git
 zoom

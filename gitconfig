@@ -110,6 +110,9 @@
 [commit]
     gpgsign = true
 
+[tag]
+    gpgsign = true
+
 [interactive]
     diffFilter = delta --color-only
 
@@ -139,8 +142,20 @@
     line-numbers-right-format = "{np:>4}│"
     line-numbers-left-style = blue
     line-numbers-right-style = blue
+
 [safe]
     directory = /home/kpango/go/src/github.com/vdaas/vald
     directory = /home/kpango/go/src/github.com/vdaas/vald-client-go
     directory = /home/kpango/go/src/github.com/kpango/glg
     directory = /home/kpango/go/src/github.com/kpango/gache
+
+[init]
+    defaultBranch = main
+
+[url "https://github.com/"]
+    insteadOf = git@github.com
+    insteadOf = ssh://git@github.com/
+
+[url "https://"]
+    insteadOf = git://
+    insteadOf = ssh://

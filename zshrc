@@ -1165,7 +1165,7 @@ if [ -z $ZSH_LOADED ]; then
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman-db-upgrade
-            paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop --sign --signdb
+            paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud
@@ -1182,7 +1182,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
             CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
-                paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop --sign --signdb
+                paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $(whoami) $HOME/.config/gcloud

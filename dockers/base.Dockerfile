@@ -46,7 +46,6 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean \
         pkg-config \
         poppler-utils \
         python3 \
-        python2 \
         sudo \
         tzdata \
         unzip \

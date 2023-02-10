@@ -1,121 +1,120 @@
 
 ====================================================================================================
-  70 MB 	 $ #(nop) ADD file:d5de90ac61ee7027aa0900efb669efa73f611463cf73ab2cfdacadf5ab9fee19 in /
+  70 MB 	 $ #(nop) ADD file:108000e07d9734743bfe65381248aa7e309283bdb87d8687b7ffe0d697487109 in /
 ====================================================================================================
- 3.8 MB 	 usr/bin/perl
- 2.3 MB 	 usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30
+ 3.9 MB 	 usr/bin/perl
+ 2.5 MB 	 usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.31
  2.1 MB 	 usr/lib/x86_64-linux-gnu/libc.so.6
- 2.0 MB 	 usr/lib/x86_64-linux-gnu/libgnutls.so.30.34.1
+ 2.1 MB 	 usr/lib/x86_64-linux-gnu/libgnutls.so.30.34.2
  1.8 MB 	 usr/lib/x86_64-linux-gnu/libapt-pkg.so.6.0.0
  1.8 MB 	 usr/lib/x86_64-linux-gnu/libdb-5.3.so
- 1.7 MB 	 usr/lib/x86_64-linux-gnu/libunistring.so.2.2.0
+ 1.8 MB 	 usr/lib/x86_64-linux-gnu/libunistring.so.2.2.0
  1.4 MB 	 usr/bin/bash
  1.3 MB 	 usr/lib/x86_64-linux-gnu/libgcrypt.so.20.4.1
  1.3 MB 	 usr/lib/x86_64-linux-gnu/libp11-kit.so.0.3.0
- 1.1 MB 	 usr/sbin/ldconfig.real
+ 1.0 MB 	 usr/sbin/ldconfig.real
  1.0 MB 	 usr/lib/x86_64-linux-gnu/libmvec.so.1
  949 kB 	 usr/lib/x86_64-linux-gnu/libm.so.6
- 849 kB 	 usr/lib/x86_64-linux-gnu/libsystemd.so.0.34.0
+ 845 kB 	 usr/lib/x86_64-linux-gnu/libsystemd.so.0.35.0
  748 kB 	 usr/lib/x86_64-linux-gnu/libsepol.so.2
- 711 kB 	 usr/lib/x86_64-linux-gnu/libzstd.so.1.5.2
- 655 kB 	 usr/lib/x86_64-linux-gnu/perl-base/auto/re/re.so
- 629 kB 	 usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.0
+ 723 kB 	 usr/lib/x86_64-linux-gnu/libzstd.so.1.5.2
+ 663 kB 	 usr/lib/x86_64-linux-gnu/perl-base/auto/re/re.so
+ 625 kB 	 usr/lib/x86_64-linux-gnu/libpcre2-8.so.0.11.2
  531 kB 	 usr/lib/x86_64-linux-gnu/libgmp.so.10.4.1
  518 kB 	 usr/bin/tar
- 477 kB 	 usr/lib/x86_64-linux-gnu/libpcre.so.3.13.3
  473 kB 	 usr/lib/x86_64-linux-gnu/gconv/libCNS.so
- 450 kB 	 var/cache/debconf/templates.dat
+ 448 kB 	 var/cache/debconf/templates.dat
  430 kB 	 usr/lib/x86_64-linux-gnu/libext2fs.so.2.4
- 416 kB 	 var/lib/dpkg/info/libstdc++6:amd64.symbols
+ 424 kB 	 var/lib/dpkg/info/libstdc++6:amd64.symbols
  412 kB 	 usr/lib/x86_64-linux-gnu/libapt-private.so.0.0.0
- 401 kB 	 usr/lib/x86_64-linux-gnu/perl-base/unicore/To/NFKCCF.pl
- 360 kB 	 usr/sbin/e2fsck
- 354 kB 	 usr/lib/locale/C.utf8/LC_CTYPE
+ 402 kB 	 usr/lib/x86_64-linux-gnu/perl-base/unicore/To/NFKCCF.pl
+ 364 kB 	 usr/sbin/e2fsck
+ 358 kB 	 usr/lib/locale/C.utf8/LC_CTYPE
  326 kB 	 usr/lib/x86_64-linux-gnu/libnettle.so.8.6
  323 kB 	 usr/bin/localedef
  318 kB 	 usr/bin/dpkg
  289 kB 	 usr/lib/x86_64-linux-gnu/libhogweed.so.6.6
  278 kB 	 usr/bin/gpgv
  277 kB 	 usr/lib/x86_64-linux-gnu/libmount.so.1.1.0
- 266 kB 	 usr/lib/x86_64-linux-gnu/libsemanage.so.2
+ 262 kB 	 usr/lib/x86_64-linux-gnu/libsemanage.so.2
+ 242 kB 	 usr/share/info/coreutils.info.gz
  240 kB 	 usr/lib/x86_64-linux-gnu/gconv/BIG5HKSCS.so
- 240 kB 	 usr/lib/x86_64-linux-gnu/libncursesw.so.6.3
- 238 kB 	 usr/share/info/coreutils.info.gz
  236 kB 	 usr/lib/x86_64-linux-gnu/gconv/IBM1390.so
  236 kB 	 usr/lib/x86_64-linux-gnu/gconv/IBM1399.so
+ 236 kB 	 usr/lib/x86_64-linux-gnu/libncursesw.so.6.4
  235 kB 	 usr/sbin/debugfs
- 229 kB 	 usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
- 228 kB 	 usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0
+ 224 kB 	 usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+ 220 kB 	 usr/lib/x86_64-linux-gnu/libblkid.so.1.1.0
  208 kB 	 usr/bin/find
- 200 kB 	 usr/lib/x86_64-linux-gnu/libtinfo.so.6.3
+ 203 kB 	 usr/lib/x86_64-linux-gnu/libproc2.so.0.0.1
+ 203 kB 	 usr/lib/x86_64-linux-gnu/liblzma.so.5.4.1
+ 200 kB 	 usr/lib/x86_64-linux-gnu/libtinfo.so.6.4
  199 kB 	 usr/lib/x86_64-linux-gnu/libcrypt.so.1.1.0
  191 kB 	 usr/lib/apt/methods/http
+ 187 kB 	 usr/lib/x86_64-linux-gnu/libudev.so.1.7.5
  183 kB 	 usr/bin/grep
  183 kB 	 usr/lib/x86_64-linux-gnu/gconv/GB18030.so
  178 kB 	 usr/lib/x86_64-linux-gnu/gconv/IBM1388.so
  174 kB 	 usr/lib/x86_64-linux-gnu/libselinux.so.1
- 170 kB 	 usr/lib/x86_64-linux-gnu/liblzma.so.5.2.5
- 170 kB 	 usr/lib/x86_64-linux-gnu/libudev.so.1.7.4
+ 162 kB 	 usr/lib/x86_64-linux-gnu/libncurses.so.6.4
  158 kB 	 usr/bin/mawk
  158 kB 	 usr/lib/x86_64-linux-gnu/gconv/IBM1364.so
- 158 kB 	 usr/lib/x86_64-linux-gnu/libncurses.so.6.3
  152 kB 	 var/lib/dpkg/info/libc6:amd64.symbols
- 150 kB 	 usr/bin/du
- 150 kB 	 usr/lib/x86_64-linux-gnu/libgpg-error.so.0.33.0
+ 150 kB 	 usr/bin/install
+ 150 kB 	 usr/lib/x86_64-linux-gnu/libgpg-error.so.0.33.1
+ 146 kB 	 usr/bin/ps
  146 kB 	 usr/bin/dpkg-deb
- 146 kB 	 usr/bin/install
  144 kB 	 var/lib/dpkg/info/debconf.templates
+ 143 kB 	 usr/sbin/useradd
+ 142 kB 	 usr/bin/dir
+ 142 kB 	 usr/bin/ls
+ 142 kB 	 usr/bin/vdir
  142 kB 	 usr/bin/dpkg-query
+ 142 kB 	 usr/lib/x86_64-linux-gnu/libgcc_s.so.1
  142 kB 	 usr/bin/cp
  142 kB 	 usr/bin/lsblk
- 138 kB 	 usr/bin/dir
- 138 kB 	 usr/bin/ls
- 138 kB 	 usr/bin/vdir
+ 138 kB 	 usr/sbin/mke2fs
  138 kB 	 usr/bin/mv
- 138 kB 	 usr/bin/ps
- 135 kB 	 usr/sbin/useradd
+ 137 kB 	 usr/lib/x86_64-linux-gnu/liblz4.so.1.9.4
+ 135 kB 	 usr/bin/top
  135 kB 	 usr/sbin/usermod
- 134 kB 	 usr/sbin/mke2fs
- 134 kB 	 var/log/dpkg.log
  134 kB 	 usr/bin/diff
  133 kB 	 usr/lib/x86_64-linux-gnu/gconv/IBM1371.so
  133 kB 	 usr/lib/x86_64-linux-gnu/libaudit.so.1.0.0
  133 kB 	 usr/lib/x86_64-linux-gnu/libidn2.so.0.3.8
- 133 kB 	 usr/bin/top
  130 kB 	 usr/bin/dash
- 130 kB 	 usr/bin/ptx
+ 130 kB 	 usr/bin/cksum
+ 130 kB 	 var/log/dpkg.log
  129 kB 	 usr/lib/x86_64-linux-gnu/gconv/libJISX0213.so
- 126 kB 	 usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+ 126 kB 	 usr/bin/dpkg-divert
  125 kB 	 usr/lib/x86_64-linux-gnu/libseccomp.so.2.5.4
- 125 kB 	 usr/lib/x86_64-linux-gnu/liblz4.so.1.9.3
- 122 kB 	 usr/bin/dpkg-divert
  121 kB 	 usr/lib/apt/methods/ftp
  121 kB 	 usr/lib/x86_64-linux-gnu/gconv/GBK.so
  121 kB 	 usr/lib/x86_64-linux-gnu/gconv/IBM933.so
  118 kB 	 var/lib/dpkg/info/base-passwd.templates
+ 117 kB 	 usr/lib/x86_64-linux-gnu/libz.so.1.2.13
  117 kB 	 usr/lib/x86_64-linux-gnu/gconv/IBM937.so
+ 114 kB 	 usr/lib/x86_64-linux-gnu/perl-base/auto/POSIX/POSIX.so
  113 kB 	 usr/bin/sed
+ 113 kB 	 usr/bin/date
  113 kB 	 usr/lib/apt/methods/gpgv
- 113 kB 	 usr/lib/x86_64-linux-gnu/libz.so.1.2.11
- 110 kB 	 usr/lib/x86_64-linux-gnu/perl-base/auto/POSIX/POSIX.so
  110 kB 	 usr/share/doc/perl-base/copyright
- 109 kB 	 usr/bin/csplit
- 109 kB 	 usr/bin/expr
  109 kB 	 usr/lib/x86_64-linux-gnu/gconv/libJIS.so
+ 105 kB 	 usr/bin/sort
+ 105 kB 	 usr/sbin/tune2fs
 
 ====================================================================================================
- 3.4 GB 	 $ rm -f /etc/apt/apt.conf.d/docker-clean && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache && echo 'APT::Install-Recommends "false";' >/etc/apt/apt.conf.d/no-install-recommends && apt clean && rm -rf /var/lib/apt/lists/* /var/cache/* && apt update -y && apt upgrade -y && apt update -y && apt install -y --no-install-recommends --fix-missing axel build-essential ca-certificates clang cmake curl ffmpeg git gnupg intel-mkl libssl-dev libtinfo5 libx11-dev libxcb-composite0-dev locales pandoc pkg-config poppler-utils python3 python2 sudo tzdata unzip upx wget xz-utils zsh && update-alternatives --set cc $(which clang) && update-alternatives --set c++ $(which clang++) && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas.so libblas.so-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas.so.3 libblas.so.3-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas64.so libblas64.so-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas64.so.3 libblas64.so.3-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack.so liblapack.so-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack.so.3 liblapack.so.3-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack64.so liblapack64.so-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack64.so.3 liblapack64.so.3-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && apt clean -y && apt autoclean -y && rm -rf /var/lib/apt/lists/* && echo "${LANG} UTF-8" >/etc/locale.gen && ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && locale-gen && rm /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && apt autoremove -y # buildkit
+ 3.1 GB 	 $ rm -f /etc/apt/apt.conf.d/docker-clean && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache && echo 'APT::Install-Recommends "false";' >/etc/apt/apt.conf.d/no-install-recommends && apt clean && rm -rf /var/lib/apt/lists/* /var/cache/* && apt update -y && apt upgrade -y && apt update -y && apt install -y --no-install-recommends --fix-missing axel build-essential ca-certificates clang cmake curl ffmpeg git gnupg intel-mkl libssl-dev libtinfo5 libx11-dev libxcb-composite0-dev locales pandoc pkg-config poppler-utils python3 sudo tzdata unzip upx wget xz-utils zsh && update-alternatives --set cc $(which clang) && update-alternatives --set c++ $(which clang++) && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas.so libblas.so-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas.so.3 libblas.so.3-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas64.so libblas64.so-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas64.so.3 libblas64.so.3-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack.so liblapack.so-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack.so.3 liblapack.so.3-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack64.so liblapack64.so-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack64.so.3 liblapack64.so.3-x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 && apt clean -y && apt autoclean -y && rm -rf /var/lib/apt/lists/* && echo "${LANG} UTF-8" >/etc/locale.gen && ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && locale-gen && rm /etc/localtime && dpkg-reconfigure -f noninteractive tzdata && apt autoremove -y # buildkit
 ====================================================================================================
  670 MB 	 usr/lib/x86_64-linux-gnu/libmkl_core.a
  172 MB 	 usr/bin/pandoc
  117 MB 	 usr/lib/x86_64-linux-gnu/libLLVM-15.so.1
- 110 MB 	 usr/lib/x86_64-linux-gnu/libLLVM-14.so.1
   90 MB 	 usr/lib/x86_64-linux-gnu/libmkl_intel_thread.a
   75 MB 	 usr/lib/x86_64-linux-gnu/libmkl_core.so
   67 MB 	 usr/lib/x86_64-linux-gnu/libmkl_avx512_mic.so
   64 MB 	 usr/lib/x86_64-linux-gnu/libmkl_intel_thread.so
   63 MB 	 usr/lib/x86_64-linux-gnu/libmkl_avx512.so
-  59 MB 	 usr/lib/llvm-14/lib/libclang-cpp.so.14
+  62 MB 	 usr/lib/llvm-15/lib/libclang-cpp.so.15
   56 MB 	 usr/lib/x86_64-linux-gnu/libmkl_pgi_thread.a
   56 MB 	 usr/lib/x86_64-linux-gnu/libmkl_tbb_thread.a
   52 MB 	 usr/lib/x86_64-linux-gnu/libmkl_avx.so
@@ -123,24 +122,22 @@
   49 MB 	 usr/lib/x86_64-linux-gnu/libmkl_avx2.so
   48 MB 	 usr/lib/x86_64-linux-gnu/libmkl_mc.so
   43 MB 	 usr/lib/x86_64-linux-gnu/libmkl_gnu_thread.a
-  43 MB 	 usr/lib/llvm-14/lib/clang/14.0.6/lib/linux
   42 MB 	 usr/lib/x86_64-linux-gnu/libmkl_def.so
   41 MB 	 usr/lib/x86_64-linux-gnu/libmkl_pgi_thread.so
   38 MB 	 usr/lib/x86_64-linux-gnu/libmkl_sequential.a
-  38 MB 	 usr/lib/x86_64-linux-gnu/libmkl_tbb_thread.so
   36 MB 	 usr/lib/gcc/x86_64-linux-gnu/12/cc1plus
   34 MB 	 usr/lib/gcc/x86_64-linux-gnu/12/cc1
   32 MB 	 usr/lib/gcc/x86_64-linux-gnu/12/lto1
   32 MB 	 usr/bin/x86_64-linux-gnu-lto-dump-12
+  32 MB 	 usr/lib/x86_64-linux-gnu/libclang-15.so.15.0.7
+  31 MB 	 usr/lib/x86_64-linux-gnu/libicudata.so.72.1
   31 MB 	 usr/lib/x86_64-linux-gnu/libmkl_gnu_thread.so
-  31 MB 	 usr/lib/x86_64-linux-gnu/libclang-14.so.14.0.6
-  30 MB 	 usr/lib/x86_64-linux-gnu/libicudata.so.71.1
+  30 MB 	 usr/lib/x86_64-linux-gnu/dri/crocus_dri.so
   29 MB 	 usr/lib/x86_64-linux-gnu/libmkl_intel_lp64.a
   29 MB 	 usr/lib/x86_64-linux-gnu/libmkl_sequential.so
   29 MB 	 usr/lib/x86_64-linux-gnu/libmkl_gf_lp64.a
   28 MB 	 usr/lib/x86_64-linux-gnu/libmkl_intel_ilp64.a
   28 MB 	 usr/lib/x86_64-linux-gnu/libmkl_gf_ilp64.a
-  25 MB 	 usr/lib/x86_64-linux-gnu/dri/crocus_dri.so
   17 MB 	 usr/lib/x86_64-linux-gnu/libcodec2.so.1.0
   16 MB 	 usr/lib/x86_64-linux-gnu/libx265.so.199
   16 MB 	 usr/lib/x86_64-linux-gnu/libmkl_vml_avx.so
@@ -154,207 +151,207 @@
   14 MB 	 usr/lib/x86_64-linux-gnu/libmkl_vml_avx512.so
   13 MB 	 usr/lib/x86_64-linux-gnu/libmkl_intel_lp64.so
   13 MB 	 usr/lib/x86_64-linux-gnu/libmkl_gf_lp64.so
+  13 MB 	 usr/lib/x86_64-linux-gnu/lapack/liblapack.a
+  13 MB 	 usr/lib/x86_64-linux-gnu/liblapack_pic.a
+  13 MB 	 usr/lib/x86_64-linux-gnu/libavfilter.so.8.44.100
   12 MB 	 usr/lib/x86_64-linux-gnu/libmkl_intel_ilp64.so
   12 MB 	 usr/lib/x86_64-linux-gnu/libmkl_gf_ilp64.so
-  12 MB 	 usr/lib/x86_64-linux-gnu/libavfilter.so.8.44.100
-  12 MB 	 usr/lib/x86_64-linux-gnu/liblapack_pic.a
-  12 MB 	 usr/lib/x86_64-linux-gnu/lapack/liblapack.a
   11 MB 	 usr/lib/x86_64-linux-gnu/librsvg-2.so.2.48.0
-  10 MB 	 usr/bin/ctest
+  11 MB 	 usr/bin/ctest
+  10 MB 	 usr/lib/x86_64-linux-gnu/libasan.so.8.0.0
+ 9.7 MB 	 usr/bin/cpack
  9.4 MB 	 usr/lib/x86_64-linux-gnu/mfx/libmfx_h264la_hw64.so
- 9.3 MB 	 usr/bin/cpack
+ 9.4 MB 	 usr/bin/cmake
  9.2 MB 	 usr/lib/x86_64-linux-gnu/libcrypto.a
- 9.0 MB 	 usr/bin/cmake
  8.4 MB 	 usr/lib/x86_64-linux-gnu/libmkl_vml_def.so
- 8.3 MB 	 usr/lib/llvm-14/lib/clang/14.0.6/include/riscv_vector.h
- 8.3 MB 	 usr/lib/x86_64-linux-gnu/libasan.so.8.0.0
- 8.0 MB 	 usr/lib/x86_64-linux-gnu/libtsan.so.2.0.0
- 7.6 MB 	 usr/lib/x86_64-linux-gnu/libplacebo.so.192
+ 8.3 MB 	 usr/lib/x86_64-linux-gnu/libtsan.so.2.0.0
+ 7.9 MB 	 usr/lib/x86_64-linux-gnu/libplacebo.so.208
+ 7.9 MB 	 usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.11.0
  7.6 MB 	 usr/lib/x86_64-linux-gnu/libmkl_vml_cmpt.so
- 7.6 MB 	 usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.10.1
  7.4 MB 	 usr/lib/x86_64-linux-gnu/libmkl_lapack95_ilp64.a
  7.3 MB 	 usr/lib/x86_64-linux-gnu/libmkl_lapack95_lp64.a
  7.1 MB 	 usr/lib/x86_64-linux-gnu/libmkl_rt.so
- 7.0 MB 	 usr/lib/x86_64-linux-gnu/libSvtAv1Enc.so.1.2.1
+ 7.1 MB 	 usr/lib/x86_64-linux-gnu/libSvtAv1Enc.so.1.4.1
+ 6.9 MB 	 usr/bin/python3.11
  6.1 MB 	 usr/lib/gcc/x86_64-linux-gnu/12/libstdc++.a
- 5.9 MB 	 usr/lib/x86_64-linux-gnu/libc.a
- 5.9 MB 	 usr/bin/python3.10
- 5.7 MB 	 usr/lib/llvm-14/lib/libPollyISL.a
+ 6.0 MB 	 usr/lib/x86_64-linux-gnu/libc.a
  5.6 MB 	 usr/share/zsh/functions/Completion/Unix.zwc
- 5.6 MB 	 usr/lib/x86_64-linux-gnu/libaom.so.3.4.0
- 5.4 MB 	 usr/lib/llvm-14/lib/libPolly.a
+ 5.4 MB 	 usr/lib/x86_64-linux-gnu/libaom.so.3.6.0
  4.9 MB 	 usr/lib/x86_64-linux-gnu/libflite_cmu_time_awb.so.2.2
  4.8 MB 	 usr/lib/x86_64-linux-gnu/libflite_cmu_us_rms.so.2.2
  4.5 MB 	 usr/share/i18n/locales/cns11643_stroke
  4.5 MB 	 usr/lib/x86_64-linux-gnu/libcrypto.so.3
- 4.4 MB 	 usr/lib/x86_64-linux-gnu/perl/5.34.0/CORE/charclass_invlists.h
+ 4.5 MB 	 usr/lib/x86_64-linux-gnu/perl/5.36.0/CORE/charclass_invlists.h
+ 4.2 MB 	 usr/lib/llvm-15/lib/LLVMPolly.so
  4.2 MB 	 usr/lib/x86_64-linux-gnu/libflite_cmu_us_slt.so.2.2
- 4.2 MB 	 usr/lib/x86_64-linux-gnu/libflite_cmu_us_awb.so.2.2
- 4.1 MB 	 usr/lib/llvm-14/lib/LLVMPolly.so
+ 4.1 MB 	 usr/lib/x86_64-linux-gnu/libflite_cmu_us_awb.so.2.2
  4.0 MB 	 usr/lib/x86_64-linux-gnu/libflite_cmu_us_kal16.so.2.2
- 3.8 MB 	 usr/bin/git
- 3.8 MB 	 usr/lib/git-core/git
- 3.7 MB 	 usr/lib/x86_64-linux-gnu/libperl.so.5.34.0
- 3.6 MB 	 usr/lib/x86_64-linux-gnu/libpoppler.so.123.0.0
- 3.5 MB 	 usr/bin/python2.7
+ 3.9 MB 	 usr/bin/git
+ 3.9 MB 	 usr/lib/git-core/git
+ 3.8 MB 	 usr/lib/x86_64-linux-gnu/libperl.so.5.36.0
+ 3.6 MB 	 usr/lib/x86_64-linux-gnu/libpoppler.so.126.0.0
+ 3.4 MB 	 usr/lib/x86_64-linux-gnu/liblsan.so.0.0.0
  3.4 MB 	 usr/share/i18n/locales/iso14651_t1_common
- 3.3 MB 	 usr/lib/x86_64-linux-gnu/libicui18n.so.71.1
+ 3.3 MB 	 usr/lib/x86_64-linux-gnu/libicui18n.so.72.1
  3.2 MB 	 usr/bin/x86_64-linux-gnu-ld.gold
+ 3.1 MB 	 usr/lib/x86_64-linux-gnu/libubsan.so.1.0.0
  3.1 MB 	 usr/lib/x86_64-linux-gnu/libvpx.so.7.1.0
- 3.1 MB 	 usr/lib/x86_64-linux-gnu/systemd/libsystemd-shared-251.so
  3.1 MB 	 usr/lib/gcc/x86_64-linux-gnu/12/libgcc.a
- 3.0 MB 	 usr/lib/locale/locale-archive
- 3.0 MB 	 usr/lib/x86_64-linux-gnu/liblsan.so.0.0.0
+ 3.1 MB 	 usr/lib/locale/locale-archive
  3.0 MB 	 usr/lib/x86_64-linux-gnu/libgfortran.so.5.0.0
+ 3.0 MB 	 usr/lib/x86_64-linux-gnu/libjxl.so.0.7.0
+ 2.9 MB 	 usr/lib/gcc/x86_64-linux-gnu/12/libasan.a
+ 2.8 MB 	 usr/lib/x86_64-linux-gnu/libavformat.so.59.27.100
+ 2.8 MB 	 usr/lib/x86_64-linux-gnu/perl/5.36.0/auto/Encode/JP
+ 2.7 MB 	 usr/lib/x86_64-linux-gnu/librav1e.so.0.5.1
+ 2.6 MB 	 usr/lib/x86_64-linux-gnu/libm-2.37.a
+ 2.5 MB 	 usr/lib/llvm-15/lib/clang/15.0.7/include/arm_neon.h
 
 ====================================================================================================
- 336 kB 	 $ groupadd --non-unique --gid ${GROUP_ID} docker && groupadd --non-unique --gid ${GROUP_ID} wheel && groupmod --non-unique --gid ${GROUP_ID} users && useradd --uid ${USER_ID} --gid ${GROUP_ID} --non-unique --create-home --shell ${SHELL} --base-dir ${BASE_DIR} --home ${HOME} --groups ${GROUP} ${USER} && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers && echo "${USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers && chown -R 0:0 /etc/sudoers.d && chown -R 0:0 /etc/sudoers && chmod -R 0440 /etc/sudoers.d && chmod -R 0440 /etc/sudoers && visudo -c # buildkit
+  12 kB 	 $ groupadd --non-unique --gid ${GROUP_ID} docker && groupadd --non-unique --gid ${GROUP_ID} wheel && groupmod --non-unique --gid ${GROUP_ID} users && useradd --uid ${USER_ID} --gid ${GROUP_ID} --non-unique --create-home --shell ${SHELL} --base-dir ${BASE_DIR} --home ${HOME} --groups ${GROUP} ${USER} && echo '%sudo ALL=(ALL) NOPASSWD:ALL' >>/etc/sudoers && echo "${USER} ALL=(ALL) NOPASSWD:ALL" >>/etc/sudoers && sed -i -e 's/# %users\tALL=(ALL)\tNOPASSWD: ALL/%users\tALL=(ALL)\tNOPASSWD: ALL/' /etc/sudoers && sed -i -e 's/%users\tALL=(ALL)\tALL/# %users\tALL=(ALL)\tALL/' /etc/sudoers && chown -R 0:0 /etc/sudoers.d && chown -R 0:0 /etc/sudoers && chmod -R 0440 /etc/sudoers.d && chmod -R 0440 /etc/sudoers && visudo -c # buildkit
 ====================================================================================================
- 292 kB 	 var/log/lastlog
-  32 kB 	 var/log/faillog
  3.8 kB 	 home/kpango/.bashrc
  1.9 kB 	 etc/sudoers
- 973  B 	 etc/passwd
- 927  B 	 etc/passwd-
+ 934  B 	 etc/passwd
+ 888  B 	 etc/passwd-
  807  B 	 home/kpango/.profile
- 540  B 	 etc/group
- 525  B 	 etc/shadow
- 510  B 	 etc/group-
- 497  B 	 etc/shadow-
- 455  B 	 etc/gshadow
- 425  B 	 etc/gshadow-
+ 564  B 	 etc/group
+ 533  B 	 etc/group-
+ 530  B 	 etc/shadow
+ 502  B 	 etc/shadow-
+ 481  B 	 etc/gshadow
+ 450  B 	 etc/gshadow-
  220  B 	 home/kpango/.bash_logout
-  20  B 	 etc/subgid
-  20  B 	 etc/subuid
-   0  B 	 etc/subgid-
-   0  B 	 etc/subuid-
+  40  B 	 etc/subgid
+  40  B 	 etc/subuid
+  20  B 	 etc/subgid-
+  20  B 	 etc/subuid-
 
 ====================================================================================================
    0  B 	 $ WORKDIR /tmp
 ====================================================================================================
 
 ====================================================================================================
- 653 MB 	 $ echo '/lib\n/lib64\n/var/lib\n/usr/lib\n/usr/local/lib\n/usr/local/go/lib\n/usr/local/clang/lib\n/usr/lib/dart/lib\n/usr/lib/node_modules/lib\n/google-cloud-sdk/lib' >/etc/ld.so.conf.d/usr-local-lib.conf && echo $(ldconfig) && apt update -y && apt upgrade -y && apt install -y --no-install-recommends --fix-missing automake bash ccls clang-format clangd diffutils exuberant-ctags gawk gettext graphviz jq less libhdf5-serial-dev liblapack-dev libncurses5-dev libomp-dev libopenblas-dev libtool libtool-bin luajit mariadb-client mtr ncurses-term nodejs npm openssh-client pass perl pkg-config python3-dev python3-pip python3-setuptools ruby-dev sass sed tar tig tmux ugrep xclip && rm -rf /var/lib/apt/lists/* && git clone --depth 1 https://github.com/neovim/neovim && cd neovim && rm -rf build && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX:PATH=/usr" CMAKE_BUILD_TYPE=Release && make install && cd /tmp && rm -rf /tmp/neovim && pip3 install --upgrade pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools && gem install neovim -N && git clone --depth 1 https://github.com/soimort/translate-shell && cd /tmp/translate-shell/ && make TARGET=zsh -j -C /tmp/translate-shell && make install -C /tmp/translate-shell && cd /tmp && rm -rf /tmp/translate-shell/ && apt -y autoremove && chown -R ${USER}:users ${HOME} && chown -R ${USER}:users ${HOME}/.* && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && npm install -g n # buildkit
+ 775 MB 	 $ echo '/lib\n/lib64\n/var/lib\n/usr/lib\n/usr/local/lib\n/usr/local/go/lib\n/usr/local/clang/lib\n/usr/lib/dart/lib\n/usr/lib/node_modules/lib\n/google-cloud-sdk/lib' >/etc/ld.so.conf.d/usr-local-lib.conf && echo $(ldconfig) && apt update -y && apt upgrade -y && apt install -y --no-install-recommends --fix-missing automake bash ccls clang-format clangd diffutils exuberant-ctags gawk gettext graphviz jq less libhdf5-serial-dev liblapack-dev libncurses5-dev libomp-dev libopenblas-dev libtool libtool-bin luajit mariadb-client mtr ncurses-term nodejs npm openssh-client pass perl pkg-config python3-dev python3-pip python3-setuptools ruby-dev sass sed tar tig tmux ugrep xclip && rm -rf /var/lib/apt/lists/* && git clone --depth 1 https://github.com/neovim/neovim && cd neovim && rm -rf build && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX:PATH=/usr" CMAKE_BUILD_TYPE=Release && make install && cd /tmp && rm -rf /tmp/neovim && pip3 install --upgrade --break-system-packages pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools && gem install neovim -N && git clone --depth 1 https://github.com/soimort/translate-shell && cd /tmp/translate-shell/ && make TARGET=zsh -j -C /tmp/translate-shell && make install -C /tmp/translate-shell && cd /tmp && rm -rf /tmp/translate-shell/ && apt -y autoremove && chown -R ${USER}:users ${HOME} && chown -R ${USER}:users ${HOME}/.* && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && npm install -g n # buildkit
 ====================================================================================================
-  61 MB 	 usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.a
-  48 MB 	 usr/lib/x86_64-linux-gnu/libnode.so.108
-  38 MB 	 usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.20.so
-  15 MB 	 usr/lib/llvm-14/bin/clangd
-  11 MB 	 var/cache/apt/archives/libnode108_18.7.0+dfsg-5ubuntu1_amd64.deb
-  10 MB 	 usr/lib/python3.10/config-3.10-x86_64-linux-gnu/libpython3.10.a
-  10 MB 	 usr/local/lib/python3.10/dist-packages/grpc/_cython/cygrpc.cpython-310-x86_64-linux-gnu.so
- 9.4 MB 	 usr/lib/python3.10/config-3.10-x86_64-linux-gnu/libpython3.10-pic.a
+  60 MB 	 usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.21.a
+  47 MB 	 usr/lib/x86_64-linux-gnu/libnode.so.108
+  37 MB 	 usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.21.so
+  24 MB 	 usr/lib/llvm-15/bin/clangd
+  13 MB 	 usr/lib/python3.11/config-3.11-x86_64-linux-gnu/libpython3.11.a
+  12 MB 	 usr/lib/python3.11/config-3.11-x86_64-linux-gnu/libpython3.11-pic.a
+  11 MB 	 var/cache/apt/archives/libnode108_18.13.0+dfsg1-1ubuntu2_amd64.deb
+  11 MB 	 usr/local/lib/python3.11/dist-packages/grpc/_cython/cygrpc.cpython-311-x86_64-linux-gnu.so
  8.3 MB 	 usr/lib/x86_64-linux-gnu/libhdf5_serial.a
- 8.0 MB 	 usr/bin/nvim
- 7.7 MB 	 var/lib/gems/3.0.0/gems/msgpack-1.6.0/ext/msgpack
- 7.2 MB 	 usr/lib/file/magic.mgc
- 7.1 MB 	 usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
- 6.8 MB 	 var/cache/apt/archives/libopenblas0-pthread_0.3.20+ds-2_amd64.deb
- 6.6 MB 	 usr/local/lib/python3.10/dist-packages/grpc_tools/_protoc_compiler.cpython-310-x86_64-linux-gnu.so
- 5.8 MB 	 usr/lib/x86_64-linux-gnu/libpython3.10.so.1.0
- 5.7 MB 	 home/kpango/.cache/luarocks/https___luarocks.org/luacheck-0.23.0-1.src.rock
- 5.1 MB 	 var/cache/apt/archives/libruby3.0_3.0.4-7_amd64.deb
+ 8.3 MB 	 usr/lib/file/magic.mgc
+ 7.9 MB 	 usr/bin/nvim
+ 7.8 MB 	 var/lib/gems/3.1.0/gems/msgpack-1.7.0/ext/msgpack
+ 7.8 MB 	 usr/lib/x86_64-linux-gnu/libpython3.11.so.1.0
+ 7.3 MB 	 usr/lib/x86_64-linux-gnu/openblas-pthread/liblapack.so.3
+ 7.2 MB 	 var/cache/apt/archives/libopenblas0-pthread_0.3.21+ds-4_amd64.deb
+ 6.6 MB 	 usr/local/lib/python3.11/dist-packages/grpc_tools/_protoc_compiler.cpython-311-x86_64-linux-gnu.so
+ 6.1 MB 	 usr/lib/llvm-15/lib/libomptarget.devicertl.a
+ 5.7 MB 	 usr/lib/x86_64-linux-gnu/libgrpc.so.29.0.0
+ 5.3 MB 	 var/cache/apt/archives/libpython3.11-dev_3.11.2-6_amd64.deb
+ 5.2 MB 	 usr/bin/mariadb-binlog
+ 5.2 MB 	 usr/bin/mariadb
+ 5.2 MB 	 var/cache/apt/archives/libruby3.1_3.1.2-6_amd64.deb
+ 5.2 MB 	 var/cache/apt/archives/clangd-15_1%3a15.0.7-3_amd64.deb
+ 5.0 MB 	 usr/bin/mariadb-dump
+ 5.0 MB 	 var/cache/apt/archives/libopenblas-pthread-dev_0.3.21+ds-4_amd64.deb
+ 5.0 MB 	 home/kpango/.cache/pip/http/2/6/3
+ 4.9 MB 	 usr/bin/mariadb-slap
+ 4.9 MB 	 usr/bin/mariadb-admin
+ 4.9 MB 	 usr/bin/mariadb-check
+ 4.9 MB 	 usr/bin/mariadb-import
+ 4.9 MB 	 usr/bin/mariadb-show
+ 4.8 MB 	 usr/bin/perror
+ 4.7 MB 	 usr/bin/mariadb-conv
  4.7 MB 	 usr/lib/x86_64-linux-gnu/libgtk-x11-2.0.so.0.2400.33
- 4.7 MB 	 home/kpango/.cache/pip/http/f/7/3
- 4.6 MB 	 var/cache/apt/archives/libpython3.10-dev_3.10.7-1_amd64.deb
- 4.6 MB 	 var/cache/apt/archives/libopenblas-pthread-dev_0.3.20+ds-2_amd64.deb
- 4.2 MB 	 usr/bin/mariadb-binlog
- 4.2 MB 	 usr/bin/mariadb
- 4.0 MB 	 usr/bin/mariadb-dump
- 4.0 MB 	 usr/bin/mariadb-slap
- 4.0 MB 	 usr/bin/mariadb-admin
- 4.0 MB 	 usr/bin/mariadb-check
- 3.9 MB 	 usr/bin/mariadb-import
- 3.9 MB 	 usr/bin/mariadb-show
- 3.8 MB 	 usr/bin/perror
+ 4.6 MB 	 usr/bin/mariadb-plugin
+ 4.6 MB 	 usr/bin/mariadb-tzinfo-to-sql
+ 4.6 MB 	 usr/bin/resolve_stack_dump
+ 4.6 MB 	 usr/bin/my_print_defaults
+ 4.6 MB 	 usr/bin/mariadb-waitpid
+ 4.6 MB 	 usr/bin/replace
+ 3.8 MB 	 usr/lib/x86_64-linux-gnu/libruby-3.1.so.3.1.2
  3.8 MB 	 usr/lib/x86_64-linux-gnu/libhdf5_serial.so.103.3.1
- 3.7 MB 	 usr/bin/mariadb-conv
- 3.7 MB 	 usr/bin/mariadb-plugin
- 3.7 MB 	 usr/bin/mariadb-tzinfo-to-sql
- 3.6 MB 	 usr/bin/resolve_stack_dump
- 3.6 MB 	 usr/bin/my_print_defaults
- 3.6 MB 	 usr/bin/mariadb-waitpid
- 3.6 MB 	 usr/bin/replace
- 3.6 MB 	 usr/lib/x86_64-linux-gnu/libruby-3.0.so.3.0.4
+ 3.5 MB 	 usr/lib/x86_64-linux-gnu/libgrpc_unsecure.so.29.0.0
  3.4 MB 	 var/cache/apt/archives/adwaita-icon-theme_41.0-1ubuntu1_all.deb
- 3.0 MB 	 var/cache/apt/archives/clangd-14_1%3a14.0.6-2_amd64.deb
- 2.9 MB 	 usr/lib/x86_64-linux-gnu/libprotobuf.so.23.0.4
- 2.8 MB 	 var/cache/apt/archives/libhdf5-dev_1.10.8+repack-1ubuntu1_amd64.deb
+ 3.1 MB 	 usr/local/lib/python3.11/dist-packages/pygments/lexers/__pycache__
+ 3.0 MB 	 usr/lib/x86_64-linux-gnu/libprotobuf.so.32.0.12
+ 2.9 MB 	 var/cache/apt/archives/mariadb-client_1%3a10.11.2-1_amd64.deb
+ 2.8 MB 	 var/cache/apt/archives/libhdf5-dev_1.10.8+repack1-1ubuntu1_amd64.deb
+ 2.8 MB 	 var/cache/apt/archives/libgrpc29_1.51.1-3build3_amd64.deb
+ 2.5 MB 	 usr/local/lib/python3.11/dist-packages/yaml/_yaml.cpython-311-x86_64-linux-gnu.so
  2.5 MB 	 usr/lib/x86_64-linux-gnu/liblab_gamut.so.1.0.0
- 2.5 MB 	 usr/local/lib/python3.10/dist-packages/jedi/third_party/typeshed
- 2.4 MB 	 home/kpango/.cache/pip/http/b/c/d
- 2.4 MB 	 usr/lib/x86_64-linux-gnu/libgrpc.so.10.0.0
- 2.4 MB 	 usr/local/lib/python3.10/dist-packages/pygments/lexers/__pycache__
- 2.3 MB 	 usr/lib/x86_64-linux-gnu/libgrpc_csharp_ext.so.10.0.0
- 2.2 MB 	 var/cache/apt/pkgcache.bin
- 2.2 MB 	 usr/local/lib/python3.10/dist-packages/yaml/_yaml.cpython-310-x86_64-linux-gnu.so
- 2.1 MB 	 var/cache/apt/archives/mariadb-client-10.6_1%3a10.6.9-1_amd64.deb
- 2.0 MB 	 home/kpango/.cache/pip/http/f/f/d
+ 2.5 MB 	 usr/local/lib/python3.11/dist-packages/jedi/third_party/typeshed
+ 2.4 MB 	 var/cache/apt/pkgcache.bin
+ 2.4 MB 	 home/kpango/.cache/pip/http/c/f/1
+ 2.3 MB 	 usr/lib/x86_64-linux-gnu/libprotoc.so.32.0.12
+ 2.2 MB 	 var/cache/apt/archives/libpython3.11_3.11.2-6_amd64.deb
  2.0 MB 	 var/cache/apt/archives/libgtk2.0-0_2.24.33-2ubuntu2_amd64.deb
- 2.0 MB 	 usr/lib/x86_64-linux-gnu/libgrpc_unsecure.so.10.0.0
- 1.9 MB 	 var/cache/apt/archives/libpython3.10_3.10.7-1_amd64.deb
- 1.9 MB 	 var/cache/apt/archives/liblab-gamut1_2.42.2-7_amd64.deb
- 1.9 MB 	 usr/local/lib/python3.10/dist-packages/pip/_vendor/rich
- 1.8 MB 	 usr/local/lib/python3.10/dist-packages/pip/_vendor/chardet
+ 1.9 MB 	 var/cache/apt/archives/liblab-gamut1_2.42.2-7build3_amd64.deb
+ 1.7 MB 	 usr/local/lib/python3.11/dist-packages/greenlet/_greenlet.cpython-311-x86_64-linux-gnu.so
  1.6 MB 	 var/cache/apt/srcpkgcache.bin
- 1.5 MB 	 usr/local/lib/python3.10/dist-packages/google/protobuf/internal
- 1.5 MB 	 var/cache/apt/archives/libgrpc10_1.30.2-3build6_amd64.deb
- 1.5 MB 	 home/kpango/.cache/luarocks/https___luarocks.org/luv-1.44.2-1.src.rock
- 1.4 MB 	 usr/local/lib/python3.10/dist-packages/pip/_vendor/distlib
+ 1.5 MB 	 usr/lib/ruby/gems/3.1.0/gems/rbs-2.1.0/core
+ 1.5 MB 	 usr/lib/ruby/gems/3.1.0/gems/rbs-2.1.0/stdlib
  1.4 MB 	 home/kpango/.cache/pip/http/c/2/0
- 1.3 MB 	 usr/lib/x86_64-linux-gnu/libcurl.a
+ 1.4 MB 	 usr/lib/x86_64-linux-gnu/libcurl.a
+ 1.4 MB 	 home/kpango/.cache/luarocks/https___luarocks.org/manifest-5.1
  1.3 MB 	 usr/lib/x86_64-linux-gnu/libgmp.a
- 1.3 MB 	 var/cache/apt/archives/libhdf5-103-1_1.10.8+repack-1ubuntu1_amd64.deb
- 1.3 MB 	 home/kpango/.cache/luarocks/https___luarocks.org/manifest-5.1
+ 1.3 MB 	 var/cache/apt/archives/python3-pip_23.0.1+dfsg-1_all.deb
+ 1.3 MB 	 var/cache/apt/archives/libhdf5-103-1_1.10.8+repack1-1ubuntu1_amd64.deb
  1.3 MB 	 var/cache/apt/archives/humanity-icon-theme_0.6.16_all.deb
- 1.3 MB 	 var/cache/apt/archives/python3-pip_22.2+dfsg-1_all.deb
+ 1.2 MB 	 usr/include/x86_64-linux-gnu/ruby-3.1.0/rb_mjit_min_header-3.1.2.h
+ 1.2 MB 	 var/cache/apt/archives/mariadb-client-core_1%3a10.11.2-1_amd64.deb
+ 1.2 MB 	 usr/lib/python3/dist-packages/pip/_vendor/rich/__pycache__
  1.2 MB 	 usr/bin/ccls
- 1.2 MB 	 usr/include/x86_64-linux-gnu/ruby-3.0.0/rb_mjit_min_header-3.0.4.h
- 1.1 MB 	 usr/lib/llvm-14/lib/libomp-14.so.5
- 1.1 MB 	 usr/lib/llvm-14/lib/libomp.so.5
- 1.1 MB 	 home/kpango/.cache/pip/http/8/3/0
- 1.1 MB 	 var/cache/apt/archives/npm_8.18.0~ds1-1_all.deb
+ 1.2 MB 	 usr/lib/llvm-15/lib/libomp-15.so.5
+ 1.2 MB 	 usr/lib/llvm-15/lib/libomp.so.5
+ 1.1 MB 	 home/kpango/.cache/pip/http/0/b/0
  1.1 MB 	 usr/lib/x86_64-linux-gnu/libhdf5_serial_cpp.a
- 1.1 MB 	 usr/bin/tmux
- 1.0 MB 	 usr/lib/x86_64-linux-gnu/nvim/parser/vim.so
- 994 kB 	 usr/lib/python3/dist-packages/pip/_vendor/rich/__pycache__
- 982 kB 	 usr/local/lib/python3.10/dist-packages/msgpack/_cmsgpack.cpython-310-x86_64-linux-gnu.so
- 946 kB 	 var/cache/apt/archives/mariadb-client-core-10.6_1%3a10.6.9-1_amd64.deb
- 879 kB 	 usr/lib/ruby/gems/3.0.0/gems/rbs-1.4.0/stdlib
- 878 kB 	 var/cache/apt/archives/openssh-client_1%3a9.0p1-1ubuntu6_amd64.deb
- 876 kB 	 var/cache/apt/archives/libprotobuf23_3.12.4-1ubuntu7_amd64.deb
- 867 kB 	 var/cache/apt/archives/gettext_0.21-8_amd64.deb
- 864 kB 	 var/lib/gems/3.0.0/gems/msgpack-1.6.0/lib/msgpack
- 858 kB 	 var/lib/gems/3.0.0/extensions/x86_64-linux/3.0.0/msgpack-1.6.0
+ 1.0 MB 	 usr/bin/tmux
+ 1.0 MB 	 usr/local/lib/python3.11/dist-packages/msgpack/_cmsgpack.cpython-311-x86_64-linux-gnu.so
+ 998 kB 	 usr/lib/python3/dist-packages/pip/_vendor/chardet/__pycache__
+ 970 kB 	 usr/share/nodejs/terser/dist/bundle.min.cjs
+ 928 kB 	 var/lib/dpkg/status-old
+ 928 kB 	 var/lib/dpkg/status
+ 905 kB 	 usr/lib/x86_64-linux-gnu/nvim/parser/vim.so
+ 901 kB 	 var/cache/apt/archives/libprotobuf32_3.21.12-1ubuntu7_amd64.deb
+ 894 kB 	 var/cache/apt/archives/zlib1g-dev_1%3a1.2.13.dfsg-1ubuntu4_amd64.deb
+ 881 kB 	 var/lib/gems/3.1.0/gems/msgpack-1.7.0/lib/msgpack
+ 876 kB 	 var/cache/apt/archives/openssh-client_1%3a9.0p1-1ubuntu8_amd64.deb
+ 876 kB 	 var/lib/gems/3.1.0/extensions/x86_64-linux/3.1.0/msgpack-1.7.0
+ 867 kB 	 var/cache/apt/archives/gettext_0.21-11_amd64.deb
+ 856 kB 	 usr/local/lib/python3.11/dist-packages/psutil/tests/__pycache__
  856 kB 	 usr/bin/ugrep
+ 844 kB 	 usr/lib/x86_64-linux-gnu/libjpeg.a
  843 kB 	 usr/bin/ssh
- 841 kB 	 usr/local/lib/python3.10/dist-packages/pip/_vendor/pygments
- 820 kB 	 usr/lib/x86_64-linux-gnu/libjpeg.a
- 812 kB 	 usr/lib/ruby/gems/3.0.0/gems/rbs-1.4.0/core
  811 kB 	 usr/share/rubygems-integration/all/gems/sass-3.7.4/lib/sass
  786 kB 	 usr/lib/x86_64-linux-gnu/libgdk-x11-2.0.so.0.2400.33
- 751 kB 	 var/lib/dpkg/status
- 751 kB 	 var/lib/dpkg/status-old
- 721 kB 	 usr/lib/x86_64-linux-gnu/libgrpcpp_channelz.so.1.30.2
+ 759 kB 	 home/kpango/.cache/pip/http/7/8/f
+ 755 kB 	 usr/lib/x86_64-linux-gnu/libgrpc++.so.1.51.1
+ 740 kB 	 usr/bin/gawk
+ 726 kB 	 var/cache/apt/archives/webpack_5.76.1+dfsg1+~cs17.16.16-1_all.deb
 
 ====================================================================================================
- 1.5 GB 	 $ n latest && npm config set user ${USER} && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" && npm config set user ${USER} && npm install -g yarn && yarn global add diagnostic-languageserver dockerfile-language-server-nodejs bash-language-server markdownlint-cli neovim npm prettier resume-cli terminalizer typescript typescript-language-server && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" && apt purge -y nodejs npm && apt -y autoremove # buildkit
+ 1.5 GB 	 $ n latest && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" && npm install -g yarn && yarn global add diagnostic-languageserver dockerfile-language-server-nodejs bash-language-server markdownlint-cli neovim npm prettier resume-cli terminalizer typescript typescript-language-server && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" && apt purge -y nodejs npm && apt -y autoremove # buildkit
 ====================================================================================================
- 396 MB 	 usr/local/share/.config/yarn/global/node_modules/puppeteer
+ 456 MB 	 usr/local/share/.config/yarn/global/node_modules/puppeteer
  205 MB 	 usr/local/share/.config/yarn/global/node_modules/electron
-  87 MB 	 usr/local/bin/node
-  87 MB 	 usr/local/n/versions/node/18.10.0/bin/node
+  93 MB 	 usr/local/bin/node
+  93 MB 	 usr/local/n/versions/node/19.8.1/bin/node
   82 MB 	 home/kpango/.cache/electron/cabea1eaee834217879a191359db42820b834798ed25561dd045bcea6af3ec9e/electron-v17.4.11-linux-x64.zip
-  81 MB 	 usr/local/share/.cache/yarn/v6/npm-typescript-4.8.4-c464abca159669597be5f96b8943500b238e60e6-integrity/node_modules
-  69 MB 	 usr/local/share/.config/yarn/global/node_modules/typescript
-  50 MB 	 usr/local/n/versions/node/18.10.0/include/node
-  20 MB 	 usr/local/share/.cache/yarn/v6/npm-prettier-2.7.1-e235806850d057f97bb08368a4f7d899f7760c64-integrity/node_modules
-  16 MB 	 usr/local/share/.config/yarn/global/node_modules/prettier
-  12 MB 	 usr/local/share/.cache/yarn/v6/npm-npm-8.19.2-db90e88584d065f51b069ab46b4f02f5cf4898b7-integrity/node_modules
-  12 MB 	 usr/local/n/versions/node/18.10.0/lib/node_modules
-  10 MB 	 usr/local/share/.cache/yarn/v6/npm-rxjs-5.5.12-6fa61b8a77c3d793dbaf270bee2f43f652d741cc-integrity/node_modules
- 9.8 MB 	 usr/local/share/.config/yarn/global/node_modules/npm
- 9.0 MB 	 usr/local/share/.config/yarn/global/node_modules/browser-sync-client
+  50 MB 	 usr/local/n/versions/node/19.8.1/include/node
+  49 MB 	 home/kpango/.cache/node-gyp/19.8.1/include/node/openssl
+  46 MB 	 usr/local/share/.cache/yarn/v6/npm-typescript-5.0.3-fe976f0c826a88d0a382007681cbb2da44afdedf-integrity/node_modules
+  39 MB 	 usr/local/share/.config/yarn/global/node_modules/typescript
+  14 MB 	 usr/local/share/.cache/yarn/v6/npm-prettier-2.8.7-bb79fc8729308549d28fe3a98fce73d2c0656450-integrity/node_modules
+  13 MB 	 usr/local/share/.cache/yarn/v6/npm-npm-9.6.3-671355e34f4396ca7d722618996c95d3774d9fa0-integrity/node_modules
+  13 MB 	 usr/local/n/versions/node/19.8.1/lib/node_modules
+  11 MB 	 usr/local/share/.config/yarn/global/node_modules/prettier
+  10 MB 	 usr/local/share/.config/yarn/global/node_modules/npm
  7.8 MB 	 usr/local/share/.cache/yarn/v6/npm-rx-4.1.0-a5f13ff79ef3b740fe30aa803fb09f98805d4782-integrity/node_modules
  6.6 MB 	 usr/local/share/.config/yarn/global/node_modules/rx
  5.9 MB 	 usr/local/share/.cache/yarn/v6/npm-rxjs-6.6.7-90ac018acabf491bf65044235d5863c4dab804c9-integrity/node_modules
@@ -362,84 +359,85 @@
  5.3 MB 	 usr/local/share/.cache/yarn/v6/npm-terminalizer-0.9.0-1788b18bc76c9138bfbebcd0ae5d39d3279ef0c2-integrity/node_modules
  5.3 MB 	 usr/local/lib/node_modules/yarn/lib/cli.js
  5.1 MB 	 usr/local/share/.config/yarn/global/node_modules/rxjs
+ 4.3 MB 	 usr/local/share/.cache/yarn/v6/npm-@types-node-18.15.11-b3b790f09cb1696cffcec605de025b088fa4225f-integrity/node_modules
  4.3 MB 	 usr/local/share/.config/yarn/global/node_modules/node-pty-prebuilt-multiarch
- 4.2 MB 	 usr/local/share/.cache/yarn/v6/npm-@types-node-18.8.0-b8ee8d83a99470c0661bd899417fcd77060682fe-integrity/node_modules
- 4.0 MB 	 usr/local/share/.cache/yarn/v6/npm-devtools-protocol-0.0.818844-d1947278ec85b53e4c8ca598f607a28fa785ba9e-integrity/node_modules
+ 4.0 MB 	 usr/local/share/.cache/yarn/v6/npm-puppeteer-16.2.0-3fc9cc0c461d3166a98562a7dcd0bf3424a0523c-integrity/node_modules
+ 3.8 MB 	 usr/local/share/.config/yarn/global/node_modules/@types
  3.7 MB 	 usr/local/share/.cache/yarn/v6/npm-expect-24.9.0-b75165b4817074fa4a157794f46fe9f1ba15b6ca-integrity/node_modules
- 3.6 MB 	 usr/local/share/.config/yarn/global/node_modules/@types
- 3.5 MB 	 usr/local/share/.config/yarn/global/node_modules/devtools-protocol
  3.4 MB 	 usr/local/share/.cache/yarn/v6/npm-handlebars-4.7.7-9ce33416aad02dbd6c8fafa8240d5d98004945a1-integrity/node_modules
- 3.3 MB 	 usr/local/share/.cache/yarn/v6/npm-browser-sync-ui-2.27.10-59dd6e436e17b743c99094ff5129306ab7ab5b79-integrity/node_modules
- 3.2 MB 	 usr/local/share/.config/yarn/global/node_modules/terminalizer
+ 3.3 MB 	 usr/local/share/.cache/yarn/v6/npm-browser-sync-ui-2.29.1-21c201a8e61aa2eaa4eebfa144066392eb8e625f-integrity/node_modules
  3.1 MB 	 usr/local/share/.cache/yarn/v6/npm--4.0.2-d077f6825571f82132f9dffaed587b4029feff57-integrity/node_modules
+ 3.1 MB 	 usr/local/share/.config/yarn/global/node_modules/terminalizer
  3.0 MB 	 usr/local/share/.config/yarn/global/node_modules/expect
+ 2.8 MB 	 usr/local/share/.cache/yarn/v6/npm-devtools-protocol-0.0.1019158-4b08d06108a784a2134313149626ba55f030a86f-integrity/node_modules
  2.7 MB 	 usr/local/share/.config/yarn/global/node_modules/handlebars
- 2.5 MB 	 usr/local/share/.cache/yarn/v6/npm-node-gyp-9.1.0-c8d8e590678ea1f7b8097511dedf41fc126648f8-integrity/node_modules
- 2.4 MB 	 usr/local/share/.config/yarn/global/node_modules/browser-sync-ui
- 2.3 MB 	 usr/local/share/.cache/yarn/v6/npm-puppeteer-5.5.0-331a7edd212ca06b4a556156435f58cbae08af00-integrity/node_modules
- 2.3 MB 	 usr/local/share/.cache/yarn/v6/npm-z-schema-5.0.4-ecad8bc5ef3283ae032d603286386cfb1380cce5-integrity/node_modules
+ 2.6 MB 	 usr/local/share/.config/yarn/global/node_modules/node-gyp
+ 2.5 MB 	 usr/local/share/.config/yarn/global/node_modules/browser-sync-ui
+ 2.5 MB 	 usr/local/share/.cache/yarn/v6/npm-node-gyp-9.3.1-1e19f5f290afcc9c46973d68700cbd21a96192e4-integrity/node_modules
+ 2.4 MB 	 usr/local/share/.config/yarn/global/node_modules/devtools-protocol
+ 2.3 MB 	 usr/local/share/.cache/yarn/v6/npm-z-schema-5.0.5-6805a48c5366a6125cae0e58752babfd503daf32-integrity/node_modules
  2.3 MB 	 usr/local/share/.cache/yarn/v6/npm-z-schema-4.2.4-73102a49512179b12a8ec50b1daa676b984da6e4-integrity/node_modules
- 2.2 MB 	 tmp/v8-compile-cache-0/10.2.154.15-node.12/zSusrzSlocalzSlibzSnode_moduleszSyarnzSbinzSyarn.js.BLOB
- 2.1 MB 	 usr/local/share/.config/yarn/global/node_modules/node-gyp
+ 2.2 MB 	 usr/local/share/.cache/yarn/v6/npm-typescript-language-server-3.3.1-2d1a123ca12e403bb52980976eff4b8585d19334-integrity/node_modules
+ 2.2 MB 	 tmp/v8-compile-cache-0/10.8.168.25-node.12/zSusrzSlocalzSlibzSnode_moduleszSyarnzSbinzSyarn.js.BLOB
+ 2.2 MB 	 usr/local/lib/node_modules/corepack/dist/corepack.js
  2.1 MB 	 usr/local/share/.config/yarn/global/node_modules/JSV
  2.1 MB 	 var/cache/apt/pkgcache.bin
+ 2.0 MB 	 usr/local/share/.config/yarn/global/node_modules/z-schema
+ 2.0 MB 	 usr/local/lib/node_modules/npm/node_modules/node-gyp/gyp
  1.9 MB 	 usr/local/share/.config/yarn/global/node_modules/resume-schema
- 1.9 MB 	 usr/local/share/.config/yarn/global/node_modules/z-schema
- 1.8 MB 	 usr/local/lib/node_modules/corepack/dist/vendors-_yarn_berry_cache_proxy-agent-npm-5_0_0-41772f4b01-9_zip_node_modules_proxy-agent_index_js.js
- 1.8 MB 	 usr/local/share/.cache/yarn/v6/npm-@types-node-14.18.31-4b873dea3122e71af4f77e65ec5841397ff254d3-integrity/node_modules
+ 1.8 MB 	 usr/local/share/.cache/yarn/v6/npm-@types-node-14.18.42-fa39b2dc8e0eba61bdf51c66502f84e23b66e114-integrity/node_modules
+ 1.8 MB 	 usr/local/share/.config/yarn/global/node_modules/typescript-language-server
  1.7 MB 	 usr/local/share/.cache/yarn/v6/npm-lodash-4.17.21-679591c564c3bffaae8454cf0b3df370c3d6911c-integrity/node_modules
- 1.7 MB 	 usr/local/share/.config/yarn/global/node_modules/typescript-language-server
- 1.6 MB 	 usr/local/lib/node_modules/npm/node_modules/node-gyp/gyp
- 1.6 MB 	 usr/local/share/.cache/yarn/v6/npm-uglify-js-3.17.2-f55f668b9a64b213977ae688703b6bbb7ca861c6-integrity/node_modules
- 1.5 MB 	 usr/local/share/.cache/yarn/v6/npm-es-abstract-1.20.3-90b143ff7aedc8b3d189bcfac7f1e3e3f81e9da1-integrity/node_modules
+ 1.7 MB 	 usr/local/share/.cache/yarn/v6/npm-es-abstract-1.21.2-a56b9695322c8a185dc25975aa3b8ec31d0e7eff-integrity/node_modules
+ 1.6 MB 	 usr/local/share/.cache/yarn/v6/npm-uglify-js-3.17.4-61678cf5fa3f5b7eb789bb345df29afb8257c22c-integrity/node_modules
+ 1.6 MB 	 usr/local/share/.config/yarn/global/node_modules/es-abstract
+ 1.6 MB 	 usr/local/share/.cache/yarn/v6/npm-socket-io-4.6.1-62ec117e5fce0692fa50498da9347cfb52c3bc70-integrity/node_modules
+ 1.5 MB 	 usr/local/share/.cache/yarn/v6/npm-socket-io-client-4.6.1-80d97d5eb0feca448a0fb6d69a7b222d3d547eab-integrity/node_modules
  1.5 MB 	 usr/local/share/.cache/yarn/v6/npm-object-assign-4.1.4-9673c7c7c351ab8c4d0b516f4343ebf4dfb7799f-integrity/node_modules
  1.4 MB 	 usr/local/share/.config/yarn/global/node_modules/lodash
- 1.4 MB 	 usr/local/share/.config/yarn/global/node_modules/es-abstract
- 1.4 MB 	 usr/local/share/.cache/yarn/v6/npm-socket-io-4.5.2-1eb25fd380ab3d63470aa8279f8e48d922d443ac-integrity/node_modules
- 1.3 MB 	 usr/local/share/.cache/yarn/v6/npm-socket-io-client-4.5.2-9481518c560388c980c88b01e3cf62f367f04c96-integrity/node_modules
  1.3 MB 	 usr/local/share/.config/yarn/global/node_modules/uglify-js
+ 1.3 MB 	 usr/local/share/.config/yarn/global/node_modules/browser-sync
+ 1.2 MB 	 usr/local/share/.config/yarn/global/node_modules/socket.io
  1.2 MB 	 usr/local/share/.cache/yarn/v6/npm-ajv-6.12.6-baf5a62e802b07d977034586f8c3baf5adf26df4-integrity/node_modules
- 1.2 MB 	 usr/local/share/.config/yarn/global/node_modules/browser-sync
+ 1.2 MB 	 usr/local/share/.config/yarn/global/node_modules/socket.io-client
+ 1.2 MB 	 usr/local/share/.cache/yarn/v6/npm-bash-language-server-4.9.0-175538045696455d3677e9104ea3684684b0a039-integrity/node_modules
  1.2 MB 	 usr/local/share/.config/yarn/global/node_modules/object.assign
+ 1.1 MB 	 usr/local/share/.config/yarn/global/node_modules/vscode-languageserver
  1.1 MB 	 usr/local/share/.config/yarn/global/node_modules/winston
- 1.1 MB 	 usr/local/share/.config/yarn/global/node_modules/socket.io-client
- 1.1 MB 	 usr/local/share/.config/yarn/global/node_modules/socket.io
- 1.0 MB 	 usr/local/share/.config/yarn/global/node_modules/resume-cli
+ 1.1 MB 	 usr/local/share/.config/yarn/global/node_modules/resume-cli
  1.0 MB 	 usr/local/share/.cache/yarn/v6/npm-source-map-0.6.1-74722af32e9614e9c287a8d0bbde48b5e2f1a263-integrity/node_modules
+ 998 kB 	 usr/local/share/.config/yarn/global/node_modules/bash-language-server
  988 kB 	 usr/local/share/.cache/yarn/v6/npm-source-map-0.5.7-8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc-integrity/node_modules
  981 kB 	 usr/local/share/.cache/yarn/v6/npm-async-3.2.4-2d22e00f8cddeb5fde5dd33522b56d1cf569a81c-integrity/node_modules
  977 kB 	 usr/local/share/.cache/yarn/v6/npm-superagent-6.1.0-09f08807bc41108ef164cfb4be293cebd480f4a6-integrity/node_modules
- 973 kB 	 usr/local/share/.config/yarn/global/node_modules/superagent
  968 kB 	 usr/local/share/.cache/yarn/v6/npm-domino-2.1.6-fe4ace4310526e5e7b9d12c7de01b7f485a57ffe-integrity/node_modules
  929 kB 	 usr/local/share/.config/yarn/global/node_modules/ajv
- 912 kB 	 usr/local/share/.cache/yarn/v6/npm-typescript-language-server-2.0.0-278d75b1577152748ebec8def1e0c5a12c31c12b-integrity/node_modules
+ 928 kB 	 usr/local/share/.cache/yarn/v6/npm-validator-13.9.0-33e7b85b604f3bbce9bb1a05d5c3e22e1c2ff855-integrity/node_modules
+ 923 kB 	 usr/local/share/.config/yarn/global/node_modules/glob
  889 kB 	 usr/local/share/.cache/yarn/v6/npm-electron-17.4.11-82899a44336bf8f1af15c6312c7f51ae3f4a519b-integrity/node_modules
  884 kB 	 usr/local/share/.cache/yarn/v6/npm-yaml-js-0.2.3-f4cf6c1b3c784f59f55547d7dfcdd06418303291-integrity/node_modules
- 874 kB 	 usr/local/share/.cache/yarn/v6/npm-bash-language-server-3.1.0-f5206d687637028070cf8ac34b4941b36dd468c4-integrity/node_modules
  859 kB 	 usr/local/share/.config/yarn/global/node_modules/snapdragon
- 848 kB 	 usr/local/include/node/openssl/archs/VC-WIN32/no-asm
- 848 kB 	 usr/local/include/node/openssl/archs/VC-WIN32/asm
- 848 kB 	 usr/local/include/node/openssl/archs/VC-WIN32/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/darwin-i386-cc/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/linux-elf/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/linux32-s390x/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/darwin64-x86_64-cc/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/darwin64-arm64-cc/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/solaris-x86-gcc/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/BSD-x86/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/darwin-i386-cc/asm
- 847 kB 	 usr/local/include/node/openssl/archs/linux-ppc64le/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/linux64-s390x/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/linux-x86_64/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/linux-elf/asm
- 847 kB 	 usr/local/include/node/openssl/archs/darwin-i386-cc/no-asm
- 847 kB 	 usr/local/include/node/openssl/archs/linux32-s390x/asm
- 847 kB 	 usr/local/include/node/openssl/archs/linux64-mips64/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/linux-elf/no-asm
- 847 kB 	 usr/local/include/node/openssl/archs/linux32-s390x/no-asm
- 847 kB 	 usr/local/include/node/openssl/archs/solaris64-x86_64-gcc/asm_avx2
- 847 kB 	 usr/local/include/node/openssl/archs/darwin64-x86_64-cc/asm
- 847 kB 	 usr/local/include/node/openssl/archs/darwin64-arm64-cc/asm
+ 849 kB 	 usr/local/include/node/openssl/archs/VC-WIN32/no-asm
+ 849 kB 	 usr/local/include/node/openssl/archs/VC-WIN32/asm
+ 849 kB 	 usr/local/include/node/openssl/archs/VC-WIN32/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/darwin-i386-cc/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/linux-elf/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/linux32-s390x/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/darwin64-x86_64-cc/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/darwin64-arm64-cc/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/solaris-x86-gcc/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/BSD-x86/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/darwin-i386-cc/asm
+ 848 kB 	 usr/local/include/node/openssl/archs/linux-ppc64le/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/linux64-s390x/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/linux-x86_64/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/linux-elf/asm
+ 848 kB 	 usr/local/include/node/openssl/archs/darwin-i386-cc/no-asm
+ 848 kB 	 usr/local/include/node/openssl/archs/linux32-s390x/asm
+ 848 kB 	 usr/local/include/node/openssl/archs/linux64-mips64/asm_avx2
+ 848 kB 	 usr/local/include/node/openssl/archs/linux-elf/no-asm
+ 848 kB 	 usr/local/include/node/openssl/archs/linux32-s390x/no-asm
+ 848 kB 	 usr/local/include/node/openssl/archs/solaris64-x86_64-gcc/asm_avx2
 
 ====================================================================================================
  174 kB 	 $ COPY /usr/local/bin/ng* /usr/local/bin/ # buildkit
@@ -447,22 +445,21 @@
  174 kB 	 usr/local/bin/ngt
 
 ====================================================================================================
- 986 kB 	 $ COPY /usr/local/include/NGT /usr/local/include/NGT # buildkit
+ 987 kB 	 $ COPY /usr/local/include/NGT /usr/local/include/NGT # buildkit
 ====================================================================================================
- 164 kB 	 usr/local/include/NGT/NGTQ/Quantizer.h
+ 165 kB 	 usr/local/include/NGT/NGTQ/Quantizer.h
  149 kB 	 usr/local/include/NGT/half.hpp
   62 kB 	 usr/local/include/NGT/Common.h
   61 kB 	 usr/local/include/NGT/Index.h
   54 kB 	 usr/local/include/NGT/Optimizer.h
-  47 kB 	 usr/local/include/NGT/NGTQ/HierarchicalKmeans.h
-  41 kB 	 usr/local/include/NGT/NGTQ/QuantizedBlobGraph.h
+  52 kB 	 usr/local/include/NGT/NGTQ/QuantizedBlobGraph.h
+  49 kB 	 usr/local/include/NGT/NGTQ/HierarchicalKmeans.h
   40 kB 	 usr/local/include/NGT/Graph.h
   36 kB 	 usr/local/include/NGT/PrimitiveComparator.h
   33 kB 	 usr/local/include/NGT/Clustering.h
   31 kB 	 usr/local/include/NGT/ObjectSpaceRepository.h
   30 kB 	 usr/local/include/NGT/GraphReconstructor.h
-  26 kB 	 usr/local/include/NGT/NGTQ/Optimizer.h
-  22 kB 	 usr/local/include/NGT/NGTQ/QuantizedGraph.h
+  23 kB 	 usr/local/include/NGT/NGTQ/QuantizedGraph.h
   22 kB 	 usr/local/include/NGT/GraphOptimizer.h
   20 kB 	 usr/local/include/NGT/MmapManagerImpl.hpp
   18 kB 	 usr/local/include/NGT/Node.h
@@ -471,73 +468,78 @@
   17 kB 	 usr/local/include/NGT/ObjectSpace.h
   14 kB 	 usr/local/include/NGT/ObjectRepository.h
   13 kB 	 usr/local/include/NGT/Tree.h
- 8.0 kB 	 usr/local/include/NGT/Capi.h
+  12 kB 	 usr/local/include/NGT/NGTQ/Optimizer.h
+ 8.1 kB 	 usr/local/include/NGT/Capi.h
  7.7 kB 	 usr/local/include/NGT/Thread.h
  6.2 kB 	 usr/local/include/NGT/SharedMemoryAllocator.h
  5.8 kB 	 usr/local/include/NGT/ArrayFile.h
  4.2 kB 	 usr/local/include/NGT/Command.h
- 3.8 kB 	 usr/local/include/NGT/NGTQ/QbgCli.h
- 3.7 kB 	 usr/local/include/NGT/NGTQ/Capi.h
+ 3.9 kB 	 usr/local/include/NGT/NGTQ/Capi.h
+ 3.7 kB 	 usr/local/include/NGT/NGTQ/QbgCli.h
  2.6 kB 	 usr/local/include/NGT/MmapManager.h
  2.6 kB 	 usr/local/include/NGT/HashBasedBooleanSet.h
  2.4 kB 	 usr/local/include/NGT/MmapManagerDefs.h
  1.9 kB 	 usr/local/include/NGT/defines.h
  1.4 kB 	 usr/local/include/NGT/Version.h
  860  B 	 usr/local/include/NGT/MmapManagerException.h
- 259  B 	 usr/local/include/NGT/version_defs.h
+ 253  B 	 usr/local/include/NGT/version_defs.h
 
 ====================================================================================================
-  12 MB 	 $ COPY /usr/local/lib/libngt.* /usr/local/lib/ # buildkit
+  16 MB 	 $ COPY /usr/local/lib/libngt.* /usr/local/lib/ # buildkit
 ====================================================================================================
- 6.2 MB 	 usr/local/lib/libngt.a
- 2.1 MB 	 usr/local/lib/libngt.so
- 2.1 MB 	 usr/local/lib/libngt.so.2
- 2.1 MB 	 usr/local/lib/libngt.so.2.0.4
+ 8.8 MB 	 usr/local/lib/libngt.a
+ 2.2 MB 	 usr/local/lib/libngt.so
+ 2.2 MB 	 usr/local/lib/libngt.so.2
+ 2.2 MB 	 usr/local/lib/libngt.so.2.0.10
 
 ====================================================================================================
- 200 kB 	 $ COPY /usr/local/include/tensorflow /usr/local/include/tensorflow # buildkit
+ 208 kB 	 $ COPY /usr/local/include/tensorflow /usr/local/include/tensorflow # buildkit
 ====================================================================================================
-  81 kB 	 usr/local/include/tensorflow/c/c_api.h
-  36 kB 	 usr/local/include/tensorflow/c/eager/c_api_experimental.h
+  80 kB 	 usr/local/include/tensorflow/c/c_api.h
+  38 kB 	 usr/local/include/tensorflow/c/eager/c_api_experimental.h
   24 kB 	 usr/local/include/tensorflow/c/eager/c_api.h
   16 kB 	 usr/local/include/tensorflow/c/c_api_experimental.h
-  14 kB 	 usr/local/include/tensorflow/core/platform/ctstring_internal.h
- 6.5 kB 	 usr/local/include/tensorflow/c/tf_tensor.h
- 6.2 kB 	 usr/local/include/tensorflow/core/platform/ctstring.h
- 3.4 kB 	 usr/local/include/tensorflow/c/tf_status.h
- 2.7 kB 	 usr/local/include/tensorflow/c/tf_datatype.h
+  14 kB 	 usr/local/include/tensorflow/tsl/platform/ctstring_internal.h
+ 6.7 kB 	 usr/local/include/tensorflow/c/tf_tensor.h
+ 6.2 kB 	 usr/local/include/tensorflow/tsl/platform/ctstring.h
+ 3.7 kB 	 usr/local/include/tensorflow/c/tf_status.h
+ 2.9 kB 	 usr/local/include/tensorflow/tsl/c/tsl_status.h
+ 2.9 kB 	 usr/local/include/tensorflow/c/tf_datatype.h
+ 2.6 kB 	 usr/local/include/tensorflow/c/tf_buffer.h
  2.5 kB 	 usr/local/include/tensorflow/c/tensor_interface.h
  2.0 kB 	 usr/local/include/tensorflow/c/tf_tstring.h
  1.7 kB 	 usr/local/include/tensorflow/c/eager/dlpack.h
  1.5 kB 	 usr/local/include/tensorflow/c/c_api_macros.h
  1.2 kB 	 usr/local/include/tensorflow/c/tf_file_statistics.h
  1.2 kB 	 usr/local/include/tensorflow/c/tf_attrtype.h
+ 892  B 	 usr/local/include/tensorflow/core/platform/ctstring_internal.h
+ 856  B 	 usr/local/include/tensorflow/core/platform/ctstring.h
 
 ====================================================================================================
- 1.3 GB 	 $ COPY /usr/local/lib/libtensorflow* /usr/local/lib/ # buildkit
+ 1.4 GB 	 $ COPY /usr/local/lib/libtensorflow* /usr/local/lib/ # buildkit
 ====================================================================================================
- 377 MB 	 usr/local/lib/libtensorflow.so
- 377 MB 	 usr/local/lib/libtensorflow.so.2
- 377 MB 	 usr/local/lib/libtensorflow.so.2.10.0
-  44 MB 	 usr/local/lib/libtensorflow_framework.so
-  44 MB 	 usr/local/lib/libtensorflow_framework.so.2
-  44 MB 	 usr/local/lib/libtensorflow_framework.so.2.10.0
+ 408 MB 	 usr/local/lib/libtensorflow.so
+ 408 MB 	 usr/local/lib/libtensorflow.so.2
+ 408 MB 	 usr/local/lib/libtensorflow.so.2.12.0
+  46 MB 	 usr/local/lib/libtensorflow_framework.so
+  46 MB 	 usr/local/lib/libtensorflow_framework.so.2
+  46 MB 	 usr/local/lib/libtensorflow_framework.so.2.12.0
 
 ====================================================================================================
- 4.6 MB 	 $ COPY /usr/local/bin/protoc /usr/local/bin/protoc # buildkit
+ 7.9 MB 	 $ COPY /usr/local/bin/protoc /usr/local/bin/protoc # buildkit
 ====================================================================================================
- 4.6 MB 	 usr/local/bin/protoc
+ 7.9 MB 	 usr/local/bin/protoc
 
 ====================================================================================================
-  99 kB 	 $ COPY /usr/local/include/google/protobuf /usr/local/include/google/protobuf # buildkit
+ 102 kB 	 $ COPY /usr/local/include/google/protobuf /usr/local/include/google/protobuf # buildkit
 ====================================================================================================
-  38 kB 	 usr/local/include/google/protobuf/descriptor.proto
- 8.8 kB 	 usr/local/include/google/protobuf/compiler/plugin.proto
+  41 kB 	 usr/local/include/google/protobuf/descriptor.proto
+ 8.7 kB 	 usr/local/include/google/protobuf/compiler/plugin.proto
  8.2 kB 	 usr/local/include/google/protobuf/field_mask.proto
  7.7 kB 	 usr/local/include/google/protobuf/api.proto
  6.5 kB 	 usr/local/include/google/protobuf/timestamp.proto
  6.1 kB 	 usr/local/include/google/protobuf/type.proto
- 5.9 kB 	 usr/local/include/google/protobuf/any.proto
+ 6.0 kB 	 usr/local/include/google/protobuf/any.proto
  4.9 kB 	 usr/local/include/google/protobuf/duration.proto
  4.0 kB 	 usr/local/include/google/protobuf/wrappers.proto
  3.8 kB 	 usr/local/include/google/protobuf/struct.proto
@@ -545,14 +547,14 @@
  2.3 kB 	 usr/local/include/google/protobuf/source_context.proto
 
 ====================================================================================================
-  38 kB 	 $ ldconfig && rm -rf /tmp/* /var/cache # buildkit
+  37 kB 	 $ ldconfig && rm -rf /tmp/* /var/cache # buildkit
 ====================================================================================================
-  38 kB 	 etc/ld.so.cache
+  37 kB 	 etc/ld.so.cache
    0  B 	 tmp/.wh.nvim.root
    0  B 	 tmp/.wh.v8-compile-cache-0
-   0  B 	 tmp/.wh.yarn--1664772145953-0.20795194472005574
-   0  B 	 tmp/.wh.yarn--1664772145954-0.4854620865220798
-   0  B 	 tmp/.wh.yarn--1664772145956-0.6732045287143191
+   0  B 	 tmp/.wh.yarn--1680675009983-0.07344186051083312
+   0  B 	 tmp/.wh.yarn--1680675009983-0.5996138212223656
+   0  B 	 tmp/.wh.yarn--1680675009983-0.7792614620731373
    0  B 	 var/.wh.cache
 
 ====================================================================================================
@@ -560,305 +562,315 @@
 ====================================================================================================
 
 ====================================================================================================
-  14 MB 	 $ COPY /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx # buildkit
+  15 MB 	 $ COPY /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx # buildkit
 ====================================================================================================
-  14 MB 	 usr/lib/docker/cli-plugins/docker-buildx
+  15 MB 	 usr/lib/docker/cli-plugins/docker-buildx
 
 ====================================================================================================
-  14 MB 	 $ COPY /usr/lib/docker/cli-plugins/docker-compose /usr/lib/docker/cli-plugins/docker-compose # buildkit
+  16 MB 	 $ COPY /usr/lib/docker/cli-plugins/docker-compose /usr/lib/docker/cli-plugins/docker-compose # buildkit
 ====================================================================================================
-  14 MB 	 usr/lib/docker/cli-plugins/docker-compose
+  16 MB 	 usr/lib/docker/cli-plugins/docker-compose
 
 ====================================================================================================
- 298 MB 	 $ COPY /usr/docker/bin/ /usr/bin/ # buildkit
+ 386 MB 	 $ COPY /usr/docker/bin/ /usr/bin/ # buildkit
 ====================================================================================================
- 186 MB 	 usr/bin/trivy
-  26 MB 	 usr/bin/dockerd
-  21 MB 	 usr/bin/docker-containerd-ctr
-  12 MB 	 usr/bin/docker-containerd
- 8.6 MB 	 usr/bin/docker
+ 191 MB 	 usr/bin/trivy
+  21 MB 	 usr/bin/dockerd
+  18 MB 	 usr/bin/containerd
+  18 MB 	 usr/bin/docker-containerd
+  17 MB 	 usr/bin/docker
+  14 MB 	 usr/bin/docker-slim
+  14 MB 	 usr/bin/slim
+ 9.9 MB 	 usr/bin/ctr
+ 9.9 MB 	 usr/bin/docker-containerd-ctr
+ 8.9 MB 	 usr/bin/containerd-stress
+ 8.9 MB 	 usr/bin/docker-containerd-stress
+ 7.9 MB 	 usr/bin/docker-runc
  7.8 MB 	 usr/bin/container-diff
- 7.7 MB 	 usr/bin/docker-runc
- 7.2 MB 	 usr/bin/dockle
- 7.1 MB 	 usr/bin/docker-slim
+ 7.0 MB 	 usr/bin/dockle
+ 4.4 MB 	 usr/bin/containerd-shim-runc-v2
+ 4.4 MB 	 usr/bin/docker-containerd-shim-runc-v2
  4.1 MB 	 usr/bin/dive
- 2.5 MB 	 usr/bin/docker-containerd-shim
+ 2.9 MB 	 usr/bin/containerd-shim-runc-v1
+ 2.9 MB 	 usr/bin/docker-containerd-shim-runc-v1
+ 2.3 MB 	 usr/bin/containerd-shim
+ 2.3 MB 	 usr/bin/docker-containerd-shim
  2.3 MB 	 usr/bin/docker-slim-sensor
+ 2.3 MB 	 usr/bin/slim-sensor
  2.0 MB 	 usr/bin/docker-proxy
- 1.4 MB 	 usr/bin/dlayer
+ 1.5 MB 	 usr/bin/dlayer
  846 kB 	 usr/bin/dockfmt
  768 kB 	 usr/bin/docker-credential-pass
  683 kB 	 usr/bin/docker-credential-secretservice
- 293 kB 	 usr/bin/docker-init
- 7.5 kB 	 usr/bin/dockerd-entrypoint
+ 301 kB 	 usr/bin/docker-init
+ 7.7 kB 	 usr/bin/dockerd-entrypoint
  1.9 kB 	 usr/bin/docker-entrypoint
- 1.5 kB 	 usr/bin/dind
+ 1.7 kB 	 usr/bin/dind
  587  B 	 usr/bin/modprobe
 
 ====================================================================================================
- 583 MB 	 $ COPY /usr/k8s/bin/ /usr/bin/ # buildkit
+ 535 MB 	 $ COPY /usr/k8s/bin/ /usr/bin/ # buildkit
 ====================================================================================================
-  58 MB 	 usr/bin/octant
-  49 MB 	 usr/bin/telepresence
+  53 MB 	 usr/bin/telepresence
+  30 MB 	 usr/bin/kubectl-gadget
   27 MB 	 usr/bin/pixie
   26 MB 	 usr/bin/wasme
-  24 MB 	 usr/bin/istioctl
+  26 MB 	 usr/bin/istioctl
   23 MB 	 usr/bin/kubectl-fzf-server
-  23 MB 	 usr/bin/kubectl-gadget
+  22 MB 	 usr/bin/skaffold
   21 MB 	 usr/bin/kubectl-fzf-completion
-  20 MB 	 usr/bin/skaffold
-  17 MB 	 usr/bin/popeye
+  19 MB 	 usr/bin/popeye
   17 MB 	 usr/bin/k9s
-  17 MB 	 usr/bin/kubebuilder
   17 MB 	 usr/bin/kubectl-check-ownerreferences
-  14 MB 	 usr/bin/linkerd
   14 MB 	 usr/bin/helm
-  13 MB 	 usr/bin/kubectl
+  14 MB 	 usr/bin/linkerd
+  14 MB 	 usr/bin/kubectl
+  12 MB 	 usr/bin/kube-linter
+  12 MB 	 usr/bin/kubectl-lint
   12 MB 	 usr/bin/kubectl-krew
   12 MB 	 usr/bin/kpt
   12 MB 	 usr/bin/kubebox
-  11 MB 	 usr/bin/kube-linter
-  11 MB 	 usr/bin/kubectl-lint
   11 MB 	 usr/bin/kubectl-rolesum
-  11 MB 	 usr/bin/kubectl-fwd
-  11 MB 	 usr/bin/kubefwd
+  11 MB 	 usr/bin/stern
+  10 MB 	 usr/bin/kubectl-fwd
+  10 MB 	 usr/bin/kubefwd
   10 MB 	 usr/bin/helmfile
-  10 MB 	 usr/bin/stern
+  10 MB 	 usr/bin/kubectl-tree
  9.8 MB 	 usr/bin/kprofefe
- 9.7 MB 	 usr/bin/kubectl-trace
- 9.7 MB 	 usr/bin/kubectl-tree
+ 9.8 MB 	 usr/bin/kubectl-trace
  9.5 MB 	 usr/bin/kubectl-profefe
- 9.2 MB 	 usr/bin/kdash
- 8.6 MB 	 usr/bin/k8sviz
+ 9.1 MB 	 usr/bin/kdash
+ 8.7 MB 	 usr/bin/k8sviz
  7.8 MB 	 usr/bin/kubens
- 6.5 MB 	 usr/bin/k3d
- 6.1 MB 	 usr/bin/kubeletctl
- 5.7 MB 	 usr/bin/kustomize
+ 7.5 MB 	 usr/bin/kubebuilder
+ 6.6 MB 	 usr/bin/k3d
+ 5.8 MB 	 usr/bin/kustomize
+ 5.5 MB 	 usr/bin/kubeletctl
  2.7 MB 	 usr/bin/kubeval
  2.6 MB 	 usr/bin/helm-docs
  2.4 MB 	 usr/bin/kind
  964 kB 	 usr/bin/kubectx
- 771 kB 	 usr/bin/kubecolor
+ 795 kB 	 usr/bin/kubecolor
  5.0 kB 	 usr/bin/kubectl-fzf.zsh
 
 ====================================================================================================
- 1.4 GB 	 $ COPY /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk # buildkit
+ 1.5 GB 	 $ COPY /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk # buildkit
 ====================================================================================================
-  92 MB 	 usr/lib/google-cloud-sdk/bin/anthoscli
-  89 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/google/appengine/tools
-  71 MB 	 usr/lib/google-cloud-sdk/data/cli/gcloud.json
-  69 MB 	 usr/lib/google-cloud-sdk/platform/pubsub-emulator/lib/cloud-pubsub-emulator-0.7.0.jar
+ 175 MB 	 usr/lib/google-cloud-sdk/bin/anthoscli
+  78 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/google/appengine/tools
+  78 MB 	 usr/lib/google-cloud-sdk/data/cli/gcloud.json
+  75 MB 	 usr/lib/google-cloud-sdk/platform/pubsub-emulator/lib/cloud-pubsub-emulator-0.8.0.jar
+  62 MB 	 usr/lib/google-cloud-sdk/bin/kpt
   53 MB 	 usr/lib/google-cloud-sdk/bin/cloud_spanner_emulator/emulator_main
-  46 MB 	 usr/lib/google-cloud-sdk/platform/cloud-firestore-emulator/cloud-firestore-emulator.jar
-  43 MB 	 usr/lib/google-cloud-sdk/bin/kpt
+  47 MB 	 usr/lib/google-cloud-sdk/platform/cloud-firestore-emulator/cloud-firestore-emulator.jar
+  41 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/python3.9/site-packages
   40 MB 	 usr/lib/google-cloud-sdk/platform/cloud-datastore-emulator/CloudDatastore.jar
   39 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/libpython3.9.so
   39 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/libpython3.9.so.1.0
   39 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/python3.9/config-3.9-x86_64-linux-gnu
   39 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/libpython3.9.a
-  37 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/python3.9/site-packages
-  24 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute
+  25 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/compute
   24 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/django-1.5/django
+  24 MB 	 usr/lib/google-cloud-sdk/bin/local-extract
   23 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/django-1.4/django
-  22 MB 	 usr/lib/google-cloud-sdk/bin/local-extract
   18 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/django-1.3/django
   18 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/django-1.11/django
   17 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/django-1.9/django
   16 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/django-1.2/django
-  14 MB 	 usr/lib/google-cloud-sdk/bin/cbt
+  15 MB 	 usr/lib/google-cloud-sdk/bin/cbt
   12 MB 	 usr/lib/google-cloud-sdk/lib/third_party/kubernetes/client/apis
   12 MB 	 usr/lib/google-cloud-sdk/platform/gsutil_py2/gslib/vendored/boto
   11 MB 	 usr/lib/google-cloud-sdk/bin/cloud_spanner_emulator/gateway_main
-  11 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/gslib/vendored/boto
   11 MB 	 usr/lib/google-cloud-sdk/bin/gke-gcloud-auth-plugin
-  10 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/aiplatform
+  11 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/gslib/vendored/boto
+  11 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/aiplatform
  9.8 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/python27/sdk/google
- 9.2 MB 	 usr/lib/google-cloud-sdk/platform/bigtable-emulator/cbtemulator
+ 9.5 MB 	 usr/lib/google-cloud-sdk/platform/bigtable-emulator/cbtemulator
  8.4 MB 	 usr/lib/google-cloud-sdk/lib/third_party/kubernetes/client/models
  7.3 MB 	 usr/lib/google-cloud-sdk/lib/third_party/botocore/data/ec2
  6.0 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/chardet/tests
- 5.5 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/go-app-stager
- 4.7 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_alpha.json
+ 5.7 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/go-app-stager
+ 4.5 MB 	 usr/lib/google-cloud-sdk/lib/third_party/cloudsdk/google/protobuf
  4.3 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/requests/ext
- 4.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_beta.json
- 3.9 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_v1.json
- 3.7 MB 	 usr/lib/google-cloud-sdk/data/cli/gcloud_completions.py
+ 4.2 MB 	 usr/lib/google-cloud-sdk/data/cli/gcloud_completions.py
  3.6 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/google/appengine/api
+ 3.4 MB 	 usr/lib/google-cloud-sdk/platform/anthoscli_licenses/lib.zip
  3.4 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/python3.9/__pycache__
  3.3 MB 	 usr/lib/google-cloud-sdk/lib/third_party/botocore/data/cloudfront
  3.2 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/php/sdk/google
+ 3.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/healthcare
  3.0 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/python3.9/ensurepip
- 2.9 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/healthcare
- 2.7 MB 	 usr/lib/google-cloud-sdk/platform/anthoscli_licenses/lib.zip
+ 2.6 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/gkehub
+ 2.4 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/networkservices
  2.3 MB 	 usr/lib/google-cloud-sdk/lib/third_party/pygments/lexers/__pycache__
- 2.2 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/aiplatform_v1beta1.json
- 2.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/gkehub
  2.1 MB 	 usr/lib/google-cloud-sdk/bin/gcloud-crc32c
- 2.1 MB 	 usr/lib/google-cloud-sdk/lib/third_party/google/protobuf/internal
- 2.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/networkservices
- 2.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dialogflow
- 2.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/aiplatform_v1alpha1.json
- 2.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/container
+ 2.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/container
+ 2.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/dialogflow
+ 2.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/gapic_clients/logging_v2
+ 1.8 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/apigee
  1.8 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/python3.9/encodings
  1.8 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/google/appengine/_internal
- 1.8 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/gapic_clients/logging_v2
  1.8 MB 	 usr/lib/google-cloud-sdk/.install/app-engine-python-extras.manifest
  1.8 MB 	 usr/lib/google-cloud-sdk/platform/gsutil_py2/third_party/apitools/samples
  1.8 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/apitools/samples
- 1.7 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/cloudbuild
  1.7 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/python3.9/unittest
- 1.7 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/apigee
+ 1.7 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/cloudbuild
+ 1.7 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/containeranalysis
+ 1.6 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/securitycenter
  1.6 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/google/appengine/ext
  1.6 MB 	 usr/lib/google-cloud-sdk/platform/bundledpythonunix/lib/python3.9/distutils
  1.5 MB 	 usr/lib/google-cloud-sdk/platform/gsutil_py2/third_party/apitools/apitools
  1.5 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/apitools/apitools
+ 1.5 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/networksecurity
  1.5 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/google/appengine/datastore
- 1.5 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/containeranalysis
  1.4 MB 	 usr/lib/google-cloud-sdk/platform/gsutil_py2/gslib/vendored/oauth2client
- 1.4 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/osconfig
- 1.3 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/aiplatform_v1.json
- 1.3 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/securitycenter
- 1.3 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dns
+ 1.4 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/osconfig
+ 1.3 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/dns
+ 1.3 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/datacatalog
  1.2 MB 	 usr/lib/google-cloud-sdk/lib/third_party/google/cloud/pubsublite_v1
+ 1.2 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/google-auth-library-python/tests
  1.2 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/docker/docker
+ 1.2 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/logging
+ 1.2 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/gapic_clients/storage_v2
  1.2 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/pyparsing/examples
  1.2 MB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/cherrypy/cherrypy
+ 1.2 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/cloudidentity
+ 1.2 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/gslib/tests/__pycache__
  1.1 MB 	 usr/lib/google-cloud-sdk/lib/third_party/botocore/data/rds
- 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/cloudresourcemanager
- 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/privateca
- 1.1 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/gslib/tests/__pycache__
- 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/managedidentities
- 1.1 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/google-auth-library-python/tests
- 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/logging
- 1.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/compute_dev_alpha.json
- 1.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/dialogflow_v2.json
- 1.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/recommender
+ 1.1 MB 	 usr/lib/google-cloud-sdk/platform/anthoscli_licenses/LICENSES.txt
+ 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/cloudresourcemanager
+ 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/managedidentities
+ 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/privateca
+ 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/monitoring
+ 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/recommender
+ 1.1 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/metastore
+ 1.1 MB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/google-auth-library-python/google
+ 1.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/iam
+ 1.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/beyondcorp
  1.0 MB 	 usr/lib/google-cloud-sdk/lib/third_party/google/pubsub_v1/services
- 999 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/cloudasset
- 986 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/datacatalog
- 980 kB 	 usr/lib/google-cloud-sdk/platform/gsutil/third_party/google-auth-library-python/google
- 979 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/beyondcorp
- 978 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/serviceusage
- 974 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/metastore
- 974 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/gameservices
+ 1.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/cloudasset
+ 1.0 MB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/appengine
+ 978 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/serviceusage
+ 973 kB 	 usr/lib/google-cloud-sdk/RELEASE_NOTES
+ 972 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/gameservices
  965 kB 	 usr/lib/google-cloud-sdk/platform/gsutil_py2/gslib/tests/__pycache__
  960 kB 	 usr/lib/google-cloud-sdk/platform/google_appengine/lib/pytz-2017.3/pytz
- 957 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/third_party/apis/iam
+ 958 kB 	 usr/lib/google-cloud-sdk/lib/googlecloudsdk/generated_clients/apis/cloudfunctions
 
 ====================================================================================================
- 338 MB 	 $ COPY /usr/lib/google-cloud-sdk/lib /usr/lib # buildkit
+ 300 MB 	 $ COPY /usr/lib/google-cloud-sdk/lib /usr/lib # buildkit
 ====================================================================================================
- 4.7 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute_alpha.json
- 4.1 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute_beta.json
- 4.0 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute/alpha/compute_alpha_messages.py
- 4.0 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute/alpha/__pycache__
- 3.9 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute_v1.json
- 3.5 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute/beta/compute_beta_messages.py
- 3.5 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute/beta/__pycache__
- 3.4 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute/v1/compute_v1_messages.py
- 3.2 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute/v1/__pycache__
- 2.2 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform_v1beta1.json
- 2.1 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform_v1alpha1.json
+ 4.2 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/alpha/compute_alpha_messages.py
+ 4.1 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/alpha/__pycache__
+ 3.7 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/beta/compute_beta_messages.py
+ 3.6 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/beta/__pycache__
+ 3.5 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/v1/compute_v1_messages.py
+ 3.3 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/v1/__pycache__
+ 1.9 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/aiplatform/v1beta1/__pycache__
  1.9 MB 	 usr/lib/third_party/botocore/data/ec2/2016-11-15/service-2.json
- 1.8 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform/v1beta1/__pycache__
- 1.7 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform/v1beta1/aiplatform_v1beta1_messages.py
- 1.6 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform/v1alpha1/__pycache__
- 1.6 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform/v1alpha1/aiplatform_v1alpha1_messages.py
+ 1.8 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/aiplatform/v1beta1/aiplatform_v1beta1_messages.py
+ 1.7 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/aiplatform/v1alpha1/__pycache__
+ 1.7 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/aiplatform/v1alpha1/aiplatform_v1alpha1_messages.py
  1.4 MB 	 usr/lib/third_party/kubernetes/client/apis/core_v1_api.py
- 1.3 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform_v1.json
- 1.2 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform/v1/__pycache__
- 1.1 MB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform/v1/aiplatform_v1_messages.py
+ 1.2 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/aiplatform/v1/__pycache__
+ 1.1 MB 	 usr/lib/googlecloudsdk/generated_clients/gapic_clients/logging_v2/services/config_service_v2
+ 1.1 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/aiplatform/v1/aiplatform_v1_messages.py
  1.1 MB 	 usr/lib/third_party/kubernetes/client/apis/__pycache__/core_v1_api.cpython-39.pyc
- 1.0 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute_dev_alpha.json
- 1.0 MB 	 usr/lib/googlecloudsdk/third_party/apis/dialogflow_v2.json
- 1.0 MB 	 usr/lib/googlecloudsdk/third_party/apis/compute/alpha/compute_alpha_client.py
- 958 kB 	 usr/lib/googlecloudsdk/third_party/apis/dialogflow/v2/__pycache__
- 904 kB 	 usr/lib/googlecloudsdk/third_party/gapic_clients/logging_v2/services/config_service_v2
+ 1.0 MB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/alpha/compute_alpha_client.py
+ 975 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dialogflow/v2/__pycache__
+ 920 kB 	 usr/lib/googlecloudsdk/generated_clients/gapic_clients/storage_v2/services/storage
+ 916 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/beta/compute_beta_client.py
+ 899 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/apigee/v1/__pycache__
  891 kB 	 usr/lib/third_party/botocore/data/ec2/2016-09-15/service-2.json
- 890 kB 	 usr/lib/googlecloudsdk/third_party/apis/compute/beta/compute_beta_client.py
  878 kB 	 usr/lib/third_party/botocore/data/ec2/2016-04-01/service-2.json
  847 kB 	 usr/lib/third_party/botocore/data/ec2/2015-10-01/service-2.json
- 814 kB 	 usr/lib/googlecloudsdk/third_party/apis/apigee/v1/__pycache__
- 798 kB 	 usr/lib/googlecloudsdk/third_party/apis/compute/v1/compute_v1_client.py
- 772 kB 	 usr/lib/googlecloudsdk/third_party/apis/apigee_v1.json
+ 812 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/compute/v1/compute_v1_client.py
+ 759 kB 	 usr/lib/third_party/cloudsdk/google/protobuf/internal/__pycache__
+ 748 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dialogflow/v2/dialogflow_v2_messages.py
  736 kB 	 usr/lib/third_party/botocore/data/rds/2014-10-31/service-2.json
- 732 kB 	 usr/lib/googlecloudsdk/third_party/apis/dialogflow/v2/dialogflow_v2_messages.py
  715 kB 	 usr/lib/third_party/botocore/data/ec2/2015-04-15/service-2.json
  709 kB 	 usr/lib/third_party/botocore/data/sagemaker/2017-07-24/service-2.json
  677 kB 	 usr/lib/third_party/botocore/data/pinpoint/2016-12-01/service-2.json
  644 kB 	 usr/lib/third_party/botocore/data/ssm/2014-11-06/service-2.json
+ 614 kB 	 usr/lib/googlecloudsdk/generated_clients/gapic_clients/spanner_v1/services/spanner
+ 601 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/healthcare/v1beta1/__pycache__
  590 kB 	 usr/lib/third_party/botocore/data/iot/2015-05-28/service-2.json
  588 kB 	 usr/lib/third_party/botocore/data/ec2/2015-03-01/service-2.json
  581 kB 	 usr/lib/third_party/botocore/data/mediaconvert/2017-08-29/service-2.json
  579 kB 	 usr/lib/third_party/botocore/data/s3/2006-03-01/service-2.json
- 574 kB 	 usr/lib/googlecloudsdk/third_party/apis/healthcare/v1beta1/__pycache__
+ 579 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/logging/v2/__pycache__
  566 kB 	 usr/lib/third_party/botocore/data/ec2/2014-10-01/service-2.json
- 560 kB 	 usr/lib/googlecloudsdk/third_party/apis/healthcare_v1beta1.json
+ 556 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/aiplatform/v1beta1/aiplatform_v1beta1_client.py
  548 kB 	 usr/lib/third_party/kubernetes/client/apis/extensions_v1beta1_api.py
  544 kB 	 usr/lib/third_party/botocore/data/iam/2010-05-08/service-2.json
  540 kB 	 usr/lib/third_party/botocore/data/ec2/2014-09-01/service-2.json
- 539 kB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform/v1beta1/aiplatform_v1beta1_client.py
- 530 kB 	 usr/lib/googlecloudsdk/third_party/apis/logging/v2/__pycache__
- 524 kB 	 usr/lib/googlecloudsdk/third_party/apis/logging_v2.json
+ 521 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/securitycenter/v1/__pycache__
  506 kB 	 usr/lib/third_party/botocore/data/medialive/2017-10-14/service-2.json
+ 502 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/networkservices/v1alpha1/__pycache__
+ 494 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/apigee/v1/apigee_v1_messages.py
  487 kB 	 usr/lib/third_party/kubernetes/client/apis/apps_v1beta2_api.py
  486 kB 	 usr/lib/third_party/kubernetes/client/apis/apps_v1_api.py
+ 479 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/healthcare/v1/__pycache__
  477 kB 	 usr/lib/third_party/botocore/data/gamelift/2015-10-01/service-2.json
- 465 kB 	 usr/lib/googlecloudsdk/third_party/apis/dlp/v2/__pycache__
- 464 kB 	 usr/lib/googlecloudsdk/third_party/apis/healthcare/v1/__pycache__
- 455 kB 	 usr/lib/googlecloudsdk/third_party/apis/healthcare_v1.json
- 454 kB 	 usr/lib/googlecloudsdk/third_party/apis/aiplatform/v1alpha1/aiplatform_v1alpha1_client.py
- 452 kB 	 usr/lib/googlecloudsdk/third_party/apis/dlp_v2.json
- 447 kB 	 usr/lib/googlecloudsdk/third_party/apis/networkservices/v1alpha1/__pycache__
- 447 kB 	 usr/lib/googlecloudsdk/third_party/apis/apigee/v1/apigee_v1_messages.py
- 446 kB 	 usr/lib/third_party/google/cloud/pubsublite_v1/services/admin_service
+ 470 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dlp/v2/__pycache__
+ 447 kB 	 usr/lib/third_party/google/cloud/pubsublite_v1/services/admin_service
+ 441 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/aiplatform/v1alpha1/aiplatform_v1alpha1_client.py
  429 kB 	 usr/lib/third_party/botocore/data/glue/2017-03-31/service-2.json
+ 428 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/apigee/v1/apigee_v1_client.py
+ 423 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/networkservices/v1/__pycache__
+ 422 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dataproc/v1/__pycache__
  422 kB 	 usr/lib/third_party/botocore/data/ecs/2014-11-13/service-2.json
+ 419 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dataplex/v1/__pycache__
  419 kB 	 usr/lib/third_party/kubernetes/client/apis/__pycache__/extensions_v1beta1_api.cpython-39.pyc
- 418 kB 	 usr/lib/googlecloudsdk/third_party/apis/securitycenter/v1/__pycache__
- 415 kB 	 usr/lib/googlecloudsdk/third_party/apis/networkservices_v1alpha1.json
  412 kB 	 usr/lib/third_party/botocore/data/apigatewayv2/2018-11-29/service-2.json
  410 kB 	 usr/lib/third_party/botocore/data/waf-regional/2016-11-28/service-2.json
  409 kB 	 usr/lib/third_party/botocore/data/redshift/2012-12-01/service-2.json
- 408 kB 	 usr/lib/third_party/google/protobuf/unittest_pb2.py
+ 408 kB 	 usr/lib/third_party/cloudsdk/google/protobuf/unittest_pb2.py
  408 kB 	 usr/lib/third_party/botocore/data/lightsail/2016-11-28/service-2.json
- 403 kB 	 usr/lib/googlecloudsdk/third_party/apis/vision_v1.json
+ 402 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dataflow/v1b3/__pycache__
  401 kB 	 usr/lib/third_party/botocore/data/waf/2015-08-24/service-2.json
- 399 kB 	 usr/lib/googlecloudsdk/third_party/apis/dataflow/v1b3/__pycache__
- 397 kB 	 usr/lib/googlecloudsdk/third_party/apis/dataproc/v1/__pycache__
- 388 kB 	 usr/lib/googlecloudsdk/third_party/apis/healthcare/v1alpha2/__pycache__
- 387 kB 	 usr/lib/googlecloudsdk/third_party/apis/apigee/v1/apigee_v1_client.py
- 385 kB 	 usr/lib/googlecloudsdk/third_party/apis/container_v1beta1.json
- 383 kB 	 usr/lib/googlecloudsdk/third_party/apis/container_v1alpha1.json
- 382 kB 	 usr/lib/googlecloudsdk/third_party/apis/securitycenter_v1.json
+ 388 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/healthcare/v1alpha2/__pycache__
+ 380 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/monitoring/v3/__pycache__
+ 379 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/monitoring/v3/monitoring_v3_messages.py
  379 kB 	 usr/lib/third_party/botocore/data/cognito-idp/2016-04-18/service-2.json
  376 kB 	 usr/lib/third_party/botocore/data/dynamodb/2012-08-10/service-2.json
- 373 kB 	 usr/lib/googlecloudsdk/third_party/apis/dataflow_v1b3.json
+ 372 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/spanner/v1/__pycache__
  370 kB 	 usr/lib/third_party/kubernetes/client/apis/__pycache__/apps_v1beta2_api.cpython-39.pyc
  369 kB 	 usr/lib/third_party/kubernetes/client/apis/__pycache__/apps_v1_api.cpython-39.pyc
- 367 kB 	 usr/lib/googlecloudsdk/third_party/apis/spanner/v1/__pycache__
+ 367 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/container/v1alpha1/__pycache__
  365 kB 	 usr/lib/third_party/botocore/data/apigateway/2015-07-09/service-2.json
- 362 kB 	 usr/lib/googlecloudsdk/third_party/apis/dataproc_v1.json
+ 365 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/container/v1beta1/__pycache__
+ 356 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/gkeonprem/v1/__pycache__
+ 356 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dialogflow/v2/dialogflow_v2_client.py
  355 kB 	 usr/lib/third_party/botocore/data/route53/2013-04-01/service-2.json
- 354 kB 	 usr/lib/googlecloudsdk/third_party/apis/healthcare_v1alpha2.json
- 353 kB 	 usr/lib/googlecloudsdk/third_party/apis/dialogflow/v2/dialogflow_v2_client.py
- 345 kB 	 usr/lib/googlecloudsdk/third_party/apis/container_v1.json
+ 355 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/healthcare/v1beta1/healthcare_v1beta1_messages.py
+ 354 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/gkehub/v1alpha/__pycache__
+ 354 kB 	 usr/lib/googlecloudsdk/generated_clients/gapic_clients/logging_v2/services/logging_service_v2
  345 kB 	 usr/lib/third_party/botocore/data/cloudformation/2010-05-15/service-2.json
- 344 kB 	 usr/lib/googlecloudsdk/third_party/apis/container/v1beta1/__pycache__
- 344 kB 	 usr/lib/googlecloudsdk/third_party/apis/container/v1alpha1/__pycache__
  343 kB 	 usr/lib/third_party/botocore/data/codecommit/2015-04-13/service-2.json
- 341 kB 	 usr/lib/googlecloudsdk/third_party/gapic_clients/logging_v2/services/logging_service_v2
+ 343 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/logging/v2/logging_v2_messages.py
+ 341 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/iam/v1/__pycache__
+ 341 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dlp/v2/dlp_v2_messages.py
+ 338 kB 	 usr/lib/third_party/botocore/data/swf/2012-01-25/service-2.json
+ 334 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/securitycenter/v1/securitycenter_v1_messages.py
+ 330 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/dataflow/v1b3/dataflow_v1b3_messages.py
+ 329 kB 	 usr/lib/third_party/wcwidth/table_zero.py
+ 326 kB 	 usr/lib/third_party/botocore/data/rds/2014-09-01/service-2.json
+ 323 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/container/v1/__pycache__
+ 319 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/networkservices/v1alpha1/networkservices_v1alpha1_messages.py
+ 317 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/cloudbuild/v1/__pycache__
+ 315 kB 	 usr/lib/googlecloudsdk/generated_clients/apis/networksecurity/v1beta1/__pycache__
 
 ====================================================================================================
-  10 kB 	 $ COPY /root/.config/gcloud /home/kpango/.config/gcloud # buildkit
+  11 kB 	 $ COPY /root/.config/gcloud /home/kpango/.config/gcloud # buildkit
 ====================================================================================================
- 4.2 kB 	 home/kpango/.config/gcloud/logs/2022.09.27/18.07.25.262227.log
- 4.2 kB 	 home/kpango/.config/gcloud/logs/2022.10.03/04.33.05.605813.log
- 625  B 	 home/kpango/.config/gcloud/logs/2022.10.03/04.32.56.848772.log
- 605  B 	 home/kpango/.config/gcloud/logs/2022.10.03/04.32.52.128797.log
- 602  B 	 home/kpango/.config/gcloud/logs/2022.10.03/04.33.00.783265.log
+ 4.2 kB 	 home/kpango/.config/gcloud/logs/2023.04.04/14.45.44.045178.log
+ 4.2 kB 	 home/kpango/.config/gcloud/logs/2023.04.05/06.06.14.975324.log
+ 704  B 	 home/kpango/.config/gcloud/logs/2023.04.05/06.06.11.421675.log
+ 684  B 	 home/kpango/.config/gcloud/logs/2023.04.05/06.06.09.577335.log
+ 681  B 	 home/kpango/.config/gcloud/logs/2023.04.05/06.06.13.230072.log
  133  B 	 home/kpango/.config/gcloud/configurations/config_default
-  37  B 	 home/kpango/.config/gcloud/.last_survey_prompt.yaml
+  36  B 	 home/kpango/.config/gcloud/.last_survey_prompt.yaml
    7  B 	 home/kpango/.config/gcloud/active_config
    0  B 	 home/kpango/.config/gcloud/config_sentinel
 
@@ -885,9 +897,9 @@
  110 kB 	 usr/local/lib/nim/system.nim
  109 kB 	 usr/local/lib/nim/packages/docutils/rst.nim
   98 kB 	 usr/local/lib/nim/pure/times.nim
-  98 kB 	 usr/local/lib/nim/pure/strutils.nim
+  97 kB 	 usr/local/lib/nim/pure/strutils.nim
   96 kB 	 usr/local/lib/nim/pure/collections/tables.nim
-  82 kB 	 usr/local/lib/nim/pure/net.nim
+  83 kB 	 usr/local/lib/nim/pure/net.nim
   76 kB 	 usr/local/lib/nim/pure/asyncdispatch.nim
   70 kB 	 usr/local/lib/nim/pure/htmlparser.nim
   69 kB 	 usr/local/lib/nim/pure/mimetypes.nim
@@ -905,15 +917,15 @@
   47 kB 	 usr/local/lib/nim/pure/json.nim
   46 kB 	 usr/local/lib/nim/pure/math.nim
   46 kB 	 usr/local/lib/nim/pure/httpclient.nim
-  41 kB 	 usr/local/lib/nim/system/alloc.nim
   40 kB 	 usr/local/lib/nim/wrappers/linenoise/linenoise.c
   39 kB 	 usr/local/lib/nim/pure/parsesql.nim
+  39 kB 	 usr/local/lib/nim/system/alloc.nim
   38 kB 	 usr/local/lib/nim/pure/includes/unicode_ranges.nim
   37 kB 	 usr/local/lib/nim/pure/collections/sequtils.nim
+  37 kB 	 usr/local/lib/nim/wrappers/openssl.nim
   36 kB 	 usr/local/lib/nim/pure/unicode.nim
   36 kB 	 usr/local/lib/nim/system/io.nim
   35 kB 	 usr/local/lib/nim/pure/asyncnet.nim
-  35 kB 	 usr/local/lib/nim/wrappers/openssl.nim
   35 kB 	 usr/local/lib/nim/pure/bitops.nim
   34 kB 	 usr/local/lib/nim/wrappers/odbcsql.nim
   34 kB 	 usr/local/lib/nim/packages/docutils/highlite.nim
@@ -922,8 +934,8 @@
   33 kB 	 usr/local/lib/nim/pure/terminal.nim
   32 kB 	 usr/local/lib/nim/posix/posix_freertos_consts.nim
   32 kB 	 usr/local/lib/nim/pure/logging.nim
+  32 kB 	 usr/local/lib/nim/pure/nativesockets.nim
   32 kB 	 usr/local/lib/nim/posix/posix_other.nim
-  31 kB 	 usr/local/lib/nim/pure/nativesockets.nim
   30 kB 	 usr/local/lib/nim/impure/db_sqlite.nim
   30 kB 	 usr/local/lib/nim/pure/collections/lists.nim
   30 kB 	 usr/local/lib/nim/nimhcr.nim
@@ -989,32 +1001,32 @@
  2.4 MB 	 home/kpango/.cache/nim/nim_d/@msem.nim.c.o
  2.3 MB 	 home/kpango/.cache/nim/nim_d/@mcgen.nim.c.o
  1.9 MB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@ssem.nim.c
- 1.1 MB 	 home/kpango/.cache/nim/nim_d/@mvm.nim.c
+ 1.2 MB 	 home/kpango/.cache/nim/nim_d/@mvm.nim.c
  1.1 MB 	 home/kpango/.cache/nim/nimgrep_r/@mnimgrep.nim.c
  940 kB 	 home/kpango/.cache/nim/nim_d/@mjsgen.nim.c
  920 kB 	 home/kpango/.cache/nim/nim_d/@msigmatch.nim.c
  911 kB 	 home/kpango/.cache/nim/nim_d/@minjectdestructors.nim.c
- 803 kB 	 home/kpango/.cache/nim/nim_d/@mvm.nim.c.o
- 775 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@ssem.nim.c.o
+ 852 kB 	 home/kpango/.cache/nim/nim_d/@mvm.nim.c.o
+ 776 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@ssem.nim.c.o
  762 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@spure@scollections@stables.nim.c
  748 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@spackages@sdocutils@srst.nim.c
+ 646 kB 	 home/kpango/.cache/nim/nim_d/@mvmgen.nim.c
  636 kB 	 home/kpango/.cache/nim/nim_d/@mjsgen.nim.c.o
- 635 kB 	 home/kpango/.cache/nim/nim_d/@mvmgen.nim.c
  608 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@ssigmatch.nim.c
- 575 kB 	 home/kpango/.cache/nim/nim_d/@msempass2.nim.c
+ 577 kB 	 home/kpango/.cache/nim/nim_d/@msempass2.nim.c
  571 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@spure@scollections@stables.nim.c.o
- 553 kB 	 home/kpango/.cache/nim/nim_d/@mdocgen.nim.c
+ 568 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@svm.nim.c
+ 555 kB 	 home/kpango/.cache/nim/nim_d/@mdocgen.nim.c
  547 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@spackages@sdocutils@srst.nim.c.o
- 541 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@svm.nim.c
  531 kB 	 home/kpango/.cache/nim/nim_d/@msigmatch.nim.c.o
  518 kB 	 home/kpango/.cache/nim/nim_d/@mtypes.nim.c
  501 kB 	 home/kpango/.cache/nim/koch_d/@mlib@spure@spegs.nim.c
  483 kB 	 home/kpango/.cache/nim/nim_d/@mrenderer.nim.c
  478 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@ssystem.nim.c
- 470 kB 	 home/kpango/.cache/nim/testament_r/@mtestament.nim.c
+ 471 kB 	 home/kpango/.cache/nim/testament_r/@mtestament.nim.c
  462 kB 	 home/kpango/.cache/nim/nimgrep_r/@m..@slib@spure@spegs.nim.c
  453 kB 	 home/kpango/.cache/nim/nim_d/@mguards.nim.c
- 448 kB 	 home/kpango/.cache/nim/nim_d/@mvmgen.nim.c.o
+ 453 kB 	 home/kpango/.cache/nim/nim_d/@mvmgen.nim.c.o
  438 kB 	 home/kpango/.cache/nim/testament_r/@m..@slib@spure@spegs.nim.c
  437 kB 	 home/kpango/.cache/nim/nim_d/@mpragmas.nim.c
  436 kB 	 home/kpango/.cache/nim/nimble_r/@m..@s..@s..@slib@spure@spegs.nim.c
@@ -1024,29 +1036,29 @@
  414 kB 	 home/kpango/.cache/nim/nim_d/@mtransf.nim.c
  412 kB 	 home/kpango/.cache/nim/nim_d/@mropes.nim.c.o
  402 kB 	 home/kpango/.cache/nim/nim_d/@minjectdestructors.nim.c.o
- 384 kB 	 home/kpango/.cache/nim/nim_d/@mdocgen.nim.c.o
- 367 kB 	 home/kpango/.cache/nim/nimgrep_r/@mnimgrep.nim.c.o
- 365 kB 	 home/kpango/.cache/nim/nimble_r/@mnimble.nim.c
- 355 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@svmgen.nim.c
+ 386 kB 	 home/kpango/.cache/nim/nim_d/@mdocgen.nim.c.o
+ 368 kB 	 home/kpango/.cache/nim/nimgrep_r/@mnimgrep.nim.c.o
+ 366 kB 	 home/kpango/.cache/nim/nimble_r/@mnimble.nim.c
+ 358 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@svmgen.nim.c
  352 kB 	 home/kpango/.cache/nim/nim_d/@mrenderer.nim.c.o
  348 kB 	 home/kpango/.cache/nim/nim_d/@mic@sic.nim.c
  342 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@spackages@sdocutils@srstgen.nim.c
  336 kB 	 home/kpango/.cache/nim/nim_d/@mropes.nim.c
  335 kB 	 home/kpango/.cache/nim/nim_d/@mtypes.nim.c.o
  334 kB 	 home/kpango/.cache/nim/nim_d/@mnilcheck.nim.c
- 331 kB 	 home/kpango/.cache/nim/nim_d/@msempass2.nim.c.o
+ 332 kB 	 home/kpango/.cache/nim/nim_d/@msempass2.nim.c.o
  327 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@ssystem.nim.c.o
+ 322 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@ssempass2.nim.c
  321 kB 	 home/kpango/.cache/nim/koch_d/@mlib@spure@spegs.nim.c.o
- 320 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@ssempass2.nim.c
  319 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@stypes.nim.c
  316 kB 	 home/kpango/.cache/nim/nim_d/@mliftdestructors.nim.c
  310 kB 	 home/kpango/.cache/nim/nim_d/@mvarpartitions.nim.c
- 307 kB 	 home/kpango/.cache/nim/nim_d/@mcommands.nim.c
+ 306 kB 	 home/kpango/.cache/nim/nim_d/@mcommands.nim.c
  306 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@slib@ssystem.nim.c
  304 kB 	 home/kpango/.cache/nim/nim_d/@mast.nim.c
  302 kB 	 home/kpango/.cache/nim/nim_d/@mparser.nim.c
  296 kB 	 home/kpango/.cache/nim/nim_d/@mmodulegraphs.nim.c
- 292 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@spragmas.nim.c
+ 293 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@spragmas.nim.c
  288 kB 	 home/kpango/.cache/nim/nim_d/@mast.nim.c.o
  288 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@slib@spure@scollections@stables.nim.c
  284 kB 	 home/kpango/.cache/nim/nim_d/@msemfold.nim.c
@@ -1056,24 +1068,24 @@
  272 kB 	 home/kpango/.cache/nim/nim_d/@mextccomp.nim.c
  270 kB 	 home/kpango/.cache/nim/nim_d/@mclosureiters.nim.c.o
  270 kB 	 home/kpango/.cache/nim/testament_r/@m..@slib@ssystem.nim.c
+ 268 kB 	 home/kpango/.cache/nim/nim_d/@mlookups.nim.c
  267 kB 	 home/kpango/.cache/nim/nim_d/@mguards.nim.c.o
  266 kB 	 home/kpango/.cache/nim/nimble_r/@m..@s..@s..@slib@ssystem.nim.c
- 266 kB 	 home/kpango/.cache/nim/nim_d/@mlookups.nim.c
- 264 kB 	 home/kpango/.cache/nim/nimgrep_r/@m..@slib@ssystem.nim.c
+ 262 kB 	 home/kpango/.cache/nim/nim_d/@msemdata.nim.c
  262 kB 	 home/kpango/.cache/nim/nim_d/@mlexer.nim.c
- 261 kB 	 home/kpango/.cache/nim/nim_d/@msemdata.nim.c
- 260 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@smodulegraphs.nim.c
+ 259 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@smodulegraphs.nim.c
+ 257 kB 	 home/kpango/.cache/nim/nimsuggest_r/@mnimsuggest.nim.c
  257 kB 	 home/kpango/.cache/nim/nim_d/@mtransf.nim.c.o
+ 256 kB 	 home/kpango/.cache/nim/nimgrep_r/@m..@slib@ssystem.nim.c
  255 kB 	 home/kpango/.cache/nim/nim_d/@mcommands.nim.c.o
  253 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@srenderer.nim.c
  250 kB 	 home/kpango/.cache/nim/nim_d/@mpragmas.nim.c.o
  250 kB 	 home/kpango/.cache/nim/nimpretty_r/@m..@scompiler@sparser.nim.c
- 245 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@spackages@sdocutils@srstgen.nim.c.o
- 245 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@scommands.nim.c
- 244 kB 	 home/kpango/.cache/nim/nimsuggest_r/@mnimsuggest.nim.c
+ 246 kB 	 home/kpango/.cache/nim/nim_d/@m..@slib@spackages@sdocutils@srstgen.nim.c.o
+ 244 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@scommands.nim.c
  244 kB 	 home/kpango/.cache/nim/atlas_r/@m..@s..@scompiler@sparser.nim.c
  239 kB 	 home/kpango/.cache/nim/atlas_r/@m..@s..@slib@ssystem.nim.c
- 238 kB 	 home/kpango/.cache/nim/nim_d/@moptions.nim.c.o
+ 239 kB 	 home/kpango/.cache/nim/nim_d/@moptions.nim.c.o
  238 kB 	 home/kpango/.cache/nim/nimpretty_r/@m..@slib@ssystem.nim.c
  238 kB 	 home/kpango/.cache/nim/nim_d/@moptions.nim.c
  235 kB 	 home/kpango/.cache/nim/nimsuggest_r/@m..@scompiler@sic@sic.nim.c
@@ -1094,12 +1106,12 @@
  1.8 MB 	 nim/tools/UnicodeData.txt
  1.3 MB 	 nim/build.sh
  1.1 MB 	 nim/bin/nimble
- 914 kB 	 nim/bin/testament
+ 915 kB 	 nim/bin/testament
  840 kB 	 nim/bin/atlas
  799 kB 	 nim/koch
  743 kB 	 nim/bin/nimpretty
  534 kB 	 nim/bin/nimgrep
- 333 kB 	 nim/makefile
+ 332 kB 	 nim/makefile
  250 kB 	 nim/doc/manual.rst
  234 kB 	 nim/lib/pure/unidecode/unidecode.dat
  130 kB 	 nim/lib/pure/os.nim
@@ -1107,20 +1119,20 @@
  116 kB 	 nim/compiler/semexprs.nim
  110 kB 	 nim/lib/system.nim
  109 kB 	 nim/lib/packages/docutils/rst.nim
- 108 kB 	 nim/build.bat
+ 107 kB 	 nim/build.bat
   98 kB 	 nim/compiler/sigmatch.nim
   98 kB 	 nim/lib/pure/times.nim
-  98 kB 	 nim/lib/pure/strutils.nim
+  97 kB 	 nim/lib/pure/strutils.nim
   96 kB 	 nim/lib/pure/collections/tables.nim
   92 kB 	 nim/compiler/jsgen.nim
   90 kB 	 nim/compiler/semstmts.nim
-  86 kB 	 nim/compiler/vm.nim
+  90 kB 	 nim/compiler/vm.nim
   86 kB 	 nim/compiler/semtypes.nim
-  82 kB 	 nim/compiler/cgen.nim
-  82 kB 	 nim/lib/pure/net.nim
+  83 kB 	 nim/compiler/cgen.nim
+  83 kB 	 nim/lib/pure/net.nim
+  81 kB 	 nim/compiler/vmgen.nim
   80 kB 	 nim/compiler/ast.nim
   80 kB 	 nim/compiler/parser.nim
-  80 kB 	 nim/compiler/vmgen.nim
   76 kB 	 nim/lib/pure/asyncdispatch.nim
   70 kB 	 nim/lib/pure/htmlparser.nim
   69 kB 	 nim/lib/pure/mimetypes.nim
@@ -1134,7 +1146,7 @@
   60 kB 	 nim/compiler/types.nim
   60 kB 	 nim/doc/tut1.rst
   59 kB 	 nim/compiler/sempass2.nim
-  57 kB 	 nim/compiler/ccgstmts.nim
+  58 kB 	 nim/compiler/ccgstmts.nim
   57 kB 	 nim/lib/posix/posix.nim
   57 kB 	 nim/lib/pure/osproc.nim
   53 kB 	 nim/install.sh
@@ -1161,20 +1173,21 @@
   42 kB 	 nim/compiler/liftdestructors.nim
   41 kB 	 nim/compiler/transf.nim
   41 kB 	 nim/dist/nimble/readme.markdown
-  41 kB 	 nim/lib/system/alloc.nim
   40 kB 	 nim/compiler/options.nim
   40 kB 	 nim/lib/wrappers/linenoise/linenoise.c
   39 kB 	 nim/lib/pure/parsesql.nim
+  39 kB 	 nim/lib/system/alloc.nim
   38 kB 	 nim/lib/pure/includes/unicode_ranges.nim
   37 kB 	 nim/lib/pure/collections/sequtils.nim
   37 kB 	 nim/doc/nimdoc.css
+  37 kB 	 nim/lib/wrappers/openssl.nim
   37 kB 	 nim/compiler/lambdalifting.nim
   36 kB 	 nim/lib/pure/unicode.nim
   36 kB 	 nim/lib/system/io.nim
   35 kB 	 nim/lib/pure/asyncnet.nim
   35 kB 	 nim/compiler/guards.nim
-  35 kB 	 nim/lib/wrappers/openssl.nim
   35 kB 	 nim/lib/pure/bitops.nim
+  34 kB 	 nim/nimsuggest/nimsuggest.nim
   34 kB 	 nim/lib/wrappers/odbcsql.nim
   34 kB 	 nim/compiler/varpartitions.nim
   34 kB 	 nim/lib/packages/docutils/highlite.nim
@@ -1183,10 +1196,9 @@
   33 kB 	 nim/lib/pure/terminal.nim
   33 kB 	 nim/compiler/astalgo.nim
   32 kB 	 nim/lib/posix/posix_freertos_consts.nim
-  32 kB 	 nim/nimsuggest/nimsuggest.nim
   32 kB 	 nim/lib/pure/logging.nim
+  32 kB 	 nim/lib/pure/nativesockets.nim
   32 kB 	 nim/lib/posix/posix_other.nim
-  31 kB 	 nim/lib/pure/nativesockets.nim
   31 kB 	 nim/doc/nimc.rst
 
 ====================================================================================================
@@ -1361,29 +1373,31 @@
 ====================================================================================================
   11 MB 	 $ COPY /opt/go/bin /usr/local/go/bin # buildkit
 ====================================================================================================
- 8.7 MB 	 usr/local/go/bin/go
- 2.0 MB 	 usr/local/go/bin/gofmt
+ 9.1 MB 	 usr/local/go/bin/go
+ 2.1 MB 	 usr/local/go/bin/gofmt
 
 ====================================================================================================
-  94 MB 	 $ COPY /opt/go/src /usr/local/go/src # buildkit
+  93 MB 	 $ COPY /opt/go/src /usr/local/go/src # buildkit
 ====================================================================================================
-  11 MB 	 usr/local/go/src/crypto/internal/boring/syso
- 9.5 MB 	 usr/local/go/src/cmd/vendor/golang.org/x
- 8.5 MB 	 usr/local/go/src/cmd/compile/internal/ssa
+  10 MB 	 usr/local/go/src/cmd/vendor/golang.org/x
+ 8.7 MB 	 usr/local/go/src/cmd/compile/internal/ssa
+ 4.5 MB 	 usr/local/go/src/crypto/internal/boring/syso
+ 3.7 MB 	 usr/local/go/src/runtime/race/internal/amd64v1
  2.7 MB 	 usr/local/go/src/vendor/golang.org/x/text
  2.6 MB 	 usr/local/go/src/cmd/trace/static/trace_viewer_full.html
- 2.2 MB 	 usr/local/go/src/cmd/asm/internal/asm
+ 2.3 MB 	 usr/local/go/src/cmd/asm/internal/asm
  1.7 MB 	 usr/local/go/src/vendor/golang.org/x/net
  1.6 MB 	 usr/local/go/src/cmd/compile/internal/test
- 1.4 MB 	 usr/local/go/src/time/tzdata/zipdata.go
- 1.2 MB 	 usr/local/go/src/cmd/compile/internal/types2
- 987 kB 	 usr/local/go/src/cmd/go/testdata/script
- 736 kB 	 usr/local/go/src/cmd/link/internal/ld
- 652 kB 	 usr/local/go/src/cmd/vendor/github.com/google
- 585 kB 	 usr/local/go/src/cmd/go/internal/modfetch
+ 1.3 MB 	 usr/local/go/src/time/tzdata/zipdata.go
+ 1.0 MB 	 usr/local/go/src/cmd/go/testdata/script
+ 798 kB 	 usr/local/go/src/cmd/compile/internal/types2
+ 752 kB 	 usr/local/go/src/cmd/link/internal/ld
+ 689 kB 	 usr/local/go/src/cmd/vendor/github.com/google
+ 587 kB 	 usr/local/go/src/cmd/go/internal/modfetch
  567 kB 	 usr/local/go/src/testdata/Isaac.Newton-Opticks.txt
- 558 kB 	 usr/local/go/src/runtime/race/race_linux_amd64.syso
+ 564 kB 	 usr/local/go/src/runtime/race/internal/amd64v3
  529 kB 	 usr/local/go/src/cmd/internal/obj/x86
+ 443 kB 	 usr/local/go/src/cmd/compile/internal/noder
  428 kB 	 usr/local/go/src/regexp/testdata/re2-exhaustive.txt.bz2
  396 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_7_good
  386 kB 	 usr/local/go/src/crypto/internal/nistec/fiat
@@ -1391,215 +1405,136 @@
  370 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_11_good
  365 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_9_good
  362 kB 	 usr/local/go/src/cmd/go/internal/modload
- 352 kB 	 usr/local/go/src/cmd/compile/internal/noder
- 348 kB 	 usr/local/go/src/net/http/h2_bundle.go
- 341 kB 	 usr/local/go/src/cmd/compile/internal/typecheck
- 323 kB 	 usr/local/go/src/cmd/compile/internal/ssagen
+ 358 kB 	 usr/local/go/src/net/http/h2_bundle.go
+ 345 kB 	 usr/local/go/src/cmd/compile/internal/typecheck
  322 kB 	 usr/local/go/src/internal/trace/testdata/stress_1_19_good
+ 316 kB 	 usr/local/go/src/cmd/compile/internal/ssagen
  310 kB 	 usr/local/go/src/cmd/internal/obj/arm64
  296 kB 	 usr/local/go/src/image/png/testdata/pngsuite
- 282 kB 	 usr/local/go/src/vendor/golang.org/x/crypto
+ 288 kB 	 usr/local/go/src/cmd/go/internal/work
+ 288 kB 	 usr/local/go/src/cmd/internal/obj/ppc64
  273 kB 	 usr/local/go/src/debug/pe/testdata/gcc-amd64-mingw-exec
- 270 kB 	 usr/local/go/src/cmd/go/internal/work
+ 254 kB 	 usr/local/go/src/internal/types/testdata/check
  253 kB 	 usr/local/go/src/cmd/internal/obj/s390x
- 251 kB 	 usr/local/go/src/go/types/testdata/check
- 245 kB 	 usr/local/go/src/cmd/compile/internal/syntax
- 241 kB 	 usr/local/go/src/cmd/internal/obj/ppc64
- 236 kB 	 usr/local/go/src/cmd/compile/internal/walk
- 212 kB 	 usr/local/go/src/reflect/all_test.go
+ 248 kB 	 usr/local/go/src/vendor/golang.org/x/crypto
+ 248 kB 	 usr/local/go/src/cmd/compile/internal/syntax
+ 246 kB 	 usr/local/go/src/cmd/compile/internal/walk
+ 216 kB 	 usr/local/go/src/reflect/all_test.go
+ 214 kB 	 usr/local/go/src/cmd/compile/internal/ir
  202 kB 	 usr/local/go/src/unicode/tables.go
  195 kB 	 usr/local/go/src/cmd/vendor/github.com/ianlancetaylor
- 194 kB 	 usr/local/go/src/cmd/compile/internal/ir
- 184 kB 	 usr/local/go/src/net/http/serve_test.go
- 181 kB 	 usr/local/go/src/runtime/proc.go
- 173 kB 	 usr/local/go/src/net/http/transport_test.go
- 152 kB 	 usr/local/go/src/crypto/x509/x509_test.go
- 146 kB 	 usr/local/go/src/cmd/go/internal/load
+ 193 kB 	 usr/local/go/src/net/http/serve_test.go
+ 186 kB 	 usr/local/go/src/runtime/proc.go
+ 184 kB 	 usr/local/go/src/net/http/transport_test.go
+ 159 kB 	 usr/local/go/src/cmd/go/internal/load
+ 159 kB 	 usr/local/go/src/crypto/x509/x509_test.go
  146 kB 	 usr/local/go/src/cmd/go/internal/modconv
- 138 kB 	 usr/local/go/src/cmd/go/alldocs.go
+ 142 kB 	 usr/local/go/src/cmd/go/alldocs.go
  133 kB 	 usr/local/go/src/debug/dwarf/testdata/line-gcc-win.bin
  132 kB 	 usr/local/go/src/compress/bzip2/testdata/Isaac.Newton-Opticks.txt.bz2
+ 132 kB 	 usr/local/go/src/debug/elf/elf.go
  128 kB 	 usr/local/go/src/cmd/compile/internal/types
  125 kB 	 usr/local/go/src/debug/gosym/testdata/pcln115.gz
- 124 kB 	 usr/local/go/src/debug/elf/elf.go
  120 kB 	 usr/local/go/src/encoding/json/testdata/code.json.gz
  118 kB 	 usr/local/go/src/cmd/trace/static/webcomponents.min.js
  117 kB 	 usr/local/go/src/html/entity.go
+ 116 kB 	 usr/local/go/src/reflect/value.go
  116 kB 	 usr/local/go/src/hash/crc32/crc32_table_ppc64le.s
  115 kB 	 usr/local/go/src/cmd/internal/obj/arm
  114 kB 	 usr/local/go/src/net/http/server.go
- 110 kB 	 usr/local/go/src/reflect/value.go
+ 110 kB 	 usr/local/go/src/internal/types/testdata/fixedbugs
  109 kB 	 usr/local/go/src/cmd/go/testdata/mod
  108 kB 	 usr/local/go/src/crypto/sha512/sha512_test.go
- 108 kB 	 usr/local/go/src/crypto/x509/verify_test.go
+ 106 kB 	 usr/local/go/src/crypto/x509/verify_test.go
  106 kB 	 usr/local/go/src/cmd/internal/obj/riscv
  105 kB 	 usr/local/go/src/database/sql/sql_test.go
  105 kB 	 usr/local/go/src/cmd/link/internal/loader
- 101 kB 	 usr/local/go/src/go/types/testdata/fixedbugs
  100 kB 	 usr/local/go/src/compress/testdata/e.txt
  100 kB 	 usr/local/go/src/compress/testdata/pi.txt
   99 kB 	 usr/local/go/src/cmd/internal/obj/mips
-  98 kB 	 usr/local/go/src/database/sql/sql.go
-  97 kB 	 usr/local/go/src/cmd/cgo/gcc.go
+  97 kB 	 usr/local/go/src/database/sql/sql.go
+  96 kB 	 usr/local/go/src/cmd/cgo/gcc.go
   96 kB 	 usr/local/go/src/crypto/ecdsa/testdata/SigVer.rsp.bz2
-  94 kB 	 usr/local/go/src/cmd/go/internal/modindex
+  95 kB 	 usr/local/go/src/cmd/go/internal/modindex
+  92 kB 	 usr/local/go/src/cmd/compile/internal/reflectdata
   92 kB 	 usr/local/go/src/runtime/zcallback_windows_arm.s
   92 kB 	 usr/local/go/src/runtime/zcallback_windows_arm64.s
-  89 kB 	 usr/local/go/src/reflect/type.go
-  89 kB 	 usr/local/go/src/cmd/go/internal/test
-  88 kB 	 usr/local/go/src/crypto/internal/nistec/p256_asm_table.bin
+  90 kB 	 usr/local/go/src/reflect/type.go
   88 kB 	 usr/local/go/src/net/http/transport.go
-  87 kB 	 usr/local/go/src/cmd/go/go_test.go
+  88 kB 	 usr/local/go/src/crypto/internal/nistec/p256_asm_table.bin
   87 kB 	 usr/local/go/src/compress/gzip/testdata/issue6550.gz.base64
   87 kB 	 usr/local/go/src/math/all_test.go
-  86 kB 	 usr/local/go/src/syscall/zerrors_linux_loong64.go
-  83 kB 	 usr/local/go/src/go/types/api_test.go
-  83 kB 	 usr/local/go/src/cmd/compile/internal/reflectdata
+  87 kB 	 usr/local/go/src/cmd/go/go_test.go
+  84 kB 	 usr/local/go/src/syscall/zerrors_linux_loong64.go
+  84 kB 	 usr/local/go/src/cmd/go/internal/test
+  81 kB 	 usr/local/go/src/go/types/api_test.go
   79 kB 	 usr/local/go/src/crypto/tls/handshake_client_test.go
-  76 kB 	 usr/local/go/src/syscall/zerrors_linux_s390x.go
-  76 kB 	 usr/local/go/src/cmd/go/internal/modget
-  75 kB 	 usr/local/go/src/cmd/internal/obj/loong64
-  75 kB 	 usr/local/go/src/crypto/x509/x509.go
-  75 kB 	 usr/local/go/src/go/parser/parser.go
+  78 kB 	 usr/local/go/src/crypto/x509/x509.go
+  76 kB 	 usr/local/go/src/cmd/internal/obj/loong64
+  75 kB 	 usr/local/go/src/cmd/go/internal/modget
+  75 kB 	 usr/local/go/src/syscall/zerrors_linux_s390x.go
   74 kB 	 usr/local/go/src/syscall/zerrors_linux_ppc64le.go
-  74 kB 	 usr/local/go/src/syscall/zerrors_linux_ppc64.go
-  74 kB 	 usr/local/go/src/syscall/zerrors_linux_riscv64.go
-  72 kB 	 usr/local/go/src/syscall/zerrors_linux_mips.go
-  72 kB 	 usr/local/go/src/syscall/zerrors_linux_mipsle.go
-  71 kB 	 usr/local/go/src/syscall/zerrors_linux_arm64.go
+  73 kB 	 usr/local/go/src/runtime/mheap.go
+  73 kB 	 usr/local/go/src/testing/testing.go
+  73 kB 	 usr/local/go/src/cmd/internal/test2json/testdata
+  73 kB 	 usr/local/go/src/syscall/zerrors_linux_ppc64.go
+  72 kB 	 usr/local/go/src/syscall/zerrors_linux_riscv64.go
 
 ====================================================================================================
- 427 kB 	 $ COPY /opt/go/lib /usr/local/go/lib # buildkit
+ 402 kB 	 $ COPY /opt/go/lib /usr/local/go/lib # buildkit
 ====================================================================================================
- 426 kB 	 usr/local/go/lib/time/zoneinfo.zip
- 952  B 	 usr/local/go/lib/time/update.bash
+ 398 kB 	 usr/local/go/lib/time/zoneinfo.zip
+ 2.2 kB 	 usr/local/go/lib/time/mkzip.go
+ 1.9 kB 	 usr/local/go/lib/time/update.bash
  390  B 	 usr/local/go/lib/time/README
 
 ====================================================================================================
- 331 MB 	 $ COPY /opt/go/pkg /usr/local/go/pkg # buildkit
+ 116 MB 	 $ COPY /opt/go/pkg /usr/local/go/pkg # buildkit
 ====================================================================================================
-  24 MB 	 usr/local/go/pkg/tool/linux_amd64/compile
-  14 MB 	 usr/local/go/pkg/tool/linux_amd64/pprof
+  25 MB 	 usr/local/go/pkg/tool/linux_amd64/compile
+  15 MB 	 usr/local/go/pkg/tool/linux_amd64/pprof
   14 MB 	 usr/local/go/pkg/tool/linux_amd64/trace
- 9.1 MB 	 usr/local/go/pkg/linux_amd64_race/runtime.a
- 8.9 MB 	 usr/local/go/pkg/linux_amd64/runtime.a
- 8.1 MB 	 usr/local/go/pkg/linux_amd64_race/net/http.a
- 7.5 MB 	 usr/local/go/pkg/tool/linux_amd64/vet
- 7.2 MB 	 usr/local/go/pkg/linux_amd64/net/http.a
- 6.5 MB 	 usr/local/go/pkg/tool/linux_amd64/link
- 6.4 MB 	 usr/local/go/pkg/linux_amd64_race/go/types.a
- 6.0 MB 	 usr/local/go/pkg/linux_amd64_race/vendor/golang.org/x
- 5.7 MB 	 usr/local/go/pkg/linux_amd64/go/types.a
- 5.2 MB 	 usr/local/go/pkg/linux_amd64/vendor/golang.org/x
- 4.8 MB 	 usr/local/go/pkg/tool/linux_amd64/asm
- 4.7 MB 	 usr/local/go/pkg/tool/linux_amd64/cover
- 4.6 MB 	 usr/local/go/pkg/tool/linux_amd64/cgo
- 4.3 MB 	 usr/local/go/pkg/linux_amd64_race/reflect.a
- 4.1 MB 	 usr/local/go/pkg/tool/linux_amd64/objdump
- 4.0 MB 	 usr/local/go/pkg/linux_amd64_race/net.a
- 3.9 MB 	 usr/local/go/pkg/tool/linux_amd64/doc
- 3.7 MB 	 usr/local/go/pkg/tool/linux_amd64/addr2line
+ 7.7 MB 	 usr/local/go/pkg/tool/linux_amd64/vet
+ 6.7 MB 	 usr/local/go/pkg/tool/linux_amd64/link
+ 5.0 MB 	 usr/local/go/pkg/tool/linux_amd64/cover
+ 4.9 MB 	 usr/local/go/pkg/tool/linux_amd64/asm
+ 4.7 MB 	 usr/local/go/pkg/tool/linux_amd64/cgo
+ 4.2 MB 	 usr/local/go/pkg/tool/linux_amd64/objdump
+ 4.0 MB 	 usr/local/go/pkg/tool/linux_amd64/doc
+ 3.8 MB 	 usr/local/go/pkg/tool/linux_amd64/addr2line
  3.7 MB 	 usr/local/go/pkg/tool/linux_amd64/nm
- 3.6 MB 	 usr/local/go/pkg/linux_amd64_race/crypto/tls.a
- 3.5 MB 	 usr/local/go/pkg/linux_amd64/net.a
- 3.3 MB 	 usr/local/go/pkg/tool/linux_amd64/dist
- 3.3 MB 	 usr/local/go/pkg/tool/linux_amd64/fix
- 3.1 MB 	 usr/local/go/pkg/linux_amd64/reflect.a
- 3.1 MB 	 usr/local/go/pkg/linux_amd64/crypto/tls.a
- 2.5 MB 	 usr/local/go/pkg/tool/linux_amd64/test2json
+ 3.4 MB 	 usr/local/go/pkg/tool/linux_amd64/dist
+ 3.4 MB 	 usr/local/go/pkg/tool/linux_amd64/fix
+ 3.2 MB 	 usr/local/go/pkg/tool/linux_amd64/covdata
+ 2.7 MB 	 usr/local/go/pkg/tool/linux_amd64/test2json
  2.5 MB 	 usr/local/go/pkg/tool/linux_amd64/buildid
  2.3 MB 	 usr/local/go/pkg/tool/linux_amd64/pack
- 2.0 MB 	 usr/local/go/pkg/linux_amd64_race/math/big.a
- 1.8 MB 	 usr/local/go/pkg/linux_amd64_race/encoding/gob.a
- 1.8 MB 	 usr/local/go/pkg/linux_amd64/math/big.a
- 1.7 MB 	 usr/local/go/pkg/linux_amd64_race/crypto/x509.a
- 1.6 MB 	 usr/local/go/pkg/linux_amd64_race/syscall.a
- 1.6 MB 	 usr/local/go/pkg/linux_amd64/encoding/gob.a
- 1.5 MB 	 usr/local/go/pkg/linux_amd64_race/internal/reflectlite.a
- 1.5 MB 	 usr/local/go/pkg/linux_amd64/syscall.a
- 1.5 MB 	 usr/local/go/pkg/linux_amd64_race/text/template.a
- 1.5 MB 	 usr/local/go/pkg/linux_amd64/crypto/x509.a
- 1.5 MB 	 usr/local/go/pkg/linux_amd64_race/testing.a
- 1.5 MB 	 usr/local/go/pkg/linux_amd64_race/debug/dwarf.a
- 1.4 MB 	 usr/local/go/pkg/linux_amd64_race/database/sql.a
- 1.4 MB 	 usr/local/go/pkg/linux_amd64_race/text/template/parse.a
- 1.4 MB 	 usr/local/go/pkg/linux_amd64_race/internal/profile.a
- 1.3 MB 	 usr/local/go/pkg/linux_amd64/testing.a
- 1.3 MB 	 usr/local/go/pkg/linux_amd64_race/encoding/json.a
- 1.3 MB 	 usr/local/go/pkg/linux_amd64/database/sql.a
- 1.3 MB 	 usr/local/go/pkg/linux_amd64_race/go/parser.a
- 1.3 MB 	 usr/local/go/pkg/linux_amd64/text/template/parse.a
- 1.3 MB 	 usr/local/go/pkg/linux_amd64/text/template.a
- 1.3 MB 	 usr/local/go/pkg/linux_amd64_race/crypto/internal/nistec
- 1.3 MB 	 usr/local/go/pkg/linux_amd64_race/go/ast.a
- 1.2 MB 	 usr/local/go/pkg/linux_amd64/debug/dwarf.a
- 1.2 MB 	 usr/local/go/pkg/linux_amd64_race/internal/fuzz.a
- 1.2 MB 	 usr/local/go/pkg/linux_amd64_race/encoding/xml.a
- 1.2 MB 	 usr/local/go/pkg/linux_amd64_race/debug/elf.a
- 1.2 MB 	 usr/local/go/pkg/linux_amd64/crypto/internal/nistec
- 1.2 MB 	 usr/local/go/pkg/linux_amd64/internal/profile.a
- 1.2 MB 	 usr/local/go/pkg/linux_amd64/go/parser.a
- 1.1 MB 	 usr/local/go/pkg/linux_amd64/go/ast.a
- 1.1 MB 	 usr/local/go/pkg/linux_amd64/encoding/json.a
- 1.1 MB 	 usr/local/go/pkg/linux_amd64_race/time.a
- 1.1 MB 	 usr/local/go/pkg/linux_amd64/debug/elf.a
- 1.0 MB 	 usr/local/go/pkg/linux_amd64/internal/fuzz.a
- 1.0 MB 	 usr/local/go/pkg/linux_amd64_race/html/template.a
- 1.0 MB 	 usr/local/go/pkg/linux_amd64_race/go/internal/gcimporter.a
- 1.0 MB 	 usr/local/go/pkg/linux_amd64/encoding/xml.a
- 1.0 MB 	 usr/local/go/pkg/linux_amd64_race/archive/zip.a
- 967 kB 	 usr/local/go/pkg/linux_amd64_race/os.a
- 964 kB 	 usr/local/go/pkg/linux_amd64/html/template.a
- 951 kB 	 usr/local/go/pkg/linux_amd64_race/archive/tar.a
- 947 kB 	 usr/local/go/pkg/linux_amd64_race/internal/trace.a
- 939 kB 	 usr/local/go/pkg/linux_amd64/time.a
- 935 kB 	 usr/local/go/pkg/linux_amd64_race/go/printer.a
- 906 kB 	 usr/local/go/pkg/linux_amd64_race/go/doc.a
- 905 kB 	 usr/local/go/pkg/linux_amd64_race/image.a
- 900 kB 	 usr/local/go/pkg/linux_amd64/go/internal/gcimporter.a
- 899 kB 	 usr/local/go/pkg/linux_amd64_race/crypto/internal/nistec.a
- 888 kB 	 usr/local/go/pkg/linux_amd64_race/fmt.a
- 857 kB 	 usr/local/go/pkg/linux_amd64/internal/reflectlite.a
- 853 kB 	 usr/local/go/pkg/linux_amd64/archive/tar.a
- 851 kB 	 usr/local/go/pkg/linux_amd64/os.a
- 820 kB 	 usr/local/go/pkg/linux_amd64/go/printer.a
- 815 kB 	 usr/local/go/pkg/linux_amd64/crypto/internal/nistec.a
- 812 kB 	 usr/local/go/pkg/linux_amd64_race/regexp.a
- 800 kB 	 usr/local/go/pkg/linux_amd64/internal/trace.a
- 794 kB 	 usr/local/go/pkg/linux_amd64_race/regexp/syntax.a
- 792 kB 	 usr/local/go/pkg/linux_amd64/go/doc.a
- 792 kB 	 usr/local/go/pkg/linux_amd64/fmt.a
- 788 kB 	 usr/local/go/pkg/linux_amd64/archive/zip.a
- 788 kB 	 usr/local/go/pkg/linux_amd64/image.a
- 773 kB 	 usr/local/go/pkg/linux_amd64_race/runtime/pprof.a
- 755 kB 	 usr/local/go/pkg/linux_amd64_race/compress/flate.a
- 753 kB 	 usr/local/go/pkg/linux_amd64/regexp/syntax.a
- 740 kB 	 usr/local/go/pkg/linux_amd64_race/go/build.a
- 718 kB 	 usr/local/go/pkg/linux_amd64/runtime/pprof.a
- 694 kB 	 usr/local/go/pkg/linux_amd64/regexp.a
- 688 kB 	 usr/local/go/pkg/linux_amd64_race/math.a
+ 2.6 kB 	 usr/local/go/pkg/include/funcdata.h
+ 1.6 kB 	 usr/local/go/pkg/include/textflag.h
+ 1.0 kB 	 usr/local/go/pkg/include/asm_ppc64x.h
+ 572  B 	 usr/local/go/pkg/include/asm_amd64.h
 
 ====================================================================================================
- 686 kB 	 $ COPY /opt/go/misc /usr/local/go/misc # buildkit
+ 692 kB 	 $ COPY /opt/go/misc /usr/local/go/misc # buildkit
 ====================================================================================================
  114 kB 	 usr/local/go/misc/cgo/test/callback.go
   49 kB 	 usr/local/go/misc/cgo/test/test.go
-  35 kB 	 usr/local/go/misc/cgo/testshared/shared_test.go
-  31 kB 	 usr/local/go/misc/cgo/testcarchive/carchive_test.go
+  36 kB 	 usr/local/go/misc/cgo/testshared/shared_test.go
+  32 kB 	 usr/local/go/misc/cgo/testcarchive/carchive_test.go
   24 kB 	 usr/local/go/misc/ios/go_ios_exec.go
-  22 kB 	 usr/local/go/misc/cgo/testcshared/cshared_test.go
+  23 kB 	 usr/local/go/misc/cgo/testcshared/cshared_test.go
   20 kB 	 usr/local/go/misc/cgo/errors/ptr_test.go
   17 kB 	 usr/local/go/misc/wasm/wasm_exec.js
-  13 kB 	 usr/local/go/misc/cgo/testsanitizers/cc_test.go
+  15 kB 	 usr/local/go/misc/cgo/testsanitizers/cc_test.go
   10 kB 	 usr/local/go/misc/cgo/test/testx.go
   10 kB 	 usr/local/go/misc/cgo/testplugin/plugin_test.go
   10 kB 	 usr/local/go/misc/android/go_android_exec.go
  9.7 kB 	 usr/local/go/misc/cgo/gmp/gmp.go
- 7.4 kB 	 usr/local/go/misc/cgo/test/testdata/issue9400
- 7.1 kB 	 usr/local/go/misc/cgo/test/issue1435.go
- 6.1 kB 	 usr/local/go/misc/cgo/test/cgo_test.go
+ 7.3 kB 	 usr/local/go/misc/cgo/test/issue1435.go
+ 6.4 kB 	 usr/local/go/misc/cgo/test/cgo_test.go
  5.6 kB 	 usr/local/go/misc/chrome/gophertool/gopher.png
  5.6 kB 	 usr/local/go/misc/cgo/errors/badsym_test.go
+ 5.2 kB 	 usr/local/go/misc/cgo/testsanitizers/asan_test.go
  5.0 kB 	 usr/local/go/misc/cgo/testplugin/testdata/host
  4.8 kB 	 usr/local/go/misc/cgo/testcarchive/testdata/main2.c
  4.6 kB 	 usr/local/go/misc/cgo/testcarchive/testdata/main4.c
@@ -1608,7 +1543,6 @@
  4.0 kB 	 usr/local/go/misc/linkcheck/linkcheck.go
  3.9 kB 	 usr/local/go/misc/cgo/testso/so_test.go
  3.9 kB 	 usr/local/go/misc/cgo/testsovar/so_test.go
- 3.9 kB 	 usr/local/go/misc/cgo/testsanitizers/asan_test.go
  3.6 kB 	 usr/local/go/misc/cgo/testcshared/testdata/main5.c
  3.6 kB 	 usr/local/go/misc/cgo/testplugin/testdata/issue25756
  3.5 kB 	 usr/local/go/misc/cgo/errors/errors_test.go
@@ -1620,34 +1554,34 @@
  2.8 kB 	 usr/local/go/misc/cgo/testsanitizers/testdata/msan8.go
  2.8 kB 	 usr/local/go/misc/ios/README
  2.6 kB 	 usr/local/go/misc/cgo/errors/testdata/err2.go
+ 2.4 kB 	 usr/local/go/misc/cgo/testsanitizers/libfuzzer_test.go
+ 2.4 kB 	 usr/local/go/misc/cgo/fortran/fortran_test.go
+ 2.2 kB 	 usr/local/go/misc/cgo/testsanitizers/msan_test.go
  2.1 kB 	 usr/local/go/misc/reboot/overlaydir_test.go
  2.0 kB 	 usr/local/go/misc/cgo/testcarchive/testdata/main5.c
- 2.0 kB 	 usr/local/go/misc/cgo/testsigfwd/main.go
- 2.0 kB 	 usr/local/go/misc/cgo/test/pkg_test.go
+ 2.0 kB 	 usr/local/go/misc/cgo/testsanitizers/cshared_test.go
  1.9 kB 	 usr/local/go/misc/cgo/testcarchive/overlaydir_test.go
  1.9 kB 	 usr/local/go/misc/cgo/testcshared/overlaydir_test.go
  1.9 kB 	 usr/local/go/misc/cgo/testplugin/overlaydir_test.go
  1.9 kB 	 usr/local/go/misc/cgo/testshared/overlaydir_test.go
  1.9 kB 	 usr/local/go/misc/cgo/stdio/overlaydir_test.go
  1.9 kB 	 usr/local/go/misc/cgo/life/overlaydir_test.go
- 1.9 kB 	 usr/local/go/misc/cgo/test/overlaydir_test.go
  1.9 kB 	 usr/local/go/misc/cgo/testso/overlaydir_test.go
  1.9 kB 	 usr/local/go/misc/cgo/testsovar/overlaydir_test.go
  1.9 kB 	 usr/local/go/misc/cgo/testplugin/testdata/checkdwarf
  1.9 kB 	 usr/local/go/misc/cgo/testplugin/testdata/issue53989
  1.9 kB 	 usr/local/go/misc/cgo/testplugin/testdata/issue44956
- 1.8 kB 	 usr/local/go/misc/cgo/testsanitizers/cshared_test.go
+ 1.8 kB 	 usr/local/go/misc/reboot/reboot_test.go
  1.8 kB 	 usr/local/go/misc/cgo/test/sigaltstack.go
  1.8 kB 	 usr/local/go/misc/cgo/testcshared/testdata/libgo2
  1.7 kB 	 usr/local/go/misc/arm/a
  1.7 kB 	 usr/local/go/misc/cgo/testcshared/testdata/main1.c
  1.7 kB 	 usr/local/go/misc/cgo/testplugin/testdata/issue18676
  1.7 kB 	 usr/local/go/misc/cgo/test/buildid_linux.go
- 1.7 kB 	 usr/local/go/misc/cgo/test/testdata/issue26213
- 1.7 kB 	 usr/local/go/misc/cgo/test/testdata/issue9400_linux.go
+ 1.7 kB 	 usr/local/go/misc/cgo/test/issue9400_linux.go
  1.7 kB 	 usr/local/go/misc/cgo/test/issue4029.go
+ 1.6 kB 	 usr/local/go/misc/cgo/testsanitizers/tsan_test.go
  1.6 kB 	 usr/local/go/misc/cgo/testcarchive/testdata/libgo2
- 1.5 kB 	 usr/local/go/misc/cgo/testsanitizers/msan_test.go
  1.5 kB 	 usr/local/go/misc/cgo/testsanitizers/testdata/tsan_shared.go
  1.5 kB 	 usr/local/go/misc/cgo/life/life_test.go
  1.5 kB 	 usr/local/go/misc/cgo/stdio/testdata/stdio
@@ -1663,258 +1597,256 @@
  1.4 kB 	 usr/local/go/misc/cgo/testsanitizers/testdata/tsan9.go
  1.3 kB 	 usr/local/go/misc/cgo/testsanitizers/testdata/tsan8.go
  1.3 kB 	 usr/local/go/misc/cgo/testgodefs/testdata/main.go
- 1.3 kB 	 usr/local/go/misc/reboot/reboot_test.go
  1.3 kB 	 usr/local/go/misc/wasm/wasm_exec.html
  1.3 kB 	 usr/local/go/misc/wasm/wasm_exec_node.js
  1.3 kB 	 usr/local/go/misc/chrome/gophertool/gopher.js
  1.3 kB 	 usr/local/go/misc/cgo/testsanitizers/testdata/tsan11.go
- 1.3 kB 	 usr/local/go/misc/cgo/testsanitizers/tsan_test.go
  1.3 kB 	 usr/local/go/misc/cgo/testcshared/testdata/main2.c
  1.2 kB 	 usr/local/go/misc/cgo/testcshared/testdata/go2c2go
- 1.2 kB 	 usr/local/go/misc/cgo/test/testdata/issue27340
+ 1.2 kB 	 usr/local/go/misc/cgo/test/issue27340/a.go
  1.2 kB 	 usr/local/go/misc/cgo/testso/testdata/cgoso_c.c
  1.2 kB 	 usr/local/go/misc/cgo/testcshared/testdata/main0.c
  1.1 kB 	 usr/local/go/misc/cgo/testsovar/testdata/cgoso.go
  1.1 kB 	 usr/local/go/misc/cgo/testplugin/testdata/issue22175
  1.1 kB 	 usr/local/go/misc/cgo/stdio/testdata/run.out
  1.1 kB 	 usr/local/go/misc/cgo/test/issue42018_windows.go
- 1.1 kB 	 usr/local/go/misc/cgo/testasan/main.go
- 1.1 kB 	 usr/local/go/misc/cgo/test/testdata/issue24161e2
+ 1.1 kB 	 usr/local/go/misc/cgo/test/issue24161e2/main.go
  1.1 kB 	 usr/local/go/misc/cgo/testplugin/testdata/method3
  1.0 kB 	 usr/local/go/misc/cgo/test/sigprocmask.c
+ 1.0 kB 	 usr/local/go/misc/cgo/test/cgo_linux_test.go
+ 1.0 kB 	 usr/local/go/misc/cgo/test/issue24161e1/main.go
+ 1.0 kB 	 usr/local/go/misc/cgo/testplugin/testdata/iface
+ 1.0 kB 	 usr/local/go/misc/cgo/testplugin/testdata/method2
 
 ====================================================================================================
- 363 MB 	 $ COPY /go/bin /home/kpango/go/bin # buildkit
+ 366 MB 	 $ COPY /go/bin /home/kpango/go/bin # buildkit
 ====================================================================================================
-  66 MB 	 home/kpango/go/bin/tinygo
-  32 MB 	 home/kpango/go/bin/pulumi
-  21 MB 	 home/kpango/go/bin/grype
-  20 MB 	 home/kpango/go/bin/syft
+  70 MB 	 home/kpango/go/bin/tinygo
+  39 MB 	 home/kpango/go/bin/pulumi
   18 MB 	 home/kpango/go/bin/hugo
+  15 MB 	 home/kpango/go/bin/grype
   12 MB 	 home/kpango/go/bin/licenses
-  10 MB 	 home/kpango/go/bin/k6
- 9.5 MB 	 home/kpango/go/bin/golangci-lint
- 9.2 MB 	 home/kpango/go/bin/buf
- 8.7 MB 	 home/kpango/go/bin/swagger
+  12 MB 	 home/kpango/go/bin/syft
+  12 MB 	 home/kpango/go/bin/k6
+ 9.8 MB 	 home/kpango/go/bin/golangci-lint
+ 9.0 MB 	 home/kpango/go/bin/swagger
+ 8.8 MB 	 home/kpango/go/bin/buf
+ 7.5 MB 	 home/kpango/go/bin/ghz
  7.5 MB 	 home/kpango/go/bin/gopls
- 7.4 MB 	 home/kpango/go/bin/ghz
- 7.4 MB 	 home/kpango/go/bin/grpcurl
- 6.2 MB 	 home/kpango/go/bin/evans
- 5.9 MB 	 home/kpango/go/bin/sqls
- 4.8 MB 	 home/kpango/go/bin/dlv
- 4.6 MB 	 home/kpango/go/bin/prototool
- 3.9 MB 	 home/kpango/go/bin/gowrap
- 3.8 MB 	 home/kpango/go/bin/kratos
+ 7.5 MB 	 home/kpango/go/bin/grpcurl
+ 6.3 MB 	 home/kpango/go/bin/evans
+ 6.0 MB 	 home/kpango/go/bin/sqls
+ 5.0 MB 	 home/kpango/go/bin/dlv
+ 4.7 MB 	 home/kpango/go/bin/prototool
+ 4.0 MB 	 home/kpango/go/bin/gowrap
+ 3.9 MB 	 home/kpango/go/bin/kratos
  3.7 MB 	 home/kpango/go/bin/gqlgen
- 3.6 MB 	 home/kpango/go/bin/xo
+ 3.7 MB 	 home/kpango/go/bin/xo
  3.5 MB 	 home/kpango/go/bin/dbmate
- 3.3 MB 	 home/kpango/go/bin/gocode
- 3.2 MB 	 home/kpango/go/bin/gitleaks
- 3.1 MB 	 home/kpango/go/bin/vegeta
- 3.0 MB 	 home/kpango/go/bin/ghq
- 3.0 MB 	 home/kpango/go/bin/markdown2medium
- 3.0 MB 	 home/kpango/go/bin/chidley
+ 3.4 MB 	 home/kpango/go/bin/gocode
+ 3.3 MB 	 home/kpango/go/bin/markdown2medium
+ 3.3 MB 	 home/kpango/go/bin/ghq
+ 3.3 MB 	 home/kpango/go/bin/gitleaks
+ 3.2 MB 	 home/kpango/go/bin/vegeta
+ 3.1 MB 	 home/kpango/go/bin/chidley
  3.0 MB 	 home/kpango/go/bin/gotests
- 2.8 MB 	 home/kpango/go/bin/ruleguard
+ 2.9 MB 	 home/kpango/go/bin/ruleguard
  2.8 MB 	 home/kpango/go/bin/protoc-gen-connect-go
- 2.7 MB 	 home/kpango/go/bin/gosec
- 2.5 MB 	 home/kpango/go/bin/hub
- 2.4 MB 	 home/kpango/go/bin/mockgen
- 2.4 MB 	 home/kpango/go/bin/golines
- 2.3 MB 	 home/kpango/go/bin/protoc-gen-go
+ 2.8 MB 	 home/kpango/go/bin/gosec
+ 2.6 MB 	 home/kpango/go/bin/hub
+ 2.5 MB 	 home/kpango/go/bin/mockgen
+ 2.5 MB 	 home/kpango/go/bin/golines
+ 2.4 MB 	 home/kpango/go/bin/protoc-gen-go
  2.3 MB 	 home/kpango/go/bin/glice
  2.3 MB 	 home/kpango/go/bin/git-codereview
- 2.2 MB 	 home/kpango/go/bin/guru
+ 2.3 MB 	 home/kpango/go/bin/guru
  2.2 MB 	 home/kpango/go/bin/vgrun
- 2.1 MB 	 home/kpango/go/bin/godef
- 2.1 MB 	 home/kpango/go/bin/reddit2wallpaper
- 2.1 MB 	 home/kpango/go/bin/task
- 2.0 MB 	 home/kpango/go/bin/goreturns
- 1.9 MB 	 home/kpango/go/bin/gofumpt
+ 2.2 MB 	 home/kpango/go/bin/task
+ 2.2 MB 	 home/kpango/go/bin/godef
+ 2.2 MB 	 home/kpango/go/bin/reddit2wallpaper
+ 2.1 MB 	 home/kpango/go/bin/goreturns
+ 2.0 MB 	 home/kpango/go/bin/gofumpt
  1.9 MB 	 home/kpango/go/bin/gotip
  1.7 MB 	 home/kpango/go/bin/fillstruct
- 1.7 MB 	 home/kpango/go/bin/errcheck
  1.7 MB 	 home/kpango/go/bin/impl
- 1.6 MB 	 home/kpango/go/bin/gorename
+ 1.7 MB 	 home/kpango/go/bin/errcheck
  1.6 MB 	 home/kpango/go/bin/fillswitch
+ 1.6 MB 	 home/kpango/go/bin/gorename
  1.6 MB 	 home/kpango/go/bin/golint
- 1.6 MB 	 home/kpango/go/bin/keyify
  1.6 MB 	 home/kpango/go/bin/goimports
- 1.5 MB 	 home/kpango/go/bin/fixplurals
+ 1.6 MB 	 home/kpango/go/bin/keyify
+ 1.6 MB 	 home/kpango/go/bin/fixplurals
  1.5 MB 	 home/kpango/go/bin/syncmap
- 1.4 MB 	 home/kpango/go/bin/strictgoimports
- 1.3 MB 	 home/kpango/go/bin/pp
- 1.3 MB 	 home/kpango/go/bin/direnv
+ 1.5 MB 	 home/kpango/go/bin/strictgoimports
+ 1.4 MB 	 home/kpango/go/bin/direnv
+ 1.4 MB 	 home/kpango/go/bin/pp
+ 1.3 MB 	 home/kpango/go/bin/fzf
  1.2 MB 	 home/kpango/go/bin/gotestfmt
  1.2 MB 	 home/kpango/go/bin/efm-langserver
  1.2 MB 	 home/kpango/go/bin/gojson
- 1.1 MB 	 home/kpango/go/bin/fzf
  1.0 MB 	 home/kpango/go/bin/air
- 991 kB 	 home/kpango/go/bin/gomodifytags
- 984 kB 	 home/kpango/go/bin/tparse
- 924 kB 	 home/kpango/go/bin/duf
- 916 kB 	 home/kpango/go/bin/dragon-imports
- 864 kB 	 home/kpango/go/bin/goimports-reviser
- 845 kB 	 home/kpango/go/bin/gotags
- 784 kB 	 home/kpango/go/bin/go-contrib-init
+ 1.0 MB 	 home/kpango/go/bin/gomodifytags
+ 1.0 MB 	 home/kpango/go/bin/tparse
+ 932 kB 	 home/kpango/go/bin/duf
+ 929 kB 	 home/kpango/go/bin/dragon-imports
+ 872 kB 	 home/kpango/go/bin/goimports-reviser
+ 846 kB 	 home/kpango/go/bin/gotags
+ 807 kB 	 home/kpango/go/bin/go-contrib-init
  746 kB 	 home/kpango/go/bin/iferr
- 695 kB 	 home/kpango/go/bin/goimports-update-ignore
+ 717 kB 	 home/kpango/go/bin/goimports-update-ignore
   38 kB 	 home/kpango/go/bin/flamegraph.pl
  3.6 kB 	 home/kpango/go/bin/stackcollapse-go.pl
  2.9 kB 	 home/kpango/go/bin/stackcollapse.pl
 
 ====================================================================================================
- 656 MB 	 $ COPY /root/.cargo /home/kpango/.cargo # buildkit
+ 398 MB 	 $ COPY /root/.cargo /home/kpango/.cargo # buildkit
 ====================================================================================================
- 127 MB 	 home/kpango/.cargo/bin/deno
-  35 MB 	 home/kpango/.cargo/bin/rg
+  38 MB 	 home/kpango/.cargo/bin/rg
   18 MB 	 home/kpango/.cargo/bin/tree-sitter
-  17 MB 	 home/kpango/.cargo/bin/watchexec
   16 MB 	 home/kpango/.cargo/bin/xh
   16 MB 	 home/kpango/.cargo/bin/cargo
-  16 MB 	 home/kpango/.cargo/bin/cargo-clippy
-  16 MB 	 home/kpango/.cargo/bin/cargo-fmt
-  16 MB 	 home/kpango/.cargo/bin/cargo-miri
-  16 MB 	 home/kpango/.cargo/bin/rust-gdb
-  16 MB 	 home/kpango/.cargo/bin/rust-gdbgui
-  16 MB 	 home/kpango/.cargo/bin/rust-lldb
-  16 MB 	 home/kpango/.cargo/bin/rustc
-  16 MB 	 home/kpango/.cargo/bin/rustup
   14 MB 	 home/kpango/.cargo/bin/cargo-expand
   11 MB 	 home/kpango/.cargo/bin/delta
   11 MB 	 home/kpango/.cargo/bin/rga
- 8.2 MB 	 home/kpango/.cargo/bin/cargo-upgrade
- 8.2 MB 	 home/kpango/.cargo/bin/sad
- 8.1 MB 	 home/kpango/.cargo/bin/bandwhich
- 7.9 MB 	 home/kpango/.cargo/bin/rnix-lsp
- 7.7 MB 	 home/kpango/.cargo/bin/broot
- 7.7 MB 	 home/kpango/.cargo/bin/bat
- 7.7 MB 	 home/kpango/.cargo/bin/t-rec
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-objcopy
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-profdata
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-readobj
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-objdump
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-strip
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-cov
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-nm
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-size
- 7.1 MB 	 home/kpango/.cargo/bin/gping
- 6.9 MB 	 home/kpango/.cargo/bin/starship
- 6.5 MB 	 home/kpango/.cargo/bin/cargo-watch
+ 9.8 MB 	 home/kpango/.cargo/bin/broot
+ 8.9 MB 	 home/kpango/.cargo/bin/starship
+ 8.5 MB 	 home/kpango/.cargo/bin/sad
+ 8.3 MB 	 home/kpango/.cargo/bin/bandwhich
+ 8.3 MB 	 home/kpango/.cargo/bin/cargo-upgrade
+ 8.2 MB 	 home/kpango/.cargo/bin/rnix-lsp
+ 7.8 MB 	 home/kpango/.cargo/bin/t-rec
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-objcopy
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-objdump
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-profdata
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-readobj
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-cov
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-nm
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-size
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-strip
+ 7.6 MB 	 home/kpango/.cargo/bin/gping
+ 6.6 MB 	 home/kpango/.cargo/bin/procs
+ 6.4 MB 	 home/kpango/.cargo/bin/cargo-watch
  6.2 MB 	 home/kpango/.cargo/bin/cargo-set-version
+ 6.2 MB 	 home/kpango/.cargo/bin/tokei
+ 6.1 MB 	 home/kpango/.cargo/bin/dutree
  6.1 MB 	 home/kpango/.cargo/bin/cargo-rm
- 6.0 MB 	 home/kpango/.cargo/bin/tokei
- 5.9 MB 	 home/kpango/.cargo/bin/dutree
- 5.6 MB 	 home/kpango/.cargo/bin/cargo-fix
- 5.3 MB 	 home/kpango/.cargo/bin/cargo-asm
- 5.3 MB 	 home/kpango/.cargo/bin/cargo-tree
- 4.8 MB 	 home/kpango/.cargo/bin/cargo-add
- 4.8 MB 	 home/kpango/.cargo/bin/fd
- 4.4 MB 	 home/kpango/.cargo/bin/procs
- 4.3 MB 	 home/kpango/.cargo/bin/rust-objcopy
- 4.3 MB 	 home/kpango/.cargo/bin/rust-objdump
- 4.3 MB 	 home/kpango/.cargo/bin/rust-profdata
- 4.3 MB 	 home/kpango/.cargo/bin/rust-readobj
- 4.3 MB 	 home/kpango/.cargo/bin/rust-strip
- 4.3 MB 	 home/kpango/.cargo/bin/rust-cov
- 4.3 MB 	 home/kpango/.cargo/bin/rust-size
- 4.3 MB 	 home/kpango/.cargo/bin/rust-ar
- 4.3 MB 	 home/kpango/.cargo/bin/rust-ld
- 4.3 MB 	 home/kpango/.cargo/bin/rust-lld
- 4.3 MB 	 home/kpango/.cargo/bin/rust-nm
- 4.2 MB 	 home/kpango/.cargo/bin/cargo-check
- 4.2 MB 	 home/kpango/.cargo/bin/shellharden
- 3.7 MB 	 home/kpango/.cargo/bin/btm
- 3.7 MB 	 home/kpango/.cargo/bin/hyperfine
- 3.6 MB 	 home/kpango/.cargo/bin/sd
- 2.6 MB 	 home/kpango/.cargo/bin/exa
- 2.2 MB 	 home/kpango/.cargo/bin/dog
- 2.0 MB 	 home/kpango/.cargo/bin/lsd
- 962 kB 	 home/kpango/.cargo/bin/cargo-bloat
+ 5.9 MB 	 home/kpango/.cargo/bin/cargo-fix
+ 5.6 MB 	 home/kpango/.cargo/bin/cargo-asm
+ 5.5 MB 	 home/kpango/.cargo/bin/cargo-tree
+ 5.4 MB 	 home/kpango/.cargo/bin/bat
+ 5.0 MB 	 home/kpango/.cargo/bin/cargo-add
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-objcopy
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-profdata
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-readobj
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-objdump
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-lld
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-strip
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-ar
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-cov
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-ld
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-nm
+ 4.5 MB 	 home/kpango/.cargo/bin/rust-size
+ 4.4 MB 	 home/kpango/.cargo/bin/cargo-check
+ 4.4 MB 	 home/kpango/.cargo/bin/shellharden
+ 4.0 MB 	 home/kpango/.cargo/bin/btm
+ 3.8 MB 	 home/kpango/.cargo/bin/sd
+ 3.5 MB 	 home/kpango/.cargo/bin/hyperfine
+ 2.8 MB 	 home/kpango/.cargo/bin/exa
+ 2.7 MB 	 home/kpango/.cargo/bin/fd
+ 2.6 MB 	 home/kpango/.cargo/bin/lsd
+ 2.4 MB 	 home/kpango/.cargo/bin/dog
+ 972 kB 	 home/kpango/.cargo/bin/cargo-bloat
  300  B 	 home/kpango/.cargo/env
+   0  B 	 home/kpango/.cargo/bin/cargo-clippy
+   0  B 	 home/kpango/.cargo/bin/cargo-fmt
+   0  B 	 home/kpango/.cargo/bin/cargo-miri
    0  B 	 home/kpango/.cargo/bin/clippy-driver
    0  B 	 home/kpango/.cargo/bin/rls
+   0  B 	 home/kpango/.cargo/bin/rust-gdb
+   0  B 	 home/kpango/.cargo/bin/rust-gdbgui
+   0  B 	 home/kpango/.cargo/bin/rust-lldb
+   0  B 	 home/kpango/.cargo/bin/rustc
    0  B 	 home/kpango/.cargo/bin/rustdoc
    0  B 	 home/kpango/.cargo/bin/rustfmt
+   0  B 	 home/kpango/.cargo/bin/rustup
 
 ====================================================================================================
- 3.3 GB 	 $ COPY /root/.rustup /home/kpango/.rustup # buildkit
+ 3.5 GB 	 $ COPY /root/.rustup /home/kpango/.rustup # buildkit
 ====================================================================================================
- 570 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust
- 563 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/rust
- 562 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/rust
- 240 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
- 186 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
- 167 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
- 128 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/librustc_driver-6662c669726bd598.so
- 127 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/librustc_driver-68b636f4229aa517.so
- 127 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/librustc_driver-de595ceff73b3253.so
- 109 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.66.0-nightly.so
- 109 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.65.0-beta.so
- 105 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libLLVM-14-rust-1.64.0-stable.so
-  26 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo
-  26 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo
-  26 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo
-  24 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src
-  17 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustfmt
-  17 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustfmt
-  17 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustfmt
+ 584 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust
+ 577 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/rust
+ 576 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/rust
+ 189 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 183 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 183 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 175 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libLLVM-16-rust-1.70.0-nightly.so
+ 141 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.68.2-stable.so
+ 141 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.69.0-beta.so
+ 139 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/librustc_driver-93862cade34bf92c.so
+ 137 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/librustc_driver-414e4dc8d7af4428.so
+ 136 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/librustc_driver-f265b505c593f632.so
+  31 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo
+  27 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo
+  27 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo
+  25 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src
+  15 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc
   14 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustdoc
   14 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustdoc
-  14 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc
-  12 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/clippy-driver
   12 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/clippy-driver
   12 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/clippy-driver
-  11 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libstd-3dd5f78c3b43746e.so
-  11 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libstd-a67a5f7770dc06bd.so
-  10 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libstd-5670385a2fe8b60b.so
- 8.0 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
+  12 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/clippy-driver
+  11 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libstd-bc6b80525d6b1f3b.so
+  10 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libstd-b5096806ff948049.so
+  10 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libstd-12996f89c8d132f4.so
+ 8.1 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
  7.8 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
  7.7 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
- 5.5 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-fmt
- 5.4 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-fmt
- 5.3 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-fmt
- 4.5 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-clippy
- 4.5 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-clippy
- 4.3 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
- 4.3 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
- 4.1 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
- 4.0 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-clippy
- 3.2 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libtest-6ceca3ba335ba7c7.so
- 3.1 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libtest-463398ede60d86ab.so
- 2.9 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libtest-f8abcd39963be1a9.so
- 2.8 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc
+ 6.2 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustfmt
+ 6.1 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustfmt
+ 6.1 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustfmt
+ 5.7 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 5.7 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 5.6 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 4.6 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
+ 4.5 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
+ 4.5 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
+ 3.2 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libtest-1b858cb142a3bc0c.so
+ 3.2 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libtest-dfbb7690b1f6faf1.so
+ 3.0 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libtest-102b1a3a6793de1a.so
  2.8 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustc
  2.8 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustc
- 739 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/multirust-channel-manifest.toml
- 727 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/multirust-channel-manifest.toml
- 727 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/multirust-channel-manifest.toml
- 317 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/man/man1
- 316 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/man/man1
- 305 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/man/man1
-  99 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rust-src
+ 2.8 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc
+ 1.4 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-clippy
+ 1.4 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-clippy
+ 1.4 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-clippy
+ 767 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/multirust-channel-manifest.toml
+ 747 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/multirust-channel-manifest.toml
+ 745 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/multirust-channel-manifest.toml
+ 338 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/man/man1
+ 336 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/man/man1
+ 324 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/man/man1
+ 101 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rust-src
   85 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/cargo
   85 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/cargo
-  83 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/cargo
+  85 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/cargo
   53 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/etc
   53 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/etc
-  52 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/etc
-  22 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/zsh/site-functions
-  22 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/zsh/site-functions
-  22 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/zsh/site-functions
-  22 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/clippy
-  22 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/clippy
-  22 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/clippy
-  22 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rustfmt
+  53 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/etc
+  24 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/zsh/site-functions
+  23 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/zsh/site-functions
+  23 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/zsh/site-functions
+  23 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/clippy
+  23 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/clippy
   22 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/rustfmt
   22 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/rustfmt
-  10 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/etc/bash_completion.d/cargo
-  10 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/etc/bash_completion.d/cargo
-  10 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/etc/bash_completion.d/cargo
- 2.7 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rust-std-x86_64-unknown-linux-gnu
+  22 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rustfmt
+  22 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/clippy
+  11 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/etc/bash_completion.d/cargo
+  11 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/etc/bash_completion.d/cargo
+  11 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/etc/bash_completion.d/cargo
+ 2.6 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rust-std-x86_64-unknown-linux-gnu
  2.6 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rust-std-x86_64-unknown-linux-gnu
  2.6 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rust-std-x86_64-unknown-linux-gnu
- 2.4 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rust-analysis-x86_64-unknown-linux-gnu
  1.9 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rust-gdbgui
  1.9 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-gdbgui
  1.9 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-gdbgui
@@ -1925,8 +1857,8 @@
  1.1 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-lldb
  1.1 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-lldb
  1.1 kB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rustc-x86_64-unknown-linux-gnu
+ 1.0 kB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rustc-x86_64-unknown-linux-gnu
  1.0 kB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rustc-x86_64-unknown-linux-gnu
- 860  B 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rustc-x86_64-unknown-linux-gnu
  759  B 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rust-gdb
  759  B 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rust-gdb
  759  B 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rust-gdb
@@ -1940,6 +1872,7 @@
  148  B 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-clippy-preview-x86_64-unknown-linux-gnu
  148  B 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/manifest-clippy-preview-x86_64-unknown-linux-gnu
  142  B 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rustfmt-preview-x86_64-unknown-linux-gnu
+ 142  B 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/manifest-rustfmt-preview-x86_64-unknown-linux-gnu
 
 ====================================================================================================
  443  B 	 $ COPY gitattributes /home/kpango/.gitattributes # buildkit
@@ -1947,9 +1880,9 @@
  443  B 	 home/kpango/.gitattributes
 
 ====================================================================================================
- 4.5 kB 	 $ COPY gitconfig /home/kpango/.gitconfig # buildkit
+ 4.6 kB 	 $ COPY gitconfig /home/kpango/.gitconfig # buildkit
 ====================================================================================================
- 4.5 kB 	 home/kpango/.gitconfig
+ 4.6 kB 	 home/kpango/.gitconfig
 
 ====================================================================================================
  1.1 kB 	 $ COPY gitignore /home/kpango/.gitignore # buildkit
@@ -1962,17 +1895,17 @@
   38  B 	 home/kpango/.config/nvim/init.lua
 
 ====================================================================================================
-  47 kB 	 $ COPY nvim/lua /home/kpango/.config/nvim/lua # buildkit
+  48 kB 	 $ COPY nvim/lua /home/kpango/.config/nvim/lua # buildkit
 ====================================================================================================
- 8.5 kB 	 home/kpango/.config/nvim/lua/plugins.lua
+ 8.8 kB 	 home/kpango/.config/nvim/lua/plugins.lua
+ 4.5 kB 	 home/kpango/.config/nvim/lua/plugins/mason.lua
  4.4 kB 	 home/kpango/.config/nvim/lua/settings/autocmd.lua
  4.2 kB 	 home/kpango/.config/nvim/lua/plugins/ddc.lua
- 4.0 kB 	 home/kpango/.config/nvim/lua/plugins/mason.lua
  3.4 kB 	 home/kpango/.config/nvim/lua/plugins/telescope.lua
  3.2 kB 	 home/kpango/.config/nvim/lua/settings/keymap.lua
  2.9 kB 	 home/kpango/.config/nvim/lua/plugins/gitsigns.lua
  2.6 kB 	 home/kpango/.config/nvim/lua/settings/base.lua
- 2.1 kB 	 home/kpango/.config/nvim/lua/plugins/cmp.lua
+ 2.3 kB 	 home/kpango/.config/nvim/lua/plugins/cmp.lua
  2.0 kB 	 home/kpango/.config/nvim/lua/plugins/lualine.lua
  1.3 kB 	 home/kpango/.config/nvim/lua/plugins/null-ls.lua
  1.1 kB 	 home/kpango/.config/nvim/lua/plugins/treesitter.lua
@@ -1980,7 +1913,7 @@
  1.1 kB 	 home/kpango/.config/nvim/lua/plugins/filetype.lua
  938  B 	 home/kpango/.config/nvim/lua/plugins/comment.lua
  788  B 	 home/kpango/.config/nvim/lua/plugins/bufferline.lua
- 646  B 	 home/kpango/.config/nvim/lua/plugins/lspsaga.lua
+ 661  B 	 home/kpango/.config/nvim/lua/plugins/lspsaga.lua
  623  B 	 home/kpango/.config/nvim/lua/plugins/packer.lua
  612  B 	 home/kpango/.config/nvim/lua/settings/skip_default.lua
  416  B 	 home/kpango/.config/nvim/lua/plugins/tabnine.lua
@@ -1989,9 +1922,9 @@
  113  B 	 home/kpango/.config/nvim/lua/setting.lua
 
 ====================================================================================================
-  79  B 	 $ COPY nvim/luacheckrc /home/kpango/.config/nvim/luacheckrc # buildkit
+  97  B 	 $ COPY nvim/luacheckrc /home/kpango/.config/nvim/luacheckrc # buildkit
 ====================================================================================================
-  79  B 	 home/kpango/.config/nvim/luacheckrc
+  97  B 	 home/kpango/.config/nvim/luacheckrc
 
 ====================================================================================================
  3.6 kB 	 $ COPY tmux-kube /home/kpango/.tmux-kube # buildkit
@@ -2004,41 +1937,34 @@
  3.9 kB 	 home/kpango/.tmux.conf
 
 ====================================================================================================
-  51 kB 	 $ COPY zshrc /home/kpango/.zshrc # buildkit
+  52 kB 	 $ COPY zshrc /home/kpango/.zshrc # buildkit
 ====================================================================================================
-  51 kB 	 home/kpango/.zshrc
+  52 kB 	 home/kpango/.zshrc
 
 ====================================================================================================
- 4.4 GB 	 $ usermod -aG ${GROUP} ${WHOAMI} && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && rm -rf $VIM_PLUG_HOME/autoload && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME && zsh -ic zplug install && rm -rf ${HOME}/.cache && rm -rf ${HOME}/.zplug/cache/* && rm -rf ${HOME}/.zplug/log/* && rm -rf ${HOME}/.npm/_cacache && rm -rf ${HOME}/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp/* && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm && chown -R ${USER_ID}:${GROUP_ID} /usr/local/include/google/protobuf && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && chmod -R 755 /usr/local/lib/node_modules && chmod -R 755 /usr/local/bin/npm && chmod -R 755 /usr/local/include/google/protobuf # buildkit
+ 4.5 GB 	 $ usermod -aG ${GROUP} ${WHOAMI} && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && rm -rf $VIM_PLUG_HOME/autoload && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME && zsh -ic zplug install && rm -rf ${HOME}/.cache && rm -rf ${HOME}/.zplug/cache/* && rm -rf ${HOME}/.zplug/log/* && rm -rf ${HOME}/.npm/_cacache && rm -rf ${HOME}/.cargo/registry/cache && rm -rf /usr/local/share/.cache && rm -rf /tmp/* && chown -R ${USER_ID}:${GROUP_ID} ${HOME} && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm && chown -R ${USER_ID}:${GROUP_ID} /usr/local/include/google/protobuf && chmod -R 755 ${HOME} && chmod -R 755 ${HOME}/.* && chmod -R 755 /usr/local/lib/node_modules && chmod -R 755 /usr/local/bin/npm && chmod -R 755 /usr/local/include/google/protobuf # buildkit
 ====================================================================================================
- 570 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust
- 563 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/rust
- 562 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/rust
- 240 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
- 186 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
- 167 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
- 128 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/librustc_driver-6662c669726bd598.so
- 127 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/librustc_driver-68b636f4229aa517.so
- 127 MB 	 home/kpango/.cargo/bin/deno
- 127 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/librustc_driver-de595ceff73b3253.so
- 109 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.66.0-nightly.so
- 109 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.65.0-beta.so
- 105 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libLLVM-14-rust-1.64.0-stable.so
-  66 MB 	 home/kpango/go/bin/tinygo
-  35 MB 	 home/kpango/.cargo/bin/rg
-  32 MB 	 home/kpango/go/bin/pulumi
-  26 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo
-  26 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo
-  26 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo
-  24 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src
-  21 MB 	 home/kpango/go/bin/grype
-  20 MB 	 home/kpango/go/bin/syft
+ 584 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/share/doc/rust
+ 577 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc/rust
+ 576 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/share/doc/rust
+ 189 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 183 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 183 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/x86_64-unknown-linux-gnu
+ 175 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libLLVM-16-rust-1.70.0-nightly.so
+ 141 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.68.2-stable.so
+ 141 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libLLVM-15-rust-1.69.0-beta.so
+ 139 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/librustc_driver-93862cade34bf92c.so
+ 137 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/librustc_driver-414e4dc8d7af4428.so
+ 136 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/librustc_driver-f265b505c593f632.so
+  70 MB 	 home/kpango/go/bin/tinygo
+  39 MB 	 home/kpango/go/bin/pulumi
+  38 MB 	 home/kpango/.cargo/bin/rg
+  31 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo
+  27 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo
+  27 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo
+  25 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src
   18 MB 	 home/kpango/go/bin/hugo
   18 MB 	 home/kpango/.cargo/bin/tree-sitter
-  17 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustfmt
-  17 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustfmt
-  17 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustfmt
-  17 MB 	 home/kpango/.cargo/bin/watchexec
   16 MB 	 home/kpango/.cargo/bin/xh
   16 MB 	 home/kpango/.cargo/bin/cargo
   16 MB 	 home/kpango/.cargo/bin/cargo-clippy
@@ -2053,64 +1979,71 @@
   16 MB 	 home/kpango/.cargo/bin/rustdoc
   16 MB 	 home/kpango/.cargo/bin/rustfmt
   16 MB 	 home/kpango/.cargo/bin/rustup
+  15 MB 	 home/kpango/go/bin/grype
+  15 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc
+  14 MB 	 home/kpango/.cargo/bin/cargo-expand
   14 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustdoc
   14 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustdoc
-  14 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc
-  14 MB 	 home/kpango/.cargo/bin/cargo-expand
-  12 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/clippy-driver
   12 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/clippy-driver
-  12 MB 	 home/kpango/go/bin/licenses
   12 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/clippy-driver
+  12 MB 	 home/kpango/go/bin/licenses
+  12 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/clippy-driver
+  12 MB 	 home/kpango/go/bin/syft
+  12 MB 	 home/kpango/go/bin/k6
   11 MB 	 home/kpango/.cargo/bin/delta
-  11 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libstd-3dd5f78c3b43746e.so
   11 MB 	 home/kpango/.cargo/bin/rga
-  11 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libstd-a67a5f7770dc06bd.so
-  10 MB 	 home/kpango/go/bin/k6
-  10 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libstd-5670385a2fe8b60b.so
- 9.5 MB 	 home/kpango/go/bin/golangci-lint
- 9.2 MB 	 home/kpango/go/bin/buf
- 8.7 MB 	 home/kpango/go/bin/swagger
- 8.2 MB 	 home/kpango/.cargo/bin/cargo-upgrade
- 8.2 MB 	 home/kpango/.cargo/bin/sad
- 8.1 MB 	 home/kpango/.cargo/bin/bandwhich
- 8.0 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
- 7.9 MB 	 home/kpango/.cargo/bin/rnix-lsp
+  11 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/libstd-bc6b80525d6b1f3b.so
+  10 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/libstd-b5096806ff948049.so
+  10 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/lib/libstd-12996f89c8d132f4.so
+ 9.8 MB 	 home/kpango/go/bin/golangci-lint
+ 9.8 MB 	 home/kpango/.cargo/bin/broot
+ 9.0 MB 	 home/kpango/go/bin/swagger
+ 8.9 MB 	 home/kpango/.cargo/bin/starship
+ 8.8 MB 	 home/kpango/go/bin/buf
+ 8.5 MB 	 home/kpango/.cargo/bin/sad
+ 8.3 MB 	 home/kpango/.cargo/bin/bandwhich
+ 8.3 MB 	 home/kpango/.cargo/bin/cargo-upgrade
+ 8.2 MB 	 home/kpango/.cargo/bin/rnix-lsp
+ 8.1 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
+ 7.8 MB 	 home/kpango/.cargo/bin/t-rec
  7.8 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
- 7.7 MB 	 home/kpango/.cargo/bin/broot
- 7.7 MB 	 home/kpango/.cargo/bin/bat
  7.7 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/libexec/rust-analyzer-proc-macro-srv
- 7.7 MB 	 home/kpango/.cargo/bin/t-rec
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-objcopy
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-profdata
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-readobj
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-objdump
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-strip
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-cov
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-nm
- 7.6 MB 	 home/kpango/.cargo/bin/cargo-size
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-objcopy
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-objdump
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-profdata
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-readobj
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-cov
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-nm
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-size
+ 7.7 MB 	 home/kpango/.cargo/bin/cargo-strip
+ 7.6 MB 	 home/kpango/.cargo/bin/gping
+ 7.5 MB 	 home/kpango/go/bin/ghz
  7.5 MB 	 home/kpango/go/bin/gopls
- 7.4 MB 	 home/kpango/go/bin/ghz
- 7.4 MB 	 home/kpango/go/bin/grpcurl
- 7.1 MB 	 home/kpango/.cargo/bin/gping
- 6.9 MB 	 home/kpango/.cargo/bin/starship
- 6.5 MB 	 home/kpango/.cargo/bin/cargo-watch
+ 7.5 MB 	 home/kpango/go/bin/grpcurl
+ 6.6 MB 	 home/kpango/.cargo/bin/procs
+ 6.4 MB 	 home/kpango/.cargo/bin/cargo-watch
+ 6.3 MB 	 home/kpango/go/bin/evans
  6.2 MB 	 home/kpango/.cargo/bin/cargo-set-version
- 6.2 MB 	 home/kpango/go/bin/evans
+ 6.2 MB 	 home/kpango/.cargo/bin/tokei
+ 6.2 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustfmt
+ 6.1 MB 	 home/kpango/.cargo/bin/dutree
+ 6.1 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/rustfmt
  6.1 MB 	 home/kpango/.cargo/bin/cargo-rm
- 6.0 MB 	 home/kpango/.cargo/bin/tokei
- 5.9 MB 	 home/kpango/go/bin/sqls
- 5.9 MB 	 home/kpango/.cargo/bin/dutree
- 5.6 MB 	 home/kpango/.cargo/bin/cargo-fix
- 5.5 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-fmt
- 5.4 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 6.1 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/rustfmt
+ 6.0 MB 	 home/kpango/go/bin/sqls
+ 5.9 MB 	 home/kpango/.cargo/bin/cargo-fix
+ 5.7 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 5.7 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 5.6 MB 	 home/kpango/.rustup/toolchains/beta-x86_64-unknown-linux-gnu/bin/cargo-fmt
+ 5.6 MB 	 home/kpango/.cargo/bin/cargo-asm
+ 5.5 MB 	 home/kpango/.cargo/bin/cargo-tree
+ 5.4 MB 	 home/kpango/.cargo/bin/bat
  5.3 MB 	 usr/local/lib/node_modules/yarn/lib/cli.js
- 5.3 MB 	 home/kpango/.cargo/bin/cargo-asm
- 5.3 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-fmt
- 5.3 MB 	 home/kpango/.cargo/bin/cargo-tree
- 4.8 MB 	 home/kpango/.cargo/bin/cargo-add
- 4.8 MB 	 home/kpango/go/bin/dlv
- 4.8 MB 	 home/kpango/.cargo/bin/fd
- 4.6 MB 	 home/kpango/go/bin/prototool
+ 5.0 MB 	 home/kpango/.cargo/bin/cargo-add
+ 5.0 MB 	 home/kpango/go/bin/dlv
+ 4.7 MB 	 home/kpango/go/bin/prototool
+ 4.6 MB 	 home/kpango/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
+ 4.5 MB 	 home/kpango/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/libexec/cargo-credential-1password
 
 ====================================================================================================
    0  B 	 $ WORKDIR /home/kpango
