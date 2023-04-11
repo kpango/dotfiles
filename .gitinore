@@ -1,3 +1,26 @@
 nvim/site/*
 nvim/log/*
 nvim/plugin/*
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.bin
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+.idea/
+
+*.hdf5
+
+.DS_Store
+.nvimlog
+
+telepresence.log
