@@ -202,6 +202,7 @@ if type zplug >/dev/null 2>&1; then
         export ENHANCD_DOT_SHOW_FULLPATH=1
     fi
 fi
+
 if type gpg >/dev/null 2>&1; then
     export GPG_TTY=$(tty)
 fi
