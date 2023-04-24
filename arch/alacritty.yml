@@ -19,6 +19,9 @@ font:
 window:
   dynamic_padding: true
   opacity: 1.2
+  padding:
+    x: 20
+    y: 20
   # startup_mode: Fullscreen
 
 #highlight Normal ctermbg=NONE guibg=NONE
@@ -36,6 +39,7 @@ selection:
   save_to_clipboard: true
 
 live_config_reload: true
+dynamic_padding: true
 
 colors:
   # Default Colors
@@ -71,6 +75,10 @@ colors:
     text: "0xeaeaea"
     background: "0x404040"
 
+shell:
+  program: /usr/bin/zsh
+
 key_bindings:
-  - { key: C,              mods: Super,       action: Copy }
-  - { key: V,              mods: Super,       action: Paste }
+  - { key: C,              mods: Super,            action: Copy }
+  - { key: V,              mods: Super,            action: Paste }
+  - { key: Return,         mods: Control|Shift,    action: SpawnNewInstance }

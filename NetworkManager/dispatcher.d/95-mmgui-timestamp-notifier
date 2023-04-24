@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import configparser
+import time
+
+#Wrong number of arguments passed
+if len(sys.argv) != 3:
+	sys.exit(1)
+
+#We're not interested in other events
+if sys.argv[2] != 'up' and sys.argv[2] != 'down':
+	sys.exit(0)
+
+#First try to create directory for our file 
+filedir = os.path.join("var", "run", "modem-manager-gui")
+os.makedirs(filedir, 0o777, True)
+
+#Then create or open existing file
+filepath = os.path.join(filedir, "timestamps")
+config = configparser.ConfigParser()
+config.read(filepath)
+if not config.has_section('timestamps'):
+	config.add_section('timestamps')
+
+#Add data to this file
+if sys.argv[2] == 'up':
+	timestamp = int(time.time())
+	config.set('timestamps', sys.argv[1], str(timestamp))
+elif sys.argv[2] == 'down':
+	if config.has_option('timestamps', sys.argv[1]):
+		config.remove_option('timestamps', sys.argv[1])
+
+#And save it
+with open(filepath, 'w') as configfile:
+	config.write(configfile)
+
