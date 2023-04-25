@@ -119,6 +119,7 @@ vim-plug
 vim-plug/
 *vim-plug
 vim-plug/*
+.nvimlog
 
 .envrc
 .env
