@@ -2,7 +2,6 @@ FROM kpango/dev-base:latest AS docker-base
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG GITHUB_ACCESS_TOKEN
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
@@ -29,7 +28,7 @@ RUN upx -9 ${BIN_PATH}/dive
 
 FROM docker-base AS slim
 
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="slim" \
     && REPO="${BIN_NAME}toolkit/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -42,7 +41,7 @@ RUN set -x; cd "$(mktemp -d)" \
         ${BIN_PATH}/${BIN_NAME}-sensor
 
 FROM docker-base AS docker-credential-pass
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
@@ -54,7 +53,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM docker-base AS docker-credential-secretservice
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
@@ -67,7 +66,7 @@ RUN set -x; cd "$(mktemp -d)" \
 
 FROM docker-base AS buildx
 ENV CLI_LIB_PATH /usr/lib/docker/cli-plugins
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && mkdir -p ${CLI_LIB_PATH} \
     && NAME="buildx" \
     && REPO="docker/${NAME}" \
@@ -78,7 +77,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 ${CLI_LIB_PATH}/${BIN_NAME}
 
 FROM docker-base AS dockfmt
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && NAME="dockfmt" \
     && REPO="jessfraz/${NAME}" \
     && BIN_NAME=${NAME} \
@@ -97,7 +96,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM docker-base AS docker-compose
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && ORG="docker"\
     && NAME="compose" \
     && REPO="${ORG}/${NAME}" \
@@ -122,7 +121,7 @@ COPY --from=dlayer-base ${BIN_PATH}/dlayer ${BIN_PATH}/dlayer
 RUN upx -9 ${BIN_PATH}/dlayer
 
 FROM docker-base AS containerd
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && NAME="containerd" \
     && REPO="${NAME}/${NAME}" \
     && BIN_NAME=${NAME} \

@@ -6,7 +6,7 @@ USER = $(eval USER := $(shell whoami))$(USER)
 USER_ID = $(eval USER_ID := $(shell id -u $(USER)))$(USER_ID)
 GROUP_ID = $(eval GROUP_ID := $(shell id -g $(USER)))$(GROUP_ID)
 GROUP_IDS = $(eval GROUP_IDS := $(shell id -G $(USER)))$(GROUP_IDS)
-GITHUB_ACCESS_TOKEN = $(eval GITHUB_ACCESS_TOKEN := $(shell pass github.api.token))$(GITHUB_ACCESS_TOKEN)
+GITHUB_ACCESS_TOKEN = $(eval GITHUB_ACCESS_TOKEN := $(shell pass github.api.ro.token))$(GITHUB_ACCESS_TOKEN)
 EMAIL = "kpango@vdaas.org"
 
 echo:
@@ -199,12 +199,13 @@ prod: \
 docker_build:
 	# sudo docker buildx build --platform linux/amd64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
 	# sudo docker buildx build --network=host --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --platform linux/amd64,linux/arm64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
-	docker build --network=host \
+	GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
+	DOCKER_BUILDKIT=1 docker build --network=host \
+	  --secret id=gat,env=GITHUB_ACCESS_TOKEN \
 	  --build-arg USER_ID="$(USER_ID)" \
 	  --build-arg GROUP_ID="$(GROUP_ID)" \
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
 	  --build-arg WHOAMI="$(USER)" \
-	  --build-arg GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
 	  --build-arg EMAIL="$(EMAIL)" \
 	  -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
 

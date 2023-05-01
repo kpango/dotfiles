@@ -3,7 +3,6 @@ FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS env-base
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG GITHUB_ACCESS_TOKEN
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango
 LABEL maintainer="${WHOAMI} <${EMAIL}>"
@@ -160,7 +159,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
 
 FROM env-base AS protoc
 WORKDIR /tmp
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && REPO_NAME="protobuf" \
     && BIN_NAME="protoc" \
     && REPO="protocolbuffers/${REPO_NAME}" \
@@ -193,7 +192,7 @@ RUN echo $(ldconfig) \
 
 FROM env-base AS tensorflow
 WORKDIR /tmp
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && REPO_NAME="tensorflow" \
     && BIN_NAME="${REPO_NAME}" \
     && REPO="${REPO_NAME}/${BIN_NAME}" \

@@ -3,7 +3,6 @@ FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS go-base
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG GITHUB_ACCESS_TOKEN
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
@@ -955,7 +954,7 @@ FROM go-base AS tinygo
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x; cd "$(mktemp -d)" \
+    --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="tinygo" \
     && REPO="${BIN_NAME}-org/${BIN_NAME}" \
     && OS="$(go env GOOS)" \

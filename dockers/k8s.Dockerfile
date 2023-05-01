@@ -2,8 +2,6 @@ FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS kube-base
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG GITHUB_ACCESS_TOKEN
-
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
@@ -38,7 +36,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubefwd
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubefwd" \
     && REPO="txn2/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -52,7 +50,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubectx
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectx" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -66,7 +64,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubens
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectx" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -81,7 +79,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS krew
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="krew" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -95,7 +93,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS check-ownerreferences
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-check-ownerreferences" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -109,7 +107,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubebox
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubebox" \
     && REPO="astefanutti/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -117,7 +115,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS stern
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="stern" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -131,7 +129,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubebuilder
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubebuilder" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -144,7 +142,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubectl-fzf
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && NAME="kubectl-fzf" \
     && REPO="bonnefoa/${NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -160,7 +158,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS k9s
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="k9s" \
     && REPO="derailed/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -171,7 +169,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kube-profefe-base
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kube-profefe" \
     && REPO="profefe/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -195,7 +193,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS conftest
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="conftest" \
     && REPO="open-policy-agent/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -206,7 +204,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubectl-tree
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-tree" \
     && REPO="ahmetb/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -224,7 +222,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS skaffold
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="skaffold" \
     && REPO="GoogleContainerTools/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -233,7 +231,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubeval
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubeval" \
     && REPO="instrumenta/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -244,7 +242,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kube-linter
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kube-linter" \
     && REPO="stackrox/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -255,7 +253,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS helm-docs
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="helm-docs" \
     && REPO="norwoodj/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -267,7 +265,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubectl-gadget
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="inspektor-gadget" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -279,7 +277,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kdash
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kdash" \
     && REPO="${BIN_NAME}-rs/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -289,7 +287,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubectl-rolesum
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-rolesum" \
     && REPO="Ladicle/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -300,7 +298,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS kubeletctl
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubeletctl" \
     && REPO="cyberark/${BIN_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
@@ -340,7 +338,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM kube-base AS wasme
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
     && NAME="wasme" \
     && REPO="solo-io/wasm" \
     && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
