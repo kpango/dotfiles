@@ -28,10 +28,10 @@ RUN upx -9 ${BIN_PATH}/dive
 
 FROM docker-base AS slim
 
-RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="slim" \
     && REPO="${BIN_NAME}toolkit/${BIN_NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && DOCKER_SLIM_RELEASES="https://downloads.dockerslim.com/releases" \
     && curl -fsSLO "${DOCKER_SLIM_RELEASES}/${VERSION}/dist_${OS}.tar.gz" \
     && tar zxvf dist_${OS}.tar.gz \
@@ -41,11 +41,11 @@ RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && se
         ${BIN_PATH}/${BIN_NAME}-sensor
 
 FROM docker-base AS docker-credential-pass
-RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && BIN_NAME="${ORG}-credential-pass" \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
     && mv ${BIN_NAME}-v${VERSION}.${OS}-${ARCH} ${BIN_PATH}/${BIN_NAME} \
@@ -53,11 +53,11 @@ RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && se
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM docker-base AS docker-credential-secretservice
-RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && BIN_NAME="${ORG}-credential-secretservice" \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
     && mv ${BIN_NAME}-v${VERSION}.${OS}-${ARCH} ${BIN_PATH}/${BIN_NAME} \
@@ -66,22 +66,22 @@ RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && se
 
 FROM docker-base AS buildx
 ENV CLI_LIB_PATH /usr/lib/docker/cli-plugins
-RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mkdir -p ${CLI_LIB_PATH} \
     && NAME="buildx" \
     && REPO="docker/${NAME}" \
     && BIN_NAME="docker-buildx" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && curl -fSsLo ${CLI_LIB_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-v${VERSION}.${OS}-${ARCH}" \
     && chmod a+x ${CLI_LIB_PATH}/${BIN_NAME} \
     && upx -9 ${CLI_LIB_PATH}/${BIN_NAME}
 
 FROM docker-base AS dockfmt
-RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="dockfmt" \
     && REPO="jessfraz/${NAME}" \
     && BIN_NAME=${NAME} \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-${OS}-${ARCH}" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
@@ -96,12 +96,12 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM docker-base AS docker-compose
-RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && ORG="docker"\
     && NAME="compose" \
     && REPO="${ORG}/${NAME}" \
     && BIN_NAME="${ORG}-${NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${NAME}-${OS}-${ARCH}" \
     && mv "${ORG}-${NAME}-${OS}-${ARCH}" ${BIN_PATH}/${BIN_NAME} \
@@ -121,11 +121,11 @@ COPY --from=dlayer-base ${BIN_PATH}/dlayer ${BIN_PATH}/dlayer
 RUN upx -9 ${BIN_PATH}/dlayer
 
 FROM docker-base AS containerd
-RUN --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="containerd" \
     && REPO="${NAME}/${NAME}" \
     && BIN_NAME=${NAME} \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && TAR_NAME="${NAME}-${VERSION}-${OS}-${ARCH}.tar.gz" \
     && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}" \
     && echo ${URL} \

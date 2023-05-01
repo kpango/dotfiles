@@ -954,12 +954,12 @@ FROM go-base AS tinygo
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
-    --mount=type=secret,id=gat GITHUB_ACCESS_TOKEN=$(cat /run/secrets/gat) && set -x && cd "$(mktemp -d)" \
+    --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="tinygo" \
     && REPO="${BIN_NAME}-org/${BIN_NAME}" \
     && OS="$(go env GOOS)" \
     && ARCH="$(go env GOARCH | sed 's/arm64/arm/')" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer ${GITHUB_ACCESS_TOKEN}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && TAR_NAME="${BIN_NAME}${VERSION}.${OS}-${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
