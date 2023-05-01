@@ -97,7 +97,7 @@
 	push-f = push --force-with-lease
 
 [gpg]
-    program = gpg2
+    program = gpg
 
 [user]
     name = kpango
