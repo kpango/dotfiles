@@ -27,7 +27,9 @@ if type tmux >/dev/null 2>&1; then
 fi
 
 if [ -z $DOTENV_LOADED ]; then
-    if type neofetch >/dev/null 2>&1; then
+    if type fastfetch >/dev/null 2>&1; then
+        fastfetch
+    elif type neofetch >/dev/null 2>&1; then
         neofetch
     fi
     stty stop undef
