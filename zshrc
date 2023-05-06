@@ -596,6 +596,15 @@ if [ -z $ZSH_LOADED ]; then
         alias tree='lsd --tree --total-size --human-readable'
         alias ls='lsd'
         alias lg='lsd -aAlLh | rg'
+    # elif type erd >/dev/null 2>&1; then
+    #     alias ks="erd -G"
+    #     alias l="exa -G "
+    #     alias ll='exa -l'
+    #     alias la='exa -aghHliS'
+    #     alias lla='exa -aghHliSm'
+    #     alias tree='exa -T'
+    #     alias ls='exa -G'
+    #     alias lg='la | rg'
     elif type exa >/dev/null 2>&1; then
         alias ks="exa -G"
         alias l="exa -G "

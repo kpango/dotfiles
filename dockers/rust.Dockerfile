@@ -90,6 +90,10 @@ FROM rust-base AS dutree
 RUN cargo +nightly install --force --no-default-features \
     dutree
 
+FROM rust-base AS erdtree
+RUN cargo +nightly install --force --no-default-features \
+    erdtree
+
 FROM rust-base AS exa
 RUN cargo +nightly install --force --no-default-features \
     exa
@@ -222,6 +226,7 @@ COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
 # COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
+COPY --from=erdtree ${BIN_PATH}/erd ${BIN_PATH}/erd
 COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
