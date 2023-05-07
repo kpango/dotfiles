@@ -101,17 +101,10 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
 #     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS dagger
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x; cd "$(mktemp -d)" \
+RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="dagger" \
-    && REPO="${BIN_NAME}/${BIN_NAME}" \
-    && go install  \
-    --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
-    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
-    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+    && curl -L https://dl.${BIN_NAME}.io/${BIN_NAME}/install.sh | BIN_DIR=${GOPATH}/bin sh \
+    && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
 FROM go-base AS dbmate
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
@@ -881,9 +874,11 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM go-base AS pulumi
-RUN curl -fsSL https://get.pulumi.com | sh \
-    && mv $HOME/.pulumi/bin/pulumi ${GOPATH}/bin/pulumi \
-    && upx -9 ${GOPATH}/bin/pulumi
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="pulumi" \
+    && curl -fsSL https://get.${BIN_NAME}.com | sh \
+    && mv ${HOME}/.${BIN_NAME}/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
+    && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
 FROM go-base AS reddit2wallpaper
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
