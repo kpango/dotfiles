@@ -8,7 +8,7 @@ font:
   italic:
     family: HackGen35 Console NF
     style: Italic
-  size: 14
+  size: 13
     # offset:
     #   x: 1
     #   y: 0
@@ -28,6 +28,11 @@ window:
 url:
   launcher:
     program: xdg-open
+
+shell:
+  program: /usr/local/bin/zsh
+  args:
+    - --login
 
 custom_cursor_colors: true
 
@@ -70,3 +75,7 @@ colors:
   selection:
     text: "0xeaeaea"
     background: "0x404040"
+
+key_bindings:
+  - { key: C,              mods: Super,       action: Copy }
+  - { key: V,              mods: Super,       action: Paste }
