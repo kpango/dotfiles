@@ -16,6 +16,11 @@ font:
   # x: 0
   # y: 7
 
+shell:
+  program: /usr/bin/zsh
+  args:
+    - --login
+
 window:
   dynamic_padding: true
   opacity: 1.2
