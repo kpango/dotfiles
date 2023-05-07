@@ -80,9 +80,6 @@ colors:
     text: "0xeaeaea"
     background: "0x404040"
 
-shell:
-  program: /usr/bin/zsh
-
 key_bindings:
   - { key: C,              mods: Super,            action: Copy }
   - { key: V,              mods: Super,            action: Paste }

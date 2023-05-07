@@ -16,6 +16,11 @@ font:
     #   x: 0
     #   y: 7
 
+shell:
+  program: /usr/local/bin/zsh
+  args:
+    - --login
+
 window:
   dynamic_padding: true
   opacity: 1.2
@@ -28,11 +33,6 @@ window:
 url:
   launcher:
     program: xdg-open
-
-shell:
-  program: /usr/local/bin/zsh
-  args:
-    - --login
 
 custom_cursor_colors: true
 
@@ -77,5 +77,6 @@ colors:
     background: "0x404040"
 
 key_bindings:
-  - { key: C,              mods: Super,       action: Copy }
-  - { key: V,              mods: Super,       action: Paste }
+  - { key: C,              mods: Super,            action: Copy }
+  - { key: V,              mods: Super,            action: Paste }
+  - { key: Return,         mods: Control|Shift,    action: SpawnNewInstance }
