@@ -47,9 +47,25 @@ if [ -z $DOTENV_LOADED ]; then
     # environment var
     export CHARSET=UTF-8
     export LESSCHARSET=${CHARSET}
-    export LANG=en_US.${CHARSET}
-    export MANLANG=ja_JP.${CHARSET}
-    export LC_TIME=en_US.${CHARSET}
+    export XLANGCCUS=en_US
+    export XLANGCCJP=ja_JP
+    export LANG=${XLANGCCUS}.${CHARSET}
+    export LANGUAGE=${LANGUAGE}:${XLANGCCUS}:${XLANGCCJP}
+    export LC_ADDRESS="${XLANGCCUS}.${CHARSET}"
+    export LC_ALL=${XLANGCCUS}.${CHARSET}
+    export LC_COLLATE="${XLANGCCUS}.${CHARSET}"
+    export LC_CTYPE=${CHARSET}
+    export LC_IDENTIFICATION="${XLANGCCUS}.${CHARSET}"
+    export LC_MEASUREMENT="${XLANGCCUS}.${CHARSET}"
+    export LC_MESSAGES="${XLANGCCUS}.${CHARSET}"
+    export LC_MONETARY="${XLANGCCUS}.${CHARSET}"
+    export LC_NAME="${XLANGCCUS}.${CHARSET}"
+    export LC_NUMERIC="${XLANGCCUS}.${CHARSET}"
+    export LC_PAPER="${XLANGCCUS}.${CHARSET}"
+    export LC_TELEPHONE="${XLANGCCUS}.${CHARSET}"
+    export LC_TIME=${XLANGCCJP}.${CHARSET}
+    export MANLANG=${XLANGCCJP}.${CHARSET}
+
 
     [ -z "$_lazy_fzf_zsh" ] && {
         [ -f $HOME/.fzf.zsh ] && source $HOME/.fzf.zsh
