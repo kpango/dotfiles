@@ -100,6 +100,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
 #     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
 #     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS dagger
+RUN --mount=type=cache,target="${GOPATH}/pkg" \
+    --mount=type=cache,target="${HOME}/.cache/go-build" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="dagger" \
+    && REPO="${BIN_NAME}/${BIN_NAME}" \
+    && go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS dbmate
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
@@ -120,6 +133,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     set -x; cd "$(mktemp -d)" \
     && BIN_NAME="direnv" \
     && REPO="direnv/${BIN_NAME}" \
+    && go install  \
+    --ldflags "-s -w" --trimpath \
+    "${GITHUBCOM}/${REPO}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
+FROM go-base AS dlayer
+RUN --mount=type=cache,target="${GOPATH}/pkg" \
+    --mount=type=cache,target="${HOME}/.cache/go-build" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="dlayer" \
+    && REPO="orisano/${BIN_NAME}" \
     && go install  \
     --ldflags "-s -w" --trimpath \
     "${GITHUBCOM}/${REPO}@latest" \
@@ -1011,8 +1037,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x; cd "$(mktemp -d)" \
     && BIN_NAME="xo" \
-    && REPO="yyoshiki41/${BIN_NAME}" \
-    # && REPO="xo/${BIN_NAME}" \
+    && REPO="xo/${BIN_NAME}" \
     && go install  \
     --ldflags "-s -w" --trimpath \
     "${GITHUBCOM}/${REPO}@latest" \
@@ -1028,8 +1053,10 @@ COPY --from=air $GOPATH/bin/air $GOPATH/bin/air
 COPY --from=buf $GOPATH/bin/buf $GOPATH/bin/buf
 COPY --from=chidley $GOPATH/bin/chidley $GOPATH/bin/chidley
 # COPY --from=dataloaden $GOPATH/bin/dataloaden $GOPATH/bin/dataloaden
+COPY --from=dagger $GOPATH/bin/dagger $GOPATH/bin/dagger
 COPY --from=dbmate $GOPATH/bin/dbmate $GOPATH/bin/dbmate
 COPY --from=direnv $GOPATH/bin/direnv $GOPATH/bin/direnv
+COPY --from=dlayer $GOPATH/bin/dlayer $GOPATH/bin/dlayer
 COPY --from=dlv $GOPATH/bin/dlv $GOPATH/bin/dlv
 COPY --from=dragon-imports $GOPATH/bin/dragon-imports $GOPATH/bin/dragon-imports
 COPY --from=duf $GOPATH/bin/duf $GOPATH/bin/duf

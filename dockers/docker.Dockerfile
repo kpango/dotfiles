@@ -108,18 +108,6 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
-FROM golang:buster AS dlayer-base
-ENV LOCAL /usr/local
-ENV BIN_PATH ${LOCAL}/bin
-RUN GO111MODULE=on go install  \
-    --ldflags "-s -w" --trimpath \
-    github.com/orisano/dlayer@latest \
-    && mv ${GOPATH}/bin/dlayer ${BIN_PATH}/dlayer
-
-FROM docker-base AS dlayer
-COPY --from=dlayer-base ${BIN_PATH}/dlayer ${BIN_PATH}/dlayer
-RUN upx -9 ${BIN_PATH}/dlayer
-
 FROM docker-base AS containerd
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="containerd" \
@@ -198,7 +186,6 @@ COPY --from=containerd ${BIN_PATH}/containerd-stress ${DOCKER_PATH}/docker-conta
 COPY --from=containerd ${BIN_PATH}/ctr ${DOCKER_PATH}/ctr
 COPY --from=containerd ${BIN_PATH}/ctr ${DOCKER_PATH}/docker-containerd-ctr
 COPY --from=dive ${BIN_PATH}/dive ${DOCKER_PATH}/dive
-COPY --from=dlayer ${BIN_PATH}/dlayer ${DOCKER_PATH}/dlayer
 COPY --from=docker-compose ${BIN_PATH}/docker-compose ${DOCKER_LIB_PATH}/cli-plugins/docker-compose
 COPY --from=docker-credential-pass ${BIN_PATH}/docker-credential-pass ${DOCKER_PATH}/docker-credential-pass
 COPY --from=docker-credential-secretservice ${BIN_PATH}/docker-credential-secretservice ${DOCKER_PATH}/docker-credential-secretservice
