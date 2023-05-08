@@ -1359,9 +1359,9 @@ if [ -z $ZSH_LOADED ]; then
             if [ $# -eq 1 ]; then
                 echo "$TRACECMD $TRACE_ARGS $1"
                 sudo $TRACECMD $TRACE_ARGS $1 \
-                | awk '{print $2}' \
+                | rg -wo -e '[0-9]+(\.[0-9]+){3}' \
                 | xargs -I {} whois {} \
-                | rg -i Country \
+                | rg -i country \
                 | awk '{print $(NF)}' \
                 | sort | uniq
             else
