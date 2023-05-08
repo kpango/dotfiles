@@ -24,9 +24,9 @@ shell:
 window:
   dynamic_padding: true
   opacity: 1.2
-  padding:
-    x: 20
-    y: 20
+  # padding:
+  #   x: 20
+  #   y: 20
   # startup_mode: Fullscreen
 
 #highlight Normal ctermbg=NONE guibg=NONE
