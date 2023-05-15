@@ -117,8 +117,7 @@
     diffFilter = delta --color-only
 
 [delta]
-    # features = side-by-side line-numbers decorations
-    features = unobtrusive-line-numbers decorations
+    features = side-by-side unobtrusive-line-numbers decorations
     whitespace-error-style = 22 reverse
     syntax-theme = Monokai Extended
     side-by-side = true
