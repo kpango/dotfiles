@@ -94,7 +94,7 @@
     ss = stash save
 
     tree = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
-	push-f = push --force-with-lease
+    push-f = push --force-with-lease
 
 [gpg]
     program = gpg
