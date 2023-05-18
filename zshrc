@@ -50,7 +50,7 @@ if [ -z $DOTENV_LOADED ]; then
     export XLANGCCUS=en_US
     export XLANGCCJP=ja_JP
     export LANG=${XLANGCCUS}.${CHARSET}
-    export LANGUAGE=${LANGUAGE}:${XLANGCCUS}:${XLANGCCJP}
+    export LANGUAGE=${XLANGCCUS}:${XLANGCCJP}
     export LC_ADDRESS="${XLANGCCUS}.${CHARSET}"
     export LC_ALL=${XLANGCCUS}.${CHARSET}
     export LC_COLLATE="${XLANGCCUS}.${CHARSET}"
@@ -189,7 +189,7 @@ if [ -z $DOTENV_LOADED ]; then
         export TERM="tmux-256color"
     fi
 
-    export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.cargo/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
+    export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.local/bin:$HOME/.cargo/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
 
     if type deno >/dev/null 2>&1; then
         export PATH="$(which deno):$PATH"
