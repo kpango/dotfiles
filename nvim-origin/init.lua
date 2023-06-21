@@ -1,0 +1,2 @@
+require('setting')
+require('plugins')

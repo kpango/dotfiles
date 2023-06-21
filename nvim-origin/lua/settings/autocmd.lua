@@ -12,6 +12,14 @@ vim.cmd([[
   command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
 ]])
 
+-- Update plugins on change in the plugin definitions file
+autocmd({ 'BufWritePost' }, {
+    desc = 'Auto update packer plugins once the plugins definition file is changed',
+    pattern = 'plugins.lua',
+    command = 'source <afile> | PackerSync',
+    group = augroup('PackerUserConfig'),
+})
+
 -- local cmp_load_group = augroup('CustomCMPLoad')
 --
 -- autocmd({ 'FileType' }, {

@@ -88,6 +88,7 @@ if [ -z $DOTENV_LOADED ]; then
     fi
 
     export XDG_CONFIG_HOME=$HOME/.config
+    export XDG_DATA_HOME=$HOME/.data
 
     if type gcloud >/dev/null 2>&1; then
         export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
@@ -107,8 +108,7 @@ if [ -z $DOTENV_LOADED ]; then
         export VIM=$(which nvim)
         export VIMRUNTIME=/usr/share/nvim/runtime
         export NVIM_HOME=$XDG_CONFIG_HOME/nvim
-        export XDG_DATA_HOME=$NVIM_HOME/log
-        export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME
+        export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME/log
         export NVIM_TUI_ENABLE_TRUE_COLOR=1
         export NVIM_PYTHON_LOG_LEVEL=WARNING;
         export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log;

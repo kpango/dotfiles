@@ -1,179 +1,308 @@
 local fn = vim.fn
-local stdpath = fn.stdpath('config')
-local packer_path = stdpath .. '/site'
-local install_path = packer_path .. '/pack/packer/opt/packer.nvim'
-vim.o.packpath = vim.o.packpath .. ',' .. packer_path
-
-if fn.empty(fn.glob(install_path)) > 0 then
-  packer_bootstrap = fn.system({
-    'git',
-    'clone',
-    '--depth',
-    '1',
-    'https://github.com/wbthomason/packer.nvim',
-    install_path,
+local pkg_path = fn.stdpath("config") .. "/lazy"
+local lazypath = pkg_path .. "/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  fn.system({
+    "git",
+    "clone",
+    "--depth",
+    "1",
+    "https://github.com/folke/lazy.nvim",
+    lazypath,
   })
 end
+vim.opt.rtp:prepend(lazypath)
 
-vim.api.nvim_command('packadd packer.nvim')
-
-local status, packer = pcall(require, 'packer')
+local status, lazy = pcall(require, 'lazy')
 if (not status) then
-  error('Packer is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
+  error('lazy is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
   return
 end
 
-local status, util =pcall(require, 'packer.util')
-if (not status) then
-  error('Packer util is not installed install_path: ' .. install_path)
-  return
-end
-
-packer.init({
-  auto_clean = true, -- During sync(), remove unused plugins
-  auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
-  autoremove = true, -- Remove disabled or unused plugins without prompting the user
-  compile_on_sync = true, -- During sync(), run packer.compile()
-  compile_path = util.join_paths(stdpath, 'plugin', 'packer_compiled.lua'),
-  disable_commands = false, -- Disable creating commands
-  ensure_dependencies   = true, -- Should packer install plugin dependencies?
-  max_jobs = nil, -- Limit the number of simultaneous jobs. nil means no limit
-  opt_default = false, -- Default to using opt (as opposed to start) plugins
-  package_root = util.join_paths(stdpath, 'site', 'pack'),
-  plugin_package = 'packer', -- The default package for plugins
-  snapshot = nil, -- Name of the snapshot you would like to load at startup
-  -- snapshot_path = util.join_paths(stdpath 'cache', 'packer.nvim'), -- Default save directory for snapshots
-  transitive_disable = true, -- Automatically disable dependencies f disabled plugins
-  transitive_opt = true, -- Make dependencies of opt plugins also opt by default
-  git = {
-    cmd = 'git', -- The base command for git operations
-    subcommands = { -- Format strings for git subcommands
-      update         = 'pull --ff-only --progress --rebase=false',
-      install        = 'clone --depth %i --no-single-branch --progress',
-      fetch          = 'fetch --depth 999999 --progress',
-      checkout       = 'checkout %s --',
-      update_branch  = 'merge --ff-only @{u}',
-      current_branch = 'branch --show-current',
-      diff           = 'log --color=never --pretty=format:FMT --no-show-signature HEAD@{1}...HEAD',
-      diff_fmt       = '%%h %%s (%%cr)',
-      get_rev        = 'rev-parse --short HEAD',
-      get_msg        = 'log --color=never --pretty=format:FMT --no-show-signature HEAD -n 1',
-      submodules     = 'submodule update --init --recursive --progress'
+lazy.setup({
+--    {'ms-jpq/coq_nvim',
+--        branch = 'coq',
+--	build = ":COQdeps",
+--	lazy = true,
+--	init = function()
+--	    vim.g.coq_settings = {
+--	        auto_start = 'shut-up',
+--    	        xdg = true,
+--    	        match = {max_results = 100},
+--    	        keymap = {jump_to_mark = "<c-cr>"},
+--    	        display = {icons = {mode = 'long'}, preview = {resolve_timeout = 5}},
+--    	        clients = {
+--		  third_party = {enabled = true},
+--		  tabnine = {enabled = true},
+--		},
+--    	        limits = {
+--    	            completion_auto_timeout = 2,
+--    	            completion_manual_timeout = 5
+--    	        }
+--    	    }
+--	end,
+--	dependencies = {
+--	    {'ms-jpq/coq.artifacts', branch = 'artifacts'},
+--	    {'ms-jpq/coq.thirdparty',
+--	        branch = '3p',
+--		config = function()
+--                    local status, c3p = pcall(require, 'coq_3p')
+--                    if (not status) then
+--                      error('coq_3p is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
+--                      return
+--                    end
+--		    c3p({
+--		      {src = "nvimlua", short_name = "NVIM", conf_only = true},
+--		      {src = "copilot", short_name = "COP", accept_key = "<c-f>"},
+--		    })
+--		end,
+--	    },
+--	},
+--    },
+    {"hrsh7th/nvim-cmp",
+        opts = function()
+	    local status, cmp = pcall(require, 'cmp')
+            if (not status) then
+                error('cmp is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
+                return
+            end
+	    return {
+                snippet = {
+                      expand = function(args)
+                          vim.fn["vsnip#anonymous"](args.body)
+                      end,
+                },
+                sources = {
+                    { name = "nvim_lsp" },--ソース類を設定
+                    { name = 'vsnip' }, -- For vsnip users.
+                    { name = "buffer" },
+                    { name = "path" },
+                },
+                mapping = cmp.mapping.preset.insert({
+                    ["<C-p>"] = cmp.mapping.select_prev_item(), --Ctrl+pで補完欄を一つ上に移動
+                    ["<C-n>"] = cmp.mapping.select_next_item(), --Ctrl+nで補完欄を一つ下に移動
+                    ['<C-l>'] = cmp.mapping.complete(),
+                    ['<C-e>'] = cmp.mapping.abort(),
+                    ["<C-y>"] = cmp.mapping.confirm({ select = true }),--Ctrl+yで補完を選択確定
+                }),
+                experimental = {
+                    ghost_text = false,
+                },
+                -- Lspkind(アイコン)を設定
+                formatting = {
+                    -- format = lspkind.cmp_format({
+                    --     mode = 'symbol', -- show only symbol annotations
+                    --     maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
+                    --     ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+                    --     -- The function below will be called before any actual modifications from lspkind
+                    --     -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
+                    -- })
+                },
+            }
+        end,
+        dependencies = {
+	    "hrsh7th/cmp-nvim-lsp",
+	    "hrsh7th/vim-vsnip",
+        },
     },
-    depth = 1, -- Git clone depth
-    clone_timeout = 60, -- Timeout, in seconds, for git clones
-    default_url_format = 'https://github.com/%s' -- Lua format string used for 'aaa/bbb' style plugins
-  },
-  display = {
-    non_interactive = false, -- If true, disable display windows for all operations
-    open_fn = function() -- An optional function to open a window for packer's display
-      return util.float({ border = 'single' })
-    end,
-    open_cmd = '65vnew \\[packer\\]', -- An optional command to open a window for packer's display
-    working_sym = '⟳', -- The symbol for a plugin being installed/updated
-    error_sym = '✗', -- The symbol for a plugin with an error in installation/updating
-    done_sym = '✓', -- The symbol for a plugin which has completed installation/updating
-    removed_sym = '-', -- The symbol for an unused plugin which was removed
-    moved_sym = '→', -- The symbol for a plugin which was moved (e.g. from opt to start)
-    header_sym = '━', -- The symbol for the header line in packer's display
-    show_all_info = true, -- Should packer show all update details automatically?
-    prompt_border = 'double', -- Border style of prompt popups.
-    keybindings = { -- Keybindings for the display window
-      quit = 'q',
-      toggle_info = '<CR>',
-      diff = 'd',
-      prompt_revert = 'r',
-    }
-  },
-  luarocks = {
-    python_cmd = 'python3' -- Set the python command to use for running hererocks
-  },
-  log = { level = 'warn' }, -- The default print log level. One of: 'trace', 'debug', 'info', 'warn', 'error', 'fatal'.
-  profile = {
-    enable = false,
-    threshold = 1, -- integer in milliseconds, plugins which load faster than this won't be shown in profile output
-  },
-})
-
--- if fn.filereadable(packer.config.compile_path) ~= 1 then
---   error('Packer compile path is not readable install_path: ' .. install_path .. ' compile_path: ' .. packer.config.compile_path)
---   return
--- end
-
-return packer.startup(function(use)
-    -- use {'VonHeikemen/lsp-zero.nvim', requires = {}}
-    -- use {'hrsh7th/nvim-cmp', requires = 'neovim/nvim-lspconfig'}
-    -- use {'hrsh7th/cmp-nvim-lsp', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    -- use {'hrsh7th/cmp-nvim-lua', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    -- use {'hrsh7th/cmp-buffer', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    -- use {'hrsh7th/cmp-path', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    -- use {'hrsh7th/cmp-cmdline', requires = {'neovim/nvim-lspconfig', 'hrsh7th/nvim-cmp'}}
-    -- use {'tzachar/cmp-tabnine', run='./install.sh', requires = 'hrsh7th/nvim-cmp'}
-
-    use {'ms-jpq/coq_nvim', branch = 'coq'}
-    use {'ms-jpq/coq.artifacts', branch = 'artifacts', requires = 'ms-jpq/coq_nvim'}
-    use {'ms-jpq/coq.thirdparty', branch = '3p', requires = 'ms-jpq/coq_nvim'}
-    -- use {'LumaKernel/ddc-file', requires = 'Shougo/ddc.vim'}
-    -- use {'LumaKernel/ddc-tabnine', requires = 'Shougo/ddc.vim'}
-    -- use {'Shougo/ddc-around', requires = 'Shougo/ddc.vim'}
-    -- use {'Shougo/ddc-converter_remove_overlap', requires = 'Shougo/ddc.vim'}
-    -- use {'Shougo/ddc-matcher_head', requires = 'Shougo/ddc.vim'}
-    -- use {'Shougo/ddc-nvim-lsp', requires = {'Shougo/ddc.vim', 'neovim/nvim-lspconfig'}}
-    -- use {'Shougo/ddc-sorter_rank', requires = 'Shougo/ddc.vim'}
-    -- use {'Shougo/ddc.vim', requires = 'vim-denops/denops.vim'}
-    -- use {'Shougo/deoppet.nvim'}
-    use {'Shougo/pum.vim'}
-    use {'terrortylor/nvim-comment'}
-    use {'SmiteshP/nvim-navic', requires = {'neovim/nvim-lspconfig', 'nvim-treesitter/nvim-treesitter'}}
-    use {'editorconfig/editorconfig-vim'}
-    use {'lambdalisue/gin.vim'}
-    use {'lewis6991/gitsigns.nvim'}
-    -- use {'matsui54/denops-popup-preview.vim', requires = {'vim-denops/denops.vim', 'Shougo/pum.vim', 'Shougo/ddc-nvim-lsp'}, run = ':call popup_preview#enable()'}
-    -- use {'matsui54/denops-signature_help', requires = {'vim-denops/denops.vim', 'Shougo/pum.vim', 'Shougo/ddc-nvim-lsp'}, run = ':call signature_help#enable()'}
-    use {'nathom/filetype.nvim'}
-    use {'navarasu/onedark.nvim', requires = 'nvim-treesitter/nvim-treesitter'}
-    use {'neovim/nvim-lspconfig'}
-    use {'ray-x/lsp_signature.nvim', requires = 'neovim/nvim-lspconfig'}
-
-    use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
-    -- use {'tani/ddc-fuzzy', requires = 'Shougo/ddc.vim'}
-    -- use {'vim-denops/denops.vim', branch = 'main'}
-    use {'wbthomason/packer.nvim', opt = true}
-    use {'williamboman/mason-lspconfig.nvim', requires = {'neovim/nvim-lspconfig', 'williamboman/mason.nvim'}}
-    use {'williamboman/mason.nvim', requires = 'neovim/nvim-lspconfig'}
-    use {'gpanders/editorconfig.nvim'}
-    use {'norcalli/nvim-colorizer.lua',
+    {'numToStr/Comment.nvim',
+        config=true,
+        lazy=true,
+        keys={
+            {'<C-_>', ":lua require('Comment.api').toggle.linewise.current()<CR>", {noremap = true, silent = true}, desc="", mode='n'},
+            {'<C-_>', '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>', {noremap = true, silent = true}, desc="", mode='x'},
+            {'<C-_>', ":lua require('Comment.api').toggle.linewise.current() <CR>", {noremap = true, silent = true}, desc="", mode='i'},
+        },
+    },
+    {'neovim/nvim-lspconfig',
+        lazy=true,
+        keys={
+            {'gD', vim.lsp.buf.declaration, {noremap = true, silent = true}, desc="Go To Declaration", mode='n'},
+            {'gi', vim.lsp.buf.implementation, {noremap = true, silent = true}, desc="Go To Implementation", mode='n'},
+            {"K", vim.lsp.buf.hover, {silent = true}, desc="Show Info", mode="n"},
+            {"<leader>k", vim.lsp.buf.signature_help, {silent = true, noremap = true}, desc="Show Signature", mode="n"},
+            {'<Leader>gr', vim.lsp.buf.references, {noremap = true, silent = true}, desc="Go To References", mode='n'},
+            {'<Leader>D', vim.lsp.buf.type_definition, {noremap = true, silent = true}, desc="Show Type Definition", mode='n'},
+        },
+    },
+    {'nvim-treesitter/nvim-treesitter',
+        build = ':TSUpdate',
+        dependencies = 'nvim-treesitter/nvim-treesitter-textobjects',
+    },
+    {'williamboman/mason.nvim',
+        config = true,
+	dependencies = 'neovim/nvim-lspconfig',
+    },
+    {'williamboman/mason-lspconfig.nvim',
+        opts = {
+            ensure_installed = {
+                'gopls',
+		'sumneko_lua',
+            },
+            automatic_installation = true,
+	},
         config = function()
-           require('colorizer').setup()
-        end
-    }
-    use {'nvim-lua/plenary.nvim'}
-    use {'nvim-telescope/telescope.nvim', branch = 'master', requires = 'nvim-lua/plenary.nvim'}
-    use {'nvim-telescope/telescope-file-browser.nvim', requires = {'nvim-telesope/telescope.nvim', 'nvim-lua/plenary.nvim'}}
-    use {'glepnir/lspsaga.nvim', branch = 'main', requires = 'neovim/nvim-lspconfig'}
-    use {'jose-elias-alvarez/null-ls.nvim', branch = 'main'}
-    use {'kyazdani42/nvim-web-devicons'}
-    use {'akinsho/bufferline.nvim', tag = 'v2.*', requires = 'kyazdani42/nvim-web-devicons'}
-    use {'nvim-lualine/lualine.nvim', requires = { 'kyazdani42/nvim-web-devicons', opt = true }}
+            local status, lspconfig = pcall(require, 'lspconfig')
+            if (not status) then
+              error('lspconfig is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
+              return
+            end
+            -- local status, coq = pcall(require, 'coq')
+            -- if (not status) then
+            --   error('coq is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
+            --   return
+            -- end
+	    local status, cmplsp = pcall(require, 'cmp_nvim_lsp')
+            if (not status) then
+              error('cmp_nvim_lsp is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
+              return
+            end
 
-    require('plugins.packer')
-    if packer_bootstrap then
-      packer.sync()
-    end
+            local status, mason_lspconfig = pcall(require, 'mason-lspconfig')
+            if (not status) then
+              error('mason_lspconfig is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
+              return
+            end
 
-    require('plugins.navic')
-    require('plugins.telescope')
-    require('plugins.treesitter')
-    require('plugins.bufferline')
-    require('plugins.comment')
-    require('plugins.mason')
-    -- require('plugins.cmp')
-    -- require('plugins.ddc')
-    -- require('plugins.deoppet')
-    require('plugins.filetype')
-    require('plugins.gitsigns')
-    -- require('plugins.lspsaga')
-    require('plugins.lualine')
-    require('plugins.onedark')
-    require('plugins.null-ls')
-end)
+            local capabilities = cmplsp.default_capabilities()
+            mason_lspconfig.setup_handlers {
+              function (server_name)
+                local opts = {}
+                if server_name == "sumneko_lua" then
+                  opts.settings = {
+                    Lua = {
+                      diagnostics = { globals = { 'vim' } },
+                    }
+                  }
+                elseif server_name == "gopls" then
+                  opts = {
+            	cmd = {"gopls", "--remote=auto"},
+            	filetypes = {"go", "gomod"},
+            	root_dir = lspconfig.util.root_pattern(".git", "go.mod", "go.sum"),
+                  }
+                end
+                opts.capabilities = capabilities
+                lspconfig[server_name].setup(opts)
+              end,
+            }
+	end,
+        dependencies = 'williamboman/mason.nvim',
+    },
+    {'gpanders/editorconfig.nvim'},
+    {"glepnir/lspsaga.nvim",
+        lazy=true,
+        keys={
+            {"<leader>ca", "<cmd><C-U>Lspsaga range_code_action<CR>", {silent = true, noremap = true}, desc="Range Code Action", mode="v"},
+            {"<leader>ca", "<cmd>Lspsaga code_action<CR>", {silent = true, noremap = true}, desc="Code Action", mode="n"},
+            {"<leader>e", "<cmd>Lspsaga show_line_diagnostics<CR>", {silent = true, noremap = true}, desc="Show Line Diagnostics", mode="n"},
+            {'<Leader>[', "<cmd>Lspsaga diagnostic_jump_prev<CR>", {noremap = true, silent = true}, desc="Jump To The Next Diagnostics", mode='n'},
+            {'<Leader>]', "<cmd>Lspsaga diagnostic_jump_next<CR>", {noremap = true, silent = true}, desc="Jump To The Previous Diagnostics", mode='n'},
+            {"<Leader>T", "<cmd>Lspsaga open_floaterm<CR>", {silent = true}, desc="Open Float Term", mode="n"},
+            {"<Leader>T", [[<C-\><C-n><cmd>Lspsaga close_floaterm<CR>]], {silent = true}, desc="Close Float Term", mode="t"},
+            {"gr", "<cmd>Lspsaga rename<CR>", {silent = true, noremap = true}, desc="Rename", mode="n"},
+            {"gh", "<cmd>Lspsaga lsp_finder<CR>", {silent = true, noremap = true}, desc="LSP Finder", mode="n"},
+            {"gd", "<cmd>Lspsaga peek_definition<CR>", {silent = true}, desc="Peek Definition", mode="n"},
+        },
+        branch = "main",
+        opts = {border_style = "rounded"},
+        dependencies='neovim/nvim-lspconfig'
+    },
+    {'jose-elias-alvarez/null-ls.nvim',
+        branch = 'main',
+	dependencies = 'nvim-lua/plenary.nvim',
+	config = true,
+	opts = function()
+	    local status, null_ls = pcall(require, 'null-ls')
+            if (not status) then
+              error('null-ls is not installed install_path: ' .. install_path..' packpath: '..vim.o.packpath)
+              return
+            end
+
+	    return {
+                sources = {
+                    null_ls.builtins.diagnostics.cspell.with({
+			 diagnostics_postprocess = function(diagnostic)
+                      	     diagnostic.severity = vim.diagnostic.severity["WARN"]
+                      	 end,
+                      	 condition = function()
+                      	     return vim.fn.executable('cspell') > 0
+                      	 end
+                    })
+                },
+	    }
+       end,
+    },
+    {'nvim-tree/nvim-web-devicons'},
+    {'akinsho/bufferline.nvim', version = "*", dependencies = 'nvim-tree/nvim-web-devicons', config = true},
+    {'nvim-lualine/lualine.nvim',
+        opts = {
+            options = {
+                icons_enabled = true,
+                theme = 'gruvbox-material',
+                component_separators = {left = '|', right = '|'},
+                section_separators = {left = '', right = ''},
+                disabled_filetypes = {"NvimTree", "packer", "TelescopePrompt"},
+                always_divide_middle = true,
+                globalstatuses = true,
+                globalstatus = true,
+                colored = false,
+            },
+            sections = {
+                lualine_a = {'mode'},
+                lualine_b = {
+                    'branch', 'diff', {
+                        'diagnostics',
+                        sources = {'nvim_lsp', 'coc'},
+                        update_in_insert = true,
+                        always_visible = true
+                    }
+                },
+                lualine_c = {
+                   {
+                      'filename',
+                      path = 1,
+                      file_status = true,
+                      shorting_target = 40,
+                      symbols = {
+                          modified = '[+]',
+                          readonly = '[RO]',
+                          unnamed = 'Untitled',
+                      }
+                   }
+                },
+                lualine_x = {'filetype'},
+		lualine_y = {
+                   {'diagnostics', source = {'nvim-lsp'}},
+                   {'progress'},
+                   {'location'},
+                },
+                lualine_z = {''}
+            },
+            inactive_sections = {
+                lualine_a = {},
+                lualine_b = {},
+                lualine_c = {{'filename', file_status = true, path = 1}},
+                lualine_x = {'filetype'},
+                lualine_y = {'%p%%', 'location'},
+                lualine_z = {}
+            },
+            tabline = {},
+            extensions = {"fugitive", "fzf", "nvim-tree"}
+        },
+	dependencies = 'nvim-tree/nvim-web-devicons',
+    },
+    {
+	'mvllow/modes.nvim',
+	config = true,
+	opts = {
+	  colors = {
+	    copy = '#FFEE55',
+	    delete = '#DC669B',
+	    insert = '#55AAEE',
+	    visual = '#DD5522',
+          },
+	},
+    },
+}, {
+    root = pkg_path,
+})
