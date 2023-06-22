@@ -86,7 +86,7 @@ lazy.setup({
                     { name = "git" },
                 },
                 mapping = cmp.mapping.preset.insert {
-                    ["<Tab>"] = cmp.mapping.select_next_item(), --Ctrl+pで補完欄を一つ上に移動
+                    -- ["<Tab>"] = cmp.mapping.select_next_item(), --Ctrl+pで補完欄を一つ上に移動
                     ["<C-p>"] = cmp.mapping.select_prev_item(), --Ctrl+pで補完欄を一つ上に移動
                     ["<C-n>"] = cmp.mapping.select_next_item(), --Ctrl+nで補完欄を一つ下に移動
                     ["<C-l>"] = cmp.mapping.complete(),
@@ -115,17 +115,27 @@ lazy.setup({
         end,
         dependencies = {
             "neovim/nvim-lspconfig",
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-nvim-lua",
-            "hrsh7th/vim-vsnip",
-            "hrsh7th/cmp-vsnip",
+            "hrsh7th/cmp-nvim-lsp-signature-help",
             "hrsh7th/cmp-buffer",
             "hrsh7th/cmp-cmdline",
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-nvim-lua",
             "hrsh7th/cmp-path",
+            "hrsh7th/cmp-vsnip",
+            "hrsh7th/vim-vsnip",
             "onsails/lspkind.nvim",
+            "saadparwaiz1/cmp_luasnip",
         },
     },
     { "tzachar/cmp-tabnine", build = "./install.sh", dependencies = "hrsh7th/nvim-cmp" },
+    {
+        "github/copilot.vim",
+        lazy = false,
+        config = function()
+            vim.g.copilot_no_tab_map = true
+            vim.api.nvim_set_keymap("i", "<C-i>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+        end,
+    },
     {
         "numToStr/Comment.nvim",
         config = true,
@@ -264,6 +274,7 @@ lazy.setup({
     },
     {
         "williamboman/mason.nvim",
+        cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
         event = "InsertEnter",
         config = true,
         dependencies = "neovim/nvim-lspconfig",
@@ -457,6 +468,7 @@ lazy.setup({
                     null_ls.builtins.formatting.stylua,
                     null_ls.builtins.formatting.yamlfix,
                     null_ls.builtins.formatting.yamlfmt,
+                    null_ls.builtins.formatting.shfmt,
                     null_ls.builtins.formatting.deno_fmt.with {
                         condition = function(utils)
                             return not (utils.has_file { ".prettierrc", ".prettierrc.js", "deno.json", "deno.jsonc" })
