@@ -1,9 +1,9 @@
-local status, filetype = pcall(require, 'filetype')
-if (not status) then
-  error("filetype is not installed")
-  return
+local status, filetype = pcall(require, "filetype")
+if not status then
+    error "filetype is not installed"
+    return
 end
-filetype.setup({
+filetype.setup {
     overrides = {
         extensions = {},
         literal = {},
@@ -17,23 +17,21 @@ filetype.setup({
             end,
             ["pdf"] = function()
                 vim.bo.filetype = "pdf"
-                vim.fn.jobstart(
-                    "open -a skim " .. '"' .. vim.fn.expand("%") .. '"'
-                )
+                vim.fn.jobstart("open -a skim " .. '"' .. vim.fn.expand "%" .. '"')
             end,
         },
         function_literal = {
             Brewfile = function()
-                vim.cmd("syntax off")
+                vim.cmd "syntax off"
             end,
         },
         function_complex = {
             ["*.math_notes/%w+"] = function()
-                vim.cmd("iabbrev $ $$")
+                vim.cmd "iabbrev $ $$"
             end,
         },
         shebang = {
             dash = "sh",
         },
     },
-})
+}

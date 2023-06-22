@@ -1,4 +1,4 @@
-vim.cmd[[
+vim.cmd [[
 call ddc#custom#patch_global('sources', ['nvim-lsp', 'tabnine', 'deoppet', 'around', 'file', 'cmdline-history'])
 call ddc#custom#patch_global('sourceOptions', {
       \ '_': {

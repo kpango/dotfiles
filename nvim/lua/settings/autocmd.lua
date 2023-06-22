@@ -3,14 +3,14 @@ local augroup = function(name)
     return vim.api.nvim_create_augroup(name, { clear = true })
 end
 
-vim.cmd([[
+vim.cmd [[
   augroup AutoGroup
       autocmd!
   augroup END
 
   command! -nargs=* Autocmd autocmd AutoGroup <args>
   command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
-]])
+]]
 
 -- local cmp_load_group = augroup('CustomCMPLoad')
 --
@@ -45,55 +45,55 @@ vim.cmd([[
 --     end,
 -- })
 
-autocmd({ 'CursorHold', 'CursorHoldI' }, {
-    desc = 'Show box with diagnosticis for current line',
-    pattern = '*',
+autocmd({ "CursorHold", "CursorHoldI" }, {
+    desc = "Show box with diagnosticis for current line",
+    pattern = "*",
     callback = function()
-        vim.diagnostic.open_float({ focusable = false })
+        vim.diagnostic.open_float { focusable = false }
     end,
 })
 
-autocmd({ 'BufRead' }, {
+autocmd({ "BufRead" }, {
     desc = "Prevent accidental writes to buffers that shouldn't be edited",
-    pattern = '*.orig',
-    command = 'set readonly',
+    pattern = "*.orig",
+    command = "set readonly",
 })
 
-local paste_mode_group = augroup('PasteMode')
-autocmd({ 'InsertLeave' }, {
-    desc = 'Leave paste mode when leaving insert mode',
-    pattern = '*',
-    command = 'set nopaste',
+local paste_mode_group = augroup "PasteMode"
+autocmd({ "InsertLeave" }, {
+    desc = "Leave paste mode when leaving insert mode",
+    pattern = "*",
+    command = "set nopaste",
     group = paste_mode_group,
 })
 
-autocmd({ 'BufRead' }, {
-    desc = 'Help markdown filetype detection',
-    pattern = '*.md',
-    command = 'set filetype=markdown',
+autocmd({ "BufRead" }, {
+    desc = "Help markdown filetype detection",
+    pattern = "*.md",
+    command = "set filetype=markdown",
 })
 
-autocmd({ 'TextYankPost' }, {
-    desc = 'Highlight yanked text',
-    pattern = '*',
+autocmd({ "TextYankPost" }, {
+    desc = "Highlight yanked text",
+    pattern = "*",
     callback = function()
-        require('vim.highlight').on_yank({ higroup = 'IncSearch', timeout = 1000 })
+        require("vim.highlight").on_yank { higroup = "IncSearch", timeout = 1000 }
     end,
 })
 
-autocmd({ 'BufWipeout' }, {
-    desc = 'Auto close NvimTree when a file is opened',
-    pattern = 'NvimTree_*',
+autocmd({ "BufWipeout" }, {
+    desc = "Auto close NvimTree when a file is opened",
+    pattern = "NvimTree_*",
     callback = function()
         vim.schedule(function()
-            require('bufferline.state').set_offset(0)
+            require("bufferline.state").set_offset(0)
         end)
     end,
 })
 
-autocmd({ 'BufReadPost' }, {
-    desc = 'Make files readonly when outside of current working dir',
-    pattern = '*',
+autocmd({ "BufReadPost" }, {
+    desc = "Make files readonly when outside of current working dir",
+    pattern = "*",
     callback = function()
         vim.api.nvim_exec('silent! normal! g`"zv', false)
         if string.sub(vim.api.nvim_buf_get_name(0), 1, string.len(vim.fn.getcwd())) ~= vim.fn.getcwd() then
@@ -103,37 +103,37 @@ autocmd({ 'BufReadPost' }, {
     end,
 })
 
-local spaces_highlight_group = augroup('SpacesHighlightGroup')
-autocmd({ 'VimEnter', 'WinNew' }, {
-    desc = 'Highlight all tabs and trailing whitespaces',
-    pattern = '*',
+local spaces_highlight_group = augroup "SpacesHighlightGroup"
+autocmd({ "VimEnter", "WinNew" }, {
+    desc = "Highlight all tabs and trailing whitespaces",
+    pattern = "*",
     group = spaces_highlight_group,
     callback = function()
-        vim.fn.matchadd('ExtraWhitespace', '\\s\\+$\\|\\t')
+        vim.fn.matchadd("ExtraWhitespace", "\\s\\+$\\|\\t")
     end,
 })
 
-autocmd({ 'FileType' }, {
-    desc = 'Remove spaces highlights in selected filetypes',
-    pattern = 'help,toggleterm',
+autocmd({ "FileType" }, {
+    desc = "Remove spaces highlights in selected filetypes",
+    pattern = "help,toggleterm",
     group = spaces_highlight_group,
     callback = function()
         for _, match in ipairs(vim.fn.getmatches()) do
-            if match['group'] == 'ExtraWhitespace' then
-                vim.fn.matchdelete(match['id'])
+            if match["group"] == "ExtraWhitespace" then
+                vim.fn.matchdelete(match["id"])
             end
         end
     end,
 })
 
-autocmd({ 'BufWinEnter' }, {
-    desc = 'Remove spaces highlights in selected filetypes',
-    pattern = '*.txt',
+autocmd({ "BufWinEnter" }, {
+    desc = "Remove spaces highlights in selected filetypes",
+    pattern = "*.txt",
     group = spaces_highlight_group,
     callback = function(event)
         for _, match in ipairs(vim.fn.getmatches()) do
-            if match['group'] == 'ExtraWhitespace' then
-                vim.fn.matchdelete(match['id'])
+            if match["group"] == "ExtraWhitespace" then
+                vim.fn.matchdelete(match["id"])
             end
         end
     end,
