@@ -43,7 +43,7 @@ lazy.setup({
             cmp.setup.cmdline("/", {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = {
-                    { name = "buffer" }, --ソース類を設定
+                    { name = "buffer" },
                 },
             })
             cmp.setup.cmdline(":", {
@@ -60,8 +60,12 @@ lazy.setup({
                         fn["vsnip#anonymous"](args.body)
                     end,
                 },
+                window = {
+                    completion = cmp.config.window.bordered(),
+                    documentation = cmp.config.window.bordered(),
+                },
                 sources = {
-                    { name = "nvim_lsp" }, --ソース類を設定
+                    { name = "nvim_lsp" },
                     { name = "cmp_tabnine" },
                     { name = "vsnip" }, -- For vsnip users.
                     { name = "buffer" },
@@ -75,6 +79,11 @@ lazy.setup({
                             --dict = '/usr/share/dict/words'
                         },
                     },
+                    { name = "nvim_lsp_signature_help" },
+                    { name = "nvim_lua" },
+                    { name = "luasnip" },
+                    { name = "cmdline" },
+                    { name = "git" },
                 },
                 mapping = cmp.mapping.preset.insert {
                     ["<Tab>"] = cmp.mapping.select_next_item(), --Ctrl+pで補完欄を一つ上に移動
@@ -86,7 +95,7 @@ lazy.setup({
                     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
                     ["<C-f>"] = cmp.mapping.scroll_docs(4),
                     ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<CR>"] = cmp.mapping.confirm { select = true }, -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+                    ["<CR>"] = cmp.mapping.confirm { select = true },
                 },
                 experimental = {
                     ghost_text = false,
@@ -94,9 +103,9 @@ lazy.setup({
                 capabilities = cmplsp.default_capabilities(),
                 formatting = {
                     format = lspkind.cmp_format {
-                        mode = "symbol", -- show only symbol annotations
-                        maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-                        ellipsis_char = "...", -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
+                        mode = "symbol",
+                        maxwidth = 50,
+                        ellipsis_char = "...",
                         before = function(entry, vim_item)
                             return vim_item
                         end,
@@ -105,6 +114,7 @@ lazy.setup({
             }
         end,
         dependencies = {
+            "neovim/nvim-lspconfig",
             "hrsh7th/cmp-nvim-lsp",
             "hrsh7th/cmp-nvim-lua",
             "hrsh7th/vim-vsnip",
@@ -146,6 +156,7 @@ lazy.setup({
     },
     {
         "neovim/nvim-lspconfig",
+        event = "InsertEnter",
         lazy = true,
         keys = {
             {
@@ -191,7 +202,7 @@ lazy.setup({
         build = ":TSUpdate",
         dependencies = {
             "nvim-treesitter/nvim-treesitter-textobjects",
-	    {"navarasu/onedark.nvim", config = true, opts = { style = "darker"}},
+            { "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
         },
         opts = {
             sync_install = false,
@@ -251,9 +262,15 @@ lazy.setup({
             },
         },
     },
-    { "williamboman/mason.nvim", config = true, dependencies = "neovim/nvim-lspconfig" },
+    {
+        "williamboman/mason.nvim",
+        event = "InsertEnter",
+        config = true,
+        dependencies = "neovim/nvim-lspconfig",
+    },
     {
         "williamboman/mason-lspconfig.nvim",
+        event = "InsertEnter",
         opts = {
             ui = {
                 icons = {
@@ -297,7 +314,21 @@ lazy.setup({
                     if server_name == "lua-language-server" then
                         opts.settings = {
                             Lua = {
-                                diagnostics = { globals = { "vim" } },
+                                runtime = {
+                                    version = "LuaJIT",
+                                },
+                                diagnostics = {
+                                    globals = {
+                                        "vim",
+                                        "require",
+                                    },
+                                },
+                                workspace = {
+                                    library = vim.api.nvim_get_runtime_file("", true),
+                                },
+                                telemetry = {
+                                    enable = false,
+                                },
                             },
                         }
                     elseif server_name == "gopls" then
@@ -383,7 +414,10 @@ lazy.setup({
     {
         "jose-elias-alvarez/null-ls.nvim",
         branch = "main",
-        dependencies = "nvim-lua/plenary.nvim",
+        dependencies = {
+            "nvim-lua/plenary.nvim",
+            "jay-babu/mason-null-ls.nvim",
+        },
         config = true,
         opts = function()
             local status, null_ls = pcall(require, "null-ls")
@@ -405,10 +439,24 @@ lazy.setup({
                     null_ls.builtins.diagnostics.eslint_d.with {
                         diagnostics_format = "[eslint] #{m}\n(#{c})",
                     },
-                    null_ls.builtins.diagnostics.fish,
-                    null_ls.builtins.diagnostics.eslint,
+                    -- null_ls.builtins.diagnostics.luacheck,
                     null_ls.builtins.completion.spell,
+                    null_ls.builtins.diagnostics.eslint,
+                    null_ls.builtins.diagnostics.fish,
+                    null_ls.builtins.diagnostics.golangci_lint,
+                    null_ls.builtins.diagnostics.gospel,
+                    null_ls.builtins.diagnostics.hadolint,
+                    null_ls.builtins.diagnostics.protoc_gen_lint,
+                    null_ls.builtins.diagnostics.revive,
+                    null_ls.builtins.diagnostics.staticcheck,
+                    null_ls.builtins.formatting.gofumpt,
+                    null_ls.builtins.formatting.rustfmt,
+                    null_ls.builtins.formatting.goimports,
+                    null_ls.builtins.formatting.goimports_reviser,
+                    null_ls.builtins.formatting.golines,
                     null_ls.builtins.formatting.stylua,
+                    null_ls.builtins.formatting.yamlfix,
+                    null_ls.builtins.formatting.yamlfmt,
                     null_ls.builtins.formatting.deno_fmt.with {
                         condition = function(utils)
                             return not (utils.has_file { ".prettierrc", ".prettierrc.js", "deno.json", "deno.jsonc" })
