@@ -57,16 +57,6 @@ lazy.setup({
                     ghost_text = false,
                 },
                 capabilities = cmplsp.default_capabilities(),
-                -- Lspkind(アイコン)を設定
-                -- formatting = {
-                -- format = lspkind.cmp_format({
-                --     mode = 'symbol', -- show only symbol annotations
-                --     maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-                --     ellipsis_char = '...', -- when popup menu exceed maxwidth, the truncated part would show ellipsis_char instead (must define maxwidth first)
-                --     -- The function below will be called before any actual modifications from lspkind
-                --     -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
-                -- })
-                -- },
             }
         end,
         dependencies = {
@@ -157,6 +147,8 @@ lazy.setup({
             ensure_installed = {
                 "gopls",
                 "sumneko_lua",
+                "dockerls",
+                "yamlls",
             },
             automatic_installation = true,
         },
@@ -184,7 +176,7 @@ lazy.setup({
             mason_lspconfig.setup_handlers {
                 function(server_name)
                     local opts = {}
-                    if server_name == "sumneko_lua" then
+                    if server_name == "lua-language-server" then
                         opts.settings = {
                             Lua = {
                                 diagnostics = { globals = { "vim" } },
@@ -195,6 +187,16 @@ lazy.setup({
                             cmd = { "gopls", "--remote=auto" },
                             filetypes = { "go", "gomod" },
                             root_dir = lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work"),
+                        }
+                    elseif server_name == "dockerls" then
+                        opts = {
+                            cmd = { "docker-langserver", "--stdio" },
+                            filetypes = { "Dockerfile", "dockerfile" },
+                        }
+                    elseif server_name == "yamlls" then
+                        opts = {
+                            cmd = { "yaml-language-server", "--stdio" },
+                            filetypes = { "yaml", "yml" },
                         }
                     end
                     opts.capabilities = capabilities
