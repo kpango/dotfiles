@@ -14,32 +14,23 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
-local status, lazy = pcall(require, "lazy")
-if not status then
-    error("lazy is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath)
-    return
+local function safe_require(module_name)
+    local status, module = pcall(require, module_name)
+    if not status then
+        error(module_name .. " is not installed install_path: " .. pkg_path .. " packpath: " .. vim.o.packpath)
+        return nil
+    end
+    return module
 end
 
-lazy.setup({
+safe_require("lazy").setup({
     {
         "hrsh7th/nvim-cmp",
         event = { "InsertEnter", "CmdlineEnter" },
         opts = function()
-            local status, cmp = pcall(require, "cmp")
-            if not status then
-                error("cmp is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath)
-                return
-            end
-            local status, cmplsp = pcall(require, "cmp_nvim_lsp")
-            if not status then
-                error("cmp_nvim_lsp is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath)
-                return
-            end
-            local status, lspkind = pcall(require, "lspkind")
-            if not status then
-                error("lspkind is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath)
-                return
-            end
+            local cmp = safe_require "cmp"
+            local cmplsp = safe_require "cmp_nvim_lsp"
+            local lspkind = safe_require "lspkind"
             cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = {
@@ -335,25 +326,9 @@ lazy.setup({
             automatic_installation = true,
         },
         config = function()
-            local status, lspconfig = pcall(require, "lspconfig")
-            if not status then
-                error("lspconfig is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath)
-                return
-            end
-            local status, cmplsp = pcall(require, "cmp_nvim_lsp")
-            if not status then
-                error("cmp_nvim_lsp is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath)
-                return
-            end
-
-            local status, mason_lspconfig = pcall(require, "mason-lspconfig")
-            if not status then
-                error(
-                    "mason_lspconfig is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath
-                )
-                return
-            end
-
+            local lspconfig = safe_require "lspconfig"
+            local cmplsp = safe_require "cmp_nvim_lsp"
+            local mason_lspconfig = safe_require "mason-lspconfig"
             local capabilities = cmplsp.default_capabilities()
             mason_lspconfig.setup_handlers {
                 function(server_name)
@@ -489,12 +464,7 @@ lazy.setup({
         },
         config = true,
         opts = function()
-            local status, null_ls = pcall(require, "null-ls")
-            if not status then
-                error("null-ls is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath)
-                return
-            end
-
+            local null_ls = safe_require "null-ls"
             return {
                 sources = {
                     null_ls.builtins.diagnostics.cspell.with {
@@ -513,15 +483,11 @@ lazy.setup({
                     null_ls.builtins.diagnostics.eslint,
                     null_ls.builtins.diagnostics.fish,
                     null_ls.builtins.diagnostics.golangci_lint,
-                    null_ls.builtins.diagnostics.gospel,
                     null_ls.builtins.diagnostics.hadolint,
                     null_ls.builtins.diagnostics.protoc_gen_lint,
-                    null_ls.builtins.diagnostics.revive,
-                    null_ls.builtins.diagnostics.staticcheck,
                     null_ls.builtins.formatting.gofumpt,
                     null_ls.builtins.formatting.rustfmt,
                     null_ls.builtins.formatting.goimports,
-                    null_ls.builtins.formatting.goimports_reviser,
                     null_ls.builtins.formatting.golines,
                     null_ls.builtins.formatting.stylua,
                     null_ls.builtins.formatting.yamlfix,
@@ -631,6 +597,14 @@ lazy.setup({
                             readonly = "[RO]",
                             unnamed = "Untitled",
                         },
+                    },
+                    {
+                        function()
+                            return safe_require("nvim-navic").get_location()
+                        end,
+                        cond = function()
+                            return safe_require("nvim-navic").is_available()
+                        end,
                     },
                 },
                 lualine_x = {
@@ -835,6 +809,9 @@ lazy.setup({
         dependencies = "neovim/nvim-lspconfig",
         config = true,
         opts = {
+            lsp = {
+                auto_attach = true,
+            },
             icons = {
                 File = " ",
                 Module = " ",
@@ -863,7 +840,7 @@ lazy.setup({
                 Operator = " ",
                 TypeParameter = " ",
             },
-            highlight = false,
+            highlight = true,
             separator = " > ",
             depth_limit = 0,
             depth_limit_indicator = "..",
@@ -873,9 +850,4 @@ lazy.setup({
     root = pkg_path,
 })
 
-local status, onedark = pcall(require, "onedark")
-if not status then
-    error "onedark colorscheme is not installed"
-    return
-end
-onedark.load()
+safe_require("onedark").load()
