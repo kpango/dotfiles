@@ -23,7 +23,7 @@ end
 lazy.setup({
     {
         "hrsh7th/nvim-cmp",
-        event = "InsertEnter",
+        event = { "InsertEnter", "CmdlineEnter" },
         opts = function()
             local status, cmp = pcall(require, "cmp")
             if not status then
@@ -40,7 +40,7 @@ lazy.setup({
                 error("lspkind is not installed install_path: " .. install_path .. " packpath: " .. vim.o.packpath)
                 return
             end
-            cmp.setup.cmdline("/", {
+            cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = {
                     { name = "buffer" },
@@ -51,7 +51,14 @@ lazy.setup({
                 sources = cmp.config.sources({
                     { name = "path" },
                 }, {
-                    { name = "cmdline" },
+                    { name = "cmdline", keyword_length = 2 },
+                }),
+            })
+            cmp.setup.filetype("gitcommit", {
+                sources = cmp.config.sources({
+                    { name = "cmp_git" }, -- You can specify the `cmp_git` source if you were installed it.
+                }, {
+                    { name = "buffer" },
                 }),
             })
             return {
@@ -61,14 +68,18 @@ lazy.setup({
                     end,
                 },
                 window = {
-                    completion = cmp.config.window.bordered(),
-                    documentation = cmp.config.window.bordered(),
+                    completion = cmp.config.window.bordered {
+                        border = "single",
+                    },
+                    documentation = cmp.config.window.bordered {
+                        border = "single",
+                    },
                 },
                 sources = {
                     { name = "nvim_lsp" },
                     { name = "cmp_tabnine" },
-                    { name = "vsnip" }, -- For vsnip users.
-                    { name = "buffer" },
+                    { name = "vsnip" },
+                    { name = "buffer", keyword_length = 2 },
                     { name = "path" },
                     {
                         name = "look",
@@ -114,17 +125,21 @@ lazy.setup({
             }
         end,
         dependencies = {
-            "neovim/nvim-lspconfig",
-            "hrsh7th/cmp-nvim-lsp-signature-help",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-cmdline",
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-nvim-lua",
-            "hrsh7th/cmp-path",
-            "hrsh7th/cmp-vsnip",
-            "hrsh7th/vim-vsnip",
-            "onsails/lspkind.nvim",
-            "saadparwaiz1/cmp_luasnip",
+            { "neovim/nvim-lspconfig", event = "InsertEnter" },
+            { "hrsh7th/cmp-nvim-lua", event = "InsertEnter" },
+            { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
+            { "hrsh7th/cmp-buffer", event = "InsertEnter" },
+            { "hrsh7th/cmp-calc", event = "InsertEnter" },
+            { "hrsh7th/cmp-cmdline", event = "ModeChanged" },
+            { "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
+            { "hrsh7th/cmp-nvim-lsp-document-symbol", event = "InsertEnter" },
+            { "hrsh7th/cmp-nvim-lsp-signature-help", event = "InsertEnter" },
+            { "hrsh7th/cmp-path", event = "InsertEnter" },
+            { "hrsh7th/cmp-vsnip", event = "InsertEnter" },
+            { "hrsh7th/vim-vsnip", event = "InsertEnter" },
+            { "hrsh7th/vim-vsnip-integ", event = "InsertEnter" },
+            { "onsails/lspkind.nvim", event = "InsertEnter" },
+            { "rafamadriz/friendly-snippets", event = "InsertEnter" },
         },
     },
     { "tzachar/cmp-tabnine", build = "./install.sh", dependencies = "hrsh7th/nvim-cmp" },
@@ -140,7 +155,13 @@ lazy.setup({
         "numToStr/Comment.nvim",
         config = true,
         lazy = true,
+        opts = {
+            ignore = "^$",
+        },
         keys = {
+            {
+                "<C-_>",
+            },
             {
                 "<C-_>",
                 ":lua require('Comment.api').toggle.linewise.current()<CR>",
