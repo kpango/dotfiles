@@ -142,7 +142,25 @@ lazy.setup({
             { "rafamadriz/friendly-snippets", event = "InsertEnter" },
         },
     },
-    { "tzachar/cmp-tabnine", build = "./install.sh", dependencies = "hrsh7th/nvim-cmp" },
+    {
+        "tzachar/cmp-tabnine",
+        build = "./install.sh",
+        dependencies = "hrsh7th/nvim-cmp",
+        config = true,
+        opts = {
+            max_lines = 1000,
+            max_num_results = 20,
+            sort = true,
+            run_on_every_keystroke = true,
+            snippet_placeholder = "..",
+            ignored_file_types = {
+                -- default is not to ignore
+                -- uncomment to ignore in lua:
+                -- lua = true
+            },
+            show_prediction_strength = false,
+        },
+    },
     {
         "github/copilot.vim",
         lazy = false,
@@ -184,7 +202,7 @@ lazy.setup({
     },
     {
         "neovim/nvim-lspconfig",
-        event = "InsertEnter",
+        event = { "InsertEnter", "CmdlineEnter" },
         lazy = true,
         keys = {
             {
@@ -339,7 +357,13 @@ lazy.setup({
             local capabilities = cmplsp.default_capabilities()
             mason_lspconfig.setup_handlers {
                 function(server_name)
-                    local opts = {}
+                    local opts = {
+                        settings = {
+                            solargraph = {
+                                diagnostics = false,
+                            },
+                        },
+                    }
                     if server_name == "lua-language-server" then
                         opts.settings = {
                             Lua = {
@@ -435,6 +459,22 @@ lazy.setup({
             { "gr", "<cmd>Lspsaga rename<CR>", { silent = true, noremap = true }, desc = "Rename", mode = "n" },
             { "gh", "<cmd>Lspsaga lsp_finder<CR>", { silent = true, noremap = true }, desc = "LSP Finder", mode = "n" },
             { "gd", "<cmd>Lspsaga peek_definition<CR>", { silent = true }, desc = "Peek Definition", mode = "n" },
+            {
+                "gp",
+                "<Cmd>Lspsaga preview_definition<CR>",
+                { noremap = true, silent = true },
+                desc = "Preview Definition",
+                mode = "n",
+            },
+            {
+                "<C-j>",
+                "<Cmd>Lspsaga diagnostic_jump_next<CR>",
+                { noremap = true, silent = true },
+                desc = "",
+                mode = "n",
+            },
+            { "K", "<Cmd>Lspsaga hover_doc<CR>", { noremap = true, silent = true }, desc = "", mode = "n" },
+            { "<C-k>", "<Cmd>Lspsaga signature_help<CR>", { noremap = true, silent = true }, desc = "", mode = "i" },
         },
         branch = "main",
         opts = { border_style = "rounded" },
@@ -508,6 +548,22 @@ lazy.setup({
         version = "*",
         dependencies = "nvim-tree/nvim-web-devicons",
         config = true,
+        keys = {
+            {
+                "<Tab>",
+                "<Cmd>BufferLineCycleNext<CR>",
+                { silent = true, noremap = true },
+                desc = "",
+                mode = "n",
+            },
+            {
+                "<S-Tab>",
+                "<Cmd>BufferLineCyclePrev<CR>",
+                { silent = true, noremap = true },
+                desc = "",
+                mode = "n",
+            },
+        },
         opts = {
             options = {
                 mode = "tabs",
@@ -632,6 +688,185 @@ lazy.setup({
                 insert = "#55AAEE",
                 visual = "#DD5522",
             },
+        },
+    },
+    {
+        "nathom/filetype.nvim",
+        lazy = false,
+        config = true,
+        opts = {
+            overrides = {
+                extensions = {},
+                literal = {},
+                complex = {
+                    [".*git/config"] = "gitconfig", -- Included in the plugin
+                },
+                function_extensions = {
+                    ["cpp"] = function()
+                        vim.bo.filetype = "cpp"
+                        vim.bo.cinoptions = vim.bo.cinoptions .. "L0"
+                    end,
+                    ["pdf"] = function()
+                        vim.bo.filetype = "pdf"
+                        vim.fn.jobstart("open -a skim " .. '"' .. vim.fn.expand "%" .. '"')
+                    end,
+                },
+                function_literal = {
+                    Brewfile = function()
+                        vim.cmd "syntax off"
+                    end,
+                },
+                function_complex = {
+                    ["*.math_notes/%w+"] = function()
+                        vim.cmd "iabbrev $ $$"
+                    end,
+                },
+                shebang = {
+                    dash = "sh",
+                },
+            },
+        },
+    },
+    {
+        "lewis6991/gitsigns.nvim",
+        config = true,
+        opts = {
+            signs = {
+                add = { hl = "GitSignsAdd", text = "│", numhl = "GitSignsAddNr", linehl = "GitSignsAddLn" },
+                change = {
+                    hl = "GitSignsChange",
+                    text = "│",
+                    numhl = "GitSignsChangeNr",
+                    linehl = "GitSignsChangeLn",
+                },
+                delete = { hl = "GitSignsDelete", text = "_", numhl = "GitSignsDeleteNr", linehl = "GitSignsDeleteLn" },
+                topdelete = {
+                    hl = "GitSignsDelete",
+                    text = "‾",
+                    numhl = "GitSignsDeleteNr",
+                    linehl = "GitSignsDeleteLn",
+                },
+                changedelete = {
+                    hl = "GitSignsChange",
+                    text = "~",
+                    numhl = "GitSignsChangeNr",
+                    linehl = "GitSignsChangeLn",
+                },
+            },
+            signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
+            numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
+            linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
+            word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
+            watch_gitdir = {
+                interval = 1000,
+                follow_files = true,
+            },
+            attach_to_untracked = true,
+            current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+            current_line_blame_opts = {
+                virt_text = true,
+                virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+                delay = 1000,
+                ignore_whitespace = false,
+            },
+            current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
+            sign_priority = 6,
+            update_debounce = 100,
+            status_formatter = nil, -- Use default
+            max_file_length = 40000, -- Disable if file is longer than this (in lines)
+            preview_config = {
+                -- Options passed to nvim_open_win
+                border = "single",
+                style = "minimal",
+                relative = "cursor",
+                row = 0,
+                col = 1,
+            },
+            yadm = {
+                enable = false,
+            },
+            on_attach = function(bufnr)
+                local gs = package.loaded.gitsigns
+                local function map(mode, l, r, opts)
+                    opts = opts or {}
+                    opts.buffer = bufnr
+                    vim.keymap.set(mode, l, r, opts)
+                end
+                map("n", "]c", function()
+                    if vim.wo.diff then
+                        return "]c"
+                    end
+                    vim.schedule(function()
+                        gs.next_hunk()
+                    end)
+                    return "<Ignore>"
+                end, { expr = true })
+
+                map("n", "[c", function()
+                    if vim.wo.diff then
+                        return "[c"
+                    end
+                    vim.schedule(function()
+                        gs.prev_hunk()
+                    end)
+                    return "<Ignore>"
+                end, { expr = true })
+                map({ "n", "v" }, "<leader>hs", ":Gitsigns stage_hunk<CR>")
+                map({ "n", "v" }, "<leader>hr", ":Gitsigns reset_hunk<CR>")
+                map("n", "<leader>hS", gs.stage_buffer)
+                map("n", "<leader>hu", gs.undo_stage_hunk)
+                map("n", "<leader>hR", gs.reset_buffer)
+                map("n", "<leader>hp", gs.preview_hunk)
+                map("n", "<leader>hb", function()
+                    gs.blame_line { full = true }
+                end)
+                map("n", "<leader>tb", gs.toggle_current_line_blame)
+                map("n", "<leader>hd", gs.diffthis)
+                map("n", "<leader>hD", function()
+                    gs.diffthis "~"
+                end)
+                map("n", "<leader>td", gs.toggle_deleted)
+                map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
+            end,
+        },
+    },
+    {
+        "SmiteshP/nvim-navic",
+        dependencies = "neovim/nvim-lspconfig",
+        config = true,
+        opts = {
+            icons = {
+                File = " ",
+                Module = " ",
+                Namespace = " ",
+                Package = " ",
+                Class = " ",
+                Method = " ",
+                Property = " ",
+                Field = " ",
+                Constructor = " ",
+                Enum = "練",
+                Interface = "練",
+                Function = " ",
+                Variable = " ",
+                Constant = " ",
+                String = " ",
+                Number = " ",
+                Boolean = "◩ ",
+                Array = " ",
+                Object = " ",
+                Key = " ",
+                Null = "ﳠ ",
+                EnumMember = " ",
+                Struct = " ",
+                Event = " ",
+                Operator = " ",
+                TypeParameter = " ",
+            },
+            highlight = false,
+            separator = " > ",
+            depth_limit = 0,
+            depth_limit_indicator = "..",
         },
     },
 }, {
