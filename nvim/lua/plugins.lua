@@ -55,7 +55,7 @@ safe_require("lazy").setup({
             return {
                 snippet = {
                     expand = function(args)
-                        fn["vsnip#anonymous"](args.body)
+                        safe_require("luasnip").lsp_expand(args.body)
                     end,
                 },
                 window = {
@@ -69,7 +69,6 @@ safe_require("lazy").setup({
                 sources = {
                     { name = "nvim_lsp" },
                     { name = "cmp_tabnine" },
-                    { name = "vsnip" },
                     { name = "buffer", keyword_length = 2 },
                     { name = "path" },
                     {
@@ -117,20 +116,18 @@ safe_require("lazy").setup({
         end,
         dependencies = {
             { "neovim/nvim-lspconfig", event = "InsertEnter" },
-            { "hrsh7th/cmp-nvim-lua", event = "InsertEnter" },
-            { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
+            { "L3MON4D3/LuaSnip", event = "InsertEnter" },
             { "hrsh7th/cmp-buffer", event = "InsertEnter" },
             { "hrsh7th/cmp-calc", event = "InsertEnter" },
             { "hrsh7th/cmp-cmdline", event = "ModeChanged" },
             { "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
             { "hrsh7th/cmp-nvim-lsp-document-symbol", event = "InsertEnter" },
             { "hrsh7th/cmp-nvim-lsp-signature-help", event = "InsertEnter" },
+            { "hrsh7th/cmp-nvim-lua", event = "InsertEnter" },
             { "hrsh7th/cmp-path", event = "InsertEnter" },
-            { "hrsh7th/cmp-vsnip", event = "InsertEnter" },
-            { "hrsh7th/vim-vsnip", event = "InsertEnter" },
-            { "hrsh7th/vim-vsnip-integ", event = "InsertEnter" },
             { "onsails/lspkind.nvim", event = "InsertEnter" },
             { "rafamadriz/friendly-snippets", event = "InsertEnter" },
+            { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
         },
     },
     {
