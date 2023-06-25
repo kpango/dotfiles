@@ -47,10 +47,18 @@ safe_require("lazy").setup({
             })
             cmp.setup.filetype("gitcommit", {
                 sources = cmp.config.sources({
-                    { name = "cmp_git" },
+                    { name = "git" },
                 }, {
                     { name = "buffer" },
                 }),
+            })
+            cmp.setup.filetype("lua", {
+                sources = cmp.config.sources {
+                    { name = "nvim_lsp" },
+                    { name = "luasnip" },
+                    { name = "cmp_tabnine" },
+                    { name = "nvim_lua" },
+                },
             })
             return {
                 snippet = {
@@ -67,8 +75,12 @@ safe_require("lazy").setup({
                     },
                 },
                 sources = {
-                    { name = "nvim_lsp" },
-                    { name = "cmp_tabnine" },
+                    {
+                        { name = "nvim_lsp" },
+                        { name = "luasnip" },
+                        { name = "cmp_tabnine" },
+                        { name = "nvim_lsp_signature_help" },
+                    },
                     { name = "buffer", keyword_length = 2 },
                     { name = "path" },
                     {
@@ -80,9 +92,6 @@ safe_require("lazy").setup({
                             --dict = '/usr/share/dict/words'
                         },
                     },
-                    { name = "nvim_lsp_signature_help" },
-                    { name = "nvim_lua" },
-                    { name = "luasnip" },
                     { name = "cmdline" },
                     { name = "git" },
                 },
@@ -116,7 +125,7 @@ safe_require("lazy").setup({
         end,
         dependencies = {
             { "neovim/nvim-lspconfig", event = "InsertEnter" },
-            { "L3MON4D3/LuaSnip", event = "InsertEnter" },
+            { "L3MON4D3/LuaSnip", build = "make install_jsregexp", event = "InsertEnter" },
             { "hrsh7th/cmp-buffer", event = "InsertEnter" },
             { "hrsh7th/cmp-calc", event = "InsertEnter" },
             { "hrsh7th/cmp-cmdline", event = "ModeChanged" },
@@ -125,6 +134,7 @@ safe_require("lazy").setup({
             { "hrsh7th/cmp-nvim-lsp-signature-help", event = "InsertEnter" },
             { "hrsh7th/cmp-nvim-lua", event = "InsertEnter" },
             { "hrsh7th/cmp-path", event = "InsertEnter" },
+            { "petertriho/cmp-git", config = ture, event = "InsertEnter" },
             { "onsails/lspkind.nvim", event = "InsertEnter" },
             { "rafamadriz/friendly-snippets", event = "InsertEnter" },
             { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
@@ -192,44 +202,47 @@ safe_require("lazy").setup({
         "neovim/nvim-lspconfig",
         event = { "InsertEnter", "CmdlineEnter" },
         lazy = true,
-        keys = {
-            {
-                "gD",
-                vim.lsp.buf.declaration,
-                { noremap = true, silent = true },
-                desc = "Go To Declaration",
-                mode = "n",
-            },
-            {
-                "gi",
-                vim.lsp.buf.implementation,
-                { noremap = true, silent = true },
-                desc = "Go To Implementation",
-                mode = "n",
-            },
-            { "K", vim.lsp.buf.hover, { silent = true }, desc = "Show Info", mode = "n" },
-            {
-                "<leader>k",
-                vim.lsp.buf.signature_help,
-                { silent = true, noremap = true },
-                desc = "Show Signature",
-                mode = "n",
-            },
-            {
-                "<Leader>gr",
-                vim.lsp.buf.references,
-                { noremap = true, silent = true },
-                desc = "Go To References",
-                mode = "n",
-            },
-            {
-                "<Leader>D",
-                vim.lsp.buf.type_definition,
-                { noremap = true, silent = true },
-                desc = "Show Type Definition",
-                mode = "n",
-            },
-        },
+        keys = function()
+            local opts = { noremap = true, silent = true }
+            return {
+                {
+                    "gD",
+                    vim.lsp.buf.declaration,
+                    opts,
+                    desc = "Go To Declaration",
+                    mode = "n",
+                },
+                {
+                    "gi",
+                    vim.lsp.buf.implementation,
+                    opts,
+                    desc = "Go To Implementation",
+                    mode = "n",
+                },
+                {
+                    "<leader>k",
+                    vim.lsp.buf.signature_help,
+                    opts,
+                    desc = "Show Signature",
+                    mode = "n",
+                },
+                {
+                    "<Leader>gr",
+                    vim.lsp.buf.references,
+                    opts,
+                    desc = "Go To References",
+                    mode = "n",
+                },
+                {
+                    "<Leader>D",
+                    vim.lsp.buf.type_definition,
+                    opts,
+                    desc = "Show Type Definition",
+                    mode = "n",
+                },
+                { "K", vim.lsp.buf.hover, { silent = true }, desc = "Show Info", mode = "n" },
+            }
+        end,
     },
     {
         "nvim-treesitter/nvim-treesitter",
