@@ -13,8 +13,8 @@ if not vim.loop.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
-vim.opt.completeopt = {'menuone', 'noselect', 'noinsert', 'preview'}
-vim.opt.shortmess = vim.opt.shortmess + { c = true}
+vim.opt.completeopt = { "menuone", "noselect", "noinsert", "preview" }
+vim.opt.shortmess = vim.opt.shortmess + { c = true }
 
 local function safe_require(module_name)
     local status, module = pcall(require, module_name)
@@ -63,7 +63,7 @@ safe_require("lazy").setup({
             })
             cmp.setup.filetype("lua", {
                 sources = cmp.config.sources {
-                    { name = "nvim_lsp", keyword_length = 3  },
+                    { name = "nvim_lsp", keyword_length = 3 },
                     { name = "luasnip" },
                     { name = "cmp_tabnine" },
                     { name = "nvim_lua" },
@@ -91,7 +91,7 @@ safe_require("lazy").setup({
                 },
                 sources = cmp.config.sources {
                     {
-                        { name = "nvim_lsp", keyword_length = 3  },
+                        { name = "nvim_lsp", keyword_length = 3 },
                         { name = "luasnip" },
                         { name = "cmp_tabnine" },
                         { name = "nvim_lsp_signature_help" },
@@ -337,9 +337,9 @@ safe_require("lazy").setup({
             { "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
         },
         config = function(_, opts)
-            local ntsi = safe_require("nvim-treesitter.install")
+            local ntsi = safe_require "nvim-treesitter.install"
             ntsi.compilers = { "clang" }
-            ntsi.update({ with_sync = true })
+            ntsi.update { with_sync = true }
             safe_require("nvim-treesitter.configs").setup(opts)
         end,
         opts = {
@@ -911,7 +911,7 @@ safe_require("lazy").setup({
             -- on_attach = function(client, bufnr)
             --     local gs = package.loaded.gitsigns
             --     local function map(...)
-	           --  vim.api.nvim_buf_set_keymap(bufnr, ...)
+            --  vim.api.nvim_buf_set_keymap(bufnr, ...)
             --     end
             --     map("n", "]c", function()
             --         if vim.wo.diff then
