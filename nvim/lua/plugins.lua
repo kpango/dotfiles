@@ -13,6 +13,8 @@ if not vim.loop.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
+vim.opt.completeopt = {'menuone', 'noselect', 'noinsert', 'preview'}
+vim.opt.shortmess = vim.opt.shortmess + { c = true}
 
 local function safe_require(module_name)
     local status, module = pcall(require, module_name)
@@ -41,7 +43,7 @@ safe_require("lazy").setup({
             cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = {
-                    { name = "buffer" },
+                    { name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, keyword_length = 2 },
                 },
             })
             cmp.setup.cmdline(":", {
@@ -56,12 +58,12 @@ safe_require("lazy").setup({
                 sources = cmp.config.sources({
                     { name = "git" },
                 }, {
-                    { name = "buffer" },
+                    { name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, keyword_length = 2 },
                 }),
             })
             cmp.setup.filetype("lua", {
                 sources = cmp.config.sources {
-                    { name = "nvim_lsp" },
+                    { name = "nvim_lsp", keyword_length = 3  },
                     { name = "luasnip" },
                     { name = "cmp_tabnine" },
                     { name = "nvim_lua" },
@@ -89,12 +91,12 @@ safe_require("lazy").setup({
                 },
                 sources = cmp.config.sources {
                     {
-                        { name = "nvim_lsp" },
+                        { name = "nvim_lsp", keyword_length = 3  },
                         { name = "luasnip" },
                         { name = "cmp_tabnine" },
                         { name = "nvim_lsp_signature_help" },
                     },
-                    { name = "buffer", keyword_length = 2 },
+                    { name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, keyword_length = 2 },
                     { name = "path" },
                     {
                         name = "look",
@@ -335,10 +337,13 @@ safe_require("lazy").setup({
             { "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
         },
         config = function(_, opts)
-            safe_require("nvim-treesitter.install").compilers = { "clang" }
+            local ntsi = safe_require("nvim-treesitter.install")
+            ntsi.compilers = { "clang" }
+            ntsi.update({ with_sync = true })
             safe_require("nvim-treesitter.configs").setup(opts)
         end,
         opts = {
+            auto_install = true,
             sync_install = false,
             highlight = {
                 enable = true,
@@ -408,8 +413,8 @@ safe_require("lazy").setup({
             },
             ensure_installed = {
                 "gopls",
-                "sumneko_lua",
                 "dockerls",
+                "rust-analyzer",
                 "yamlls",
             },
             automatic_installation = true,
@@ -451,10 +456,18 @@ safe_require("lazy").setup({
                         }
                     elseif server_name == "gopls" then
                         opts = {
-                            cmd = { "gopls" },
+                            cmd = { "gopls", "serve" },
                             -- cmd = { "gopls", "--remote=auto" },
                             filetypes = { "go", "gomod", "gowork" },
                             root_dir = lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work"),
+                            settings = {
+                                gopls = {
+                                    analyses = {
+                                        unusedparams = true,
+                                    },
+                                    staticcheck = true,
+                                },
+                            },
                         }
                     elseif server_name == "dockerls" then
                         opts = {
@@ -563,17 +576,19 @@ safe_require("lazy").setup({
                     handlers = {},
                     ensure_installed = {
                         "cspell",
+                        "stylua",
                         "jsonlint",
                         "markdownlint",
                         "prettierd",
                         "shellcheck",
                         "sql_formatter",
                         "yamlfmt",
-                        -- "beautysh",
-                        -- "black",
+                        "beautysh",
+                        "black",
                         -- "luacheck",
-                        -- "yamllint",
+                        "yamllint",
                     },
+                    automatic_setup = true,
                     automatic_installation = true,
                 },
                 config = true,
@@ -608,7 +623,7 @@ safe_require("lazy").setup({
                     null_ls.builtins.diagnostics.golangci_lint,
                     null_ls.builtins.diagnostics.hadolint,
                     null_ls.builtins.diagnostics.jsonlint,
-                    null_ls.builtins.diagnostics.luacheck,
+                    -- null_ls.builtins.diagnostics.luacheck,
                     null_ls.builtins.diagnostics.markdownlint,
                     null_ls.builtins.diagnostics.protoc_gen_lint,
                     null_ls.builtins.diagnostics.shellcheck,
@@ -893,49 +908,47 @@ safe_require("lazy").setup({
             yadm = {
                 enable = false,
             },
-            on_attach = function(bufnr)
-                local gs = package.loaded.gitsigns
-                local function map(mode, l, r, opts)
-                    opts = opts or {}
-                    opts.buffer = bufnr
-                    vim.keymap.set(mode, l, r, opts)
-                end
-                map("n", "]c", function()
-                    if vim.wo.diff then
-                        return "]c"
-                    end
-                    vim.schedule(function()
-                        gs.next_hunk()
-                    end)
-                    return "<Ignore>"
-                end, { expr = true })
+            -- on_attach = function(client, bufnr)
+            --     local gs = package.loaded.gitsigns
+            --     local function map(...)
+	           --  vim.api.nvim_buf_set_keymap(bufnr, ...)
+            --     end
+            --     map("n", "]c", function()
+            --         if vim.wo.diff then
+            --             return "]c"
+            --         end
+            --         vim.schedule(function()
+            --             gs.next_hunk()
+            --         end)
+            --         return "<Ignore>"
+            --     end, { expr = true })
 
-                map("n", "[c", function()
-                    if vim.wo.diff then
-                        return "[c"
-                    end
-                    vim.schedule(function()
-                        gs.prev_hunk()
-                    end)
-                    return "<Ignore>"
-                end, { expr = true })
-                map({ "n", "v" }, "<leader>hs", ":Gitsigns stage_hunk<CR>")
-                map({ "n", "v" }, "<leader>hr", ":Gitsigns reset_hunk<CR>")
-                map("n", "<leader>hS", gs.stage_buffer)
-                map("n", "<leader>hu", gs.undo_stage_hunk)
-                map("n", "<leader>hR", gs.reset_buffer)
-                map("n", "<leader>hp", gs.preview_hunk)
-                map("n", "<leader>hb", function()
-                    gs.blame_line { full = true }
-                end)
-                map("n", "<leader>tb", gs.toggle_current_line_blame)
-                map("n", "<leader>hd", gs.diffthis)
-                map("n", "<leader>hD", function()
-                    gs.diffthis "~"
-                end)
-                map("n", "<leader>td", gs.toggle_deleted)
-                map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
-            end,
+            --     map("n", "[c", function()
+            --         if vim.wo.diff then
+            --             return "[c"
+            --         end
+            --         vim.schedule(function()
+            --             gs.prev_hunk()
+            --         end)
+            --         return "<Ignore>"
+            --     end, { expr = true })
+            --     map({ "n", "v" }, "<leader>hs", ":Gitsigns stage_hunk<CR>")
+            --     map({ "n", "v" }, "<leader>hr", ":Gitsigns reset_hunk<CR>")
+            --     map("n", "<leader>hS", gs.stage_buffer)
+            --     map("n", "<leader>hu", gs.undo_stage_hunk)
+            --     map("n", "<leader>hR", gs.reset_buffer)
+            --     map("n", "<leader>hp", gs.preview_hunk)
+            --     map("n", "<leader>hb", function()
+            --         gs.blame_line { full = true }
+            --     end)
+            --     map("n", "<leader>tb", gs.toggle_current_line_blame)
+            --     map("n", "<leader>hd", gs.diffthis)
+            --     map("n", "<leader>hD", function()
+            --         gs.diffthis "~"
+            --     end)
+            --     map("n", "<leader>td", gs.toggle_deleted)
+            --     map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
+            -- end,
         },
     },
     {
