@@ -25,11 +25,19 @@ end
 
 safe_require("lazy").setup({
     {
+        "dstein64/vim-startuptime",
+        cmd = "StartupTime",
+        init = function()
+            vim.g.startuptime_tries = 10
+        end,
+    },
+    {
         "hrsh7th/nvim-cmp",
         event = { "InsertEnter", "CmdlineEnter" },
         opts = function()
             local cmp = safe_require "cmp"
-            local cmplsp = safe_require "cmp_nvim_lsp"
+            local capabilities =
+                safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
             local lspkind = safe_require "lspkind"
             cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
@@ -61,6 +69,9 @@ safe_require("lazy").setup({
                 },
             })
             return {
+                flags = {
+                    debounce_text_changes = 150,
+                },
                 snippet = {
                     expand = function(args)
                         safe_require("luasnip").lsp_expand(args.body)
@@ -69,12 +80,15 @@ safe_require("lazy").setup({
                 window = {
                     completion = cmp.config.window.bordered {
                         border = "single",
+                        col_offset = -3,
+                        side_padding = 0,
                     },
                     documentation = cmp.config.window.bordered {
-                        border = "single",
+                        border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+                        winhiglight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
                     },
                 },
-                sources = {
+                sources = cmp.config.sources {
                     {
                         { name = "nvim_lsp" },
                         { name = "luasnip" },
@@ -110,7 +124,7 @@ safe_require("lazy").setup({
                 experimental = {
                     ghost_text = false,
                 },
-                capabilities = cmplsp.default_capabilities(),
+                capabilities = capabilities,
                 formatting = {
                     format = lspkind.cmp_format {
                         mode = "symbol",
@@ -134,7 +148,9 @@ safe_require("lazy").setup({
             { "hrsh7th/cmp-nvim-lsp-signature-help", event = "InsertEnter" },
             { "hrsh7th/cmp-nvim-lua", event = "InsertEnter" },
             { "hrsh7th/cmp-path", event = "InsertEnter" },
+            { "ray-x/cmp-treesitter", event = "InsertEnter" },
             { "petertriho/cmp-git", config = ture, event = "InsertEnter" },
+            { "octaltree/cmp-look", config = ture, event = "InsertEnter" },
             { "onsails/lspkind.nvim", event = "InsertEnter" },
             { "rafamadriz/friendly-snippets", event = "InsertEnter" },
             { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
@@ -164,8 +180,18 @@ safe_require("lazy").setup({
         lazy = false,
         config = function()
             vim.g.copilot_no_tab_map = true
-            vim.api.nvim_set_keymap("i", "<C-i>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
         end,
+        keys = {
+            {
+                "<C-i>",
+                'copilot#Accept("")',
+                replace_keycodes = false,
+                mode = "i",
+                desc = "Accept Copilot suggestion",
+                expr = true,
+                silent = true,
+            },
+        },
     },
     {
         "numToStr/Comment.nvim",
@@ -176,25 +202,28 @@ safe_require("lazy").setup({
         },
         keys = {
             {
-                "<C-_>",
+                "<C-c>",
                 ":lua require('Comment.api').toggle.linewise.current()<CR>",
-                { noremap = true, silent = true },
                 desc = "",
                 mode = "n",
+                noremap = true,
+                silent = true,
             },
             {
-                "<C-_>",
+                "<C-c>",
                 '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>',
-                { noremap = true, silent = true },
                 desc = "",
                 mode = "x",
+                noremap = true,
+                silent = true,
             },
             {
-                "<C-_>",
+                "<C-c>",
                 ":lua require('Comment.api').toggle.linewise.current() <CR>",
-                { noremap = true, silent = true },
                 desc = "",
                 mode = "i",
+                noremap = true,
+                silent = true,
             },
         },
     },
@@ -251,6 +280,10 @@ safe_require("lazy").setup({
             "nvim-treesitter/nvim-treesitter-textobjects",
             { "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
         },
+        config = function(_, opts)
+            safe_require("nvim-treesitter.install").compilers = { "clang" }
+            safe_require("nvim-treesitter.configs").setup(opts)
+        end,
         opts = {
             sync_install = false,
             highlight = {
@@ -274,7 +307,6 @@ safe_require("lazy").setup({
                 "go",
                 "gomod",
                 "graphql",
-                "help",
                 "html",
                 "http",
                 "java",
@@ -310,13 +342,6 @@ safe_require("lazy").setup({
         },
     },
     {
-        "williamboman/mason.nvim",
-        cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
-        event = "InsertEnter",
-        config = true,
-        dependencies = "neovim/nvim-lspconfig",
-    },
-    {
         "williamboman/mason-lspconfig.nvim",
         event = "InsertEnter",
         opts = {
@@ -335,11 +360,12 @@ safe_require("lazy").setup({
             },
             automatic_installation = true,
         },
-        config = function()
+        config = function(_, opts)
             local lspconfig = safe_require "lspconfig"
-            local cmplsp = safe_require "cmp_nvim_lsp"
             local mason_lspconfig = safe_require "mason-lspconfig"
-            local capabilities = cmplsp.default_capabilities()
+            local capabilities =
+                safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+            mason_lspconfig.setup(opts)
             mason_lspconfig.setup_handlers {
                 function(server_name)
                     local opts = {
@@ -371,8 +397,9 @@ safe_require("lazy").setup({
                         }
                     elseif server_name == "gopls" then
                         opts = {
-                            cmd = { "gopls", "--remote=auto" },
-                            filetypes = { "go", "gomod" },
+                            cmd = { "gopls" },
+                            -- cmd = { "gopls", "--remote=auto" },
+                            filetypes = { "go", "gomod", "gowork" },
                             root_dir = lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work"),
                         }
                     elseif server_name == "dockerls" then
@@ -391,7 +418,13 @@ safe_require("lazy").setup({
                 end,
             }
         end,
-        dependencies = "williamboman/mason.nvim",
+        dependencies = {
+            "williamboman/mason.nvim",
+            cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUninstall", "MasonUninstallAll", "MasonLog" },
+            event = "InsertEnter",
+            config = true,
+            dependencies = "neovim/nvim-lspconfig",
+        },
     },
     { "gpanders/editorconfig.nvim" },
     {
@@ -470,12 +503,33 @@ safe_require("lazy").setup({
         branch = "main",
         dependencies = {
             "nvim-lua/plenary.nvim",
-            "jay-babu/mason-null-ls.nvim",
+            {
+                "jay-babu/mason-null-ls.nvim",
+                opts = {
+                    handlers = {},
+                    ensure_installed = {
+                        "beautysh",
+                        "cspell",
+                        "prettierd",
+                        "luacheck",
+                        "markdownlint",
+                        "black",
+                        "jsonlint",
+                        "shellcheck",
+                        "sql_formatter",
+                        "yamlfmt",
+                        "yamllint",
+                    },
+                    automatic_installation = true,
+                },
+                config = true,
+            },
         },
         config = true,
         opts = function()
             local null_ls = safe_require "null-ls"
             return {
+                diagnostics_format = "[#{s}] #{m}\n(#{c})",
                 sources = {
                     null_ls.builtins.diagnostics.cspell.with {
                         diagnostics_postprocess = function(diagnostic)
@@ -492,7 +546,7 @@ safe_require("lazy").setup({
                     null_ls.builtins.completion.spell,
                     null_ls.builtins.diagnostics.eslint,
                     null_ls.builtins.diagnostics.fish,
-                    null_ls.builtins.diagnostics.golangci_lint,
+                    -- null_ls.builtins.diagnostics.golangci_lint,
                     null_ls.builtins.diagnostics.hadolint,
                     null_ls.builtins.diagnostics.protoc_gen_lint,
                     null_ls.builtins.formatting.gofumpt,
@@ -518,7 +572,6 @@ safe_require("lazy").setup({
             }
         end,
     },
-    { "nvim-tree/nvim-web-devicons" },
     {
         "akinsho/bufferline.nvim",
         version = "*",
@@ -856,8 +909,25 @@ safe_require("lazy").setup({
             depth_limit_indicator = "..",
         },
     },
+    {
+        "windwp/nvim-autopairs",
+        config = true,
+    },
 }, {
     root = pkg_path,
 })
 
 safe_require("onedark").load()
+
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+    underline = true,
+    virtual_text = {
+        spacing = 4,
+        prefix = "",
+        format = function(diagnostic, virtual_text)
+            return string.format("%s %s (%s: %s)", virtual_text, diagnostic.message, diagnostic.source, diagnostic.code)
+        end,
+    },
+    signs = true,
+    update_in_insert = false,
+})
