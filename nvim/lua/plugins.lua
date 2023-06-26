@@ -38,7 +38,6 @@ safe_require("lazy").setup({
             local cmp = safe_require "cmp"
             local capabilities =
                 safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-            local lspkind = safe_require "lspkind"
             cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = {
@@ -126,7 +125,7 @@ safe_require("lazy").setup({
                 },
                 capabilities = capabilities,
                 formatting = {
-                    format = lspkind.cmp_format {
+                    format = safe_require("lspkind").cmp_format {
                         mode = "symbol",
                         maxwidth = 50,
                         ellipsis_char = "...",
@@ -151,7 +150,62 @@ safe_require("lazy").setup({
             { "ray-x/cmp-treesitter", event = "InsertEnter" },
             { "petertriho/cmp-git", config = ture, event = "InsertEnter" },
             { "octaltree/cmp-look", config = ture, event = "InsertEnter" },
-            { "onsails/lspkind.nvim", event = "InsertEnter" },
+            {
+                "onsails/lspkind.nvim",
+                event = "InsertEnter",
+                config = function(_, opts)
+                    safe_require("lspkind").init(opts)
+                end,
+                opts = {
+                    mode = "symbol_text",
+                    preset = "codicons",
+                    menu = {
+                        nvim_lua = "[api]",
+                        nvim_lsp = "[LSP]",
+                        luasnip = "[LuaSnip]",
+                        neorg = "[Neorg]",
+                        npm = "[NPM]",
+                        buffer = "[Buffer]",
+                        path = "[Path]",
+                    },
+                    symbol_map = {
+                        Array = "",
+                        Boolean = "",
+                        Key = "",
+                        Namespace = "",
+                        Null = "",
+                        Number = "",
+                        Object = "",
+                        Package = "",
+                        String = "",
+                        Text = " ",
+                        Method = " ",
+                        Function = " ",
+                        Constructor = " ",
+                        Field = " ",
+                        Variable = " ",
+                        Class = " ",
+                        Interface = " ",
+                        Module = " ",
+                        Property = " ",
+                        Unit = " ",
+                        Value = " ",
+                        Enum = " ",
+                        Keyword = " ",
+                        Snippet = " ",
+                        Color = " ",
+                        File = " ",
+                        Reference = " ",
+                        Folder = " ",
+                        EnumMember = " ",
+                        Constant = " ",
+                        Struct = " ",
+                        Event = " ",
+                        Operator = " ",
+                        TypeParameter = " ",
+                    },
+                },
+            },
             { "rafamadriz/friendly-snippets", event = "InsertEnter" },
             { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
         },
@@ -508,17 +562,17 @@ safe_require("lazy").setup({
                 opts = {
                     handlers = {},
                     ensure_installed = {
-                        "beautysh",
                         "cspell",
-                        "prettierd",
-                        "luacheck",
-                        "markdownlint",
-                        "black",
                         "jsonlint",
+                        "markdownlint",
+                        "prettierd",
                         "shellcheck",
                         "sql_formatter",
                         "yamlfmt",
-                        "yamllint",
+                        -- "beautysh",
+                        -- "black",
+                        -- "luacheck",
+                        -- "yamllint",
                     },
                     automatic_installation = true,
                 },
@@ -531,6 +585,14 @@ safe_require("lazy").setup({
             return {
                 diagnostics_format = "[#{s}] #{m}\n(#{c})",
                 sources = {
+                    null_ls.builtins.code_actions.cspell,
+                    null_ls.builtins.code_actions.eslint_d,
+                    null_ls.builtins.code_actions.shellcheck,
+                    null_ls.builtins.code_actions.gitsigns,
+
+                    null_ls.builtins.completion.spell,
+                    null_ls.builtins.completion.tags,
+
                     null_ls.builtins.diagnostics.cspell.with {
                         diagnostics_postprocess = function(diagnostic)
                             diagnostic.severity = vim.diagnostic.severity["WARN"]
@@ -539,24 +601,33 @@ safe_require("lazy").setup({
                             return fn.executable "cspell" > 0
                         end,
                     },
-                    null_ls.builtins.diagnostics.eslint_d.with {
-                        diagnostics_format = "[eslint] #{m}\n(#{c})",
-                    },
-                    -- null_ls.builtins.diagnostics.luacheck,
-                    null_ls.builtins.completion.spell,
+                    null_ls.builtins.diagnostics.dotenv_linter,
                     null_ls.builtins.diagnostics.eslint,
+                    null_ls.builtins.diagnostics.eslint_d.with { diagnostics_format = "[eslint] #{m}\n(#{c})" },
                     null_ls.builtins.diagnostics.fish,
-                    -- null_ls.builtins.diagnostics.golangci_lint,
+                    null_ls.builtins.diagnostics.golangci_lint,
                     null_ls.builtins.diagnostics.hadolint,
+                    null_ls.builtins.diagnostics.jsonlint,
+                    null_ls.builtins.diagnostics.luacheck,
+                    null_ls.builtins.diagnostics.markdownlint,
                     null_ls.builtins.diagnostics.protoc_gen_lint,
+                    null_ls.builtins.diagnostics.shellcheck,
+                    null_ls.builtins.diagnostics.yamllint,
+                    null_ls.builtins.diagnostics.zsh,
+
+                    null_ls.builtins.formatting.black,
                     null_ls.builtins.formatting.gofumpt,
-                    null_ls.builtins.formatting.rustfmt,
                     null_ls.builtins.formatting.goimports,
                     null_ls.builtins.formatting.golines,
+                    null_ls.builtins.formatting.json_tool,
+                    null_ls.builtins.formatting.markdownlint,
+                    null_ls.builtins.formatting.prettierd,
+                    null_ls.builtins.formatting.prismaFmt,
+                    null_ls.builtins.formatting.rustfmt,
+                    null_ls.builtins.formatting.shfmt,
                     null_ls.builtins.formatting.stylua,
                     null_ls.builtins.formatting.yamlfix,
                     null_ls.builtins.formatting.yamlfmt,
-                    null_ls.builtins.formatting.shfmt,
                     null_ls.builtins.formatting.deno_fmt.with {
                         condition = function(utils)
                             return not (utils.has_file { ".prettierrc", ".prettierrc.js", "deno.json", "deno.jsonc" })
