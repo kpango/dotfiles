@@ -634,6 +634,7 @@ safe_require("lazy").setup({
                             settings = {
                                 gopls = {
                                     analyses = {
+                                        shadow = true,
                                         unusedparams = true,
                                     },
                                     hints = {
@@ -653,6 +654,7 @@ safe_require("lazy").setup({
                                     hoverKind = "Structured",
                                     gofumpt = true,
                                     ["local"] = "repo",
+                                    experimentalPostfixCompletions = true,
                                 },
                             },
                         }
