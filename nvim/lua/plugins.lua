@@ -379,8 +379,28 @@ safe_require("lazy").setup({
         event = { "InsertEnter", "VeryLazy" },
     },
     {
-        "github/copilot.vim",
+        "zbirenbaum/copilot.lua",
         lazy = false,
+        config = true,
+        cmd = "Copilot",
+        event = "InsertEnter",
+        -- keys = {
+        --     {
+        --         "<C-i>",
+        --         'copilot#Accept("")',
+        --         replace_keycodes = false,
+        --         mode = "i",
+        --         desc = "Accept Copilot suggestion",
+        --         expr = true,
+        --         silent = true,
+        --     },
+        -- },
+    },
+    {
+        "github/copilot.vim",
+        enabled = false,
+        lazy = false,
+        config = true,
         -- config = function()
         --     vim.g.copilot_no_tab_map = true
         -- end,
@@ -620,8 +640,10 @@ safe_require("lazy").setup({
                         }
                     elseif server_name == "gopls" then
                         opts = {
-                            cmd = { "gopls", "serve", "-rpc.trace", "--debug=localhost:6060" },
+                            -- cmd = { "gopls", "serve", "-rpc.trace", "--debug=localhost:6060" },
                             -- cmd = { "gopls", "--remote=auto" },
+                            cmd = { "gopls" },
+                            -- cmd = { "gopls", "--remote=localhost:8181" },
                             filetypes = { "go", "gomod", "gowork", "gotmpl" },
                             root_dir = function(fname)
                                 return lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work")(fname)

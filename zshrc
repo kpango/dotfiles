@@ -1404,13 +1404,13 @@ if [ -z $ZSH_LOADED ]; then
                 && cat go.sum | awk '{printf "\t%s => %s latest\n", $1, $1}' \
                 | sort -n | uniq | sort -n >> hack/go.mod.default2 \
                 && echo ")" >> hack/go.mod.default2
-            rm -rf hack/go.mod.default3 \
-                && cat hack/go.mod.default | head -n 5 >> hack/go.mod.default3 \
-                && cat hack/go.mod.default | rg k8s >> hack/go.mod.default3 \
-                && cat hack/go.mod.default | rg opentelemetry >> hack/go.mod.default3 \
-                && cat hack/go.mod.default | rg containerd >> hack/go.mod.default3 \
-                && echo ")" >> hack/go.mod.default3 \
-                && rm -rf /tmp/go.mod /tmp/go.sum \
+            rm -rf hack/go.mod.default3
+            cat hack/go.mod.default | head -n 5 >> hack/go.mod.default3
+            cat hack/go.mod.default | rg k8s >> hack/go.mod.default3
+            cat hack/go.mod.default | rg opentelemetry >> hack/go.mod.default3
+            cat hack/go.mod.default | rg containerd >> hack/go.mod.default3
+            echo ")" >> hack/go.mod.default3
+            rm -rf /tmp/go.mod /tmp/go.sum \
                 && mv go.mod go.sum /tmp \
                 && cp hack/go.mod.default3 go.mod \
                 && GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy \
