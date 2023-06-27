@@ -41,29 +41,7 @@ safe_require("lazy").setup({
             local capabilities =
                 safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
             local on_attach = function(client, bufnr)
-                -- Enable completion triggered by <c-x><c-o>
                 vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-
-                -- Mappings.
-                -- See `:help vim.lsp.*` for documentation on any of the below functions
-                local bufopts = { noremap = true, silent = true, buffer = bufnr }
-                vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-                vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
-                vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
-                vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
-                vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
-                vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, bufopts)
-                vim.keymap.set("n", "<space>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
-                vim.keymap.set("n", "<space>wl", function()
-                    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-                end, bufopts)
-                vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, bufopts)
-                vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, bufopts)
-                vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, bufopts)
-                vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-                vim.keymap.set("n", "<space>f", function()
-                    vim.lsp.buf.format { async = true }
-                end, bufopts)
             end
             cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
@@ -164,6 +142,148 @@ safe_require("lazy").setup({
                 },
             }
         end,
+        keys = {
+            {
+                "gD",
+                vim.lsp.buf.declaration,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "gd",
+                vim.lsp.buf.definition,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "gr",
+                vim.lsp.buf.references,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "gi",
+                vim.lsp.buf.implementation,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "K",
+                vim.lsp.buf.hover,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<C-k>",
+                vim.lsp.buf.signature_help,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>wa",
+                vim.lsp.buf.add_workspace_folder,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>wr",
+                vim.lsp.buf.remove_workspace_folder,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>wl",
+                function()
+                    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+                end,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>D",
+                vim.lsp.buf.type_definition,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>rn",
+                vim.lsp.buf.rename,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>ca",
+                vim.lsp.buf.code_action,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>f",
+                function()
+                    vim.lsp.buf.format { async = true }
+                end,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>e",
+                vim.lsp.diagnostic.show_line_diagnostics,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>q",
+                vim.lsp.diagnostic.set_loclist,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "[d",
+                vim.lsp.diagnostic.goto_prev,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "]d",
+                vim.lsp.diagnostic.goto_next,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+        },
         dependencies = {
             { "neovim/nvim-lspconfig", event = "InsertEnter" },
             { "L3MON4D3/LuaSnip", build = "make install_jsregexp", event = "InsertEnter" },
@@ -188,13 +308,13 @@ safe_require("lazy").setup({
                     mode = "symbol_text",
                     preset = "codicons",
                     menu = {
-                        nvim_lua = "[api]",
+                        nvim_lua = "[API]",
                         nvim_lsp = "[LSP]",
-                        luasnip = "[LuaSnip]",
-                        neorg = "[Neorg]",
-                        npm = "[NPM]",
+                        cmp_tabnine = "[TN]",
+                        luasnip = "[LSN]",
                         buffer = "[Buffer]",
                         path = "[Path]",
+                        look = "[LK]",
                     },
                     symbol_map = {
                         Array = "",
@@ -256,13 +376,14 @@ safe_require("lazy").setup({
             },
             show_prediction_strength = false,
         },
+	event = "VeryLazy",
     },
     {
         "github/copilot.vim",
         lazy = false,
-        config = function()
-            vim.g.copilot_no_tab_map = true
-        end,
+        -- config = function()
+        --     vim.g.copilot_no_tab_map = true
+        -- end,
         keys = {
             {
                 "<C-i>",
@@ -322,6 +443,8 @@ safe_require("lazy").setup({
                     opts,
                     desc = "Go To Declaration",
                     mode = "n",
+                    silent = true,
+                    noremap = true,
                 },
                 {
                     "gi",
@@ -329,6 +452,8 @@ safe_require("lazy").setup({
                     opts,
                     desc = "Go To Implementation",
                     mode = "n",
+                    silent = true,
+                    noremap = true,
                 },
                 {
                     "<leader>k",
@@ -336,6 +461,8 @@ safe_require("lazy").setup({
                     opts,
                     desc = "Show Signature",
                     mode = "n",
+                    silent = true,
+                    noremap = true,
                 },
                 {
                     "<Leader>gr",
@@ -343,6 +470,8 @@ safe_require("lazy").setup({
                     opts,
                     desc = "Go To References",
                     mode = "n",
+                    silent = true,
+                    noremap = true,
                 },
                 {
                     "<Leader>D",
@@ -350,8 +479,17 @@ safe_require("lazy").setup({
                     opts,
                     desc = "Show Type Definition",
                     mode = "n",
+                    silent = true,
+                    noremap = true,
                 },
-                { "K", vim.lsp.buf.hover, { silent = true }, desc = "Show Info", mode = "n" },
+                {
+                    "K",
+                    vim.lsp.buf.hover,
+                    desc = "Show Info",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
             }
         end,
     },
@@ -482,7 +620,7 @@ safe_require("lazy").setup({
                         }
                     elseif server_name == "gopls" then
                         opts = {
-                            cmd = { "gopls", "serve" },
+                            cmd = { "gopls", "serve", "-rpc.trace", "--debug=localhost:6060" },
                             -- cmd = { "gopls", "--remote=auto" },
                             filetypes = { "go", "gomod", "gowork" },
                             root_dir = lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work"),
@@ -527,65 +665,101 @@ safe_require("lazy").setup({
             {
                 "<leader>ca",
                 "<cmd><C-U>Lspsaga range_code_action<CR>",
-                { silent = true, noremap = true },
                 desc = "Range Code Action",
                 mode = "v",
+                silent = true,
+                noremap = true,
             },
             {
                 "<leader>ca",
                 "<cmd>Lspsaga code_action<CR>",
-                { silent = true, noremap = true },
                 desc = "Code Action",
                 mode = "n",
+                silent = true,
+                noremap = true,
             },
             {
                 "<leader>e",
                 "<cmd>Lspsaga show_line_diagnostics<CR>",
-                { silent = true, noremap = true },
                 desc = "Show Line Diagnostics",
                 mode = "n",
+                silent = true,
+                noremap = true,
             },
             {
                 "<Leader>[",
                 "<cmd>Lspsaga diagnostic_jump_prev<CR>",
-                { noremap = true, silent = true },
                 desc = "Jump To The Next Diagnostics",
                 mode = "n",
+                silent = true,
+                noremap = true,
             },
             {
                 "<Leader>]",
                 "<cmd>Lspsaga diagnostic_jump_next<CR>",
-                { noremap = true, silent = true },
                 desc = "Jump To The Previous Diagnostics",
                 mode = "n",
+                silent = true,
+                noremap = true,
             },
-            { "<Leader>T", "<cmd>Lspsaga open_floaterm<CR>", { silent = true }, desc = "Open Float Term", mode = "n" },
+            {
+                "<Leader>T",
+                "<cmd>Lspsaga open_floaterm<CR>",
+                desc = "Open Float Term",
+                mode = "n",
+                silent = true,
+                noremap = true,
+            },
             {
                 "<Leader>T",
                 [[<C-\><C-n><cmd>Lspsaga close_floaterm<CR>]],
-                { silent = true },
                 desc = "Close Float Term",
                 mode = "t",
+                silent = true,
+                noremap = true,
             },
-            { "gr", "<cmd>Lspsaga rename<CR>", { silent = true, noremap = true }, desc = "Rename", mode = "n" },
-            { "gh", "<cmd>Lspsaga lsp_finder<CR>", { silent = true, noremap = true }, desc = "LSP Finder", mode = "n" },
-            { "gd", "<cmd>Lspsaga peek_definition<CR>", { silent = true }, desc = "Peek Definition", mode = "n" },
+            { "gr", "<cmd>Lspsaga rename<CR>", desc = "Rename", mode = "n", silent = true, noremap = true },
+            {
+                "gh",
+                "<cmd>Lspsaga lsp_finder<CR>",
+                desc = "LSP Finder",
+                mode = "n",
+                silent = true,
+                noremap = true,
+            },
+            {
+                "gd",
+                "<cmd>Lspsaga peek_definition<CR>",
+                desc = "Peek Definition",
+                mode = "n",
+                silent = true,
+                noremap = true,
+            },
             {
                 "gp",
                 "<Cmd>Lspsaga preview_definition<CR>",
-                { noremap = true, silent = true },
                 desc = "Preview Definition",
                 mode = "n",
+                silent = true,
+                noremap = true,
             },
             {
                 "<C-j>",
                 "<Cmd>Lspsaga diagnostic_jump_next<CR>",
-                { noremap = true, silent = true },
                 desc = "",
                 mode = "n",
+                silent = true,
+                noremap = true,
             },
-            { "K", "<Cmd>Lspsaga hover_doc<CR>", { noremap = true, silent = true }, desc = "", mode = "n" },
-            { "<C-k>", "<Cmd>Lspsaga signature_help<CR>", { noremap = true, silent = true }, desc = "", mode = "i" },
+            { "K", "<Cmd>Lspsaga hover_doc<CR>", desc = "", mode = "n", silent = true, noremap = true },
+            {
+                "<C-k>",
+                "<Cmd>Lspsaga signature_help<CR>",
+                desc = "",
+                mode = "i",
+                silent = true,
+                noremap = true,
+            },
         },
         branch = "main",
         opts = { border_style = "rounded" },
@@ -693,16 +867,18 @@ safe_require("lazy").setup({
             {
                 "<Tab>",
                 "<Cmd>BufferLineCycleNext<CR>",
-                { silent = true, noremap = true },
                 desc = "",
                 mode = "n",
+                silent = true,
+                noremap = true,
             },
             {
                 "<S-Tab>",
                 "<Cmd>BufferLineCyclePrev<CR>",
-                { silent = true, noremap = true },
                 desc = "",
                 mode = "n",
+                silent = true,
+                noremap = true,
             },
         },
         opts = {
@@ -934,48 +1110,142 @@ safe_require("lazy").setup({
             yadm = {
                 enable = false,
             },
-            -- on_attach = function(client, bufnr)
-            --     local gs = package.loaded.gitsigns
-            --     local function map(...)
-            --  vim.api.nvim_buf_set_keymap(bufnr, ...)
-            --     end
-            --     map("n", "]c", function()
-            --         if vim.wo.diff then
-            --             return "]c"
-            --         end
-            --         vim.schedule(function()
-            --             gs.next_hunk()
-            --         end)
-            --         return "<Ignore>"
-            --     end, { expr = true })
-
-            --     map("n", "[c", function()
-            --         if vim.wo.diff then
-            --             return "[c"
-            --         end
-            --         vim.schedule(function()
-            --             gs.prev_hunk()
-            --         end)
-            --         return "<Ignore>"
-            --     end, { expr = true })
-            --     map({ "n", "v" }, "<leader>hs", ":Gitsigns stage_hunk<CR>")
-            --     map({ "n", "v" }, "<leader>hr", ":Gitsigns reset_hunk<CR>")
-            --     map("n", "<leader>hS", gs.stage_buffer)
-            --     map("n", "<leader>hu", gs.undo_stage_hunk)
-            --     map("n", "<leader>hR", gs.reset_buffer)
-            --     map("n", "<leader>hp", gs.preview_hunk)
-            --     map("n", "<leader>hb", function()
-            --         gs.blame_line { full = true }
-            --     end)
-            --     map("n", "<leader>tb", gs.toggle_current_line_blame)
-            --     map("n", "<leader>hd", gs.diffthis)
-            --     map("n", "<leader>hD", function()
-            --         gs.diffthis "~"
-            --     end)
-            --     map("n", "<leader>td", gs.toggle_deleted)
-            --     map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>")
-            -- end,
         },
+        keys = function()
+            local gs = safe_require "gitsigns"
+            return {
+                {
+                    "]c",
+                    function()
+                        if vim.wo.diff then
+                            return "]c"
+                        end
+                        vim.schedule(function()
+                            gs.next_hunk()
+                        end)
+                        return "<Ignore>"
+                    end,
+                    desc = "",
+                    mode = "n",
+                    expr = true,
+                },
+                {
+                    "[c",
+                    function()
+                        if vim.wo.diff then
+                            return "[c"
+                        end
+                        vim.schedule(function()
+                            gs.prev_hunk()
+                        end)
+                        return "<Ignore>"
+                    end,
+                    desc = "",
+                    mode = "n",
+                    expr = true,
+                },
+                {
+                    "<leader>hs",
+                    "<Cmd>Gitsigns stage_hunk<CR>",
+                    desc = "",
+                    mode = { "n", "v" },
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hr",
+                    "<Cmd>Gitsigns reset_hunk<CR>",
+                    desc = "",
+                    mode = { "n", "v" },
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hS",
+                    gs.stage_buffer,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hR",
+                    gs.reset_buffer,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hu",
+                    gs.undo_stage_hunk,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hp",
+                    gs.preview_hunk,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hb",
+                    function()
+                        gs.blame_line { full = true }
+                    end,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hd",
+                    gs.diffthis,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hD",
+                    function()
+                        gs.diffthis "~"
+                    end,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>tb",
+                    gs.toggle_current_line_blame,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>td",
+                    gs.toggle_deleted,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "ih",
+                    "<Cmd>Gitsigns select_hunk<CR>",
+                    desc = "",
+                    mode = { "o", "x" },
+                    silent = true,
+                    noremap = true,
+                },
+            }
+        end,
     },
     {
         "SmiteshP/nvim-navic",
