@@ -376,7 +376,7 @@ safe_require("lazy").setup({
             },
             show_prediction_strength = false,
         },
-	event = "VeryLazy",
+        event = "VeryLazy",
     },
     {
         "github/copilot.vim",
