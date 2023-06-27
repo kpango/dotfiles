@@ -379,31 +379,10 @@ safe_require("lazy").setup({
         event = { "InsertEnter", "VeryLazy" },
     },
     {
-        "zbirenbaum/copilot.lua",
-        lazy = false,
-        config = true,
-        cmd = "Copilot",
-        event = "InsertEnter",
-        -- keys = {
-        --     {
-        --         "<C-i>",
-        --         'copilot#Accept("")',
-        --         replace_keycodes = false,
-        --         mode = "i",
-        --         desc = "Accept Copilot suggestion",
-        --         expr = true,
-        --         silent = true,
-        --     },
-        -- },
-    },
-    {
         "github/copilot.vim",
         enabled = false,
         lazy = false,
         config = true,
-        -- config = function()
-        --     vim.g.copilot_no_tab_map = true
-        -- end,
         keys = {
             {
                 "<C-i>",
@@ -423,38 +402,38 @@ safe_require("lazy").setup({
         opts = {
             ignore = "^$",
         },
-        keys = function()
-            local cmtapi = safe_require "Comment.api"
-            return {
-
-                {
-                    "<C-c>",
-                    cmtapi.toggle.linewise.current,
-                    desc = "",
-                    mode = "n",
-                    noremap = true,
-                    silent = true,
-                },
-                {
-                    "<C-c>",
-                    function()
-                        cmtapi.toggle.linewise(vim.fn.visualmode())
-                    end,
-                    desc = "",
-                    mode = "x",
-                    noremap = true,
-                    silent = true,
-                },
-                {
-                    "<C-c>",
-                    cmtapi.toggle.linewise.current,
-                    desc = "",
-                    mode = "i",
-                    noremap = true,
-                    silent = true,
-                },
-            }
-        end,
+        keys = {
+            {
+                "<C-c>",
+                function()
+                    safe_require("Comment.api").toggle.linewise.current()
+                end,
+                desc = "",
+                mode = "n",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<C-c>",
+                function()
+                    safe_require("Comment.api").toggle.linewise(vim.fn.visualmode())
+                end,
+                desc = "",
+                mode = "x",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<C-c>",
+                function()
+                    safe_require("Comment.api").toggle.linewise.current()
+                end,
+                desc = "",
+                mode = "i",
+                noremap = true,
+                silent = true,
+            },
+        },
     },
     {
         "neovim/nvim-lspconfig",
@@ -1179,8 +1158,7 @@ safe_require("lazy").setup({
                 enable = false,
             },
         },
-        keys = function()
-            local gs = safe_require "gitsigns"
+        keys = function(gs, keys)
             return {
                 {
                     "]c",
