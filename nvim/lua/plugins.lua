@@ -376,7 +376,7 @@ safe_require("lazy").setup({
             },
             show_prediction_strength = false,
         },
-        event = "VeryLazy",
+        event = { "InsertEnter", "VeryLazy" },
     },
     {
         "github/copilot.vim",
@@ -597,13 +597,7 @@ safe_require("lazy").setup({
             mason_lspconfig.setup(opts)
             mason_lspconfig.setup_handlers {
                 function(server_name)
-                    local opts = {
-                        settings = {
-                            solargraph = {
-                                diagnostics = false,
-                            },
-                        },
-                    }
+                    local opts = {}
                     if server_name == "lua-language-server" then
                         opts.settings = {
                             Lua = {
@@ -628,14 +622,37 @@ safe_require("lazy").setup({
                         opts = {
                             cmd = { "gopls", "serve", "-rpc.trace", "--debug=localhost:6060" },
                             -- cmd = { "gopls", "--remote=auto" },
-                            filetypes = { "go", "gomod", "gowork" },
-                            root_dir = lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work"),
+                            filetypes = { "go", "gomod", "gowork", "gotmpl" },
+                            root_dir = function(fname)
+                                return lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work")(fname)
+                                    or lspconfig.util.find_git_ancestor(fname)
+                                    or vim.loop.os_homedir()
+                                    or lspconfig.util.path.dirname(fname)
+                            end,
+                            -- root_dir = lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work"),
+                            single_file_support = true,
                             settings = {
                                 gopls = {
                                     analyses = {
                                         unusedparams = true,
                                     },
+                                    hints = {
+                                        assignVariableTypes = true,
+                                        compositeLiteralFields = true,
+                                        compositeLiteralTypes = true,
+                                        constantValues = true,
+                                        functionTypeParameters = true,
+                                        parameterNames = true,
+                                        rangeVariableTypes = true,
+                                        experimentalPackageCacheKey = true,
+                                    },
+                                    buildFlags = { "-tags", "integration" },
+                                    usePlacehlders = true,
                                     staticcheck = true,
+                                    semanticTokens = true,
+                                    hoverKind = "Structured",
+                                    gofumpt = true,
+                                    ["local"] = "repo",
                                 },
                             },
                         }
@@ -651,6 +668,9 @@ safe_require("lazy").setup({
                         }
                     end
                     opts.capabilities = capabilities
+                    opts.flags = {
+                        debounce_did_change_notify = 250,
+                    }
                     lspconfig[server_name].setup(opts)
                 end,
             }
@@ -803,6 +823,7 @@ safe_require("lazy").setup({
         config = true,
         opts = function()
             local null_ls = safe_require "null-ls"
+            local augroup = vim.api.nvim_create_augroup("LspFormatting", {})
             return {
                 diagnostics_format = "[#{s}] #{m}\n(#{c})",
                 sources = {
@@ -861,6 +882,23 @@ safe_require("lazy").setup({
                         prefer_local = "node_modules/.bin",
                     },
                 },
+                on_attach = function(client, bufnr)
+                    if client.supports_method "textDocument/formatting" then
+                        vim.api.nvim_clear_autocmds { group = augroup, buffer = bufnr }
+                        vim.api.nvim_create_autocmd("BufWritePre", {
+                            group = augroup,
+                            buffer = bufnr,
+                            callback = function()
+                                vim.lsp.buf.format {
+                                    filter = function(client)
+                                        return client.name == "null-ls"
+                                    end,
+                                    bufnr = bufnr,
+                                }
+                            end,
+                        })
+                    end
+                end,
             }
         end,
     },
