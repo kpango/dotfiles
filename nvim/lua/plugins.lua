@@ -403,32 +403,38 @@ safe_require("lazy").setup({
         opts = {
             ignore = "^$",
         },
-        keys = {
-            {
-                "<C-c>",
-                ":lua require('Comment.api').toggle.linewise.current()<CR>",
-                desc = "",
-                mode = "n",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<C-c>",
-                '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>',
-                desc = "",
-                mode = "x",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<C-c>",
-                ":lua require('Comment.api').toggle.linewise.current() <CR>",
-                desc = "",
-                mode = "i",
-                noremap = true,
-                silent = true,
-            },
-        },
+        keys = function()
+            local cmtapi = safe_require "Comment.api"
+            return {
+
+                {
+                    "<C-c>",
+                    cmtapi.toggle.linewise.current,
+                    desc = "",
+                    mode = "n",
+                    noremap = true,
+                    silent = true,
+                },
+                {
+                    "<C-c>",
+                    function()
+                        cmtapi.toggle.linewise(vim.fn.visualmode())
+                    end,
+                    desc = "",
+                    mode = "x",
+                    noremap = true,
+                    silent = true,
+                },
+                {
+                    "<C-c>",
+                    cmtapi.toggle.linewise.current,
+                    desc = "",
+                    mode = "i",
+                    noremap = true,
+                    silent = true,
+                },
+            }
+        end,
     },
     {
         "neovim/nvim-lspconfig",
