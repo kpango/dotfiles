@@ -996,14 +996,17 @@ safe_require("lazy").setup({
                             unnamed = "Untitled",
                         },
                     },
-                    {
-                        function()
-                            return safe_require("nvim-navic").get_location()
-                        end,
-                        cond = function()
-                            return safe_require("nvim-navic").is_available()
-                        end,
-                    },
+                    function()
+                        local navic = safe_require "nvim-navic"
+                        return {
+                            function()
+                                return navic.get_location()
+                            end,
+                            cond = function()
+                                return navic.is_available()
+                            end,
+                        }
+                    end,
                 },
                 lualine_x = {
                     {
