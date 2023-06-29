@@ -380,7 +380,7 @@ safe_require("lazy").setup({
     },
     {
         "github/copilot.vim",
-        enabled = false,
+        enabled = true,
         lazy = false,
         config = true,
         keys = {
@@ -620,8 +620,8 @@ safe_require("lazy").setup({
                     elseif server_name == "gopls" then
                         opts = {
                             -- cmd = { "gopls", "serve", "-rpc.trace", "--debug=localhost:6060" },
-                            -- cmd = { "gopls", "--remote=auto" },
-                            cmd = { "gopls" },
+                            cmd = { "gopls", "--remote=auto" },
+                            -- cmd = { "gopls" },
                             -- cmd = { "gopls", "--remote=localhost:8181" },
                             filetypes = { "go", "gomod", "gowork", "gotmpl" },
                             root_dir = function(fname)
@@ -863,7 +863,7 @@ safe_require("lazy").setup({
                     null_ls.builtins.formatting.black,
                     null_ls.builtins.formatting.gofumpt,
                     null_ls.builtins.formatting.goimports,
-                    null_ls.builtins.formatting.golines,
+                    null_ls.builtins.formatting.golines.with { extra_args = { "-m", 200 } },
                     null_ls.builtins.formatting.json_tool,
                     null_ls.builtins.formatting.markdownlint,
                     null_ls.builtins.formatting.prettierd,
