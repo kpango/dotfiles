@@ -382,7 +382,7 @@ safe_require("lazy").setup({
         "github/copilot.vim",
         enabled = true,
         lazy = false,
-        config = true,
+        -- config = true,
         keys = {
             {
                 "<C-i>",

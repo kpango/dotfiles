@@ -1380,12 +1380,6 @@ if [ -z $ZSH_LOADED ]; then
             make helm/schema/crd/vald-helm-operator
             make k8s/manifest/update
             make k8s/manifest/helm-operator/update
-            make helm/schema/vald
-            make helm/schema/vald-helm-operator
-            make helm/schema/crd/vald
-            make helm/schema/crd/vald-helm-operator
-            make k8s/manifest/update
-            make k8s/manifest/helm-operator/update
             make helm/docs/vald
             make helm/docs/vald-helm-operator
             make update \
