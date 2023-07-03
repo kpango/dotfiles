@@ -28,7 +28,6 @@ opt.backupdir = os.getenv "HOME" .. "/.vim/backup"
 opt.backupskip = { "/tmp/*", "/private/tmp/*" }
 opt.clipboard:append "unnamedplus"
 opt.cmdheight = 1
-opt.completeopt = menu, preview, noselect
 opt.cursorline = false
 opt.display = lastline
 opt.encoding = "utf-8"
