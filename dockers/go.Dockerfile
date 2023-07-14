@@ -625,6 +625,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
+FROM go-base AS govulncheck
+RUN --mount=type=cache,target="${GOPATH}/pkg" \
+    --mount=type=cache,target="${HOME}/.cache/go-build" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="govulncheck" \
+    && REPO="${GOORG}/x/vuln" \
+    && go install  \
+    --ldflags "-s -w" --trimpath \
+    "${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+
 FROM go-base AS gowrap
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
@@ -1091,6 +1104,7 @@ COPY --from=gotags $GOPATH/bin/gotags $GOPATH/bin/gotags
 COPY --from=gotestfmt $GOPATH/bin/gotestfmt $GOPATH/bin/gotestfmt
 COPY --from=gotests $GOPATH/bin/gotests $GOPATH/bin/gotests
 COPY --from=gotip $GOPATH/bin/gotip $GOPATH/bin/gotip
+COPY --from=govulncheck $GOPATH/bin/govulncheck $GOPATH/bin/govulncheck
 COPY --from=gowrap $GOPATH/bin/gowrap $GOPATH/bin/gowrap
 COPY --from=gqlgen $GOPATH/bin/gqlgen $GOPATH/bin/gqlgen
 COPY --from=grpcurl $GOPATH/bin/grpcurl $GOPATH/bin/grpcurl
