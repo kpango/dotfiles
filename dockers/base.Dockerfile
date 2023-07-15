@@ -38,7 +38,6 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean \
         gnupg \
         intel-mkl \
         libssl-dev \
-        libtinfo5 \
         libx11-dev \
         libxcb-composite0-dev \
         locales \
