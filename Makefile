@@ -93,7 +93,7 @@ arch_link: \
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.conf
+	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.d/99-sysctl.conf
 	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
 	# sudo modprobe -rv thinkpad_acpi
 	# sudo modprobe -v thinkpad_acpi
@@ -171,6 +171,7 @@ clean:
 		/etc/scaramanga/config.toml \
 		/etc/sudoers.d/kpango \
 		/etc/sysctl.conf \
+		/etc/sysctl.d/99-sysctl.conf \
 		/etc/systemd/system/NetworkManager-dispatcher.service \
 		/etc/systemd/system/nvidia-disable-resume.service \
 		/etc/systemd/system/nvidia-enable-power-off.service \
