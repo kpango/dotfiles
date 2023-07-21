@@ -15,12 +15,10 @@ font:
   # glyph_offset:
   # x: 0
   # y: 7
-
 shell:
   program: /usr/bin/zsh
   args:
     - --login
-
 window:
   dynamic_padding: true
   opacity: 1.2
@@ -28,7 +26,6 @@ window:
   #   x: 20
   #   y: 20
   # startup_mode: Fullscreen
-
 #highlight Normal ctermbg=NONE guibg=NONE
 #highlight NonText ctermbg=NONE guibg=NONE
 #highlight SpecialKey ctermbg=NONE guibg=NONE
@@ -36,16 +33,12 @@ window:
 url:
   launcher:
     program: xdg-open
-
 custom_cursor_colors: true
-
 selection:
   semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
   save_to_clipboard: true
-
 live_config_reload: true
 dynamic_padding: true
-
 colors:
   # Default Colors
   primary:
@@ -71,16 +64,13 @@ colors:
     magenta: "#ff55de"
     cyan: "#4fb8cc"
     white: "#f1f1f1"
-
   cursor:
     text: "#000000"
     cursor: "#00ff00"
-
   selection:
     text: "0xeaeaea"
     background: "0x404040"
-
 key_bindings:
-  - { key: C,              mods: Super,       action: Copy }
-  - { key: V,              mods: Super,       action: Paste }
-  - { key: Return,         mods: Control|Shift,    action: SpawnNewInstance }
+  - {key: C, mods: Super, action: Copy}
+  - {key: V, mods: Super, action: Paste}
+  - {key: Return, mods: Control|Shift, action: SpawnNewInstance}

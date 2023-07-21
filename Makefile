@@ -103,7 +103,7 @@ arch_link: \
 	sudo chmod -R 0440 /etc/sudoers.d
 	sudo chown -R 0:0 /etc/sudoers.d/kpango
 	sudo chmod -R 0440 /etc/sudoers.d/kpango
-	sudo sysctl -p
+	sudo sysctl -e -p /etc/sysctl.d/99-sysctl.conf
 	sudo systemctl daemon-reload
 
 arch_p1_link: \
@@ -116,6 +116,11 @@ arch_p1_link: \
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
 	sudo systemctl daemon-reload
+
+arch_desk_link: \
+	arch_link
+	rm -rf $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
 
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
