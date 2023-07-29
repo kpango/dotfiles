@@ -168,10 +168,10 @@ RUN cargo +nightly install --force --no-default-features \
 
 # FROM old AS starship
 FROM rust-base AS starship
-RUN rustup update stable \
-    && rustup default stable \
-    && cargo install --force --no-default-features
-# RUN cargo +nightly install --force --no-default-features \
+RUN cargo +nightly install --force --no-default-features starship
+# RUN rustup update stable \
+    # && rustup default stable \
+    # && cargo install --force --no-default-features
 # RUN cargo install --locked starship
 
 FROM rust-base AS t-rec

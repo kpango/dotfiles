@@ -1,1 +1,1 @@
-FROM google/dart:dev AS dart
+FROM dart:beta AS dart
