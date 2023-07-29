@@ -76,6 +76,7 @@ arch_link: \
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/environment
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
 	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/nmcli-bond-auto-connect.sh /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/default.pa /etc/pulse/default.pa
 	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
@@ -99,6 +100,8 @@ arch_link: \
 	# sudo modprobe -v thinkpad_acpi
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
+	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
 	sudo chown -R 0:0 /etc/sudoers.d
 	sudo chmod -R 0440 /etc/sudoers.d
 	sudo chown -R 0:0 /etc/sudoers.d/kpango
@@ -156,6 +159,7 @@ clean:
 		$(HOME)/.zshrc \
 		/etc/NetworkManager/NetworkManager.conf \
 		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
+		/etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
 		/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
 		/etc/chrony.conf \
 		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
