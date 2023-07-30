@@ -1156,6 +1156,19 @@ safe_require("lazy").setup({
         },
     },
     {
+        "lukas-reineke/indent-blankline.nvim",
+        enabled = false,
+        opts = function(_, opts)
+            opts.space_char_blankline = " "
+            opts.show_current_context = true
+            opts.show_current_context_start = true
+            return safe_require("indent-rainbowline").make_opts(opts)
+        end,
+        dependencies = {
+            "TheGLander/indent-rainbowline.nvim",
+        },
+    },
+    {
         "lewis6991/gitsigns.nvim",
         config = true,
         opts = {
@@ -1396,6 +1409,10 @@ safe_require("lazy").setup({
         opts = {
             disable_filetype = { "TelescopePrompt", "vim" },
         },
+        config = true,
+    },
+    {
+        "windwp/nvim-ts-autotag",
         config = true,
     },
 }, {
