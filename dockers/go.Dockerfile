@@ -29,7 +29,7 @@ ENV RELEASE_LATEST releases/latest
 WORKDIR /opt
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="go" \
-    && GO_VERSION="$(curl --silent ${GODEV}/VERSION?m=text)" \
+    && GO_VERSION="$(curl --silent ${GODEV}/VERSION?m=text | head -n 1)" \
     && TAR_NAME="${GO_VERSION}.${OS}-${ARCH}.tar.gz" \
     && curl -sSL -O "https://${GOORG}/dl/${TAR_NAME}" \
     && tar zxf "${TAR_NAME}" \
