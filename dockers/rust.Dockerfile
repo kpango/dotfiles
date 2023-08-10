@@ -137,15 +137,15 @@ RUN cargo install --force --no-default-features \
     --git https://github.com/dalance/procs
 
 FROM rust-base AS rg
-RUN rustup update stable \
-    && rustup default stable \
-    && RUSTFLAGS="-C target-cpu=native" \
+# RUN rustup update stable \
+    # && rustup default stable \
+    # && RUSTFLAGS="-C target-cpu=native" \
+RUN RUSTFLAGS="-C target-cpu=native" \
     RUSTC_BOOTSTRAP=1 \
     cargo +nightly install --force --features 'pcre2 simd-accel' \
     ripgrep
 
-FROM rust-base AS rga
-COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
+FROM rg AS rga
 RUN cargo install --locked --force --no-default-features \
     ripgrep_all
 
