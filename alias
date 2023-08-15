@@ -32,6 +32,7 @@ devrun(){
     container_home="/home/kpango"
     container_root="/root"
     container_goroot="$container_home/go"
+    goroot="/usr/local/go"
     image_name=kpango/dev:latest
     case "$(uname -s)" in
         Darwin)
@@ -123,6 +124,7 @@ devrun(){
                 -v $font_dir:$font_dir \
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
                 -v $rcpath/go.env:$container_goroot/go.env:ro \
+                -v $rcpath/go.env:$goroot/go.env:ro \
                 -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
                 -v $rcpath/nvim/luacheckrc:$container_home/.config/nvim/luacheckrc \
                 -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
