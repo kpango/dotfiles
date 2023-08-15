@@ -122,6 +122,7 @@ devrun(){
                 -v $docker_sock:$docker_sock \
                 -v $font_dir:$font_dir \
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
+                -v $rcpath/go.env:$container_goroot/go.env:ro \
                 -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
                 -v $rcpath/nvim/luacheckrc:$container_home/.config/nvim/luacheckrc \
                 -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
