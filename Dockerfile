@@ -76,6 +76,7 @@ COPY nvim/luacheckrc $NVIM_HOME/luacheckrc
 COPY tmux-kube $HOME/.tmux-kube
 COPY tmux.conf $HOME/.tmux.conf
 COPY zshrc $HOME/.zshrc
+COPY go.env $GOROOT/go.env
 
 USER root
 

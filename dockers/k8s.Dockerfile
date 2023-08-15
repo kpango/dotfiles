@@ -366,6 +366,7 @@ COPY --from=golang /go /go
 ENV GOPATH /go
 ENV GOROOT /usr/local/go
 ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
+COPY go.env $GOROOT/go.env
 
 FROM kube-golang-base AS helmfile
 RUN set -x; cd "$(mktemp -d)" \

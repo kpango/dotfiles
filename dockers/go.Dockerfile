@@ -34,9 +34,11 @@ RUN set -x; cd "$(mktemp -d)" \
     && curl -sSL -O "https://${GOORG}/dl/${TAR_NAME}" \
     && tar zxf "${TAR_NAME}" \
     && rm "${TAR_NAME}" \
-    && mv ${BIN_NAME} /opt/${BIN_NAME} \
+    && mv ${BIN_NAME} ${GOROOT} \
     && mkdir -p ${GOPATH}/bin \
     && ${BIN_NAME} version
+
+COPY go.env "${GOROOT}/go.env"
 
 # FROM go-base AS act
 # RUN set -x; cd "$(mktemp -d)" \
