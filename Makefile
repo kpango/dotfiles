@@ -17,35 +17,61 @@ all: prod_build login push profile git_push
 run:
 	source $(ROOTDIR)/alias && devrun
 
-link:
+copy:
+	mkdir -p $(HOME)/.config/TabNine
+	mkdir -p $(HOME)/.config/alacritty
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
-	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
 	sudo mkdir -p /etc/docker
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))alias $(HOME)/.aliases
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))editorconfig $(HOME)/.editorconfig
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))efm-lsp-conf.yaml $(HOME)/.config/nvim/efm-lsp-conf.yaml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitattributes $(HOME)/.gitattributes
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitconfig $(HOME)/.gitconfig
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))gitignore $(HOME)/.gitignore
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))nvim/init.lua $(HOME)/.config/nvim/init.lua
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))nvim/lua $(HOME)/.config/nvim/lua
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))starship.toml $(HOME)/.config/starship.toml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux-kube $(HOME)/.tmux-kube
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.conf $(HOME)/.tmux.conf
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))tmux.new-session $(HOME)/.tmux.new-session
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))zshrc $(HOME)/.zshrc
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json $(HOME)/.docker/config.json
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json /etc/docker/config.json
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json $(HOME)/.docker/daemon.json
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /etc/docker/daemon.json
+	cp $(ROOTDIR)/alias $(HOME)/.aliases
+	cp $(ROOTDIR)/arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
+	cp $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
+	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
+	cp $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
+	cp $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
+	cp $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
+	cp $(ROOTDIR)/gitignore $(HOME)/.gitignore
+	cp $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
+	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
+	cp $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
+	cp $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
+	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
+	cp $(ROOTDIR)/tmux.new-session $(HOME)/.tmux.new-session
+	cp $(ROOTDIR)/zshrc $(HOME)/.zshrc
+	cp -r $(ROOTDIR)/nvim/lua $(HOME)/.config/nvim/lua
+	sudo cp $(ROOTDIR)/dockers/config.json /etc/docker/config.json
+	sudo cp $(ROOTDIR)/dockers/daemon.json /etc/docker/daemon.json
+
+link:
+	mkdir -p $(HOME)/.config/TabNine
+	mkdir -p $(HOME)/.config/alacritty
+	mkdir -p $(HOME)/.config/nvim/colors
+	mkdir -p $(HOME)/.config/nvim/syntax
+	mkdir -p $(HOME)/.docker
+	sudo mkdir -p /etc/docker
+	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
+	ln -sfv $(ROOTDIR)/arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
+	ln -sfv $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
+	ln -sfv $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
+	ln -sfv $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
+	ln -sfv $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
+	ln -sfv $(ROOTDIR)/gitignore $(HOME)/.gitignore
+	ln -sfv $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
+	ln -sfv $(ROOTDIR)/nvim/lua $(HOME)/.config/nvim/lua
+	ln -sfv $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
+	ln -sfv $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
+	ln -sfv $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
+	ln -sfv $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
+	ln -sfv $(ROOTDIR)/tmux.new-session $(HOME)/.tmux.new-session
+	ln -sfv $(ROOTDIR)/zshrc $(HOME)/.zshrc
+	sudo ln -sfv $(ROOTDIR)/dockers/config.json /etc/docker/config.json
+	sudo ln -sfv $(ROOTDIR)/dockers/daemon.json /etc/docker/daemon.json
 
 arch_link: \
 	clean \
 	link
-	mkdir -p $(HOME)/.config/alacritty
 	mkdir -p $(HOME)/.config/fcitx5/conf
 	mkdir -p $(HOME)/.config/sway
 	mkdir -p $(HOME)/.config/kanshi
@@ -57,7 +83,6 @@ arch_link: \
 	sudo mkdir -p /root/.docker
 	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/swaylock.sh $(HOME)/.config/sway/swaylock.sh
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.classicui.conf $(HOME)/.config/fcitx5/conf/classicui.conf
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.conf $(HOME)/.config/fcitx5/config
 	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.profile $(HOME)/.config/fcitx5/profile

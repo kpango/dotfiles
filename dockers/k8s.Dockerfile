@@ -349,8 +349,8 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
 
 FROM kube-base AS telepresence
 RUN curl -fL https://app.getambassador.io/download/tel2/linux/amd64/latest/telepresence -o "${BIN_PATH}/telepresence" \
-    && chmod a+x "${BIN_PATH}/telepresence" \
-    && upx -9 "${BIN_PATH}/telepresence"
+    && chmod a+x "${BIN_PATH}/telepresence"
+    # && upx -9 "${BIN_PATH}/telepresence"
 
 FROM kube-base AS pixie
 RUN set -x; cd "$(mktemp -d)" \
@@ -382,6 +382,16 @@ FROM kube-golang-base AS kubecolor
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubecolor" \
     && REPO="hidetatz/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
+FROM kube-golang-base AS kubeconform
+RUN set -x; cd "$(mktemp -d)" \
+    && BIN_NAME="kubeconform" \
+    && REPO="yannh/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
@@ -457,6 +467,7 @@ COPY --from=kube-linter ${BIN_PATH}/kube-linter ${K8S_PATH}/kubectl-lint
 COPY --from=kubebox ${BIN_PATH}/kubebox ${K8S_PATH}/kubebox
 COPY --from=kubebuilder ${BIN_PATH}/kubebuilder ${K8S_PATH}/kubebuilder
 COPY --from=kubecolor ${BIN_PATH}/kubecolor ${K8S_PATH}/kubecolor
+COPY --from=kubeconform ${BIN_PATH}/kubeconform ${K8S_PATH}/kubeconform
 COPY --from=kubectl ${BIN_PATH}/kubectl ${K8S_PATH}/kubectl
 COPY --from=kubectl-fzf ${BIN_PATH}/kubectl-fzf-server ${K8S_PATH}/kubectl-fzf-server
 COPY --from=kubectl-fzf ${BIN_PATH}/kubectl-fzf-completion ${K8S_PATH}/kubectl-fzf-completion

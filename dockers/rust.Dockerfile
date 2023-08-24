@@ -39,7 +39,7 @@ FROM rust-base AS bottom
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --no-default-features \
-    --git https://github.com/ClementTsang/bottom
+    bottom
 
 FROM rust-base AS broot
 RUN cargo +nightly install --force --no-default-features \
@@ -94,9 +94,9 @@ FROM rust-base AS erdtree
 RUN cargo +nightly install --force --no-default-features \
     erdtree
 
-FROM rust-base AS exa
+FROM rust-base AS eza
 RUN cargo +nightly install --force --no-default-features \
-    exa
+    --git https://github.com/eza-community/eza
 
 FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
@@ -137,11 +137,9 @@ RUN cargo install --force --no-default-features \
     --git https://github.com/dalance/procs
 
 FROM rust-base AS rg
-# RUN rustup update stable \
-    # && rustup default stable \
-    # && RUSTFLAGS="-C target-cpu=native" \
-RUN RUSTFLAGS="-C target-cpu=native" \
-    RUSTC_BOOTSTRAP=1 \
+RUN rustup update stable \
+    && rustup default stable \
+    && RUSTFLAGS="-C target-cpu=native" \
     cargo +nightly install --force --features 'pcre2 simd-accel' \
     ripgrep
 
@@ -226,7 +224,7 @@ COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=erdtree ${BIN_PATH}/erd ${BIN_PATH}/erd
-COPY --from=exa ${BIN_PATH}/exa ${BIN_PATH}/exa
+COPY --from=eza ${BIN_PATH}/eza ${BIN_PATH}/eza
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine

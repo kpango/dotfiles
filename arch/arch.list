@@ -21,7 +21,7 @@ docker-credential-pass-bin
 dosfstools
 downgrade
 duf
-exa
+eza
 fakeroot
 fcitx5
 fcitx5-configtool

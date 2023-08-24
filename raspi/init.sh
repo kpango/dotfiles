@@ -1,5 +1,4 @@
 #!/bin/sh
-
 swapoff --all
 rm -rf /var/swap
 pacman-key --init
@@ -17,7 +16,7 @@ pacman -Sy --noconfirm dnsmasq
 pacman -Sy --noconfirm docker
 pacman -Sy --noconfirm dosfstools
 pacman -Sy --noconfirm dropbear
-pacman -Sy --noconfirm exa
+pacman -Sy --noconfirm eza
 pacman -Sy --noconfirm fakeroot
 pacman -Sy --noconfirm fd
 pacman -Sy --noconfirm fwupd

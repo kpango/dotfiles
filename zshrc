@@ -74,6 +74,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     export SHELL=$(which zsh)
     export USER=$(whoami)
+    export GIT_USER=kpango
 
     if type nproc >/dev/null 2>&1; then
         export CPUCORES="$(nproc)"
@@ -174,7 +175,7 @@ if [ -z $DOTENV_LOADED ]; then
         export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
     fi
 
-    DOTFILE_URL="github.com/kpango/dotfiles"
+    DOTFILE_URL="github.com/$GIT_USER/dotfiles"
     if type ghq >/dev/null 2>&1; then
         export DOTFILES_DIR="$(ghq root)/$DOTFILE_URL"
     elif [ -d "$HOME/go/src/$DOTFILE_URL" ]; then
@@ -603,7 +604,17 @@ if [ -z $ZSH_LOADED ]; then
         alias top=htop
     fi
 
-    if type lsd >/dev/null 2>&1; then
+
+    if type erd >/dev/null 2>&1; then
+        alias ks='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
+        alias l='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
+        alias ll='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
+        alias la='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --color force --level 1'
+        alias lla='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --no-git --color force --level 2'
+        alias tree='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --no-git --color force'
+        alias ls='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
+        alias lg='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --color force --level 1 | rg'
+    elif type lsd >/dev/null 2>&1; then
         alias ks="lsd"
         alias l="lsd"
         alias ll='lsd -l'
@@ -612,23 +623,14 @@ if [ -z $ZSH_LOADED ]; then
         alias tree='lsd --tree --total-size --human-readable'
         alias ls='lsd'
         alias lg='lsd -aAlLh | rg'
-    # elif type erd >/dev/null 2>&1; then
-    #     alias ks="erd -G"
-    #     alias l="exa -G "
-    #     alias ll='exa -l'
-    #     alias la='exa -aghHliS'
-    #     alias lla='exa -aghHliSm'
-    #     alias tree='exa -T'
-    #     alias ls='exa -G'
-    #     alias lg='la | rg'
-    elif type exa >/dev/null 2>&1; then
-        alias ks="exa -G"
-        alias l="exa -G "
-        alias ll='exa -l'
-        alias la='exa -aghHliS'
-        alias lla='exa -aghHliSm'
-        alias tree='exa -T'
-        alias ls='exa -G'
+    elif type eza >/dev/null 2>&1; then
+        alias ks="eza -G"
+        alias l="eza -G "
+        alias ll='eza -l'
+        alias la='eza -aghHliS'
+        alias lla='eza -aghHliSm'
+        alias tree='eza -T'
+        alias ls='eza -G'
         alias lg='la | rg'
     else
         alias ks="ls "
@@ -705,7 +707,7 @@ if [ -z $ZSH_LOADED ]; then
             rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
         }
         alias sshls=sshls
-        alias sshinit="rm -rf $HOME/.ssh/known_hosts;rm -rf $HOME/.ssh/master_kpango@192.168.2.*;sudo chmod -R 700 $HOME/.ssh;sudo chmod -R 600 $HOME/.ssh/*"
+        alias sshinit="rm -rf $HOME/.ssh/known_hosts;rm -rf $HOME/.ssh/master_$GIT_USER@192.168.2.*;sudo chmod -R 700 $HOME/.ssh;sudo chmod -R 600 $HOME/.ssh/*"
     fi
 
     if type rails >/dev/null 2>&1; then
@@ -1144,7 +1146,7 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archback=archback
         archup() {
-            sudo chown 0 /etc/sudoers.d/kpango
+            sudo chown 0 /etc/sudoers.d/$(USER)
             sudo chmod -R 700 $HOME/.gnupg
             sudo chmod -R 600 $HOME/.gnupg/*
             sync \
@@ -1153,9 +1155,9 @@ if [ -z $ZSH_LOADED ]; then
                 && sudo swapon -a \
                 && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
                 && free
-            sudo su -c "chown 0 /etc/sudoers.d/kpango"
+            sudo su -c "chown 0 /etc/sudoers.d/$(USER)"
             sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $(whoami) $HOME/.config/gcloud
+            sudo chown -R $(USER) $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
                 /var/lib/pacman/sync/* \
                 $HOME/.config/gcloud/logs/* \
@@ -1196,7 +1198,7 @@ if [ -z $ZSH_LOADED ]; then
             paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $(whoami) $HOME/.config/gcloud
+            sudo chown -R $(USER) $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
                 /var/lib/pacman/sync/* \
                 $HOME/.config/gcloud/logs/* \
@@ -1213,7 +1215,7 @@ if [ -z $ZSH_LOADED ]; then
                 paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $(whoami) $HOME/.config/gcloud
+            sudo chown -R $(USER) $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
@@ -1285,9 +1287,9 @@ if [ -z $ZSH_LOADED ]; then
         gpgbackup() {
             sudo rm -rf $backup_dir
             mkdir -p $backup_dir
-            gpg -a --export $1 > $backup_dir/kpango-public.key
-            gpg -a --export-secret-keys $1 > $backup_dir/kpango-secret.key
-            gpg --export-ownertrust > $backup_dir/kpango-ownertrust.txt
+            gpg -a --export $1 > $backup_dir/$GIT_USER-public.key
+            gpg -a --export-secret-keys $1 > $backup_dir/$GIT_USER-secret.key
+            gpg --export-ownertrust > $backup_dir/$GIT_USER-ownertrust.txt
             sudo chmod -R 777 $backup_dir
             sudo chown -R $(USER) $backup_dir
             if type tar >/dev/null 2>&1; then
@@ -1301,8 +1303,8 @@ if [ -z $ZSH_LOADED ]; then
             if type tar >/dev/null 2>&1; then
                 sudo tar Jxvf $HOME/Downloads/gpgbackup.tar.gz
             fi
-            gpg --import $backup_dir/kpango-secret.key
-            gpg --import-ownertrust $backup_dir/kpango-ownertrust.txt
+            gpg --import $backup_dir/$GIT_USER-secret.key
+            gpg --import-ownertrust $backup_dir/$GIT_USER-ownertrust.txt
         }
         alias gpgrs=gpgrestore
     fi
