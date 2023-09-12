@@ -23,3 +23,5 @@ fc-cache -f -v
 if [[ $family_name =~ "P1" ]]; then
     systemctl --user enable psd.service
 fi
+
+git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm

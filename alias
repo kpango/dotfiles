@@ -55,6 +55,7 @@ devrun(){
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.netrc:$container_home/.netrc \
                 -v $HOME/.ssh:$container_home/.ssh \
+                -v $HOME/.tmux:$container_home/.tmux \
                 -v $HOME/.zsh_history:$container_home/.zsh_history \
                 -v $HOME/Documents:$container_home/Documents \
                 -v $HOME/Downloads:$container_home/Downloads \
@@ -64,13 +65,13 @@ devrun(){
                 -v $docker_sock:$docker_sock \
                 -v $font_dir:/usr/share/fonts:ro \
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
-                -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
-                -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
-                -v $rcpath/nvim/luacheckrc:$container_home/.config/nvim/luacheckrc \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/gitattributes:$container_home/.gitattributes \
                 -v $rcpath/gitignore:$container_home/.gitignore \
                 -v $rcpath/network/sysctl.conf:/etc/sysctl.conf \
+                -v $rcpath/nvim/init.lua:$container_home/.config/nvim/init.lua \
+                -v $rcpath/nvim/lua:$container_home/.config/nvim/lua \
+                -v $rcpath/nvim/luacheckrc:$container_home/.config/nvim/luacheckrc \
                 -v $rcpath/starship.toml:$container_home/.config/starship.toml \
                 -v $rcpath/tmux-kube:$container_home/.tmux-kube \
                 -v $rcpath/tmux.conf:$container_home/.tmux.conf \
@@ -114,6 +115,7 @@ devrun(){
                 -v $HOME/.password-store:$container_root/.password-store \
                 -v $HOME/.ssh:$container_home/.ssh \
                 -v $HOME/.tig_history:$container_home/.tig_history \
+                -v $HOME/.tmux:$container_home/.tmux \
                 -v $HOME/.zsh_history:$container_home/.zsh_history:cached \
                 -v $HOME/Documents:$container_home/Documents \
                 -v $HOME/Downloads:$container_home/Downloads \

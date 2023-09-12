@@ -389,13 +389,13 @@ if [ -z $ZSH_LOADED ]; then
     bindkey -e
     select-history() {
         BUFFER=$(history -n -r 1 \
-            | awk 'length($0) > 2' \
-            | rg -v "^...$" \
-            | rg -v "^....$" \
-            | rg -v "^.....$" \
-            | rg -v "^......$" \
-            | rg -v "^exit$" \
-            | uniq -u \
+                | awk 'length($0) > 2' \
+                | rg -v "^...$" \
+                | rg -v "^....$" \
+                | rg -v "^.....$" \
+                | rg -v "^......$" \
+                | rg -v "^exit$" \
+                | uniq -u \
             | fzf-tmux --no-sort +m --query "$LBUFFER" --prompt="History > ")
         CURSOR=$#BUFFER
     }
@@ -543,10 +543,10 @@ if [ -z $ZSH_LOADED ]; then
             listdomains(){
                 if [ $# -eq 1 ]; then
                     curl -fs $1 \
-                    | rg -Po '.*?//\K.*?(?=/)'\
-                    | rg -v "@" \
-                    | rg -v "\+"\
-                    | sort | uniq
+                        | rg -Po '.*?//\K.*?(?=/)'\
+                        | rg -v "@" \
+                        | rg -v "\+"\
+                        | sort | uniq
                 else
                     echo "invalid argument, Domain or url is required"
                 fi
@@ -605,16 +605,7 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
 
-    if type erd >/dev/null 2>&1; then
-        alias ks='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
-        alias l='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
-        alias ll='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
-        alias la='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --color force --level 1'
-        alias lla='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --no-git --color force --level 2'
-        alias tree='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --no-git --color force'
-        alias ls='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
-        alias lg='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --color force --level 1 | rg'
-    elif type lsd >/dev/null 2>&1; then
+    if type lsd >/dev/null 2>&1; then
         alias ks="lsd"
         alias l="lsd"
         alias ll='lsd -l'
@@ -623,6 +614,15 @@ if [ -z $ZSH_LOADED ]; then
         alias tree='lsd --tree --total-size --human-readable'
         alias ls='lsd'
         alias lg='lsd -aAlLh | rg'
+    elif type erd >/dev/null 2>&1; then
+        alias ks='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
+        alias l='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
+        alias ll='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
+        alias la='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --color force --level 1'
+        alias lla='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --no-git --color force --level 2'
+        alias tree='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --no-git --color force'
+        alias ls='erd -H -d logical -I --level 1 --sort rsize -y inverted --dir-order first'
+        alias lg='erd -H -d logical -I -l --group --octal --time-format iso --sort rsize -y inverted --dir-order first --threads 32 --hidden --color force --level 1 | rg'
     elif type eza >/dev/null 2>&1; then
         alias ks="eza -G"
         alias l="eza -G "
@@ -829,7 +829,7 @@ if [ -z $ZSH_LOADED ]; then
                 rg --multiline -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |
-                    xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
+                xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             else
                 find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
                     -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' -o -name '*.schema.json' \) \
@@ -840,7 +840,7 @@ if [ -z $ZSH_LOADED ]; then
                 rg -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |
-                    xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
+                xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             else
                 find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
                     -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' -o -name '*.schema.json' \) \
@@ -1146,18 +1146,18 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archback=archback
         archup() {
-            sudo chown 0 /etc/sudoers.d/$(USER)
+            sudo chown 0 /etc/sudoers.d/$USER
             sudo chmod -R 700 $HOME/.gnupg
             sudo chmod -R 600 $HOME/.gnupg/*
             sync \
-            && sudo sysctl -w vm.drop_caches=3 \
+                && sudo sysctl -w vm.drop_caches=3 \
                 && sudo swapoff -a \
                 && sudo swapon -a \
                 && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
                 && free
-            sudo su -c "chown 0 /etc/sudoers.d/$(USER)"
+            sudo su -c "chown 0 /etc/sudoers.d/$USER"
             sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $(USER) $HOME/.config/gcloud
+            sudo chown -R $USER $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
                 /var/lib/pacman/sync/* \
                 $HOME/.config/gcloud/logs/* \
@@ -1198,7 +1198,7 @@ if [ -z $ZSH_LOADED ]; then
             paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $(USER) $HOME/.config/gcloud
+            sudo chown -R $USER $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
                 /var/lib/pacman/sync/* \
                 $HOME/.config/gcloud/logs/* \
@@ -1215,7 +1215,7 @@ if [ -z $ZSH_LOADED ]; then
                 paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $(USER) $HOME/.config/gcloud
+            sudo chown -R $USER $HOME/.config/gcloud
             sudo rm -rf /var/lib/pacman/db.l* \
                 $HOME/.config/gcloud/logs/* \
                 $HOME/.config/gcloud/config_sentinel \
@@ -1231,7 +1231,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
             sync \
-            && sudo sysctl -w vm.drop_caches=3 \
+                && sudo sysctl -w vm.drop_caches=3 \
                 && sudo swapoff -a \
                 && sudo swapon -a \
                 && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
@@ -1261,22 +1261,22 @@ if [ -z $ZSH_LOADED ]; then
         fi
     elif type apt >/dev/null 2>&1; then
         aptup(){
-          sudo du -sh /var/cache/apt/archives
-          sudo rm -rf /var/cache/apt
-          sudo mkdir -p /var/cache/apt/archives/partial
-          sudo DEBIAN_FRONTEND=noninteractive apt -y clean
-          sudo DEBIAN_FRONTEND=noninteractive apt -y autoremove
-          sudo DEBIAN_FRONTEND=noninteractive apt -y update
-          sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
-          sudo DEBIAN_FRONTEND=noninteractive apt -y full-upgrade
-          sudo DEBIAN_FRONTEND=noninteractive apt -y clean
-          sudo dpkg-reconfigure -f noninteractive tzdata
-          sudo DEBIAN_FRONTEND=noninteractive apt -y autoremove --purge
-          sudo du -sh /var/cache/apt/archives
-          sudo rm -rf /var/cache/apt
-          sudo mkdir -p /var/cache/apt/archives/partial
-          sudo update-alternatives --set cc $CC
-          sudo update-alternatives --set c++ $CXX
+            sudo du -sh /var/cache/apt/archives
+            sudo rm -rf /var/cache/apt
+            sudo mkdir -p /var/cache/apt/archives/partial
+            sudo DEBIAN_FRONTEND=noninteractive apt -y clean
+            sudo DEBIAN_FRONTEND=noninteractive apt -y autoremove
+            sudo DEBIAN_FRONTEND=noninteractive apt -y update
+            sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
+            sudo DEBIAN_FRONTEND=noninteractive apt -y full-upgrade
+            sudo DEBIAN_FRONTEND=noninteractive apt -y clean
+            sudo dpkg-reconfigure -f noninteractive tzdata
+            sudo DEBIAN_FRONTEND=noninteractive apt -y autoremove --purge
+            sudo du -sh /var/cache/apt/archives
+            sudo rm -rf /var/cache/apt
+            sudo mkdir -p /var/cache/apt/archives/partial
+            sudo update-alternatives --set cc $CC
+            sudo update-alternatives --set c++ $CXX
         }
         alias aptup=aptup
         alias up=aptup
@@ -1291,7 +1291,7 @@ if [ -z $ZSH_LOADED ]; then
             gpg -a --export-secret-keys $1 > $backup_dir/$GIT_USER-secret.key
             gpg --export-ownertrust > $backup_dir/$GIT_USER-ownertrust.txt
             sudo chmod -R 777 $backup_dir
-            sudo chown -R $(USER) $backup_dir
+            sudo chown -R $USER $backup_dir
             if type tar >/dev/null 2>&1; then
                 sudo tar Jcvf $HOME/Downloads/gpgbackup.tar.gz $backup_dir
                 rm -rf gpgbackup
@@ -1361,11 +1361,11 @@ if [ -z $ZSH_LOADED ]; then
             if [ $# -eq 1 ]; then
                 echo "$TRACECMD $TRACE_ARGS $1"
                 sudo $TRACECMD $TRACE_ARGS $1 \
-                | rg -wo -e '[0-9]+(\.[0-9]+){3}' \
-                | xargs -I {} whois {} \
-                | rg -i country \
-                | awk '{print $(NF)}' \
-                | sort | uniq
+                    | rg -wo -e '[0-9]+(\.[0-9]+){3}' \
+                    | xargs -I {} whois {} \
+                    | rg -i country \
+                    | awk '{print $(NF)}' \
+                    | sort | uniq
             else
                 echo "invalid argument, Domain or IP is required"
             fi

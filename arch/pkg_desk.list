@@ -22,7 +22,6 @@ dmidecode
 dnsmasq
 docker
 dosfstools
-erdtree
 ethtool
 fakeroot
 fcitx5
@@ -52,6 +51,7 @@ light
 linux-firmware
 linux-zen
 linux-zen-headers
+lsd
 lshw
 make
 mako
