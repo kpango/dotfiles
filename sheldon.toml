@@ -1,0 +1,41 @@
+shell = "zsh"
+
+apply = ["defer"]
+
+[plugins]
+[plugins.aws_zsh_completer]
+remote = "https://raw.githubusercontent.com/aws/aws-cli/v2/bin/aws_zsh_completer.sh"
+[plugins.brew-completion]
+inline = 'type brew &>/dev/null && FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"'
+[plugins.compinit]
+inline = 'autoload -Uz compinit && zsh-defer compinit'
+[plugins.enhancd]
+github = 'b4b4r07/enhancd'
+apply = ['defer']
+[plugins.fzf]
+github = 'junegunn/fzf'
+apply = ['fzf-install', 'fzf-source']
+[plugins.rust-zsh-completions]
+github = "ryutok/rust-zsh-completions"
+[plugins.starship]
+inline = 'eval "$(starship init zsh)"'
+[plugins.wakatime-zsh-plugin]
+github = "sobolevn/wakatime-zsh-plugin"
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+[plugins.zsh-better-npm-completion]
+github = "lukechilds/zsh-better-npm-completion"
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
+[plugins.zsh-syntax-highlighting]
+github = 'zsh-users/zsh-syntax-highlighting'
+apply = ['defer']
+
+[templates]
+PATH = 'export PATH="$PATH:{{ dir }}"'
+defer = "{{ hooks | get: \"pre\" | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks | get: \"post\" | nl }}"
+fzf-install = "{{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\"\n"
+fzf-source = "{% for file in files %}source \"{{ file }}\"\n{% endfor %}"

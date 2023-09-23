@@ -49,7 +49,6 @@ link:
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.docker
-	sudo mkdir -p /etc/docker
 	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
 	ln -sfv $(ROOTDIR)/arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	ln -sfv $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
@@ -61,11 +60,13 @@ link:
 	ln -sfv $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
 	ln -sfv $(ROOTDIR)/nvim/lua $(HOME)/.config/nvim/lua
 	ln -sfv $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
+	ln -sfv $(ROOTDIR)/sheldon.toml $(HOME)/.config/sheldon/plugins.toml
 	ln -sfv $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
 	ln -sfv $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
 	ln -sfv $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
 	ln -sfv $(ROOTDIR)/tmux.new-session $(HOME)/.tmux.new-session
 	ln -sfv $(ROOTDIR)/zshrc $(HOME)/.zshrc
+	sudo mkdir -p /etc/docker
 	sudo ln -sfv $(ROOTDIR)/dockers/config.json /etc/docker/config.json
 	sudo ln -sfv $(ROOTDIR)/dockers/daemon.json /etc/docker/daemon.json
 
