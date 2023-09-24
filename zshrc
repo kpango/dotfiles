@@ -215,6 +215,12 @@ if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc
 fi
 
 if [ -z $ZSH_LOADED ]; then
+    if type sheldon >/dev/null 2>&1; then
+        [ -z "$_lazy_sheldon" ] && {
+            eval "$(sheldon source)"
+            _lazy_sheldon=1
+        }
+    fi
 
     # 色を使用出来るようにする
     autoload -Uz colors
@@ -313,13 +319,6 @@ if [ -z $ZSH_LOADED ]; then
         # RPROMPT="%F{green}${vcs_info_msg_0_} %{$fg[blue]%}($ZSH_KUBECTL_PROMPT)%{$reset_color%} %F{gray}[%D{%Y-%m-%d %H:%M:%S}]"
     }
     add-zsh-hook precmd _update_vcs_info_msg
-
-    if type starship >/dev/null 2>&1; then
-        [ -z "$_lazy_starship" ] && {
-            eval "$(starship init zsh)"
-            _lazy_starship=1
-        }
-    fi
 
     ########################################
     # オプション
