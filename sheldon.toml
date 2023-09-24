@@ -6,10 +6,6 @@ apply = ["defer"]
 [plugins.zsh-defer]
 github = 'romkatv/zsh-defer'
 apply = ['source']
-[plugins.aws_zsh_completer]
-remote = "https://raw.githubusercontent.com/aws/aws-cli/v2/bin/aws_zsh_completer.sh"
-[plugins.brew-completion]
-inline = 'type brew &>/dev/null && FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"'
 [plugins.compinit]
 inline = 'autoload -Uz compinit && zsh-defer compinit'
 [plugins.colors]
@@ -19,17 +15,21 @@ inline = 'autoload -Uz colors && zsh-defer colors'
 # apply = ['defer']
 [plugins.fzf]
 github = 'junegunn/fzf'
-apply = ['fzf-install', 'fzf-source']
+apply = ['fzf-install', 'fzf-source', 'defer']
 [plugins.rust-zsh-completions]
 github = "ryutok/rust-zsh-completions"
+apply = ['defer']
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
+apply = ['defer']
 [plugins.zsh-better-npm-completion]
 github = "lukechilds/zsh-better-npm-completion"
+apply = ['defer']
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"
+apply = ['defer']
 [plugins.zsh-syntax-highlighting]
 github = 'zsh-users/zsh-syntax-highlighting'
 apply = ['defer']
