@@ -3,6 +3,9 @@ shell = "zsh"
 apply = ["defer"]
 
 [plugins]
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
 [plugins.aws_zsh_completer]
 remote = "https://raw.githubusercontent.com/aws/aws-cli/v2/bin/aws_zsh_completer.sh"
 [plugins.brew-completion]
@@ -21,17 +24,12 @@ apply = ['fzf-install', 'fzf-source']
 github = "ryutok/rust-zsh-completions"
 [plugins.starship]
 inline = 'eval "$(starship init zsh)"'
-[plugins.wakatime-zsh-plugin]
-github = "sobolevn/wakatime-zsh-plugin"
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
 [plugins.zsh-better-npm-completion]
 github = "lukechilds/zsh-better-npm-completion"
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"
-[plugins.zsh-defer]
-github = 'romkatv/zsh-defer'
-apply = ['source']
 [plugins.zsh-syntax-highlighting]
 github = 'zsh-users/zsh-syntax-highlighting'
 apply = ['defer']
@@ -42,11 +40,10 @@ apply = ['defer']
 github = "greymd/tmux-xpanes"
 apply = ['defer']
 [plugins.zsh-history-substring-search]
-github "zsh-users/zsh-history-substring-search"
+github = "zsh-users/zsh-history-substring-search"
 apply = ['defer']
 
 [templates]
-# PATH = 'export PATH="$PATH:{{ dir }}"'
-defer = { value = 'zsh-defer source "{{ file }}"', each = true }
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
 fzf-install = "{{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\"\n"
 fzf-source = "{% for file in files %}source \"{{ file }}\"\n{% endfor %}"
