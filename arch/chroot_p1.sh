@@ -82,7 +82,6 @@ sed -e '/%wheel ALL=(ALL) ALL/s/^# //' /etc/sudoers | EDITOR=tee visudo >/dev/nu
 sed -e '/%wheel ALL=(ALL) NOPASSWORD: ALL/s/^# %wheel/kpango/' /etc/sudoers | EDITOR=tee visudo >/dev/null
 passwd
 
-mkdir -p ${HOME}/.zplug
 mkdir -p ${HOME}/.config
 mkdir -p ${HOME}/.cache
 

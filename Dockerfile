@@ -34,7 +34,6 @@ ENV CARGO_PATH $HOME/.cargo
 ENV DART_PATH /usr/lib/dart
 ENV NVIM_HOME $HOME/.config/nvim
 ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
-ENV ZPLUG_HOME $HOME/.zplug
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
@@ -86,11 +85,7 @@ RUN usermod -aG ${GROUP} ${WHOAMI} \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && rm -rf $VIM_PLUG_HOME/autoload \
-    && git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME \
-    && zsh -ic zplug install \
     && rm -rf ${HOME}/.cache \
-    && rm -rf ${HOME}/.zplug/cache/* \
-    && rm -rf ${HOME}/.zplug/log/* \
     && rm -rf ${HOME}/.npm/_cacache \
     && rm -rf ${HOME}/.cargo/registry/cache \
     && rm -rf /usr/local/share/.cache \

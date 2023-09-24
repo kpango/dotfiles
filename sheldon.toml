@@ -9,9 +9,11 @@ remote = "https://raw.githubusercontent.com/aws/aws-cli/v2/bin/aws_zsh_completer
 inline = 'type brew &>/dev/null && FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"'
 [plugins.compinit]
 inline = 'autoload -Uz compinit && zsh-defer compinit'
-[plugins.enhancd]
-github = 'b4b4r07/enhancd'
-apply = ['defer']
+[plugins.colors]
+inline = 'autoload -Uz colors && zsh-defer colors'
+# [plugins.enhancd]
+# github = 'b4b4r07/enhancd'
+# apply = ['defer']
 [plugins.fzf]
 github = 'junegunn/fzf'
 apply = ['fzf-install', 'fzf-source']
@@ -33,9 +35,18 @@ apply = ['source']
 [plugins.zsh-syntax-highlighting]
 github = 'zsh-users/zsh-syntax-highlighting'
 apply = ['defer']
+[plugins.fast-syntax-highlighting]
+github = "auscompgeek/fast-syntax-highlighting"
+apply = ['defer']
+[plugins.tmux-xpanes]
+github = "greymd/tmux-xpanes"
+apply = ['defer']
+[plugins.zsh-history-substring-search]
+github "zsh-users/zsh-history-substring-search"
+apply = ['defer']
 
 [templates]
-PATH = 'export PATH="$PATH:{{ dir }}"'
-defer = "{{ hooks | get: \"pre\" | nl }}{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}{{ hooks | get: \"post\" | nl }}"
+# PATH = 'export PATH="$PATH:{{ dir }}"'
+defer = { value = 'zsh-defer source "{{ file }}"', each = true }
 fzf-install = "{{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\"\n"
 fzf-source = "{% for file in files %}source \"{{ file }}\"\n{% endfor %}"

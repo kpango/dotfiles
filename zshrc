@@ -196,30 +196,10 @@ if [ -z $DOTENV_LOADED ]; then
         export PATH="$(which deno):$PATH"
     fi
 
-    export ZPLUG_HOME=$HOME/.zplug
-
-    if [ -e $ZPLUG_HOME/repos/zsh-users/zsh-completions ]; then
-        fpath=($ZPLUG_HOME/repos/zsh-users/zsh-completions/src $fpath)
-    fi
-
     # for teleplesence disabling send analytics data anonymously
     export SCOUT_DISABLE=1
 
     export DOTENV_LOADED=1
-fi
-
-if type zplug >/dev/null 2>&1; then
-    if zplug check junegunn/fzf; then
-        export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --smartcase --glob "!.git/*"'
-        export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
-    fi
-
-    if zplug check b4b4r07/enhancd; then
-        export ENHANCD_FILTER=fzf-tmux
-        export ENHANCD_COMMAND=ccd
-        export ENHANCD_FILTER=fzf:peco:gof
-        export ENHANCD_DOT_SHOW_FULLPATH=1
-    fi
 fi
 
 if type gpg >/dev/null 2>&1; then
@@ -235,26 +215,6 @@ if [ ! -f "$HOME/.zcompdump.zwc" -o "$HOME/.zcompdump" -nt "$HOME/.zcompdump.zwc
 fi
 
 if [ -z $ZSH_LOADED ]; then
-    ########################################
-    #Zplug Settings
-    if [[ ! -f $HOME/.zplug/init.zsh ]]; then
-        rm -rf $ZPLUG_HOME
-        git clone --depth 1 https://github.com/zplug/zplug $ZPLUG_HOME
-    fi
-    [ -z "$_lazy_zplug_zsh" ] && {
-        [ -f "$HOME/.zplug/init.zsh" ] && source "$HOME/.zplug/init.zsh"
-        _lazy_zplug_zsh=1
-    }
-    zplug "junegunn/fzf", as:command, use:bin/fzf-tmux
-    zplug "zsh-users/zsh-autosuggestions"
-    zplug "zsh-users/zsh-completions", as:plugin, use:"src"
-    zplug "zsh-users/zsh-history-substring-search"
-    zplug "auscompgeek/fast-syntax-highlighting", defer:2
-    zplug "greymd/tmux-xpanes"
-    if ! zplug check --verbose; then
-        zplug install
-    fi
-    zplug load
 
     # 色を使用出来るようにする
     autoload -Uz colors
@@ -760,12 +720,8 @@ if [ -z $ZSH_LOADED ]; then
 
     zsup() {
         rm -rf $HOME/.zcompd*
-        rm -rf $HOME/.zplug/zcompd*
         rm $HOME/.zshrc.zwc
-        zplug update
-        zplug clean
-        zplug clear
-        zplug info
+	# update sheldon package here
         rm -rf $HOME/.bashrc
         rm -rf $HOME/.fzf.bash
         zscompile
@@ -773,9 +729,7 @@ if [ -z $ZSH_LOADED ]; then
     alias zsup=zsup
 
     zsinit() {
-        rm -rf $ZPLUG_HOME
         rm -rf $HOME/.zcompd*
-        rm -rf $HOME/.zplug/zcompd*
         rm -rf $HOME/.zshrc.zwc
     }
     alias zsinit=zsinit
