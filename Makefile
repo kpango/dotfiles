@@ -81,46 +81,48 @@ arch_link: \
 	mkdir -p $(HOME)/.config/psd
 	mkdir -p $(HOME)/.config/workstyle
 	sudo mkdir -p /etc/scaramanga
-	sudo mkdir -p /root/.docker
-	# ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/swaylock.sh $(HOME)/.config/sway/swaylock.sh
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/Xmodmap $(HOME)/.Xmodmap
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.classicui.conf $(HOME)/.config/fcitx5/conf/classicui.conf
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.conf $(HOME)/.config/fcitx5/config
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/fcitx.profile $(HOME)/.config/fcitx5/profile
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/kanshi.conf $(HOME)/.config/kanshi/config
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/psd.conf $(HOME)/.config/psd/psd.conf
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/ranger $(HOME)/.config/ranger
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.conf $(HOME)/.config/sway/config
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.conf $(HOME)/.config/waybar/config
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/waybar.css $(HOME)/.config/waybar/style.css
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/wofi/style.css $(HOME)/.config/wofi/style.css
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/wofi/wofi.conf $(HOME)/.config/wofi/config
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/workstyle.toml $(HOME)/.config/workstyle/config.toml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc $(HOME)/.xinitrc
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/chrony.conf /etc/chrony.conf
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/suduers /etc/sudoers.d/kpango
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/environment
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/nmcli-bond-auto-connect.sh /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/default.pa /etc/pulse/default.pa
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/limits.conf /etc/security/limits.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/makepkg.conf /etc/makepkg.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/pacman.conf /etc/pacman.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/scaramanga.toml /etc/scaramanga/config.toml
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/sway.sh /etc/profile.d/sway.sh
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/thinkfan.conf /etc/thinkfan.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/tlp /etc/default/tlp
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/tlp /etc/tlp.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/xinitrc /etc/profile.d/fcitx.sh
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/config.json /root/.docker/config.json
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))dockers/daemon.json /root/.docker/daemon.json
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
-	sudo ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))network/sysctl.conf /etc/sysctl.d/99-sysctl.conf
+	sudo mkdir -p /root/.dockers
+	sudo mkdir -p /etc/udev/rules.d
+	sudo mkdir -p /etc/modules-load.d/
+	# ln -sfv $(ROOTDIR)/arch/swaylock.sh $(HOME)/.config/sway/swaylock.sh
+	ln -sfv $(ROOTDIR)/arch/Xmodmap $(HOME)/.Xmodmap
+	ln -sfv $(ROOTDIR)/arch/fcitx.classicui.conf $(HOME)/.config/fcitx5/conf/classicui.conf
+	ln -sfv $(ROOTDIR)/arch/fcitx.conf $(HOME)/.config/fcitx5/config
+	ln -sfv $(ROOTDIR)/arch/fcitx.profile $(HOME)/.config/fcitx5/profile
+	ln -sfv $(ROOTDIR)/arch/kanshi.conf $(HOME)/.config/kanshi/config
+	ln -sfv $(ROOTDIR)/arch/psd.conf $(HOME)/.config/psd/psd.conf
+	ln -sfv $(ROOTDIR)/arch/ranger $(HOME)/.config/ranger
+	ln -sfv $(ROOTDIR)/arch/sway.conf $(HOME)/.config/sway/config
+	ln -sfv $(ROOTDIR)/arch/waybar.conf $(HOME)/.config/waybar/config
+	ln -sfv $(ROOTDIR)/arch/waybar.css $(HOME)/.config/waybar/style.css
+	ln -sfv $(ROOTDIR)/arch/wofi/style.css $(HOME)/.config/wofi/style.css
+	ln -sfv $(ROOTDIR)/arch/wofi/wofi.conf $(HOME)/.config/wofi/config
+	ln -sfv $(ROOTDIR)/arch/workstyle.toml $(HOME)/.config/workstyle/config.toml
+	ln -sfv $(ROOTDIR)/arch/xinitrc $(HOME)/.xinitrc
+	sudo cp $(ROOTDIR)/arch/chrony.conf /etc/chrony.conf
+	sudo cp $(ROOTDIR)/arch/suduers /etc/sudoers.d/kpango
+	sudo cp $(ROOTDIR)/arch/xinitrc /etc/environment
+	sudo cp $(ROOTDIR)/network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
+	sudo cp $(ROOTDIR)/network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo cp $(ROOTDIR)/network/nmcli-bond-auto-connect.sh /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
+	sudo ln -sfv $(ROOTDIR)/arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
+	sudo ln -sfv $(ROOTDIR)/arch/default.pa /etc/pulse/default.pa
+	sudo ln -sfv $(ROOTDIR)/arch/limits.conf /etc/security/limits.conf
+	sudo ln -sfv $(ROOTDIR)/arch/makepkg.conf /etc/makepkg.conf
+	sudo ln -sfv $(ROOTDIR)/arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+	sudo ln -sfv $(ROOTDIR)/arch/pacman.conf /etc/pacman.conf
+	sudo ln -sfv $(ROOTDIR)/arch/scaramanga.toml /etc/scaramanga/config.toml
+	sudo ln -sfv $(ROOTDIR)/arch/sway.sh /etc/profile.d/sway.sh
+	sudo ln -sfv $(ROOTDIR)/arch/thinkfan.conf /etc/thinkfan.conf
+	sudo ln -sfv $(ROOTDIR)/arch/tlp /etc/default/tlp
+	sudo ln -sfv $(ROOTDIR)/arch/tlp /etc/tlp.conf
+	sudo ln -sfv $(ROOTDIR)/arch/xinitrc /etc/profile.d/fcitx.sh
+	sudo ln -sfv $(ROOTDIR)/dockers/config.json /root/.docker/config.json
+	sudo ln -sfv $(ROOTDIR)/dockers/daemon.json /root/.docker/daemon.json
+	sudo ln -sfv $(ROOTDIR)/network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+	sudo ln -sfv $(ROOTDIR)/network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
+	sudo ln -sfv $(ROOTDIR)/network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
+	sudo ln -sfv $(ROOTDIR)/network/sysctl.conf /etc/sysctl.d/99-sysctl.conf
 	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
 	# sudo modprobe -rv thinkpad_acpi
 	# sudo modprobe -v thinkpad_acpi
@@ -139,17 +141,20 @@ arch_p1_link: \
 	arch_link
 	sudo echo "options bbswitch load_state=0 unload_state=1" | sudo tee /etc/modprobe.d/bbswitch.conf
 	rm -rf $(HOME)/.config/alacritty/alacritty.yml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(ROOTDIR)/arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
 	rm -rf $(HOME)/.config/psd
 	mkdir $(HOME)/.config/psd
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
-	sudo cp $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
+	sudo cp $(ROOTDIR)/arch/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
+	sudo cp $(ROOTDIR)/arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
 	sudo systemctl daemon-reload
 
 arch_desk_link: \
 	arch_link
 	rm -rf $(HOME)/.config/alacritty/alacritty.yml
-	ln -sfv $(dir $(abspath $(lastword $(MAKEFILE_LIST))))arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(ROOTDIR)/arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
+	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
+	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
+	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
 
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
@@ -184,8 +189,8 @@ clean:
 		$(HOME)/.xinitrc \
 		$(HOME)/.zshrc \
 		/etc/NetworkManager/NetworkManager.conf \
-		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
 		/etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
+		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
 		/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
 		/etc/chrony.conf \
 		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
@@ -196,7 +201,9 @@ clean:
 		/etc/lightdm \
 		/etc/makepkg.conf \
 		/etc/modprobe.d/bbswitch.conf \
+		/etc/modprobe.d/nvidia-tweaks.conf \
 		/etc/modprobe.d/thinkfan.conf \
+		/etc/modules-load.d/nvidia-uvm.conf \
 		/etc/modules-load.d/bbr.conf \
 		/etc/pacman.conf \
 		/etc/profile.d/fcitx.sh \
@@ -212,7 +219,9 @@ clean:
 		/etc/systemd/system/nvidia-enable-power-off.service \
 		/etc/systemd/system/pulseaudio.service \
 		/etc/tlp.conf \
+		/etc/udev/rules.d/60-nvidia.rules \
 		/etc/udev/rules.d/60-ioschedulers.rules
+
 
 zsh: link
 	[ -f $(HOME)/.zshrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.zshrc
