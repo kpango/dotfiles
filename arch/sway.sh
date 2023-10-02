@@ -26,7 +26,6 @@ setxkbmap -option ctrl:nocaps
 ulimit -n 500000
 
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
-    # WLR_NO_HARDWARE_CURSORS=1 \
     DefaultImModule=fcitx5 \
     GTK_IM_MODULE=fcitx5 \
     LIBSEAT_BACKEND=logind \
@@ -34,6 +33,7 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     QT_QPA_PLATFORM=wayland \
     SDL_IM_MODULE=fcitx5 \
     WLR_DRM_DEVICES=/dev/dri/card1:/dev/dri/card0 \
+    WLR_NO_HARDWARE_CURSORS=1 \
     XDG_CURRENT_DESKTOP=sway \
     XDG_CURRENT_SESSION=sway \
     XDG_SESSION_TYPE=wayland \

@@ -93,7 +93,7 @@ systemctl enable docker
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
-sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress nouveau)/g" /etc/mkinitcpio.conf
+sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/FILES=()/FILES=(\"\/etc\/mdadm.conf\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block mdadm mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
@@ -111,7 +111,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /amd-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw acpi_osi=! acpi_osi="Windows 2013" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce loglevel=1 nowatchdog psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet sysrq_always_enabled=1 rd.systemd.show_status=auto rd.udev.log_priority=3 vt.global_cursor_default=0 zswap.enabled=1 zswap.compressor=zstd zswap.zpool=z3fold zswap.max_pool_percent=25 i8042.reset=1 i8042.nomux=1 systemd.unified_cgroup_hierarchy=1 cgroup_no_v1=all
+options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw acpi.ec_no_wakeup=1 acpi_backlight=native acpi_osi=! acpi_osi="Windows 2013" amd_iommu=on intel_iommu=on iommu=force,merge,nopanic,nopt nvidia_drm.modeset=1 cgroup_no_v1=all i8042.nomux=1 i8042.reset=1 loglevel=1 nowatchdog psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet rd.systemd.show_status=auto rd.udev.log_priority=3 swiotlb=noforce sysrq_always_enabled=1 systemd.unified_cgroup_hierarchy=1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=25 zswap.zpool=z3fold
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf
