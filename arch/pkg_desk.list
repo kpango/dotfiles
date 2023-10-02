@@ -17,6 +17,7 @@ ccache
 chrony
 clang
 cmake
+cuda
 discord
 dmidecode
 dnsmasq
@@ -63,6 +64,7 @@ mysql-workbench
 neovim
 networkmanager
 nmap
+nvidia-open-dkms
 nvme-cli
 openssl-1.1
 pacman-contrib

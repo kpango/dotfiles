@@ -28,16 +28,17 @@ ulimit -n 500000
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     DefaultImModule=fcitx5 \
     GTK_IM_MODULE=fcitx5 \
+    LIBSEAT_BACKEND=logind \
     QT_IM_MODULE=fcitx5 \
-    XMODIFIERS="@im=fcitx5" \
+    QT_QPA_PLATFORM=wayland \
     SDL_IM_MODULE=fcitx5 \
-    XKB_DEFAULT_OPTIONS=ctrl:nocaps \
-    XKB_DEFAULT_LAYOUT=us \
-    XDG_SESSION_TYPE=wayland \
+    WLR_DRM_DEVICES=/dev/dri/card1:/dev/dri/card0 \
+    WLR_NO_HARDWARE_CURSORS=1 \
     XDG_CURRENT_DESKTOP=sway \
     XDG_CURRENT_SESSION=sway \
-    LIBSEAT_BACKEND=logind \
-    QT_QPA_PLATFORM=wayland \
-    WLR_DRM_DEVICES=/dev/dri/card1:/dev/dri/card0 \
-    exec sway
+    XDG_SESSION_TYPE=wayland \
+    XKB_DEFAULT_LAYOUT=us \
+    XKB_DEFAULT_OPTIONS=ctrl:nocaps \
+    XMODIFIERS="@im=fcitx5" \
+    exec sway --unsupported-gpu
 fi
