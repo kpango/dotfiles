@@ -11,6 +11,8 @@ brew autoupdate --start --upgrade --cleanup
 
 sudo rm -rf $HOME/.docker
 sudo mkdir -p $HOME/.docker
+sudo chown -R $USER $HOME/.docker
+sudo chmod -R 777 $HOME/.docker
 cat <<EOF >$HOME/.docker/config.json
 {
    "auths":{ },
