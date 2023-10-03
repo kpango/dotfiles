@@ -720,7 +720,7 @@ if [ -z $ZSH_LOADED ]; then
     zsup() {
         rm -rf $HOME/.zcompd*
         rm $HOME/.zshrc.zwc
-	# update sheldon package here
+        # update sheldon package here
         rm -rf $HOME/.bashrc
         rm -rf $HOME/.fzf.bash
         zscompile
@@ -1122,22 +1122,22 @@ if [ -z $ZSH_LOADED ]; then
             sudo mkdir -p /var/cache/pacman/pkg
             if type gpgconf >/dev/null 2>&1; then
                 sudo gpgconf --kill all
-	    fi
+            fi
             if [ $# -eq 1 ]; then
-	        sudo chown -R $USER $HOME/.gnupg
-	        touch $HOME/.gnupg/dirmngr_ldapservers.conf
-	        sudo chmod 700 $HOME/.gnupg/crls.d/
+                sudo chown -R $USER $HOME/.gnupg
+                touch $HOME/.gnupg/dirmngr_ldapservers.conf
+                sudo chmod 700 $HOME/.gnupg/crls.d/
                 if type dirmgr >/dev/null 2>&1; then
-	            sudo dirmngr < /dev/null
-	        fi
+                    sudo dirmngr < /dev/null
+                fi
                 if type pacman-key >/dev/null 2>&1; then
-	            sudo pacman-key --init
+                    sudo pacman-key --init
                     sudo pacman-key --populate archlinux
                     sudo pacman-key --refresh-keys
-	        fi
-	    else
+                fi
+            elif type pacman-key >/dev/null 2>&1; then
                 sudo pacman-key --populate archlinux
-	    fi
+            fi
             sudo pacman-db-upgrade
             sudo pacman -Scc --noconfirm
             sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
@@ -1219,7 +1219,11 @@ if [ -z $ZSH_LOADED ]; then
 
         if type shutdown >/dev/null 2>&1; then
             shutdown() {
-                archup keyref
+                if [ $# -eq 1 ]; then
+                    archup keyref
+                else
+                    archup
+                fi
                 fup
                 archback
                 sudo shutdown now && exit
