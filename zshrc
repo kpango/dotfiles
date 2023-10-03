@@ -1219,7 +1219,7 @@ if [ -z $ZSH_LOADED ]; then
 
         if type shutdown >/dev/null 2>&1; then
             shutdown() {
-                archup
+                archup keyref
                 fup
                 archback
                 sudo shutdown now && exit
