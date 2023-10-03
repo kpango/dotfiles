@@ -3,26 +3,36 @@
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
         echo "welcome to tmux"
-        USER=$(whoami)
-        HOST=$(hostname)
-        TMUX_SOCK=/tmp/tmux.sock
-        if [ -z "$SSH_CLIENT" ] || [ -z "$SSH_TTY" ]; then
+        USER="$(whoami)"
+        HOST="$(hostname)"
+        HOSTNAME="$(cat /etc/hostname 2>/dev/null || echo $HOST)"
+        TMUX_TMPDIR_PREFIX="/tmp/tmux-sockets"
+        TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/$HOST"
+        if [ ! -z "$SSH_CLIENT" ] ; then
+            SSH_IP="${SSH_CLIENT%% *}"
+            TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/ssh-from-$SSH_IP"
             echo "starting tmux for ssh $SSH_TTY from $SSH_CLIENT"
-            TMUX_SOCK=/tmp/tmux-ssh-$(echo $SSH_CLIENT | awk '{print $1}').sock
         fi
-        TMUX_TMPDIR=/tmp
-        if [[ ! -f $TMUX_SOCK ]]; then
+        mkdir -p $TMUX_TMPDIR
+        export TMUX_TMPDIR=$TMUX_TMPDIR
+        TMUX_SESSIONS=$(tmux ls 2>/dev/null)  # Check for existing tmux sessions on the specified socket directory
+        if [ $? -ne 0 ]; then  # Check for error from tmux command
             if [ -f /.dockerenv ]; then
                 group=$(id -g)
                 sudo chown -R $USER:$group /var/run/docker.sock
             fi
-            echo "creating new tmux session"
-            TMUX_TMPDIR=/tmp tmux -S $TMUX_SOCK -2 new-session -n$USER -s$USER@$HOST && echo "created new tmux session"
+            echo "creating new tmux session at $TMUX_TMPDIR"
+            tmux -2 new-session -n$USER -s$USER@$HOST && echo "created new tmux session"
         else
-            ID="$(tmux -S /tmp/tmux.sock ls | grep attached | cut -d: -f1)" # get the id of a deattached session
-            echo "attaching tmux session $ID"
-            TMUX_TMPDIR=/tmp tmux -S $TMUX_SOCK -2 attach-session -t "$ID" && echo "attached tmux session $ID"
+            SESSION_NAME="$(tmux ls | cut -d: -f1 | head -n 1)"  # get the name of a session
+            if [ -z "$SESSION_NAME" ]; then
+                echo "No sessions found in $USER@$HOST, global tmux ls = $(tmux ls)"
+                exit 1
+            fi
+            echo "attaching tmux session $SESSION_NAME at $TMUX_TMPDIR"
+            tmux -2 attach-session -t "$SESSION_NAME" && echo "attached tmux session $SESSION_NAME"
         fi
+        exit
     fi
 fi
 
@@ -695,14 +705,6 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type tmux >/dev/null 2>&1; then
-        export TMUX_TMPDIR=/tmp
-        alias tkill='\tmux -S /tmp/tmux.sock kill-server'
-        alias tmls='\tmux -S /tmp/tmux.sock list-sessions'
-        alias tmlc='\tmux -S /tmp/tmux.sock list-clients'
-        alias tmkl='\tmux -S /tmp/tmux.sock kill-session'
-        alias tmaw='\tmux -S /tmp/tmux.sock main-horizontal'
-        alias tmuxa='\tmux -S /tmp/tmux.sock -2 a -t'
-
         if [ -f /.dockerenv ]; then
             tmux unbind C-b
             tmux set -g prefix C-w

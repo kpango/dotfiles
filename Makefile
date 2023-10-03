@@ -1,6 +1,5 @@
 .PHONY: all link zsh bash build prod_build profile run push pull
 
-
 ROOTDIR = $(eval ROOTDIR := $(shell git rev-parse --show-toplevel))$(ROOTDIR)
 USER = $(eval USER := $(shell whoami))$(USER)
 USER_ID = $(eval USER_ID := $(shell id -u $(USER)))$(USER_ID)
@@ -100,7 +99,7 @@ arch_link: \
 	ln -sfv $(ROOTDIR)/arch/workstyle.toml $(HOME)/.config/workstyle/config.toml
 	ln -sfv $(ROOTDIR)/arch/xinitrc $(HOME)/.xinitrc
 	sudo cp $(ROOTDIR)/arch/chrony.conf /etc/chrony.conf
-	sudo cp $(ROOTDIR)/arch/suduers /etc/sudoers.d/kpango
+	sudo cp $(ROOTDIR)/arch/suduers /etc/sudoers.d/$(USER)
 	sudo cp $(ROOTDIR)/arch/xinitrc /etc/environment
 	sudo cp $(ROOTDIR)/network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
 	sudo cp $(ROOTDIR)/network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
@@ -132,8 +131,8 @@ arch_link: \
 	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
 	sudo chown -R 0:0 /etc/sudoers.d
 	sudo chmod -R 0440 /etc/sudoers.d
-	sudo chown -R 0:0 /etc/sudoers.d/kpango
-	sudo chmod -R 0440 /etc/sudoers.d/kpango
+	sudo chown -R 0:0 /etc/sudoers.d/$(USER)
+	sudo chmod -R 0440 /etc/sudoers.d/$(USER)
 	sudo sysctl -e -p /etc/sysctl.d/99-sysctl.conf
 	sudo systemctl daemon-reload
 
@@ -155,6 +154,36 @@ arch_desk_link: \
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
+
+mac_link: \
+	link
+	sudo rm -rf \
+		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
+		$(HOME)/Library/LaunchAgents/ulimit.plist \
+		$(HOME)/.config/alacritty/alacritty.yml \
+		$(HOME)/.docker/config.json \
+		$(HOME)/.docker/daemon.json \
+		$(HOME)/.gitconfig \
+		/etc/docker/config.json \
+		/etc/docker/daemon.json
+	cat $(ROOTDIR)/gitconfig | sed -e "s/gpgsign = true/gpgsign = false/g" > $(HOME)/.gitconfig
+	ln -sfv $(ROOTDIR)/macos/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(ROOTDIR)/macos/docker_config.json $(HOME)/.docker/config.json
+	ln -sfv $(ROOTDIR)/macos/docker_daemon.json $(HOME)/.docker/daemon.json
+	sudo ln -sfv $(ROOTDIR)/macos/docker_config.json /etc/docker/config.json
+	sudo ln -sfv $(ROOTDIR)/macos/docker_daemon.json /etc/docker/daemon.json
+	sudo ln -sfv $(ROOTDIR)/macos/localhost.homebrew-autoupdate.plist $(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
+	sudo ln -sfv $(ROOTDIR)/macos/ulimit.plist $(HOME)/Library/LaunchAgents/ulimit.plist
+	sudo chmod 600 $(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
+	sudo chmod 600 $(HOME)/Library/LaunchAgents/ulimit.plist
+	sudo chown root:wheel $(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
+	sudo chown root:wheel $(HOME)/Library/LaunchAgents/ulimit.plist
+	sudo plutil -lint $(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
+	sudo plutil -lint $(HOME)/Library/LaunchAgents/ulimit.plist
+	sudo launchctl load -w $(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
+	sudo launchctl load -w $(HOME)/Library/LaunchAgents/ulimit.plist
+	sudo rm -rf $(ROOTDIR)/nvim/lua/lua
+	@make perm
 
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
@@ -211,7 +240,7 @@ clean:
 		/etc/pulse/default.pa \
 		/etc/scaramanga \
 		/etc/scaramanga/config.toml \
-		/etc/sudoers.d/kpango \
+		/etc/sudoers.d/$(USER) \
 		/etc/sysctl.conf \
 		/etc/sysctl.d/99-sysctl.conf \
 		/etc/systemd/system/NetworkManager-dispatcher.service \

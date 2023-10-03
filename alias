@@ -166,7 +166,8 @@ devrun(){
 
 alias devrun="devrun"
 
-alias devin="docker exec -it $container_name $zsh_path -c \"tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST\""
+# alias devin="docker exec -it $container_name $zsh_path -c \"tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST\""
+alias devin="docker exec -it $container_name $zsh_path"
 
 devkill(){
     docker update --restart=no $container_name \
