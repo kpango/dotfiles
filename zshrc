@@ -1120,10 +1120,17 @@ if [ -z $ZSH_LOADED ]; then
                 /usr/share/man/man5/gemfile* \
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
-            sudo gpgconf --kill all
-            # sudo pacman-key --init
-            sudo pacman-key --populate archlinux
-            # sudo pacman-key --refresh-keys
+            if type gpgconf >/dev/null 2>&1; then
+                sudo gpgconf --kill all
+	    fi
+            if type dirmgr >/dev/null 2>&1; then
+	        # sudo dirmngr < /dev/null
+	    fi
+            if type pacman-key >/dev/null 2>&1; then
+	        # sudo pacman-key --init
+                sudo pacman-key --populate archlinux
+                # sudo pacman-key --refresh-keys
+	    fi
             sudo pacman-db-upgrade
             sudo pacman -Scc --noconfirm
             sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
