@@ -65,6 +65,7 @@ neovim
 networkmanager
 nmap
 nvidia-open-dkms
+nvidia-settings
 nvme-cli
 openssl-1.1
 pacman-contrib

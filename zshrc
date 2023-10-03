@@ -22,7 +22,7 @@ if type tmux >/dev/null 2>&1; then
                 sudo chown -R $USER:$group /var/run/docker.sock
             fi
             echo "creating new tmux session at $TMUX_TMPDIR"
-            tmux -2 new-session -n$USER -s$USER@$HOST && echo "created new tmux session"
+            TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 new-session -n$USER -s$USER@$HOST && echo "created new tmux session"
         else
             SESSION_NAME="$(tmux ls | cut -d: -f1 | head -n 1)"  # get the name of a session
             if [ -z "$SESSION_NAME" ]; then
@@ -30,7 +30,7 @@ if type tmux >/dev/null 2>&1; then
                 exit 1
             fi
             echo "attaching tmux session $SESSION_NAME at $TMUX_TMPDIR"
-            tmux -2 attach-session -t "$SESSION_NAME" && echo "attached tmux session $SESSION_NAME"
+            TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 attach-session -t "$SESSION_NAME" && echo "attached tmux session $SESSION_NAME"
         fi
         exit
     fi
