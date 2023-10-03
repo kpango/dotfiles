@@ -1,15 +1,3 @@
--- opt.foldmethod=manual
--- opt.guioptions:append('a')
--- opt.listchars={ 'tab:> ', 'trail:_', 'eol:↲', 'extends:»', 'precedes:«', 'nbsp:%' }
--- opt.nobackup=true
--- opt.noerrorbells=true
--- opt.noswapfile=true
--- opt.novisualbell=true
--- opt.nowritebackup=true
--- opt.relativenumber=true
--- opt.termencoding = "utf-8"
--- opt.viminfo='100,/50,%,<1000,f50,s100,:100,c,h,!'
--- opt.whichwrap={ 'b', 's', 'h', 'l', '<', '>', '[', ']' }
 local opt = vim.opt
 opt.ambiwidth = "double"
 opt.autoindent = true
@@ -58,7 +46,6 @@ opt.shell = zsh
 opt.shiftround = true
 opt.shiftwidth = 4
 opt.shortmess:append "I"
-opt.showbreak = "↪"
 opt.showcmd = true
 opt.showmatch = true
 opt.smartcase = true

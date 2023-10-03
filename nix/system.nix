@@ -49,7 +49,7 @@
       };
       cpu-throttling = {
         enable = true;
-        description = "Set temp offset to 3°C, so the new trip point is 97°C";
+        description = "Set temp offset to 3℃, so the new trip point is 97℃";
         documentation = [
           "https://wiki.archlinux.org/index.php/Lenovo_ThinkPad_X1_Carbon_(Gen_6)#Power_management.2FThrottling_issues"
         ];
@@ -63,7 +63,7 @@
     };
     timers.cpu-throttling = {
       enable = true;
-      description = "Set cpu throttling threshold to 97°C";
+      description = "Set cpu throttling threshold to 97℃";
       documentation = [
         "https://wiki.archlinux.org/index.php/Lenovo_ThinkPad_X1_Carbon_(Gen_6)#Power_management.2FThrottling_issues"
       ];

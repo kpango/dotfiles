@@ -398,8 +398,9 @@ pull:
 perm:
 	sudo chmod -R 755 $(ROOTDIR)/*
 	sudo chmod -R 755 $(ROOTDIR)/.*
-	sudo chown -R kpango:users $(ROOTDIR)/*
-	sudo chown -R kpango:users $(ROOTDIR)/.*
+	sudo chown -R $(USER):$(GROUP_ID) $(ROOTDIR)/*
+	sudo chown -R $(USER):$(GROUP_ID) $(ROOTDIR)/.*
+	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f -print | xargs -I {} nkf -Lu -w --overwrite {}
 
 git_push:
 	git add -A
