@@ -32,7 +32,16 @@ if type tmux >/dev/null 2>&1; then
             echo "attaching tmux session $SESSION_NAME at $TMUX_TMPDIR"
             TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 attach-session -t "$SESSION_NAME" && echo "attached tmux session $SESSION_NAME"
         fi
-        exit
+        case ${OSTYPE} in
+        darwin*)
+                tmux unbind C-b
+                tmux set -g prefix C-g
+                ;;
+        linux*)
+                exit
+                ;;
+        esac
+
     fi
 fi
 
@@ -708,6 +717,15 @@ if [ -z $ZSH_LOADED ]; then
         if [ -f /.dockerenv ]; then
             tmux unbind C-b
             tmux set -g prefix C-w
+        else
+            case ${OSTYPE} in
+            darwin*)
+                    tmux unbind C-b
+                    tmux set -g prefix C-g
+                    ;;
+            linux*)
+                    ;;
+            esac
         fi
     fi
     alias tedit="$EDITOR $HOME/.tmux.conf"
@@ -1211,7 +1229,11 @@ if [ -z $ZSH_LOADED ]; then
 
         if type reboot >/dev/null 2>&1; then
             reboot() {
-                archup
+                if [ $# -eq 1 ]; then
+                    archup keyref
+                else
+                    archup
+                fi
                 fup
                 archback
                 sudo reboot && exit
