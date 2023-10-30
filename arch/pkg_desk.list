@@ -13,6 +13,7 @@ avr-libc
 avrdude
 axel
 bash-language-server
+bolt
 ccache
 chrony
 clang
@@ -25,6 +26,7 @@ docker
 dosfstools
 ethtool
 fakeroot
+fastfetch
 fcitx5
 fcitx5-configtool
 fcitx5-mozc
