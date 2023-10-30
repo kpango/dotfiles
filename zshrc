@@ -1,4 +1,11 @@
-#!/usr/bin/zsh
+#!/usr/bin/env zsh
+
+if [ -z $CPUTYPE ]; then
+    CPUTYPE=$(uname -m)
+fi
+if [[ ${OSTYPE} == "darwin"* && ${CPUTYPE} == "arm"* ]]; then
+    alias tmux=/opt/homebrew/bin/tmux
+fi
 
 if type tmux >/dev/null 2>&1; then
     if [ -z $TMUX ]; then
@@ -13,8 +20,12 @@ if type tmux >/dev/null 2>&1; then
             TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/ssh-from-$SSH_IP"
             echo "starting tmux for ssh $SSH_TTY from $SSH_CLIENT"
         fi
-        mkdir -p $TMUX_TMPDIR
         export TMUX_TMPDIR=$TMUX_TMPDIR
+        if mkdir -p $TMUX_TMPDIR; then
+            echo "Successfully created tmux temp directory."
+        else
+            echo "Failed to create tmux temp directory."
+        fi
         TMUX_SESSIONS=$(tmux ls 2>/dev/null)  # Check for existing tmux sessions on the specified socket directory
         if [ $? -ne 0 ]; then  # Check for error from tmux command
             if [ -f /.dockerenv ]; then
@@ -22,7 +33,11 @@ if type tmux >/dev/null 2>&1; then
                 sudo chown -R $USER:$group /var/run/docker.sock
             fi
             echo "creating new tmux session at $TMUX_TMPDIR"
-            TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 new-session -n$USER -s$USER@$HOST && echo "created new tmux session"
+            if TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 new-session -n$USER -s$USER@$HOST; then
+                echo "created new tmux session for $TMUX_TMPDIR:$USER@$HOST"
+            else
+                echo "failed to create new tmux session for $TMUX_TMPDIR:$USER@$HOST"
+            fi
         else
             SESSION_NAME="$(tmux ls | cut -d: -f1 | head -n 1)"  # get the name of a session
             if [ -z "$SESSION_NAME" ]; then
@@ -30,18 +45,17 @@ if type tmux >/dev/null 2>&1; then
                 exit 1
             fi
             echo "attaching tmux session $SESSION_NAME at $TMUX_TMPDIR"
-            TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 attach-session -t "$SESSION_NAME" && echo "attached tmux session $SESSION_NAME"
+            if TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 attach-session -t "$SESSION_NAME"; then
+                echo "attached tmux session $SESSION_NAME"
+            else
+                echo "failed to attach tmux session for $SESSION_NAME"
+            fi
         fi
-        case ${OSTYPE} in
-        darwin*)
-                tmux unbind C-b
-                tmux set -g prefix C-g
-                ;;
-        linux*)
-                exit
-                ;;
-        esac
-
+        if [[ ${OSTYPE} == "darwin"* ]]; then
+            tmux unbind C-b
+            tmux set -g prefix C-g
+        fi
+        exit
     fi
 fi
 
