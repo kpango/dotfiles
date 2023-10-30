@@ -215,7 +215,7 @@ if [ -z $DOTENV_LOADED ]; then
         export PATH="$(which deno):$PATH"
     fi
 
-    if [[ ${OSTYPE} == "darwin*" && ${ARCH} == "arm64" ]]; then
+    if [[ ${OSTYPE} == "darwin"* && ${CPUTYPE} == "arm"* ]]; then
         export PATH="/opt/homebrew/bin:$PATH"
     fi
 
