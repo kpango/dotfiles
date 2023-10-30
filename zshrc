@@ -215,6 +215,10 @@ if [ -z $DOTENV_LOADED ]; then
         export PATH="$(which deno):$PATH"
     fi
 
+    if [[ ${OSTYPE} == "darwin*" && ${ARCH} == "arm64" ]]; then
+        export PATH="/opt/homebrew/bin:$PATH"
+    fi
+
     # for teleplesence disabling send analytics data anonymously
     export SCOUT_DISABLE=1
 
