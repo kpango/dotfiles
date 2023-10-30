@@ -16,7 +16,7 @@ font:
   #   x: 0
   #   y: 7
 shell:
-  program: $(which zsh)
+  program: /opt/homebrew/bin/zsh
   args:
     - --login
 window:
