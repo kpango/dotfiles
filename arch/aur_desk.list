@@ -12,6 +12,7 @@ gopreload-git
 kubectl-bin
 milcheck
 mkinitcpio-firmware
+multibg-sway
 netrc
 ngrok
 noto-fonts-emoji-git
