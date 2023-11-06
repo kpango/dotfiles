@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Kubernetes status line for tmux
 # Displays current context and namespace
 
-# Copyright 2018 Jon Mosco
+# Copyright 2023 Jon Mosco
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,16 +19,39 @@
 
 # Default values for the plugin
 KUBE_TMUX_BINARY="${KUBE_TMUX_BINARY:-kubectl}"
+KUBE_TMUX_SYMBOL_ENABLE="${KUBE_TMUX_SYMBOL_ENABLE:-true}"
+KUBE_TMUX_SYMBOL_DEFAULT="${KUBE_TMUX_SYMBOL_DEFAULT:-\u2388 }"
+KUBE_TMUX_SYMBOL_USE_IMG="${KUBE_TMUX_SYMBOL_USE_IMG:-false}"
 KUBE_TMUX_NS_ENABLE="${KUBE_TMUX_NS_ENABLE:-true}"
 KUBE_TMUX_DIVIDER="${KUBE_TMUX_DIVIDER-:}"
+KUBE_TMUX_SYMBOL_COLOR="${KUBE_TMUX_SYMBOL_COLOR-blue}"
 KUBE_TMUX_CTX_COLOR="${KUBE_TMUX_CTX_COLOR-red}"
 KUBE_TMUX_NS_COLOR="${KUBE_TMUX_NS_COLOR-cyan}"
 KUBE_TMUX_KUBECONFIG_CACHE="${KUBECONFIG}"
 KUBE_TMUX_UNAME=$(uname)
 KUBE_TMUX_LAST_TIME=0
 
+KUBE_TMUX_CLUSTER_FUNCTION="${KUBE_TMUX_CLUSTER_FUNCTION}"
+KUBE_TMUX_NAMESPACE_FUNCTION="${KUBE_TMUX_NAMESPACE_FUNCTION}"
+
 _kube_tmux_binary_check() {
   command -v $1 >/dev/null
+}
+
+_kube_tmux_symbol() {
+  if ((BASH_VERSINFO[0] >= 4)) && [[ $'\u2388 ' != "\\u2388 " ]]; then
+    KUBE_TMUX_SYMBOL=$'\u2388 '
+    KUBE_TMUX_SYMBOL_IMG=$'\u2638 '
+  else
+    KUBE_TMUX_SYMBOL=$'\xE2\x8E\x88 '
+    KUBE_TMUX_SYMBOL_IMG=$'\xE2\x98\xB8 '
+  fi
+
+  if [[ "${KUBE_TMUX_SYMBOL_USE_IMG}" == true ]]; then
+    KUBE_TMUX_SYMBOL="${KUBE_TMUX_SYMBOL_IMG}"
+  fi
+
+  echo "${KUBE_TMUX_SYMBOL}"
 }
 
 _kube_tmux_split() {
@@ -105,12 +128,27 @@ _kube_tmux_get_context_ns() {
     # Set namespace to 'default' if it is not defined
     KUBE_TMUX_NAMESPACE="${KUBE_TMUX_NAMESPACE:-default}"
   fi
+  _kube_tmux_format_context_ns
+}
+
+_kube_tmux_format_context_ns() {
+  if [[ -n "${KUBE_TMUX_CLUSTER_FUNCTION}" ]]; then
+    KUBE_TMUX_CONTEXT=$($KUBE_TMUX_CLUSTER_FUNCTION $KUBE_TMUX_CONTEXT)
+  fi
+  if [[ -n "${KUBE_TMUX_NAMESPACE_FUNCTION}" ]]; then
+    KUBE_TMUX_CONTEXT=$($KUBE_TMUX_NAMESPACE_FUNCTION $KUBE_TMUX_NAMESPACE)
+  fi
 }
 
 kube_tmux() {
   _kube_tmux_update_cache
 
   local KUBE_TMUX
+
+  # Symbol
+  if [[ "${KUBE_TMUX_SYMBOL_ENABLE}" == true ]]; then
+    KUBE_TMUX+="#[fg=blue]$(_kube_tmux_symbol)#[fg=colour${1}]"
+  fi
 
   # Context
   KUBE_TMUX+="#[fg=${2}]${KUBE_TMUX_CONTEXT}"
