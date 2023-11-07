@@ -7,7 +7,6 @@ ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango
 LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
-
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
 ENV XARCH x86_64
@@ -155,7 +154,6 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && apt purge -y nodejs npm \
     && apt -y autoremove
-
 
 FROM env-base AS protoc
 WORKDIR /tmp

@@ -198,7 +198,10 @@ RUN cargo +nightly install --force --no-default-features \
 #     && cargo install watchexec-cli
 
 FROM rust-base AS xh
-RUN cargo +nightly install --force --locked --all-features \
+# RUN cargo +nightly install --force --locked --all-features \
+RUN rustup update stable \
+    && rustup default stable \
+    && cargo install --force --locked --all-features \
     xh
 
 FROM scratch AS rust

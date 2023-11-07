@@ -272,16 +272,19 @@ prod: \
 
 docker_build:
 	# sudo docker buildx build --platform linux/amd64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
-	# sudo docker buildx build --network=host --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) --platform linux/amd64,linux/arm64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
+	# sudo docker buildx build --network=host --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
 	GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
-	DOCKER_BUILDKIT=1 docker build --network=host \
+	DOCKER_BUILDKIT=1 sudo docker buildx build \
 	  --secret id=gat,env=GITHUB_ACCESS_TOKEN \
 	  --build-arg USER_ID="$(USER_ID)" \
 	  --build-arg GROUP_ID="$(GROUP_ID)" \
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
 	  --build-arg WHOAMI="$(USER)" \
 	  --build-arg EMAIL="$(EMAIL)" \
+	  --platform linux/amd64,linux/arm64 \
+	  --push \
 	  -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
+	  # --network=host \
 
 docker_push:
 	docker push $(IMAGE_NAME):latest

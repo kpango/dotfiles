@@ -348,9 +348,8 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${NAME}"
 
 FROM kube-base AS telepresence
-RUN curl -fL https://app.getambassador.io/download/tel2/linux/amd64/latest/telepresence -o "${BIN_PATH}/telepresence" \
+RUN curl -fsSL "https://app.getambassador.io/download/tel2/${OS}/${ARCH}/nightly/telepresence" -o ${BINDIR}/telepresence \
     && chmod a+x "${BIN_PATH}/telepresence"
-    # && upx -9 "${BIN_PATH}/telepresence"
 
 FROM kube-base AS pixie
 RUN set -x; cd "$(mktemp -d)" \

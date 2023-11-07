@@ -1,10 +1,16 @@
 # syntax = docker/dockerfile:latest
 FROM --platform=$BUILDPLATFORM ubuntu:devel AS base
 
+ARG TARGETOS
+ARG TARGETARCH
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango
 LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
+ENV OS=${TARGETOS}
+ENV ARCH=${TARGETARCH}
+ENV XARCH x86_64
+ENV AARCH aarch64
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
 ENV LANG en_US.UTF-8
@@ -54,22 +60,24 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean \
         zsh \
     && update-alternatives --set cc $(which clang) \
     && update-alternatives --set c++ $(which clang++) \
-    && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas.so  \
-       libblas.so-x86_64-linux-gnu      /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 \
-    && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas.so.3  \
-       libblas.so.3-x86_64-linux-gnu    /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 \
-    && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas64.so  \
-       libblas64.so-x86_64-linux-gnu      /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 \
-    && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/libblas64.so.3  \
-       libblas64.so.3-x86_64-linux-gnu    /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 \
-    && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack.so  \
-       liblapack.so-x86_64-linux-gnu      /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 \
-    && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack.so.3  \
-       liblapack.so.3-x86_64-linux-gnu    /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 \
-    && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack64.so  \
-       liblapack64.so-x86_64-linux-gnu      /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 \
-    && update-alternatives --install /usr/lib/x86_64-linux-gnu/mkl/liblapack64.so.3  \
-       liblapack64.so.3-x86_64-linux-gnu    /usr/lib/x86_64-linux-gnu/libmkl_rt.so 150 \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
+    && update-alternatives --install /usr/lib/${ARCH}-linux-gnu/mkl/libblas.so  \
+       libblas.so-${ARCH}-linux-gnu      /usr/lib/${ARCH}-linux-gnu/libmkl_rt.so 150 \
+    && update-alternatives --install /usr/lib/${ARCH}-linux-gnu/mkl/libblas.so.3  \
+       libblas.so.3-${ARCH}-linux-gnu    /usr/lib/${ARCH}-linux-gnu/libmkl_rt.so 150 \
+    && update-alternatives --install /usr/lib/${ARCH}-linux-gnu/mkl/libblas64.so  \
+       libblas64.so-${ARCH}-linux-gnu      /usr/lib/${ARCH}-linux-gnu/libmkl_rt.so 150 \
+    && update-alternatives --install /usr/lib/${ARCH}-linux-gnu/mkl/libblas64.so.3  \
+       libblas64.so.3-${ARCH}-linux-gnu    /usr/lib/${ARCH}-linux-gnu/libmkl_rt.so 150 \
+    && update-alternatives --install /usr/lib/${ARCH}-linux-gnu/mkl/liblapack.so  \
+       liblapack.so-${ARCH}-linux-gnu      /usr/lib/${ARCH}-linux-gnu/libmkl_rt.so 150 \
+    && update-alternatives --install /usr/lib/${ARCH}-linux-gnu/mkl/liblapack.so.3  \
+       liblapack.so.3-${ARCH}-linux-gnu    /usr/lib/${ARCH}-linux-gnu/libmkl_rt.so 150 \
+    && update-alternatives --install /usr/lib/${ARCH}-linux-gnu/mkl/liblapack64.so  \
+       liblapack64.so-${ARCH}-linux-gnu      /usr/lib/${ARCH}-linux-gnu/libmkl_rt.so 150 \
+    && update-alternatives --install /usr/lib/${ARCH}-linux-gnu/mkl/liblapack64.so.3  \
+       liblapack64.so.3-${ARCH}-linux-gnu    /usr/lib/${ARCH}-linux-gnu/libmkl_rt.so 150 \
     && apt clean -y \
     && apt autoclean -y \
     && rm -rf /var/lib/apt/lists/* \
