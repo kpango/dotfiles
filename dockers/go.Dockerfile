@@ -557,7 +557,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && REPO="sqs/${BIN_NAME}" \
     && go install  \
     --ldflags "-s -w" --trimpath \
-    "sourcegraph.com/${REPO}@latest" \
+    "github.com/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
