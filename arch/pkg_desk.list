@@ -47,6 +47,7 @@ imagemagick
 inetutils
 iptables-nft
 kanshi
+kubectl
 kubectx
 less
 libnm
