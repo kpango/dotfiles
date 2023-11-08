@@ -338,15 +338,15 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM kube-base AS wasme
-RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
-    && NAME="wasme" \
-    && REPO="solo-io/wasm" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
-    && BIN_NAME="${NAME}-${OS}-${ARCH}" \
-    && curl -fsSLo "${BIN_PATH}/${NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}" \
-    && chmod a+x "${BIN_PATH}/${NAME}" \
-    && upx -9 "${BIN_PATH}/${NAME}"
+# FROM --platform=$TARGETPLATFORM kube-base AS wasme
+# RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+#     && NAME="wasme" \
+#     && REPO="solo-io/wasm" \
+#     && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+#     && BIN_NAME="${NAME}-${OS}-${ARCH}" \
+#     && curl -fsSLo "${BIN_PATH}/${NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}" \
+#     && chmod a+x "${BIN_PATH}/${NAME}" \
+#     && upx -9 "${BIN_PATH}/${NAME}"
 
 FROM --platform=$TARGETPLATFORM kube-base AS telepresence
 RUN curl -fsSL "https://app.getambassador.io/download/tel2/${OS}/${ARCH}/nightly/telepresence" -o ${BINDIR}/telepresence \
@@ -490,4 +490,4 @@ COPY --from=popeye ${BIN_PATH}/popeye ${K8S_PATH}/popeye
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${K8S_PATH}/telepresence
-COPY --from=wasme ${BIN_PATH}/wasme ${K8S_PATH}/wasme
+# COPY --from=wasme ${BIN_PATH}/wasme ${K8S_PATH}/wasme
