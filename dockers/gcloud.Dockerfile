@@ -1,4 +1,5 @@
-FROM google/cloud-sdk:latest AS gcloud
+# syntax = docker/dockerfile:latest
+FROM --platform=$TARGETPLATFORM google/cloud-sdk:latest AS gcloud
 
 RUN gcloud config set core/disable_usage_reporting true \
     && gcloud config set component_manager/disable_update_check true \

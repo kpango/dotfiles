@@ -1,20 +1,20 @@
-FROM kpango/go:latest AS go
+FROM --platform=$TARGETPLATFORM kpango/go:latest AS go
 
-FROM kpango/rust:latest AS rust
+FROM --platform=$TARGETPLATFORM kpango/rust:latest AS rust
 
-FROM kpango/nim:latest AS nim
+FROM --platform=$TARGETPLATFORM kpango/nim:latest AS nim
 
-FROM kpango/dart:latest AS dart
+FROM --platform=$TARGETPLATFORM kpango/dart:latest AS dart
 
-FROM kpango/docker:latest AS docker
+FROM --platform=$TARGETPLATFORM kpango/docker:latest AS docker
 
-FROM kpango/kube:latest AS kube
+FROM --platform=$TARGETPLATFORM kpango/kube:latest AS kube
 
-FROM kpango/gcloud:latest AS gcloud
+FROM --platform=$TARGETPLATFORM kpango/gcloud:latest AS gcloud
 
-FROM kpango/env:latest AS env
+FROM --platform=$TARGETPLATFORM kpango/env:latest AS env
 
-FROM env
+FROM --platform=$TARGETPLATFORM env
 
 
 ARG EMAIL=kpango@vdaas.org

@@ -1,1 +1,2 @@
-FROM nimlang/nim:latest AS nim
+# syntax = docker/dockerfile:latest
+FROM --platform=$TARGETPLATFORM nimlang/nim:latest AS nim

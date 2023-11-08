@@ -1,4 +1,5 @@
-FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS kube-base
+# syntax = docker/dockerfile:latest
+FROM --platform=$TARGETPLATFORM kpango/dev-base:latest AS kube-base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -17,7 +18,7 @@ ENV BIN_PATH ${LOCAL}/bin
 
 RUN mkdir -p "${BIN_PATH}"
 
-FROM kube-base AS kubectl
+FROM --platform=$TARGETPLATFORM kube-base AS kubectl
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl" \
     && VERSION="$(curl -s ${GOOGLE}/kubernetes-release/release/stable.txt)" \
@@ -28,14 +29,14 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}" \
     && "${BIN_PATH}/${BIN_NAME}" version --client
 
-FROM kube-base AS helm
+FROM --platform=$TARGETPLATFORM kube-base AS helm
 RUN set -x; cd "$(mktemp -d)" \
     && curl "${RAWGITHUB}/helm/helm/main/scripts/get-helm-3" | bash \
     && BIN_NAME="helm" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubefwd
+FROM --platform=$TARGETPLATFORM kube-base AS kubefwd
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubefwd" \
     && REPO="txn2/${BIN_NAME}" \
@@ -49,7 +50,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubectx
+FROM --platform=$TARGETPLATFORM kube-base AS kubectx
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectx" \
     && REPO="ahmetb/${BIN_NAME}" \
@@ -63,7 +64,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubens
+FROM --platform=$TARGETPLATFORM kube-base AS kubens
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectx" \
     && REPO="ahmetb/${BIN_NAME}" \
@@ -78,7 +79,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS krew
+FROM --platform=$TARGETPLATFORM kube-base AS krew
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="krew" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
@@ -92,7 +93,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && "/root/.krew/bin/${BIN_NAME}" update \
     && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS check-ownerreferences
+FROM --platform=$TARGETPLATFORM kube-base AS check-ownerreferences
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-check-ownerreferences" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
@@ -106,7 +107,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubebox
+FROM --platform=$TARGETPLATFORM kube-base AS kubebox
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubebox" \
     && REPO="astefanutti/${BIN_NAME}" \
@@ -114,7 +115,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-${OS}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS stern
+FROM --platform=$TARGETPLATFORM kube-base AS stern
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="stern" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
@@ -128,7 +129,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubebuilder
+FROM --platform=$TARGETPLATFORM kube-base AS kubebuilder
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubebuilder" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
@@ -141,7 +142,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubectl-fzf
+FROM --platform=$TARGETPLATFORM kube-base AS kubectl-fzf
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="kubectl-fzf" \
     && REPO="bonnefoa/${NAME}" \
@@ -157,7 +158,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS k9s
+FROM --platform=$TARGETPLATFORM kube-base AS k9s
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="k9s" \
     && REPO="derailed/${BIN_NAME}" \
@@ -168,7 +169,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kube-profefe-base
+FROM --platform=$TARGETPLATFORM kube-base AS kube-profefe-base
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kube-profefe" \
     && REPO="profefe/${BIN_NAME}" \
@@ -182,17 +183,17 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-profefe" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-profefe-base AS kprofefe
+FROM --platform=$TARGETPLATFORM kube-profefe-base AS kprofefe
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kprofefe" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-profefe-base AS kubectl-profefe
+FROM --platform=$TARGETPLATFORM kube-profefe-base AS kubectl-profefe
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-profefe" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS conftest
+FROM --platform=$TARGETPLATFORM kube-base AS conftest
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="conftest" \
     && REPO="open-policy-agent/${BIN_NAME}" \
@@ -203,7 +204,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubectl-tree
+FROM --platform=$TARGETPLATFORM kube-base AS kubectl-tree
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-tree" \
     && REPO="ahmetb/${BIN_NAME}" \
@@ -214,14 +215,14 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS linkerd
+FROM --platform=$TARGETPLATFORM kube-base AS linkerd
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="linkerd" \
     && curl -sL https://run.linkerd.io/install | sh \
     && mv ${HOME}/.linkerd2/bin/${BIN_NAME}-* "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS skaffold
+FROM --platform=$TARGETPLATFORM kube-base AS skaffold
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="skaffold" \
     && REPO="GoogleContainerTools/${BIN_NAME}" \
@@ -230,7 +231,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubeval
+FROM --platform=$TARGETPLATFORM kube-base AS kubeval
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubeval" \
     && REPO="instrumenta/${BIN_NAME}" \
@@ -241,7 +242,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kube-linter
+FROM --platform=$TARGETPLATFORM kube-base AS kube-linter
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kube-linter" \
     && REPO="stackrox/${BIN_NAME}" \
@@ -252,7 +253,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS helm-docs
+FROM --platform=$TARGETPLATFORM kube-base AS helm-docs
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="helm-docs" \
     && REPO="norwoodj/${BIN_NAME}" \
@@ -264,7 +265,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubectl-gadget
+FROM --platform=$TARGETPLATFORM kube-base AS kubectl-gadget
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="inspektor-gadget" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
@@ -276,7 +277,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kdash
+FROM --platform=$TARGETPLATFORM kube-base AS kdash
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kdash" \
     && REPO="${BIN_NAME}-rs/${BIN_NAME}" \
@@ -286,7 +287,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubectl-rolesum
+FROM --platform=$TARGETPLATFORM kube-base AS kubectl-rolesum
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-rolesum" \
     && REPO="Ladicle/${BIN_NAME}" \
@@ -297,7 +298,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kubeletctl
+FROM --platform=$TARGETPLATFORM kube-base AS kubeletctl
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubeletctl" \
     && REPO="cyberark/${BIN_NAME}" \
@@ -308,28 +309,28 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS istio
+FROM --platform=$TARGETPLATFORM kube-base AS istio
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="istioctl" \
     && curl -L https://istio.io/downloadIstio | sh - \
     && mv "$(ls | grep istio)/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kpt
+FROM --platform=$TARGETPLATFORM kube-base AS kpt
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kpt" \
     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-dev/latest/${OS}_${ARCH}/${BIN_NAME}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS k3d
+FROM --platform=$TARGETPLATFORM kube-base AS k3d
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="k3d" \
     && REPO="rancher/${BIN_NAME}" \
     && wget -q -O - "${RAWGITHUB}/${REPO}/main/install.sh" | bash \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS kustomize
+FROM --platform=$TARGETPLATFORM kube-base AS kustomize
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kustomize" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
@@ -337,7 +338,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-base AS wasme
+FROM --platform=$TARGETPLATFORM kube-base AS wasme
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="wasme" \
     && REPO="solo-io/wasm" \
@@ -347,19 +348,19 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${NAME}" \
     && upx -9 "${BIN_PATH}/${NAME}"
 
-FROM kube-base AS telepresence
+FROM --platform=$TARGETPLATFORM kube-base AS telepresence
 RUN curl -fsSL "https://app.getambassador.io/download/tel2/${OS}/${ARCH}/nightly/telepresence" -o ${BINDIR}/telepresence \
     && chmod a+x "${BIN_PATH}/telepresence"
 
-FROM kube-base AS pixie
+FROM --platform=$TARGETPLATFORM kube-base AS pixie
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="pixie" \
     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-prod-artifacts/cli/latest/cli_${OS}_${ARCH}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kpango/go:latest AS golang
-FROM kube-base AS kube-golang-base
+FROM --platform=$TARGETPLATFORM kpango/go:latest AS golang
+FROM --platform=$TARGETPLATFORM kube-base AS kube-golang-base
 COPY --from=golang /opt/go /usr/local/go
 COPY --from=golang /go /go
 ENV GOPATH /go
@@ -367,7 +368,7 @@ ENV GOROOT /usr/local/go
 ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
 COPY go.env $GOROOT/go.env
 
-FROM kube-golang-base AS helmfile
+FROM --platform=$TARGETPLATFORM kube-golang-base AS helmfile
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="helmfile" \
     && REPO="roboll/${BIN_NAME}" \
@@ -377,7 +378,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-golang-base AS kubecolor
+FROM --platform=$TARGETPLATFORM kube-golang-base AS kubecolor
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubecolor" \
     && REPO="hidetatz/${BIN_NAME}" \
@@ -387,7 +388,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-golang-base AS kubeconform
+FROM --platform=$TARGETPLATFORM kube-golang-base AS kubeconform
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubeconform" \
     && REPO="yannh/${BIN_NAME}" \
@@ -397,7 +398,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-golang-base AS popeye
+FROM --platform=$TARGETPLATFORM kube-golang-base AS popeye
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="popeye" \
     && REPO="derailed/${BIN_NAME}" \
@@ -407,7 +408,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-golang-base AS kubectl-trace
+FROM --platform=$TARGETPLATFORM kube-golang-base AS kubectl-trace
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-trace" \
     && REPO="iovisor/${BIN_NAME}" \
@@ -417,7 +418,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-golang-base AS k8sviz
+FROM --platform=$TARGETPLATFORM kube-golang-base AS k8sviz
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="k8sviz" \
     && REPO="mkimuram/${BIN_NAME}" \
@@ -427,7 +428,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM kube-golang-base AS kind
+FROM --platform=$TARGETPLATFORM kube-golang-base AS kind
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kind" \
     && REPO="sigs.k8s.io/${BIN_NAME}" \
@@ -437,7 +438,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM scratch AS kube
+FROM --platform=$TARGETPLATFORM scratch AS kube
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango
 LABEL maintainer="${WHOAMI} <${EMAIL}>"

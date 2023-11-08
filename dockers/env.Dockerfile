@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$BUILDPLATFORM kpango/dev-base:latest AS env-base
+FROM --platform=$TARGETPLATFORM kpango/dev-base:latest AS env-base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -155,7 +155,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && apt purge -y nodejs npm \
     && apt -y autoremove
 
-FROM env-base AS protoc
+FROM --platform=$TARGETPLATFORM env-base AS protoc
 WORKDIR /tmp
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO_NAME="protobuf" \
@@ -170,7 +170,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && rm -f /tmp/protoc.zip \
     && rm -rf /tmp/*
 
-FROM env-base AS ngt
+FROM --platform=$TARGETPLATFORM env-base AS ngt
 WORKDIR /tmp
 ENV NGT_VERSION main
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
@@ -188,7 +188,7 @@ RUN echo $(ldconfig) \
     && cd /tmp \
     && rm -rf /tmp/*
 
-FROM env-base AS tensorflow
+FROM --platform=$TARGETPLATFORM env-base AS tensorflow
 WORKDIR /tmp
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO_NAME="tensorflow" \
@@ -204,7 +204,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
     && rm -rf /tmp/*
 
-FROM env-base AS env
+FROM --platform=$TARGETPLATFORM env-base AS env
 
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango
