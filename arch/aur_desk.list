@@ -3,6 +3,7 @@ docker-credential-pass-git
 downgrade
 duf-git
 fanctl-git
+fcitx5-mozc-ut
 fcitx5-skin-arc
 ghq-bin
 google-chrome-beta
@@ -11,6 +12,7 @@ google-cloud-cli-gke-gcloud-auth-plugin
 gopreload-git
 milcheck
 mkinitcpio-firmware
+mozc-ut
 netrc
 ngrok
 noto-fonts-emoji-git
