@@ -163,10 +163,8 @@ mac_link: \
 		$(HOME)/.config/alacritty/alacritty.yml \
 		$(HOME)/.docker/config.json \
 		$(HOME)/.docker/daemon.json \
-		$(HOME)/.gitconfig \
 		/etc/docker/config.json \
 		/etc/docker/daemon.json
-	cat $(ROOTDIR)/gitconfig | sed -e "s/gpgsign = true/gpgsign = false/g" > $(HOME)/.gitconfig
 	ln -sfv $(ROOTDIR)/macos/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
 	ln -sfv $(ROOTDIR)/macos/docker_config.json $(HOME)/.docker/config.json
 	ln -sfv $(ROOTDIR)/macos/docker_daemon.json $(HOME)/.docker/daemon.json
