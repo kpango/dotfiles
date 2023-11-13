@@ -6,6 +6,7 @@ ARG TARGETARCH
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
+ENV AARCH aarch64
 ENV XARCH x86_64
 ENV GITHUB https://github.com
 ENV API_GITHUB https://api.github.com/repos
@@ -104,6 +105,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="${ORG}-${NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${NAME}-${OS}-${ARCH}" \
     && mv "${ORG}-${NAME}-${OS}-${ARCH}" ${BIN_PATH}/${BIN_NAME} \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \

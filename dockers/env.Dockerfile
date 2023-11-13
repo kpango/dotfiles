@@ -9,6 +9,7 @@ LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
+ENV AARCH aarch_64
 ENV XARCH x86_64
 ENV GITHUBCOM github.com
 ENV GITHUB https://${GITHUBCOM}
@@ -163,6 +164,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="protocolbuffers/${REPO_NAME}" \
     && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
     && ZIP_NAME="${BIN_NAME}-${VERSION}-${OS}-${ARCH}" \
     && curl -fsSL "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ZIP_NAME}.zip" -o "/tmp/${BIN_NAME}.zip" \
     && unzip -o "/tmp/${BIN_NAME}.zip" -d /usr/local "bin/${BIN_NAME}" \
@@ -188,21 +190,21 @@ RUN echo $(ldconfig) \
     && cd /tmp \
     && rm -rf /tmp/*
 
-FROM --platform=$TARGETPLATFORM env-base AS tensorflow
-WORKDIR /tmp
-RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
-    && REPO_NAME="tensorflow" \
-    && BIN_NAME="${REPO_NAME}" \
-    && REPO="${REPO_NAME}/${BIN_NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
-    && BIN_NAME="lib${REPO_NAME}" \
-    && REPO="${REPO_NAME}/${BIN_NAME}" \
-    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-    && URL="${GOOGLE}/${REPO}/${BIN_NAME}-cpu-${OS}-${ARCH}-${VERSION}.tar.gz" \
-    && echo "${URL}" \
-    && curl -fsSLo "/tmp/${BIN_NAME}.tar.gz" "${URL}" \
-    && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
-    && rm -rf /tmp/*
+# FROM --platform=$TARGETPLATFORM env-base AS tensorflow
+# WORKDIR /tmp
+# RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+#     && REPO_NAME="tensorflow" \
+#     && BIN_NAME="${REPO_NAME}" \
+#     && REPO="${REPO_NAME}/${BIN_NAME}" \
+#     && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+#     && BIN_NAME="lib${REPO_NAME}" \
+#     && REPO="${REPO_NAME}/${BIN_NAME}" \
+#     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+#     && URL="${GOOGLE}/${REPO}/${BIN_NAME}-cpu-${OS}-${ARCH}-${VERSION}.tar.gz" \
+#     && echo "${URL}" \
+#     && curl -fsSLo "/tmp/${BIN_NAME}.tar.gz" "${URL}" \
+#     && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
+#     && rm -rf /tmp/*
 
 FROM --platform=$TARGETPLATFORM env-base AS env
 
@@ -213,8 +215,8 @@ LABEL maintainer="${WHOAMI} <${EMAIL}>"
 COPY --from=ngt ${BIN_PATH}/ng* ${BIN_PATH}/
 COPY --from=ngt ${LOCAL}/include/NGT ${LOCAL}/include/NGT
 COPY --from=ngt ${LOCAL}/lib/libngt.* ${LOCAL}/lib/
-COPY --from=tensorflow ${LOCAL}/include/tensorflow ${LOCAL}/include/tensorflow
-COPY --from=tensorflow ${LOCAL}/lib/libtensorflow* ${LOCAL}/lib/
+# COPY --from=tensorflow ${LOCAL}/include/tensorflow ${LOCAL}/include/tensorflow
+# COPY --from=tensorflow ${LOCAL}/lib/libtensorflow* ${LOCAL}/lib/
 COPY --from=protoc ${BIN_PATH}/protoc ${BIN_PATH}/protoc
 COPY --from=protoc ${LOCAL}/include/google/protobuf ${LOCAL}/include/google/protobuf
 

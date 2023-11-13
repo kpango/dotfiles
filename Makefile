@@ -269,10 +269,9 @@ prod: \
 	prod_push
 
 docker_build:
-	# sudo docker buildx build --platform linux/amd64 --push -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
-	# sudo docker buildx build --network=host --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
 	GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
 	DOCKER_BUILDKIT=1 sudo docker buildx build \
+	  --no-cache \
 	  --secret id=gat,env=GITHUB_ACCESS_TOKEN \
 	  --build-arg USER_ID="$(USER_ID)" \
 	  --build-arg GROUP_ID="$(GROUP_ID)" \
