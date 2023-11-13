@@ -8,6 +8,9 @@ GROUP_IDS = $(eval GROUP_IDS := $(shell id -G $(USER)))$(GROUP_IDS)
 GITHUB_ACCESS_TOKEN = $(eval GITHUB_ACCESS_TOKEN := $(shell pass github.api.ro.token))$(GITHUB_ACCESS_TOKEN)
 EMAIL = kpango@vdaas.org
 
+DOCKER_BUILDER_NAME = "kpango-builder"
+DOCKER_BUILDER_DRIVER = "docker-container"
+
 echo:
 	@echo $(ROOTDIR)
 
@@ -258,10 +261,10 @@ bash: link
 
 build: \
 	login \
+	remove_buildx \
+	create_buildx \
 	build_base
-	# @xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_{} go docker rust dart k8s nim gcloud env base
 	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
-	# @make prod
 
 prod: \
 	login \
@@ -271,6 +274,9 @@ prod: \
 docker_build:
 	GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
 	DOCKER_BUILDKIT=1 sudo docker buildx build \
+	  --builder $(DOCKER_BUILDER_NAME) \
+	  --allow "network.host" \
+	  --sbom \
 	  --no-cache \
 	  --secret id=gat,env=GITHUB_ACCESS_TOKEN \
 	  --build-arg USER_ID="$(USER_ID)" \
@@ -279,12 +285,29 @@ docker_build:
 	  --build-arg WHOAMI="$(USER)" \
 	  --build-arg EMAIL="$(EMAIL)" \
 	  --platform linux/amd64,linux/arm64 \
+	  --load \
 	  --push \
 	  -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
 	  # --network=host \
 
 docker_push:
 	docker push $(IMAGE_NAME):latest
+
+create_buildx:
+	docker run --privileged --rm tonistiigi/binfmt --install all
+	docker buildx create --use \
+		--name $(DOCKER_BUILDER_NAME) \
+		--driver $(DOCKER_BUILDER_DRIVER) \
+		--bootstrap \
+		--driver-opt=image=moby/buildkit:master \
+		--driver-opt=network=host \
+		--buildkitd-flags="--oci-worker-no-process-sandbox --oci-worker-bgc=false --oci-worker-memory 16g"
+	sudo docker buildx ls
+	sudo docker buildx inspect
+
+remove_buildx:
+	sudo docker buildx rm $(DOCKER_BUILDER_NAME)
+	sudo docker buildx prune
 
 prod_build:
 	@make DOCKERFILE="$(ROOTDIR)/Dockerfile" IMAGE_NAME="kpango/dev" docker_build
