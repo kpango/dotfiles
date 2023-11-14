@@ -137,7 +137,7 @@ RUN cargo install --force --no-default-features \
 #     --git https://github.com/nushell/nushell nu
 
 FROM --platform=$TARGETPLATFORM rust-base AS procs
-RUN cargo install --force --no-default-features \
+RUN cargo +nightly install --force --no-default-features \
     --git https://github.com/dalance/procs
 
 FROM --platform=$TARGETPLATFORM rust-base AS rg

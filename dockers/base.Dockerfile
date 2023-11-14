@@ -22,7 +22,9 @@ ENV CLANG_PATH /usr/local/clang
 ENV PATH ${PATH}:${CLANG_PATH}/bin
 ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
 
-RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
     && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends \
     && apt clean\

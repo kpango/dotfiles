@@ -56,7 +56,9 @@ RUN groupadd --non-unique --gid ${GROUP_ID} docker \
 
 WORKDIR /tmp
 
-RUN --mount=type=cache,target=${HOME}/.npm \
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt \
+    --mount=type=cache,target=${HOME}/.npm \
     echo '/lib\n\
 /lib64\n\
 /var/lib\n\
@@ -134,7 +136,10 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && npm install -g n
 
 FROM --platform=$TARGETPLATFORM env-base AS env-stage
-RUN --mount=type=cache,target=${HOME}/.npm \
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt \
+    --mount=type=cache,target=${HOME}/.npm \
+    --mount=type=cache,target=${HOME}/.cache/yarn \
     n latest \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \

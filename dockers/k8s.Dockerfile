@@ -360,9 +360,13 @@ RUN set -x; cd "$(mktemp -d)" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$TARGETPLATFORM kube-base AS kpt
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kpt" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-dev/latest/${OS}_${ARCH}/${BIN_NAME}" \
+    && REPO="GoogleContainerTools/${BIN_NAME}" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
+    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}/releases/v${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -397,12 +401,12 @@ FROM --platform=$TARGETPLATFORM kube-base AS telepresence
 RUN curl -fsSL "https://app.getambassador.io/download/tel2/${OS}/${ARCH}/nightly/telepresence" -o ${BINDIR}/telepresence \
     && chmod a+x "${BIN_PATH}/telepresence"
 
-FROM --platform=$TARGETPLATFORM kube-base AS pixie
-RUN set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="pixie" \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-prod-artifacts/cli/latest/cli_${OS}_${ARCH}" \
-    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+# FROM --platform=$TARGETPLATFORM kube-base AS pixie
+# RUN set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="pixie" \
+#     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-prod-artifacts/cli/latest/cli_${OS}_${ARCH}" \
+#     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
+#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$TARGETPLATFORM kpango/go:latest AS golang
 FROM --platform=$TARGETPLATFORM kube-base AS kube-golang-base
@@ -530,7 +534,7 @@ COPY --from=kubens ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
 COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize
 COPY --from=linkerd ${BIN_PATH}/linkerd ${K8S_PATH}/linkerd
-COPY --from=pixie ${BIN_PATH}/pixie ${K8S_PATH}/pixie
+# COPY --from=pixie ${BIN_PATH}/pixie ${K8S_PATH}/pixie
 COPY --from=popeye ${BIN_PATH}/popeye ${K8S_PATH}/popeye
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern

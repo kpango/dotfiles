@@ -146,9 +146,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
         "${BIN_PATH}/${BIN_NAME}" \
         "${BIN_PATH}/${BIN_NAME}-shim" \
         "${BIN_PATH}/${BIN_NAME}-shim-runc-v1" \
-        "${BIN_PATH}/${BIN_NAME}-shim-runc-v2" \
-        "${BIN_PATH}/${BIN_NAME}-stress" \
-        "${BIN_PATH}/ctr"
+        "${BIN_PATH}/${BIN_NAME}-shim-runc-v2"
 
 FROM --platform=$TARGETPLATFORM docker:rc-dind AS common-base
 
