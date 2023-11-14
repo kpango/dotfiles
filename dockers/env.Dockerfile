@@ -168,7 +168,9 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="protoc" \
     && REPO="protocolbuffers/${REPO_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
+    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && unset HEADER \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
@@ -204,7 +206,9 @@ RUN echo $(ldconfig) \
 #     && BIN_NAME="${REPO_NAME}" \
 #     && REPO="${REPO_NAME}/${BIN_NAME}" \
 #     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-#     && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+#     && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+#     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
+#     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
 #     && unset HEADER \
 #     && BIN_NAME="lib${REPO_NAME}" \
 #     && REPO="${REPO_NAME}/${BIN_NAME}" \
