@@ -99,7 +99,7 @@ RUN cargo +nightly install --force --no-default-features \
     erdtree
 
 FROM --platform=$TARGETPLATFORM rust-base AS eza
-RUN cargo +nightly install --force --no-default-features \
+RUN cargo install --force --no-default-features \
     --git https://github.com/eza-community/eza
 
 FROM --platform=$TARGETPLATFORM rust-base AS fd

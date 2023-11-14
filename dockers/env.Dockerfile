@@ -133,6 +133,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && chmod -R 755 ${HOME}/.* \
     && npm install -g n
 
+FROM --platform=$TARGETPLATFORM env-base AS env-stage
 RUN --mount=type=cache,target=${HOME}/.npm \
     n latest \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
@@ -146,11 +147,10 @@ RUN --mount=type=cache,target=${HOME}/.npm \
         markdownlint-cli \
         neovim \
         npm \
-        prettier \
-        resume-cli \
-        terminalizer \
         typescript \
         typescript-language-server \
+        terminalizer \
+        prettier \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && apt purge -y nodejs npm \
@@ -162,7 +162,9 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO_NAME="protobuf" \
     && BIN_NAME="protoc" \
     && REPO="protocolbuffers/${REPO_NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
     && ZIP_NAME="${BIN_NAME}-${VERSION}-${OS}-${ARCH}" \
@@ -178,12 +180,12 @@ ENV NGT_VERSION main
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS ${CFLAGS}
 ENV LDFLAGS="-L/etc/altenatives ${LDFLAGS}"
-# ENV CPPFLAGS="-I/usr/local/opt/llvm/include"
 RUN echo $(ldconfig) \
     && echo ${LDFLAGS} \
     && rm -rf /tmp/* /var/cache \
     && git clone -b ${NGT_VERSION} --depth 1 https://github.com/yahoojapan/NGT "/tmp/NGT-${NGT_VERSION}" \
     && cd "/tmp/NGT-${NGT_VERSION}" \
+    && if [ "${ARCH}" = "arm64" ] ; then  CFLAGS="" && CXXFLAGS="" ; fi \
     && CC=$(which gcc) CXX=$(which g++) cmake -DNGT_LARGE_DATASET=ON . \
     && CC=$(which gcc) CXX=$(which g++) make -j -C "/tmp/NGT-${NGT_VERSION}" \
     && CC=$(which gcc) CXX=$(which g++) make install -C "/tmp/NGT-${NGT_VERSION}" \
@@ -196,7 +198,9 @@ RUN echo $(ldconfig) \
 #     && REPO_NAME="tensorflow" \
 #     && BIN_NAME="${REPO_NAME}" \
 #     && REPO="${REPO_NAME}/${BIN_NAME}" \
-#     && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+#     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+#     && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+#     && unset HEADER \
 #     && BIN_NAME="lib${REPO_NAME}" \
 #     && REPO="${REPO_NAME}/${BIN_NAME}" \
 #     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
@@ -206,7 +210,7 @@ RUN echo $(ldconfig) \
 #     && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
 #     && rm -rf /tmp/*
 
-FROM --platform=$TARGETPLATFORM env-base AS env
+FROM --platform=$TARGETPLATFORM env-stage AS env
 
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango

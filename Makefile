@@ -275,7 +275,6 @@ docker_build:
 	GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
 	DOCKER_BUILDKIT=1 sudo docker buildx build \
 	  --builder $(DOCKER_BUILDER_NAME) \
-	  --no-cache \
 	  --network=host \
 	  --secret id=gat,env=GITHUB_ACCESS_TOKEN \
 	  --build-arg USER_ID="$(USER_ID)" \
@@ -287,6 +286,7 @@ docker_build:
 	  --allow "network.host" \
 	  --push \
 	  -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
+	  # --no-cache \
 
 docker_push:
 	docker push $(IMAGE_NAME):latest

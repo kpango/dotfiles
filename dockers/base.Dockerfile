@@ -31,7 +31,6 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean \
         /var/cache/* \
     && apt update -y \
     && apt upgrade -y \
-    && apt update -y \
     && apt install -y --no-install-recommends --fix-missing \
         axel \
         build-essential \

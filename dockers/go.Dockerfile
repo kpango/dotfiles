@@ -986,21 +986,23 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-# FROM --platform=$TARGETPLATFORM go-base AS tinygo
-# RUN --mount=type=cache,target="${GOPATH}/pkg" \
-#     --mount=type=cache,target="${HOME}/.cache/go-build" \
-#     --mount=type=tmpfs,target="${GOPATH}/src" \
-#     --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
-#     && BIN_NAME="tinygo" \
-#     && REPO="${BIN_NAME}-org/${BIN_NAME}" \
-#     && OS="$(go env GOOS)" \
-#     && ARCH="$(go env GOARCH)" \
-#     && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
-#     && TAR_NAME="${BIN_NAME}${VERSION}.${OS}-${ARCH}" \
-#     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
-#     && tar -zxvf "${TAR_NAME}.tar.gz" \
-#     && mv ${BIN_NAME}/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
-#     && upx -9 ${GOPATH}/bin/${BIN_NAME}
+FROM --platform=$TARGETPLATFORM go-base AS tinygo
+RUN --mount=type=cache,target="${GOPATH}/pkg" \
+    --mount=type=cache,target="${HOME}/.cache/go-build" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+    && BIN_NAME="tinygo" \
+    && REPO="${BIN_NAME}-org/${BIN_NAME}" \
+    && OS="$(go env GOOS)" \
+    && ARCH="$(go env GOARCH)" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
+    && TAR_NAME="${BIN_NAME}${VERSION}.${OS}-${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv ${BIN_NAME}/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
+    && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
 FROM --platform=$TARGETPLATFORM go-base AS tparse
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
@@ -1134,7 +1136,7 @@ COPY --from=strictgoimports $GOPATH/bin/strictgoimports $GOPATH/bin/strictgoimpo
 COPY --from=swagger $GOPATH/bin/swagger $GOPATH/bin/swagger
 COPY --from=syft $GOPATH/bin/syft $GOPATH/bin/syft
 COPY --from=syncmap $GOPATH/bin/syncmap $GOPATH/bin/syncmap
-# COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
+COPY --from=tinygo $GOPATH/bin/tinygo $GOPATH/bin/tinygo
 COPY --from=tparse $GOPATH/bin/tparse $GOPATH/bin/tparse
 COPY --from=vegeta $GOPATH/bin/vegeta $GOPATH/bin/vegeta
 COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun

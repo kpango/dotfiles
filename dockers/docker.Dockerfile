@@ -33,7 +33,9 @@ FROM --platform=$TARGETPLATFORM docker-base AS slim
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="slim" \
     && REPO="${BIN_NAME}toolkit/${BIN_NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
     && DOCKER_SLIM_RELEASES="https://downloads.dockerslim.com/releases" \
     && curl -fsSLO "${DOCKER_SLIM_RELEASES}/${VERSION}/dist_${OS}.tar.gz" \
     && tar zxvf dist_${OS}.tar.gz \
@@ -47,7 +49,9 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
     && BIN_NAME="${ORG}-credential-pass" \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
     && mv ${BIN_NAME}-v${VERSION}.${OS}-${ARCH} ${BIN_PATH}/${BIN_NAME} \
@@ -59,7 +63,9 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
     && BIN_NAME="${ORG}-credential-secretservice" \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
     && mv ${BIN_NAME}-v${VERSION}.${OS}-${ARCH} ${BIN_PATH}/${BIN_NAME} \
@@ -73,7 +79,9 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="buildx" \
     && REPO="docker/${NAME}" \
     && BIN_NAME="docker-buildx" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
     && curl -fSsLo ${CLI_LIB_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-v${VERSION}.${OS}-${ARCH}" \
     && chmod a+x ${CLI_LIB_PATH}/${BIN_NAME} \
     && upx -9 ${CLI_LIB_PATH}/${BIN_NAME}
@@ -83,19 +91,21 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="dockfmt" \
     && REPO="jessfraz/${NAME}" \
     && BIN_NAME=${NAME} \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
     && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-${OS}-${ARCH}" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM docker-base AS container-diff
-RUN set -x; cd "$(mktemp -d)" \
-    && NAME="container-diff" \
-    && REPO="jessfraz/${NAME}" \
-    && BIN_NAME=${NAME} \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${NAME}/latest/${NAME}-${OS}-${ARCH}" \
-    && chmod a+x ${BIN_PATH}/${BIN_NAME} \
-    && upx -9 ${BIN_PATH}/${BIN_NAME}
+# FROM --platform=$TARGETPLATFORM docker-base AS container-diff
+# RUN set -x; cd "$(mktemp -d)" \
+#     && NAME="container-diff" \
+#     && REPO="jessfraz/${NAME}" \
+#     && BIN_NAME=${NAME} \
+#     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${NAME}/latest/${NAME}-${OS}-${ARCH}" \
+#     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
+#     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM --platform=$TARGETPLATFORM docker-base AS docker-compose
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
@@ -103,7 +113,9 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="compose" \
     && REPO="${ORG}/${NAME}" \
     && BIN_NAME="${ORG}-${NAME}" \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
     && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${NAME}-${OS}-${ARCH}" \
@@ -116,7 +128,9 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="containerd" \
     && REPO="${NAME}/${NAME}" \
     && BIN_NAME=${NAME} \
-    && VERSION="$(curl --silent -H "Authorization: Bearer $(cat /run/secrets/gat)" ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && VERSION="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST} | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g')" \
+    && unset HEADER \
     && TAR_NAME="${NAME}-${VERSION}-${OS}-${ARCH}.tar.gz" \
     && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}" \
     && echo ${URL} \
@@ -175,7 +189,7 @@ COPY --from=common ${BIN_PATH}/dockerd ${DOCKER_PATH}/dockerd
 COPY --from=common ${BIN_PATH}/dockerd-entrypoint.sh ${DOCKER_PATH}/dockerd-entrypoint
 COPY --from=common ${BIN_PATH}/modprobe ${DOCKER_PATH}/modprobe
 COPY --from=common ${BIN_PATH}/runc ${DOCKER_PATH}/docker-runc
-COPY --from=container-diff ${BIN_PATH}/container-diff ${DOCKER_PATH}/container-diff
+# COPY --from=container-diff ${BIN_PATH}/container-diff ${DOCKER_PATH}/container-diff
 COPY --from=containerd ${BIN_PATH}/containerd ${DOCKER_PATH}/containerd
 COPY --from=containerd ${BIN_PATH}/containerd ${DOCKER_PATH}/docker-containerd
 COPY --from=containerd ${BIN_PATH}/containerd-shim ${DOCKER_PATH}/containerd-shim
