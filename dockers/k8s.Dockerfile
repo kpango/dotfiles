@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$TARGETPLATFORM kpango/dev-base:latest AS kube-base
+FROM --platform=$TARGETPLATFORM kpango/base:latest AS kube-base
 
 ARG TARGETOS
 ARG TARGETARCH

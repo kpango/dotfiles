@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$TARGETPLATFORM kpango/dev-base:latest AS rust-base
+FROM --platform=$TARGETPLATFORM kpango/base:latest AS rust-base
 
 ARG TOOLCHAIN=nightly
 

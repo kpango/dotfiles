@@ -10,7 +10,6 @@ EMAIL = kpango@vdaas.org
 
 DOCKER_BUILDER_NAME = "kpango-builder"
 DOCKER_BUILDER_DRIVER = "docker-container"
-
 DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64"
 
 echo:
@@ -282,11 +281,14 @@ docker_build:
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
 	  --build-arg WHOAMI="$(USER)" \
 	  --build-arg EMAIL="$(EMAIL)" \
+	  --cache-to type=registry,ref=$(IMAGE_NAME):buildcache,mode=max \
+	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
-	  --push \
-	  -t $(IMAGE_NAME):latest -f $(DOCKERFILE) .
-	  # --no-cache \
+	  --squash \
+	  --no-cache \
+	  --output type=image,name="$(IMAGE_NAME):latest",oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
+	  -f $(DOCKERFILE) .
 
 docker_push:
 	docker push $(IMAGE_NAME):latest
@@ -328,7 +330,7 @@ build_docker:
 	@make DOCKERFILE="$(ROOTDIR)/dockers/docker.Dockerfile" IMAGE_NAME="kpango/docker" docker_build
 
 build_base:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/base.Dockerfile" IMAGE_NAME="kpango/dev-base" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/base.Dockerfile" IMAGE_NAME="kpango/base" docker_build
 
 build_env:
 	@make DOCKERFILE="$(ROOTDIR)/dockers/env.Dockerfile" IMAGE_NAME="kpango/env" docker_build
@@ -358,7 +360,7 @@ push_docker:
 	@make IMAGE_NAME="kpango/docker" docker_push
 
 push_base:
-	@make IMAGE_NAME="kpango/dev-base" docker_push
+	@make IMAGE_NAME="kpango/base" docker_push
 
 push_env:
 	@make IMAGE_NAME="kpango/env" docker_push
