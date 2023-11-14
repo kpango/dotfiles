@@ -14,8 +14,8 @@ ENV INITRD No
 ENV LANG en_US.UTF-8
 ENV GOROOT /opt/go
 ENV GOPATH /go
-ENV GOARCH=$TARGETARCH
-ENV GOOS=$TARGETOS
+ENV GOARCH=${ARCH}
+ENV GOOS=${OS}
 ENV GOFLAGS "-ldflags=-w -ldflags=-s"
 ENV GOORG "golang.org"
 ENV GODEV "https://go.dev"

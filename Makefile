@@ -291,7 +291,7 @@ docker_build:
 	  -f $(DOCKERFILE) .
 
 docker_push:
-	docker push $(IMAGE_NAME):latest
+	# docker push $(IMAGE_NAME):latest
 
 create_buildx:
 	docker run --privileged --rm tonistiigi/binfmt --install $(DOCKER_BUILDER_PLATFORM)
@@ -370,7 +370,6 @@ push_gcloud:
 
 push_k8s:
 	@make IMAGE_NAME="kpango/kube" docker_push
-
 
 build_and_push_base: \
 	build_base \
