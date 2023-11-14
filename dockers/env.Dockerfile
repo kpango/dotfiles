@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$TARGETPLATFORM kpango/base:latest AS env-base
+FROM --platform=$BUILDPLATFORM kpango/base:latest AS env-base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -135,7 +135,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && chmod -R 755 ${HOME}/.* \
     && npm install -g n
 
-FROM --platform=$TARGETPLATFORM env-base AS env-stage
+FROM --platform=$BUILDPLATFORM env-base AS env-stage
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
     --mount=type=cache,target=${HOME}/.npm \
@@ -161,7 +161,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     && apt purge -y nodejs npm \
     && apt -y autoremove
 
-FROM --platform=$TARGETPLATFORM env-base AS protoc
+FROM --platform=$BUILDPLATFORM env-base AS protoc
 WORKDIR /tmp
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO_NAME="protobuf" \
@@ -181,7 +181,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && rm -f /tmp/protoc.zip \
     && rm -rf /tmp/*
 
-FROM --platform=$TARGETPLATFORM env-base AS ngt
+FROM --platform=$BUILDPLATFORM env-base AS ngt
 WORKDIR /tmp
 ENV NGT_VERSION main
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
@@ -199,7 +199,7 @@ RUN echo $(ldconfig) \
     && cd /tmp \
     && rm -rf /tmp/*
 
-# FROM --platform=$TARGETPLATFORM env-base AS tensorflow
+# FROM --platform=$BUILDPLATFORM env-base AS tensorflow
 # WORKDIR /tmp
 # RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
 #     && REPO_NAME="tensorflow" \
@@ -219,7 +219,7 @@ RUN echo $(ldconfig) \
 #     && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
 #     && rm -rf /tmp/*
 
-FROM --platform=$TARGETPLATFORM env-stage AS env
+FROM --platform=$BUILDPLATFORM env-stage AS env
 
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango

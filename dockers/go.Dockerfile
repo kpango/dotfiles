@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$TARGETPLATFORM kpango/base:latest AS go-base
+FROM --platform=$BUILDPLATFORM kpango/base:latest AS go-base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -42,7 +42,7 @@ RUN set -x; cd "$(mktemp -d)" \
 
 COPY go.env "${GOROOT}/go.env"
 
-# FROM --platform=$TARGETPLATFORM go-base AS act
+# FROM --platform=$BUILDPLATFORM go-base AS act
 # RUN set -x; cd "$(mktemp -d)" \
 #     && BIN_NAME="act" \
 #     && REPO="nektos/${BIN_NAME}" \
@@ -52,7 +52,7 @@ COPY go.env "${GOROOT}/go.env"
 #     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
 #     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS air
+FROM --platform=$BUILDPLATFORM go-base AS air
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -65,7 +65,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS buf
+FROM --platform=$BUILDPLATFORM go-base AS buf
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -78,7 +78,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS chidley
+FROM --platform=$BUILDPLATFORM go-base AS chidley
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -91,7 +91,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-# FROM --platform=$TARGETPLATFORM go-base AS dataloaden
+# FROM --platform=$BUILDPLATFORM go-base AS dataloaden
 # RUN --mount=type=cache,target="${GOPATH}/pkg" \
 #     --mount=type=cache,target="${HOME}/.cache/go-build" \
 #     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -104,13 +104,13 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
 #     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
 #     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS dagger
+FROM --platform=$BUILDPLATFORM go-base AS dagger
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="dagger" \
     && curl -L https://dl.${BIN_NAME}.io/${BIN_NAME}/install.sh | BIN_DIR=${GOPATH}/bin sh \
     && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM go-base AS dbmate
+FROM --platform=$BUILDPLATFORM go-base AS dbmate
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -123,7 +123,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS direnv
+FROM --platform=$BUILDPLATFORM go-base AS direnv
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -136,7 +136,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS dlayer
+FROM --platform=$BUILDPLATFORM go-base AS dlayer
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -149,7 +149,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS dlv
+FROM --platform=$BUILDPLATFORM go-base AS dlv
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -162,7 +162,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS dragon-imports
+FROM --platform=$BUILDPLATFORM go-base AS dragon-imports
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -175,7 +175,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS duf
+FROM --platform=$BUILDPLATFORM go-base AS duf
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -188,7 +188,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS efm
+FROM --platform=$BUILDPLATFORM go-base AS efm
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -201,7 +201,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS errcheck
+FROM --platform=$BUILDPLATFORM go-base AS errcheck
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -214,7 +214,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS evans
+FROM --platform=$BUILDPLATFORM go-base AS evans
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -227,7 +227,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS fillstruct
+FROM --platform=$BUILDPLATFORM go-base AS fillstruct
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -240,7 +240,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS fillswitch
+FROM --platform=$BUILDPLATFORM go-base AS fillswitch
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -253,7 +253,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS fixplurals
+FROM --platform=$BUILDPLATFORM go-base AS fixplurals
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -266,7 +266,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS flamegraph
+FROM --platform=$BUILDPLATFORM go-base AS flamegraph
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -282,7 +282,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && cp ${TMPDIR}/stackcollapse.pl ${GOPATH}/bin/ \
     && cp ${TMPDIR}/stackcollapse-go.pl ${GOPATH}/bin/
 
-FROM --platform=$TARGETPLATFORM go-base AS fzf
+FROM --platform=$BUILDPLATFORM go-base AS fzf
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -295,7 +295,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS ghq
+FROM --platform=$BUILDPLATFORM go-base AS ghq
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -308,7 +308,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS ghz
+FROM --platform=$BUILDPLATFORM go-base AS ghz
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -321,7 +321,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS git-codereview
+FROM --platform=$BUILDPLATFORM go-base AS git-codereview
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -334,7 +334,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gitleaks
+FROM --platform=$BUILDPLATFORM go-base AS gitleaks
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -348,7 +348,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 
-FROM --platform=$TARGETPLATFORM go-base AS glice
+FROM --platform=$BUILDPLATFORM go-base AS glice
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -361,7 +361,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS go-contrib-init
+FROM --platform=$BUILDPLATFORM go-base AS go-contrib-init
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -374,7 +374,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS go-task
+FROM --platform=$BUILDPLATFORM go-base AS go-task
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -387,7 +387,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gocode
+FROM --platform=$BUILDPLATFORM go-base AS gocode
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -400,7 +400,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS godef
+FROM --platform=$BUILDPLATFORM go-base AS godef
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -413,7 +413,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gofumpt
+FROM --platform=$BUILDPLATFORM go-base AS gofumpt
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -426,7 +426,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS goimports
+FROM --platform=$BUILDPLATFORM go-base AS goimports
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -439,7 +439,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS goimports-reviser
+FROM --platform=$BUILDPLATFORM go-base AS goimports-reviser
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -452,7 +452,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS goimports-update-ignore
+FROM --platform=$BUILDPLATFORM go-base AS goimports-update-ignore
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -465,7 +465,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gojson
+FROM --platform=$BUILDPLATFORM go-base AS gojson
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -478,14 +478,14 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM golangci/golangci-lint:latest AS golangci-lint-base
-FROM --platform=$TARGETPLATFORM go-base AS golangci-lint
+FROM --platform=$BUILDPLATFORM golangci/golangci-lint:latest AS golangci-lint-base
+FROM --platform=$BUILDPLATFORM go-base AS golangci-lint
 ENV BIN_NAME golangci-lint
 COPY --from=golangci-lint-base /usr/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME}
 RUN upx -9 ${GOPATH}/bin/${BIN_NAME}
 
 
-FROM --platform=$TARGETPLATFORM go-base AS golines
+FROM --platform=$BUILDPLATFORM go-base AS golines
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -498,7 +498,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS golint
+FROM --platform=$BUILDPLATFORM go-base AS golint
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -511,7 +511,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gomodifytags
+FROM --platform=$BUILDPLATFORM go-base AS gomodifytags
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -524,7 +524,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gopls
+FROM --platform=$BUILDPLATFORM go-base AS gopls
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -537,7 +537,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gorename
+FROM --platform=$BUILDPLATFORM go-base AS gorename
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -550,7 +550,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS goreturns
+FROM --platform=$BUILDPLATFORM go-base AS goreturns
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -563,7 +563,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gosec
+FROM --platform=$BUILDPLATFORM go-base AS gosec
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -576,7 +576,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gotags
+FROM --platform=$BUILDPLATFORM go-base AS gotags
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -589,7 +589,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gotestfmt
+FROM --platform=$BUILDPLATFORM go-base AS gotestfmt
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -602,7 +602,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gotests
+FROM --platform=$BUILDPLATFORM go-base AS gotests
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -615,7 +615,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gotip
+FROM --platform=$BUILDPLATFORM go-base AS gotip
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -629,7 +629,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS govulncheck
+FROM --platform=$BUILDPLATFORM go-base AS govulncheck
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -642,7 +642,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gowrap
+FROM --platform=$BUILDPLATFORM go-base AS gowrap
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -655,7 +655,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS gqlgen
+FROM --platform=$BUILDPLATFORM go-base AS gqlgen
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -668,7 +668,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS grpcurl
+FROM --platform=$BUILDPLATFORM go-base AS grpcurl
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -681,7 +681,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS grype
+FROM --platform=$BUILDPLATFORM go-base AS grype
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -694,7 +694,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS guru
+FROM --platform=$BUILDPLATFORM go-base AS guru
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -707,7 +707,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS hub
+FROM --platform=$BUILDPLATFORM go-base AS hub
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -720,7 +720,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS hugo
+FROM --platform=$BUILDPLATFORM go-base AS hugo
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -734,7 +734,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS iferr
+FROM --platform=$BUILDPLATFORM go-base AS iferr
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -747,7 +747,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS impl
+FROM --platform=$BUILDPLATFORM go-base AS impl
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -760,7 +760,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS k6
+FROM --platform=$BUILDPLATFORM go-base AS k6
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -773,7 +773,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS keyify
+FROM --platform=$BUILDPLATFORM go-base AS keyify
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -786,7 +786,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS kratos
+FROM --platform=$BUILDPLATFORM go-base AS kratos
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -799,7 +799,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS licenses
+FROM --platform=$BUILDPLATFORM go-base AS licenses
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -812,7 +812,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS markdown2medium
+FROM --platform=$BUILDPLATFORM go-base AS markdown2medium
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -825,7 +825,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS mockgen
+FROM --platform=$BUILDPLATFORM go-base AS mockgen
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -838,7 +838,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS panicparse
+FROM --platform=$BUILDPLATFORM go-base AS panicparse
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -851,7 +851,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS protoc-gen-connect-go
+FROM --platform=$BUILDPLATFORM go-base AS protoc-gen-connect-go
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -864,7 +864,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS protoc-gen-go
+FROM --platform=$BUILDPLATFORM go-base AS protoc-gen-go
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -877,7 +877,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS prototool
+FROM --platform=$BUILDPLATFORM go-base AS prototool
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -890,14 +890,14 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS pulumi
+FROM --platform=$BUILDPLATFORM go-base AS pulumi
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="pulumi" \
     && curl -fsSL https://get.${BIN_NAME}.com | sh \
     && mv ${HOME}/.${BIN_NAME}/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
     && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM go-base AS reddit2wallpaper
+FROM --platform=$BUILDPLATFORM go-base AS reddit2wallpaper
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -910,7 +910,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS ruleguard
+FROM --platform=$BUILDPLATFORM go-base AS ruleguard
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -923,7 +923,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS sqls
+FROM --platform=$BUILDPLATFORM go-base AS sqls
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -936,7 +936,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS strictgoimports
+FROM --platform=$BUILDPLATFORM go-base AS strictgoimports
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -949,7 +949,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS swagger
+FROM --platform=$BUILDPLATFORM go-base AS swagger
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -962,7 +962,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS syft
+FROM --platform=$BUILDPLATFORM go-base AS syft
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -975,7 +975,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS syncmap
+FROM --platform=$BUILDPLATFORM go-base AS syncmap
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -988,7 +988,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS tinygo
+FROM --platform=$BUILDPLATFORM go-base AS tinygo
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -1008,7 +1008,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && mv ${BIN_NAME}/bin/${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
     && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM go-base AS tparse
+FROM --platform=$BUILDPLATFORM go-base AS tparse
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -1021,7 +1021,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS vegeta
+FROM --platform=$BUILDPLATFORM go-base AS vegeta
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -1034,7 +1034,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS vgrun
+FROM --platform=$BUILDPLATFORM go-base AS vgrun
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -1047,7 +1047,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS xo
+FROM --platform=$BUILDPLATFORM go-base AS xo
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -1060,10 +1060,10 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$TARGETPLATFORM go-base AS go
+FROM --platform=$BUILDPLATFORM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
-FROM --platform=$TARGETPLATFORM go-base AS go-bins
+FROM --platform=$BUILDPLATFORM go-base AS go-bins
 # COPY --from=act $GOPATH/bin/act $GOPATH/bin/act
 COPY --from=air $GOPATH/bin/air $GOPATH/bin/air
 COPY --from=buf $GOPATH/bin/buf $GOPATH/bin/buf
@@ -1146,7 +1146,7 @@ COPY --from=vegeta $GOPATH/bin/vegeta $GOPATH/bin/vegeta
 COPY --from=vgrun $GOPATH/bin/vgrun $GOPATH/bin/vgrun
 COPY --from=xo $GOPATH/bin/xo $GOPATH/bin/xo
 
-FROM --platform=$TARGETPLATFORM scratch
+FROM --platform=$BUILDPLATFORM scratch
 ENV GOROOT /opt/go
 ENV GOPATH /go
 COPY --from=go $GOROOT/bin $GOROOT/bin

@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$TARGETPLATFORM kpango/base:latest AS docker-base
+FROM --platform=$BUILDPLATFORM kpango/base:latest AS docker-base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -16,19 +16,19 @@ ENV RELEASE_LATEST releases/latest
 ENV LOCAL /usr/local
 ENV BIN_PATH ${LOCAL}/bin
 
-FROM --platform=$TARGETPLATFORM aquasec/trivy:latest AS trivy
+FROM --platform=$BUILDPLATFORM aquasec/trivy:latest AS trivy
 
-FROM --platform=$TARGETPLATFORM goodwithtech/dockle:latest AS dockle-base
-FROM --platform=$TARGETPLATFORM docker-base AS dockle
+FROM --platform=$BUILDPLATFORM goodwithtech/dockle:latest AS dockle-base
+FROM --platform=$BUILDPLATFORM docker-base AS dockle
 COPY --from=dockle-base /usr/bin/dockle ${BIN_PATH}/dockle
 RUN upx -9 ${BIN_PATH}/dockle
 
-FROM --platform=$TARGETPLATFORM wagoodman/dive:latest AS dive-base
-FROM --platform=$TARGETPLATFORM docker-base AS dive
+FROM --platform=$BUILDPLATFORM wagoodman/dive:latest AS dive-base
+FROM --platform=$BUILDPLATFORM docker-base AS dive
 COPY --from=dive-base ${BIN_PATH}/dive ${BIN_PATH}/dive
 RUN upx -9 ${BIN_PATH}/dive
 
-FROM --platform=$TARGETPLATFORM docker-base AS slim
+FROM --platform=$BUILDPLATFORM docker-base AS slim
 
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="slim" \
@@ -46,7 +46,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
         ${BIN_PATH}/${BIN_NAME} \
         ${BIN_PATH}/${BIN_NAME}-sensor
 
-FROM --platform=$TARGETPLATFORM docker-base AS docker-credential-pass
+FROM --platform=$BUILDPLATFORM docker-base AS docker-credential-pass
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
@@ -62,7 +62,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM docker-base AS docker-credential-secretservice
+FROM --platform=$BUILDPLATFORM docker-base AS docker-credential-secretservice
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && ORG="docker" \
     && NAME="${ORG}-credential-helpers" \
@@ -78,7 +78,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM docker-base AS buildx
+FROM --platform=$BUILDPLATFORM docker-base AS buildx
 ENV CLI_LIB_PATH /usr/lib/docker/cli-plugins
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mkdir -p ${CLI_LIB_PATH} \
@@ -94,7 +94,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x ${CLI_LIB_PATH}/${BIN_NAME} \
     && upx -9 ${CLI_LIB_PATH}/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM docker-base AS dockfmt
+FROM --platform=$BUILDPLATFORM docker-base AS dockfmt
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="dockfmt" \
     && REPO="jessfraz/${NAME}" \
@@ -108,7 +108,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
-# FROM --platform=$TARGETPLATFORM docker-base AS container-diff
+# FROM --platform=$BUILDPLATFORM docker-base AS container-diff
 # RUN set -x; cd "$(mktemp -d)" \
 #     && NAME="container-diff" \
 #     && REPO="jessfraz/${NAME}" \
@@ -117,7 +117,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
 #     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
 #     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM docker-base AS docker-compose
+FROM --platform=$BUILDPLATFORM docker-base AS docker-compose
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && ORG="docker"\
     && NAME="compose" \
@@ -135,7 +135,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
-FROM --platform=$TARGETPLATFORM docker-base AS containerd
+FROM --platform=$BUILDPLATFORM docker-base AS containerd
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="containerd" \
     && REPO="${NAME}/${NAME}" \
@@ -162,9 +162,9 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
         "${BIN_PATH}/${BIN_NAME}-shim-runc-v1" \
         "${BIN_PATH}/${BIN_NAME}-shim-runc-v2"
 
-FROM --platform=$TARGETPLATFORM docker:rc-dind AS common-base
+FROM --platform=$BUILDPLATFORM docker:rc-dind AS common-base
 
-FROM --platform=$TARGETPLATFORM docker-base AS common
+FROM --platform=$BUILDPLATFORM docker-base AS common
 COPY --from=common-base ${BIN_PATH}/dind ${BIN_PATH}/dind
 COPY --from=common-base ${BIN_PATH}/docker ${BIN_PATH}/docker
 COPY --from=common-base ${BIN_PATH}/docker-entrypoint.sh ${BIN_PATH}/docker-entrypoint.sh
@@ -184,7 +184,7 @@ RUN upx -9 \
     && chmod a+x ${BIN_PATH}/docker-entrypoint.sh \
     && chmod a+x ${BIN_PATH}/dockerd-entrypoint.sh
 
-FROM --platform=$TARGETPLATFORM scratch AS docker
+FROM --platform=$BUILDPLATFORM kpango/base:latest AS docker
 
 ENV BIN_PATH /usr/local/bin
 ENV LIB_PATH /usr/local/libexec

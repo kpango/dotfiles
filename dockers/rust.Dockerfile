@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$TARGETPLATFORM kpango/base:latest AS rust-base
+FROM --platform=$BUILDPLATFORM kpango/base:latest AS rust-base
 
 ARG TOOLCHAIN=nightly
 
@@ -24,89 +24,89 @@ RUN rustup install stable \
        clippy \
        --toolchain nightly
 
-FROM --platform=$TARGETPLATFORM kpango/rust:latest AS old
+FROM --platform=$BUILDPLATFORM kpango/rust:latest AS old
 
-FROM --platform=$TARGETPLATFORM rust-base AS bandwhich
+FROM --platform=$BUILDPLATFORM rust-base AS bandwhich
 RUN cargo +nightly install --force --no-default-features \
     bandwhich
 
-FROM --platform=$TARGETPLATFORM rust-base AS bat
+FROM --platform=$BUILDPLATFORM rust-base AS bat
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --locked \
     bat
 
-FROM --platform=$TARGETPLATFORM rust-base AS bottom
+FROM --platform=$BUILDPLATFORM rust-base AS bottom
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --no-default-features \
     bottom
 
-FROM --platform=$TARGETPLATFORM rust-base AS broot
+FROM --platform=$BUILDPLATFORM rust-base AS broot
 # RUN cargo +nightly install --force --no-default-features \
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --locked \
     broot
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-asm
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-asm
 RUN cargo install cargo-asm
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-binutils
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-binutils
 RUN cargo install --git https://github.com/japaric/cargo-binutils
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-bloat
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-bloat
 RUN cargo install --force --no-default-features \
     --git https://github.com/RazrFalcon/cargo-bloat
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-check
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-check
 RUN cargo install cargo-check
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-edit
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-edit
 RUN cargo install cargo-edit
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-expand
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-expand
 RUN cargo install cargo-expand
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-fix
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-fix
 RUN cargo +nightly install --force --no-default-features \
     cargo-fix
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-tree
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-tree
 RUN cargo install cargo-tree
 
-FROM --platform=$TARGETPLATFORM rust-base AS cargo-watch
+FROM --platform=$BUILDPLATFORM rust-base AS cargo-watch
 RUN cargo install cargo-watch
 
-FROM --platform=$TARGETPLATFORM rust-base AS delta
+FROM --platform=$BUILDPLATFORM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
     git-delta
 
-# FROM --platform=$TARGETPLATFORM rust-base AS deno
+# FROM --platform=$BUILDPLATFORM rust-base AS deno
 # RUN RUST_BACKTRACE=full cargo install --force --locked --all-features \
 #     deno
 
-FROM --platform=$TARGETPLATFORM rust-base AS dog
+FROM --platform=$BUILDPLATFORM rust-base AS dog
 RUN cargo install --force --no-default-features \
     --git https://github.com/ogham/dog dog
 
-FROM --platform=$TARGETPLATFORM rust-base AS dutree
+FROM --platform=$BUILDPLATFORM rust-base AS dutree
 RUN cargo +nightly install --force --no-default-features \
     dutree
 
-FROM --platform=$TARGETPLATFORM rust-base AS erdtree
+FROM --platform=$BUILDPLATFORM rust-base AS erdtree
 RUN cargo +nightly install --force --no-default-features \
     erdtree
 
-FROM --platform=$TARGETPLATFORM rust-base AS eza
+FROM --platform=$BUILDPLATFORM rust-base AS eza
 RUN cargo install --force --no-default-features \
     --git https://github.com/eza-community/eza
 
-FROM --platform=$TARGETPLATFORM rust-base AS fd
+FROM --platform=$BUILDPLATFORM rust-base AS fd
 RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
 
-# FROM --platform=$TARGETPLATFORM rust-base AS frawk
+# FROM --platform=$BUILDPLATFORM rust-base AS frawk
 # RUN apt update -y \
 #     && apt upgrade -y \
 #     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
@@ -118,94 +118,94 @@ RUN cargo install --force --no-default-features \
 #     --features use_jemalloc,allow_avx2,unstable \
 #     --git https://github.com/ezrosent/frawk frawk
 
-FROM --platform=$TARGETPLATFORM rust-base AS gping
+FROM --platform=$BUILDPLATFORM rust-base AS gping
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --no-default-features \
     gping
 
-FROM --platform=$TARGETPLATFORM rust-base AS hyperfine
+FROM --platform=$BUILDPLATFORM rust-base AS hyperfine
 RUN cargo +nightly install --force --no-default-features \
     hyperfine
 
-FROM --platform=$TARGETPLATFORM rust-base AS lsd
+FROM --platform=$BUILDPLATFORM rust-base AS lsd
 RUN cargo install --force --no-default-features \
     --git https://github.com/Peltoche/lsd --branch master
 
-# FROM --platform=$TARGETPLATFORM rust-base AS nushell
+# FROM --platform=$BUILDPLATFORM rust-base AS nushell
 # RUN cargo install --force --features=extra \
 #     --git https://github.com/nushell/nushell nu
 
-FROM --platform=$TARGETPLATFORM rust-base AS procs
+FROM --platform=$BUILDPLATFORM rust-base AS procs
 RUN cargo +nightly install --force --no-default-features \
     --git https://github.com/dalance/procs
 
-FROM --platform=$TARGETPLATFORM rust-base AS rg
+FROM --platform=$BUILDPLATFORM rust-base AS rg
 RUN rustup update stable \
     && rustup default stable \
     && RUSTFLAGS="-C target-cpu=native" \
     cargo +nightly install --force --features 'pcre2 simd-accel' \
     ripgrep
 
-FROM --platform=$TARGETPLATFORM rg AS rga
+FROM --platform=$BUILDPLATFORM rg AS rga
 RUN cargo install --locked --force --no-default-features \
     ripgrep_all
 
-FROM --platform=$TARGETPLATFORM rust-base AS rnix-lsp
+FROM --platform=$BUILDPLATFORM rust-base AS rnix-lsp
 RUN cargo install --force --no-default-features \
     --git https://github.com/nix-community/rnix-lsp
 
-FROM --platform=$TARGETPLATFORM rust-base AS sad
+FROM --platform=$BUILDPLATFORM rust-base AS sad
 RUN git clone --depth 1 https://github.com/ms-jpq/sad \
     && cd sad \
     && cargo install --force --locked --all-features --path .
 
-FROM --platform=$TARGETPLATFORM rust-base AS sd
+FROM --platform=$BUILDPLATFORM rust-base AS sd
 RUN cargo +nightly install --force --no-default-features \
     sd
 
-FROM --platform=$TARGETPLATFORM rust-base AS shellharden
+FROM --platform=$BUILDPLATFORM rust-base AS shellharden
 RUN cargo +nightly install --force --no-default-features \
     shellharden
 
-FROM --platform=$TARGETPLATFORM rust-base AS sheldon
+FROM --platform=$BUILDPLATFORM rust-base AS sheldon
 RUN cargo install --force --no-default-features \
     --git https://github.com/rossmacarthur/sheldon
 
-# FROM --platform=$TARGETPLATFORM old AS starship
-FROM --platform=$TARGETPLATFORM rust-base AS starship
+# FROM --platform=$BUILDPLATFORM old AS starship
+FROM --platform=$BUILDPLATFORM rust-base AS starship
 RUN cargo +nightly install --force --no-default-features starship
 # RUN rustup update stable \
     # && rustup default stable \
     # && cargo install --force --no-default-features
 # RUN cargo install --locked starship
 
-FROM --platform=$TARGETPLATFORM rust-base AS t-rec
+FROM --platform=$BUILDPLATFORM rust-base AS t-rec
 RUN cargo +nightly install --force --no-default-features \
     t-rec
 
-FROM --platform=$TARGETPLATFORM rust-base AS tokei
+FROM --platform=$BUILDPLATFORM rust-base AS tokei
 RUN cargo +nightly install --force --no-default-features \
     tokei
 
-FROM --platform=$TARGETPLATFORM rust-base AS tree-sitter
+FROM --platform=$BUILDPLATFORM rust-base AS tree-sitter
 RUN cargo +nightly install --force --no-default-features \
     tree-sitter-cli
 
-# FROM --platform=$TARGETPLATFORM rust-base AS watchexec
+# FROM --platform=$BUILDPLATFORM rust-base AS watchexec
 # # RUN cargo +nightly install --force --no-default-features \
 # RUN rustup update stable \
 #     && rustup default stable \
 #     && cargo install watchexec-cli
 
-FROM --platform=$TARGETPLATFORM rust-base AS xh
+FROM --platform=$BUILDPLATFORM rust-base AS xh
 # RUN cargo +nightly install --force --locked --all-features \
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --locked --all-features \
     xh
 
-FROM --platform=$TARGETPLATFORM scratch AS rust
+FROM --platform=$BUILDPLATFORM scratch AS rust
 ENV HOME /root
 ENV RUSTUP ${HOME}/.rustup
 ENV CARGO ${HOME}/.cargo
