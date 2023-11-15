@@ -286,14 +286,26 @@ FROM --platform=$BUILDPLATFORM go-base AS fzf
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=cache,target="${HOME}/.cache/go-build" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x; cd "$(mktemp -d)" \
+    --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="fzf" \
     && REPO="junegunn/${BIN_NAME}" \
-    && go install  \
-    --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}@latest" \
-    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
-    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && unset HEADER \
+    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
+    && if [ -z "${VERSION}" ]; then \
+         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
+         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
+       fi \
+    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
+    && OS="$(go env GOOS)" \
+    && ARCH="$(go env GOARCH)" \
+    && TAR_NAME="${BIN_NAME}-${VERSION}-${OS}_${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv ${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
+    && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
 FROM --platform=$BUILDPLATFORM go-base AS ghq
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
@@ -995,8 +1007,6 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="tinygo" \
     && REPO="${BIN_NAME}-org/${BIN_NAME}" \
-    && OS="$(go env GOOS)" \
-    && ARCH="$(go env GOARCH)" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
     && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
@@ -1007,6 +1017,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
+    && OS="$(go env GOOS)" \
+    && ARCH="$(go env GOARCH)" \
     && TAR_NAME="${BIN_NAME}${VERSION}.${OS}-${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \

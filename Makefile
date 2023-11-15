@@ -270,6 +270,14 @@ prod: \
 	prod_build \
 	prod_push
 
+github_check:
+	curl --request GET \
+	  -H "Authorization: Bearer $(GITHUB_ACCESS_TOKEN)" \
+	  --url https://api.github.com/octocat
+	curl --request GET \
+	  -H "Authorization: Bearer $(GITHUB_ACCESS_TOKEN)" \
+	  --url https://api.github.com/rate_limit
+
 docker_build:
 	GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
 	DOCKER_BUILDKIT=1 sudo docker buildx build \
