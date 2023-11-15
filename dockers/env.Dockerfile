@@ -163,19 +163,19 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="protoc" \
     && REPO="protocolbuffers/${REPO_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
     && ZIP_NAME="${BIN_NAME}-${VERSION}-${OS}-${ARCH}" \
-    && curl -fsSL "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ZIP_NAME}.zip" -o "/tmp/${BIN_NAME}.zip" \
+    && curl -fsSLo "/tmp/${BIN_NAME}.zip" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ZIP_NAME}.zip" \
     && unzip -o "/tmp/${BIN_NAME}.zip" -d /usr/local "bin/${BIN_NAME}" \
     && unzip -o "/tmp/${BIN_NAME}.zip" -d /usr/local 'include/*' \
     && rm -f /tmp/protoc.zip \
@@ -206,13 +206,13 @@ RUN echo $(ldconfig) \
 #     && BIN_NAME="${REPO_NAME}" \
 #     && REPO="${REPO_NAME}/${BIN_NAME}" \
 #     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-#     && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+#     && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
 #     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
 #     && unset HEADER \
 #     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
 #     && if [ -z "${VERSION}" ]; then \
 #          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-#          BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+#          BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
 #          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
 #        fi \
 #     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \

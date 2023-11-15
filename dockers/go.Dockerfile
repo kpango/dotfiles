@@ -29,11 +29,11 @@ ENV RELEASE_LATEST releases/latest
 WORKDIR /opt
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="go" \
-    && BODY="$(curl --silent ${GODEV}/VERSION?m=text)" \
+    && BODY="$(curl -fsSL ${GODEV}/VERSION?m=text)" \
     && GO_VERSION=$(echo "$BODY" | head -n 1) \
     && [ -n "${GO_VERSION}" ] || { echo "Error: VERSION is empty. curl response was: ${BODY}" >&2; exit 1; } \
     && TAR_NAME="${GO_VERSION}.${OS}-${ARCH}.tar.gz" \
-    && curl -sSL -O "https://${GOORG}/dl/${TAR_NAME}" \
+    && curl -fsSLO "https://${GOORG}/dl/${TAR_NAME}" \
     && tar zxf "${TAR_NAME}" \
     && rm "${TAR_NAME}" \
     && mv ${BIN_NAME} ${GOROOT} \
@@ -107,7 +107,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
 FROM --platform=$BUILDPLATFORM go-base AS dagger
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="dagger" \
-    && curl -L https://dl.${BIN_NAME}.io/${BIN_NAME}/install.sh | BIN_DIR=${GOPATH}/bin sh \
+    && curl -fsSL https://dl.${BIN_NAME}.io/${BIN_NAME}/install.sh | BIN_DIR=${GOPATH}/bin sh \
     && upx -9 ${GOPATH}/bin/${BIN_NAME}
 
 FROM --platform=$BUILDPLATFORM go-base AS dbmate
@@ -290,19 +290,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="fzf" \
     && REPO="junegunn/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && OS="$(go env GOOS)" \
     && ARCH="$(go env GOARCH)" \
     && TAR_NAME="${BIN_NAME}-${VERSION}-${OS}_${ARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv ${BIN_NAME} ${GOPATH}/bin/${BIN_NAME} \
     && upx -9 ${GOPATH}/bin/${BIN_NAME}
@@ -1008,12 +1008,12 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="tinygo" \
     && REPO="${BIN_NAME}-org/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \

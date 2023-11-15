@@ -34,12 +34,12 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="slim" \
     && REPO="${BIN_NAME}toolkit/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
@@ -57,17 +57,17 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && BIN_NAME="${ORG}-credential-pass" \
-    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
     && mv ${BIN_NAME}-v${VERSION}.${OS}-${ARCH} ${BIN_PATH}/${BIN_NAME} \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
@@ -78,17 +78,17 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && BIN_NAME="${ORG}-credential-secretservice" \
-    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}-v${VERSION}.${OS}-${ARCH}" \
     && mv ${BIN_NAME}-v${VERSION}.${OS}-${ARCH} ${BIN_PATH}/${BIN_NAME} \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
@@ -101,16 +101,16 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="docker/${NAME}" \
     && BIN_NAME="docker-buildx" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-    && curl -fSsLo ${CLI_LIB_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-v${VERSION}.${OS}-${ARCH}" \
+    && curl -fsSLo ${CLI_LIB_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-v${VERSION}.${OS}-${ARCH}" \
     && chmod a+x ${CLI_LIB_PATH}/${BIN_NAME} \
     && upx -9 ${CLI_LIB_PATH}/${BIN_NAME}
 
@@ -120,16 +120,16 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="jessfraz/${NAME}" \
     && BIN_NAME=${NAME} \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-    && curl -fSsLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-${OS}-${ARCH}" \
+    && curl -fsSLo ${BIN_PATH}/${BIN_NAME} "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${NAME}-${OS}-${ARCH}" \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
@@ -149,18 +149,18 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="${ORG}/${NAME}" \
     && BIN_NAME="${ORG}-${NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
-    && curl -fSsLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${NAME}-${OS}-${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ORG}-${NAME}-${OS}-${ARCH}" \
     && mv "${ORG}-${NAME}-${OS}-${ARCH}" ${BIN_PATH}/${BIN_NAME} \
     && chmod a+x ${BIN_PATH}/${BIN_NAME} \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
@@ -171,12 +171,12 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="${NAME}/${NAME}" \
     && BIN_NAME=${NAME} \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl --silent -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl --silent ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \

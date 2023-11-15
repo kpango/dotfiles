@@ -9,7 +9,7 @@ ENV CARGO ${HOME}/.cargo
 ENV BIN_PATH ${CARGO}/bin
 ENV PATH ${BIN_PATH}:$PATH
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | sh -s -- -y
 
 RUN rustup install stable \
     && rustup install beta \
