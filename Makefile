@@ -263,7 +263,7 @@ bash: link
 build: \
 	login \
 	build_base
-	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_and_push_{}" go docker rust dart k8s nim gcloud env base
+	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_{}" go docker rust dart k8s nim gcloud env base
 
 prod: \
 	login \
@@ -281,6 +281,8 @@ docker_build:
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
 	  --build-arg WHOAMI="$(USER)" \
 	  --build-arg EMAIL="$(EMAIL)" \
+	  --build-arg BUILDKIT_MULTI_PLATFORM=1 \
+	  --build-arg BUILDKIT_INLINE_CACHE=1 \
 	  --cache-to type=registry,ref=$(IMAGE_NAME):buildcache,mode=max \
 	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
