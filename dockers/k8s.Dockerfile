@@ -37,8 +37,8 @@ RUN set -x; cd "$(mktemp -d)" \
     && echo ${URL} \
     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${URL}" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}" \
     && "${BIN_PATH}/${BIN_NAME}" version --client
+    # && upx -9 "${BIN_PATH}/${BIN_NAME}" \
 
 FROM --platform=$BUILDPLATFORM kube-base AS helm
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
@@ -510,7 +510,7 @@ RUN set -x; cd "$(mktemp -d)" \
 #     && upx -9 "${BIN_PATH}/${NAME}"
 
 FROM --platform=$BUILDPLATFORM kube-base AS telepresence
-RUN curl -fsSLo ${BINDIR}/telepresence "https://app.getambassador.io/download/tel2/${OS}/${ARCH}/nightly/telepresence" \
+RUN curl -fsSLo ${BIN_PATH}/telepresence "https://app.getambassador.io/download/tel2/${OS}/${ARCH}/nightly/telepresence" \
     && chmod a+x "${BIN_PATH}/telepresence"
 
 # FROM --platform=$BUILDPLATFORM kube-base AS pixie
