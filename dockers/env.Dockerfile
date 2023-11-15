@@ -55,7 +55,8 @@ RUN groupadd --non-unique --gid ${GROUP_ID} docker \
     && visudo -c
 
 WORKDIR /tmp
-RUN echo '/lib\n\
+RUN --mount=type=cache,target=${HOME}/.npm \
+    echo '/lib\n\
 /lib64\n\
 /var/lib\n\
 /usr/lib\n\
@@ -133,7 +134,8 @@ RUN echo '/lib\n\
 
 FROM --platform=$BUILDPLATFORM env-base AS env-stage
 WORKDIR /tmp
-RUN n latest \
+RUN --mount=type=cache,target=${HOME}/.npm \
+    n latest \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && npm install -g \
