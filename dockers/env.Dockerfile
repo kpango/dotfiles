@@ -163,7 +163,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="protoc" \
     && REPO="protocolbuffers/${REPO_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -206,7 +206,7 @@ RUN echo $(ldconfig) \
 #     && BIN_NAME="${REPO_NAME}" \
 #     && REPO="${REPO_NAME}/${BIN_NAME}" \
 #     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-#     && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+#     && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
 #     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
 #     && unset HEADER \
 #     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \

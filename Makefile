@@ -279,11 +279,12 @@ github_check:
 	  --url https://api.github.com/rate_limit
 
 docker_build:
-	GITHUB_ACCESS_TOKEN="$(GITHUB_ACCESS_TOKEN)" \
+	rm -rf /tmp/gat
+	echo "$(GITHUB_ACCESS_TOKEN)" > /tmp/gat
 	DOCKER_BUILDKIT=1 sudo docker buildx build \
 	  --builder $(DOCKER_BUILDER_NAME) \
 	  --network=host \
-	  --secret id=gat,env=GITHUB_ACCESS_TOKEN \
+	  --secret id=gat,src=/tmp/gat \
 	  --build-arg USER_ID="$(USER_ID)" \
 	  --build-arg GROUP_ID="$(GROUP_ID)" \
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
@@ -299,6 +300,7 @@ docker_build:
 	  --no-cache \
 	  --output type=image,name="$(IMAGE_NAME):latest",oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
+	rm -rf /tmp/gat
 
 docker_push:
 	# docker push $(IMAGE_NAME):latest

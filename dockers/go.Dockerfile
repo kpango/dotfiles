@@ -290,7 +290,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="fzf" \
     && REPO="junegunn/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -1008,7 +1008,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="tinygo" \
     && REPO="${BIN_NAME}-org/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \

@@ -16,6 +16,8 @@ inline = 'autoload -Uz colors && zsh-defer colors'
 [plugins.fzf]
 github = 'junegunn/fzf'
 apply = ['fzf-install', 'fzf-source', 'defer']
+[plugins.kubectl-fzf]
+remote = "https://raw.githubusercontent.com/bonnefoa/kubectl-fzf/main/shell/kubectl_fzf.plugin.zsh"
 [plugins.rust-zsh-completions]
 github = "ryutok/rust-zsh-completions"
 apply = ['defer']

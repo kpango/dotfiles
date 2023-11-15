@@ -19,6 +19,15 @@ ENV BIN_PATH ${LOCAL}/bin
 
 RUN mkdir -p "${BIN_PATH}"
 
+FROM --platform=$BUILDPLATFORM kpango/go:latest AS golang
+FROM --platform=$BUILDPLATFORM kube-base AS kube-golang-base
+COPY --from=golang /opt/go /usr/local/go
+COPY --from=golang /go /go
+ENV GOPATH /go
+ENV GOROOT /usr/local/go
+ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
+COPY go.env $GOROOT/go.env
+
 FROM --platform=$BUILDPLATFORM kube-base AS kubectl
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl" \
@@ -32,8 +41,10 @@ RUN set -x; cd "$(mktemp -d)" \
     && "${BIN_PATH}/${BIN_NAME}" version --client
 
 FROM --platform=$BUILDPLATFORM kube-base AS helm
-RUN set -x; cd "$(mktemp -d)" \
-    && curl -fsSL "${RAWGITHUB}/helm/helm/main/scripts/get-helm-3" | bash \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && curl -fsSLGH "${HEADER}" "${RAWGITHUB}/helm/helm/main/scripts/get-helm-3" | bash \
+    && unset HEADER \
     && BIN_NAME="helm" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
@@ -43,7 +54,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubefwd" \
     && REPO="txn2/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -66,7 +77,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectx" \
     && REPO="ahmetb/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -89,7 +100,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectx" \
     && REPO="ahmetb/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -113,7 +124,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="krew" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -131,27 +142,14 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && "/root/.krew/bin/${BIN_NAME}" update \
     && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-base AS check-ownerreferences
-RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+FROM --platform=$BUILDPLATFORM kube-golang-base AS check-ownerreferences
+RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-check-ownerreferences" \
-    && REPO="kubernetes-sigs/${BIN_NAME}" \
-    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
-    && unset HEADER \
-    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-    && if [ -z "${VERSION}" ]; then \
-         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-       fi \
-    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-    && TAR_NAME="${BIN_NAME}-${OS}-${ARCH}" \
-    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
-    && echo ${URL} \
-    && curl -fsSLO "${URL}" \
-    && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
+    && REPO="sigs.k8s.io/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${REPO}@master" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM kube-base AS kubebox
@@ -159,7 +157,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubebox" \
     && REPO="astefanutti/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -176,7 +174,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="stern" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -199,7 +197,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubebuilder" \
     && REPO="kubernetes-sigs/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -216,29 +214,26 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-base AS kubectl-fzf
-RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+FROM --platform=$BUILDPLATFORM kube-golang-base AS kubectl-fzf-completion
+RUN set -x; cd "$(mktemp -d)" \
     && NAME="kubectl-fzf" \
-    && REPO="bonnefoa/${NAME}" \
-    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
-    && unset HEADER \
-    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-    && if [ -z "${VERSION}" ]; then \
-         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-       fi \
-    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-    && TAR_NAME="${NAME}_${OS}_${ARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
-    && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv "shell/kubectl_fzf.plugin.zsh" "${BIN_PATH}/${NAME}.zsh" \
-    && BIN_NAME="${NAME}-server" \
-    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}" \
     && BIN_NAME="${NAME}-completion" \
-    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && REPO="bonnefoa/${NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/v3/cmd/${BIN_NAME}@main" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+
+FROM --platform=$BUILDPLATFORM kube-golang-base AS kubectl-fzf-server
+RUN set -x; cd "$(mktemp -d)" \
+    && NAME="kubectl-fzf" \
+    && BIN_NAME="${NAME}-server" \
+    && REPO="bonnefoa/${NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/v3/cmd/${BIN_NAME}@main" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM kube-base AS k9s
@@ -246,7 +241,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="k9s" \
     && REPO="derailed/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -261,37 +256,26 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-base AS kube-profefe-base
-RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="kube-profefe" \
-    && REPO="profefe/${BIN_NAME}" \
-    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
-    && unset HEADER \
-    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-    && if [ -z "${VERSION}" ]; then \
-         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-       fi \
-    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-    && TAR_NAME="${BIN_NAME}_v${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
-    && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && BIN_NAME="kprofefe" \
-    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && BIN_NAME="kubectl-profefe" \
-    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM kube-profefe-base AS kprofefe
+FROM --platform=$BUILDPLATFORM kube-golang-base AS kprofefe
 RUN set -x; cd "$(mktemp -d)" \
+    && NAME="kube-profefe" \
+    && REPO="gianarb/${NAME}" \
     && BIN_NAME="kprofefe" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-profefe-base AS kubectl-profefe
+FROM --platform=$BUILDPLATFORM kube-golang-base AS kubectl-profefe
 RUN set -x; cd "$(mktemp -d)" \
+    && NAME="kube-profefe" \
+    && REPO="gianarb/${NAME}" \
     && BIN_NAME="kubectl-profefe" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM kube-base AS conftest
@@ -299,7 +283,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="conftest" \
     && REPO="open-policy-agent/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -319,7 +303,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-tree" \
     && REPO="ahmetb/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -346,7 +330,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="skaffold" \
     && REPO="GoogleContainerTools/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -359,24 +343,14 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-base AS kubeval
-RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+FROM --platform=$BUILDPLATFORM kube-golang-base AS kubeval
+RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kubeval" \
     && REPO="instrumenta/${BIN_NAME}" \
-    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
-    && unset HEADER \
-    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-    && if [ -z "${VERSION}" ]; then \
-         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-       fi \
-    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-    && TAR_NAME="${BIN_NAME}-${OS}-${ARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
-    && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}@latest" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM kube-base AS kube-linter
@@ -384,7 +358,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kube-linter" \
     && REPO="stackrox/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -404,7 +378,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="helm-docs" \
     && REPO="norwoodj/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -425,7 +399,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="inspektor-gadget" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -446,7 +420,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kdash" \
     && REPO="${BIN_NAME}-rs/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -465,7 +439,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kubectl-rolesum" \
     && REPO="Ladicle/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -480,26 +454,6 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-base AS kubeletctl
-RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="kubeletctl" \
-    && REPO="cyberark/${BIN_NAME}" \
-    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
-    && unset HEADER \
-    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-    && if [ -z "${VERSION}" ]; then \
-         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-       fi \
-    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-    && FILE_NAME="${BIN_NAME}_${OS}_${ARCH}" \
-    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${FILE_NAME}" \
-    && mv "${FILE_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
 FROM --platform=$BUILDPLATFORM kube-base AS istio
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="istioctl" \
@@ -507,38 +461,33 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "$(ls | grep istio)/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-base AS kpt
-    # && REPO="kptdev/${BIN_NAME}" \
-RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+FROM --platform=$BUILDPLATFORM kube-golang-base AS kpt
+RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kpt" \
     && REPO="GoogleContainerTools/${BIN_NAME}" \
-    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
-    && unset HEADER \
-    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-    && if [ -z "${VERSION}" ]; then \
-         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-       fi \
-    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-    && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}/releases/v${VERSION}/${BIN_NAME}-${OS}-${ARCH}" \
-    && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${GITHUBCOM}/${REPO}@latest" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM kube-base AS k3d
-RUN set -x; cd "$(mktemp -d)" \
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="k3d" \
     && REPO="rancher/${BIN_NAME}" \
-    && curl -fsSL "${RAWGITHUB}/${REPO}/main/install.sh" | bash \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && curl -fsSLGH "${HEADER}" "${RAWGITHUB}/${REPO}/main/install.sh" | bash \
+    && unset HEADER \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-base AS kustomize
+FROM --platform=$BUILDPLATFORM kube-golang-base AS kustomize
 RUN set -x; cd "$(mktemp -d)" \
     && BIN_NAME="kustomize" \
-    && REPO="kubernetes-sigs/${BIN_NAME}" \
-    && curl -fsSL "${RAWGITHUB}/${REPO}/master/hack/install_${BIN_NAME}.sh" | bash \
-    && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && REPO="sigs.k8s.io/${BIN_NAME}" \
+    &&GO111MODULE=on go install  \
+      --ldflags "-s -w" --trimpath \
+      "${REPO}/${BIN_NAME}/v5@latest" \
+    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 # FROM --platform=$BUILDPLATFORM kube-base AS wasme
@@ -546,7 +495,7 @@ RUN set -x; cd "$(mktemp -d)" \
 #     && NAME="wasme" \
 #     && REPO="solo-io/wasm" \
 #     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-#     && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+#     && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
 #     && unset HEADER \
 #     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
 #     && if [ -z "${VERSION}" ]; then \
@@ -570,15 +519,6 @@ RUN curl -fsSLo ${BINDIR}/telepresence "https://app.getambassador.io/download/te
 #     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-prod-artifacts/cli/latest/cli_${OS}_${ARCH}" \
 #     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
 #     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM kpango/go:latest AS golang
-FROM --platform=$BUILDPLATFORM kube-base AS kube-golang-base
-COPY --from=golang /opt/go /usr/local/go
-COPY --from=golang /go /go
-ENV GOPATH /go
-ENV GOROOT /usr/local/go
-ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
-COPY go.env $GOROOT/go.env
 
 FROM --platform=$BUILDPLATFORM kube-golang-base AS helmfile
 RUN set -x; cd "$(mktemp -d)" \
@@ -681,9 +621,8 @@ COPY --from=kubebuilder ${BIN_PATH}/kubebuilder ${K8S_PATH}/kubebuilder
 COPY --from=kubecolor ${BIN_PATH}/kubecolor ${K8S_PATH}/kubecolor
 COPY --from=kubeconform ${BIN_PATH}/kubeconform ${K8S_PATH}/kubeconform
 COPY --from=kubectl ${BIN_PATH}/kubectl ${K8S_PATH}/kubectl
-COPY --from=kubectl-fzf ${BIN_PATH}/kubectl-fzf-server ${K8S_PATH}/kubectl-fzf-server
-COPY --from=kubectl-fzf ${BIN_PATH}/kubectl-fzf-completion ${K8S_PATH}/kubectl-fzf-completion
-COPY --from=kubectl-fzf ${BIN_PATH}/kubectl-fzf.zsh ${K8S_PATH}/kubectl-fzf.zsh
+COPY --from=kubectl-fzf-server ${BIN_PATH}/kubectl-fzf-server ${K8S_PATH}/kubectl-fzf-server
+COPY --from=kubectl-fzf-completion ${BIN_PATH}/kubectl-fzf-completion ${K8S_PATH}/kubectl-fzf-completion
 COPY --from=kubectl-gadget ${BIN_PATH}/kubectl-gadget ${K8S_PATH}/kubectl-gadget
 COPY --from=kubectl-profefe ${BIN_PATH}/kubectl-profefe ${K8S_PATH}/kubectl-profefe
 COPY --from=kubectl-rolesum ${BIN_PATH}/kubectl-rolesum ${K8S_PATH}/kubectl-rolesum
@@ -692,7 +631,6 @@ COPY --from=kubectl-tree ${BIN_PATH}/kubectl-tree ${K8S_PATH}/kubectl-tree
 COPY --from=kubectx ${BIN_PATH}/kubectx ${K8S_PATH}/kubectx
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubectl-fwd
 COPY --from=kubefwd ${BIN_PATH}/kubefwd ${K8S_PATH}/kubefwd
-COPY --from=kubeletctl ${BIN_PATH}/kubeletctl ${K8S_PATH}/kubeletctl
 COPY --from=kubens ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
 COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize

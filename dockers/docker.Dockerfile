@@ -34,7 +34,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="slim" \
     && REPO="${BIN_NAME}toolkit/${BIN_NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -57,7 +57,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -78,7 +78,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && NAME="${ORG}-credential-helpers" \
     && REPO="${ORG}/${NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -101,7 +101,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="docker/${NAME}" \
     && BIN_NAME="docker-buildx" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -120,7 +120,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="jessfraz/${NAME}" \
     && BIN_NAME=${NAME} \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -149,7 +149,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="${ORG}/${NAME}" \
     && BIN_NAME="${ORG}-${NAME}" \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
@@ -171,7 +171,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO="${NAME}/${NAME}" \
     && BIN_NAME=${NAME} \
     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-    && BODY="$(curl -fsSL -H ${HEADER} ${API_GITHUB}/${REPO}/${RELEASE_LATEST})" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
     && unset HEADER \
     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
     && if [ -z "${VERSION}" ]; then \
