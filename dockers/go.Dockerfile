@@ -6,6 +6,7 @@ ARG TARGETARCH
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
+ENV AARCH aarch_64
 ENV XARCH x86_64
 
 ENV GO111MODULE on
@@ -25,6 +26,20 @@ ENV GITHUB https://${GITHUBCOM}
 ENV PATH ${PATH}:${GOROOT}/bin:${GOPATH}/bin
 ENV RELEASE_DL releases/download
 ENV RELEASE_LATEST releases/latest
+ENV GO_FLAGS "-trimpath -modcacherw -a -tags netgo"
+
+WORKDIR /tmp
+
+RUN apt update -y \
+    && apt upgrade -y \
+    && if [ "${ARCH}" = "amd64" ] ; then  \
+         apt install -y --no-install-recommends --fix-missing gcc-${XARCH}-${OS}-gnu; \
+         export CC=${XARCH}-${OS}-gnu-gcc; \
+       elif [ "${ARCH}" = "arm64" ] ; then  \
+         apt install -y --no-install-recommends --fix-missing gcc-${AARCH}-${OS}-gnu; \
+         export CC=${AARCH}-${OS}-gnu-gcc; \
+       fi
+
 
 WORKDIR /opt
 RUN set -x; cd "$(mktemp -d)" \
@@ -47,7 +62,7 @@ COPY go.env "${GOROOT}/go.env"
 #     && BIN_NAME="act" \
 #     && REPO="nektos/${BIN_NAME}" \
 #     && go install  \
-#     --ldflags "-s -w" --trimpath \
+#     ${GO_FLAGS} \
 #     "${GITHUBCOM}/${REPO}@latest" \
 #     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
 #     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -60,7 +75,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="air" \
     && REPO="cosmtrek/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -73,7 +88,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="buf" \
     && REPO="bufbuild/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -86,7 +101,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="chidley" \
     && REPO="gnewton/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -99,7 +114,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
 #     && BIN_NAME="dataloaden" \
 #     && REPO="vektah/${BIN_NAME}" \
 #     && go install  \
-#     --ldflags "-s -w" --trimpath \
+#     ${GO_FLAGS} \
 #     "${GITHUBCOM}/${REPO}@latest" \
 #     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
 #     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -118,7 +133,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="dbmate" \
     && REPO="amacneil/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -131,7 +146,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="direnv" \
     && REPO="direnv/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -144,7 +159,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="dlayer" \
     && REPO="orisano/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -157,7 +172,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="dlv" \
     && REPO="go-delve/delve" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -170,7 +185,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="dragon-imports" \
     && REPO="rerost/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -183,7 +198,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="duf" \
     && REPO="muesli/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -196,7 +211,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="efm-langserver" \
     && REPO="mattn/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@master" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -209,7 +224,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="errcheck" \
     && REPO="kisielk/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -222,7 +237,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="evans" \
     && REPO="ktr0731/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -235,7 +250,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="fillstruct" \
     && REPO="davidrjenni/reftools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -248,7 +263,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="fillswitch" \
     && REPO="davidrjenni/reftools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -261,7 +276,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="fixplurals" \
     && REPO="davidrjenni/reftools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -315,7 +330,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="ghq" \
     && REPO="x-motemen/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -328,7 +343,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="ghz" \
     && REPO="bojand/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -341,7 +356,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="git-codereview" \
     && REPO="${GOORG}/x/review" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -354,7 +369,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gitleaks" \
     && REPO="zricethezav/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -368,7 +383,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="glice" \
     && REPO="ribice/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -381,7 +396,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="go-contrib-init" \
     && REPO="${GOORG}/x/tools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -394,7 +409,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="task" \
     && REPO="go-${BIN_NAME}/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/v3/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -407,7 +422,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gocode" \
     && REPO="nsf/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -420,7 +435,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="godef" \
     && REPO="rogpeppe/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -433,7 +448,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gofumpt" \
     && REPO="mvdan.cc/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -446,7 +461,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="goimports" \
     && REPO="${GOORG}/x/tools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -459,7 +474,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="goimports-reviser" \
     && REPO="incu6us/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -472,7 +487,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="goimports-update-ignore" \
     && REPO="pwaller/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -485,7 +500,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gojson" \
     && REPO="y4v8/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -505,7 +520,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="golines" \
     && REPO="segmentio/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -518,7 +533,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="golint" \
     && REPO="${GOORG}/x/lint" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -531,7 +546,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gomodifytags" \
     && REPO="fatih/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -544,7 +559,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gopls" \
     && REPO="${GOORG}/x/tools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -557,7 +572,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gorename" \
     && REPO="${GOORG}/x/tools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -570,7 +585,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="goreturns" \
     && REPO="sqs/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "github.com/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -583,7 +598,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gosec" \
     && REPO="securego/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -596,7 +611,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gotags" \
     && REPO="jstemmer/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -609,7 +624,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gotestfmt" \
     && REPO="gotesttools/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/v2/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -622,7 +637,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gotests" \
     && REPO="cweill/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -636,7 +651,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && ORG="${GOORG}/dl" \
     && REPO="${ORG}/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -649,7 +664,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="govulncheck" \
     && REPO="${GOORG}/x/vuln" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -662,7 +677,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gowrap" \
     && REPO="hexdigest/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -675,7 +690,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="gqlgen" \
     && REPO="99designs/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -688,7 +703,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="grpcurl" \
     && REPO="fullstorydev/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -701,7 +716,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="grype" \
     && REPO="anchore/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -714,7 +729,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="guru" \
     && REPO="${GOORG}/x/tools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -727,7 +742,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="hub" \
     && REPO="github/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -741,7 +756,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && REPO="gohugoio/${BIN_NAME}" \
     && CGO_ENABLED=1 go install  \
     --tags extended \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@master" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -754,7 +769,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="iferr" \
     && REPO="koron/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -767,7 +782,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="impl" \
     && REPO="josharian/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -780,7 +795,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="k6" \
     && REPO="go.k6.io/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}@master" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -793,7 +808,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="keyify" \
     && REPO="honnef.co/go/tools" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -806,7 +821,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="kratos" \
     && REPO="go-kratos/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -819,7 +834,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="go-licenses" \
     && REPO="google/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@master" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -832,7 +847,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="markdown2medium" \
     && REPO="kpango/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@master" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -845,23 +860,23 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="mockgen" \
     && REPO="golang/mock" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS panicparse
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x; cd "$(mktemp -d)" \
-    && BIN_NAME="pp" \
-    && REPO="maruel/panicparse" \
-    && go install  \
-    --ldflags "-s -w" --trimpath \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
-    && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
-    && upx -9 "${GOPATH}/bin/${BIN_NAME}"
+# FROM --platform=$BUILDPLATFORM go-base AS panicparse
+# RUN --mount=type=cache,target="${GOPATH}/pkg" \
+#     --mount=type=cache,target="${HOME}/.cache/go-build" \
+#     --mount=type=tmpfs,target="${GOPATH}/src" \
+#     set -x; cd "$(mktemp -d)" \
+#     && BIN_NAME="pp" \
+#     && REPO="maruel/panicparse" \
+#     && go install  \
+#     ${GO_FLAGS} \
+#     "${GITHUBCOM}/${REPO}/v2/cmd/${BIN_NAME}@master" \
+#     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
+#     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS protoc-gen-connect-go
 RUN --mount=type=cache,target="${GOPATH}/pkg" \
@@ -871,7 +886,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="protoc-gen-connect-go" \
     && REPO="bufbuild/connect-go" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -884,7 +899,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="protoc-gen-go" \
     && REPO="protobuf" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "google.${GOORG}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -897,7 +912,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="prototool" \
     && REPO="uber/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@dev" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -917,7 +932,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="reddit2wallpaper" \
     && REPO="mattiamari/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -930,7 +945,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="ruleguard" \
     && REPO="quasilyte/go-${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -943,7 +958,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="sqls" \
     && REPO="lighttiger2505/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -956,7 +971,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="strictgoimports" \
     && REPO="momotaro98/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -969,7 +984,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="swagger" \
     && REPO="go-${BIN_NAME}/go-${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -982,7 +997,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="syft" \
     && REPO="anchore/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -995,7 +1010,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="syncmap" \
     && REPO="a8m/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -1033,7 +1048,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="tparse" \
     && REPO="mfridman/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -1046,7 +1061,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="vegeta" \
     && REPO="tsenart/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -1059,7 +1074,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="vgrun" \
     && REPO="vugu/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -1072,7 +1087,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && BIN_NAME="xo" \
     && REPO="xo/${BIN_NAME}" \
     && go install  \
-    --ldflags "-s -w" --trimpath \
+    ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOPATH}/bin/${BIN_NAME}" \
     && upx -9 "${GOPATH}/bin/${BIN_NAME}"
@@ -1145,7 +1160,7 @@ COPY --from=kratos $GOPATH/bin/kratos $GOPATH/bin/kratos
 COPY --from=licenses $GOPATH/bin/go-licenses $GOPATH/bin/licenses
 COPY --from=markdown2medium $GOPATH/bin/markdown2medium $GOPATH/bin/markdown2medium
 COPY --from=mockgen $GOPATH/bin/mockgen $GOPATH/bin/mockgen
-COPY --from=panicparse $GOPATH/bin/pp $GOPATH/bin/pp
+# COPY --from=panicparse $GOPATH/bin/pp $GOPATH/bin/pp
 COPY --from=protoc-gen-connect-go $GOPATH/bin/protoc-gen-connect-go $GOPATH/bin/protoc-gen-connect-go
 COPY --from=protoc-gen-go $GOPATH/bin/protoc-gen-go $GOPATH/bin/protoc-gen-go
 COPY --from=prototool $GOPATH/bin/prototool $GOPATH/bin/prototool

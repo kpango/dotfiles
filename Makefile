@@ -295,7 +295,6 @@ docker_build:
 	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
-	  --squash \
 	  --output type=image,name="$(IMAGE_NAME):latest",oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
 	  # --no-cache \
