@@ -237,6 +237,10 @@ if [ -z $DOTENV_LOADED ]; then
         export PATH="$(which deno):$PATH"
     fi
 
+    if [ -d "$HOME/.rd/bin" ]; then
+        export PATH="$HOME/.rd/bin:$PATH"
+    fi
+
     if [[ ${OSTYPE} == "darwin"* && ${CPUTYPE} == "arm"* ]]; then
         export PATH="/opt/homebrew/bin:$PATH"
     fi
