@@ -15,6 +15,10 @@ if type tmux >/dev/null 2>&1; then
         HOST="$(hostname)"
         TMUX_TMPDIR_PREFIX="/tmp/tmux-sockets"
         TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/$HOST"
+        TPM_PATH="$HOME/.tmux/plugins/tpm"
+        if [ ! -d "$TPM_PATH" ]; then
+            git clone --depth 1 https://github.com/tmux-plugins/tpm $TPM_PATH
+        fi
         # If connected via SSH
         if [ ! -z "$SSH_CLIENT" ] ; then
             SSH_IP="${SSH_CLIENT%% *}"
