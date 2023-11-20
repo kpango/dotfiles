@@ -1074,13 +1074,13 @@ if [ -z $ZSH_LOADED ]; then
             sudo systemctl reload dbus.service
             sudo systemctl restart fwupd.service
             sudo lsusb
-            sudo fwupdmgr get-devices
-            sudo fwupdmgr clear-history
-            sudo fwupdmgr clear-offline
-            sudo fwupdmgr refresh --force
-            sudo fwupdmgr get-updates --force
-            sudo fwupdmgr get-upgrades --force
-            sudo fwupdmgr update
+            sudo fwupdtool get-devices
+            sudo fwupdtool clear-history
+            sudo fwupdtool clear-offline
+            sudo fwupdtool refresh --force
+            sudo fwupdtool get-updates --force
+            sudo fwupdtool get-upgrades --force
+            sudo fwupdtool update
         }
         alias fup=fup
     fi
