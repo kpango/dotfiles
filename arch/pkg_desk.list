@@ -13,7 +13,6 @@ avr-libc
 avrdude
 axel
 bash-language-server
-bolt
 ccache
 chrony
 clang
@@ -40,7 +39,6 @@ graphviz
 grep
 grim
 gzip
-helvum
 htop
 imagemagick
 inetutils
