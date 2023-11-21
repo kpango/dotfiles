@@ -4,18 +4,17 @@ sudo rm -rf /tmp/* \
 
 export DefaultImModule=fcitx5
 export GTK_IM_MODULE=fcitx5
+export LIBSEAT_BACKEND=logind
 export QT_IM_MODULE=fcitx5
-export XMODIFIERS="@im=fcitx5"
+export QT_QPA_PLATFORM=wayland
 export SDL_IM_MODULE=fcitx5
-
-export XKB_DEFAULT_OPTIONS=ctrl:nocaps
-export XKB_DEFAULT_LAYOUT=us
-
-export XDG_SESSION_TYPE=wayland
 export XDG_CURRENT_DESKTOP=sway
 export XDG_CURRENT_SESSION=sway
-export LIBSEAT_BACKEND=logind
-export QT_QPA_PLATFORM=wayland
+export XDG_SESSION_DESKTOP=sway
+export XDG_SESSION_TYPE=wayland
+export XKB_DEFAULT_LAYOUT=us
+export XKB_DEFAULT_OPTIONS=ctrl:nocaps
+export XMODIFIERS="@im=fcitx5"
 # export GDK_DPI_SCALE=1.5
 # export QT_SCALE_FACTOR=1.5
 # export MOZ_ENABLE_WAYLAND=1
@@ -28,6 +27,7 @@ ulimit -n 500000
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     CLUTTER_BACKEND=wayland \
     DefaultImModule=fcitx5 \
+    DESKTOP_SESSION=sway \
     GBM_BACKEND=nvidia-drm \
     GDK_BACKEND=wayland \
     GTK_IM_MODULE=fcitx5 \
@@ -37,7 +37,7 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     MOZ_ENABLE_WAYLAND=1 \
     QT_AUTO_SCREEN_SCALE_FACTOR=1 \
     QT_IM_MODULE=fcitx5 \
-    QT_QPA_PLATFORM="wayland;xcb" \
+    QT_QPA_PLATFORM="wayland-egl;xcb" \
     QT_WAYLAND_DISABLE_WINDOWDECORATION=1 \
     SDL_IM_MODULE=fcitx5 \
     SDL_VIDEODRIVER=wayland \
@@ -46,6 +46,7 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     WLR_NO_HARDWARE_CURSORS=1 \
     XDG_CURRENT_DESKTOP=sway \
     XDG_CURRENT_SESSION=sway \
+    XDG_SESSION_DESKTOP=sway \
     XDG_SESSION_TYPE=wayland \
     XKB_DEFAULT_LAYOUT=us \
     XKB_DEFAULT_OPTIONS=ctrl:nocaps \

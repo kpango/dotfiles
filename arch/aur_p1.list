@@ -11,15 +11,15 @@ google-cloud-cli-gke-gcloud-auth-plugin
 gopreload-git
 libnm-iwd
 milcheck
-networkmanager-iwd
 mkinitcpio-firmware
 mozc-ut
 netrc
+networkmanager-iwd
 ngrok
 noto-fonts-emoji-git
 paru-bin
 scaramanga
-slack-desktop
+slack-desktop-wayland
 swaybg-git
 tpacpi-bat-git
 ttf-hackgen

@@ -1130,26 +1130,26 @@ if [ -z $ZSH_LOADED ]; then
                 echo "backup ThinkPad P1 Gen 2 packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_p1.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_p1.list
-                pacman -Qqen > $DOTFILES_DIR/arch/pkg_p1.list
-                pacman -Qqem > $DOTFILES_DIR/arch/aur_p1.list
+                pacman -Qqen | sort > $DOTFILES_DIR/arch/pkg_p1.list
+                pacman -Qqem | sort > $DOTFILES_DIR/arch/aur_p1.list
             elif [[ $family_name =~ "5th" ]]; then
                 echo "backup ThinkPad X1 Carbon Gen 5 packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_nc.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_nc.list
-                pacman -Qqen > $DOTFILES_DIR/arch/pkg_nc.list
-                pacman -Qqem > $DOTFILES_DIR/arch/aur_nc.list
+                pacman -Qqen | sort > $DOTFILES_DIR/arch/pkg_nc.list
+                pacman -Qqem | sort > $DOTFILES_DIR/arch/aur_nc.list
             elif [[ $family_name =~ "X1" ]]; then
                 echo "backup ThinkPad X1 Carbon Gen 9 packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur.list
-                pacman -Qqen > $DOTFILES_DIR/arch/pkg.list
-                pacman -Qqem > $DOTFILES_DIR/arch/aur.list
+                pacman -Qqen | sort > $DOTFILES_DIR/arch/pkg.list
+                pacman -Qqem | sort > $DOTFILES_DIR/arch/aur.list
             else
                 echo "backup packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_desk.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_desk.list
-                pacman -Qqen > $DOTFILES_DIR/arch/pkg_desk.list
-                pacman -Qqem > $DOTFILES_DIR/arch/aur_desk.list
+                pacman -Qqen | sort > $DOTFILES_DIR/arch/pkg_desk.list
+                pacman -Qqem | sort > $DOTFILES_DIR/arch/aur_desk.list
             fi
         }
         alias archback=archback

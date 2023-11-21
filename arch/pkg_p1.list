@@ -112,8 +112,8 @@ whois
 wl-clipboard
 wofi
 wpscan
-xf86-video-nouveau
 xf86-input-synaptics
+xf86-video-nouveau
 xfsprogs
 xorg-xwayland
 yarn
