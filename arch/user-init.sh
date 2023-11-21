@@ -16,12 +16,11 @@ elif [[ $family_name =~ "X1" ]]; then
 else
     curl https://raw.githubusercontent.com/kpango/dotfiles/main/arch/aur_desk.list -o aur.list
 fi
-sudo pacman -Rsucnd --noconfirm go
-paru -Syu --noanswerdiff --noanswerclean --noconfirm - < aur.list
-sudo cp /usr/bin/google-chrome-stable /usr/bin/chrome
+paru -Syu - < aur.list
+rm -rf aur.list
 fc-cache -f -v
 if [[ $family_name =~ "P1" ]]; then
     systemctl --user enable psd.service
 fi
-
-git clone https://github.com/tmux-plugins/tpm $HOME/.tmux/plugins/tpm
+sudo mkdir -p /root/.docker
+mkdir $HOME/.config/sheldon

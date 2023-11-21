@@ -51,6 +51,7 @@ link:
 	mkdir -p $(HOME)/.config/alacritty
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
+	mkdir -p $(HOME)/.config/sheldon
 	mkdir -p $(HOME)/.docker
 	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
 	ln -sfv $(ROOTDIR)/arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
@@ -84,7 +85,7 @@ arch_link: \
 	mkdir -p $(HOME)/.config/psd
 	mkdir -p $(HOME)/.config/workstyle
 	sudo mkdir -p /etc/scaramanga
-	sudo mkdir -p /root/.dockers
+	sudo mkdir -p /root/.docker
 	sudo mkdir -p /etc/udev/rules.d
 	sudo mkdir -p /etc/modules-load.d/
 	# ln -sfv $(ROOTDIR)/arch/swaylock.sh $(HOME)/.config/sway/swaylock.sh
@@ -142,14 +143,16 @@ arch_link: \
 
 arch_p1_link: \
 	arch_link
-	sudo echo "options bbswitch load_state=0 unload_state=1" | sudo tee /etc/modprobe.d/bbswitch.conf
 	rm -rf $(HOME)/.config/alacritty/alacritty.yml
 	ln -sfv $(ROOTDIR)/arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
 	rm -rf $(HOME)/.config/psd
 	mkdir $(HOME)/.config/psd
-	sudo cp $(ROOTDIR)/arch/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
-	sudo cp $(ROOTDIR)/arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
+	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
+	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
+	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
 	sudo systemctl daemon-reload
+	# sudo cp $(ROOTDIR)/arch/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
+	# sudo cp $(ROOTDIR)/arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
 
 arch_desk_link: \
 	arch_link
@@ -158,6 +161,7 @@ arch_desk_link: \
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
+	sudo systemctl daemon-reload
 
 mac_link: \
 	link
@@ -196,13 +200,14 @@ clean:
 		$(HOME)/.aliases \
 		$(HOME)/.config/alacritty \
 		$(HOME)/.config/compton \
+		$(HOME)/.config/fcitx5/conf/classicui.conf \
 		$(HOME)/.config/fcitx5/config \
 		$(HOME)/.config/fcitx5/profile \
-		$(HOME)/.config/fcitx5/conf/classicui.conf \
 		$(HOME)/.config/i3 \
 		$(HOME)/.config/i3status \
 		$(HOME)/.config/nvim \
 		$(HOME)/.config/ranger \
+		$(HOME)/.config/sheldon \
 		$(HOME)/.config/starship.toml \
 		$(HOME)/.config/sway \
 		$(HOME)/.config/waybar \
@@ -234,8 +239,8 @@ clean:
 		/etc/modprobe.d/bbswitch.conf \
 		/etc/modprobe.d/nvidia-tweaks.conf \
 		/etc/modprobe.d/thinkfan.conf \
-		/etc/modules-load.d/nvidia-uvm.conf \
 		/etc/modules-load.d/bbr.conf \
+		/etc/modules-load.d/nvidia-uvm.conf \
 		/etc/pacman.conf \
 		/etc/profile.d/fcitx.sh \
 		/etc/profile.d/sway.sh \
@@ -250,8 +255,8 @@ clean:
 		/etc/systemd/system/nvidia-enable-power-off.service \
 		/etc/systemd/system/pulseaudio.service \
 		/etc/tlp.conf \
-		/etc/udev/rules.d/60-nvidia.rules \
-		/etc/udev/rules.d/60-ioschedulers.rules
+		/etc/udev/rules.d/60-ioschedulers.rules \
+		/etc/udev/rules.d/60-nvidia.rules
 
 
 zsh: link
