@@ -7,10 +7,10 @@ archlinux-keyring
 autoconf
 automake
 avr-binutils
+avrdude
 avr-gcc
 avr-gdb
 avr-libc
-avrdude
 axel
 bash-language-server
 ccache
@@ -39,6 +39,7 @@ graphviz
 grep
 grim
 gzip
+helvum
 htop
 imagemagick
 inetutils
