@@ -52,5 +52,5 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     XKB_DEFAULT_OPTIONS=ctrl:nocaps \
     XMODIFIERS="@im=fcitx5" \
     __GLX_VENDOR_LIBRARY_NAME=nvidia \
-    exec sway --unsupported-gpu -d -V
+    exec sway --unsupported-gpu
 fi
