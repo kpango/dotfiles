@@ -13,8 +13,6 @@ SWAP_PART=${DEVICE2}p1
 ROOT_PART=${RAID0}p1
 ROOT=/
 BOOT=${ROOT}boot
-ESP_SIZE=64GiB
-SWAP_SIZE=${ESP_SIZE}
 FILESYS=xfs
 
 sed -i -e "s/COMPRESSXZ=(xz -c -z -)/COMPRESSXZ=(xz -T 0 -c -z -)/g" /etc/makepkg.conf
@@ -60,7 +58,7 @@ swapon ${SWAP_PART} && sync
 echo "${SWAP_PART}     	none    	swap    	defaults,noatime    	0 0" | tee -a /etc/fstab
 
 sed -i -e "s/#DNS=/DNS=1.1.1.1 8.8.8.8 9.9.9.10 8.8.4.4/g" /etc/systemd/resolved.conf
-sed -i -e "s/#FallbackDNS=/FallbackDNS/g" /etc/systemd/resolved.conf
+sed -i -e "s/#FallbackDNS=/FallbackDNS=/g" /etc/systemd/resolved.conf
 
 LOGIN_USER=kpango
 HOME=/home/${LOGIN_USER}
@@ -72,11 +70,9 @@ groupadd input
 groupadd uinput
 groupadd pulse
 groupadd pulse-access
-groupadd bumblebee
-
 
 groupmod -g 1000 -o users
-useradd -m -o -u 1000 -g users -G wheel,users,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,bumblebee,uinput -s /usr/bin/zsh ${LOGIN_USER}
+useradd -m -o -u 1000 -g users -G wheel,users,${LOGIN_USER},docker,sshd,storage,power,autologin,audio,pulse,pulse-access,input,uinput -s /usr/bin/zsh ${LOGIN_USER}
 passwd ${LOGIN_USER}
 sed -e '/%wheel ALL=(ALL) ALL/s/^# //' /etc/sudoers | EDITOR=tee visudo >/dev/null
 sed -e '/%wheel ALL=(ALL) NOPASSWORD: ALL/s/^# %wheel/kpango/' /etc/sudoers | EDITOR=tee visudo >/dev/null
@@ -85,9 +81,7 @@ passwd
 mkdir -p ${HOME}/.config
 mkdir -p ${HOME}/.cache
 
-echo "tmpfs /tmp tmpfs nodiratime,noatime,nosuid,nodev,size=1g 0 0" | tee -a /etc/fstab
 echo "tmpfs /var/tmp tmpfs nodiratime,noatime,nosuid,nodev,size=64m 0 0" | tee -a /etc/fstab
-echo "tmpfs /var/cache tmpfs nodiratime,noatime,nosuid,nodev,size=64m 0 0" | tee -a /etc/fstab
 echo "tmpfs /home/kpango/.cache/fontconfig tmpfs nodiratime,noatime,nosuid,nodev,size=10m 0 0" | tee -a /etc/fstab
 echo "tmpfs /home/kpango/.cache/google-chrome-beta tmpfs nodiratime,noatime,nosuid,nodev,size=2g 0 0" | tee -a /etc/fstab
 
@@ -133,7 +127,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /intel-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw acpi.ec_no_wakeup=1 acpi_backlight=native acpi_osi=! acpi_osi="Windows 2013" iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce nvidia-drm.modeset=1 loglevel=1 nowatchdog psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet rd.systemd.show_status=auto rd.udev.log_priority=3 zswap.enabled=1 zswap.compressor=lz4 zswap.max_pool_percent=25 systemd.unified_cgroup_hierarchy=1 cgroup_no_v1=all i8042.reset=1 i8042.nomux=1
+options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw acpi.ec_no_wakeup=1 acpi_backlight=native acpi_osi=! acpi_osi="Windows 2013" amd_iommu=on cgroup_no_v1=all i8042.nomux=1 i8042.reset=1 intel_iommu=on iommu=force,merge,nopanic,nopt loglevel=1 nowatchdog nvidia_drm.modeset=1 psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet rd.systemd.show_status=auto rd.udev.log_priority=3 swiotlb=noforce sysrq_always_enabled=1 systemd.unified_cgroup_hierarchy=1 usbcore.autosuspend=-1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=25 zswap.zpool=z3fold
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf
@@ -156,3 +150,5 @@ chmod -R 755 ${HOME}
 chown -R $LOGIN_USER:wheel ${HOME}
 chmod -R 755 /go
 chown -R $LOGIN_USER:wheel /go
+chown -R $LOGIN_USER:wheel /tmp
+chmod -R 777 /tmp

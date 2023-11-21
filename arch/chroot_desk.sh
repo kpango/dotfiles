@@ -25,7 +25,6 @@ cat <<EOF >>/etc/pacman.conf
 Include = /etc/pacman.d/mirrorlist
 EOF
 echo "blacklist pcspkr" > /etc/modprobe.d/nobeep.conf
-
 cat <<EOF >>/etc/modprobe.d/nowatchdog.conf
 blacklist intel_pmc_bxt
 blacklist iTCO_vendor_support
@@ -93,7 +92,7 @@ systemctl enable docker
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
-sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
+sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/FILES=()/FILES=(\"\/etc\/mdadm.conf\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block mdadm mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
@@ -111,7 +110,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /amd-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw acpi.ec_no_wakeup=1 acpi_backlight=native acpi_osi=! acpi_osi="Windows 2013" amd_iommu=on intel_iommu=on iommu=force,merge,nopanic,nopt nvidia_drm.modeset=1 cgroup_no_v1=all i8042.nomux=1 i8042.reset=1 loglevel=1 nowatchdog psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet rd.systemd.show_status=auto rd.udev.log_priority=3 swiotlb=noforce sysrq_always_enabled=1 systemd.unified_cgroup_hierarchy=1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=25 zswap.zpool=z3fold usbcore.autosuspend=-1
+options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw acpi.ec_no_wakeup=1 acpi_backlight=native acpi_osi=! acpi_osi="Windows 2013" amd_iommu=on cgroup_no_v1=all i8042.nomux=1 i8042.reset=1 intel_iommu=on iommu=force,merge,nopanic,nopt loglevel=1 nowatchdog nvidia_drm.modeset=1 psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet rd.systemd.show_status=auto rd.udev.log_priority=3 swiotlb=noforce sysrq_always_enabled=1 systemd.unified_cgroup_hierarchy=1 usbcore.autosuspend=-1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=25 zswap.zpool=z3fold
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf
