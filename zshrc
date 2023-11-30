@@ -1197,11 +1197,22 @@ if [ -z $ZSH_LOADED ]; then
             sudo pacman -Scc --noconfirm
             sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
             if type scaramanga >/dev/null 2>&1; then
+                sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
                 sudo scaramanga > mirrorlist
-                sudo rm -rf /etc/pacman.d/mirrorlist
-                sudo mv mirrorlist /etc/pacman.d/mirrorlist
-                sudo chmod 755 /etc/pacman.d/mirrorlist
-                sudo chown root:root /etc/pacman.d/mirrorlist
+		if [[ $(wc -l < mirrorlist) -lt 5 ]]; then
+		    echo "failed to get new mirrorlist from scaramanga"
+		    sudo cat mirrorlist
+		    sudo rm -rf mirrorlist
+                    sudo rm -rf /etc/pacman.d/mirrorlist
+                    sudo mv /etc/pacman.d/mirrorlist.backup /etc/pacman.d/mirrorlist
+                else
+		    echo "succeeded to get new mirrorlist from scaramanga"
+                    sudo rm -rf /etc/pacman.d/mirrorlist
+                    sudo mv mirrorlist /etc/pacman.d/mirrorlist
+                    sudo chmod 755 /etc/pacman.d/mirrorlist
+                    sudo chown root:root /etc/pacman.d/mirrorlist
+                    sudo rm -f /etc/pacman.d/mirrorlist.backup
+                fi
                 paru -Syy
                 if type milcheck >/dev/null 2>&1; then
                     sudo milcheck
