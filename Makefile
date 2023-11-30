@@ -84,7 +84,6 @@ arch_link: \
 	mkdir -p $(HOME)/.config/wofi
 	mkdir -p $(HOME)/.config/psd
 	mkdir -p $(HOME)/.config/workstyle
-	sudo mkdir -p /etc/scaramanga
 	sudo mkdir -p /root/.docker
 	sudo mkdir -p /etc/udev/rules.d
 	sudo mkdir -p /etc/modules-load.d/
@@ -115,7 +114,6 @@ arch_link: \
 	sudo ln -sfv $(ROOTDIR)/arch/makepkg.conf /etc/makepkg.conf
 	sudo ln -sfv $(ROOTDIR)/arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 	sudo ln -sfv $(ROOTDIR)/arch/pacman.conf /etc/pacman.conf
-	sudo ln -sfv $(ROOTDIR)/arch/scaramanga.toml /etc/scaramanga/config.toml
 	sudo ln -sfv $(ROOTDIR)/arch/sway.sh /etc/profile.d/sway.sh
 	sudo ln -sfv $(ROOTDIR)/arch/thinkfan.conf /etc/thinkfan.conf
 	sudo ln -sfv $(ROOTDIR)/arch/tlp /etc/default/tlp
@@ -245,8 +243,6 @@ clean:
 		/etc/profile.d/fcitx.sh \
 		/etc/profile.d/sway.sh \
 		/etc/pulse/default.pa \
-		/etc/scaramanga \
-		/etc/scaramanga/config.toml \
 		/etc/sudoers.d/$(USER) \
 		/etc/sysctl.conf \
 		/etc/sysctl.d/99-sysctl.conf \

@@ -1196,19 +1196,28 @@ if [ -z $ZSH_LOADED ]; then
             sudo pacman-db-upgrade
             sudo pacman -Scc --noconfirm
             sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
-            if type scaramanga >/dev/null 2>&1; then
+            if type rate-mirrors >/dev/null 2>&1; then
                 sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-                sudo scaramanga > mirrorlist
-		if [[ $(wc -l < mirrorlist) -lt 5 ]]; then
-		    echo "failed to get new mirrorlist from scaramanga"
-		    sudo cat mirrorlist
-		    sudo rm -rf mirrorlist
+		TMPFILE="$(mktemp)"
+		rate-mirrors \
+		  --allow-root \
+		  --disable-comments \
+		  --disable-comments-in-file \
+		  --entry-country JP \
+		  --concurrency $CPUCORES \
+		  --save="$TMPFILE" \
+		  arch --max-delay=21600
+		if [[ $(wc -l < $TMPFILE) -lt 5 ]]; then
+		    echo "failed to get new mirrorlist from rate-mirrors"
+		    sudo cat $TMPFILE
+		    sudo rm -rf $TMPFILE
                     sudo rm -rf /etc/pacman.d/mirrorlist
                     sudo mv /etc/pacman.d/mirrorlist.backup /etc/pacman.d/mirrorlist
                 else
-		    echo "succeeded to get new mirrorlist from scaramanga"
+		    echo "succeeded to get new mirrorlist from rate-mirrors"
+		    sudo cat $TMPFILE
                     sudo rm -rf /etc/pacman.d/mirrorlist
-                    sudo mv mirrorlist /etc/pacman.d/mirrorlist
+		    sudo mv $TMPFILE /etc/pacman.d/mirrorlist
                     sudo chmod 755 /etc/pacman.d/mirrorlist
                     sudo chown root:root /etc/pacman.d/mirrorlist
                     sudo rm -f /etc/pacman.d/mirrorlist.backup
