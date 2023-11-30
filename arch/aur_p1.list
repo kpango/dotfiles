@@ -1,4 +1,5 @@
 chrome-remote-desktop
+cursor-appimage
 docker-credential-pass-git
 downgrade
 duf-git
@@ -18,6 +19,7 @@ networkmanager-iwd
 ngrok
 noto-fonts-emoji-git
 paru-bin
+rate-mirrors-bin
 scaramanga
 slack-desktop-wayland
 swaybg-git

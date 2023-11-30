@@ -26,8 +26,8 @@ ulimit -n 500000
 
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     CLUTTER_BACKEND=wayland \
-    DefaultImModule=fcitx5 \
     DESKTOP_SESSION=sway \
+    DefaultImModule=fcitx5 \
     GBM_BACKEND=nvidia-drm \
     GDK_BACKEND=wayland \
     GTK_IM_MODULE=fcitx5 \
@@ -35,6 +35,7 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     LIBSEAT_BACKEND=logind \
     LIBVA_DRIVER_NAME=nvidia \
     MOZ_ENABLE_WAYLAND=1 \
+    MOZ_USE_XINPUT2=1 \
     QT_AUTO_SCREEN_SCALE_FACTOR=1 \
     QT_IM_MODULE=fcitx5 \
     QT_QPA_PLATFORM="wayland-egl;xcb" \
@@ -44,13 +45,16 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     WLR_DRM_DEVICES=/dev/dri/card1:/dev/dri/card0 \
     WLR_DRM_NO_ATOMIC=1 \
     WLR_NO_HARDWARE_CURSORS=1 \
-    XDG_CURRENT_DESKTOP=sway \
+    WLR_RENDERER=vulkan \
     XDG_CURRENT_SESSION=sway \
     XDG_SESSION_DESKTOP=sway \
     XDG_SESSION_TYPE=wayland \
     XKB_DEFAULT_LAYOUT=us \
     XKB_DEFAULT_OPTIONS=ctrl:nocaps \
     XMODIFIERS="@im=fcitx5" \
+    XWAYLAND_NO_GLAMOR=1 \
     __GLX_VENDOR_LIBRARY_NAME=nvidia \
-    exec sway --unsupported-gpu
+    __GL_GSYNC_ALLOWED=0 \
+    __GL_VRR_ALLOWED=0 \
+    exec sway --unsupported-gpu -D noscanout "$@"
 fi
