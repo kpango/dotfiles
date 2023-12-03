@@ -142,7 +142,7 @@ arch_link: \
 arch_p1_link: \
 	arch_link
 	rm -rf $(HOME)/.config/alacritty/alacritty.yml
-	ln -sfv $(ROOTDIR)/arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(ROOTDIR)/arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty_p1.yml
 	rm -rf $(HOME)/.config/psd
 	mkdir $(HOME)/.config/psd
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
