@@ -1209,13 +1209,11 @@ if [ -z $ZSH_LOADED ]; then
 		  arch --max-delay=21600
 		if [[ $(wc -l < $TMPFILE) -lt 5 ]]; then
 		    echo "failed to get new mirrorlist from rate-mirrors"
-		    sudo cat $TMPFILE
 		    sudo rm -rf $TMPFILE
                     sudo rm -rf /etc/pacman.d/mirrorlist
                     sudo mv /etc/pacman.d/mirrorlist.backup /etc/pacman.d/mirrorlist
                 else
 		    echo "succeeded to get new mirrorlist from rate-mirrors"
-		    sudo cat $TMPFILE
                     sudo rm -rf /etc/pacman.d/mirrorlist
 		    sudo mv $TMPFILE /etc/pacman.d/mirrorlist
                     sudo chmod 755 /etc/pacman.d/mirrorlist
