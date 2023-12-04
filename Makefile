@@ -282,11 +282,13 @@ github_check:
 	  --url https://api.github.com/rate_limit
 
 docker_build:
-	echo "$(GITHUB_ACCESS_TOKEN)" > /tmp/gat
+	$(eval TMP_DIR := $(shell mktemp -d))
+	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
+	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 sudo docker buildx build \
 	  --builder $(DOCKER_BUILDER_NAME) \
 	  --network=host \
-	  --secret id=gat,src=/tmp/gat \
+	  --secret id=gat,src="$(TMP_DIR)/gat" \
 	  --build-arg USER_ID="$(USER_ID)" \
 	  --build-arg GROUP_ID="$(GROUP_ID)" \
 	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
@@ -298,16 +300,14 @@ docker_build:
 	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
-	  --output type=image,name="$(IMAGE_NAME):latest",oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
-	  # --no-cache \
-	rm -rf /tmp/gat
+	@rm -rf $(TMP_DIR)
 
 docker_push:
 	# docker push $(IMAGE_NAME):latest
 
 create_buildx:
-	docker run --privileged --rm tonistiigi/binfmt --install $(DOCKER_BUILDER_PLATFORM)
+	docker run --privileged --rm tonistiigi/binfmt:master --install $(DOCKER_BUILDER_PLATFORM)
 	sudo docker buildx create --use \
 		--name $(DOCKER_BUILDER_NAME) \
 		--driver $(DOCKER_BUILDER_DRIVER) \
