@@ -143,6 +143,8 @@ arch_p1_link: \
 	arch_link
 	rm -rf $(HOME)/.config/alacritty/alacritty.yml
 	ln -sfv $(ROOTDIR)/arch/alacritty_p1.yml $(HOME)/.config/alacritty/alacritty.yml
+	rm -rf $(HOME)/.config/waybar/style.css
+	ln -sfv $(ROOTDIR)/arch/waybar_p1.css $(HOME)/.config/waybar/style.css
 	rm -rf $(HOME)/.config/psd
 	mkdir $(HOME)/.config/psd
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
