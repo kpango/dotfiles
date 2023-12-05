@@ -300,6 +300,8 @@ docker_build:
 	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
+	  -t $(IMAGE_NAME) \
+	  --push \
 	  -f $(DOCKERFILE) .
 	@rm -rf $(TMP_DIR)
 
