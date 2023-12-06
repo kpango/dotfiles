@@ -14,6 +14,8 @@ DOCKER_BUILDER_NAME = "kpango-builder"
 DOCKER_BUILDER_DRIVER = "docker-container"
 DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64"
 
+VERSION = latest
+
 echo:
 	@echo $(ROOTDIR)
 
@@ -302,10 +304,12 @@ docker_build:
 	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
 	  --label org.opencontainers.image.url="$(GITHUB_URL)" \
 	  --label org.opencontainers.image.source="$(GITHUB_URL)" \
-	  --label org.opencontainers.image.revision="$(GITHUB_SHA)"
+	  --label org.opencontainers.image.revision="$(GITHUB_SHA)" \
+	  --label org.opencontainers.image.version=$(VERSION) \
+	  --label org.opencontainers.image.title=$(IMAGE_NAME) \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
-	  -t $(IMAGE_NAME) \
+	  -t $(IMAGE_NAME):$(VERSION) \
 	  --push \
 	  -f $(DOCKERFILE) .
 	@rm -rf $(TMP_DIR)
