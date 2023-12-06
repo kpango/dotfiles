@@ -309,9 +309,10 @@ docker_build:
 	  --label org.opencontainers.image.title=$(IMAGE_NAME) \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
-	  -t $(IMAGE_NAME):$(VERSION) \
-	  --push \
+	  --output type=image,name=$(IMAGE_NAME):$(VERSION),oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
+	  # -t $(IMAGE_NAME):$(VERSION) \
+	  # --push \
 	@rm -rf $(TMP_DIR)
 
 docker_push:
