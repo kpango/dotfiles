@@ -309,7 +309,8 @@ docker_build:
 	  --label org.opencontainers.image.title=$(IMAGE_NAME) \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
-	  --output type=image,name=$(IMAGE_NAME):$(VERSION),oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
+	  --output type=image,name=$(IMAGE_NAME):$(VERSION),oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \ 
+          --output type=image,name=$(IMAGE_NAME):$(VERSION)-estargz,oci-mediatypes=true,compression=estargz,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
 	  # -t $(IMAGE_NAME):$(VERSION) \
 	  # --push \
@@ -326,9 +327,9 @@ create_buildx:
 		--bootstrap \
 		--driver-opt=image=moby/buildkit:master \
 		--driver-opt=network=host \
-		--buildkitd-flags="--oci-worker-gc=false"
+		--buildkitd-flags="--oci-worker-gc=false --oci-worker-snapshotter=stargz"
 	sudo docker buildx ls
-	sudo docker buildx inspect
+	sudo docker buildx inspect --bootstrap $(DOCKER_BUILDER_NAME)
 
 remove_buildx:
 	sudo docker buildx rm $(DOCKER_BUILDER_NAME)
