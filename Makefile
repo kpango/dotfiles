@@ -309,8 +309,10 @@ docker_build:
 	  --label org.opencontainers.image.title=$(IMAGE_NAME) \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
-	  --squash \
-	  --output type=registry,name=$(IMAGE_NAME):$(VERSION),oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \ 
+	  --sbom=true \
+	  --provenance=true \
+	  -t $(IMAGE_NAME):$(VERSION) \
+	  --output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
           # --output type=image,name=$(IMAGE_NAME):$(VERSION)-estargz,oci-mediatypes=true,compression=estargz,force-compression=true,push=true \
 	  # -t $(IMAGE_NAME):$(VERSION) \
