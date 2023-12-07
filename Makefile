@@ -286,6 +286,8 @@ github_check:
 	  --url https://api.github.com/rate_limit
 
 docker_build:
+	$(eval CACHE_DIR := "/tmp/docker_cache/$(IMAGE_NAME)/$(VERSION)")
+	mkdir -p $(CACHE_DIR)
 	$(eval TMP_DIR := $(shell mktemp -d))
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
@@ -300,7 +302,9 @@ docker_build:
 	  --build-arg EMAIL="$(EMAIL)" \
 	  --build-arg BUILDKIT_MULTI_PLATFORM=1 \
 	  --build-arg BUILDKIT_INLINE_CACHE=1 \
+	  --cache-to type=local,dest=$(CACHE_DIR) \
 	  --cache-to type=registry,ref=$(IMAGE_NAME):buildcache,mode=max \
+	  --cache-from type=local,src=$(CACHE_DIR) \
 	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
 	  --label org.opencontainers.image.url="$(GITHUB_URL)" \
 	  --label org.opencontainers.image.source="$(GITHUB_URL)" \
@@ -310,7 +314,7 @@ docker_build:
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
 	  --sbom=true \
-	  --provenance=true \
+	  --provenance=mode=max \
 	  -t $(IMAGE_NAME):$(VERSION) \
 	  --output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
