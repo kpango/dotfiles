@@ -2,7 +2,7 @@ chrome-remote-desktop
 docker-credential-pass-git
 downgrade
 duf-git
-fcitx5-mozc-ut-full
+fcitx5-mozc-ut
 fcitx5-skin-arc
 ghq-bin
 google-chrome-beta
@@ -19,8 +19,9 @@ ngrok
 noto-fonts-emoji-git
 paru-bin
 rate-mirrors-bin
-slack-desktop-wayland
+slack-desktop
 swaybg-git
+sway-nvidia
 tpacpi-bat-git
 ttf-hackgen
 wdisplays-git
