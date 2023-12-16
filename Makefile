@@ -12,7 +12,7 @@ EMAIL = kpango@vdaas.org
 
 DOCKER_BUILDER_NAME = "kpango-builder"
 DOCKER_BUILDER_DRIVER = "docker-container"
-DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64"
+DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64/v8"
 
 VERSION = latest
 
@@ -286,8 +286,6 @@ github_check:
 	  --url https://api.github.com/rate_limit
 
 docker_build:
-	$(eval CACHE_DIR := "/tmp/docker_cache/$(IMAGE_NAME)/$(VERSION)")
-	mkdir -p $(CACHE_DIR)
 	$(eval TMP_DIR := $(shell mktemp -d))
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
@@ -302,9 +300,7 @@ docker_build:
 	  --build-arg EMAIL="$(EMAIL)" \
 	  --build-arg BUILDKIT_MULTI_PLATFORM=1 \
 	  --build-arg BUILDKIT_INLINE_CACHE=1 \
-	  --cache-to type=local,dest=$(CACHE_DIR) \
 	  --cache-to type=registry,ref=$(IMAGE_NAME):buildcache,mode=max \
-	  --cache-from type=local,src=$(CACHE_DIR) \
 	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
 	  --label org.opencontainers.image.url="$(GITHUB_URL)" \
 	  --label org.opencontainers.image.source="$(GITHUB_URL)" \
@@ -319,8 +315,6 @@ docker_build:
 	  --output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
           # --output type=image,name=$(IMAGE_NAME):$(VERSION)-estargz,oci-mediatypes=true,compression=estargz,force-compression=true,push=true \
-	  # -t $(IMAGE_NAME):$(VERSION) \
-	  # --push \
 	@rm -rf $(TMP_DIR)
 
 docker_push:
@@ -331,10 +325,11 @@ create_buildx:
 	sudo docker buildx create --use \
 		--name $(DOCKER_BUILDER_NAME) \
 		--driver $(DOCKER_BUILDER_DRIVER) \
-		--bootstrap \
 		--driver-opt=image=moby/buildkit:master \
 		--driver-opt=network=host \
-		--buildkitd-flags="--oci-worker-gc=false --oci-worker-snapshotter=stargz"
+		--buildkitd-flags="--oci-worker-gc=false --oci-worker-snapshotter=stargz" \
+		--platform $(DOCKER_BUILDER_PLATFORM) \
+		--bootstrap
 	sudo docker buildx ls
 	sudo docker buildx inspect --bootstrap $(DOCKER_BUILDER_NAME)
 
