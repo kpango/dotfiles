@@ -36,9 +36,11 @@ RUN apt update -y \
     && if [ "${ARCH}" = "amd64" ] ; then  \
          apt install -y --no-install-recommends --fix-missing gcc-${XARCH}-${OS}-gnu; \
          export CC=${XARCH}-${OS}-gnu-gcc; \
+         export CC_FOR_TARGET=${CC}; \
        elif [ "${ARCH}" = "arm64" ] ; then  \
          apt install -y --no-install-recommends --fix-missing gcc-${AARCH}-${OS}-gnu; \
          export CC=${AARCH}-${OS}-gnu-gcc; \
+         export CC_FOR_TARGET=${CC}; \
        fi
 
 
@@ -69,8 +71,8 @@ COPY go.env "${GOROOT}/go.env"
 #     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS air
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="air" \
@@ -82,8 +84,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS buf
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="buf" \
@@ -95,8 +97,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS chidley
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="chidley" \
@@ -108,8 +110,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 # FROM --platform=$BUILDPLATFORM go-base AS dataloaden
-# RUN --mount=type=cache,target="${GOPATH}/pkg" \
-#     --mount=type=cache,target="${HOME}/.cache/go-build" \
+# RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+#     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
 #     --mount=type=tmpfs,target="${GOPATH}/src" \
 #     set -x && cd "$(mktemp -d)" \
 #     && BIN_NAME="dataloaden" \
@@ -127,8 +129,8 @@ RUN set -x && cd "$(mktemp -d)" \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
 FROM --platform=$BUILDPLATFORM go-base AS dbmate
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dbmate" \
@@ -140,8 +142,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS direnv
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="direnv" \
@@ -153,8 +155,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS dlayer
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dlayer" \
@@ -187,8 +189,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS dlv
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dlv" \
@@ -200,8 +202,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS dragon-imports
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dragon-imports" \
@@ -213,8 +215,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS duf
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="duf" \
@@ -226,8 +228,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS efm
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="efm-langserver" \
@@ -239,8 +241,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS errcheck
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="errcheck" \
@@ -252,8 +254,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS evans
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="evans" \
@@ -265,8 +267,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS fillstruct
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="fillstruct" \
@@ -278,8 +280,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS fillswitch
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="fillswitch" \
@@ -291,8 +293,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS fixplurals
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="fixplurals" \
@@ -304,8 +306,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS flamegraph
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="FlameGraph" \
@@ -320,8 +322,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && cp ${TMPDIR}/stackcollapse-go.pl ${GOBIN}/
 
 FROM --platform=$BUILDPLATFORM go-base AS fzf
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="fzf" \
@@ -345,8 +347,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
 FROM --platform=$BUILDPLATFORM go-base AS ghq
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="ghq" \
@@ -358,8 +360,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS ghz
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="ghz" \
@@ -371,8 +373,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS git-codereview
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="git-codereview" \
@@ -384,8 +386,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gitleaks
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gitleaks" \
@@ -398,8 +400,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
 
 
 FROM --platform=$BUILDPLATFORM go-base AS glice
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="glice" \
@@ -411,8 +413,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS go-contrib-init
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="go-contrib-init" \
@@ -424,8 +426,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS go-task
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="task" \
@@ -437,8 +439,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gocode
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gocode" \
@@ -450,8 +452,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gofumpt
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gofumpt" \
@@ -463,8 +465,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS goimports
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="goimports" \
@@ -476,8 +478,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS goimports-reviser
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="goimports-reviser" \
@@ -489,8 +491,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS goimports-update-ignore
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="goimports-update-ignore" \
@@ -502,8 +504,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gojson
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gojson" \
@@ -522,8 +524,8 @@ RUN upx -9 ${GOBIN}/${BIN_NAME}
 
 
 FROM --platform=$BUILDPLATFORM go-base AS golines
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="golines" \
@@ -535,8 +537,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS golint
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="golint" \
@@ -548,8 +550,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gomodifytags
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gomodifytags" \
@@ -561,8 +563,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gopls
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gopls" \
@@ -574,8 +576,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gorename
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gorename" \
@@ -587,8 +589,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS goreturns
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="goreturns" \
@@ -600,8 +602,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gosec
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gosec" \
@@ -634,8 +636,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gotags
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gotags" \
@@ -647,8 +649,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gotestfmt
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gotestfmt" \
@@ -660,8 +662,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gotests
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gotests" \
@@ -673,22 +675,24 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gotip
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
+    && echo "gcc VERSION is $(gcc --version)" \
     && BIN_NAME="gotip" \
     && ORG="${GOORG}/dl" \
     && REPO="${ORG}/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS govulncheck
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="govulncheck" \
@@ -700,8 +704,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gowrap
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gowrap" \
@@ -713,8 +717,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gqlgen
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gqlgen" \
@@ -726,8 +730,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS grpcurl
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="grpcurl" \
@@ -739,8 +743,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS grype
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="grype" \
@@ -752,8 +756,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS guru
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="guru" \
@@ -765,8 +769,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS hub
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="hub" \
@@ -778,8 +782,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS hugo
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="hugo" \
@@ -792,8 +796,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS iferr
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="iferr" \
@@ -805,8 +809,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS impl
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="impl" \
@@ -818,8 +822,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS k6
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="k6" \
@@ -831,8 +835,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS keyify
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="keyify" \
@@ -844,8 +848,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS kratos
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kratos" \
@@ -857,8 +861,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS licenses
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="go-licenses" \
@@ -870,8 +874,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS markdown2medium
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="markdown2medium" \
@@ -883,8 +887,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS mockgen
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="mockgen" \
@@ -896,8 +900,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 # FROM --platform=$BUILDPLATFORM go-base AS panicparse
-# RUN --mount=type=cache,target="${GOPATH}/pkg" \
-#     --mount=type=cache,target="${HOME}/.cache/go-build" \
+# RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+#     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
 #     --mount=type=tmpfs,target="${GOPATH}/src" \
 #     set -x && cd "$(mktemp -d)" \
 #     && BIN_NAME="pp" \
@@ -909,8 +913,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
 #     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS protoc-gen-connect-go
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="protoc-gen-connect-go" \
@@ -922,8 +926,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS protoc-gen-go
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="protoc-gen-go" \
@@ -935,8 +939,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS prototool
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="prototool" \
@@ -955,8 +959,8 @@ RUN set -x && cd "$(mktemp -d)" \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
 FROM --platform=$BUILDPLATFORM go-base AS reddit2wallpaper
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="reddit2wallpaper" \
@@ -968,8 +972,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS ruleguard
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="ruleguard" \
@@ -981,8 +985,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS sqls
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="sqls" \
@@ -994,8 +998,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS strictgoimports
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="strictgoimports" \
@@ -1007,8 +1011,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS swagger
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="swagger" \
@@ -1020,8 +1024,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS syft
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="syft" \
@@ -1033,8 +1037,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS syncmap
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="syncmap" \
@@ -1046,8 +1050,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS tinygo
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="tinygo" \
@@ -1071,8 +1075,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
 FROM --platform=$BUILDPLATFORM go-base AS tparse
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="tparse" \
@@ -1084,8 +1088,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS vegeta
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="vegeta" \
@@ -1097,8 +1101,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS vgrun
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="vgrun" \
@@ -1110,8 +1114,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS xo
-RUN --mount=type=cache,target="${GOPATH}/pkg" \
-    --mount=type=cache,target="${HOME}/.cache/go-build" \
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="xo" \
