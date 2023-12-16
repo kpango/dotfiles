@@ -77,7 +77,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="air" \
     && REPO="cosmtrek/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -90,7 +91,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="buf" \
     && REPO="bufbuild/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -135,7 +137,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dbmate" \
     && REPO="amacneil/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -161,32 +164,39 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dlayer" \
     && REPO="orisano/${BIN_NAME}" \
-    && if [ "${ARCH}" = "amd64" ]; then \
-        GOOS=${GOOS} GOARCH=${GOARCH} \
-        go install \
-        ${GO_FLAGS} \
-        "${GITHUBCOM}/${REPO}@latest"; \
-    elif [ "${ARCH}" = "arm64" ]; then \
-        HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-        && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
-        && unset HEADER \
-        && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-        && if [ -z "${VERSION}" ]; then \
-             echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-             BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-             VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-        fi \
-        && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-	&& TAR_NAME=${BIN_NAME}_${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH} \
-        && curl -fsSLO ${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz \
-	&& tar xfv ${TAR_NAME}.tar.gz \
-	&& mv ${BIN_NAME} ${GOBIN}/${BIN_NAME}; \
-    else \
-      echo "Unsupported architecture: ${ARCH} for installing ${REPO}"; \
-      exit 1; \
-    fi \
+    && GOOS=${GOOS} GOARCH=${GOARCH} \
+    CGO_ENABLED=0 \
+    go install \
+    ${GO_FLAGS} \
+    "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
+#    && if [ "${ARCH}" = "amd64" ]; then \
+#        GOOS=${GOOS} GOARCH=${GOARCH} \
+#        go install \
+#        ${GO_FLAGS} \
+#        "${GITHUBCOM}/${REPO}@latest"; \
+#    elif [ "${ARCH}" = "arm64" ]; then \
+#        HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+#        && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
+#        && unset HEADER \
+#        && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
+#        && if [ -z "${VERSION}" ]; then \
+#             echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
+#             BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+#             VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
+#        fi \
+#        && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
+#	&& TAR_NAME=${BIN_NAME}_${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH} \
+#        && curl -fsSLO ${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz \
+#	&& tar xfv ${TAR_NAME}.tar.gz \
+#	&& mv ${BIN_NAME} ${GOBIN}/${BIN_NAME}; \
+#    else \
+#      echo "Unsupported architecture: ${ARCH} for installing ${REPO}"; \
+#      exit 1; \
+#    fi \
+#    && chmod a+x "${GOBIN}/${BIN_NAME}" \
+#    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS dlv
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -195,7 +205,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dlv" \
     && REPO="go-delve/delve" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -260,7 +271,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="evans" \
     && REPO="ktr0731/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -353,7 +365,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="ghq" \
     && REPO="x-motemen/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -366,7 +379,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="ghz" \
     && REPO="bojand/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -379,7 +393,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="git-codereview" \
     && REPO="${GOORG}/x/review" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -392,7 +407,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gitleaks" \
     && REPO="zricethezav/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -432,7 +448,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="task" \
     && REPO="go-${BIN_NAME}/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/v3/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -569,7 +586,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gopls" \
     && REPO="${GOORG}/x/tools" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -608,32 +626,39 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gosec" \
     && REPO="securego/${BIN_NAME}" \
-    && if [ "${ARCH}" = "amd64" ]; then \
-        GOOS=${GOOS} GOARCH=${GOARCH} \
-        go install \
-        ${GO_FLAGS} \
-        "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest"; \
-    elif [ "${ARCH}" = "arm64" ]; then \
-        HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-        && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
-        && unset HEADER \
-        && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-        && if [ -z "${VERSION}" ]; then \
-             echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-             BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-             VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-        fi \
-        && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-	&& TAR_NAME=${BIN_NAME}_${VERSION}_${OS}_${ARCH} \
-        && curl -fsSLO ${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz \
-	&& tar xfv ${TAR_NAME}.tar.gz \
-	&& mv ${BIN_NAME} ${GOBIN}/${BIN_NAME}; \
-    else \
-      echo "Unsupported architecture: ${ARCH} for installing ${REPO}"; \
-      exit 1; \
-    fi \
+    && GOOS=${GOOS} GOARCH=${GOARCH} \
+    CGO_ENABLED=0 \
+    go install \
+    ${GO_FLAGS} \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
+#    && if [ "${ARCH}" = "amd64" ]; then \
+#        GOOS=${GOOS} GOARCH=${GOARCH} \
+#        go install \
+#        ${GO_FLAGS} \
+#        "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest"; \
+#    elif [ "${ARCH}" = "arm64" ]; then \
+#        HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+#        && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
+#        && unset HEADER \
+#        && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
+#        && if [ -z "${VERSION}" ]; then \
+#             echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
+#             BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+#             VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
+#        fi \
+#        && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
+#	&& TAR_NAME=${BIN_NAME}_${VERSION}_${OS}_${ARCH} \
+#        && curl -fsSLO ${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz \
+#	&& tar xfv ${TAR_NAME}.tar.gz \
+#	&& mv ${BIN_NAME} ${GOBIN}/${BIN_NAME}; \
+#    else \
+#      echo "Unsupported architecture: ${ARCH} for installing ${REPO}"; \
+#      exit 1; \
+#    fi \
+#    && chmod a+x "${GOBIN}/${BIN_NAME}" \
+#    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gotags
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -668,7 +693,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gotests" \
     && REPO="cweill/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -697,7 +723,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="govulncheck" \
     && REPO="${GOORG}/x/vuln" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -710,7 +737,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gowrap" \
     && REPO="hexdigest/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -723,7 +751,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="gqlgen" \
     && REPO="99designs/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -736,7 +765,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="grpcurl" \
     && REPO="fullstorydev/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -749,7 +779,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="grype" \
     && REPO="anchore/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -788,7 +819,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="hugo" \
     && REPO="gohugoio/${BIN_NAME}" \
-    && CGO_ENABLED=1 go install \
+    && CGO_ENABLED=0 go install \
     --tags extended \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@master" \
@@ -828,7 +859,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="k6" \
     && REPO="go.${BIN_NAME}.io/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${REPO}@master" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -854,7 +886,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="kratos" \
     && REPO="go-kratos/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -867,7 +900,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="go-licenses" \
     && REPO="google/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@master" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -945,7 +979,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="prototool" \
     && REPO="uber/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@dev" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -984,19 +1019,6 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS sqls
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="sqls" \
-    && REPO="lighttiger2505/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
 FROM --platform=$BUILDPLATFORM go-base AS strictgoimports
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
@@ -1017,7 +1039,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="swagger" \
     && REPO="go-${BIN_NAME}/go-${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -1030,7 +1053,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="syft" \
     && REPO="anchore/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -1120,7 +1144,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="xo" \
     && REPO="${BIN_NAME}/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -1200,7 +1225,6 @@ COPY --from=prototool $GOBIN/prototool $GOBIN/prototool
 COPY --from=pulumi $GOBIN/pulumi $GOBIN/pulumi
 COPY --from=reddit2wallpaper $GOBIN/reddit2wallpaper $GOBIN/reddit2wallpaper
 COPY --from=ruleguard $GOBIN/ruleguard $GOBIN/ruleguard
-COPY --from=sqls $GOBIN/sqls $GOBIN/sqls
 COPY --from=strictgoimports $GOBIN/strictgoimports $GOBIN/strictgoimports
 COPY --from=swagger $GOBIN/swagger $GOBIN/swagger
 COPY --from=syft $GOBIN/syft $GOBIN/syft
