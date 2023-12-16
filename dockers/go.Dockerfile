@@ -171,32 +171,6 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
-#    && if [ "${ARCH}" = "amd64" ]; then \
-#        GOOS=${GOOS} GOARCH=${GOARCH} \
-#        go install \
-#        ${GO_FLAGS} \
-#        "${GITHUBCOM}/${REPO}@latest"; \
-#    elif [ "${ARCH}" = "arm64" ]; then \
-#        HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-#        && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
-#        && unset HEADER \
-#        && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-#        && if [ -z "${VERSION}" ]; then \
-#             echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-#             BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-#             VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-#        fi \
-#        && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-#	&& TAR_NAME=${BIN_NAME}_${VERSION}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH} \
-#        && curl -fsSLO ${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz \
-#	&& tar xfv ${TAR_NAME}.tar.gz \
-#	&& mv ${BIN_NAME} ${GOBIN}/${BIN_NAME}; \
-#    else \
-#      echo "Unsupported architecture: ${ARCH} for installing ${REPO}"; \
-#      exit 1; \
-#    fi \
-#    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-#    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS dlv
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -633,32 +607,6 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
-#    && if [ "${ARCH}" = "amd64" ]; then \
-#        GOOS=${GOOS} GOARCH=${GOARCH} \
-#        go install \
-#        ${GO_FLAGS} \
-#        "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest"; \
-#    elif [ "${ARCH}" = "arm64" ]; then \
-#        HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-#        && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
-#        && unset HEADER \
-#        && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-#        && if [ -z "${VERSION}" ]; then \
-#             echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-#             BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-#             VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-#        fi \
-#        && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-#	&& TAR_NAME=${BIN_NAME}_${VERSION}_${OS}_${ARCH} \
-#        && curl -fsSLO ${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz \
-#	&& tar xfv ${TAR_NAME}.tar.gz \
-#	&& mv ${BIN_NAME} ${GOBIN}/${BIN_NAME}; \
-#    else \
-#      echo "Unsupported architecture: ${ARCH} for installing ${REPO}"; \
-#      exit 1; \
-#    fi \
-#    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-#    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gotags
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
