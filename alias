@@ -46,9 +46,6 @@ devrun(){
                 --privileged=$privileged \
                 --workdir $container_home \
                 -p $port_range:$port_range \
-                -v $HOME/.aws:$container_home/.aws \
-                -v $HOME/.config/TabNine/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
-                -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json \
                 -v $HOME/.gitconfig:$container_home/.gitconfig \
                 -v $HOME/.gnupg:$container_home/.gnupg \
