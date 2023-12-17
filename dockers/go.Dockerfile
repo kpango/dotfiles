@@ -409,7 +409,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="go-contrib-init" \
     && REPO="${GOORG}/x/tools" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${REPO}/cmd/${BIN_NAME}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
@@ -754,7 +755,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="hub" \
     && REPO="github/${BIN_NAME}" \
-    && go install \
+    && CGO_ENABLED=0 \
+    go install \
     ${GO_FLAGS} \
     "${GITHUBCOM}/${REPO}@latest" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
