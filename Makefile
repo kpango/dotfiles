@@ -270,12 +270,11 @@ bash: link
 build: \
 	login \
 	build_base
-	@xpanes -s -c "make -f $(GOPATH)/src/github.com/kpango/dotfiles/Makefile build_{}" go docker rust dart k8s nim gcloud env base
+	@xpanes -s -c "make -f $(ROOTDIR)/Makefile build_{}" go docker rust dart k8s nim gcloud env
 
 prod: \
 	login \
-	prod_build \
-	prod_push
+	prod_build
 
 github_check:
 	curl --request GET \
@@ -286,11 +285,20 @@ github_check:
 	  --url https://api.github.com/rate_limit
 
 docker_build:
+	docker buildx create --use \
+		--name "$(DOCKER_BUILDER_NAME)-$(NAME)" \
+		--driver "$(DOCKER_BUILDER_DRIVER)" \
+		--driver-opt=image=moby/buildkit:master \
+		--driver-opt=network=host \
+		--buildkitd-flags="--oci-worker-gc=false --oci-worker-snapshotter=stargz" \
+		--platform "$(DOCKER_BUILDER_PLATFORM)" \
+		--bootstrap
+	sudo chown -R $(USER):$(GROUP_ID) "$(HOME)/.docker"
 	$(eval TMP_DIR := $(shell mktemp -d))
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
-	DOCKER_BUILDKIT=1 sudo docker buildx build \
-	  --builder $(DOCKER_BUILDER_NAME) \
+	DOCKER_BUILDKIT=1 docker buildx build \
+	  --builder "$(DOCKER_BUILDER_NAME)-$(NAME)" \
 	  --network=host \
 	  --secret id=gat,src="$(TMP_DIR)/gat" \
 	  --build-arg USER_ID="$(USER_ID)" \
@@ -300,31 +308,32 @@ docker_build:
 	  --build-arg EMAIL="$(EMAIL)" \
 	  --build-arg BUILDKIT_MULTI_PLATFORM=1 \
 	  --build-arg BUILDKIT_INLINE_CACHE=1 \
-	  --cache-to type=registry,ref=$(IMAGE_NAME):buildcache,mode=max \
-	  --cache-from type=registry,ref=$(IMAGE_NAME):buildcache \
+	  --cache-to type=registry,ref=$(USER)/$(NAME):buildcache,mode=max \
+	  --cache-from type=registry,ref=$(USER)/$(NAME):buildcache \
 	  --label org.opencontainers.image.url="$(GITHUB_URL)" \
 	  --label org.opencontainers.image.source="$(GITHUB_URL)" \
 	  --label org.opencontainers.image.revision="$(GITHUB_SHA)" \
-	  --label org.opencontainers.image.version=$(VERSION) \
-	  --label org.opencontainers.image.title=$(IMAGE_NAME) \
+	  --label org.opencontainers.image.version="$(VERSION)" \
+	  --label org.opencontainers.image.title="$(USER)/$(NAME)" \
 	  --memory 32G \
 	  --memory-swap 0m \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
 	  --sbom=true \
 	  --provenance=mode=max \
-	  -t $(IMAGE_NAME):$(VERSION) \
+	  -t "$(USER)/$(NAME):$(VERSION)" \
 	  --output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
-          # --output type=image,name=$(IMAGE_NAME):$(VERSION)-estargz,oci-mediatypes=true,compression=estargz,force-compression=true,push=true \
+          # --output type=image,name=$(NAME):$(VERSION)-estargz,oci-mediatypes=true,compression=estargz,force-compression=true,push=true \
+	docker buildx rm --force "$(DOCKER_BUILDER_NAME)-$(NAME)"
 	@rm -rf $(TMP_DIR)
 
 docker_push:
-	# docker push $(IMAGE_NAME):latest
+	# docker push $(NAME):latest
 
 create_buildx:
 	docker run --privileged --rm tonistiigi/binfmt:master --install $(DOCKER_BUILDER_PLATFORM)
-	sudo docker buildx create --use \
+	docker buildx create --use \
 		--name $(DOCKER_BUILDER_NAME) \
 		--driver $(DOCKER_BUILDER_DRIVER) \
 		--driver-opt=image=moby/buildkit:master \
@@ -332,74 +341,77 @@ create_buildx:
 		--buildkitd-flags="--oci-worker-gc=false --oci-worker-snapshotter=stargz" \
 		--platform $(DOCKER_BUILDER_PLATFORM) \
 		--bootstrap
-	sudo docker buildx ls
-	sudo docker buildx inspect --bootstrap $(DOCKER_BUILDER_NAME)
+	docker buildx ls
+	docker buildx inspect --bootstrap $(DOCKER_BUILDER_NAME)
+	sudo chown -R $(USER):$(GROUP_ID) $(HOME)/.docker
 
 remove_buildx:
-	sudo docker buildx rm $(DOCKER_BUILDER_NAME)
+	docker buildx rm --force --all-inactive
+	sudo rm -rf $(HOME)/.docker/buildx
+	docker buildx ls
 
 prod_build:
-	@make DOCKERFILE="$(ROOTDIR)/Dockerfile" IMAGE_NAME="kpango/dev" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/Dockerfile" NAME="dev" docker_build
 
 build_mkl:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/mkl.Dockerfile" IMAGE_NAME="kpango/mkl" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/mkl.Dockerfile" NAME="mkl" docker_build
 
 build_go:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/go.Dockerfile" IMAGE_NAME="kpango/go" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/go.Dockerfile" NAME="go" docker_build
 
 build_rust:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/rust.Dockerfile" IMAGE_NAME="kpango/rust" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/rust.Dockerfile" NAME="rust" docker_build
 
 build_nim:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/nim.Dockerfile" IMAGE_NAME="kpango/nim" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/nim.Dockerfile" NAME="nim" docker_build
 
 build_dart:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/dart.Dockerfile" IMAGE_NAME="kpango/dart" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/dart.Dockerfile" NAME="dart" docker_build
 
 build_docker:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/docker.Dockerfile" IMAGE_NAME="kpango/docker" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/docker.Dockerfile" NAME="docker" docker_build
 
 build_base:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/base.Dockerfile" IMAGE_NAME="kpango/base" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/base.Dockerfile" NAME="base" docker_build
 
 build_env:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/env.Dockerfile" IMAGE_NAME="kpango/env" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/env.Dockerfile" NAME="env" docker_build
 
 build_gcloud:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/gcloud.Dockerfile" IMAGE_NAME="kpango/gcloud" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/gcloud.Dockerfile" NAME="gcloud" docker_build
 
 build_k8s:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/k8s.Dockerfile" IMAGE_NAME="kpango/kube" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/k8s.Dockerfile" NAME="kube" docker_build
 
 prod_push:
-	@make IMAGE_NAME="kpango/dev" docker_push
+	@make NAME="dev" docker_push
 
 push_go:
-	@make IMAGE_NAME="kpango/go" docker_push
+	@make NAME="go" docker_push
 
 push_rust:
-	@make IMAGE_NAME="kpango/rust" docker_push
+	@make NAME="rust" docker_push
 
 push_nim:
-	@make IMAGE_NAME="kpango/nim" docker_push
+	@make NAME="nim" docker_push
 
 push_dart:
-	@make IMAGE_NAME="kpango/dart" docker_push
+	@make NAME="dart" docker_push
 
 push_docker:
-	@make IMAGE_NAME="kpango/docker" docker_push
+	@make NAME="docker" docker_push
 
 push_base:
-	@make IMAGE_NAME="kpango/base" docker_push
+	@make NAME="base" docker_push
 
 push_env:
-	@make IMAGE_NAME="kpango/env" docker_push
+	@make NAME="env" docker_push
 
 push_gcloud:
-	@make IMAGE_NAME="kpango/gcloud" docker_push
+	@make NAME="gcloud" docker_push
 
 push_k8s:
-	@make IMAGE_NAME="kpango/kube" docker_push
+	@make NAME="kube" docker_push
 
 build_and_push_base: \
 	build_base \
