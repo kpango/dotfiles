@@ -108,13 +108,13 @@ devrun(){
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.docker:$container_home/.docker \
                 -v $HOME/.docker:$container_root/.docker \
-                -v $HOME/.gnupg:$container_home/.gnupg \
-                -v $HOME/.gnupg:$container_root/.gnupg \
+                -v $HOME/.gnupg:$container_home/.gnupg:ro \
+                -v $HOME/.gnupg:$container_root/.gnupg:ro \
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.netrc:$container_home/.netrc:ro \
                 -v $HOME/.password-store:$container_home/.password-store \
                 -v $HOME/.password-store:$container_root/.password-store \
-                -v $HOME/.ssh:$container_home/.ssh \
+                -v $HOME/.ssh:$container_home/.ssh:ro \
                 -v $HOME/.tig_history:$container_home/.tig_history \
                 -v $HOME/.tmux:$container_home/.tmux \
                 -v $HOME/.zsh_history:$container_home/.zsh_history:cached \

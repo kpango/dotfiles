@@ -307,6 +307,8 @@ docker_build:
 	  --label org.opencontainers.image.revision="$(GITHUB_SHA)" \
 	  --label org.opencontainers.image.version=$(VERSION) \
 	  --label org.opencontainers.image.title=$(IMAGE_NAME) \
+	  --memory 32G \
+	  --memory-swap 0m \
 	  --platform $(DOCKER_BUILDER_PLATFORM) \
 	  --allow "network.host" \
 	  --sbom=true \
