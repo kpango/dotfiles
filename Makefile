@@ -270,6 +270,7 @@ bash: link
 build: \
 	login \
 	remove_buildx \
+	init_buildx \
 	create_buildx \
 	build_base
 	@xpanes -s -c "make -f $(ROOTDIR)/Makefile build_{}" go docker rust dart k8s nim gcloud env
@@ -277,6 +278,7 @@ build: \
 prod: \
 	login \
 	remove_buildx \
+	init_buildx \
 	create_buildx \
 	prod_build
 
