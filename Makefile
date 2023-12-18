@@ -269,11 +269,15 @@ bash: link
 
 build: \
 	login \
+	remove_buildx \
+	create_buildx \
 	build_base
 	@xpanes -s -c "make -f $(ROOTDIR)/Makefile build_{}" go docker rust dart k8s nim gcloud env
 
 prod: \
 	login \
+	remove_buildx \
+	create_buildx \
 	prod_build
 
 github_check:
@@ -285,20 +289,12 @@ github_check:
 	  --url https://api.github.com/rate_limit
 
 docker_build:
-	docker buildx create --use \
-		--name "$(DOCKER_BUILDER_NAME)-$(NAME)" \
-		--driver "$(DOCKER_BUILDER_DRIVER)" \
-		--driver-opt=image=moby/buildkit:master \
-		--driver-opt=network=host \
-		--buildkitd-flags="--oci-worker-gc=false --oci-worker-snapshotter=stargz" \
-		--platform "$(DOCKER_BUILDER_PLATFORM)" \
-		--bootstrap
-	sudo chown -R $(USER):$(GROUP_ID) "$(HOME)/.docker"
+	@make DOCKER_BUILDER_NAME=$(DOCKER_BUILDER_NAME) create_buildx
 	$(eval TMP_DIR := $(shell mktemp -d))
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 docker buildx build \
-	  --builder "$(DOCKER_BUILDER_NAME)-$(NAME)" \
+	  --builder "$(DOCKER_BUILDER_NAME)" \
 	  --network=host \
 	  --secret id=gat,src="$(TMP_DIR)/gat" \
 	  --build-arg USER_ID="$(USER_ID)" \
@@ -324,15 +320,17 @@ docker_build:
 	  -t "$(USER)/$(NAME):$(VERSION)" \
 	  --output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 	  -f $(DOCKERFILE) .
-          # --output type=image,name=$(NAME):$(VERSION)-estargz,oci-mediatypes=true,compression=estargz,force-compression=true,push=true \
-	docker buildx rm --force "$(DOCKER_BUILDER_NAME)-$(NAME)"
+	docker buildx rm --force "$(DOCKER_BUILDER_NAME)"
 	@rm -rf $(TMP_DIR)
 
 docker_push:
 	# docker push $(NAME):latest
 
-create_buildx:
+init_buildx:
 	docker run --privileged --rm tonistiigi/binfmt:master --install $(DOCKER_BUILDER_PLATFORM)
+
+create_buildx:
+	-docker buildx rm --force $(DOCKER_BUILDER_NAME)
 	docker buildx create --use \
 		--name $(DOCKER_BUILDER_NAME) \
 		--driver $(DOCKER_BUILDER_DRIVER) \
@@ -343,136 +341,48 @@ create_buildx:
 		--bootstrap
 	docker buildx ls
 	docker buildx inspect --bootstrap $(DOCKER_BUILDER_NAME)
-	sudo chown -R $(USER):$(GROUP_ID) $(HOME)/.docker
+	sudo chown -R $(USER):$(GROUP_ID) "$(HOME)/.docker"
 
 remove_buildx:
 	docker buildx rm --force --all-inactive
 	sudo rm -rf $(HOME)/.docker/buildx
 	docker buildx ls
 
+do_build:
+	@make DOCKERFILE="$(ROOTDIR)/dockers/$(NAME).Dockerfile" NAME="$(NAME)" DOCKER_BUILDER_NAME="$(DOCKER_BUILDER_NAME)-$(NAME)" docker_build
+
 prod_build:
-	@make DOCKERFILE="$(ROOTDIR)/Dockerfile" NAME="dev" docker_build
+	@make NAME="dev" do_build
 
 build_mkl:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/mkl.Dockerfile" NAME="mkl" docker_build
+	@make NAME="mkl" do_build
 
 build_go:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/go.Dockerfile" NAME="go" docker_build
+	@make NAME="go" do_build
 
 build_rust:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/rust.Dockerfile" NAME="rust" docker_build
+	@make NAME="rust" do_build
 
 build_nim:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/nim.Dockerfile" NAME="nim" docker_build
+	@make NAME="nim" do_build
 
 build_dart:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/dart.Dockerfile" NAME="dart" docker_build
+	@make NAME="dart" do_build
 
 build_docker:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/docker.Dockerfile" NAME="docker" docker_build
+	@make NAME="docker" do_build
 
 build_base:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/base.Dockerfile" NAME="base" docker_build
+	@make NAME="base" do_build
 
 build_env:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/env.Dockerfile" NAME="env" docker_build
+	@make NAME="env" do_build
 
 build_gcloud:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/gcloud.Dockerfile" NAME="gcloud" docker_build
+	@make NAME="gcloud" do_build
 
 build_k8s:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/k8s.Dockerfile" NAME="kube" docker_build
-
-prod_push:
-	@make NAME="dev" docker_push
-
-push_go:
-	@make NAME="go" docker_push
-
-push_rust:
-	@make NAME="rust" docker_push
-
-push_nim:
-	@make NAME="nim" docker_push
-
-push_dart:
-	@make NAME="dart" docker_push
-
-push_docker:
-	@make NAME="docker" docker_push
-
-push_base:
-	@make NAME="base" docker_push
-
-push_env:
-	@make NAME="env" docker_push
-
-push_gcloud:
-	@make NAME="gcloud" docker_push
-
-push_k8s:
-	@make NAME="kube" docker_push
-
-build_and_push_base: \
-	build_base \
-	push_base
-
-build_and_push_env: \
-	build_env \
-	push_env
-
-build_and_push_go: \
-	build_go \
-	push_go
-
-build_and_push_rust: \
-	build_rust \
-	push_rust
-
-build_and_push_docker: \
-	build_docker \
-	push_docker
-
-build_and_push_k8s: \
-	build_k8s \
-	push_k8s
-
-build_and_push_nim: \
-	build_nim \
-	push_nim
-
-build_and_push_dart: \
-	build_dart \
-	push_dart
-
-build_and_push_gcloud: \
-	build_gcloud \
-	push_gcloud
-
-
-build_all: \
-	build_base \
-	build_env \
-	build_dart \
-	build_docker \
-	build_gcloud \
-	build_go \
-	build_k8s \
-	build_nim \
-	prod_build
-	echo "done"
-
-push_all: \
-	push_base \
-	push_env \
-	push_dart \
-	push_docker \
-	push_gcloud \
-	push_go \
-	push_k8s \
-	push_nim \
-	prod_push
-	echo "done"
+	@make NAME="kube" do_build
 
 profile:
 	rm -f analyze.txt
