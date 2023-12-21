@@ -63,11 +63,6 @@ if type tmux >/dev/null 2>&1; then
                 exit 1  # Exit if failed to attach tmux session
             fi
         fi
-        # Rebind tmux prefix to C-g on macOS
-        if [[ ${OSTYPE} == "darwin"* ]]; then
-            tmux unbind C-b
-            tmux set -g prefix C-g
-        fi
         exit
     fi
 fi
@@ -747,18 +742,20 @@ if [ -z $ZSH_LOADED ]; then
         # alias ranger=rng
         alias rng=ranger
     fi
-
     if type tmux >/dev/null 2>&1; then
         if [ -f /.dockerenv ]; then
             tmux unbind C-b
             tmux set -g prefix C-w
+	    tmux C-w send-prefix
         else
             case ${OSTYPE} in
                 darwin*)
                     tmux unbind C-b
                     tmux set -g prefix C-g
+		    tmux C-g send-prefix
                     ;;
                 linux*)
+		    tmux C-b send-prefix
                     ;;
             esac
         fi
