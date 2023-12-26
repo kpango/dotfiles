@@ -746,16 +746,16 @@ if [ -z $ZSH_LOADED ]; then
         if [ -f /.dockerenv ]; then
             tmux unbind C-b
             tmux set -g prefix C-w
-	    tmux C-w send-prefix
+	    tmux bind C-w send-prefix
         else
             case ${OSTYPE} in
                 darwin*)
                     tmux unbind C-b
                     tmux set -g prefix C-g
-		    tmux C-g send-prefix
+		    tmux bind C-g send-prefix
                     ;;
                 linux*)
-		    tmux C-b send-prefix
+		    tmux bind C-b send-prefix
                     ;;
             esac
         fi
