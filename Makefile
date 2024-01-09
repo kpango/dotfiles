@@ -32,7 +32,7 @@ copy:
 	mkdir -p $(HOME)/.docker
 	sudo mkdir -p /etc/docker
 	cp $(ROOTDIR)/alias $(HOME)/.aliases
-	cp $(ROOTDIR)/arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
+	cp $(ROOTDIR)/arch/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
 	cp $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	cp $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
@@ -58,7 +58,7 @@ link:
 	mkdir -p $(HOME)/.config/sheldon
 	mkdir -p $(HOME)/.docker
 	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
-	ln -sfv $(ROOTDIR)/arch/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(ROOTDIR)/arch/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
 	ln -sfv $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	ln -sfv $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	ln -sfv $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
@@ -145,8 +145,8 @@ arch_link: \
 
 arch_p1_link: \
 	arch_link
-	rm -rf $(HOME)/.config/alacritty/alacritty.yml
-	ln -sfv $(ROOTDIR)/arch/alacritty_p1.yml $(HOME)/.config/alacritty/alacritty.yml
+	rm -rf $(HOME)/.config/alacritty/alacritty.toml
+	ln -sfv $(ROOTDIR)/arch/alacritty_p1.toml $(HOME)/.config/alacritty/alacritty.toml
 	rm -rf $(HOME)/.config/waybar/style.css
 	ln -sfv $(ROOTDIR)/arch/waybar_p1.css $(HOME)/.config/waybar/style.css
 	rm -rf $(HOME)/.config/psd
@@ -160,8 +160,8 @@ arch_p1_link: \
 
 arch_desk_link: \
 	arch_link
-	rm -rf $(HOME)/.config/alacritty/alacritty.yml
-	ln -sfv $(ROOTDIR)/arch/alacritty_desk.yml $(HOME)/.config/alacritty/alacritty.yml
+	rm -rf $(HOME)/.config/alacritty/alacritty.toml
+	ln -sfv $(ROOTDIR)/arch/alacritty_desk.toml $(HOME)/.config/alacritty/alacritty.toml
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
@@ -172,12 +172,12 @@ mac_link: \
 	sudo rm -rf \
 		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
 		$(HOME)/Library/LaunchAgents/ulimit.plist \
-		$(HOME)/.config/alacritty/alacritty.yml \
+		$(HOME)/.config/alacritty/alacritty.toml \
 		$(HOME)/.docker/config.json \
 		$(HOME)/.docker/daemon.json \
 		/etc/docker/config.json \
 		/etc/docker/daemon.json
-	ln -sfv $(ROOTDIR)/macos/alacritty.yml $(HOME)/.config/alacritty/alacritty.yml
+	ln -sfv $(ROOTDIR)/macos/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
 	ln -sfv $(ROOTDIR)/macos/docker_config.json $(HOME)/.docker/config.json
 	ln -sfv $(ROOTDIR)/macos/docker_daemon.json $(HOME)/.docker/daemon.json
 	sudo ln -sfv $(ROOTDIR)/macos/docker_config.json /etc/docker/config.json
