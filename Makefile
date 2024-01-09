@@ -329,7 +329,11 @@ docker_push:
 	# docker push $(NAME):latest
 
 init_buildx:
-	docker run --privileged --rm tonistiigi/binfmt:master --install $(DOCKER_BUILDER_PLATFORM)
+	docker run \
+	  --network=host \
+	  --privileged \
+	  --rm tonistiigi/binfmt:master \
+	  --install $(DOCKER_BUILDER_PLATFORM)
 
 create_buildx:
 	-docker buildx rm --force $(DOCKER_BUILDER_NAME)
@@ -391,6 +395,8 @@ profile:
 	type dlayer >/dev/null 2>&1 && docker save kpango/dev:latest | dlayer >> analyze.txt
 
 login:
+	rm -rf $(HOME)/.docker/config.json
+	cp $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	docker login
 
 push:
