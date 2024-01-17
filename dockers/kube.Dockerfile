@@ -256,27 +256,27 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM kube-golang-base AS kprofefe
-RUN set -x; cd "$(mktemp -d)" \
-    && NAME="kube-profefe" \
-    && REPO="gianarb/${NAME}" \
-    && BIN_NAME="kprofefe" \
-    &&GO111MODULE=on go install  \
-      --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
-    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM kube-golang-base AS kubectl-profefe
-RUN set -x; cd "$(mktemp -d)" \
-    && NAME="kube-profefe" \
-    && REPO="gianarb/${NAME}" \
-    && BIN_NAME="kubectl-profefe" \
-    &&GO111MODULE=on go install  \
-      --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
-    && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && upx -9 "${BIN_PATH}/${BIN_NAME}"
+# FROM --platform=$BUILDPLATFORM kube-golang-base AS kprofefe
+# RUN set -x; cd "$(mktemp -d)" \
+#     && NAME="kube-profefe" \
+#     && REPO="gianarb/${NAME}" \
+#     && BIN_NAME="kprofefe" \
+#     &&GO111MODULE=on go install  \
+#       --ldflags "-s -w" --trimpath \
+#       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
+#     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
+#
+# FROM --platform=$BUILDPLATFORM kube-golang-base AS kubectl-profefe
+# RUN set -x; cd "$(mktemp -d)" \
+#     && NAME="kube-profefe" \
+#     && REPO="gianarb/${NAME}" \
+#     && BIN_NAME="kubectl-profefe" \
+#     &&GO111MODULE=on go install  \
+#       --ldflags "-s -w" --trimpath \
+#       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
+#     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM kube-base AS conftest
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
@@ -609,7 +609,7 @@ COPY --from=k3d ${BIN_PATH}/k3d ${K8S_PATH}/k3d
 COPY --from=k8sviz ${BIN_PATH}/k8sviz ${K8S_PATH}/k8sviz
 COPY --from=k9s ${BIN_PATH}/k9s ${K8S_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${K8S_PATH}/kind
-COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
+# COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
 COPY --from=kpt ${BIN_PATH}/kpt ${K8S_PATH}/kpt
 COPY --from=kdash ${BIN_PATH}/kdash ${K8S_PATH}/kdash
 COPY --from=krew ${BIN_PATH}/kubectl-krew ${K8S_PATH}/kubectl-krew
@@ -624,7 +624,7 @@ COPY --from=kubectl ${BIN_PATH}/kubectl ${K8S_PATH}/kubectl
 COPY --from=kubectl-fzf-server ${BIN_PATH}/kubectl-fzf-server ${K8S_PATH}/kubectl-fzf-server
 COPY --from=kubectl-fzf-completion ${BIN_PATH}/kubectl-fzf-completion ${K8S_PATH}/kubectl-fzf-completion
 COPY --from=kubectl-gadget ${BIN_PATH}/kubectl-gadget ${K8S_PATH}/kubectl-gadget
-COPY --from=kubectl-profefe ${BIN_PATH}/kubectl-profefe ${K8S_PATH}/kubectl-profefe
+# COPY --from=kubectl-profefe ${BIN_PATH}/kubectl-profefe ${K8S_PATH}/kubectl-profefe
 COPY --from=kubectl-rolesum ${BIN_PATH}/kubectl-rolesum ${K8S_PATH}/kubectl-rolesum
 COPY --from=kubectl-trace ${BIN_PATH}/kubectl-trace ${K8S_PATH}/kubectl-trace
 COPY --from=kubectl-tree ${BIN_PATH}/kubectl-tree ${K8S_PATH}/kubectl-tree
