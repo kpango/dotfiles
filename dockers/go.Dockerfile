@@ -1101,6 +1101,20 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
+FROM --platform=$BUILDPLATFORM go-base AS yamlfmt
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -x && cd "$(mktemp -d)" \
+    && BIN_NAME="yamlfmt" \
+    && REPO="google/${BIN_NAME}" \
+    && CGO_ENABLED=0 \
+    go install \
+    ${GO_FLAGS} \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    && chmod a+x "${GOBIN}/${BIN_NAME}" \
+    && upx -9 "${GOBIN}/${BIN_NAME}"
+
 FROM --platform=$BUILDPLATFORM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
@@ -1184,6 +1198,7 @@ COPY --from=tparse $GOBIN/tparse $GOBIN/tparse
 COPY --from=vegeta $GOBIN/vegeta $GOBIN/vegeta
 COPY --from=vgrun $GOBIN/vgrun $GOBIN/vgrun
 COPY --from=xo $GOBIN/xo $GOBIN/xo
+COPY --from=yamlfmt $GOBIN/yamlfmt $GOBIN/yamlfmt
 
 FROM --platform=$BUILDPLATFORM scratch
 ENV GOROOT /opt/go
