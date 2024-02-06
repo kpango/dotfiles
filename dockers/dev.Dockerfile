@@ -30,11 +30,13 @@ ENV HOME /home/${WHOAMI}
 ENV GOPATH $HOME/go
 ENV GOROOT /usr/local/go
 ENV GCLOUD_PATH /google-cloud-sdk
-ENV CARGO_PATH $HOME/.cargo
+ENV RUST_HOME=/usr/local/lib/rust
+ENV CARGO_HOME=${RUST_HOME}/cargo
+ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV DART_PATH /usr/lib/dart
 ENV NVIM_HOME $HOME/.config/nvim
 ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_PATH/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
+ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_HOME/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-compose /usr/lib/docker/cli-plugins/docker-compose
@@ -63,8 +65,7 @@ COPY --from=go /opt/go/pkg $GOROOT/pkg
 COPY --from=go /opt/go/misc $GOROOT/misc
 COPY --from=go /go/bin $GOPATH/bin
 
-COPY --from=rust /root/.cargo ${CARGO_PATH}
-COPY --from=rust /root/.rustup ${HOME}/.rustup
+COPY --from=rust ${RUST_HOME} ${RUST_HOME}
 
 COPY gitattributes $HOME/.gitattributes
 COPY gitconfig $HOME/.gitconfig
@@ -87,7 +88,7 @@ RUN usermod -aG ${GROUP} ${WHOAMI} \
     && rm -rf $VIM_PLUG_HOME/autoload \
     && rm -rf ${HOME}/.cache \
     && rm -rf ${HOME}/.npm/_cacache \
-    && rm -rf ${HOME}/.cargo/registry/cache \
+    && rm -rf ${CARGO_HOME}/registry/cache \
     && rm -rf /usr/local/share/.cache \
     && rm -rf /tmp/* \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \

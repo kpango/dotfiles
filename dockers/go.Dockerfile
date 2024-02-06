@@ -51,7 +51,7 @@ RUN set -x && cd "$(mktemp -d)" \
     && GO_VERSION=$(echo "$BODY" | head -n 1) \
     && [ -n "${GO_VERSION}" ] || { echo "Error: VERSION is empty. curl response was: ${BODY}" >&2; exit 1; } \
     && TAR_NAME="${GO_VERSION}.${OS}-${ARCH}.tar.gz" \
-    && curl -fsSLO "https://${GOORG}/dl/${TAR_NAME}" \
+    && curl -fsSLO "${GODEV}/dl/${TAR_NAME}" \
     && tar zxf "${TAR_NAME}" \
     && rm "${TAR_NAME}" \
     && mv ${BIN_NAME} ${GOROOT} \
@@ -721,19 +721,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS grype
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="grype" \
-    && REPO="anchore/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
+# FROM --platform=$BUILDPLATFORM go-base AS grype
+# RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+#     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
+#     --mount=type=tmpfs,target="${GOPATH}/src" \
+#     set -x && cd "$(mktemp -d)" \
+#     && BIN_NAME="grype" \
+#     && REPO="anchore/${BIN_NAME}" \
+#     && CGO_ENABLED=0 \
+#     go install \
+#     ${GO_FLAGS} \
+#     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+#     && chmod a+x "${GOBIN}/${BIN_NAME}" \
+#     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS guru
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -996,19 +996,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS syft
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="syft" \
-    && REPO="anchore/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
+# FROM --platform=$BUILDPLATFORM go-base AS syft
+# RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+#     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
+#     --mount=type=tmpfs,target="${GOPATH}/src" \
+#     set -x && cd "$(mktemp -d)" \
+#     && BIN_NAME="syft" \
+#     && REPO="anchore/${BIN_NAME}" \
+#     && CGO_ENABLED=0 \
+#     go install \
+#     ${GO_FLAGS} \
+#     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+#     && chmod a+x "${GOBIN}/${BIN_NAME}" \
+#     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS syncmap
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -1170,7 +1170,7 @@ COPY --from=govulncheck $GOBIN/govulncheck $GOBIN/govulncheck
 COPY --from=gowrap $GOBIN/gowrap $GOBIN/gowrap
 COPY --from=gqlgen $GOBIN/gqlgen $GOBIN/gqlgen
 COPY --from=grpcurl $GOBIN/grpcurl $GOBIN/grpcurl
-COPY --from=grype $GOBIN/grype $GOBIN/grype
+# COPY --from=grype $GOBIN/grype $GOBIN/grype
 COPY --from=guru $GOBIN/guru $GOBIN/guru
 COPY --from=hub $GOBIN/hub $GOBIN/hub
 COPY --from=hugo $GOBIN/hugo $GOBIN/hugo
@@ -1191,7 +1191,7 @@ COPY --from=reddit2wallpaper $GOBIN/reddit2wallpaper $GOBIN/reddit2wallpaper
 COPY --from=ruleguard $GOBIN/ruleguard $GOBIN/ruleguard
 COPY --from=strictgoimports $GOBIN/strictgoimports $GOBIN/strictgoimports
 COPY --from=swagger $GOBIN/swagger $GOBIN/swagger
-COPY --from=syft $GOBIN/syft $GOBIN/syft
+# COPY --from=syft $GOBIN/syft $GOBIN/syft
 COPY --from=syncmap $GOBIN/syncmap $GOBIN/syncmap
 COPY --from=tinygo $GOBIN/tinygo $GOBIN/tinygo
 COPY --from=tparse $GOBIN/tparse $GOBIN/tparse

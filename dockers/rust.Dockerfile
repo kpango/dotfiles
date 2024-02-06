@@ -4,20 +4,20 @@ FROM --platform=$BUILDPLATFORM kpango/base:latest AS rust-base
 ARG TOOLCHAIN=nightly
 
 ENV HOME /root
-ENV RUSTUP ${HOME}/.rustup
-ENV CARGO ${HOME}/.cargo
-ENV BIN_PATH ${CARGO}/bin
+ENV RUST_HOME=/usr/local/lib/rust
+ENV CARGO_HOME=${RUST_HOME}/cargo
+ENV RUSTUP_HOME=${RUST_HOME}/rustup
+ENV BIN_PATH ${CARGO_HOME}/bin
 ENV PATH ${BIN_PATH}:$PATH
 
-RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | sh -s -- -y
-
-RUN rustup install stable \
-    && rustup install beta \
-    && rustup install nightly \
-    && rustup toolchain install nightly \
-    && rustup default nightly \
-    && rustup update \
-    && rustup component add \
+RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} sh -s -- --default-toolchain nightly -y \
+    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup install stable \
+    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup install beta \
+    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup install nightly \
+    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup toolchain install nightly \
+    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup default nightly \
+    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup update \
+    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup component add \
        rustfmt \
        rust-analysis \
        rust-src \
@@ -214,10 +214,14 @@ RUN rustup update stable \
 
 FROM --platform=$BUILDPLATFORM scratch AS rust
 ENV HOME /root
-ENV RUSTUP ${HOME}/.rustup
-ENV CARGO ${HOME}/.cargo
-ENV BIN_PATH ${CARGO}/bin
+ENV RUST_HOME=/usr/local/lib/rust
+ENV CARGO_HOME=${RUST_HOME}/cargo
+ENV RUSTUP_HOME=${RUST_HOME}/rustup
+ENV BIN_PATH ${CARGO_HOME}/bin
 
+COPY --from=rust-base ${CARGO_HOME} ${CARGO_HOME}
+COPY --from=rust-base ${RUSTUP_HOME}/settings.toml ${RUSTUP_HOME}/settings.toml
+COPY --from=rust-base ${RUSTUP_HOME}/toolchains ${RUSTUP_HOME}/toolchains
 # COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
 COPY --from=ast-grep ${BIN_PATH}/sg ${BIN_PATH}/sg
@@ -252,11 +256,6 @@ COPY --from=procs ${BIN_PATH}/procs ${BIN_PATH}/procs
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
 COPY --from=rga ${BIN_PATH}/rga ${BIN_PATH}/rga
 COPY --from=rnix-lsp ${BIN_PATH}/rnix-lsp ${BIN_PATH}/rnix-lsp
-COPY --from=rust-base ${BIN_PATH}/rustc ${BIN_PATH}/rustc
-COPY --from=rust-base ${BIN_PATH}/rustup ${BIN_PATH}/rustup
-COPY --from=rust-base ${CARGO} ${CARGO}
-COPY --from=rust-base ${RUSTUP}/settings.toml ${RUSTUP}/settings.toml
-COPY --from=rust-base ${RUSTUP}/toolchains ${RUSTUP}/toolchains
 COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
 COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
 COPY --from=sheldon ${BIN_PATH}/sheldon ${BIN_PATH}/sheldon

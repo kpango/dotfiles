@@ -172,6 +172,10 @@ if [ -z $DOTENV_LOADED ]; then
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64:${GCLOUD_PATH}/lib
 
+    export RUST_HOME=/usr/local/lib/rust
+    export CARGO_HOME=$RUST_HOME/cargo
+    export RUSTUP_HOME=$RUST_HOME/rustup
+
     if type go >/dev/null 2>&1; then
         #GO
         export GOPATH=$HOME/go
@@ -231,7 +235,7 @@ if [ -z $DOTENV_LOADED ]; then
         export TERM="tmux-256color"
     fi
 
-    export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.local/bin:$HOME/.cargo/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
+    export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/share/npm/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.local/bin:$CARGO_HOME/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
 
     if type deno >/dev/null 2>&1; then
         export PATH="$(which deno):$PATH"
@@ -830,7 +834,9 @@ if [ -z $ZSH_LOADED ]; then
     }
     chword() {
         if [ $# -eq 3 ]; then
-            if type rg >/dev/null 2>&1; then
+            if type ug >/dev/null 2>&1; then
+                ug -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
+	    elif type rg >/dev/null 2>&1; then
                 rg --multiline -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |
@@ -841,7 +847,9 @@ if [ -z $ZSH_LOADED ]; then
                     -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             fi
         elif [ $# -eq 4 ]; then
-            if type rg >/dev/null 2>&1; then
+            if type ug >/dev/null 2>&1; then
+                ug -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
+            elif type rg >/dev/null 2>&1; then
                 rg -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |

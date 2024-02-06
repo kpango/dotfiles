@@ -117,7 +117,7 @@ devrun(){
                 -v $HOME/.zsh_history:$container_home/.zsh_history:cached \
                 -v $HOME/Documents:$container_home/Documents \
                 -v $HOME/Downloads:$container_home/Downloads \
-                -v $HOME/go/src:$container_goroot/src:cached \
+                -v $HOME/go/src:$container_goroot/src \
                 -v $docker_config:$docker_config:ro,cached \
                 -v $docker_daemon:$docker_daemon:ro,cached \
                 -v $docker_sock:$docker_sock \
