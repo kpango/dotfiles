@@ -284,11 +284,11 @@ prod: \
 
 github_check:
 	curl --request GET \
-	  -H "Authorization: Bearer $(GITHUB_ACCESS_TOKEN)" \
-	  --url https://api.github.com/octocat
+		-H "Authorization: Bearer $(GITHUB_ACCESS_TOKEN)" \
+		--url https://api.github.com/octocat
 	curl --request GET \
-	  -H "Authorization: Bearer $(GITHUB_ACCESS_TOKEN)" \
-	  --url https://api.github.com/rate_limit
+		-H "Authorization: Bearer $(GITHUB_ACCESS_TOKEN)" \
+		--url https://api.github.com/rate_limit
 
 docker_build:
 	@make DOCKER_BUILDER_NAME=$(DOCKER_BUILDER_NAME) create_buildx
@@ -296,32 +296,32 @@ docker_build:
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 docker buildx build \
-	  --builder "$(DOCKER_BUILDER_NAME)" \
-	  --network=host \
-	  --secret id=gat,src="$(TMP_DIR)/gat" \
-	  --build-arg USER_ID="$(USER_ID)" \
-	  --build-arg GROUP_ID="$(GROUP_ID)" \
-	  --build-arg GROUP_IDS="$(GROUP_IDS)" \
-	  --build-arg WHOAMI="$(USER)" \
-	  --build-arg EMAIL="$(EMAIL)" \
-	  --build-arg BUILDKIT_MULTI_PLATFORM=1 \
-	  --build-arg BUILDKIT_INLINE_CACHE=1 \
-	  --cache-to type=registry,ref=$(USER)/$(NAME):buildcache,mode=max \
-	  --cache-from type=registry,ref=$(USER)/$(NAME):buildcache \
-	  --label org.opencontainers.image.url="$(GITHUB_URL)" \
-	  --label org.opencontainers.image.source="$(GITHUB_URL)" \
-	  --label org.opencontainers.image.revision="$(GITHUB_SHA)" \
-	  --label org.opencontainers.image.version="$(VERSION)" \
-	  --label org.opencontainers.image.title="$(USER)/$(NAME)" \
-	  --memory 32G \
-	  --memory-swap 0m \
-	  --platform $(DOCKER_BUILDER_PLATFORM) \
-	  --allow "network.host" \
-	  --sbom=true \
-	  --provenance=mode=max \
-	  -t "$(USER)/$(NAME):$(VERSION)" \
-	  --output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
-	  -f $(DOCKERFILE) .
+		--builder "$(DOCKER_BUILDER_NAME)" \
+		--network=host \
+		--secret id=gat,src="$(TMP_DIR)/gat" \
+		--build-arg USER_ID="$(USER_ID)" \
+		--build-arg GROUP_ID="$(GROUP_ID)" \
+		--build-arg GROUP_IDS="$(GROUP_IDS)" \
+		--build-arg WHOAMI="$(USER)" \
+		--build-arg EMAIL="$(EMAIL)" \
+		--build-arg BUILDKIT_MULTI_PLATFORM=1 \
+		--build-arg BUILDKIT_INLINE_CACHE=1 \
+		--cache-to type=registry,ref=$(USER)/$(NAME):buildcache,mode=max \
+		--cache-from type=registry,ref=$(USER)/$(NAME):buildcache \
+		--label org.opencontainers.image.url="$(GITHUB_URL)" \
+		--label org.opencontainers.image.source="$(GITHUB_URL)" \
+		--label org.opencontainers.image.revision="$(GITHUB_SHA)" \
+		--label org.opencontainers.image.version="$(VERSION)" \
+		--label org.opencontainers.image.title="$(USER)/$(NAME)" \
+		--memory 32G \
+		--memory-swap 0m \
+		--platform $(DOCKER_BUILDER_PLATFORM) \
+		--allow "network.host" \
+		--sbom=true \
+		--provenance=mode=max \
+		-t "$(USER)/$(NAME):$(VERSION)" \
+		--output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
+		-f $(DOCKERFILE) .
 	docker buildx rm --force "$(DOCKER_BUILDER_NAME)"
 	@rm -rf $(TMP_DIR)
 
@@ -330,10 +330,10 @@ docker_push:
 
 init_buildx:
 	docker run \
-	  --network=host \
-	  --privileged \
-	  --rm tonistiigi/binfmt:master \
-	  --install $(DOCKER_BUILDER_PLATFORM)
+		--network=host \
+		--privileged \
+		--rm tonistiigi/binfmt:master \
+		--install $(DOCKER_BUILDER_PLATFORM)
 
 create_buildx:
 	-docker buildx rm --force $(DOCKER_BUILDER_NAME)
@@ -345,9 +345,17 @@ create_buildx:
 		--buildkitd-flags="--oci-worker-gc=false --oci-worker-snapshotter=stargz" \
 		--platform $(DOCKER_BUILDER_PLATFORM) \
 		--bootstrap
+	# make add_nodes
 	docker buildx ls
 	docker buildx inspect --bootstrap $(DOCKER_BUILDER_NAME)
 	sudo chown -R $(USER):$(GROUP_ID) "$(HOME)/.docker"
+
+add_nodes:
+	@echo $(DOCKER_BUILDER_PLATFORM) | tr ',' '\n' | while read platform; do \
+		node_name=$$(echo $$platform | tr '/' '_' | tr -d '[:space:]'); \
+		echo "Adding node to $(DOCKER_BUILDER_NAME) for $$platform as $$node_name..."; \
+		docker buildx create --append --name $(DOCKER_BUILDER_NAME) --node $${DOCKER_BUILDER_NAME}-$$node_name --platform $$platform; \
+	done
 
 remove_buildx:
 	docker buildx rm --force --all-inactive

@@ -835,7 +835,7 @@ if [ -z $ZSH_LOADED ]; then
     chword() {
         if [ $# -eq 3 ]; then
             if type ug >/dev/null 2>&1; then
-                ug -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
+                cd $1 && ug -l $2 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g" && cd -
 	    elif type rg >/dev/null 2>&1; then
                 rg --multiline -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             elif type jvgrep >/dev/null 2>&1; then
@@ -848,7 +848,7 @@ if [ -z $ZSH_LOADED ]; then
             fi
         elif [ $# -eq 4 ]; then
             if type ug >/dev/null 2>&1; then
-                ug -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
+                cd $1 && ug -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g" && cd -
             elif type rg >/dev/null 2>&1; then
                 rg -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             elif type jvgrep >/dev/null 2>&1; then
@@ -1312,19 +1312,19 @@ if [ -z $ZSH_LOADED ]; then
             }
             alias shutdown=shutdown
         fi
-    elif type apt >/dev/null 2>&1; then
+    elif type apt-get >/dev/null 2>&1; then
         aptup(){
             sudo du -sh /var/cache/apt/archives
             sudo rm -rf /var/cache/apt
             sudo mkdir -p /var/cache/apt/archives/partial
-            sudo DEBIAN_FRONTEND=noninteractive apt -y clean
-            sudo DEBIAN_FRONTEND=noninteractive apt -y autoremove
-            sudo DEBIAN_FRONTEND=noninteractive apt -y update
-            sudo DEBIAN_FRONTEND=noninteractive apt -y upgrade
-            sudo DEBIAN_FRONTEND=noninteractive apt -y full-upgrade
-            sudo DEBIAN_FRONTEND=noninteractive apt -y clean
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y clean
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y update
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y upgrade
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y full-upgrade
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y clean
             sudo dpkg-reconfigure -f noninteractive tzdata
-            sudo DEBIAN_FRONTEND=noninteractive apt -y autoremove --purge
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove --purge
             sudo du -sh /var/cache/apt/archives
             sudo rm -rf /var/cache/apt
             sudo mkdir -p /var/cache/apt/archives/partial
