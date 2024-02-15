@@ -468,10 +468,15 @@ if [ -z $ZSH_LOADED ]; then
             git remote show origin | grep 'HEAD' | cut -d':' -f2 | sed -e 's/^ *//g' -e 's/ *$//g'
         }
         alias gitdb=gitdefaultbranch
+	gitremovalcheck() {
+            git branch -r --merged $(gitdb) | grep -v -e $(gitdb) -e develop -e release | \sed -E 's% *origin/%%'
+            git branch --merged $(gitdb) | grep -vE '^\*|master$|develop$|main$'
+	}
+        alias grc=gitremovalcheck
         gfr() {
             git fetch --prune
             git reset --hard origin/$(tb)
-            git branch -r --merged $(gitdb) | grep -v -e $(gitdb) -e develop | \sed -E 's% *origin/%%' | xargs -I% git push --delete origin %
+            git branch -r --merged $(gitdb) | grep -v -e $(gitdb) -e develop -e release | \sed -E 's% *origin/%%' | xargs -I% git push --delete origin %
             git fetch --prune
             git reset --hard origin/$(tb)
             git branch --merged $(gitdb) | grep -vE '^\*|master$|develop$|main$' | xargs -I % git branch -d %
@@ -750,16 +755,16 @@ if [ -z $ZSH_LOADED ]; then
         if [ -f /.dockerenv ]; then
             tmux unbind C-b
             tmux set -g prefix C-w
-	    tmux bind C-w send-prefix
+            tmux bind C-w send-prefix
         else
             case ${OSTYPE} in
                 darwin*)
                     tmux unbind C-b
                     tmux set -g prefix C-g
-		    tmux bind C-g send-prefix
+                    tmux bind C-g send-prefix
                     ;;
                 linux*)
-		    tmux bind C-b send-prefix
+                    tmux bind C-b send-prefix
                     ;;
             esac
         fi
@@ -836,7 +841,7 @@ if [ -z $ZSH_LOADED ]; then
         if [ $# -eq 3 ]; then
             if type ug >/dev/null 2>&1; then
                 cd $1 && ug -l $2 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g" && cd -
-	    elif type rg >/dev/null 2>&1; then
+            elif type rg >/dev/null 2>&1; then
                 rg --multiline -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |
@@ -1203,24 +1208,24 @@ if [ -z $ZSH_LOADED ]; then
             sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
             if type rate-mirrors >/dev/null 2>&1; then
                 sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-		TMPFILE="$(mktemp)"
-		rate-mirrors \
-		  --allow-root \
-		  --disable-comments \
-		  --disable-comments-in-file \
-		  --entry-country JP \
-		  --concurrency $CPUCORES \
-		  --save="$TMPFILE" \
-		  arch --max-delay=21600
-		if [[ $(wc -l < $TMPFILE) -lt 5 ]]; then
-		    echo "failed to get new mirrorlist from rate-mirrors"
-		    sudo rm -rf $TMPFILE
+                TMPFILE="$(mktemp)"
+                rate-mirrors \
+                    --allow-root \
+                    --disable-comments \
+                    --disable-comments-in-file \
+                    --entry-country JP \
+                    --concurrency $CPUCORES \
+                    --save="$TMPFILE" \
+                    arch --max-delay=21600
+                if [[ $(wc -l < $TMPFILE) -lt 5 ]]; then
+                    echo "failed to get new mirrorlist from rate-mirrors"
+                    sudo rm -rf $TMPFILE
                     sudo rm -rf /etc/pacman.d/mirrorlist
                     sudo mv /etc/pacman.d/mirrorlist.backup /etc/pacman.d/mirrorlist
                 else
-		    echo "succeeded to get new mirrorlist from rate-mirrors"
+                    echo "succeeded to get new mirrorlist from rate-mirrors"
                     sudo rm -rf /etc/pacman.d/mirrorlist
-		    sudo mv $TMPFILE /etc/pacman.d/mirrorlist
+                    sudo mv $TMPFILE /etc/pacman.d/mirrorlist
                     sudo chmod 755 /etc/pacman.d/mirrorlist
                     sudo chown root:root /etc/pacman.d/mirrorlist
                     sudo rm -f /etc/pacman.d/mirrorlist.backup
@@ -1429,6 +1434,10 @@ if [ -z $ZSH_LOADED ]; then
     if [ -d "$GOPATH/src/github.com/vdaas/vald" ]; then
         valdup(){
             cd "$GOPATH/src/github.com/vdaas/vald"
+	    sudo chmod -R 777 $CARGO_HOME
+	    sudo chmod -R 777 $RUSTUP_HOME
+            sudo chown -R $USER $CARGO_HOME
+            sudo chown -R $USER $RUSTUP_HOME
             make helm/schema/all
             make helm/schema/crd/all
             make k8s/manifest/update
