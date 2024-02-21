@@ -198,8 +198,8 @@ if [ -z $DOTENV_LOADED ]; then
 
     if type clang >/dev/null 2>&1; then
         export CC=$(which clang)
-        export CPP=$(which clang++)
-        export CXX=$CPP
+        export CXX=$(which clang++)
+        export CPP="$CXX -E"
         export LD=/usr/bin/ldd
         if type llvm-config >/dev/null 2>&1; then
             export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
