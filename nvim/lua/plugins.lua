@@ -845,7 +845,7 @@ safe_require("lazy").setup({
         end,
     },
     {
-        "jose-elias-alvarez/null-ls.nvim",
+        "nvimtools/null-ls.nvim",
         branch = "main",
         dependencies = {
             "nvim-lua/plenary.nvim",

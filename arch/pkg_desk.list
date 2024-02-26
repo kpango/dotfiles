@@ -67,6 +67,7 @@ networkmanager
 nmap
 nvidia-open-dkms
 nvidia-settings
+nvidia-utils
 nvme-cli
 openssl-1.1
 pacman-contrib
@@ -85,7 +86,6 @@ ranger
 rclone
 ripgrep
 rmlint
-rxvt-unicode
 seatd
 sed
 sheldon
@@ -107,6 +107,7 @@ ufw
 unrar
 unzip
 usbutils
+vulkan-mesa-layers
 waybar
 wayland
 which

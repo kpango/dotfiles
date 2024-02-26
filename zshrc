@@ -1454,7 +1454,7 @@ if [ -z $ZSH_LOADED ]; then
                 && GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
             rm -rf hack/go.mod.default2 \
                 && cat hack/go.mod.default | head -n 5 >> hack/go.mod.default2 \
-                && cat go.sum | awk '{printf "\t%s => %s latest\n", $1, $1}' \
+                && cat go.sum | awk '{printf "\t%s => %s upgrade\n", $1, $1}' \
                 | sort -n | uniq | sort -n >> hack/go.mod.default2 \
                 && echo ")" >> hack/go.mod.default2
             rm -rf hack/go.mod.default3
@@ -1469,7 +1469,7 @@ if [ -z $ZSH_LOADED ]; then
                 && GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy \
                 && rm -rf hack/go.mod.default3 \
                 && cat hack/go.mod.default | head -n 5 >> hack/go.mod.default3 \
-                && cat go.sum | awk '{printf "\t%s => %s latest\n", $1, $1}' \
+                && cat go.sum | awk '{printf "\t%s => %s upgrade\n", $1, $1}' \
                 | sort -n | uniq | sort -n >> hack/go.mod.default3 \
                 && echo ")" >> hack/go.mod.default3 \
                 && rm -rf go.mod go.sum \

@@ -155,7 +155,7 @@ return packer.startup(function(use)
         requires = { "nvim-telesope/telescope.nvim", "nvim-lua/plenary.nvim" },
     }
     use { "glepnir/lspsaga.nvim", branch = "main", requires = "neovim/nvim-lspconfig" }
-    use { "jose-elias-alvarez/null-ls.nvim", branch = "main" }
+    use { "nvimtools/null-ls.nvim", branch = "main" }
     use { "kyazdani42/nvim-web-devicons" }
     use { "akinsho/bufferline.nvim", tag = "v2.*", requires = "kyazdani42/nvim-web-devicons" }
     use { "nvim-lualine/lualine.nvim", requires = { "kyazdani42/nvim-web-devicons", opt = true } }
