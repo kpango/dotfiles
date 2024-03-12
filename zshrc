@@ -170,7 +170,7 @@ if [ -z $DOTENV_LOADED ]; then
     #ReactNative
     export REACT_EDITOR=$EDITOR;
 
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib64:${GCLOUD_PATH}/lib
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib:/usr/local/lib:${GCLOUD_PATH}/lib:/opt/containerd/lib:/opt/cuda/lib
 
     export RUST_HOME=/usr/local/lib/rust
     export CARGO_HOME=$RUST_HOME/cargo
