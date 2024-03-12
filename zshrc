@@ -170,7 +170,7 @@ if [ -z $DOTENV_LOADED ]; then
     #ReactNative
     export REACT_EDITOR=$EDITOR;
 
-    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/lib:/usr/local/lib:${GCLOUD_PATH}/lib:/opt/containerd/lib:/opt/cuda/lib
+    export LD_LIBRARY_PATH=/lib:/usr/local/lib:${GCLOUD_PATH}/lib:/opt/containerd/lib:/opt/cuda/lib:${LD_LIBRARY_PATH}
 
     export RUST_HOME=/usr/local/lib/rust
     export CARGO_HOME=$RUST_HOME/cargo
@@ -205,7 +205,7 @@ if [ -z $DOTENV_LOADED ]; then
             export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
             export LLVM_CONFIG_PATH=$(which llvm-config);
         else
-            export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib/clang/*/lib
+            export LD_LIBRARY_PATH=/usr/lib/clang/*/lib:$LD_LIBRARY_PATH
         fi
         export CFLAGS="-g -Ofast -march=native -ffp-contract=fast"
         export CPPFLAGS="-g -Ofast -march=native -ffp-contract=fast"
