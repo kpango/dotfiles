@@ -1438,6 +1438,7 @@ if [ -z $ZSH_LOADED ]; then
 	    sudo chmod -R 777 $RUSTUP_HOME
             sudo chown -R $USER $CARGO_HOME
             sudo chown -R $USER $RUSTUP_HOME
+            make files
             make helm/schema/all
             make helm/schema/crd/all
             make k8s/manifest/update
@@ -1445,6 +1446,7 @@ if [ -z $ZSH_LOADED ]; then
             make helm/docs/vald
             make helm/docs/vald-helm-operator
             make update
+            make format/yaml
         }
         alias valdup=valdup
         valddep(){
