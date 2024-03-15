@@ -50,6 +50,7 @@ kanshi
 kubectl
 kubectx
 less
+libnm
 linux-firmware
 linux-zen
 linux-zen-headers
@@ -63,6 +64,7 @@ mpv
 mtr
 mysql-workbench
 neovim
+networkmanager
 nmap
 nvidia-open-dkms
 nvidia-settings
