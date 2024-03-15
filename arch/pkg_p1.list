@@ -18,6 +18,7 @@ clang
 cmake
 cuda
 discord
+dmidecode
 dnsmasq
 docker
 dosfstools
@@ -26,6 +27,7 @@ fakeroot
 fastfetch
 fcitx5
 fcitx5-configtool
+fcitx5-gtk
 fd
 fwupd
 fwupd-efi
@@ -64,6 +66,7 @@ neovim
 nmap
 nvidia-open-dkms
 nvidia-settings
+nvidia-utils
 nvme-cli
 openssl-1.1
 pacman-contrib
@@ -105,6 +108,7 @@ ufw
 unrar
 unzip
 usbutils
+vulkan-mesa-layers
 waybar
 wayland
 which
