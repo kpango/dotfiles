@@ -1163,6 +1163,12 @@ if [ -z $ZSH_LOADED ]; then
             fi
         }
         alias archback=archback
+	kacman() {
+	  paru $@ || {
+	    echo "paru failed, attempting with pakku..."
+	    pakku $@
+	  }
+	}
         archup() {
             sudo chown 0 /etc/sudoers.d/$USER
             sudo chmod -R 700 $HOME/.gnupg
@@ -1230,7 +1236,7 @@ if [ -z $ZSH_LOADED ]; then
                     sudo chown root:root /etc/pacman.d/mirrorlist
                     sudo rm -f /etc/pacman.d/mirrorlist.backup
                 fi
-                paru -Syy
+                kacman -Syy
                 if type milcheck >/dev/null 2>&1; then
                     sudo milcheck
                 fi
@@ -1245,7 +1251,7 @@ if [ -z $ZSH_LOADED ]; then
                 /var/cache/pacman/pkg
             sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman-db-upgrade
-            paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
+            kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $USER $HOME/.config/gcloud
@@ -1262,7 +1268,7 @@ if [ -z $ZSH_LOADED ]; then
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
             CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
-                paru -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
+                kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $USER $HOME/.config/gcloud
