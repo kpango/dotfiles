@@ -1170,7 +1170,7 @@ if [ -z $ZSH_LOADED ]; then
                   echo "Command executed successfully with paru."
                   return 0
               else
-                  echo "paru failed to execute the command with option $@."
+                  echo "paru failed to execute the command with option '$@'."
               fi
           else
               echo "paru is not installed."
@@ -1182,7 +1182,7 @@ if [ -z $ZSH_LOADED ]; then
                   echo "Command executed successfully with pakku."
                   return 0
               else
-                  echo "pakku failed to execute the command with option $@."
+                  echo "pakku failed to execute the command with option '$@'."
               fi
           else
               echo "pakku is not installed."
@@ -1194,7 +1194,7 @@ if [ -z $ZSH_LOADED ]; then
                   echo "Command executed successfully with yay."
                   return 0
               else
-                  echo "yay failed to execute the command with option $@."
+                  echo "yay failed to execute the command with option '$@'."
               fi
           else
               echo "yay is not installed."
@@ -1205,7 +1205,7 @@ if [ -z $ZSH_LOADED ]; then
               echo "Command executed successfully with pacman."
               return 0
           else
-              echo "Failed to execute the command with option $@ with pacman as well."
+              echo "Failed to execute the command with option '$@' with pacman as well."
               return 1
           fi
         }

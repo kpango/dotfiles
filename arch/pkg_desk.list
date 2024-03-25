@@ -12,6 +12,7 @@ avr-gcc
 avr-gdb
 avr-libc
 axel
+base-devel
 bash-language-server
 ccache
 chrony
