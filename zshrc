@@ -1164,11 +1164,51 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archback=archback
 	kacman() {
-	  paru $@ || {
-	    echo "paru failed, attempting with pakku..."
-	    pakku $@
-	  }
-	}
+          # Try with paru
+          if type paru >/dev/null 2>&1; then
+              if paru "$@"; then
+                  echo "Command executed successfully with paru."
+                  return 0
+              else
+                  echo "paru failed to execute the command with option $@."
+              fi
+          else
+              echo "paru is not installed."
+          fi
+          # Try with pakku
+          if type pakku >/dev/null 2>&1; then
+              echo "Trying with pakku..."
+              if pakku "$@"; then
+                  echo "Command executed successfully with pakku."
+                  return 0
+              else
+                  echo "pakku failed to execute the command with option $@."
+              fi
+          else
+              echo "pakku is not installed."
+          fi
+          # Try with yay
+          if type yay >/dev/null 2>&1; then
+              echo "Trying with yay..."
+              if yay "$@"; then
+                  echo "Command executed successfully with yay."
+                  return 0
+              else
+                  echo "yay failed to execute the command with option $@."
+              fi
+          else
+              echo "yay is not installed."
+          fi
+          # Try with pacman
+          echo "Trying with sudo pacman..."
+          if sudo pacman "$@"; then
+              echo "Command executed successfully with pacman."
+              return 0
+          else
+              echo "Failed to execute the command with option $@ with pacman as well."
+              return 1
+          fi
+        }
         archup() {
             sudo chown 0 /etc/sudoers.d/$USER
             sudo chmod -R 700 $HOME/.gnupg
