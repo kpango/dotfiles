@@ -1132,7 +1132,7 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias brewup=brewup
         alias up=brewup
-    elif type paru >/dev/null 2>&1; then
+    elif type pacman >/dev/null 2>&1; then
         archback() {
             family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
             echo $family_name
