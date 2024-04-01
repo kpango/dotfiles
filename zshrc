@@ -1290,6 +1290,10 @@ if [ -z $ZSH_LOADED ]; then
                         && sudo swapoff -a \
                         && sudo swapon -a \
                         && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
+                        && sudo fsck -AR -a \
+                        && sudo journalctl --vacuum-time=2weeks \
+                        && systemd-analyze \
+                        && sensors \
                         && free
         }
         alias archup=archup
