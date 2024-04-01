@@ -1242,7 +1242,7 @@ if [ -z $ZSH_LOADED ]; then
                 /var/lib/pacman/sync/*
             sudo mkdir -p /var/cache/pacman/pkg
             kacman -Scc --noconfirm
-	    sudo pacman -Qtdq | xargs -r kacman -Rsucnd --noconfirm
+            sudo pacman -Qtdq | xargs -r kacman -Rsucnd --noconfirm
             sudo rm -rf /var/lib/pacman/db.lck
             sudo paccache -ruk0
         }
@@ -1257,7 +1257,7 @@ if [ -z $ZSH_LOADED ]; then
                 && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
                 && free
             sudo su -c "chown 0 /etc/sudoers.d/$USER"
-	    kacclean
+            kacclean
             if type gpgconf >/dev/null 2>&1; then
                 sudo gpgconf --kill all
             fi
@@ -1277,7 +1277,7 @@ if [ -z $ZSH_LOADED ]; then
                 sudo pacman-key --populate archlinux
             fi
             sudo pacman-db-upgrade
-	    kacclean
+            kacclean
             if type rate-mirrors >/dev/null 2>&1; then
                 sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
                 TMPFILE="$(mktemp)"
@@ -1318,10 +1318,10 @@ if [ -z $ZSH_LOADED ]; then
             sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman-db-upgrade
             kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
-	    kacclean
+            kacclean
             CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
                 kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
-	    kacclean
+            kacclean
             sudo bootctl update
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
