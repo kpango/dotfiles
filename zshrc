@@ -1283,6 +1283,7 @@ if [ -z $ZSH_LOADED ]; then
             kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             kacclean
             sudo bootctl update
+            sudo bootctl status
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
             run_command sync \
