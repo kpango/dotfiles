@@ -468,10 +468,10 @@ if [ -z $ZSH_LOADED ]; then
             git remote show origin | grep 'HEAD' | cut -d':' -f2 | sed -e 's/^ *//g' -e 's/ *$//g'
         }
         alias gitdb=gitdefaultbranch
-	gitremovalcheck() {
+        gitremovalcheck() {
             git branch -r --merged $(gitdb) | grep -v -e $(gitdb) -e develop -e release | \sed -E 's% *origin/%%'
             git branch --merged $(gitdb) | grep -vE '^\*|master$|develop$|main$'
-	}
+        }
         alias grc=gitremovalcheck
         gfr() {
             git fetch --prune
@@ -1163,14 +1163,19 @@ if [ -z $ZSH_LOADED ]; then
             fi
         }
         alias archback=archback
-	kacman() {
+        kacman() {
           # Try with paru
           if type paru >/dev/null 2>&1; then
               if paru "$@"; then
                   echo "Command executed successfully with paru."
                   return 0
               else
-                  echo "paru failed to execute the command with option '$@'."
+                  if CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" paru "$@"; then
+                      echo "Command executed successfully with paru on gcc/g++."
+                      return 0
+                  else
+                      echo "paru failed to execute the command with option '$@' on gcc/g++."
+                  fi
               fi
           else
               echo "paru is not installed."
@@ -1182,7 +1187,12 @@ if [ -z $ZSH_LOADED ]; then
                   echo "Command executed successfully with pakku."
                   return 0
               else
-                  echo "pakku failed to execute the command with option '$@'."
+                  if CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" pakku "$@"; then
+                      echo "Command executed successfully with pakku on gcc/g++."
+                      return 0
+                  else
+                      echo "pakku failed to execute the command with option '$@' on gcc/g++."
+                  fi
               fi
           else
               echo "pakku is not installed."
@@ -1194,7 +1204,12 @@ if [ -z $ZSH_LOADED ]; then
                   echo "Command executed successfully with yay."
                   return 0
               else
-                  echo "yay failed to execute the command with option '$@'."
+                  if CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" yay "$@"; then
+                      echo "Command executed successfully with yay on gcc/g++."
+                      return 0
+                  else
+                      echo "yay failed to execute the command with option '$@' on gcc/g++."
+                  fi
               fi
           else
               echo "yay is not installed."
@@ -1205,9 +1220,31 @@ if [ -z $ZSH_LOADED ]; then
               echo "Command executed successfully with pacman."
               return 0
           else
+              if CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" sudo pacman "$@"; then
+                  echo "Command executed successfully with pacman on gcc/g++."
+                  return 0
+              fi
               echo "Failed to execute the command with option '$@' with pacman as well."
               return 1
           fi
+        }
+        kacclean() {
+            sudo rm -rf /var/lib/pacman/db.l*
+            sudo chmod -R 777 $HOME/.config/gcloud
+            sudo chown -R $USER $HOME/.config/gcloud
+            sudo rm -rf $HOME/.cache/* \
+                $HOME/.config/gcloud/config_sentinel \
+                $HOME/.config/gcloud/logs/* \
+                /tmp/makepkg/* \
+                /var/lib/pacman/db.l* \
+                /usr/share/man/man5/gemfile* \
+                /var/cache/pacman/pkg \
+                /var/lib/pacman/sync/*
+            sudo mkdir -p /var/cache/pacman/pkg
+            kacman -Scc --noconfirm
+	    sudo pacman -Qtdq | xargs -r kacman -Rsucnd --noconfirm
+            sudo rm -rf /var/lib/pacman/db.lck
+            sudo paccache -ruk0
         }
         archup() {
             sudo chown 0 /etc/sudoers.d/$USER
@@ -1220,17 +1257,7 @@ if [ -z $ZSH_LOADED ]; then
                 && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
                 && free
             sudo su -c "chown 0 /etc/sudoers.d/$USER"
-            sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $USER $HOME/.config/gcloud
-            sudo rm -rf /var/lib/pacman/db.l* \
-                /var/lib/pacman/sync/* \
-                $HOME/.config/gcloud/logs/* \
-                $HOME/.config/gcloud/config_sentinel \
-                $HOME/.cache/* \
-                /tmp/makepkg/* \
-                /usr/share/man/man5/gemfile* \
-                /var/cache/pacman/pkg
-            sudo mkdir -p /var/cache/pacman/pkg
+	    kacclean
             if type gpgconf >/dev/null 2>&1; then
                 sudo gpgconf --kill all
             fi
@@ -1250,8 +1277,7 @@ if [ -z $ZSH_LOADED ]; then
                 sudo pacman-key --populate archlinux
             fi
             sudo pacman-db-upgrade
-            sudo pacman -Scc --noconfirm
-            sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
+	    kacclean
             if type rate-mirrors >/dev/null 2>&1; then
                 sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
                 TMPFILE="$(mktemp)"
@@ -1292,37 +1318,10 @@ if [ -z $ZSH_LOADED ]; then
             sudo mkdir -p /var/cache/pacman/pkg
             sudo pacman-db-upgrade
             kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
-            sudo rm -rf /var/lib/pacman/db.l*
-            sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $USER $HOME/.config/gcloud
-            sudo rm -rf /var/lib/pacman/db.l* \
-                /var/lib/pacman/sync/* \
-                $HOME/.config/gcloud/logs/* \
-                $HOME/.config/gcloud/config_sentinel \
-                $HOME/.cache/* \
-                /tmp/makepkg/* \
-                /var/cache/pacman/pkg
-            sudo mkdir -p /var/cache/pacman/pkg
-            sudo pacman -Scc --noconfirm
-            sudo pacman -Rsucnd --noconfirm $(sudo pacman -Qtdq)
-            sudo rm -rf /var/lib/pacman/db.lck
-            sudo paccache -ruk0
+	    kacclean
             CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
                 kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
-            sudo rm -rf /var/lib/pacman/db.l*
-            sudo chmod -R 777 $HOME/.config/gcloud
-            sudo chown -R $USER $HOME/.config/gcloud
-            sudo rm -rf /var/lib/pacman/db.l* \
-                $HOME/.config/gcloud/logs/* \
-                $HOME/.config/gcloud/config_sentinel \
-                $HOME/.cache/* \
-                /tmp/makepkg/* \
-                /var/cache/pacman/pkg
-            sudo mkdir -p /var/cache/pacman/pkg
-            sudo pacman -Scc --noconfirm
-            sudo pacman -Rns --noconfirm $(sudo pacman -Qtdq)
-            sudo rm -rf /var/lib/pacman/db.lck
-            sudo paccache -ruk0
+	    kacclean
             sudo bootctl update
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
@@ -1480,8 +1479,8 @@ if [ -z $ZSH_LOADED ]; then
     if [ -d "$GOPATH/src/github.com/vdaas/vald" ]; then
         valdup(){
             cd "$GOPATH/src/github.com/vdaas/vald"
-	    sudo chmod -R 777 $CARGO_HOME
-	    sudo chmod -R 777 $RUSTUP_HOME
+            sudo chmod -R 777 $CARGO_HOME
+            sudo chmod -R 777 $RUSTUP_HOME
             sudo chown -R $USER $CARGO_HOME
             sudo chown -R $USER $RUSTUP_HOME
             make files
