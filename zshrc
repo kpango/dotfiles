@@ -1163,83 +1163,56 @@ if [ -z $ZSH_LOADED ]; then
             fi
         }
         alias archback=archback
+
+        GCC=$(which gcc)
+        GXX=$(which g++)
+        GCPP="$GCC -E"
+        run_command() {
+            if ! "$@"; then
+                echo "Failed to execute the command: $@"
+                return 1
+            fi
+            echo "Command executed successfully: $@"
+        }
+
+        try_package_manager() {
+            local manager=$1
+            shift
+            if type $manager >/dev/null 2>&1; then
+                echo "Trying with $manager..."
+                if run_command $manager "$@"; then
+                    return 0
+                else
+                    echo "$manager failed, trying with gcc/g++ environment variables set."
+                    if CC=$GCC CXX=$GXX CPP=$GCPP run_command $manager "$@"; then
+                        return 0
+                    fi
+                fi
+            else
+                echo "$manager is not installed."
+            fi
+            return 1
+        }
+
         kacman() {
-          # Try with paru
-          if type paru >/dev/null 2>&1; then
-              if paru "$@"; then
-                  echo "Command executed successfully with paru."
-                  return 0
-              else
-                  if CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" paru "$@"; then
-                      echo "Command executed successfully with paru on gcc/g++."
-                      return 0
-                  else
-                      echo "paru failed to execute the command with option '$@' on gcc/g++."
-                  fi
-              fi
-          else
-              echo "paru is not installed."
-          fi
-          # Try with pakku
-          if type pakku >/dev/null 2>&1; then
-              echo "Trying with pakku..."
-              if pakku "$@"; then
-                  echo "Command executed successfully with pakku."
-                  return 0
-              else
-                  if CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" pakku "$@"; then
-                      echo "Command executed successfully with pakku on gcc/g++."
-                      return 0
-                  else
-                      echo "pakku failed to execute the command with option '$@' on gcc/g++."
-                  fi
-              fi
-          else
-              echo "pakku is not installed."
-          fi
-          # Try with yay
-          if type yay >/dev/null 2>&1; then
-              echo "Trying with yay..."
-              if yay "$@"; then
-                  echo "Command executed successfully with yay."
-                  return 0
-              else
-                  if CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" yay "$@"; then
-                      echo "Command executed successfully with yay on gcc/g++."
-                      return 0
-                  else
-                      echo "yay failed to execute the command with option '$@' on gcc/g++."
-                  fi
-              fi
-          else
-              echo "yay is not installed."
-          fi
-          # Try with pacman
-          echo "Trying with sudo pacman..."
-          if sudo pacman "$@"; then
-              echo "Command executed successfully with pacman."
-              return 0
-          else
-              if CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" sudo pacman "$@"; then
-                  echo "Command executed successfully with pacman on gcc/g++."
-                  return 0
-              fi
-              echo "Failed to execute the command with option '$@' with pacman as well."
-              return 1
-          fi
+            if try_package_manager paru "$@"; then return 0; fi
+            if try_package_manager pakku "$@"; then return 0; fi
+            if try_package_manager yay "$@"; then return 0; fi
+            if try_package_manager "sudo pacman" "$@"; then return 0; fi
+            echo "Failed to execute the command with option '$@' with all package managers."
+            return 1
         }
         kacclean() {
-            sudo rm -rf /var/lib/pacman/db.l*
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $USER $HOME/.config/gcloud
             sudo rm -rf $HOME/.cache/* \
-                $HOME/.config/gcloud/config_sentinel \
-                $HOME/.config/gcloud/logs/* \
-                /tmp/makepkg/* \
-                /var/lib/pacman/db.l* \
-                /usr/share/man/man5/gemfile* \
-                /var/cache/pacman/pkg \
-                /var/lib/pacman/sync/*
+                        $HOME/.config/gcloud/config_sentinel \
+                        $HOME/.config/gcloud/logs/* \
+                        /tmp/makepkg/* \
+                        /var/lib/pacman/db.l* \
+                        /usr/share/man/man5/gemfile* \
+                        /var/cache/pacman/pkg \
+                        /var/lib/pacman/sync/*
             sudo mkdir -p /var/cache/pacman/pkg
             kacman -Scc --noconfirm
             sudo pacman -Qtdq | xargs -r kacman -Rsucnd --noconfirm
@@ -1250,12 +1223,12 @@ if [ -z $ZSH_LOADED ]; then
             sudo chown 0 /etc/sudoers.d/$USER
             sudo chmod -R 700 $HOME/.gnupg
             sudo chmod -R 600 $HOME/.gnupg/*
-            sync \
-                && sudo sysctl -w vm.drop_caches=3 \
-                && sudo swapoff -a \
-                && sudo swapon -a \
-                && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
-                && free
+            run_command sync \
+                        && sudo sysctl -w vm.drop_caches=3 \
+                        && sudo swapoff -a \
+                        && sudo swapon -a \
+                        && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
+                        && free
             sudo su -c "chown 0 /etc/sudoers.d/$USER"
             kacclean
             if type gpgconf >/dev/null 2>&1; then
@@ -1290,12 +1263,12 @@ if [ -z $ZSH_LOADED ]; then
                     --save="$TMPFILE" \
                     arch --max-delay=21600
                 if [[ $(wc -l < $TMPFILE) -lt 5 ]]; then
-                    echo "failed to get new mirrorlist from rate-mirrors"
+                    echo "Failed to get new mirrorlist from rate-mirrors"
                     sudo rm -rf $TMPFILE
                     sudo rm -rf /etc/pacman.d/mirrorlist
                     sudo mv /etc/pacman.d/mirrorlist.backup /etc/pacman.d/mirrorlist
                 else
-                    echo "succeeded to get new mirrorlist from rate-mirrors"
+                    echo "Successfully got new mirrorlist from rate-mirrors"
                     sudo rm -rf /etc/pacman.d/mirrorlist
                     sudo mv $TMPFILE /etc/pacman.d/mirrorlist
                     sudo chmod 755 /etc/pacman.d/mirrorlist
@@ -1307,33 +1280,21 @@ if [ -z $ZSH_LOADED ]; then
                     sudo milcheck
                 fi
             fi
-            sudo rm -rf /var/lib/pacman/db.l* \
-                /var/lib/pacman/sync/* \
-                $HOME/.config/gcloud/logs/* \
-                $HOME/.config/gcloud/config_sentinel \
-                $HOME/.cache/* \
-                /tmp/makepkg/* \
-                /usr/share/man/man5/gemfile* \
-                /var/cache/pacman/pkg
-            sudo mkdir -p /var/cache/pacman/pkg
-            sudo pacman-db-upgrade
             kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
-            kacclean
-            CC=$(which gcc) CXX=$(which g++) CPP="$CC -E" \
-                kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
             kacclean
             sudo bootctl update
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
-            sync \
-                && sudo sysctl -w vm.drop_caches=3 \
-                && sudo swapoff -a \
-                && sudo swapon -a \
-                && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
-                && free
+            run_command sync \
+                        && sudo sysctl -w vm.drop_caches=3 \
+                        && sudo swapoff -a \
+                        && sudo swapon -a \
+                        && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
+                        && free
         }
         alias archup=archup
         alias up=archup
+
 
         if type reboot >/dev/null 2>&1; then
             reboot() {
