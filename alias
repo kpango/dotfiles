@@ -93,6 +93,7 @@ devrun(){
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
             docker run \
                 --cap-add=ALL \
+		--gpus all \
                 --name $container_name \
                 --privileged=$privileged \
                 --restart always \
