@@ -1191,7 +1191,7 @@ if [ -z $ZSH_LOADED ]; then
         archback() {
             family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
             echo $family_name
-	    kacman -Sy
+            kacman -Sy
             if [[ $family_name =~ "P1" ]]; then
                 echo "backup ThinkPad P1 Gen 2 packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_p1.list
@@ -1217,7 +1217,7 @@ if [ -z $ZSH_LOADED ]; then
                 pacman -Qqen | sort -n > $DOTFILES_DIR/arch/pkg_desk.list
                 pacman -Qqem | sort -n > $DOTFILES_DIR/arch/aur_desk.list
             fi
-	    kacclean
+            kacclean
         }
         alias archback=archback
 
@@ -1333,8 +1333,12 @@ if [ -z $ZSH_LOADED ]; then
     elif type apt-get >/dev/null 2>&1; then
         aptup(){
             sudo du -sh /var/cache/apt/archives
-            sudo rm -rf /var/cache/apt
+            sudo rm -rf /var/cache/apt /var/lib/apt/lists/*
             sudo mkdir -p /var/cache/apt/archives/partial
+            sudo apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com
+            sudo apt-key list | awk -F"/" '/expired:/{print $2}' | xargs -I {} sudo apt-key del {}
+            echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+            echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y clean
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y update
@@ -1343,11 +1347,13 @@ if [ -z $ZSH_LOADED ]; then
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y clean
             sudo dpkg-reconfigure -f noninteractive tzdata
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove --purge
+            sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoclean --purge
             sudo du -sh /var/cache/apt/archives
-            sudo rm -rf /var/cache/apt
+            sudo rm -rf /var/cache/apt /var/lib/apt/lists/*
             sudo mkdir -p /var/cache/apt/archives/partial
             sudo update-alternatives --set cc $CC
             sudo update-alternatives --set c++ $CXX
+            sudo systemctl daemon-reload
         }
         alias aptup=aptup
         alias up=aptup
@@ -1442,6 +1448,18 @@ if [ -z $ZSH_LOADED ]; then
             fi
         }
         alias ccnt=checkcountry
+    fi
+
+    if type wakeonlan >/dev/null 2>&1; then
+        alias p1up="wakeonlan -p 9 -i 10.0.0.255 48:2a:e3:8c:80:90"
+        alias trup="wakeonlan -p 9 -i 10.0.0.255 f0:2f:74:d4:37:35"
+    fi
+
+    if type ubnt-systool >/dev/null 2>&1; then
+        export PATH=/usr/lib/unifi/bin:/usr/share/sensible-utils/bin:/usr/share/ubios-udapi-server/ips/bin:/usr/share/ubios-udapi-server/utm/bin:/usr/share/unifi-core/bin:$PATH
+        if type tailscale >/dev/null 2>&1; then
+	    alias tailup="tailscale up --ssh --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29"
+        fi
     fi
 
     if [ -d "$GOPATH/src/github.com/vdaas/vald" ]; then
