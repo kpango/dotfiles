@@ -1156,7 +1156,12 @@ if [ -z $ZSH_LOADED ]; then
                     if CC=$GCC CXX=$GXX CPP=$GCPP run_command $manager "$@"; then
                         return 0
                     fi
+                    echo "$manager with gcc/g++ environment variables failed, trying to ignore unnecessary packages."
+                    if CC=$GCC CXX=$GXX CPP=$GCPP run_command $manager "$@" --ignore mozc --ignore fcitx5-mozc-ut; then
+                        return 0
+                    fi
                 fi
+                echo "$manager failed."
             else
                 echo "$manager is not installed."
             fi
