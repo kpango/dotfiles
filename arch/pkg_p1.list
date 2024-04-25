@@ -11,6 +11,7 @@ avr-gcc
 avr-gdb
 avr-libc
 axel
+base-devel
 bash-language-server
 ccache
 chrony
@@ -68,7 +69,6 @@ networkmanager
 nmap
 nvidia-open-dkms
 nvidia-settings
-nvidia-utils
 nvme-cli
 openssl-1.1
 pacman-contrib
