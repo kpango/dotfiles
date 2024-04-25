@@ -10,6 +10,7 @@ GITHUB_SHA = $(eval GITHUB_SHA := $(shell git rev-parse HEAD))$(GITHUB_SHA)
 GITHUB_URL = https://github.com/kpango/dotfiles
 EMAIL = kpango@vdaas.org
 
+DOCKER_EXTRA_OPTS = ""
 DOCKER_BUILDER_NAME = "kpango-builder"
 DOCKER_BUILDER_DRIVER = "docker-container"
 DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64/v8"
@@ -296,6 +297,7 @@ docker_build:
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 docker buildx build \
+		"$(DOCKER_EXTRA_OPTS)" \
 		--builder "$(DOCKER_BUILDER_NAME)" \
 		--network=host \
 		--secret id=gat,src="$(TMP_DIR)/gat" \
