@@ -111,6 +111,7 @@ unrar
 unzip
 usbutils
 vulkan-mesa-layers
+wakeonlan
 waybar
 wayland
 which
