@@ -297,7 +297,7 @@ docker_build:
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 docker buildx build \
-		"$(DOCKER_EXTRA_OPTS)" \
+		$(DOCKER_EXTRA_OPTS) \
 		--builder "$(DOCKER_BUILDER_NAME)" \
 		--network=host \
 		--secret id=gat,src="$(TMP_DIR)/gat" \
@@ -316,7 +316,7 @@ docker_build:
 		--label org.opencontainers.image.version="$(VERSION)" \
 		--label org.opencontainers.image.title="$(USER)/$(NAME)" \
 		--memory 32G \
-		--memory-swap 0m \
+		--memory-swap 32G \
 		--platform $(DOCKER_BUILDER_PLATFORM) \
 		--allow "network.host" \
 		--sbom=true \
