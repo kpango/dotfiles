@@ -274,7 +274,7 @@ build: \
 	init_buildx \
 	create_buildx \
 	build_base
-	@xpanes -s -c "make -f $(ROOTDIR)/Makefile build_{}" go docker rust dart k8s nim gcloud env
+	@xpanes -s -c "make DOCKER_EXTRA_OPTS=$(DOCKER_EXTRA_OPTS) -f $(ROOTDIR)/Makefile build_{}" go docker rust dart k8s nim gcloud env
 
 prod: \
 	login \
