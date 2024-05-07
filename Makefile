@@ -297,7 +297,6 @@ docker_build:
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 docker buildx build \
-		$(DOCKER_EXTRA_OPTS) \
 		--builder "$(DOCKER_BUILDER_NAME)" \
 		--network=host \
 		--secret id=gat,src="$(TMP_DIR)/gat" \

@@ -101,6 +101,7 @@ devrun(){
                 --network=host \
                 --mount type=bind,source=$resolve_dnsmasq_config,destination=$resolve_config,readonly \
                 --add-host=host.docker.internal:host-gateway \
+		--memory=200G \
                 -u "$(id -u $USER):$(id -g $USER)" \
                 -v $HOME/.aws:$container_home/.aws \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
