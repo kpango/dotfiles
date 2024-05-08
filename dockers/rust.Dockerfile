@@ -26,9 +26,9 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | CARGO_HOME=${CA
 
 FROM --platform=$BUILDPLATFORM kpango/rust:latest AS old
 
-FROM --platform=$BUILDPLATFORM rust-base AS ast-grep
-RUN cargo +nightly install --force --no-default-features \
-    ast-grep
+# FROM --platform=$BUILDPLATFORM rust-base AS ast-grep
+# RUN cargo +nightly install --force --no-default-features \
+#     ast-grep
 
 FROM --platform=$BUILDPLATFORM rust-base AS bandwhich
 RUN cargo +nightly install --force --no-default-features \
@@ -224,7 +224,7 @@ COPY --from=rust-base ${RUSTUP_HOME}/settings.toml ${RUSTUP_HOME}/settings.toml
 COPY --from=rust-base ${RUSTUP_HOME}/toolchains ${RUSTUP_HOME}/toolchains
 # COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
-COPY --from=ast-grep ${BIN_PATH}/sg ${BIN_PATH}/sg
+# COPY --from=ast-grep ${BIN_PATH}/sg ${BIN_PATH}/sg
 COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm

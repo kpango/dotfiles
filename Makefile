@@ -297,32 +297,32 @@ docker_build:
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 docker buildx build \
-		--builder "$(DOCKER_BUILDER_NAME)" \
-		--network=host \
-		--secret id=gat,src="$(TMP_DIR)/gat" \
-		--build-arg USER_ID="$(USER_ID)" \
+		--allow "network.host" \
+		--build-arg BUILDKIT_MULTI_PLATFORM=1 \
+		--build-arg EMAIL="$(EMAIL)" \
 		--build-arg GROUP_ID="$(GROUP_ID)" \
 		--build-arg GROUP_IDS="$(GROUP_IDS)" \
+		--build-arg USER_ID="$(USER_ID)" \
 		--build-arg WHOAMI="$(USER)" \
-		--build-arg EMAIL="$(EMAIL)" \
-		--build-arg BUILDKIT_MULTI_PLATFORM=1 \
-		--build-arg BUILDKIT_INLINE_CACHE=1 \
+		--builder "$(DOCKER_BUILDER_NAME)" \
 		--cache-to type=registry,ref=$(USER)/$(NAME):buildcache,mode=max \
 		--cache-from type=registry,ref=$(USER)/$(NAME):buildcache \
-		--label org.opencontainers.image.url="$(GITHUB_URL)" \
-		--label org.opencontainers.image.source="$(GITHUB_URL)" \
 		--label org.opencontainers.image.revision="$(GITHUB_SHA)" \
-		--label org.opencontainers.image.version="$(VERSION)" \
+		--label org.opencontainers.image.source="$(GITHUB_URL)" \
 		--label org.opencontainers.image.title="$(USER)/$(NAME)" \
+		--label org.opencontainers.image.url="$(GITHUB_URL)" \
+		--label org.opencontainers.image.version="$(VERSION)" \
 		--memory 32G \
 		--memory-swap 32G \
-		--platform $(DOCKER_BUILDER_PLATFORM) \
-		--allow "network.host" \
-		--sbom=true \
-		--provenance=mode=max \
-		-t "$(USER)/$(NAME):$(VERSION)" \
+		--network=host \
 		--output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
+		--platform $(DOCKER_BUILDER_PLATFORM) \
+		--provenance=mode=max \
+		--sbom=true \
+		--secret id=gat,src="$(TMP_DIR)/gat" \
+		-t "$(USER)/$(NAME):$(VERSION)" \
 		-f $(DOCKERFILE) .
+		# --build-arg BUILDKIT_INLINE_CACHE=1 \
 	docker buildx rm --force "$(DOCKER_BUILDER_NAME)"
 	@rm -rf $(TMP_DIR)
 
