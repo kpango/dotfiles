@@ -841,10 +841,10 @@ if [ -z $ZSH_LOADED ]; then
     }
     chword() {
         if [ $# -eq 3 ]; then
-            if type ug >/dev/null 2>&1; then
-                cd $1 && ug -l $2 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g" && cd -
-            elif type rg >/dev/null 2>&1; then
+            if type rg >/dev/null 2>&1; then
                 rg --multiline -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
+            elif type ug >/dev/null 2>&1; then
+                cd $1 && ug -l $2 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g" && cd -
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |
                 xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
@@ -854,10 +854,10 @@ if [ -z $ZSH_LOADED ]; then
                     -prune -o -type f -print0 | xargs -0 -P $CPUCORES grep -rnwe $2 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             fi
         elif [ $# -eq 4 ]; then
-            if type ug >/dev/null 2>&1; then
+            if type rg >/dev/null 2>&1; then
+                rg --multiline -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
+            elif type ug >/dev/null 2>&1; then
                 cd $1 && ug -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g" && cd -
-            elif type rg >/dev/null 2>&1; then
-                rg -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |
                 xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
@@ -1483,7 +1483,7 @@ if [ -z $ZSH_LOADED ]; then
             make k8s/manifest/helm-operator/update
             make helm/docs/vald
             make helm/docs/vald-helm-operator
-            make update
+            make -k update
             make format/yaml
         }
         alias valdup=valdup
