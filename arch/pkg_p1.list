@@ -67,6 +67,7 @@ mysql-workbench
 neovim
 networkmanager
 nmap
+nvidia-container-toolkit
 nvidia-open-dkms
 nvidia-settings
 nvme-cli
