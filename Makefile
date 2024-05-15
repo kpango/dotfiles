@@ -197,7 +197,6 @@ mac_link: \
 	sudo launchctl load -w $(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 	sudo launchctl load -w $(HOME)/Library/LaunchAgents/ulimit.plist
 	sudo rm -rf $(ROOTDIR)/nvim/lua/lua
-	@make perm
 
 clean:
 	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
