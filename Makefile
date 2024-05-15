@@ -176,8 +176,11 @@ mac_link: \
 		$(HOME)/.config/alacritty/alacritty.toml \
 		$(HOME)/.docker/config.json \
 		$(HOME)/.docker/daemon.json \
+		$(HOME)/.tmux.conf \
 		/etc/docker/config.json \
 		/etc/docker/daemon.json
+	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
+	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
 	ln -sfv $(ROOTDIR)/macos/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
 	ln -sfv $(ROOTDIR)/macos/docker_config.json $(HOME)/.docker/config.json
 	ln -sfv $(ROOTDIR)/macos/docker_daemon.json $(HOME)/.docker/daemon.json
