@@ -324,7 +324,6 @@ docker_build:
 		--secret id=gat,src="$(TMP_DIR)/gat" \
 		-t "$(USER)/$(NAME):$(VERSION)" \
 		-f $(DOCKERFILE) .
-		# --build-arg BUILDKIT_INLINE_CACHE=1 \
 	docker buildx rm --force "$(DOCKER_BUILDER_NAME)"
 	@rm -rf $(TMP_DIR)
 
