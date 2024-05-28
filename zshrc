@@ -740,7 +740,7 @@ if [ -z $ZSH_LOADED ]; then
                 /tmp/ssh-.*.sock
             sshperm
         }
-        alias sshinit="rm -rf $HOME/.ssh/known_hosts;rm -rf $HOME/.ssh/master_$GIT_USER@192.168.2.*;sudo chmod -R 700 $HOME/.ssh;sudo chmod -R 600 $HOME/.ssh/*"
+        alias sshinit=sshinit
     fi
 
     if type rails >/dev/null 2>&1; then
