@@ -110,6 +110,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     tmux \
     ugrep \
     xclip \
+    && curl -fsSL https://tailscale.com/install.sh | sh \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 https://github.com/neovim/neovim \
     && cd neovim \

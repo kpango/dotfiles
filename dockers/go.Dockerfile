@@ -703,9 +703,11 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@v0.17.46" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
+    # TODO: update
+    # "${GITHUBCOM}/${REPO}@latest" \
 
 FROM --platform=$BUILDPLATFORM go-base AS grpcurl
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
