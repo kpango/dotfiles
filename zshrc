@@ -709,9 +709,9 @@ if [ -z $ZSH_LOADED ]; then
 
     if type ssh-keygen >/dev/null 2>&1; then
         sshperm() {
-            sudo chown -R $(id -u):$(id -g) $(HOME)/.ssh
-            find $(HOME)/.ssh -type d -print | xargs sudo chmod 700
-            find $(HOME)/.ssh -type f -print | xargs sudo chmod 600
+            sudo chown -R $(id -u):$(id -g) $HOME/.ssh
+            find $HOME/.ssh -type d -print | xargs sudo chmod 700
+            find $HOME/.ssh -type f -print | xargs sudo chmod 600
         }
         rsagen() {
             ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
