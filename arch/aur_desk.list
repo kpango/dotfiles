@@ -3,6 +3,7 @@ docker-buildx-git
 docker-credential-pass-git
 downgrade
 duf-git
+ethtool-git
 fanctl-git
 fcitx5-mozc-ut
 fcitx5-skin-arc

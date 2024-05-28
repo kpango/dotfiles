@@ -1116,9 +1116,41 @@ if [ -z $ZSH_LOADED ]; then
         alias fup=fup
     fi
 
+    update_git_repo() {
+        local repo_dir=$1
+        if [ -d "$repo_dir" ]; then
+            pushd "$repo_dir" > /dev/null || return
+            if git diff-index --quiet HEAD --; then
+	        echo "No local changes in $repo_dir, pulling latest changes from origin..."
+		gfrs
+            else
+                echo "Local changes detected in $repo_dir, not pulling from origin."
+            fi
+            popd > /dev/null || return
+        else
+            echo "Directory $repo_dir does not exist."
+        fi
+    }
+
+    update_multiple_git_repos() {
+        local repos=("$@")
+        for repo in "${repos[@]}"; do
+            update_git_repo "$repo"
+        done
+    }
+
+    kpangoup() {
+	update_multiple_git_repos "$GOPATH/src/github.com/kpango/dotfiles" \
+	    "$GOPATH/src/github.com/kpango/pass" \
+	    "$GOPATH/src/github.com/kpango/wallpapers" \
+	    "$GOPATH/src/github.com/vdaas/vald-client-go" \
+	    "$GOPATH/src/github.com/vdaas/vald"
+    }
+    alias kpangoup=kpangoup
 
     if type brew >/dev/null 2>&1; then
         brewup() {
+            kpangoup
             cd `brew --prefix`/Homebrew
             gfr
             git config --local pull.ff only
@@ -1244,6 +1276,7 @@ if [ -z $ZSH_LOADED ]; then
 
 
         archup() {
+            kpangoup
             sudo chown 0 /etc/sudoers.d/$USER
             sudo chmod -R 700 $HOME/.gnupg
             sudo chmod -R 600 $HOME/.gnupg/*
@@ -1353,6 +1386,7 @@ if [ -z $ZSH_LOADED ]; then
         fi
     elif type apt-get >/dev/null 2>&1; then
         aptup(){
+            kpangoup
             sudo du -sh /var/cache/apt/archives
             sudo rm -rf /var/cache/apt /var/lib/apt/lists/*
             sudo mkdir -p /var/cache/apt/archives/partial

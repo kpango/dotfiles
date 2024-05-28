@@ -24,7 +24,6 @@ dmidecode
 dnsmasq
 docker
 dosfstools
-ethtool
 fakeroot
 fastfetch
 fcitx5
