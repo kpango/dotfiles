@@ -708,17 +708,25 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type ssh-keygen >/dev/null 2>&1; then
+        sshperm() {
+            sudo chown -R $(id -u):$(id -g) $(HOME)/.ssh
+            find $(HOME)/.ssh -type d -print | xargs sudo chmod 700
+            find $(HOME)/.ssh -type f -print | xargs sudo chmod 600
+        }
         rsagen() {
             ssh-keygen -t rsa -b 4096 -P $1 -f $HOME/.ssh/id_rsa -C $USER
+            sshperm
         }
         alias rsagen=rsagen
         ecdsagen() {
             ssh-keygen -t ecdsa -b 521 -P $1 -f $HOME/.ssh/id_ecdsa -C $USER
+            sshperm
         }
         alias ecdsagen=ecdsagen
 
         edgen() {
             ssh-keygen -t ed25519 -P $1 -f $HOME/.ssh/id_ed -C $USER
+            sshperm
         }
         alias edgen=edgen
         alias sedit="$EDITOR $HOME/.ssh/config"
@@ -726,6 +734,12 @@ if [ -z $ZSH_LOADED ]; then
             rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
         }
         alias sshls=sshls
+        sshinit() {
+            rm -rf $HOME/.ssh/known_hosts \
+                $HOME/.ssh/master_$GIT_USER@192.168.2.* \
+                /tmp/ssh-.*.sock
+            sshperm
+        }
         alias sshinit="rm -rf $HOME/.ssh/known_hosts;rm -rf $HOME/.ssh/master_$GIT_USER@192.168.2.*;sudo chmod -R 700 $HOME/.ssh;sudo chmod -R 600 $HOME/.ssh/*"
     fi
 
@@ -1465,7 +1479,7 @@ if [ -z $ZSH_LOADED ]; then
     if type ubnt-systool >/dev/null 2>&1; then
         export PATH=/usr/lib/unifi/bin:/usr/share/sensible-utils/bin:/usr/share/ubios-udapi-server/ips/bin:/usr/share/ubios-udapi-server/utm/bin:/usr/share/unifi-core/bin:$PATH
         if type tailscale >/dev/null 2>&1; then
-	    alias tailup="tailscale up --ssh --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29"
+            alias tailup="tailscale up --ssh --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29"
         fi
     fi
 
