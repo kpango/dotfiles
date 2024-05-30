@@ -1140,11 +1140,12 @@ if [ -z $ZSH_LOADED ]; then
     }
 
     kpangoup() {
-	update_multiple_git_repos "$GOPATH/src/github.com/kpango/dotfiles" \
+	update_multiple_git_repos \
+	    "$GOPATH/src/github.com/kpango/dotfiles" \
 	    "$GOPATH/src/github.com/kpango/pass" \
 	    "$GOPATH/src/github.com/kpango/wallpapers" \
-	    "$GOPATH/src/github.com/vdaas/vald-client-go" \
-	    "$GOPATH/src/github.com/vdaas/vald"
+	    "$GOPATH/src/github.com/vdaas/vald" \
+	    "$GOPATH/src/github.com/vdaas/vald-client-go"
     }
     alias kpangoup=kpangoup
 
