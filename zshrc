@@ -117,6 +117,10 @@ if [ -z $DOTENV_LOADED ]; then
     export USER=$(whoami)
     export GIT_USER=kpango
 
+    if [[ ${OSTYPE} == "darwin"* && ${CPUTYPE} == "arm"* ]]; then
+        export PATH="/opt/homebrew/bin:$PATH"
+    fi
+
     if type nproc >/dev/null 2>&1; then
         export CPUCORES="$(nproc)"
     else
@@ -243,10 +247,6 @@ if [ -z $DOTENV_LOADED ]; then
 
     if [ -d "$HOME/.rd/bin" ]; then
         export PATH="$HOME/.rd/bin:$PATH"
-    fi
-
-    if [[ ${OSTYPE} == "darwin"* && ${CPUTYPE} == "arm"* ]]; then
-        export PATH="/opt/homebrew/bin:$PATH"
     fi
 
     # for teleplesence disabling send analytics data anonymously
@@ -1124,11 +1124,15 @@ if [ -z $ZSH_LOADED ]; then
 	        echo "No local changes in $repo_dir, pulling latest changes from origin..."
 		gfrs
             else
-                echo "Local changes detected in $repo_dir, not pulling from origin."
+                echo "Local changes detected in $repo_dir, not pulling from origin. Here are the changes:"
+                git status
+                git diff --name-only
+                echo "Detailed changes:"
+                git diff
             fi
             popd > /dev/null || return
         else
-            echo "Directory $repo_dir does not exist."
+            echo "Directory $repo_dir does not exist." >&2
         fi
     }
 
