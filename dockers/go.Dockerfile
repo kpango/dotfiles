@@ -76,7 +76,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="air" \
-    && REPO="cosmtrek/${BIN_NAME}" \
+    && REPO="air-verse/${BIN_NAME}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
