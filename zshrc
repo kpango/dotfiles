@@ -1516,10 +1516,12 @@ if [ -z $ZSH_LOADED ]; then
         alias trup="wakeonlan -p 9 -i 10.0.0.255 f0:2f:74:d4:37:35"
     fi
 
-    if type ubnt-systool >/dev/null 2>&1; then
-        export PATH=/usr/lib/unifi/bin:/usr/share/sensible-utils/bin:/usr/share/ubios-udapi-server/ips/bin:/usr/share/ubios-udapi-server/utm/bin:/usr/share/unifi-core/bin:$PATH
-        if type tailscale >/dev/null 2>&1; then
-            alias tailup="tailscale up --ssh --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29"
+    if type tailscale >/dev/null 2>&1; then
+        if type ubnt-systool >/dev/null 2>&1; then
+            export PATH=/usr/lib/unifi/bin:/usr/share/sensible-utils/bin:/usr/share/ubios-udapi-server/ips/bin:/usr/share/ubios-udapi-server/utm/bin:/usr/share/unifi-core/bin:$PATH
+            alias tailup="sudo tailscale up --ssh --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29"
+	else
+            alias tailup="sudo tailscale up --ssh --accept-routes=true"
         fi
     fi
 
