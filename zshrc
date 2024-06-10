@@ -1519,9 +1519,9 @@ if [ -z $ZSH_LOADED ]; then
     if type tailscale >/dev/null 2>&1; then
         if type ubnt-systool >/dev/null 2>&1; then
             export PATH=/usr/lib/unifi/bin:/usr/share/sensible-utils/bin:/usr/share/ubios-udapi-server/ips/bin:/usr/share/ubios-udapi-server/utm/bin:/usr/share/unifi-core/bin:$PATH
-            alias tailup="sudo tailscale up --ssh --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29"
+            alias tailup="sudo tailscale up --ssh --reset --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29 --stateful-filtering"
 	else
-            alias tailup="sudo tailscale up --ssh --accept-routes=true"
+	    alias tailup="sudo tailscale up --ssh --reset --accept-routes --stateful-filtering"
         fi
     fi
 
