@@ -1122,8 +1122,8 @@ if [ -z $ZSH_LOADED ]; then
         if [ -d "$repo_dir" ]; then
             pushd "$repo_dir" > /dev/null || return
             if git diff-index --quiet HEAD --; then
-	        echo "No local changes in $repo_dir, pulling latest changes from origin..."
-		gfrs
+                echo "No local changes in $repo_dir, pulling latest changes from origin..."
+                gfrs
             else
                 echo "Local changes detected in $repo_dir, not pulling from origin. Here are the changes:"
                 git status
@@ -1145,12 +1145,12 @@ if [ -z $ZSH_LOADED ]; then
     }
 
     kpangoup() {
-	update_multiple_git_repos \
-	    "$GOPATH/src/github.com/kpango/dotfiles" \
-	    "$GOPATH/src/github.com/kpango/pass" \
-	    "$GOPATH/src/github.com/kpango/wallpapers" \
-	    "$GOPATH/src/github.com/vdaas/vald" \
-	    "$GOPATH/src/github.com/vdaas/vald-client-go"
+        update_multiple_git_repos \
+            "$GOPATH/src/github.com/kpango/dotfiles" \
+            "$GOPATH/src/github.com/kpango/pass" \
+            "$GOPATH/src/github.com/kpango/wallpapers" \
+            "$GOPATH/src/github.com/vdaas/vald" \
+            "$GOPATH/src/github.com/vdaas/vald-client-go"
     }
     alias kpangoup=kpangoup
 
@@ -1520,8 +1520,8 @@ if [ -z $ZSH_LOADED ]; then
         if type ubnt-systool >/dev/null 2>&1; then
             export PATH=/usr/lib/unifi/bin:/usr/share/sensible-utils/bin:/usr/share/ubios-udapi-server/ips/bin:/usr/share/ubios-udapi-server/utm/bin:/usr/share/unifi-core/bin:$PATH
             alias tailup="sudo tailscale up --ssh --reset --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29 --stateful-filtering"
-	else
-	    alias tailup="sudo tailscale up --ssh --reset --accept-routes --stateful-filtering"
+        else
+            alias tailup="sudo tailscale up --ssh --reset --accept-routes --stateful-filtering"
         fi
     fi
 
