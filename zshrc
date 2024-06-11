@@ -1121,7 +1121,7 @@ if [ -z $ZSH_LOADED ]; then
         local repo_dir=$1
         if [ -d "$repo_dir" ]; then
             pushd "$repo_dir" > /dev/null || return
-            if git diff-index --quiet HEAD --; then
+            if git diff-index --quiet HEAD -- && [ -z "$(git status --porcelain | grep '^[^ ]')" ]; then
                 echo "No local changes in $repo_dir, pulling latest changes from origin..."
                 gfrs
             else

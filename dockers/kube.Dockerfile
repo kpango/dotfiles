@@ -349,7 +349,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="instrumenta/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}@latest" \
+      "${GITHUBCOM}/${REPO}@upgrade" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -467,7 +467,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="GoogleContainerTools/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}@latest" \
+      "${GITHUBCOM}/${REPO}@upgrade" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -486,7 +486,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="sigs.k8s.io/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${REPO}/${BIN_NAME}/v5@latest" \
+      "${REPO}/${BIN_NAME}/v5@upgrade" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -526,7 +526,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="roboll/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}@latest" \
+      "${GITHUBCOM}/${REPO}@upgrade" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -536,7 +536,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="hidetatz/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -546,7 +546,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="yannh/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+      "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
@@ -556,7 +556,7 @@ RUN set -x; cd "$(mktemp -d)" \
     && REPO="derailed/${BIN_NAME}" \
     &&GO111MODULE=on go install  \
       --ldflags "-s -w" --trimpath \
-      "${GITHUBCOM}/${REPO}@latest" \
+      "${GITHUBCOM}/${REPO}@upgrade" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 

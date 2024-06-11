@@ -66,7 +66,7 @@ COPY go.env "${GOROOT}/go.env"
 #     && REPO="nektos/${BIN_NAME}" \
 #     && go install \
 #     ${GO_FLAGS} \
-#     "${GITHUBCOM}/${REPO}@latest" \
+#     "${GITHUBCOM}/${REPO}@upgrade" \
 #     && chmod a+x "${GOBIN}/${BIN_NAME}" \
 #     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -80,7 +80,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -94,7 +94,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -107,7 +107,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="gnewton/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -120,7 +120,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
 #     && REPO="vektah/${BIN_NAME}" \
 #     && go install \
 #     ${GO_FLAGS} \
-#     "${GITHUBCOM}/${REPO}@latest" \
+#     "${GITHUBCOM}/${REPO}@upgrade" \
 #     && chmod a+x "${GOBIN}/${BIN_NAME}" \
 #     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -140,7 +140,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -153,7 +153,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="direnv/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -168,7 +168,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -182,7 +182,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -195,7 +195,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="rerost/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -208,7 +208,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="muesli/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -234,7 +234,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="kisielk/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -248,7 +248,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -261,7 +261,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="davidrjenni/reftools" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -274,7 +274,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="davidrjenni/reftools" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -287,7 +287,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="davidrjenni/reftools" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -342,7 +342,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -356,7 +356,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -370,7 +370,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${REPO}/${BIN_NAME}@latest" \
+    "${REPO}/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -384,7 +384,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -398,7 +398,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="ribice/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -412,7 +412,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@latest" \
+    "${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -426,7 +426,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/v3/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/v3/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -439,7 +439,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="nsf/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -452,7 +452,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="mvdan.cc/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${REPO}@latest" \
+    "${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -465,7 +465,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="${GOORG}/x/tools" \
     && go install \
     ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@latest" \
+    "${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -478,7 +478,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="incu6us/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -491,7 +491,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="pwaller/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -504,7 +504,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="y4v8/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -524,7 +524,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="segmentio/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -537,7 +537,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="${GOORG}/x/lint" \
     && go install \
     ${GO_FLAGS} \
-    "${REPO}/${BIN_NAME}@latest" \
+    "${REPO}/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -550,7 +550,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="fatih/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -564,7 +564,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${REPO}/${BIN_NAME}@latest" \
+    "${REPO}/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -577,7 +577,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="${GOORG}/x/tools" \
     && go install \
     ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@latest" \
+    "${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -590,7 +590,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="sqs/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -605,7 +605,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -618,7 +618,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="jstemmer/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -631,7 +631,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="gotesttools/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/v2/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/v2/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -645,7 +645,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -661,7 +661,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${REPO}@latest" \
+    "${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -675,7 +675,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@latest" \
+    "${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -689,7 +689,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -707,7 +707,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
     # TODO: update
-    # "${GITHUBCOM}/${REPO}@latest" \
+    # "${GITHUBCOM}/${REPO}@upgrade" \
 
 FROM --platform=$BUILDPLATFORM go-base AS grpcurl
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -719,7 +719,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -733,7 +733,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
 #     && CGO_ENABLED=0 \
 #     go install \
 #     ${GO_FLAGS} \
-#     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+#     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
 #     && chmod a+x "${GOBIN}/${BIN_NAME}" \
 #     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -746,7 +746,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="${GOORG}/x/tools" \
     && go install \
     ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@latest" \
+    "${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -760,7 +760,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -787,7 +787,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="koron/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -800,7 +800,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="josharian/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -827,7 +827,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="honnef.co/go/tools" \
     && go install \
     ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@latest" \
+    "${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -841,7 +841,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -881,7 +881,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="golang/mock" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -907,7 +907,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="bufbuild/connect-go" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -920,7 +920,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="protobuf" \
     && go install \
     ${GO_FLAGS} \
-    "google.${GOORG}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "google.${GOORG}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -954,7 +954,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="mattiamari/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -967,7 +967,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="quasilyte/go-${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -980,7 +980,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="momotaro98/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -994,7 +994,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -1008,7 +1008,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
 #     && CGO_ENABLED=0 \
 #     go install \
 #     ${GO_FLAGS} \
-#     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+#     "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
 #     && chmod a+x "${GOBIN}/${BIN_NAME}" \
 #     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -1021,7 +1021,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="a8m/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -1059,7 +1059,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="mfridman/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -1072,7 +1072,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="tsenart/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -1085,7 +1085,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && REPO="vugu/${BIN_NAME}" \
     && go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -1099,7 +1099,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@latest" \
+    "${GITHUBCOM}/${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -1113,7 +1113,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && CGO_ENABLED=0 \
     go install \
     ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@latest" \
+    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
