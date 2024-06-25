@@ -1,6 +1,8 @@
 # /etc/profile
+# Remove unnecessary cache files (avoid removing /tmp/* to prevent data loss)
 sudo rm -rf $HOME/.ccache
 
+# Set environment variables for Wayland and NVIDIA GPU
 export CLUTTER_BACKEND=wayland
 export DESKTOP_SESSION=sway
 export DefaultImModule=fcitx5
@@ -31,14 +33,20 @@ export XKB_DEFAULT_OPTIONS=ctrl:nocaps
 export XMODIFIERS="@im=fcitx5"
 export XWAYLAND_NO_GLAMOR=1
 export __EGL_VENDOR_LIBRARY_DIRS="/usr/share/glvnd/egl_vendor.d/"
-export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export __GLX_SYNC_TO_VBLANK=1
+export __GLX_VENDOR_LIBRARY_NAME="nvidia"
 export __GL_GSYNC_ALLOWED=0
-export __GL_VRR_ALLOWED=0
+export __GL_THREADED_OPTIMIZATIONS=1
+export __GL_VRR_ALLOWED=1
+export __GL_YIELD="USLEEP"
 
+# Map Ctrl key to Caps Lock
 setxkbmap -option ctrl:nocaps
 
+# Increase the file descriptor limit
 ulimit -n 500000
 
+# Start sway if no display server is running and the terminal is tty1
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     exec sway --unsupported-gpu "$@"
 fi
