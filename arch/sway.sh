@@ -75,5 +75,5 @@ if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
     __GLX_VENDOR_LIBRARY_NAME=nvidia \
     __GL_GSYNC_ALLOWED=0 \
     __GL_VRR_ALLOWED=0 \
-    exec sway --unsupported-gpu "$@" --debug 
+    exec sway --unsupported-gpu "$@"
 fi
