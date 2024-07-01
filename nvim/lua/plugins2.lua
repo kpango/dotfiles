@@ -5,21 +5,22 @@ local lazypath = pkg_path .. "/lazy.nvim"
 
 -- Auto-install lazy.nvim if not already installed
 if not vim.loop.fs_stat(lazypath) then
-    fn.system {
+    fn.system({
         "git",
         "clone",
         "--depth",
         "1",
-	"--filter=blob:none",
+        "--filter=blob:none",
         "https://github.com/folke/lazy.nvim",
         lazypath,
-    }
+    })
 end
 
 vim.opt.rtp:prepend(lazypath)
 vim.opt.completeopt = { "menuone", "noselect", "noinsert", "preview" }
 vim.opt.shortmess:append("c")
 
+-- Function for safely requiring modules
 local function safe_require(module_name)
     local status, module = pcall(require, module_name)
     if not status then
@@ -29,6 +30,7 @@ local function safe_require(module_name)
     return module
 end
 
+-- Setup lazy.nvim
 safe_require("lazy").setup({
     {
         "dstein64/vim-startuptime",
@@ -46,10 +48,11 @@ safe_require("lazy").setup({
             local on_attach = function(client, bufnr)
                 vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
             end
+
             cmp.setup.cmdline({ "/", "?" }, {
                 mapping = cmp.mapping.preset.cmdline(),
                 sources = {
-                    { name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, keyword_length = 2 },
+                    { name = "buffer", keyword_length = 2 },
                 },
             })
             cmp.setup.cmdline(":", {
@@ -64,17 +67,17 @@ safe_require("lazy").setup({
                 sources = cmp.config.sources({
                     { name = "git" },
                 }, {
-                    { name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, keyword_length = 2 },
+                    { name = "buffer", keyword_length = 2 },
                 }),
             })
             cmp.setup.filetype("lua", {
-                sources = cmp.config.sources {
+                sources = cmp.config.sources({
                     { name = "copilot_cmp", keyword_length = 2 },
                     { name = "nvim_lsp", keyword_length = 3 },
                     { name = "luasnip" },
                     { name = "cmp_tabnine" },
                     { name = "nvim_lua" },
-                },
+                }),
             })
             cmp.event:on("confirm_done", safe_require("nvim-autopairs.completion.cmp").on_confirm_done())
             return {
@@ -87,59 +90,41 @@ safe_require("lazy").setup({
                     end,
                 },
                 window = {
-                    completion = cmp.config.window.bordered {
-                        border = "single",
-                        col_offset = -3,
-                        side_padding = 0,
-                    },
-                    documentation = cmp.config.window.bordered {
-                        border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-                        winhiglight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
-                    },
+                    completion = cmp.config.window.bordered(),
+                    documentation = cmp.config.window.bordered(),
                 },
-                sources = cmp.config.sources {
+                sources = cmp.config.sources({
                     { name = "copilot_cmp", keyword_length = 2 },
                     { name = "nvim_lsp" },
                     { name = "nvim_lsp", keyword_length = 3 },
                     { name = "luasnip" },
                     { name = "cmp_tabnine" },
                     { name = "nvim_lsp_signature_help" },
-                    { name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, keyword_length = 2 },
+                    { name = "buffer", keyword_length = 2 },
                     { name = "path" },
-                    {
-                        name = "look",
-                        keyword_length = 2,
-                        option = {
-                            convert_case = true,
-                            loud = true,
-                            -- dict = '/usr/share/dict/words'
-                        },
-                    },
                     { name = "cmdline" },
                     { name = "git" },
-                },
-                mapping = cmp.mapping.preset.insert {
-                    -- ["<Tab>"] = cmp.mapping.select_next_item(), --Ctrl+pで補完欄を一つ上に移動
-                    ["<C-p>"] = cmp.mapping.select_prev_item(), --Ctrl+pで補完欄を一つ上に移動
-                    ["<C-n>"] = cmp.mapping.select_next_item(), --Ctrl+nで補完欄を一つ下に移動
+                }),
+                mapping = cmp.mapping.preset.insert({
+                    ["<C-p>"] = cmp.mapping.select_prev_item(),
+                    ["<C-n>"] = cmp.mapping.select_next_item(),
                     ["<C-l>"] = cmp.mapping.complete(),
                     ["<C-e>"] = cmp.mapping.abort(),
-                    ["<C-y>"] = cmp.mapping.confirm { select = true }, --Ctrl+yで補完を選択確定
+                    ["<C-y>"] = cmp.mapping.confirm({ select = true }),
                     ["<C-b>"] = cmp.mapping.scroll_docs(-4),
                     ["<C-f>"] = cmp.mapping.scroll_docs(4),
                     ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<CR>"] = cmp.mapping.confirm { select = true },
-                },
+                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                }),
                 experimental = {
                     ghost_text = false,
                 },
                 on_attach = on_attach,
                 capabilities = capabilities,
                 formatting = {
-                    format = safe_require("lspkind").cmp_format {
+                    format = safe_require("lspkind").cmp_format({
                         mode = "symbol_text",
                         preset = "codicons",
-                        -- with_text = false,
                         maxwidth = 50,
                         menu = {
                             copilot = "[COP]",
@@ -188,151 +173,28 @@ safe_require("lazy").setup({
                             Value = " ",
                             Variable = " ",
                         },
-                    },
+                    }),
                 },
             }
         end,
         keys = {
-            {
-                "gD",
-                vim.lsp.buf.declaration,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "gd",
-                vim.lsp.buf.definition,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "gr",
-                vim.lsp.buf.references,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "gi",
-                vim.lsp.buf.implementation,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "K",
-                vim.lsp.buf.hover,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<C-k>",
-                vim.lsp.buf.signature_help,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>wa",
-                vim.lsp.buf.add_workspace_folder,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>wr",
-                vim.lsp.buf.remove_workspace_folder,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>wl",
-                function()
-                    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-                end,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>D",
-                vim.lsp.buf.type_definition,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>rn",
-                vim.lsp.buf.rename,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>ca",
-                vim.lsp.buf.code_action,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>f",
-                function()
-                    vim.lsp.buf.format { async = true }
-                end,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>e",
-                vim.diagnostic.show_line_diagnostics,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "<space>q",
-                vim.diagnostic.set_loclist,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "[d",
-                vim.diagnostic.goto_prev,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
-            {
-                "]d",
-                vim.diagnostic.goto_next,
-                mode = "n",
-                desc = "",
-                noremap = true,
-                silent = true,
-            },
+            { "gD", vim.lsp.buf.declaration, mode = "n", desc = "", noremap = true, silent = true },
+            { "gd", vim.lsp.buf.definition, mode = "n", desc = "", noremap = true, silent = true },
+            { "gr", vim.lsp.buf.references, mode = "n", desc = "", noremap = true, silent = true },
+            { "gi", vim.lsp.buf.implementation, mode = "n", desc = "", noremap = true, silent = true },
+            { "K", vim.lsp.buf.hover, mode = "n", desc = "", noremap = true, silent = true },
+            { "<C-k>", vim.lsp.buf.signature_help, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>wa", vim.lsp.buf.add_workspace_folder, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>wr", vim.lsp.buf.remove_workspace_folder, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>wl", function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>D", vim.lsp.buf.type_definition, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>rn", vim.lsp.buf.rename, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>ca", vim.lsp.buf.code_action, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>f", function() vim.lsp.buf.format { async = true } end, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>e", vim.diagnostic.open_float, mode = "n", desc = "", noremap = true, silent = true },
+            { "<space>q", vim.diagnostic.setloclist, mode = "n", desc = "", noremap = true, silent = true },
+            { "[d", vim.diagnostic.goto_prev, mode = "n", desc = "", noremap = true, silent = true },
+            { "]d", vim.diagnostic.goto_next, mode = "n", desc = "", noremap = true, silent = true },
         },
         dependencies = {
             { "neovim/nvim-lspconfig", event = "InsertEnter" },
@@ -375,16 +237,11 @@ safe_require("lazy").setup({
             sort = true,
             run_on_every_keystroke = true,
             snippet_placeholder = "..",
-            ignored_file_types = {
-                -- default is not to ignore
-                -- uncomment to ignore in lua:
-                -- lua = true
-            },
+            ignored_file_types = {},
             show_prediction_strength = false,
         },
         event = { "InsertEnter", "VeryLazy" },
     },
-    -- GitHub Copilot
     {
         "zbirenbaum/copilot.lua",
         enabled = true,
@@ -402,7 +259,7 @@ safe_require("lazy").setup({
                     open = "<M-CR>",
                 },
                 layout = {
-                    position = "bottom", -- | top | left | right
+                    position = "bottom",
                     ratio = 0.4,
                 },
             },
@@ -412,8 +269,6 @@ safe_require("lazy").setup({
                 debounce = 75,
                 keymap = {
                     accept = "<C-i>",
-                    accept_word = false,
-                    accept_line = false,
                     next = "<C-n>",
                     prev = "<C-p>",
                     dismiss = "<C-x>",
@@ -430,7 +285,7 @@ safe_require("lazy").setup({
                 cvs = false,
                 ["."] = false,
             },
-            copilot_node_command = "node", -- Node.js version must be > 16.x
+            copilot_node_command = "node",
             server_opts_overrides = {},
         },
         config = true,
@@ -488,59 +343,12 @@ safe_require("lazy").setup({
         keys = function()
             local opts = { noremap = true, silent = true }
             return {
-                {
-                    "gD",
-                    vim.lsp.buf.declaration,
-                    opts,
-                    desc = "Go To Declaration",
-                    mode = "n",
-                    silent = true,
-                    noremap = true,
-                },
-                {
-                    "gi",
-                    vim.lsp.buf.implementation,
-                    opts,
-                    desc = "Go To Implementation",
-                    mode = "n",
-                    silent = true,
-                    noremap = true,
-                },
-                {
-                    "<leader>k",
-                    vim.lsp.buf.signature_help,
-                    opts,
-                    desc = "Show Signature",
-                    mode = "n",
-                    silent = true,
-                    noremap = true,
-                },
-                {
-                    "<Leader>gr",
-                    vim.lsp.buf.references,
-                    opts,
-                    desc = "Go To References",
-                    mode = "n",
-                    silent = true,
-                    noremap = true,
-                },
-                {
-                    "<Leader>D",
-                    vim.lsp.buf.type_definition,
-                    opts,
-                    desc = "Show Type Definition",
-                    mode = "n",
-                    silent = true,
-                    noremap = true,
-                },
-                {
-                    "K",
-                    vim.lsp.buf.hover,
-                    desc = "Show Info",
-                    mode = "n",
-                    silent = true,
-                    noremap = true,
-                },
+                { "gD", vim.lsp.buf.declaration, opts, desc = "Go To Declaration", mode = "n", silent = true, noremap = true },
+                { "gi", vim.lsp.buf.implementation, opts, desc = "Go To Implementation", mode = "n", silent = true, noremap = true },
+                { "<leader>k", vim.lsp.buf.signature_help, opts, desc = "Show Signature", mode = "n", silent = true, noremap = true },
+                { "<Leader>gr", vim.lsp.buf.references, opts, desc = "Go To References", mode = "n", silent = true, noremap = true },
+                { "<Leader>D", vim.lsp.buf.type_definition, opts, desc = "Show Type Definition", mode = "n", silent = true, noremap = true },
+                { "K", vim.lsp.buf.hover, desc = "Show Info", mode = "n", silent = true, noremap = true },
             }
         end,
     },
@@ -636,8 +444,7 @@ safe_require("lazy").setup({
         config = function(_, opts)
             local lspconfig = safe_require "lspconfig"
             local mason_lspconfig = safe_require "mason-lspconfig"
-            local capabilities =
-                safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+            local capabilities = safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
             mason_lspconfig.setup(opts)
             mason_lspconfig.setup_handlers {
                 function(server_name)
@@ -664,10 +471,7 @@ safe_require("lazy").setup({
                         }
                     elseif server_name == "gopls" then
                         opts = {
-                            -- cmd = { "gopls", "serve", "-rpc.trace", "--debug=localhost:6060" },
-                            -- cmd = { "gopls", "--remote=auto" },
                             cmd = { "gopls" },
-                            -- cmd = { "gopls", "--remote=localhost:8181" },
                             filetypes = { "go", "gomod", "gowork", "gotmpl" },
                             root_dir = function(fname)
                                 return lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work")(fname)
@@ -675,7 +479,6 @@ safe_require("lazy").setup({
                                     or vim.loop.os_homedir()
                                     or lspconfig.util.path.dirname(fname)
                             end,
-                            -- root_dir = lspconfig.util.root_pattern(".git", "go.mod", "go.sum", "go.work"),
                             single_file_support = true,
                             settings = {
                                 gopls = {
@@ -745,104 +548,20 @@ safe_require("lazy").setup({
         "glepnir/lspsaga.nvim",
         lazy = true,
         keys = {
-            {
-                "<leader>ca",
-                "<cmd><C-U>Lspsaga range_code_action<CR>",
-                desc = "Range Code Action",
-                mode = "v",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "<leader>ca",
-                "<cmd>Lspsaga code_action<CR>",
-                desc = "Code Action",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "<leader>e",
-                "<cmd>Lspsaga show_line_diagnostics<CR>",
-                desc = "Show Line Diagnostics",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "<Leader>[",
-                "<cmd>Lspsaga diagnostic_jump_prev<CR>",
-                desc = "Jump To The Next Diagnostics",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "<Leader>]",
-                "<cmd>Lspsaga diagnostic_jump_next<CR>",
-                desc = "Jump To The Previous Diagnostics",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "<Leader>T",
-                "<cmd>Lspsaga open_floaterm<CR>",
-                desc = "Open Float Term",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "<Leader>T",
-                [[<C-\><C-n><cmd>Lspsaga close_floaterm<CR>]],
-                desc = "Close Float Term",
-                mode = "t",
-                silent = true,
-                noremap = true,
-            },
+            { "<leader>ca", "<cmd>Lspsaga range_code_action<CR>", desc = "Range Code Action", mode = "v", silent = true, noremap = true },
+            { "<leader>ca", "<cmd>Lspsaga code_action<CR>", desc = "Code Action", mode = "n", silent = true, noremap = true },
+            { "<leader>e", "<cmd>Lspsaga show_line_diagnostics<CR>", desc = "Show Line Diagnostics", mode = "n", silent = true, noremap = true },
+            { "<Leader>[", "<cmd>Lspsaga diagnostic_jump_prev<CR>", desc = "Jump To The Next Diagnostics", mode = "n", silent = true, noremap = true },
+            { "<Leader>]", "<cmd>Lspsaga diagnostic_jump_next<CR>", desc = "Jump To The Previous Diagnostics", mode = "n", silent = true, noremap = true },
+            { "<Leader>T", "<cmd>Lspsaga open_floaterm<CR>", desc = "Open Float Term", mode = "n", silent = true, noremap = true },
+            { "<Leader>T", [[<C-\><C-n><cmd>Lspsaga close_floaterm<CR>]], desc = "Close Float Term", mode = "t", silent = true, noremap = true },
             { "gr", "<cmd>Lspsaga rename<CR>", desc = "Rename", mode = "n", silent = true, noremap = true },
-            {
-                "gh",
-                "<cmd>Lspsaga lsp_finder<CR>",
-                desc = "LSP Finder",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "gd",
-                "<cmd>Lspsaga peek_definition<CR>",
-                desc = "Peek Definition",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "gp",
-                "<Cmd>Lspsaga preview_definition<CR>",
-                desc = "Preview Definition",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "<C-j>",
-                "<Cmd>Lspsaga diagnostic_jump_next<CR>",
-                desc = "",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
+            { "gh", "<cmd>Lspsaga lsp_finder<CR>", desc = "LSP Finder", mode = "n", silent = true, noremap = true },
+            { "gd", "<cmd>Lspsaga peek_definition<CR>", desc = "Peek Definition", mode = "n", silent = true, noremap = true },
+            { "gp", "<Cmd>Lspsaga preview_definition<CR>", desc = "Preview Definition", mode = "n", silent = true, noremap = true },
+            { "<C-j>", "<Cmd>Lspsaga diagnostic_jump_next<CR>", desc = "", mode = "n", silent = true, noremap = true },
             { "K", "<Cmd>Lspsaga hover_doc<CR>", desc = "", mode = "n", silent = true, noremap = true },
-            {
-                "<C-k>",
-                "<Cmd>Lspsaga signature_help<CR>",
-                desc = "",
-                mode = "i",
-                silent = true,
-                noremap = true,
-            },
+            { "<C-k>", "<Cmd>Lspsaga signature_help<CR>", desc = "", mode = "i", silent = true, noremap = true },
         },
         branch = "main",
         opts = { border_style = "rounded" },
@@ -875,7 +594,6 @@ safe_require("lazy").setup({
                         "yamlfmt",
                         "beautysh",
                         "black",
-                        -- "luacheck",
                         "yamllint",
                     },
                     automatic_setup = true,
@@ -917,7 +635,6 @@ safe_require("lazy").setup({
                     },
                     null_ls.builtins.diagnostics.hadolint,
                     null_ls.builtins.diagnostics.jsonlint,
-                    -- null_ls.builtins.diagnostics.luacheck,
                     null_ls.builtins.diagnostics.markdownlint,
                     null_ls.builtins.diagnostics.protoc_gen_lint,
                     null_ls.builtins.diagnostics.shellcheck,
@@ -975,22 +692,8 @@ safe_require("lazy").setup({
         dependencies = "nvim-tree/nvim-web-devicons",
         config = true,
         keys = {
-            {
-                "<Tab>",
-                "<Cmd>BufferLineCycleNext<CR>",
-                desc = "",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
-            {
-                "<S-Tab>",
-                "<Cmd>BufferLineCyclePrev<CR>",
-                desc = "",
-                mode = "n",
-                silent = true,
-                noremap = true,
-            },
+            { "<Tab>", "<Cmd>BufferLineCycleNext<CR>", desc = "", mode = "n", silent = true, noremap = true },
+            { "<S-Tab>", "<Cmd>BufferLineCyclePrev<CR>", desc = "", mode = "n", silent = true, noremap = true },
         },
         opts = {
             options = {
@@ -1138,7 +841,7 @@ safe_require("lazy").setup({
                 extensions = {},
                 literal = {},
                 complex = {
-                    [".*git/config"] = "gitconfig", -- Included in the plugin
+                    [".*git/config"] = "gitconfig",
                 },
                 function_extensions = {
                     ["cpp"] = function()
@@ -1147,7 +850,7 @@ safe_require("lazy").setup({
                     end,
                     ["pdf"] = function()
                         vim.bo.filetype = "pdf"
-                        vim.fn.jobstart("open -a skim " .. '"' .. vim.fn.expand "%" .. '"')
+                        vim.fn.jobstart("open -a skim " .. '"' .. vim.fn.expand("%") .. '"')
                     end,
                 },
                 function_literal = {
@@ -1205,29 +908,28 @@ safe_require("lazy").setup({
                     linehl = "GitSignsChangeLn",
                 },
             },
-            signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-            numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
-            linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
-            word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
+            signcolumn = true,
+            numhl = false,
+            linehl = false,
+            word_diff = false,
             watch_gitdir = {
                 interval = 1000,
                 follow_files = true,
             },
             attach_to_untracked = true,
-            current_line_blame = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
+            current_line_blame = false,
             current_line_blame_opts = {
                 virt_text = true,
-                virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+                virt_text_pos = "eol",
                 delay = 1000,
                 ignore_whitespace = false,
             },
             current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
             sign_priority = 6,
             update_debounce = 100,
-            status_formatter = nil, -- Use default
-            max_file_length = 40000, -- Disable if file is longer than this (in lines)
+            status_formatter = nil,
+            max_file_length = 40000,
             preview_config = {
-                -- Options passed to nvim_open_win
                 border = "single",
                 style = "minimal",
                 relative = "cursor",
@@ -1377,43 +1079,6 @@ safe_require("lazy").setup({
         "SmiteshP/nvim-navic",
         dependencies = "neovim/nvim-lspconfig",
         config = true,
-        -- opts = {
-        --     lsp = {
-        --         auto_attach = true,
-        --     },
-        --     icons = {
-        --         File = " ",
-        --         Module = " ",
-        --         Namespace = " ",
-        --         Package = " ",
-        --         Class = " ",
-        --         Method = " ",
-        --         Property = " ",
-        --         Field = " ",
-        --         Constructor = " ",
-        --         Enum = "練",
-        --         Interface = "練",
-        --         Function = " ",
-        --         Variable = " ",
-        --         Constant = " ",
-        --         String = " ",
-        --         Number = " ",
-        --         Boolean = "◩ ",
-        --         Array = " ",
-        --         Object = " ",
-        --         Key = " ",
-        --         Null = "ﳠ ",
-        --         EnumMember = " ",
-        --         Struct = " ",
-        --         Event = " ",
-        --         Operator = " ",
-        --         TypeParameter = " ",
-        --     },
-        --     highlight = true,
-        --     separator = " > ",
-        --     depth_limit = 0,
-        --     depth_limit_indicator = "..",
-        -- },
     },
     {
         "windwp/nvim-autopairs",
@@ -1426,7 +1091,6 @@ safe_require("lazy").setup({
         "windwp/nvim-ts-autotag",
         config = true,
     },
-    -- Linter
     {
         'mfussenegger/nvim-lint',
         event = "BufReadPost",
@@ -1447,7 +1111,6 @@ safe_require("lazy").setup({
             })
         end
     },
-    -- Telescope
     {
         'nvim-telescope/telescope.nvim',
         cmd = "Telescope",
@@ -1468,7 +1131,6 @@ safe_require("lazy").setup({
             vim.api.nvim_set_keymap('n', '<C-f>', ':Telescope live_grep<CR>', { noremap = true, silent = true })
         end
     },
-    -- Flutter Tools
     {
         'akinsho/flutter-tools.nvim',
         ft = { "dart" },
@@ -1476,7 +1138,6 @@ safe_require("lazy").setup({
             safe_require('flutter-tools').setup{}
         end
     },
-    -- Debug Adapter Protocol
     {
         'mfussenegger/nvim-dap',
         ft = { "c", "cpp", "rust", "go" },
@@ -1484,7 +1145,7 @@ safe_require("lazy").setup({
             local dap = safe_require('dap')
             dap.adapters.lldb = {
                 type = 'executable',
-                command = '/usr/bin/lldb-vscode', -- adjust as needed
+                command = '/usr/bin/lldb-vscode',
                 name = 'lldb'
             }
             dap.configurations.cpp = {
@@ -1505,7 +1166,6 @@ safe_require("lazy").setup({
             dap.configurations.c = dap.configurations.cpp
         end
     },
-    -- Language-specific plugins
     {
         'fatih/vim-go',
         ft = { "go" },
@@ -1555,9 +1215,11 @@ safe_require("lazy").setup({
     root = pkg_path,
 })
 
+-- Theme setup
 safe_require("onedark").load()
 
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.diagnostic.on_publish_diagnostics, {
+-- Diagnostic settings
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
     underline = true,
     virtual_text = {
         spacing = 4,
