@@ -181,7 +181,6 @@ safe_require("lazy").setup({
                         option = {
                             convert_case = true,
                             loud = true,
-                            -- dict = '/usr/share/dict/words'
                         },
                     },
                     { name = "cmdline" },
@@ -226,7 +225,6 @@ safe_require("lazy").setup({
                     format = safe_require("lspkind").cmp_format {
                         mode = "symbol_text",
                         preset = "codicons",
-                        -- with_text = false,
                         maxwidth = 50,
                         menu = {
                             copilot = "[COP]",
@@ -321,9 +319,6 @@ safe_require("lazy").setup({
             run_on_every_keystroke = true,
             snippet_placeholder = "..",
             ignored_file_types = {
-                -- default is not to ignore
-                -- uncomment to ignore in lua:
-                -- lua = true
             },
             show_prediction_strength = false,
         },
@@ -416,27 +411,6 @@ safe_require("lazy").setup({
                 local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
 
                 buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
-
-                -- Mappings.
-                local opts = { noremap = true, silent = true }
-                buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-                buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-                buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-                buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-                buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-                buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-                buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-                buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
-                    opts)
-                buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-                buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-                buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-                buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-                buf_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-                buf_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
-                buf_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
-                buf_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
-                buf_set_keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
             end
 
             for _, lsp in ipairs(servers) do
@@ -828,8 +802,6 @@ safe_require("lazy").setup({
                     },
                 }
             }
-            vim.api.nvim_set_keymap('n', '<C-p>', ':Telescope find_files<CR>', { noremap = true, silent = true })
-            vim.api.nvim_set_keymap('n', '<C-f>', ':Telescope live_grep<CR>', { noremap = true, silent = true })
         end
     },
     {
@@ -967,18 +939,37 @@ local keymaps = {
         vim.schedule(function() safe_require('gitsigns').prev_hunk() end)
         return "<Ignore>"
     end, { expr = true, noremap = true, silent = true } },
-    { "n",          "<leader>hs", "<Cmd>Gitsigns stage_hunk<CR>",                                     { noremap = true, silent = true } },
-    { "n",          "<leader>hr", "<Cmd>Gitsigns reset_hunk<CR>",                                     { noremap = true, silent = true } },
-    { "n",          "<leader>hS", "<Cmd>Gitsigns stage_buffer<CR>",                                   { noremap = true, silent = true } },
-    { "n",          "<leader>hR", "<Cmd>Gitsigns reset_buffer<CR>",                                   { noremap = true, silent = true } },
-    { "n",          "<leader>hu", "<Cmd>Gitsigns undo_stage_hunk<CR>",                                { noremap = true, silent = true } },
-    { "n",          "<leader>hp", "<Cmd>Gitsigns preview_hunk<CR>",                                   { noremap = true, silent = true } },
-    { "n",          "<leader>hb", function() safe_require('gitsigns').blame_line { full = true } end, { noremap = true, silent = true } },
-    { "n",          "<leader>hd", "<Cmd>Gitsigns diffthis<CR>",                                       { noremap = true, silent = true } },
-    { "n",          "<leader>hD", function() safe_require('gitsigns').diffthis("~") end,              { noremap = true, silent = true } },
-    { "n",          "<leader>tb", "<Cmd>Gitsigns toggle_current_line_blame<CR>",                      { noremap = true, silent = true } },
-    { "n",          "<leader>td", "<Cmd>Gitsigns toggle_deleted<CR>",                                 { noremap = true, silent = true } },
-    { { "o", "x" }, "ih",         "<Cmd>Gitsigns select_hunk<CR>",                                    { noremap = true, silent = true } },
+    { "n",          "<leader>hs", "<Cmd>Gitsigns stage_hunk<CR>",                                              { noremap = true, silent = true } },
+    { "n",          "<leader>hr", "<Cmd>Gitsigns reset_hunk<CR>",                                              { noremap = true, silent = true } },
+    { "n",          "<leader>hS", "<Cmd>Gitsigns stage_buffer<CR>",                                            { noremap = true, silent = true } },
+    { "n",          "<leader>hR", "<Cmd>Gitsigns reset_buffer<CR>",                                            { noremap = true, silent = true } },
+    { "n",          "<leader>hu", "<Cmd>Gitsigns undo_stage_hunk<CR>",                                         { noremap = true, silent = true } },
+    { "n",          "<leader>hp", "<Cmd>Gitsigns preview_hunk<CR>",                                            { noremap = true, silent = true } },
+    { "n",          "<leader>hb", function() safe_require('gitsigns').blame_line { full = true } end,          { noremap = true, silent = true } },
+    { "n",          "<leader>hd", "<Cmd>Gitsigns diffthis<CR>",                                                { noremap = true, silent = true } },
+    { "n",          "<leader>hD", function() safe_require('gitsigns').diffthis("~") end,                       { noremap = true, silent = true } },
+    { "n",          "<leader>tb", "<Cmd>Gitsigns toggle_current_line_blame<CR>",                               { noremap = true, silent = true } },
+    { "n",          "<leader>td", "<Cmd>Gitsigns toggle_deleted<CR>",                                          { noremap = true, silent = true } },
+    { { "o", "x" }, "ih",         "<Cmd>Gitsigns select_hunk<CR>",                                             { noremap = true, silent = true } },
+    -- Comment
+    { "n",          "<C-c>",      function() safe_require("Comment.api").toggle.linewise.current() end,        { noremap = true, silent = true } },
+    { "x",          "<C-c>",      function() safe_require("Comment.api").toggle.linewise(fn.visualmode()) end, { noremap = true, silent = true } },
+    { "i",          "<C-c>",      function() safe_require("Comment.api").toggle.linewise.current() end,        { noremap = true, silent = true } },
+    -- Lspsaga
+    { "n",          "gr",         "<cmd>Lspsaga rename<CR>",                                                   { noremap = true, silent = true } },
+    { "n",          "gh",         "<cmd>Lspsaga lsp_finder<CR>",                                               { noremap = true, silent = true } },
+    { "n",          "gd",         "<cmd>Lspsaga peek_definition<CR>",                                          { noremap = true, silent = true } },
+    { "n",          "gp",         "<Cmd>Lspsaga preview_definition<CR>",                                       { noremap = true, silent = true } },
+    { "n",          "<C-j>",      "<Cmd>Lspsaga diagnostic_jump_next<CR>",                                     { noremap = true, silent = true } },
+    { "n",          "K",          "<Cmd>Lspsaga hover_doc<CR>",                                                { noremap = true, silent = true } },
+    { "i",          "<C-k>",      "<Cmd>Lspsaga signature_help<CR>",                                           { noremap = true, silent = true } },
+    { "v",          "<leader>ca", "<cmd><C-U>Lspsaga range_code_action<CR>",                                   { noremap = true, silent = true } },
+    { "n",          "<leader>ca", "<cmd>Lspsaga code_action<CR>",                                              { noremap = true, silent = true } },
+    { "n",          "<leader>e",  "<cmd>Lspsaga show_line_diagnostics<CR>",                                    { noremap = true, silent = true } },
+    { "n",          "<Leader>[",  "<cmd>Lspsaga diagnostic_jump_prev<CR>",                                     { noremap = true, silent = true } },
+    { "n",          "<Leader>]",  "<cmd>Lspsaga diagnostic_jump_next<CR>",                                     { noremap = true, silent = true } },
+    { "n",          "<Leader>T",  "<cmd>Lspsaga open_floaterm<CR>",                                            { noremap = true, silent = true } },
+    { "t",          "<Leader>T",  [[<C-\><C-n><cmd>Lspsaga close_floaterm<CR>]],                               { noremap = true, silent = true } },
 }
 
 for _, map in ipairs(keymaps) do
