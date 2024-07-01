@@ -362,10 +362,7 @@ safe_require("lazy").setup({
                 'yamlls' }
 
             local on_attach = function(client, bufnr)
-                local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
-                local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-                buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+                vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
             end
 
             for _, lsp in ipairs(servers) do
@@ -541,7 +538,7 @@ safe_require("lazy").setup({
                         },
                     },
                     function()
-                        local navic = safe_require "nvim-navic"
+                        local navic = safe_require("nvim-navic")
                         return {
                             function()
                                 return navic.get_location()
