@@ -1,6 +1,6 @@
 -- Initialize necessary paths
 local fn = vim.fn
-local lazypath = fn.stdpath("data") .. "/lazy/lazy.nvim"
+local lazypath = fn.stdpath("config") .. "/lazy/lazy.nvim"
 
 -- Auto-install lazy.nvim if not already installed
 if not vim.loop.fs_stat(lazypath) then
@@ -125,7 +125,7 @@ safe_require("lazy").setup({
         run = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup {
-                ensure_installed = ensure_installed_list,
+                ensure_installed = { "bash", "c", "cpp", "dart", "dockerfile", "go", "html", "json", "lua", "markdown", "nim", "rust", "yaml", "zig" },
                 highlight = {
                     enable = true,
                 },
@@ -206,5 +206,5 @@ safe_require("lazy").setup({
         end
     },
 }, {
-    root = vim.fn.stdpath("data") .. "/lazy"
+    root = vim.fn.stdpath("config") .. "/lazy"
 })
