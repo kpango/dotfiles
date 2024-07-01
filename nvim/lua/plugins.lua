@@ -33,7 +33,6 @@ end
 -- Ensure installed list
 local ensure_installed_list = {
     "bash",
-    "bashls",
     "beautysh",
     "black",
     "c",
