@@ -375,12 +375,12 @@ safe_require("lazy").setup({
 
             null_ls.setup({
                 sources = {
-	          null_ls.builtins.formatting.stylua,
-		  null_ls.builtins.completion.spell,
-		  safe_require("none-ls.diagnostics.eslint"),
-	          safe_require("none-ls.diagnostics.cpplint"),
-		  safe_require("none-ls.formatting.jq"),
-		  safe_require("none-ls.code_actions.eslint"),
+                    null_ls.builtins.formatting.stylua,
+                    null_ls.builtins.completion.spell,
+                    safe_require("none-ls.diagnostics.eslint"),
+                    safe_require("none-ls.diagnostics.cpplint"),
+                    safe_require("none-ls.formatting.jq"),
+                    safe_require("none-ls.code_actions.eslint"),
                 },
             })
         end,
