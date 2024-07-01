@@ -48,5 +48,5 @@ ulimit -n 500000
 
 # Start sway if no display server is running and the terminal is tty1
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
-    exec sway --unsupported-gpu "$@"
+    exec sway --unsupported-gpu --debug "$@"
 fi
