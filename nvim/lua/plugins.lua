@@ -181,50 +181,17 @@ safe_require("lazy").setup({
                         option = {
                             convert_case = true,
                             loud = true,
+                            -- dict = '/usr/share/dict/words'
                         },
                     },
                     { name = "cmdline" },
                     { name = "git" },
                 },
-                mapping = {
-                    ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
-                    ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
-                    ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-                    ["<C-l>"] = cmp.mapping.complete(),
-                    ["<C-y>"] = cmp.mapping.confirm { select = true }, --Ctrl+yで補完を選択確定
-                    ['<C-e>'] = cmp.mapping({
-                        i = cmp.mapping.abort(),
-                        c = cmp.mapping.close(),
-                    }),
-                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-                    ['<Tab>'] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_next_item()
-                        elseif luasnip.expand_or_jumpable() then
-                            luasnip.expand_or_jump()
-                        else
-                            fallback()
-                        end
-                    end, { 'i', 's' }),
-                    ['<S-Tab>'] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_prev_item()
-                        elseif luasnip.jumpable(-1) then
-                            luasnip.jump(-1)
-                        else
-                            fallback()
-                        end
-                    end, { 'i', 's' }),
-                },
-                experimental = {
-                    ghost_text = false,
-                },
-                on_attach = on_attach,
-                capabilities = capabilities,
                 formatting = {
                     format = safe_require("lspkind").cmp_format {
                         mode = "symbol_text",
                         preset = "codicons",
+                        -- with_text = false,
                         maxwidth = 50,
                         menu = {
                             copilot = "[COP]",
@@ -319,6 +286,9 @@ safe_require("lazy").setup({
             run_on_every_keystroke = true,
             snippet_placeholder = "..",
             ignored_file_types = {
+                -- default is not to ignore
+                -- uncomment to ignore in lua:
+                -- lua = true
             },
             show_prediction_strength = false,
         },
@@ -333,13 +303,6 @@ safe_require("lazy").setup({
             panel = {
                 enabled = true,
                 auto_refresh = false,
-                keymap = {
-                    jump_prev = "[[",
-                    jump_next = "]]",
-                    accept = "<CR>",
-                    refresh = "gr",
-                    open = "<M-CR>",
-                },
                 layout = {
                     position = "bottom",
                     ratio = 0.4,
@@ -349,14 +312,6 @@ safe_require("lazy").setup({
                 enabled = false,
                 auto_trigger = true,
                 debounce = 75,
-                keymap = {
-                    accept = "<C-i>",
-                    accept_word = false,
-                    accept_line = false,
-                    next = "<C-n>",
-                    prev = "<C-p>",
-                    dismiss = "<C-x>",
-                },
             },
             filetypes = {
                 yaml = false,
@@ -939,37 +894,53 @@ local keymaps = {
         vim.schedule(function() safe_require('gitsigns').prev_hunk() end)
         return "<Ignore>"
     end, { expr = true, noremap = true, silent = true } },
-    { "n",          "<leader>hs", "<Cmd>Gitsigns stage_hunk<CR>",                                              { noremap = true, silent = true } },
-    { "n",          "<leader>hr", "<Cmd>Gitsigns reset_hunk<CR>",                                              { noremap = true, silent = true } },
-    { "n",          "<leader>hS", "<Cmd>Gitsigns stage_buffer<CR>",                                            { noremap = true, silent = true } },
-    { "n",          "<leader>hR", "<Cmd>Gitsigns reset_buffer<CR>",                                            { noremap = true, silent = true } },
-    { "n",          "<leader>hu", "<Cmd>Gitsigns undo_stage_hunk<CR>",                                         { noremap = true, silent = true } },
-    { "n",          "<leader>hp", "<Cmd>Gitsigns preview_hunk<CR>",                                            { noremap = true, silent = true } },
-    { "n",          "<leader>hb", function() safe_require('gitsigns').blame_line { full = true } end,          { noremap = true, silent = true } },
-    { "n",          "<leader>hd", "<Cmd>Gitsigns diffthis<CR>",                                                { noremap = true, silent = true } },
-    { "n",          "<leader>hD", function() safe_require('gitsigns').diffthis("~") end,                       { noremap = true, silent = true } },
-    { "n",          "<leader>tb", "<Cmd>Gitsigns toggle_current_line_blame<CR>",                               { noremap = true, silent = true } },
-    { "n",          "<leader>td", "<Cmd>Gitsigns toggle_deleted<CR>",                                          { noremap = true, silent = true } },
-    { { "o", "x" }, "ih",         "<Cmd>Gitsigns select_hunk<CR>",                                             { noremap = true, silent = true } },
+    { "n",          "<leader>hs", "<Cmd>Gitsigns stage_hunk<CR>",                                     { noremap = true, silent = true } },
+    { "n",          "<leader>hr", "<Cmd>Gitsigns reset_hunk<CR>",                                     { noremap = true, silent = true } },
+    { "n",          "<leader>hS", "<Cmd>Gitsigns stage_buffer<CR>",                                   { noremap = true, silent = true } },
+    { "n",          "<leader>hR", "<Cmd>Gitsigns reset_buffer<CR>",                                   { noremap = true, silent = true } },
+    { "n",          "<leader>hu", "<Cmd>Gitsigns undo_stage_hunk<CR>",                                { noremap = true, silent = true } },
+    { "n",          "<leader>hp", "<Cmd>Gitsigns preview_hunk<CR>",                                   { noremap = true, silent = true } },
+    { "n",          "<leader>hb", function() safe_require('gitsigns').blame_line { full = true } end, { noremap = true, silent = true } },
+    { "n",          "<leader>hd", "<Cmd>Gitsigns diffthis<CR>",                                       { noremap = true, silent = true } },
+    { "n",          "<leader>hD", function() safe_require('gitsigns').diffthis("~") end,              { noremap = true, silent = true } },
+    { "n",          "<leader>tb", "<Cmd>Gitsigns toggle_current_line_blame<CR>",                      { noremap = true, silent = true } },
+    { "n",          "<leader>td", "<Cmd>Gitsigns toggle_deleted<CR>",                                 { noremap = true, silent = true } },
+    { { "o", "x" }, "ih",         "<Cmd>Gitsigns select_hunk<CR>",                                    { noremap = true, silent = true } },
     -- Comment
-    { "n",          "<C-c>",      function() safe_require("Comment.api").toggle.linewise.current() end,        { noremap = true, silent = true } },
-    { "x",          "<C-c>",      function() safe_require("Comment.api").toggle.linewise(fn.visualmode()) end, { noremap = true, silent = true } },
-    { "i",          "<C-c>",      function() safe_require("Comment.api").toggle.linewise.current() end,        { noremap = true, silent = true } },
-    -- Lspsaga
-    { "n",          "gr",         "<cmd>Lspsaga rename<CR>",                                                   { noremap = true, silent = true } },
-    { "n",          "gh",         "<cmd>Lspsaga lsp_finder<CR>",                                               { noremap = true, silent = true } },
-    { "n",          "gd",         "<cmd>Lspsaga peek_definition<CR>",                                          { noremap = true, silent = true } },
-    { "n",          "gp",         "<Cmd>Lspsaga preview_definition<CR>",                                       { noremap = true, silent = true } },
-    { "n",          "<C-j>",      "<Cmd>Lspsaga diagnostic_jump_next<CR>",                                     { noremap = true, silent = true } },
-    { "n",          "K",          "<Cmd>Lspsaga hover_doc<CR>",                                                { noremap = true, silent = true } },
-    { "i",          "<C-k>",      "<Cmd>Lspsaga signature_help<CR>",                                           { noremap = true, silent = true } },
-    { "v",          "<leader>ca", "<cmd><C-U>Lspsaga range_code_action<CR>",                                   { noremap = true, silent = true } },
-    { "n",          "<leader>ca", "<cmd>Lspsaga code_action<CR>",                                              { noremap = true, silent = true } },
-    { "n",          "<leader>e",  "<cmd>Lspsaga show_line_diagnostics<CR>",                                    { noremap = true, silent = true } },
-    { "n",          "<Leader>[",  "<cmd>Lspsaga diagnostic_jump_prev<CR>",                                     { noremap = true, silent = true } },
-    { "n",          "<Leader>]",  "<cmd>Lspsaga diagnostic_jump_next<CR>",                                     { noremap = true, silent = true } },
-    { "n",          "<Leader>T",  "<cmd>Lspsaga open_floaterm<CR>",                                            { noremap = true, silent = true } },
-    { "t",          "<Leader>T",  [[<C-\><C-n><cmd>Lspsaga close_floaterm<CR>]],                               { noremap = true, silent = true } },
+    { "n", "<C-c>", function()
+        safe_require("Comment.api").toggle.linewise.current()
+    end, { noremap = true, silent = true } },
+    { "x", "<C-c>", function()
+        safe_require("Comment.api").toggle.linewise(vim.fn.visualmode())
+    end, { noremap = true, silent = true } },
+    { "i", "<C-c>", function()
+        safe_require("Comment.api").toggle.linewise.current()
+    end, { noremap = true, silent = true } },
+    -- cmp
+    { 'i', '<C-b>',     'cmp.mapping.scroll_docs(-4)',            { noremap = true, silent = true } },
+    { 'i', '<C-f>',     'cmp.mapping.scroll_docs(4)',             { noremap = true, silent = true } },
+    { 'i', '<C-Space>', 'cmp.mapping.complete()',                 { noremap = true, silent = true } },
+    { 'i', '<C-y>',     'cmp.mapping.confirm { select = true }',  { noremap = true, silent = true } },
+    { 'i', '<C-e>',     'cmp.mapping.abort()',                    { noremap = true, silent = true } },
+    { 'i', '<CR>',      'cmp.mapping.confirm({ select = true })', { noremap = true, silent = true } },
+    { 'i', '<Tab>', function(fallback)
+        if cmp.visible() then
+            cmp.select_next_item()
+        elseif luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+        else
+            fallback()
+        end
+    end, { noremap = true, silent = true } },
+    { 'i', '<S-Tab>', function(fallback)
+        if cmp.visible() then
+            cmp.select_prev_item()
+        elseif luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+        else
+            fallback()
+        end
+    end, { noremap = true, silent = true } },
 }
 
 for _, map in ipairs(keymaps) do
