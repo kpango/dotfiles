@@ -356,7 +356,6 @@ safe_require("lazy").setup({
         config = function()
             local lspconfig = safe_require('lspconfig')
             local null_ls = safe_require('null-ls')
-            local none_ls_extras = safe_require('none-ls-extras')
 
             local servers = { 'gopls', 'rust_analyzer', 'tsserver', 'pyright', 'clangd', 'zls', 'nimls', 'bashls',
                 'yamlls' }
@@ -376,18 +375,12 @@ safe_require("lazy").setup({
 
             null_ls.setup({
                 sources = {
-                    null_ls.builtins.formatting.stylua,
-                    null_ls.builtins.diagnostics.eslint.with({
-                        command = "eslint_d",
-                    }),
-                },
-            })
-
-            safe_require("none-ls").setup({
-                sources = {
-                    none_ls_extras.diagnostics.cpplint,
-                    none_ls_extras.formatting.jq,
-                    none_ls_extras.code_actions.eslint,
+	          null_ls.builtins.formatting.stylua,
+		  null_ls.builtins.completion.spell,
+		  safe_require("none-ls.diagnostics.eslint"),
+	          safe_require("none-ls.diagnostics.cpplint"),
+		  safe_require("none-ls.formatting.jq"),
+		  safe_require("none-ls.code_actions.eslint"),
                 },
             })
         end,
@@ -462,6 +455,10 @@ safe_require("lazy").setup({
                 config = true,
             },
         },
+        config = true,
+    },
+    {
+        'nvimtools/none-ls-extras.nvim',
         config = true,
     },
     {
