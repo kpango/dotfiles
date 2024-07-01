@@ -457,7 +457,7 @@ safe_require("lazy").setup({
                 },
             })
 
-            require("none-ls").setup({
+            safe_require("none-ls").setup({
                 sources = {
                     none_ls_extras.diagnostics.cpplint,
                     none_ls_extras.formatting.jq,
@@ -807,7 +807,7 @@ safe_require("lazy").setup({
             }
             vim.api.nvim_create_autocmd("BufWritePost", {
                 callback = function()
-                    require('lint').try_lint()
+                    safe_require('lint').try_lint()
                 end,
             })
         end
@@ -822,8 +822,8 @@ safe_require("lazy").setup({
                 defaults = {
                     mappings = {
                         i = {
-                            ["<C-n>"] = require('telescope.actions').move_selection_next,
-                            ["<C-p>"] = require('telescope.actions').move_selection_previous,
+                            ["<C-n>"] = safe_require('telescope.actions').move_selection_next,
+                            ["<C-p>"] = safe_require('telescope.actions').move_selection_previous,
                         },
                     },
                 }
@@ -959,26 +959,26 @@ local keymaps = {
     -- Gitsigns
     { "n", "]c", function()
         if vim.wo.diff then return "]c" end
-        vim.schedule(function() require('gitsigns').next_hunk() end)
+        vim.schedule(function() safe_require('gitsigns').next_hunk() end)
         return "<Ignore>"
     end, { expr = true, noremap = true, silent = true } },
     { "n", "[c", function()
         if vim.wo.diff then return "[c" end
-        vim.schedule(function() require('gitsigns').prev_hunk() end)
+        vim.schedule(function() safe_require('gitsigns').prev_hunk() end)
         return "<Ignore>"
     end, { expr = true, noremap = true, silent = true } },
-    { "n",          "<leader>hs", "<Cmd>Gitsigns stage_hunk<CR>",                                { noremap = true, silent = true } },
-    { "n",          "<leader>hr", "<Cmd>Gitsigns reset_hunk<CR>",                                { noremap = true, silent = true } },
-    { "n",          "<leader>hS", "<Cmd>Gitsigns stage_buffer<CR>",                              { noremap = true, silent = true } },
-    { "n",          "<leader>hR", "<Cmd>Gitsigns reset_buffer<CR>",                              { noremap = true, silent = true } },
-    { "n",          "<leader>hu", "<Cmd>Gitsigns undo_stage_hunk<CR>",                           { noremap = true, silent = true } },
-    { "n",          "<leader>hp", "<Cmd>Gitsigns preview_hunk<CR>",                              { noremap = true, silent = true } },
-    { "n",          "<leader>hb", function() require('gitsigns').blame_line { full = true } end, { noremap = true, silent = true } },
-    { "n",          "<leader>hd", "<Cmd>Gitsigns diffthis<CR>",                                  { noremap = true, silent = true } },
-    { "n",          "<leader>hD", function() require('gitsigns').diffthis("~") end,              { noremap = true, silent = true } },
-    { "n",          "<leader>tb", "<Cmd>Gitsigns toggle_current_line_blame<CR>",                 { noremap = true, silent = true } },
-    { "n",          "<leader>td", "<Cmd>Gitsigns toggle_deleted<CR>",                            { noremap = true, silent = true } },
-    { { "o", "x" }, "ih",         "<Cmd>Gitsigns select_hunk<CR>",                               { noremap = true, silent = true } },
+    { "n",          "<leader>hs", "<Cmd>Gitsigns stage_hunk<CR>",                                     { noremap = true, silent = true } },
+    { "n",          "<leader>hr", "<Cmd>Gitsigns reset_hunk<CR>",                                     { noremap = true, silent = true } },
+    { "n",          "<leader>hS", "<Cmd>Gitsigns stage_buffer<CR>",                                   { noremap = true, silent = true } },
+    { "n",          "<leader>hR", "<Cmd>Gitsigns reset_buffer<CR>",                                   { noremap = true, silent = true } },
+    { "n",          "<leader>hu", "<Cmd>Gitsigns undo_stage_hunk<CR>",                                { noremap = true, silent = true } },
+    { "n",          "<leader>hp", "<Cmd>Gitsigns preview_hunk<CR>",                                   { noremap = true, silent = true } },
+    { "n",          "<leader>hb", function() safe_require('gitsigns').blame_line { full = true } end, { noremap = true, silent = true } },
+    { "n",          "<leader>hd", "<Cmd>Gitsigns diffthis<CR>",                                       { noremap = true, silent = true } },
+    { "n",          "<leader>hD", function() safe_require('gitsigns').diffthis("~") end,              { noremap = true, silent = true } },
+    { "n",          "<leader>tb", "<Cmd>Gitsigns toggle_current_line_blame<CR>",                      { noremap = true, silent = true } },
+    { "n",          "<leader>td", "<Cmd>Gitsigns toggle_deleted<CR>",                                 { noremap = true, silent = true } },
+    { { "o", "x" }, "ih",         "<Cmd>Gitsigns select_hunk<CR>",                                    { noremap = true, silent = true } },
 }
 
 for _, map in ipairs(keymaps) do
