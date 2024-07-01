@@ -27,4 +27,5 @@ sway-git-wlroots-git
 thunderbolt-utils
 ttf-hackgen
 wdisplays-git
+wlroots-hidpi-xprop-git
 zoom
