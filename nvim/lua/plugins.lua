@@ -118,17 +118,35 @@ safe_require("lazy").setup({
                     { name = "cmdline" },
                     { name = "git" },
                 },
-                mapping = cmp.mapping.preset.insert {
-                    -- ["<Tab>"] = cmp.mapping.select_next_item(), --Ctrl+pで補完欄を一つ上に移動
-                    ["<C-p>"] = cmp.mapping.select_prev_item(), --Ctrl+pで補完欄を一つ上に移動
-                    ["<C-n>"] = cmp.mapping.select_next_item(), --Ctrl+nで補完欄を一つ下に移動
+                mapping = {
+                    ['<C-b>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+                    ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+                    ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
                     ["<C-l>"] = cmp.mapping.complete(),
-                    ["<C-e>"] = cmp.mapping.abort(),
                     ["<C-y>"] = cmp.mapping.confirm { select = true }, --Ctrl+yで補完を選択確定
-                    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-                    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-                    ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<CR>"] = cmp.mapping.confirm { select = true },
+                    ['<C-e>'] = cmp.mapping({
+                        i = cmp.mapping.abort(),
+                        c = cmp.mapping.close(),
+                    }),
+                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                    ['<Tab>'] = cmp.mapping(function(fallback)
+                        if cmp.visible() then
+                            cmp.select_next_item()
+                        elseif luasnip.expand_or_jumpable() then
+                            luasnip.expand_or_jump()
+                        else
+                            fallback()
+                        end
+                    end, { 'i', 's' }),
+                    ['<S-Tab>'] = cmp.mapping(function(fallback)
+                        if cmp.visible() then
+                            cmp.select_prev_item()
+                        elseif luasnip.jumpable(-1) then
+                            luasnip.jump(-1)
+                        else
+                            fallback()
+                        end
+                    end, { 'i', 's' }),
                 },
                 experimental = {
                     ghost_text = false,
@@ -361,7 +379,7 @@ safe_require("lazy").setup({
                 history = true,
                 updateevents = "TextChanged,TextChangedI",
             }
-            require('luasnip/loaders/from_vscode').load()
+	    safe_require("luasnip.loaders.from_vscode").lazy_load()
         end
     },
     {
@@ -483,8 +501,74 @@ safe_require("lazy").setup({
     },
     {
         "neovim/nvim-lspconfig",
-        event = { "InsertEnter", "CmdlineEnter" },
+        event = { "InsertEnter", "CmdlineEnter", "BufReadPost" },
+        dependencies = {
+            'williamboman/mason.nvim',
+            'williamboman/mason-lspconfig.nvim',
+            'nvimtools/none-ls.nvim',
+            'nvimtools/none-ls-extras.nvim'
+        },
         lazy = true,
+        config = function()
+            local lspconfig = safe_require('lspconfig')
+            local null_ls = safe_require('null-ls')
+            local none_ls_extras = safe_require('none-ls-extras')
+
+            local servers = { 'gopls', 'rust_analyzer', 'tsserver', 'pyright', 'clangd', 'zls', 'nimls', 'bashls', 'yamlls' }
+
+            local on_attach = function(client, bufnr)
+                local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
+                local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
+
+                buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+                -- Mappings.
+                local opts = { noremap=true, silent=true }
+                buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+                buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
+                buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+                buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+                buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+                buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+                buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+                buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+                buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+                buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+                buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+                buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+                buf_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+                buf_set_keymap('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+                buf_set_keymap('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+                buf_set_keymap('n', '<leader>q', '<cmd>lua vim.diagnostic.setloclist()<CR>', opts)
+                buf_set_keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+            end
+
+            for _, lsp in ipairs(servers) do
+                lspconfig[lsp].setup {
+                    on_attach = on_attach,
+                    flags = {
+                        debounce_text_changes = 150,
+                    }
+                }
+            end
+
+            null_ls.setup({
+                sources = {
+                    null_ls.builtins.formatting.stylua,
+                    null_ls.builtins.diagnostics.eslint.with({
+                        command = "eslint_d",
+                    }),
+                },
+            })
+
+            require("none-ls").setup({
+                sources = {
+                    none_ls_extras.diagnostics.cpplint,
+                    none_ls_extras.formatting.jq,
+                    none_ls_extras.code_actions.eslint,
+                },
+            })
+        end
         keys = function()
             local opts = { noremap = true, silent = true }
             return {
