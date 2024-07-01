@@ -7,6 +7,7 @@ if not vim.loop.fs_stat(lazypath) then
         "clone",
         "--depth",
         "1",
+	"--filter=blob:none",
         "https://github.com/folke/lazy.nvim",
         lazypath,
     }
@@ -19,7 +20,7 @@ vim.opt.shortmess = vim.opt.shortmess + { c = true }
 local function safe_require(module_name)
     local status, module = pcall(require, module_name)
     if not status then
-        error(module_name .. " is not installed install_path: " .. pkg_path .. " packpath: " .. vim.o.packpath)
+        vim.api.nvim_err_writeln("Error loading module: " .. module_name .. " is not installed install_path: " .. pkg_path .. " packpath: " .. vim.o.packpath)
         return nil
     end
     return module
@@ -351,6 +352,17 @@ safe_require("lazy").setup({
         },
     },
     {
+        'L3MON4D3/LuaSnip',
+        event = "InsertCharPre",
+        config = function()
+            safe_require('luasnip').config.set_config {
+                history = true,
+                updateevents = "TextChanged,TextChangedI",
+            }
+            require('luasnip/loaders/from_vscode').load()
+        end
+    },
+    {
         "tzachar/cmp-tabnine",
         build = "./install.sh",
         dependencies = "hrsh7th/nvim-cmp",
@@ -370,9 +382,11 @@ safe_require("lazy").setup({
         },
         event = { "InsertEnter", "VeryLazy" },
     },
+    -- GitHub Copilot
     {
         "zbirenbaum/copilot.lua",
         enabled = true,
+        event = "InsertEnter",
         lazy = false,
         opts = {
             panel = {
@@ -530,7 +544,8 @@ safe_require("lazy").setup({
     },
     {
         "nvim-treesitter/nvim-treesitter",
-        build = ":TSUpdate",
+        run = ":TSUpdate",
+        event = "BufReadPost",
         dependencies = {
             "nvim-treesitter/nvim-treesitter-textobjects",
             { "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
@@ -546,11 +561,9 @@ safe_require("lazy").setup({
             sync_install = false,
             highlight = {
                 enable = true,
-                disable = {},
             },
             indent = {
                 enable = true,
-                disable = {},
             },
             ensure_installed = {
                 "bash",
@@ -580,6 +593,7 @@ safe_require("lazy").setup({
                 "markdown_inline",
                 "meson",
                 "ninja",
+                "nim",
                 "nix",
                 "proto",
                 "python",
@@ -614,12 +628,7 @@ safe_require("lazy").setup({
                     package_uninstalled = "✗",
                 },
             },
-            ensure_installed = {
-                "gopls",
-                "dockerls",
-                "rust-analyzer",
-                "yamlls",
-            },
+            ensure_installed = { 'gopls', 'rust_analyzer', 'tsserver', 'pyright', 'clangd', 'zls', 'nimls', 'bashls', 'yamlls', "dockerls" },
             automatic_installation = true,
         },
         config = function(_, opts)
@@ -1414,6 +1423,131 @@ safe_require("lazy").setup({
     {
         "windwp/nvim-ts-autotag",
         config = true,
+    },
+    -- Linter
+    {
+        'mfussenegger/nvim-lint',
+        event = "BufReadPost",
+        config = function()
+            local lint = safe_require('lint')
+            lint.linters_by_ft = {
+                go = {'golangcilint'},
+                python = {'flake8'},
+                lua = {'luacheck'},
+                rust = {'clippy'},
+                yaml = {'yamllint'},
+                sh = {'shellcheck'},
+            }
+            vim.api.nvim_create_autocmd("BufWritePost", {
+                callback = function()
+                    require('lint').try_lint()
+                end,
+            })
+        end
+    },
+    -- Telescope
+    {
+        'nvim-telescope/telescope.nvim',
+        cmd = "Telescope",
+        dependencies = { 'nvim-lua/plenary.nvim' },
+        config = function()
+            local telescope = safe_require('telescope')
+            telescope.setup {
+                defaults = {
+                    mappings = {
+                        i = {
+                            ["<C-n>"] = require('telescope.actions').move_selection_next,
+                            ["<C-p>"] = require('telescope.actions').move_selection_previous,
+                        },
+                    },
+                }
+            }
+            vim.api.nvim_set_keymap('n', '<C-p>', ':Telescope find_files<CR>', { noremap = true, silent = true })
+            vim.api.nvim_set_keymap('n', '<C-f>', ':Telescope live_grep<CR>', { noremap = true, silent = true })
+        end
+    },
+    -- Flutter Tools
+    {
+        'akinsho/flutter-tools.nvim',
+        ft = { "dart" },
+        config = function()
+            safe_require('flutter-tools').setup{}
+        end
+    },
+    -- Debug Adapter Protocol
+    {
+        'mfussenegger/nvim-dap',
+        ft = { "c", "cpp", "rust", "go" },
+        config = function()
+            local dap = safe_require('dap')
+            dap.adapters.lldb = {
+                type = 'executable',
+                command = '/usr/bin/lldb-vscode', -- adjust as needed
+                name = 'lldb'
+            }
+            dap.configurations.cpp = {
+                {
+                    name = 'Launch',
+                    type = 'lldb',
+                    request = 'launch',
+                    program = function()
+                        return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+                    end,
+                    cwd = '${workspaceFolder}',
+                    stopOnEntry = false,
+                    args = {},
+
+                    runInTerminal = false,
+                },
+            }
+            dap.configurations.c = dap.configurations.cpp
+        end
+    },
+    -- Language-specific plugins
+    {
+        'fatih/vim-go',
+        ft = { "go" },
+        config = function()
+            vim.g.go_fmt_command = "goimports"
+        end
+    },
+    {
+        'rust-lang/rust.vim',
+        ft = { "rust" },
+        config = function()
+            vim.g.rustfmt_autosave = 1
+        end
+    },
+    {
+        'ziglang/zig.vim',
+        ft = { "zig" },
+    },
+    {
+        'alaviss/nim.nvim',
+        ft = { "nim" },
+    },
+    {
+        'vim-python/python-syntax',
+        ft = { "python" },
+        config = function()
+            vim.g.python_highlight_all = 1
+        end
+    },
+    {
+        'tbastos/vim-lua',
+        ft = { "lua" },
+    },
+    {
+        'towolf/vim-helm',
+        ft = { "yaml" },
+    },
+    {
+        'juliosueiras/vim-terraform-completion',
+        ft = { "tf" },
+    },
+    {
+        'mattn/vim-sonictemplate',
+        cmd = "Template",
     },
 }, {
     root = pkg_path,
