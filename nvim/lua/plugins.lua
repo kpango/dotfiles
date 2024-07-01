@@ -10,7 +10,7 @@ if not vim.loop.fs_stat(lazypath) then
         "clone",
         "--depth",
         "1",
-	"--filter=blob:none",
+        "--filter=blob:none",
         "https://github.com/folke/lazy.nvim",
         lazypath,
     }
@@ -23,7 +23,8 @@ vim.opt.shortmess:append("c")
 local function safe_require(module_name)
     local status, module = pcall(require, module_name)
     if not status then
-        vim.api.nvim_err_writeln("Error loading module: " .. module_name .. " is not installed. Install path: " .. pkg_path)
+        vim.api.nvim_err_writeln("Error loading module: " ..
+        module_name .. " is not installed. Install path: " .. pkg_path)
         return nil
     end
     return module
@@ -42,7 +43,8 @@ safe_require("lazy").setup({
         event = { "InsertEnter", "CmdlineEnter" },
         opts = function()
             local cmp = safe_require("cmp")
-            local capabilities = safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+            local capabilities = safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol
+            .make_client_capabilities())
             local on_attach = function(client, bufnr)
                 vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
             end
@@ -70,7 +72,7 @@ safe_require("lazy").setup({
             cmp.setup.filetype("lua", {
                 sources = cmp.config.sources {
                     { name = "copilot_cmp", keyword_length = 2 },
-                    { name = "nvim_lsp", keyword_length = 3 },
+                    { name = "nvim_lsp",    keyword_length = 3 },
                     { name = "luasnip" },
                     { name = "cmp_tabnine" },
                     { name = "nvim_lua" },
@@ -98,13 +100,13 @@ safe_require("lazy").setup({
                     },
                 },
                 sources = cmp.config.sources {
-                    { name = "copilot_cmp", keyword_length = 2 },
+                    { name = "copilot_cmp",            keyword_length = 2 },
                     { name = "nvim_lsp" },
-                    { name = "nvim_lsp", keyword_length = 3 },
+                    { name = "nvim_lsp",               keyword_length = 3 },
                     { name = "luasnip" },
                     { name = "cmp_tabnine" },
                     { name = "nvim_lsp_signature_help" },
-                    { name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, keyword_length = 2 },
+                    { name = "buffer",                 get_bufnrs = vim.api.nvim_list_bufs, keyword_length = 2 },
                     { name = "path" },
                     {
                         name = "look",
@@ -353,22 +355,22 @@ safe_require("lazy").setup({
             },
         },
         dependencies = {
-            { "neovim/nvim-lspconfig", event = "InsertEnter" },
-            { "L3MON4D3/LuaSnip", build = "make install_jsregexp", event = "InsertEnter" },
-            { "hrsh7th/cmp-buffer", event = "InsertEnter" },
-            { "hrsh7th/cmp-calc", event = "InsertEnter" },
-            { "hrsh7th/cmp-cmdline", event = "ModeChanged" },
-            { "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
+            { "neovim/nvim-lspconfig",                event = "InsertEnter" },
+            { "L3MON4D3/LuaSnip",                     build = "make install_jsregexp", event = "InsertEnter" },
+            { "hrsh7th/cmp-buffer",                   event = "InsertEnter" },
+            { "hrsh7th/cmp-calc",                     event = "InsertEnter" },
+            { "hrsh7th/cmp-cmdline",                  event = "ModeChanged" },
+            { "hrsh7th/cmp-nvim-lsp",                 event = "InsertEnter" },
             { "hrsh7th/cmp-nvim-lsp-document-symbol", event = "InsertEnter" },
-            { "hrsh7th/cmp-nvim-lsp-signature-help", event = "InsertEnter" },
-            { "hrsh7th/cmp-nvim-lua", event = "InsertEnter" },
-            { "hrsh7th/cmp-path", event = "InsertEnter" },
-            { "ray-x/cmp-treesitter", event = "InsertEnter" },
-            { "petertriho/cmp-git", config = true, event = "InsertEnter" },
-            { "octaltree/cmp-look", config = true, event = "InsertEnter" },
-            { "onsails/lspkind.nvim", event = "InsertEnter" },
-            { "rafamadriz/friendly-snippets", event = "InsertEnter" },
-            { "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
+            { "hrsh7th/cmp-nvim-lsp-signature-help",  event = "InsertEnter" },
+            { "hrsh7th/cmp-nvim-lua",                 event = "InsertEnter" },
+            { "hrsh7th/cmp-path",                     event = "InsertEnter" },
+            { "ray-x/cmp-treesitter",                 event = "InsertEnter" },
+            { "petertriho/cmp-git",                   config = true,                   event = "InsertEnter" },
+            { "octaltree/cmp-look",                   config = true,                   event = "InsertEnter" },
+            { "onsails/lspkind.nvim",                 event = "InsertEnter" },
+            { "rafamadriz/friendly-snippets",         event = "InsertEnter" },
+            { "saadparwaiz1/cmp_luasnip",             event = "InsertEnter" },
         },
     },
     {
@@ -379,7 +381,7 @@ safe_require("lazy").setup({
                 history = true,
                 updateevents = "TextChanged,TextChangedI",
             }
-	    safe_require("luasnip.loaders.from_vscode").lazy_load()
+            safe_require("luasnip.loaders.from_vscode").lazy_load()
         end
     },
     {
@@ -480,7 +482,7 @@ safe_require("lazy").setup({
             {
                 "<C-c>",
                 function()
-                    safe_require("Comment.api").toggle.linewise(vim.fn.visualmode())
+                    safe_require("Comment.api").toggle.linewise(fn.visualmode())
                 end,
                 desc = "",
                 mode = "x",
@@ -514,7 +516,8 @@ safe_require("lazy").setup({
             local null_ls = safe_require('null-ls')
             local none_ls_extras = safe_require('none-ls-extras')
 
-            local servers = { 'gopls', 'rust_analyzer', 'tsserver', 'pyright', 'clangd', 'zls', 'nimls', 'bashls', 'yamlls' }
+            local servers = { 'gopls', 'rust_analyzer', 'tsserver', 'pyright', 'clangd', 'zls', 'nimls', 'bashls',
+                'yamlls' }
 
             local on_attach = function(client, bufnr)
                 local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
@@ -523,7 +526,7 @@ safe_require("lazy").setup({
                 buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
                 -- Mappings.
-                local opts = { noremap=true, silent=true }
+                local opts = { noremap = true, silent = true }
                 buf_set_keymap('n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
                 buf_set_keymap('n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
                 buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
@@ -531,7 +534,8 @@ safe_require("lazy").setup({
                 buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
                 buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
                 buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-                buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+                buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
+                    opts)
                 buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
                 buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
                 buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
@@ -568,7 +572,7 @@ safe_require("lazy").setup({
                     none_ls_extras.code_actions.eslint,
                 },
             })
-        end
+        end,
         keys = function()
             local opts = { noremap = true, silent = true }
             return {
@@ -885,7 +889,7 @@ safe_require("lazy").setup({
                 silent = true,
                 noremap = true,
             },
-            { "gr", "<cmd>Lspsaga rename<CR>", desc = "Rename", mode = "n", silent = true, noremap = true },
+            { "gr", "<cmd>Lspsaga rename<CR>",    desc = "Rename", mode = "n", silent = true, noremap = true },
             {
                 "gh",
                 "<cmd>Lspsaga lsp_finder<CR>",
@@ -918,7 +922,7 @@ safe_require("lazy").setup({
                 silent = true,
                 noremap = true,
             },
-            { "K", "<Cmd>Lspsaga hover_doc<CR>", desc = "", mode = "n", silent = true, noremap = true },
+            { "K",  "<Cmd>Lspsaga hover_doc<CR>", desc = "",       mode = "n", silent = true, noremap = true },
             {
                 "<C-k>",
                 "<Cmd>Lspsaga signature_help<CR>",
@@ -1231,7 +1235,7 @@ safe_require("lazy").setup({
                     end,
                     ["pdf"] = function()
                         vim.bo.filetype = "pdf"
-                        vim.fn.jobstart("open -a skim " .. '"' .. vim.fn.expand "%" .. '"')
+                        fn.jobstart("open -a skim " .. '"' .. fn.expand "%" .. '"')
                     end,
                 },
                 function_literal = {
@@ -1290,8 +1294,8 @@ safe_require("lazy").setup({
                 },
             },
             signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
-            numhl = false, -- Toggle with `:Gitsigns toggle_numhl`
-            linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
+            numhl = false,     -- Toggle with `:Gitsigns toggle_numhl`
+            linehl = false,    -- Toggle with `:Gitsigns toggle_linehl`
             word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
             watch_gitdir = {
                 interval = 1000,
@@ -1308,7 +1312,7 @@ safe_require("lazy").setup({
             current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
             sign_priority = 6,
             update_debounce = 100,
-            status_formatter = nil, -- Use default
+            status_formatter = nil,  -- Use default
             max_file_length = 40000, -- Disable if file is longer than this (in lines)
             preview_config = {
                 -- Options passed to nvim_open_win
@@ -1517,12 +1521,12 @@ safe_require("lazy").setup({
         config = function()
             local lint = safe_require('lint')
             lint.linters_by_ft = {
-                go = {'golangcilint'},
-                python = {'flake8'},
-                lua = {'luacheck'},
-                rust = {'clippy'},
-                yaml = {'yamllint'},
-                sh = {'shellcheck'},
+                go = { 'golangcilint' },
+                python = { 'flake8' },
+                lua = { 'luacheck' },
+                rust = { 'clippy' },
+                yaml = { 'yamllint' },
+                sh = { 'shellcheck' },
             }
             vim.api.nvim_create_autocmd("BufWritePost", {
                 callback = function()
@@ -1557,7 +1561,7 @@ safe_require("lazy").setup({
         'akinsho/flutter-tools.nvim',
         ft = { "dart" },
         config = function()
-            safe_require('flutter-tools').setup{}
+            safe_require('flutter-tools').setup {}
         end
     },
     -- Debug Adapter Protocol
@@ -1577,7 +1581,7 @@ safe_require("lazy").setup({
                     type = 'lldb',
                     request = 'launch',
                     program = function()
-                        return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+                        return fn.input('Path to executable: ', fn.getcwd() .. '/', 'file')
                     end,
                     cwd = '${workspaceFolder}',
                     stopOnEntry = false,
