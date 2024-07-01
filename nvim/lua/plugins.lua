@@ -27,15 +27,16 @@ local function safe_require(module_name)
 end
 
 local ensure_installed_list = {
-    "bash", "beautysh", "black", "c", "clangd", "cpp", "cspell", "css", "dart", "dockerfile",
-    "eslint_d", "go", "gopls", "graphql", "html", "json", "lua", "make", "markdown", "nim",
-    "nimls", "prettierd", "proto", "pyright", "rust", "rust_analyzer", "shellcheck", "sql",
-    "stylua", "toml", "tsserver", "vim", "yaml", "zig", "zls"
+    "bash", "c", "clangd", "cpp", "dart", "dockerfile", "go", "gopls",
+    "html", "json", "lua", "make", "markdown", "nim", "pyright", "rust",
+    "rust_analyzer", "shellcheck", "yaml", "zig", "zls"
 }
 
 safe_require("lazy").setup({
+    -- General plugins
     {
         "neovim/nvim-lspconfig",
+        event = "BufReadPre",
         dependencies = {
             "williamboman/mason.nvim",
             "williamboman/mason-lspconfig.nvim",
@@ -46,13 +47,17 @@ safe_require("lazy").setup({
                 ensure_installed = ensure_installed_list
             }
             local lspconfig = require("lspconfig")
+            local on_attach = function(client, bufnr)
+                vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
+            end
             for _, server in ipairs(ensure_installed_list) do
-                lspconfig[server].setup {}
+                lspconfig[server].setup { on_attach = on_attach }
             end
         end,
     },
     {
         "hrsh7th/nvim-cmp",
+        event = "InsertEnter",
         dependencies = {
             "hrsh7th/cmp-nvim-lsp",
             "hrsh7th/cmp-buffer",
@@ -116,6 +121,7 @@ safe_require("lazy").setup({
     },
     {
         "nvim-treesitter/nvim-treesitter",
+        event = "BufReadPost",
         run = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup {
@@ -131,6 +137,7 @@ safe_require("lazy").setup({
     },
     {
         "zbirenbaum/copilot.lua",
+        event = "InsertEnter",
         config = function()
             require("copilot").setup({
                 suggestion = { enabled = true },
@@ -144,12 +151,14 @@ safe_require("lazy").setup({
     },
     {
         "numToStr/Comment.nvim",
+        event = "BufReadPost",
         config = function()
             require("Comment").setup()
         end,
     },
     {
         "nvim-lualine/lualine.nvim",
+        event = "VimEnter",
         dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
             require("lualine").setup {
@@ -161,9 +170,40 @@ safe_require("lazy").setup({
     },
     {
         "lewis6991/gitsigns.nvim",
+        event = "BufReadPost",
         config = function()
             require("gitsigns").setup()
         end,
+    },
+    -- Language specific plugins and configurations
+    {
+        "fatih/vim-go",
+        ft = { "go" },
+        config = function()
+            vim.g.go_fmt_command = "goimports"
+        end
+    },
+    {
+        "rust-lang/rust.vim",
+        ft = { "rust" },
+        config = function()
+            vim.g.rustfmt_autosave = 1
+        end
+    },
+    {
+        "ziglang/zig.vim",
+        ft = { "zig" },
+    },
+    {
+        "alaviss/nim.nvim",
+        ft = { "nim" },
+    },
+    {
+        "vim-python/python-syntax",
+        ft = { "python" },
+        config = function()
+            vim.g.python_highlight_all = 1
+        end
     },
 }, {
     root = vim.fn.stdpath("data") .. "/lazy"
