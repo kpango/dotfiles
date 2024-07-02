@@ -1080,6 +1080,7 @@ safe_require("lazy").setup({
 
 safe_require("onedark").load()
 
+-- format_modified_ranges関数の定義
 local function format_modified_ranges()
     local gitsigns = safe_require("gitsigns")
     if not gitsigns then return end
@@ -1091,7 +1092,9 @@ local function format_modified_ranges()
     for _, hunk in ipairs(hunks) do
         local start_line = hunk.added.start
         local end_line = hunk.added.start + hunk.added.count - 1
-        vim.lsp.buf.range_formatting({}, { start_line, 0 }, { end_line, 0 })
+        vim.api.nvim_buf_call(bufnr, function()
+            vim.lsp.buf.range_formatting({}, {start_line - 1, 0}, {end_line, 0})
+        end)
     end
 end
 
