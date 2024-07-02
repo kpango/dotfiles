@@ -21,7 +21,7 @@ if type tmux >/dev/null 2>&1; then
             git clone --depth 1 --recursive https://github.com/tmux-plugins/tpm $TPM_PATH
         fi
         # If connected via SSH
-        if [ ! -z "$SSH_CLIENT" ] ; then
+        if [ ! -z "$SSH_CLIENT" ]; then
             SSH_IP="${SSH_CLIENT%% *}"
             TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/ssh-from-$SSH_IP"
             echo "starting tmux for ssh $SSH_TTY from $SSH_CLIENT"
@@ -32,11 +32,11 @@ if type tmux >/dev/null 2>&1; then
             echo "Successfully created tmux temp directory on $TMUX_TMPDIR."
         else
             echo "Failed to create tmux temp directory on $TMUX_TMPDIR."
-            exit 1  # Exit if failed to create directory
+            exit 1 # Exit if failed to create directory
         fi
-        TMUX_SESSIONS=$(tmux ls 2>/dev/null)  # Check for existing tmux sessions on the specified socket directory
-        if [ $? -ne 0 ]; then  # Check for error from tmux command
-            if [ -f /.dockerenv ]; then # Docker specific settings
+        TMUX_SESSIONS=$(tmux ls 2>/dev/null) # Check for existing tmux sessions on the specified socket directory
+        if [ $? -ne 0 ]; then                # Check for error from tmux command
+            if [ -f /.dockerenv ]; then      # Docker specific settings
                 group=$(id -g)
                 # Ensure the user has access to the Docker socket
                 sudo chown -R $USER:$group /var/run/docker.sock
@@ -46,13 +46,13 @@ if type tmux >/dev/null 2>&1; then
                 echo "created new tmux session for $TMUX_TMPDIR:$USER@$HOST"
             else
                 echo "failed to create new tmux session for $TMUX_TMPDIR:$USER@$HOST"
-                exit 1  # Exit if failed to create tmux session
+                exit 1 # Exit if failed to create tmux session
             fi
         else
-            SESSION_NAME="$(tmux ls | cut -d: -f1 | head -n 1)"  # get the name of a session
+            SESSION_NAME="$(tmux ls | cut -d: -f1 | head -n 1)" # get the name of a session
             if [ -z "$SESSION_NAME" ]; then
                 echo "No sessions found in $USER@$HOST, global tmux ls = $(tmux ls)"
-                exit 1  # Exit if no sessions found
+                exit 1 # Exit if no sessions found
             fi
             echo "attaching tmux session $SESSION_NAME at $TMUX_TMPDIR"
             # Attach to an existing tmux session
@@ -60,7 +60,7 @@ if type tmux >/dev/null 2>&1; then
                 echo "attached tmux session $SESSION_NAME"
             else
                 echo "failed to attach tmux session for $SESSION_NAME"
-                exit 1  # Exit if failed to attach tmux session
+                exit 1 # Exit if failed to attach tmux session
             fi
         fi
         exit
@@ -107,7 +107,6 @@ if [ -z $DOTENV_LOADED ]; then
     export LC_TIME=${XLANGCCJP}.${CHARSET}
     export MANLANG=${XLANGCCJP}.${CHARSET}
 
-
     [ -z "$_lazy_fzf_zsh" ] && {
         [ -f $HOME/.fzf.zsh ] && source $HOME/.fzf.zsh
         _lazy_fzf_zsh=1
@@ -147,7 +146,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     if type python3 >/dev/null 2>&1; then
         export PYTHON_CONFIGURE_OPTS="--enable-shared"
-        export PYTHONIOENCODING="utf-8";
+        export PYTHONIOENCODING="utf-8"
     fi
 
     if type nvim >/dev/null 2>&1; then
@@ -156,9 +155,9 @@ if [ -z $DOTENV_LOADED ]; then
         export NVIM_HOME=$XDG_CONFIG_HOME/nvim
         export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME/log
         export NVIM_TUI_ENABLE_TRUE_COLOR=1
-        export NVIM_PYTHON_LOG_LEVEL=WARNING;
-        export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log;
-        export NVIM_LISTEN_ADDRESS="127.0.0.1:7650";
+        export NVIM_PYTHON_LOG_LEVEL=WARNING
+        export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log
+        export NVIM_LISTEN_ADDRESS="127.0.0.1:7650"
     elif type vim >/dev/null 2>&1; then
         export VIM=$(which vim)
         export VIMRUNTIME=/usr/share/vim/vim*
@@ -172,7 +171,7 @@ if [ -z $DOTENV_LOADED ]; then
     export SUDO_EDITOR=$EDITOR
 
     #ReactNative
-    export REACT_EDITOR=$EDITOR;
+    export REACT_EDITOR=$EDITOR
 
     export LD_LIBRARY_PATH=/lib:/usr/local/lib:${GCLOUD_PATH}/lib:/opt/containerd/lib:/opt/cuda/lib:${LD_LIBRARY_PATH}
 
@@ -206,8 +205,8 @@ if [ -z $DOTENV_LOADED ]; then
         export CPP="$CXX -E"
         export LD=/usr/bin/ldd
         if type llvm-config >/dev/null 2>&1; then
-            export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH;
-            export LLVM_CONFIG_PATH=$(which llvm-config);
+            export LD_LIBRARY_PATH=$(llvm-config --libdir):$LD_LIBRARY_PATH
+            export LLVM_CONFIG_PATH=$(which llvm-config)
         else
             export LD_LIBRARY_PATH=/usr/lib/clang/*/lib:$LD_LIBRARY_PATH
         fi
@@ -217,11 +216,11 @@ if [ -z $DOTENV_LOADED ]; then
         export FFLAGS="-g -Ofast -march=native -ffp-contract=fast"
         export LDFLAGS="-g -Ofast -march=native -ffp-contract=fast"
         #CLANG
-        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS;
-        export CPPFLAGS=$CFLAGS;
-        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS;
-        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH;
-        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH;
+        export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS
+        export CPPFLAGS=$CFLAGS
+        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS
+        export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH
+        export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH
     fi
 
     DOTFILE_URL="github.com/$GIT_USER/dotfiles"
@@ -381,7 +380,7 @@ if [ -z $ZSH_LOADED ]; then
     setopt auto_menu       # 補完候補が複数あるときに自動的に一覧表示する
     setopt auto_param_keys # カッコの対応などを自動的に補完
     setopt auto_param_slash
-    setopt auto_pushd      # cd したら自動的にpushdする
+    setopt auto_pushd # cd したら自動的にpushdする
     setopt correct
     setopt extended_glob
     setopt ignore_eof
@@ -401,15 +400,15 @@ if [ -z $ZSH_LOADED ]; then
     # ^R で履歴検索をするときに * でワイルドカードを使用出来るようにする
     bindkey -e
     select-history() {
-        BUFFER=$(history -n -r 1 \
-                | awk 'length($0) > 2' \
-                | rg -v "^...$" \
-                | rg -v "^....$" \
-                | rg -v "^.....$" \
-                | rg -v "^......$" \
-                | rg -v "^exit$" \
-                | uniq -u \
-            | fzf-tmux --no-sort +m --query "$LBUFFER" --prompt="History > ")
+        BUFFER=$(history -n -r 1 |
+            awk 'length($0) > 2' |
+            rg -v "^...$" |
+            rg -v "^....$" |
+            rg -v "^.....$" |
+            rg -v "^......$" |
+            rg -v "^exit$" |
+            uniq -u |
+            fzf-tmux --no-sort +m --query "$LBUFFER" --prompt="History > ")
         CURSOR=$#BUFFER
     }
     zle -N select-history
@@ -465,7 +464,7 @@ if [ -z $ZSH_LOADED ]; then
             git symbolic-ref --short HEAD | tr -d "\n"
         }
         alias tb=gitthisrepo
-        gitdefaultbranch(){
+        gitdefaultbranch() {
             git remote show origin | grep 'HEAD' | cut -d':' -f2 | sed -e 's/^ *//g' -e 's/ *$//g'
         }
         alias gitdb=gitdefaultbranch
@@ -560,13 +559,13 @@ if [ -z $ZSH_LOADED ]; then
     if type rg >/dev/null 2>&1; then
         alias grep=rg
         if type curl >/dev/null 2>&1; then
-            listdomains(){
+            listdomains() {
                 if [ $# -eq 1 ]; then
-                    curl -fs $1 \
-                        | rg -Po '.*?//\K.*?(?=/)'\
-                        | rg -v "@" \
-                        | rg -v "\+"\
-                        | sort | uniq
+                    curl -fs $1 |
+                        rg -Po '.*?//\K.*?(?=/)' |
+                        rg -v "@" |
+                        rg -v "\+" |
+                        sort | uniq
                 else
                     echo "invalid argument, Domain or url is required"
                 fi
@@ -623,7 +622,6 @@ if [ -z $ZSH_LOADED ]; then
     elif type htop >/dev/null 2>&1; then
         alias top=htop
     fi
-
 
     if type lsd >/dev/null 2>&1; then
         alias ks="lsd"
@@ -775,14 +773,14 @@ if [ -z $ZSH_LOADED ]; then
             tmux bind C-w send-prefix
         else
             case ${OSTYPE} in
-                darwin*)
-                    tmux unbind C-b
-                    tmux set -g prefix C-g
-                    tmux bind C-g send-prefix
-                    ;;
-                linux*)
-                    tmux bind C-b send-prefix
-                    ;;
+            darwin*)
+                tmux unbind C-b
+                tmux set -g prefix C-g
+                tmux bind C-g send-prefix
+                ;;
+            linux*)
+                tmux bind C-b send-prefix
+                ;;
             esac
         fi
     fi
@@ -818,8 +816,7 @@ if [ -z $ZSH_LOADED ]; then
     }
     alias zstime=zstime
 
-
-    if { [ -L "$HOME/.zshrc" ] || [ -f "/.dockerenv" ] ;} && [ -f "$DOTFILES_DIR/zshrc" ]; then
+    if { [ -L "$HOME/.zshrc" ] || [ -f "/.dockerenv" ]; } && [ -f "$DOTFILES_DIR/zshrc" ]; then
         alias zedit="$EDITOR $DOTFILES_DIR/zshrc"
     else
         alias zedit="$EDITOR $HOME/.zshrc"
@@ -845,7 +842,7 @@ if [ -z $ZSH_LOADED ]; then
         fi
     }
     alias gt=greptext
-    chperm(){
+    chperm() {
         if [ $# -eq 3 ]; then
             sudo chmod $1 $3
             sudo chown $2 $3
@@ -862,7 +859,7 @@ if [ -z $ZSH_LOADED ]; then
                 cd $1 && ug -l $2 | xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g" && cd -
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |
-                xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
+                    xargs -t -P $CPUCORES \sed -i -E "s/$2/$3/g"
             else
                 find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
                     -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' -o -name '*.schema.json' \) \
@@ -875,7 +872,7 @@ if [ -z $ZSH_LOADED ]; then
                 cd $1 && ug -l $2 $1 | xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g" && cd -
             elif type jvgrep >/dev/null 2>&1; then
                 jvgrep -I -R $2 $1 --exclude $jvgrule -l -r |
-                xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
+                    xargs -t -P $CPUCORES \sed -i -E "s$4$2$4$3$4g"
             else
                 find $1 -type d \( -name 'vendor' -o -name '.git' -o -name '.svn' -o -name 'build' -o -name '*.mbox' -o -name '.idea' -o -name '.cache' -o -name 'Application\ Support' \) \
                     -prune -o -type f \( -name '.zsh_history' -o -name '*.zip' -o -name '*.tar.gz' -o -name '*.tar.xz' -o -name '*.o' -o -name '*.so' -o -name '*.dll' -o -name '*.a' -o -name '*.out' -o -name '*.pdf' -o -name '*.swp' -o -name '*.bak' -o -name '*.back' -o -name '*.bac' -o -name '*.class' -o -name '*.bin' -o -name '.z' -o -name '*.dat' -o -name '*.plist' -o -name '*.db' -o -name '*.webhistory' -o -name '*.schema.json' \) \
@@ -932,9 +929,9 @@ if [ -z $ZSH_LOADED ]; then
 
     if type kubectl >/dev/null 2>&1; then
         kubectl() {
-            local kubectl="$(whence -p kubectl 2> /dev/null)"
+            local kubectl="$(whence -p kubectl 2>/dev/null)"
             if type kubecolor >/dev/null 2>&1; then
-                local kubectl="$(whence -p kubecolor 2> /dev/null)"
+                local kubectl="$(whence -p kubecolor 2>/dev/null)"
             fi
             [ -z "$_lazy_kubectl_completion" ] && {
                 source <("$kubectl" completion zsh)
@@ -1095,14 +1092,14 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type osascript >/dev/null 2>&1; then
-        ciscovpn(){
+        ciscovpn() {
             osascript $DOTFILES_DIR/macos/AnyConnect.scpt
         }
         alias ciscovpn=ciscovpn
     fi
 
     if type fwupdmgr >/dev/null 2>&1; then
-        fup(){
+        fup() {
             sudo systemctl reload dbus.service
             sudo systemctl restart fwupd.service
             sudo lsusb
@@ -1120,7 +1117,7 @@ if [ -z $ZSH_LOADED ]; then
     update_git_repo() {
         local repo_dir=$1
         if [ -d "$repo_dir" ]; then
-            pushd "$repo_dir" > /dev/null || return
+            pushd "$repo_dir" >/dev/null || return
             #if git diff-index --quiet HEAD -- && [ -z "$(git status --porcelain | grep '^[^ ]')" ]; then
             if git diff-index --quiet HEAD -- && [ -z "$(git diff --ignore-space-change --ignore-blank-lines --diff-filter=MARC)" ]; then
                 echo "No local changes in $repo_dir, pulling latest changes from origin..."
@@ -1132,7 +1129,7 @@ if [ -z $ZSH_LOADED ]; then
                 echo "Detailed changes:"
                 git diff
             fi
-            popd > /dev/null || return
+            popd >/dev/null || return
         else
             echo "Directory $repo_dir does not exist." >&2
         fi
@@ -1158,7 +1155,7 @@ if [ -z $ZSH_LOADED ]; then
     if type brew >/dev/null 2>&1; then
         brewup() {
             kpangoup
-            cd `brew --prefix`/Homebrew
+            cd $(brew --prefix)/Homebrew
             gfr
             git config --local pull.ff only
             git fetch origin
@@ -1238,13 +1235,13 @@ if [ -z $ZSH_LOADED ]; then
             sudo chmod -R 777 $HOME/.config/gcloud
             sudo chown -R $USER $HOME/.config/gcloud
             sudo rm -rf $HOME/.cache/* \
-                        $HOME/.config/gcloud/config_sentinel \
-                        $HOME/.config/gcloud/logs/* \
-                        /tmp/makepkg/* \
-                        /var/lib/pacman/db.l* \
-                        /usr/share/man/man5/gemfile* \
-                        /var/cache/pacman/pkg \
-                        /var/lib/pacman/sync/*
+                $HOME/.config/gcloud/config_sentinel \
+                $HOME/.config/gcloud/logs/* \
+                /tmp/makepkg/* \
+                /var/lib/pacman/db.l* \
+                /usr/share/man/man5/gemfile* \
+                /var/cache/pacman/pkg \
+                /var/lib/pacman/sync/*
             sudo mkdir -p /var/cache/pacman/pkg
             kacman -Scc --noconfirm
             sudo pacman -Qtdq | xargs -r kacman -Rsucnd --noconfirm
@@ -1259,43 +1256,42 @@ if [ -z $ZSH_LOADED ]; then
                 echo "backup ThinkPad P1 Gen 2 packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_p1.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_p1.list
-                pacman -Qqen | sort -n > $DOTFILES_DIR/arch/pkg_p1.list
-                pacman -Qqem | sort -n > $DOTFILES_DIR/arch/aur_p1.list
+                pacman -Qqen | sort -n >$DOTFILES_DIR/arch/pkg_p1.list
+                pacman -Qqem | sort -n >$DOTFILES_DIR/arch/aur_p1.list
             elif [[ $family_name =~ "5th" ]]; then
                 echo "backup ThinkPad X1 Carbon Gen 5 packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_nc.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_nc.list
-                pacman -Qqen | sort -n > $DOTFILES_DIR/arch/pkg_nc.list
-                pacman -Qqem | sort -n > $DOTFILES_DIR/arch/aur_nc.list
+                pacman -Qqen | sort -n >$DOTFILES_DIR/arch/pkg_nc.list
+                pacman -Qqem | sort -n >$DOTFILES_DIR/arch/aur_nc.list
             elif [[ $family_name =~ "X1" ]]; then
                 echo "backup ThinkPad X1 Carbon Gen 9 packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur.list
-                pacman -Qqen | sort -n > $DOTFILES_DIR/arch/pkg.list
-                pacman -Qqem | sort -n > $DOTFILES_DIR/arch/aur.list
+                pacman -Qqen | sort -n >$DOTFILES_DIR/arch/pkg.list
+                pacman -Qqem | sort -n >$DOTFILES_DIR/arch/aur.list
             else
                 echo "backup packages"
                 sudo chmod -R 777 $DOTFILES_DIR/arch/pkg_desk.list
                 sudo chmod -R 777 $DOTFILES_DIR/arch/aur_desk.list
-                pacman -Qqen | sort -n > $DOTFILES_DIR/arch/pkg_desk.list
-                pacman -Qqem | sort -n > $DOTFILES_DIR/arch/aur_desk.list
+                pacman -Qqen | sort -n >$DOTFILES_DIR/arch/pkg_desk.list
+                pacman -Qqem | sort -n >$DOTFILES_DIR/arch/aur_desk.list
             fi
             kacclean
         }
         alias archback=archback
-
 
         archup() {
             kpangoup
             sudo chown 0 /etc/sudoers.d/$USER
             sudo chmod -R 700 $HOME/.gnupg
             sudo chmod -R 600 $HOME/.gnupg/*
-            run_command sync \
-                        && sudo sysctl -w vm.drop_caches=3 \
-                        && sudo swapoff -a \
-                        && sudo swapon -a \
-                        && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
-                        && free
+            run_command sync &&
+                sudo sysctl -w vm.drop_caches=3 &&
+                sudo swapoff -a &&
+                sudo swapon -a &&
+                printf '\n%s\n' 'RAM-cache and Swap were cleared.' &&
+                free
             sudo su -c "chown 0 /etc/sudoers.d/$USER"
             kacclean
             if type gpgconf >/dev/null 2>&1; then
@@ -1306,7 +1302,7 @@ if [ -z $ZSH_LOADED ]; then
                 touch $HOME/.gnupg/dirmngr_ldapservers.conf
                 sudo chmod 700 $HOME/.gnupg/crls.d/
                 if type dirmgr >/dev/null 2>&1; then
-                    sudo dirmngr < /dev/null
+                    sudo dirmngr </dev/null
                 fi
                 if type pacman-key >/dev/null 2>&1; then
                     sudo pacman-key --init
@@ -1329,7 +1325,7 @@ if [ -z $ZSH_LOADED ]; then
                     --concurrency $CPUCORES \
                     --save="$TMPFILE" \
                     arch --max-delay=21600
-                if [[ $(wc -l < $TMPFILE) -lt 5 ]]; then
+                if [[ $(wc -l <$TMPFILE) -lt 5 ]]; then
                     echo "Failed to get new mirrorlist from rate-mirrors"
                     sudo rm -rf $TMPFILE
                     sudo rm -rf /etc/pacman.d/mirrorlist
@@ -1352,20 +1348,19 @@ if [ -z $ZSH_LOADED ]; then
             sudo bootctl update
             sudo mkinitcpio -p linux-zen
             sudo journalctl --vacuum-time=2weeks
-            run_command sync \
-                        && sudo sysctl -w vm.drop_caches=3 \
-                        && sudo swapoff -a \
-                        && sudo swapon -a \
-                        && printf '\n%s\n' 'RAM-cache and Swap were cleared.' \
-                        && sudo fsck -AR -a \
-                        && sudo journalctl --vacuum-time=2weeks \
-                        && systemd-analyze \
-                        && sensors \
-                        && free
+            run_command sync &&
+                sudo sysctl -w vm.drop_caches=3 &&
+                sudo swapoff -a &&
+                sudo swapon -a &&
+                printf '\n%s\n' 'RAM-cache and Swap were cleared.' &&
+                sudo fsck -AR -a &&
+                sudo journalctl --vacuum-time=2weeks &&
+                systemd-analyze &&
+                sensors &&
+                free
         }
         alias archup=archup
         alias up=archup
-
 
         if type reboot >/dev/null 2>&1; then
             reboot() {
@@ -1395,15 +1390,15 @@ if [ -z $ZSH_LOADED ]; then
             alias shutdown=shutdown
         fi
     elif type apt-get >/dev/null 2>&1; then
-        aptup(){
+        aptup() {
             kpangoup
             sudo du -sh /var/cache/apt/archives
             sudo rm -rf /var/cache/apt /var/lib/apt/lists/*
             sudo mkdir -p /var/cache/apt/archives/partial
             sudo apt-key adv --refresh-keys --keyserver keyserver.ubuntu.com
             sudo apt-key list | awk -F"/" '/expired:/{print $2}' | xargs -I {} sudo apt-key del {}
-            echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-            echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
+            echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache
+            echo 'APT::Install-Recommends "false";' >/etc/apt/apt.conf.d/no-install-recommends
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y clean
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
             sudo DEBIAN_FRONTEND=noninteractive apt-get -y update
@@ -1429,9 +1424,9 @@ if [ -z $ZSH_LOADED ]; then
         gpgbackup() {
             sudo rm -rf $backup_dir
             mkdir -p $backup_dir
-            gpg -a --export $1 > $backup_dir/$GIT_USER-public.key
-            gpg -a --export-secret-keys $1 > $backup_dir/$GIT_USER-secret.key
-            gpg --export-ownertrust > $backup_dir/$GIT_USER-ownertrust.txt
+            gpg -a --export $1 >$backup_dir/$GIT_USER-public.key
+            gpg -a --export-secret-keys $1 >$backup_dir/$GIT_USER-secret.key
+            gpg --export-ownertrust >$backup_dir/$GIT_USER-ownertrust.txt
             sudo chmod -R 777 $backup_dir
             sudo chown -R $USER $backup_dir
             if type tar >/dev/null 2>&1; then
@@ -1499,15 +1494,15 @@ if [ -z $ZSH_LOADED ]; then
             TRACECMD="mtr"
             TRACE_ARGS="-wbc 4"
         fi
-        checkcountry(){
+        checkcountry() {
             if [ $# -eq 1 ]; then
                 echo "$TRACECMD $TRACE_ARGS $1"
-                sudo $TRACECMD $TRACE_ARGS $1 \
-                    | rg -wo -e '[0-9]+(\.[0-9]+){3}' \
-                    | xargs -I {} whois {} \
-                    | rg -i country \
-                    | awk '{print $(NF)}' \
-                    | sort | uniq
+                sudo $TRACECMD $TRACE_ARGS $1 |
+                    rg -wo -e '[0-9]+(\.[0-9]+){3}' |
+                    xargs -I {} whois {} |
+                    rg -i country |
+                    awk '{print $(NF)}' |
+                    sort | uniq
             else
                 echo "invalid argument, Domain or IP is required"
             fi
@@ -1530,7 +1525,7 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if [ -d "$GOPATH/src/github.com/vdaas/vald" ]; then
-        valdup(){
+        valdup() {
             cd "$GOPATH/src/github.com/vdaas/vald"
             sudo chmod -R 777 $CARGO_HOME
             sudo chmod -R 777 $RUSTUP_HOME
@@ -1547,40 +1542,39 @@ if [ -z $ZSH_LOADED ]; then
             make format/yaml
         }
         alias valdup=valdup
-        valddep(){
+        valddep() {
             cd "$GOPATH/src/github.com/vdaas/vald"
-            rm -rf go.mod go.sum \
-                && cp hack/go.mod.default go.mod \
-                && GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
-            rm -rf hack/go.mod.default2 \
-                && cat hack/go.mod.default | head -n 5 >> hack/go.mod.default2 \
-                && cat go.sum | awk '{printf "\t%s => %s upgrade\n", $1, $1}' \
-                | sort -n | uniq | sort -n >> hack/go.mod.default2 \
-                && echo ")" >> hack/go.mod.default2
+            rm -rf go.mod go.sum &&
+                cp hack/go.mod.default go.mod &&
+                GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
+            rm -rf hack/go.mod.default2 &&
+                cat hack/go.mod.default | head -n 5 >>hack/go.mod.default2 &&
+                cat go.sum | awk '{printf "\t%s => %s upgrade\n", $1, $1}' |
+                sort -n | uniq | sort -n >>hack/go.mod.default2 &&
+                echo ")" >>hack/go.mod.default2
             rm -rf hack/go.mod.default3
-            cat hack/go.mod.default | head -n 5 >> hack/go.mod.default3
-            cat hack/go.mod.default | rg k8s >> hack/go.mod.default3
-            cat hack/go.mod.default | rg opentelemetry >> hack/go.mod.default3
-            cat hack/go.mod.default | rg containerd >> hack/go.mod.default3
-            echo ")" >> hack/go.mod.default3
-            rm -rf /tmp/go.mod /tmp/go.sum \
-                && mv go.mod go.sum /tmp \
-                && cp hack/go.mod.default3 go.mod \
-                && GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy \
-                && rm -rf hack/go.mod.default3 \
-                && cat hack/go.mod.default | head -n 5 >> hack/go.mod.default3 \
-                && cat go.sum | awk '{printf "\t%s => %s upgrade\n", $1, $1}' \
-                | sort -n | uniq | sort -n >> hack/go.mod.default3 \
-                && echo ")" >> hack/go.mod.default3 \
-                && rm -rf go.mod go.sum \
-                && mv /tmp/go.mod /tmp/go.sum .
+            cat hack/go.mod.default | head -n 5 >>hack/go.mod.default3
+            cat hack/go.mod.default | rg k8s >>hack/go.mod.default3
+            cat hack/go.mod.default | rg opentelemetry >>hack/go.mod.default3
+            cat hack/go.mod.default | rg containerd >>hack/go.mod.default3
+            echo ")" >>hack/go.mod.default3
+            rm -rf /tmp/go.mod /tmp/go.sum &&
+                mv go.mod go.sum /tmp &&
+                cp hack/go.mod.default3 go.mod &&
+                GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy &&
+                rm -rf hack/go.mod.default3 &&
+                cat hack/go.mod.default | head -n 5 >>hack/go.mod.default3 &&
+                cat go.sum | awk '{printf "\t%s => %s upgrade\n", $1, $1}' |
+                sort -n | uniq | sort -n >>hack/go.mod.default3 &&
+                echo ")" >>hack/go.mod.default3 &&
+                rm -rf go.mod go.sum &&
+                mv /tmp/go.mod /tmp/go.sum .
             $EDITOR -d hack/go.mod.default hack/go.mod.default2
             $EDITOR -d hack/go.mod.default hack/go.mod.default3
             cd -
         }
         alias valddep=valddep
     fi
-
 
     PASS_KEY="zsh/history"
     zshstorehistory() {
@@ -1590,22 +1584,34 @@ if [ -z $ZSH_LOADED ]; then
             setopt extended_history
             local temp_file=$(mktemp)
             # remove duplicated history and sort desc by timestamp
-	    awk -F';' '!seen[$2]++ { cmd[$2] = $0 } END { for (c in cmd) print cmd[c] }' $HISTFILE | sort -t ';' -k2,2 > $temp_file
-	    awk '!seen[substr($0, index($0,$3))]++' $temp_file | sort -t ';' -k1,1nr > $HISTFILE
+            awk -F';' '!seen[$2]++ { cmd[$2] = $0 } END { for (c in cmd) print cmd[c] }' $HISTFILE | sort -t ';' -k2,2 >$temp_file
+            awk '!seen[substr($0, index($0,$3))]++' $temp_file | sort -t ';' -k1,1nr >$HISTFILE
 
             mv $temp_file $HISTFILE
             # store history to pass with key zsh/history
-            echo "$PASS_PASSWORD" | pass insert -m "$PASS_KEY" < "$HISTFILE"
+            echo "$PASS_PASSWORD" | pass insert -m "$PASS_KEY" <"$HISTFILE"
             # change directory to pass local git repository dir
             local pass_store=$HOME/.password-store
-            cd $pass_store || { echo "Failed to change directory to $pass_store"; return 1; }
+            cd $pass_store || {
+                echo "Failed to change directory to $pass_store"
+                return 1
+            }
             # pull latest change of remote
-            git pull origin main || { echo "Failed to pull latest changes"; return 1; }
+            git pull origin main || {
+                echo "Failed to pull latest changes"
+                return 1
+            }
             # if diff-index exists, push to remote
             if ! git diff --quiet; then
                 git add .
-                git commit -m "Update pass store on $(hostname)" || { echo "Failed to commit changes"; return 1; }
-                git push origin main || { echo "Failed to push changes"; return 1; }
+                git commit -m "Update pass store on $(hostname)" || {
+                    echo "Failed to commit changes"
+                    return 1
+                }
+                git push origin main || {
+                    echo "Failed to push changes"
+                    return 1
+                }
             fi
             return 0
         ) &
@@ -1614,7 +1620,7 @@ if [ -z $ZSH_LOADED ]; then
     alias zshstorehistory=zshstorehistory
 
     # load history from pass
-    pass show "$PASS_KEY" > "$HISTFILE"
+    pass show "$PASS_KEY" >"$HISTFILE"
 
     # add sync hook to zsh
     autoload -Uz add-zsh-hook
@@ -1623,5 +1629,5 @@ if [ -z $ZSH_LOADED ]; then
     # add finalization sync process to zsh
     trap zshstorehistory EXIT
 
-    export ZSH_LOADED=1;
+    export ZSH_LOADED=1
 fi
