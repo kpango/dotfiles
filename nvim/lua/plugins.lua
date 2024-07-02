@@ -862,6 +862,136 @@ safe_require("lazy").setup({
             }
         end,
     },
+    {
+        "mhartington/formatter.nvim",
+        event = "BufWritePost",
+        config = function()
+            -- 保存時に自動フォーマットを有効にする
+            vim.api.nvim_exec([[
+                augroup FormatAutogroup
+                    autocmd!
+                    autocmd BufWritePost * FormatWrite
+                augroup END
+            ]], true)
+
+            -- フォーマッタの設定
+            safe_require("formatter").setup({
+                logging = false,
+                filetype = {
+                    lua = {
+                        function()
+                            return {
+                                exe = "stylua",
+                                args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), "--", "-" },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    go = {
+                        function()
+                            return {
+                                exe = "gofmt",
+                                args = {},
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    cpp = {
+                        function()
+                            return {
+                                exe = "clang-format",
+                                args = { "--assume-filename", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+                                stdin = true,
+                                cwd = vim.fn.expand("%:p:h"),
+                            }
+                        end,
+                    },
+                    rust = {
+                        function()
+                            return {
+                                exe = "rustfmt",
+                                args = { "--emit=stdout" },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    zig = {
+                        function()
+                            return {
+                                exe = "zig",
+                                args = { "fmt", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+                                stdin = false,
+                            }
+                        end,
+                    },
+                    nim = {
+                        function()
+                            return {
+                                exe = "nimpretty",
+                                args = { "--backup:off", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+                                stdin = false,
+                            }
+                        end,
+                    },
+                    python = {
+                        function()
+                            return {
+                                exe = "black",
+                                args = { "-" },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    sh = {
+                        function()
+                            return {
+                                exe = "shfmt",
+                                args = { "-i", "4" },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    make = {
+                        function()
+                            return {
+                                exe = "gmake",
+                                args = { "-f", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+                                stdin = false,
+                            }
+                        end,
+                    },
+                    yaml = {
+                        function()
+                            return {
+                                exe = "prettier",
+                                args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    json = {
+                        function()
+                            return {
+                                exe = "jq",
+                                args = { "." },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    proto = {
+                        function()
+                            return {
+                                exe = "clang-format",
+                                args = { "--assume-filename", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+                                stdin = true,
+                                cwd = vim.fn.expand("%:p:h"),
+                            }
+                        end,
+                    },
+                },
+            })
+        end,
+    },
     -- Language specific plugins and configurations
     {
         "fatih/vim-go",
