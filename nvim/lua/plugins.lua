@@ -269,6 +269,148 @@ safe_require("lazy").setup({
                         },
                     })
                 },
+	       keys = {
+            {
+                "gD",
+                vim.lsp.buf.declaration,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "gd",
+                vim.lsp.buf.definition,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "gr",
+                vim.lsp.buf.references,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "gi",
+                vim.lsp.buf.implementation,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "K",
+                vim.lsp.buf.hover,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<C-k>",
+                vim.lsp.buf.signature_help,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>wa",
+                vim.lsp.buf.add_workspace_folder,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>wr",
+                vim.lsp.buf.remove_workspace_folder,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>wl",
+                function()
+                    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+                end,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>D",
+                vim.lsp.buf.type_definition,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>rn",
+                vim.lsp.buf.rename,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>ca",
+                vim.lsp.buf.code_action,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>f",
+                function()
+                    vim.lsp.buf.format { async = true }
+                end,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>e",
+                vim.diagnostic.show_line_diagnostics,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<space>q",
+                vim.diagnostic.set_loclist,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "[d",
+                vim.diagnostic.goto_prev,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "]d",
+                vim.diagnostic.goto_next,
+                mode = "n",
+                desc = "",
+                noremap = true,
+                silent = true,
+            },
+        },
                 experimental = {
                     ghost_text = false,
                     native_menu = false,
@@ -359,9 +501,43 @@ safe_require("lazy").setup({
     {
         "numToStr/Comment.nvim",
         event = "BufReadPost",
-        config = function()
-            safe_require("Comment").setup()
-        end,
+	config = true,
+        lazy = true,
+        opts = {
+            ignore = "^$",
+        },
+        keys = {
+            {
+                "<C-c>",
+                function()
+                    safe_require("Comment.api").toggle.linewise.current()
+                end,
+                desc = "",
+                mode = "n",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<C-c>",
+                function()
+                    safe_require("Comment.api").toggle.linewise(fn.visualmode())
+                end,
+                desc = "",
+                mode = "x",
+                noremap = true,
+                silent = true,
+            },
+            {
+                "<C-c>",
+                function()
+                    safe_require("Comment.api").toggle.linewise.current()
+                end,
+                desc = "",
+                mode = "i",
+                noremap = true,
+                silent = true,
+            },
+        },
     },
     {
         "nvim-lualine/lualine.nvim",
@@ -511,8 +687,196 @@ safe_require("lazy").setup({
     {
         "lewis6991/gitsigns.nvim",
         event = "BufReadPost",
-        config = function()
-            safe_require("gitsigns").setup()
+        config = true,
+        opts = {
+            signs = {
+                add = { hl = "GitSignsAdd", text = "│", numhl = "GitSignsAddNr", linehl = "GitSignsAddLn" },
+                change = {
+                    hl = "GitSignsChange",
+                    text = "│",
+                    numhl = "GitSignsChangeNr",
+                    linehl = "GitSignsChangeLn",
+                },
+                delete = { hl = "GitSignsDelete", text = "_", numhl = "GitSignsDeleteNr", linehl = "GitSignsDeleteLn" },
+                topdelete = {
+                    hl = "GitSignsDelete",
+                    text = "‾",
+                    numhl = "GitSignsDeleteNr",
+                    linehl = "GitSignsDeleteLn",
+                },
+                changedelete = {
+                    hl = "GitSignsChange",
+                    text = "~",
+                    numhl = "GitSignsChangeNr",
+                    linehl = "GitSignsChangeLn",
+                },
+            },
+            signcolumn = true, -- Toggle with :Gitsigns toggle_signs
+            numhl = false,     -- Toggle with :Gitsigns toggle_numhl
+            linehl = false,    -- Toggle with :Gitsigns toggle_linehl
+            word_diff = false, -- Toggle with :Gitsigns toggle_word_diff
+            watch_gitdir = {
+                interval = 1000,
+                follow_files = true,
+            },
+            attach_to_untracked = true,
+            current_line_blame = false, -- Toggle with :Gitsigns toggle_current_line_blame
+            current_line_blame_opts = {
+                virt_text = true,
+                virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+                delay = 1000,
+                ignore_whitespace = false,
+            },
+            current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
+            sign_priority = 6,
+            update_debounce = 100,
+            status_formatter = nil,  -- Use default
+            max_file_length = 40000, -- Disable if file is longer than this (in lines)
+            preview_config = {
+                -- Options passed to nvim_open_win
+                border = "single",
+                style = "minimal",
+                relative = "cursor",
+                row = 0,
+                col = 1,
+            },
+            yadm = {
+                enable = false,
+            },
+        },
+        keys = function(gs, keys)
+            return {
+                {
+                    "]c",
+                    function()
+                        if vim.wo.diff then
+                            return "]c"
+                        end
+                        vim.schedule(function()
+                            gs.next_hunk()
+                        end)
+                        return "<Ignore>"
+                    end,
+                    desc = "",
+                    mode = "n",
+                    expr = true,
+                },
+                {
+                    "[c",
+                    function()
+                        if vim.wo.diff then
+                            return "[c"
+                        end
+                        vim.schedule(function()
+                            gs.prev_hunk()
+                        end)
+                        return "<Ignore>"
+                    end,
+                    desc = "",
+                    mode = "n",
+                    expr = true,
+                },
+                {
+                    "<leader>hs",
+                    "<Cmd>Gitsigns stage_hunk<CR>",
+                    desc = "",
+                    mode = { "n", "v" },
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hr",
+                    "<Cmd>Gitsigns reset_hunk<CR>",
+                    desc = "",
+                    mode = { "n", "v" },
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hS",
+                    gs.stage_buffer,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hR",
+                    gs.reset_buffer,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hu",
+                    gs.undo_stage_hunk,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hp",
+                    gs.preview_hunk,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hb",
+                    function()
+                        gs.blame_line { full = true }
+                    end,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hd",
+                    gs.diffthis,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>hD",
+                    function()
+                        gs.diffthis "~"
+                    end,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>tb",
+                    gs.toggle_current_line_blame,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "<leader>td",
+                    gs.toggle_deleted,
+                    desc = "",
+                    mode = "n",
+                    silent = true,
+                    noremap = true,
+                },
+                {
+                    "ih",
+                    "<Cmd>Gitsigns select_hunk<CR>",
+                    desc = "",
+                    mode = { "o", "x" },
+                    silent = true,
+                    noremap = true,
+                },
+            }
         end,
     },
     -- Language specific plugins and configurations
@@ -543,6 +907,35 @@ safe_require("lazy").setup({
         ft = { "python" },
         config = function()
             vim.g.python_highlight_all = 1
+        end
+    },
+    -- Debug Adapter Protocol
+    {
+        'mfussenegger/nvim-dap',
+        ft = { "c", "cpp", "rust", "go" },
+        config = function()
+            local dap = safe_require('dap')
+            dap.adapters.lldb = {
+                type = 'executable',
+                command = '/usr/bin/lldb-vscode', -- adjust as needed
+                name = 'lldb'
+            }
+            dap.configurations.cpp = {
+                {
+                    name = 'Launch',
+                    type = 'lldb',
+                    request = 'launch',
+                    program = function()
+                        return fn.input('Path to executable: ', fn.getcwd() .. '/', 'file')
+                    end,
+                    cwd = '${workspaceFolder}',
+                    stopOnEntry = false,
+                    args = {},
+
+                    runInTerminal = false,
+                },
+            }
+            dap.configurations.c = dap.configurations.cpp
         end
     },
 }, {
