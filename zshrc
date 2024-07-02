@@ -1590,7 +1590,9 @@ if [ -z $ZSH_LOADED ]; then
             setopt extended_history
             local temp_file=$(mktemp)
             # remove duplicated history and sort desc by timestamp
-            awk -F';' '!seen[$2]++ { cmd[$2] = $0 } END { for (c in cmd) print cmd[c] }' $HISTFILE | sort -t ';' -k1,1nr > $temp_file
+	    awk -F';' '!seen[$2]++ { cmd[$2] = $0 } END { for (c in cmd) print cmd[c] }' $HISTFILE | sort -t ';' -k2,2 > $temp_file
+	    awk '!seen[substr($0, index($0,$3))]++' $temp_file | sort -t ';' -k1,1nr > $HISTFILE
+
             mv $temp_file $HISTFILE
             # store history to pass with key zsh/history
             echo "$PASS_PASSWORD" | pass insert -m "$PASS_KEY" < "$HISTFILE"
