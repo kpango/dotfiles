@@ -1093,7 +1093,7 @@ safe_require("lazy").setup({
 	{
 		"mfussenegger/nvim-lint",
 		config = function()
-			local lint = require("lint")
+			local lint = safe_require("lint")
 			lint.linters_by_ft = {
 				go = { "golangcilint" },
 				cpp = { "clangtidy" },
@@ -1114,7 +1114,7 @@ safe_require("lazy").setup({
 				cmd = "golangci-lint",
 				args = { "run", "--out-format", "json" },
 				stream = "stdout",
-				parser = require("lint.parser").from_errorformat("[%trror] %f:%l:%c: %m, [%tarning] %f:%l:%c: %m", {
+				parser = safe_require("lint.parser").from_errorformat("[%trror] %f:%l:%c: %m, [%tarning] %f:%l:%c: %m", {
 					source = "golangcilint",
 				}),
 			}
