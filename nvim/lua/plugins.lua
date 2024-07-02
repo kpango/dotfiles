@@ -1023,6 +1023,44 @@ safe_require("lazy").setup({
             })
         end,
     },
+  -- linter
+    {
+    'mfussenegger/nvim-lint',
+    config = function()
+      local lint = require('lint')
+      lint.linters_by_ft = {
+        go = {'golangcilint'},
+        cpp = {'clangtidy'},
+        rust = {'clippy'},
+        zig = {'zigfmt'},
+        nim = {'nimlint'},
+        python = {'pylint'},
+        lua = {'luacheck'},
+        sh = {'shellcheck'},
+        make = {'checkmake'},
+        yaml = {'yamllint'},
+        proto = {'protoc-gen-lint'},
+        buf = {'buf'},
+      }
+
+      -- 各言語ごとのリンター設定 (必要に応じて追加)
+      lint.linters.golangcilint = {
+        cmd = 'golangci-lint',
+        args = {'run', '--out-format', 'json'},
+        stream = 'stdout',
+        parser = require('lint.parser').from_errorformat('[%trror] %f:%l:%c: %m, [%tarning] %f:%l:%c: %m', {
+          source = 'golangcilint',
+        }),
+      }
+
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        pattern = "*",
+        callback = function()
+          require('lint').try_lint()
+        end,
+      })
+    end
+  },
     -- Language specific plugins and configurations
     {
         "fatih/vim-go",
