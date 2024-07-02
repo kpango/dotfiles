@@ -98,6 +98,16 @@ safe_require("lazy").setup({
             }
         end,
     },
+    {
+        "ms-jpq/coq.thirdparty",
+        branch = "3p",
+        config = function()
+            require("coq_3p") {
+                { src = "copilot", short_name = "COP", accept_key = "<C-f>" },
+            }
+        end,
+        after = { "coq_nvim", "copilot.lua" },
+    },
     -- Treesitter configuration
     {
         "nvim-treesitter/nvim-treesitter",
