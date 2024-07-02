@@ -31,7 +31,8 @@ local function safe_require(module_name)
 end
 
 local languages = {
-    "bash", "c", "cpp", "dart", "dockerfile", "go", "html", "json", "lua", "make", "markdown", "nim", "rust", "yaml", "zig"
+    "bash", "c", "cpp", "dart", "dockerfile", "go", "html", "json", "lua", "make", "markdown", "nim", "rust", "yaml",
+    "zig"
 }
 
 local lsps = {
@@ -66,16 +67,18 @@ safe_require("lazy").setup({
         event = { "InsertEnter", "CmdlineEnter" },
         dependencies = {
             { "neovim/nvim-lspconfig",                event = "InsertEnter" },
-            { "L3MON4D3/LuaSnip",
-		build = "make install_jsregexp", event = "InsertEnter",
-		config = function()
-		    safe_require('luasnip').config.set_config {
-            	        history = true,
-            	        updateevents = "TextChanged,TextChangedI",
-            	    }
-		    safe_require("luasnip.loaders.from_vscode").lazy_load()
-		end,
-	    },
+            {
+                "L3MON4D3/LuaSnip",
+                build = "make install_jsregexp",
+                event = "InsertEnter",
+                config = function()
+                    safe_require('luasnip').config.set_config {
+                        history = true,
+                        updateevents = "TextChanged,TextChangedI",
+                    }
+                    safe_require("luasnip.loaders.from_vscode").lazy_load()
+                end,
+            },
             { "hrsh7th/cmp-buffer",                   event = "InsertEnter" },
             { "hrsh7th/cmp-calc",                     event = "InsertEnter" },
             { "hrsh7th/cmp-cmdline",                  event = "ModeChanged" },
@@ -85,7 +88,7 @@ safe_require("lazy").setup({
             { "hrsh7th/cmp-nvim-lua",                 event = "InsertEnter" },
             { "hrsh7th/cmp-path",                     event = "InsertEnter" },
             { "ray-x/cmp-treesitter",                 event = "InsertEnter" },
-            { "petertriho/cmp-git",                   config = true,                   event = "InsertEnter", dependencies = { 'nvim-lua/plenary.nvim' }},
+            { "petertriho/cmp-git",                   config = true,        event = "InsertEnter", dependencies = { 'nvim-lua/plenary.nvim' } },
             { "onsails/lspkind.nvim",                 event = "InsertEnter" },
             { "rafamadriz/friendly-snippets",         event = "InsertEnter" },
             { "saadparwaiz1/cmp_luasnip",             event = "InsertEnter" },
@@ -94,20 +97,21 @@ safe_require("lazy").setup({
             local cmp = safe_require("cmp")
             local luasnip = safe_require("luasnip")
             local lspkind = safe_require("lspkind")
-	    local capabilities = safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+            local capabilities = safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol
+            .make_client_capabilities())
 
-	    local has_words_before = function()
-	        if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
-		    return false
-		end
-	        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-	        return col ~= 0 and vim.api.nvim_buf_get_text(0, line-1, 0, line-1, col, {})[1]:match("^%s*$") == nil
-	    end
+            local has_words_before = function()
+                if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
+                    return false
+                end
+                local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+                return col ~= 0 and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
+            end
 
-	    local check_backspace = function()
-		local col = vim.fn.col(".") - 1
-		return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
-	    end
+            local check_backspace = function()
+                local col = vim.fn.col(".") - 1
+                return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
+            end
 
             cmp.setup({
                 flags = {
@@ -119,58 +123,58 @@ safe_require("lazy").setup({
                     end,
                 },
                 mapping = {
-		    ["<C-p>"] = cmp.mapping.select_prev_item(),
-		    ["<C-n>"] = cmp.mapping.select_next_item(),
-		    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
-		    ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
-		    ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
+                    ["<C-p>"] = cmp.mapping.select_prev_item(),
+                    ["<C-n>"] = cmp.mapping.select_next_item(),
+                    ["<C-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-1), { "i", "c" }),
+                    ["<C-f>"] = cmp.mapping(cmp.mapping.scroll_docs(1), { "i", "c" }),
+                    ["<C-Space>"] = cmp.mapping(cmp.mapping.complete(), { "i", "c" }),
                     ["<C-y>"] = cmp.mapping.confirm({ select = true }),
-		    ["<C-e>"] = cmp.mapping({
-		    	i = cmp.mapping.abort(),
-		    	c = cmp.mapping.close(),
-		    }),
+                    ["<C-e>"] = cmp.mapping({
+                        i = cmp.mapping.abort(),
+                        c = cmp.mapping.close(),
+                    }),
                     ["<CR>"] = cmp.mapping.confirm({ select = true }),
-		    ["<Tab>"] = cmp.mapping(function(fallback)
-			if cmp.visible() and has_words_before() then
-			    cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-		    	elseif safe_require("copilot.suggestion").is_visible() then
-		    		require("copilot.suggestion").accept()
-		    	elseif luasnip.expandable() then
-		    		luasnip.expand()
-		    	elseif luasnip.expand_or_jumpable() then
-		    		luasnip.expand_or_jump()
-		    	elseif check_backspace() then
-		    		fallback()
-		    	else
-		    		fallback()
-		    	end
-		    end, {
-		    	"i",
-		    	"s",
-		    }),
-		    ["<S-Tab>"] = cmp.mapping(function(fallback)
-			if cmp.visible() and has_words_before() then
-			    cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
+                    ["<Tab>"] = cmp.mapping(function(fallback)
+                        if cmp.visible() and has_words_before() then
+                            cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+                        elseif safe_require("copilot.suggestion").is_visible() then
+                            require("copilot.suggestion").accept()
+                        elseif luasnip.expandable() then
+                            luasnip.expand()
+                        elseif luasnip.expand_or_jumpable() then
+                            luasnip.expand_or_jump()
+                        elseif check_backspace() then
+                            fallback()
+                        else
+                            fallback()
+                        end
+                    end, {
+                        "i",
+                        "s",
+                    }),
+                    ["<S-Tab>"] = cmp.mapping(function(fallback)
+                        if cmp.visible() and has_words_before() then
+                            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
                         elseif luasnip.jumpable(-1) then
                             luasnip.jump(-1)
                         else
                             fallback()
                         end
-		    end, {
-		    	"i",
-		    	"s",
-		    }),
+                    end, {
+                        "i",
+                        "s",
+                    }),
                 },
                 sources = cmp.config.sources({
-		    -- Copilot Source
-                    { name = "copilot", group_index = 2 },
+                    -- Copilot Source
+                    { name = "copilot",                group_index = 2 },
                     -- Other Sources
-                    { name = "nvim_lsp", group_index = 2 },
+                    { name = "nvim_lsp",               group_index = 2 },
                     { name = "nvim_lsp_signature_help" },
-                    { name = "path", group_index = 2 },
-                    { name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, group_index = 2 },
-                    { name = "luasnip", group_index = 2 },
-		    {
+                    { name = "path",                   group_index = 2 },
+                    { name = "buffer",                 get_bufnrs = vim.api.nvim_list_bufs, group_index = 2 },
+                    { name = "luasnip",                group_index = 2 },
+                    {
                         name = "look",
                         keyword_length = 2,
                         option = {
@@ -182,24 +186,24 @@ safe_require("lazy").setup({
                     { name = "cmdline" },
                     { name = "git" },
                 }),
-		sorting = {
-		    priority_weight = 2,
-		    comparators = {
-		      safe_require("copilot_cmp.comparators").prioritize,
-		      -- Below is the default comparitor list and order for nvim-cmp
-		      cmp.config.compare.offset,
-		      -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
-		      cmp.config.compare.exact,
-		      cmp.config.compare.score,
-		      cmp.config.compare.recently_used,
-		      cmp.config.compare.locality,
-		      cmp.config.compare.kind,
-		      cmp.config.compare.sort_text,
-		      cmp.config.compare.length,
-		      cmp.config.compare.order,
-		    },
-		},
-		window = {
+                sorting = {
+                    priority_weight = 2,
+                    comparators = {
+                        safe_require("copilot_cmp.comparators").prioritize,
+                        -- Below is the default comparitor list and order for nvim-cmp
+                        cmp.config.compare.offset,
+                        -- cmp.config.compare.scopes, --this is commented in nvim-cmp too
+                        cmp.config.compare.exact,
+                        cmp.config.compare.score,
+                        cmp.config.compare.recently_used,
+                        cmp.config.compare.locality,
+                        cmp.config.compare.kind,
+                        cmp.config.compare.sort_text,
+                        cmp.config.compare.length,
+                        cmp.config.compare.order,
+                    },
+                },
+                window = {
                     completion = cmp.config.window.bordered {
                         border = "single",
                         col_offset = 0,
@@ -265,10 +269,10 @@ safe_require("lazy").setup({
                         },
                     })
                 },
-		experimental = {
-		    ghost_text = false,
-		    native_menu = false,
-		},
+                experimental = {
+                    ghost_text = false,
+                    native_menu = false,
+                },
             })
         end,
     },
@@ -281,8 +285,8 @@ safe_require("lazy").setup({
         },
         config = function()
             safe_require("nvim-treesitter.configs").setup {
-		auto_install = true,
-		sync_install = false,
+                auto_install = true,
+                sync_install = false,
                 ensure_installed = languages,
                 highlight = {
                     enable = true,
@@ -290,67 +294,67 @@ safe_require("lazy").setup({
                 indent = {
                     enable = true,
                 },
-		autotag = {
-		    enable = true,
-		},
+                autotag = {
+                    enable = true,
+                },
             }
         end,
     },
     {
         "zbirenbaum/copilot.lua",
-         config = function()
+        config = function()
             safe_require("copilot").setup({
-		panel = {
-            	    enabled = false,
-            	    auto_refresh = true,
-		    keymap = {
-			jump_prev = "[[",
-			jump_next = "]]",
-			accept = "<CR>",
-			refresh = "gr",
-			open = "<M-CR>",
-		    },
-		    layout = {
-			position = "bottom", -- | top | left | right
-			ratio = 0.4,
-		    },
-            	},
-		suggestion = {
-			enabled = false,
-			auto_trigger = true,
-			debounce = 75,
-			keymap = {
-				accept = false,
-				accept_word = false,
-				accept_line = false,
-				next = "<M-]>",
-				prev = "<M-[>",
-				dismiss = "<C-]>",
-			},
-		},
-            	filetypes = {
-            	    yaml = false,
-            	    markdown = false,
-            	    help = false,
-            	    gitcommit = false,
-            	    gitrebase = false,
-            	    hgcommit = false,
-            	    svn = false,
-            	    cvs = false,
-            	    ["."] = false,
-            	},
-		copilot_node_command = "node", -- Node.js version must be > 16.x
-		server_opts_overrides = {},
-		on_status_update = safe_require("lualine").refresh,
+                panel = {
+                    enabled = false,
+                    auto_refresh = true,
+                    keymap = {
+                        jump_prev = "[[",
+                        jump_next = "]]",
+                        accept = "<CR>",
+                        refresh = "gr",
+                        open = "<M-CR>",
+                    },
+                    layout = {
+                        position = "bottom", -- | top | left | right
+                        ratio = 0.4,
+                    },
+                },
+                suggestion = {
+                    enabled = false,
+                    auto_trigger = true,
+                    debounce = 75,
+                    keymap = {
+                        accept = false,
+                        accept_word = false,
+                        accept_line = false,
+                        next = "<M-]>",
+                        prev = "<M-[>",
+                        dismiss = "<C-]>",
+                    },
+                },
+                filetypes = {
+                    yaml = false,
+                    markdown = false,
+                    help = false,
+                    gitcommit = false,
+                    gitrebase = false,
+                    hgcommit = false,
+                    svn = false,
+                    cvs = false,
+                    ["."] = false,
+                },
+                copilot_node_command = "node", -- Node.js version must be > 16.x
+                server_opts_overrides = {},
+                on_status_update = safe_require("lualine").refresh,
             })
         end,
     },
     {
         "zbirenbaum/copilot-cmp",
         after = { "copilot.lua", "nvim-cmp" },
-	event = { "InsertEnter", "LspAttach" },
-	fix_pairs = true,
-	config = true,
+        event = { "InsertEnter", "LspAttach" },
+        fix_pairs = true,
+        config = true,
     },
     {
         "numToStr/Comment.nvim",
@@ -363,9 +367,9 @@ safe_require("lazy").setup({
         "nvim-lualine/lualine.nvim",
         event = "VimEnter",
         dependencies = {
-      "nvim-tree/nvim-web-devicons",
-        "SmiteshP/nvim-navic",
-    },
+            "nvim-tree/nvim-web-devicons",
+            "SmiteshP/nvim-navic",
+        },
         opts = {
             options = {
                 icons_enabled = true,
