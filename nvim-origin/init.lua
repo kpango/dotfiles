@@ -1,2 +1,0 @@
-require "setting"
-require "plugins"
