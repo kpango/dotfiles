@@ -54,10 +54,7 @@ safe_require("lazy").setup({
                 ensure_installed = lsps
             }
             local lspconfig = safe_require("lspconfig")
-	    local coq = safe_require("coq")
-            local on_attach = function(client, bufnr)
-                vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-            end
+            local coq = safe_require("coq")
             for _, server in ipairs(lsps) do
                 lspconfig[server].setup(coq.lsp_ensure_capabilities())
             end
@@ -68,8 +65,21 @@ safe_require("lazy").setup({
         "ms-jpq/coq_nvim",
         branch = "coq",
         event = "InsertEnter",
-	dependencies =  { "ms-jpq/coq.artifacts", branch = "artifacts" },
         run = ":COQdeps",
+        dependencies = {
+            { "ms-jpq/coq.artifacts", branch = "artifacts" },
+            {
+                "ms-jpq/coq.thirdparty",
+                branch = "3p",
+                config = function()
+                    require("coq_3p") {
+                        { src = "copilot", short_name = "COP", accept_key = "<C-f>" },
+                    }
+                end,
+                after = { "coq_nvim", "copilot.lua" },
+            },
+
+        },
         config = function()
             vim.g.coq_settings = {
                 auto_start = true,
@@ -97,18 +107,19 @@ safe_require("lazy").setup({
                         context = { "", "<CR>" },
                     },
                 },
+                keymap = {
+                    recommended = false,
+                    manual_complete = "<C-Space>",
+                    bigger_preview = "<C-f>",
+                    jump_to_mark = "<C-y>",
+                    pre_select = true,
+                },
             }
+
+            -- Keymap for Tab and Shift+Tab
+            vim.api.nvim_set_keymap("i", "<Tab>", 'pumvisible() ? "<C-n>" : "<Tab>"', { expr = true, noremap = true })
+            vim.api.nvim_set_keymap("i", "<S-Tab>", 'pumvisible() ? "<C-p>" : "<S-Tab>"', { expr = true, noremap = true })
         end,
-    },
-    {
-        "ms-jpq/coq.thirdparty",
-        branch = "3p",
-        config = function()
-            safe_require("coq_3p") {
-                { src = "copilot", short_name = "COP", accept_key = "<C-f>" },
-            }
-        end,
-        after = { "coq_nvim", "copilot.lua" },
     },
     -- Treesitter configuration
     {
