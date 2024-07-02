@@ -452,9 +452,10 @@ safe_require("lazy").setup({
 	},
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = "BufReadPost",
 		run = ":TSUpdate",
+		event = "BufReadPost",
 		dependencies = {
+			"nvim-treesitter/nvim-treesitter-textobjects",
 			{ "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
 		},
 		config = function()
@@ -671,6 +672,18 @@ safe_require("lazy").setup({
 		},
 		dependencies = "nvim-tree/nvim-web-devicons",
 		config = true,
+	},
+	{
+		"mvllow/modes.nvim",
+		config = true,
+		opts = {
+			colors = {
+				copy = "#FFEE55",
+				delete = "#DC669B",
+				insert = "#55AAEE",
+				visual = "#DD5522",
+			},
+		},
 	},
 	{
 		"nathom/filetype.nvim",
@@ -894,6 +907,24 @@ safe_require("lazy").setup({
 			}
 		end,
 	},
+	{
+		"nvim-telescope/telescope.nvim",
+		cmd = "Telescope",
+		dependencies = { "nvim-lua/plenary.nvim" },
+		config = function()
+			local telescope = safe_require("telescope")
+			telescope.setup({
+				defaults = {
+					mappings = {
+						i = {
+							["<C-n>"] = safe_require("telescope.actions").move_selection_next,
+							["<C-p>"] = safe_require("telescope.actions").move_selection_previous,
+						},
+					},
+				},
+			})
+		end,
+	},
 	-- code formatter setting
 	{
 		"mhartington/formatter.nvim",
@@ -1069,7 +1100,7 @@ safe_require("lazy").setup({
 				rust = { "clippy" },
 				zig = { "zigfmt" },
 				nim = { "nimlint" },
-				python = { "pylint" },
+				python = { "flake8", "pylint" },
 				lua = { "luacheck" },
 				sh = { "shellcheck" },
 				make = { "checkmake" },
