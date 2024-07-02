@@ -179,13 +179,11 @@ FROM --platform=$BUILDPLATFORM rust-base AS sheldon
 RUN cargo install --force --no-default-features \
     --git https://github.com/rossmacarthur/sheldon
 
-# FROM --platform=$BUILDPLATFORM old AS starship
 FROM --platform=$BUILDPLATFORM rust-base AS starship
 RUN cargo +nightly install --force --no-default-features starship
-# RUN rustup update stable \
-    # && rustup default stable \
-    # && cargo install --force --no-default-features
-# RUN cargo install --locked starship
+
+FROM --platform=$BUILDPLATFORM rust-base AS stylua
+RUN cargo +nightly install --force --features lua54 stylua
 
 FROM --platform=$BUILDPLATFORM rust-base AS t-rec
 RUN cargo +nightly install --force --no-default-features \
@@ -261,6 +259,7 @@ COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
 COPY --from=sheldon ${BIN_PATH}/sheldon ${BIN_PATH}/sheldon
 COPY --from=shellharden ${BIN_PATH}/shellharden ${BIN_PATH}/shellharden
 COPY --from=starship ${BIN_PATH}/starship ${BIN_PATH}/starship
+COPY --from=stylua ${BIN_PATH}/stylua ${BIN_PATH}/stylua
 COPY --from=t-rec ${BIN_PATH}/t-rec ${BIN_PATH}/t-rec
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
 COPY --from=tree-sitter ${BIN_PATH}/tree-sitter ${BIN_PATH}/tree-sitter

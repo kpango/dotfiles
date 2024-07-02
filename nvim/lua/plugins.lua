@@ -968,7 +968,16 @@ safe_require("lazy").setup({
                         function()
                             return {
                                 exe = "shfmt",
-                                args = { "-i", "4" },
+                                args = { "-i", "4", "-w", "-s" },
+                                stdin = true,
+                            }
+                        end,
+                    },
+                    zsh = {
+                        function()
+                            return {
+                                exe = "shfmt",
+                                args = { "-i", "4", "-w", "-s" },
                                 stdin = true,
                             }
                         end,

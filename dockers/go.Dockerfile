@@ -971,6 +971,17 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
+FROM --platform=$BUILDPLATFORM go-base AS shfmt
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -x && cd "$(mktemp -d)" \
+    && BIN_NAME="shfmt" \
+    && REPO="mvdan.cc/sh/v3/cmd/${BIN_NAME}" \
+    && go install ${GO_FLAGS} ${REPO}@upgrade" \
+    && chmod a+x "${GOBIN}/${BIN_NAME}" \
+    && upx -9 "${GOBIN}/${BIN_NAME}"
+
 FROM --platform=$BUILDPLATFORM go-base AS strictgoimports
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
@@ -1191,6 +1202,7 @@ COPY --from=prototool $GOBIN/prototool $GOBIN/prototool
 COPY --from=pulumi $GOBIN/pulumi $GOBIN/pulumi
 COPY --from=reddit2wallpaper $GOBIN/reddit2wallpaper $GOBIN/reddit2wallpaper
 COPY --from=ruleguard $GOBIN/ruleguard $GOBIN/ruleguard
+COPY --from=shfmt $GOBIN/shfmt $GOBIN/shfmt
 COPY --from=strictgoimports $GOBIN/strictgoimports $GOBIN/strictgoimports
 COPY --from=swagger $GOBIN/swagger $GOBIN/swagger
 # COPY --from=syft $GOBIN/syft $GOBIN/syft
