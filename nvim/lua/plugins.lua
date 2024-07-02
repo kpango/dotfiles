@@ -862,6 +862,7 @@ safe_require("lazy").setup({
             }
         end,
     },
+    -- code formatter setting
     {
         "mhartington/formatter.nvim",
         event = "BufWritePost",
@@ -890,7 +891,28 @@ safe_require("lazy").setup({
                     go = {
                         function()
                             return {
-                                exe = "gofmt",
+                                exe = "golines",
+                                args = { "--max-len=80", "--base-formatter=gofumpt" },
+                                stdin = true,
+                            }
+                        end,
+                        function()
+                            return {
+                                exe = "gofumpt",
+                                args = { "-extra" },
+                                stdin = true,
+                            }
+                        end,
+                        function()
+                            return {
+                                exe = "strictgoimports",
+                                args = {},
+                                stdin = true,
+                            }
+                        end,
+                        function()
+                            return {
+                                exe = "goimports",
                                 args = {},
                                 stdin = true,
                             }
@@ -1051,9 +1073,31 @@ safe_require("lazy").setup({
             dap.configurations.c = dap.configurations.cpp
         end
     },
+
 }, {
     root = pkg_path,
 })
 
-
 safe_require("onedark").load()
+
+local function format_modified_ranges()
+    local gitsigns = safe_require("gitsigns")
+    if not gitsigns then return end
+
+    local bufnr = vim.api.nvim_get_current_buf()
+    local hunks = gitsigns.get_hunks(bufnr)
+    if not hunks then return end
+
+    for _, hunk in ipairs(hunks) do
+        local start_line = hunk.added.start
+        local end_line = hunk.added.start + hunk.added.count - 1
+        vim.lsp.buf.range_formatting({}, { start_line, 0 }, { end_line, 0 })
+    end
+end
+
+vim.api.nvim_exec([[
+    augroup FormatModified
+        autocmd!
+        autocmd BufWritePost * lua format_modified_ranges()
+    augroup END
+]], false)
