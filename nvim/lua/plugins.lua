@@ -31,7 +31,21 @@ local function safe_require(module_name)
 end
 
 local languages = {
-    "bash", "c", "cpp", "dart", "dockerfile", "go", "html", "json", "lua", "make", "markdown", "nim", "rust", "yaml", "zig"
+    "bash",
+    "c",
+    "cpp",
+    "dart",
+    "dockerfile",
+    "go",
+    "html",
+    "json",
+    "lua",
+    "make",
+    "markdown",
+    "nim",
+    "rust",
+    "yaml",
+    "zig"
 }
 
 local lsps = {
