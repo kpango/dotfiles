@@ -54,11 +54,12 @@ safe_require("lazy").setup({
                 ensure_installed = lsps
             }
             local lspconfig = safe_require("lspconfig")
+	    local coq = safe_require("coq")
             local on_attach = function(client, bufnr)
                 vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
             end
             for _, server in ipairs(lsps) do
-                lspconfig[server].setup { on_attach = on_attach }
+                lspconfig[server].setup(coq.lsp_ensure_capabilities())
             end
         end,
     },
@@ -67,6 +68,7 @@ safe_require("lazy").setup({
         "ms-jpq/coq_nvim",
         branch = "coq",
         event = "InsertEnter",
+	dependencies =  { "ms-jpq/coq.artifacts", branch = "artifacts" },
         run = ":COQdeps",
         config = function()
             vim.g.coq_settings = {
@@ -102,7 +104,7 @@ safe_require("lazy").setup({
         "ms-jpq/coq.thirdparty",
         branch = "3p",
         config = function()
-            require("coq_3p") {
+            safe_require("coq_3p") {
                 { src = "copilot", short_name = "COP", accept_key = "<C-f>" },
             }
         end,
@@ -182,13 +184,6 @@ safe_require("lazy").setup({
                 on_status_update = safe_require("lualine").refresh,
             })
         end,
-    },
-    {
-        "zbirenbaum/copilot-cmp",
-        after = { "copilot.lua", "coq_nvim" },
-        event = { "InsertEnter", "LspAttach" },
-        fix_pairs = true,
-        config = true,
     },
     -- Other plugins remain unchanged
     {
