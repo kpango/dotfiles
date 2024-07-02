@@ -1583,37 +1583,41 @@ if [ -z $ZSH_LOADED ]; then
 
 
     PASS_KEY="zsh/history"
-    zshstorehistory() { # store function, this function stores zsh history to pass and remote github repository
-        emulate -L zsh
-        setopt extended_history
-        local temp_file=$(mktemp)
-	# remove duplicated history and sort desc by timestamp
-        awk -F';' '!seen[$2]++ { cmd[$2] = $0 } END { for (c in cmd) print cmd[c] }' $HISTFILE | sort -t ';' -k1,1nr > $temp_file
-        mv $temp_file $HISTFILE
-
-	# store history to pass with key zsh/history
-        pass insert -m "$PASS_KEY" < "$HISTFILE"
-
-	# change directory to pass local git repository dir
-	local pass_store=$HOME/.password-store
-        cd $pass_store || { echo "Failed to change directory to $pass_store"; return 1; }
-	# pull latest change of remote
-        git pull origin main || { echo "Failed to pull latest changes"; return 1; }
-	# if diff-index exitsts, push to remote
-        if ! git diff --quiet; then
-            git add .
-            git commit -m "Update pass store on $(hostname)" || { echo "Failed to commit changes"; return 1; }
-            git push origin main || { echo "Failed to push changes"; return 1; }
-        fi
-        return 0
+    zshstorehistory() {
+        # store function, this function stores zsh history to pass and remote github repository
+        (
+            emulate -L zsh
+            setopt extended_history
+            local temp_file=$(mktemp)
+            # remove duplicated history and sort desc by timestamp
+            awk -F';' '!seen[$2]++ { cmd[$2] = $0 } END { for (c in cmd) print cmd[c] }' $HISTFILE | sort -t ';' -k1,1nr > $temp_file
+            mv $temp_file $HISTFILE
+            # store history to pass with key zsh/history
+            echo "$PASS_PASSWORD" | pass insert -m "$PASS_KEY" < "$HISTFILE"
+            # change directory to pass local git repository dir
+            local pass_store=$HOME/.password-store
+            cd $pass_store || { echo "Failed to change directory to $pass_store"; return 1; }
+            # pull latest change of remote
+            git pull origin main || { echo "Failed to pull latest changes"; return 1; }
+            # if diff-index exists, push to remote
+            if ! git diff --quiet; then
+                git add .
+                git commit -m "Update pass store on $(hostname)" || { echo "Failed to commit changes"; return 1; }
+                git push origin main || { echo "Failed to push changes"; return 1; }
+            fi
+            return 0
+        ) &
     }
+
     alias zshstorehistory=zshstorehistory
 
     # load history from pass
     pass show "$PASS_KEY" > "$HISTFILE"
+
     # add sync hook to zsh
     autoload -Uz add-zsh-hook
     add-zsh-hook zshstorehistory
+
     # add finalization sync process to zsh
     trap zshstorehistory EXIT
 
