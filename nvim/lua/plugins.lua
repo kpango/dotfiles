@@ -78,11 +78,10 @@ safe_require("lazy").setup({
                 end,
                 after = { "coq_nvim", "copilot.lua" },
             },
-
         },
         config = function()
             vim.g.coq_settings = {
-                auto_start = true,
+                auto_start = 'shut-up',
                 clients = {
                     lsp = {
                         enabled = true,
