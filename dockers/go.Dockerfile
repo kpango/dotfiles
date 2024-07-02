@@ -978,7 +978,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     set -x && cd "$(mktemp -d)" \
     && BIN_NAME="shfmt" \
     && REPO="mvdan.cc/sh/v3/cmd/${BIN_NAME}" \
-    && go install ${GO_FLAGS} ${REPO}@upgrade" \
+    && go install ${GO_FLAGS} "${REPO}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
