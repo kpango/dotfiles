@@ -1581,71 +1581,41 @@ if [ -z $ZSH_LOADED ]; then
         alias valddep=valddep
     fi
 
-    # 履歴ファイルのパスを設定
-    HISTORY_FILE=~/.zsh_history
-    PASS_PATH="zsh/history"
 
-    # 重複エントリを除去してタイムスタンプ順にソートする関数
-    function clean_and_sort_history() {
-        local history_file=$1
+    PASS_KEY="zsh/history"
+    zshstorehistory() { # store function, this function stores zsh history to pass and remote github repository
+        emulate -L zsh
+        setopt extended_history
         local temp_file=$(mktemp)
-        # 重複エントリを除去し、最新のタイムスタンプに基づいてソート
-        awk -F';' '!seen[$2]++ { cmd[$2] = $0 } END { for (c in cmd) print cmd[c] }' $history_file | sort -t ';' -k1,1nr > $temp_file
-        # ソート結果を履歴ファイルに上書き
-        mv $temp_file $history_file
-    }
-    # passを利用して履歴を同期する関数
-    function sync_history_with_pass() {
-        local history_file=$1
-        local pass_path=$2
-        # 履歴ファイルをクリーンアップしてソート
-        clean_and_sort_history "$history_file"
-        # passに保存
-        pass insert -m "$pass_path" < "$history_file"
-    }
-    # passから履歴を復元する関数
-    function restore_history_from_pass() {
-        local pass_path=$1
-        local history_file=$2
-        # passから履歴を取得して履歴ファイルに書き込み
-        pass show "$pass_path" > "$history_file"
-    }
-    # passのストレージをGitHubに同期する関数
-    function sync_pass_with_github() {
-        local pass_store=~/.password-store
+	# remove duplicated history and sort desc by timestamp
+        awk -F';' '!seen[$2]++ { cmd[$2] = $0 } END { for (c in cmd) print cmd[c] }' $HISTFILE | sort -t ';' -k1,1nr > $temp_file
+        mv $temp_file $HISTFILE
+
+	# store history to pass with key zsh/history
+        pass insert -m "$PASS_KEY" < "$HISTFILE"
+
+	# change directory to pass local git repository dir
+	local pass_store=$HOME/.password-store
         cd $pass_store || { echo "Failed to change directory to $pass_store"; return 1; }
-        # 最新の変更をプル
+	# pull latest change of remote
         git pull origin main || { echo "Failed to pull latest changes"; return 1; }
-        # 変更がある場合のみコミットとプッシュ
+	# if diff-index exitsts, push to remote
         if ! git diff --quiet; then
             git add .
             git commit -m "Update pass store on $(hostname)" || { echo "Failed to commit changes"; return 1; }
             git push origin main || { echo "Failed to push changes"; return 1; }
         fi
-    }
-    # zshaddhistory関数の定義
-    function zshaddhistory() {
-        emulate -L zsh
-        setopt extended_history
-        # 履歴をクリーンアップしてpassに同期
-        sync_history_with_pass "$HISTORY_FILE" "$PASS_PATH"
-        # passのストレージをGitHubに同期
-        sync_pass_with_github &
         return 0
     }
-    # 初回起動時にpassから履歴を復元
-    restore_history_from_pass "$PASS_PATH" "$HISTORY_FILE"
-    # 履歴ファイルの設定
-    export HISTFILE=$HISTORY_FILE
-    export HISTSIZE=10000
-    export SAVEHIST=10000
-    setopt append_history
-    setopt share_history
-    # 履歴の追加時にフック
+    alias zshstorehistory=zshstorehistory
+
+    # load history from pass
+    pass show "$PASS_KEY" > "$HISTFILE"
+    # add sync hook to zsh
     autoload -Uz add-zsh-hook
-    add-zsh-hook zshaddhistory
-    # Zsh終了時にも履歴を同期
-    trap zshaddhistory EXIT
+    add-zsh-hook zshstorehistory
+    # add finalization sync process to zsh
+    trap zshstorehistory EXIT
 
     export ZSH_LOADED=1;
 fi
