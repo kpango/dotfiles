@@ -6,11 +6,12 @@ opt.autowrite = true
 opt.background = "dark"
 opt.backspace = { "start", "eol", "indent" }
 opt.backup = false
-opt.backupdir = os.getenv "HOME" .. "/.vim/backup"
+opt.backupdir = os.getenv("HOME") .. "/.vim/backup"
 opt.backupskip = { "/tmp/*", "/private/tmp/*" }
-opt.clipboard:append "unnamedplus"
+opt.clipboard:append("unnamedplus")
 opt.cmdheight = 1
 opt.cursorline = false
+opt.diffopt:append("vertical")
 opt.display = lastline
 opt.encoding = "utf-8"
 opt.expandtab = true
@@ -19,9 +20,9 @@ opt.fileencodings = { "utf-8", "euc-jp", "iso-2022-jp", "cp932", "ucs-boms" }
 opt.fileformat = unix
 opt.fileformats = unix, dos, mac
 opt.filetype = extension
-opt.formatoptions:append "mM"
-opt.formatoptions:append "r"
-opt.formatoptions:remove "t"
+opt.formatoptions:append("mM")
+opt.formatoptions:append("r")
+opt.formatoptions:remove("t")
 opt.guifont = "HackGen35 Console"
 opt.helplang = ja
 opt.hidden = true
@@ -33,7 +34,7 @@ opt.incsearch = true
 opt.infercase = true
 opt.laststatus = 2
 opt.lazyredraw = true
-opt.matchpairs:append "<:>"
+opt.matchpairs:append("<:>")
 opt.matchtime = 2
 opt.modifiable = true
 opt.mouse = a
@@ -46,10 +47,10 @@ opt.scrolloff = 8
 opt.shell = zsh
 opt.shiftround = true
 opt.shiftwidth = 4
-opt.shortmess:append "I"
+opt.shortmess:append("I")
 opt.showcmd = true
 opt.showmatch = true
-opt.signcolumn = 'yes'
+opt.signcolumn = "yes"
 opt.smartcase = true
 opt.smartindent = true
 opt.smarttab = true
@@ -64,7 +65,7 @@ opt.tabstop = 4
 opt.termguicolors = true
 opt.title = true
 opt.ttyfast = true
-opt.undodir = vim.fn.stdpath('config') .. '/undo'
+opt.undodir = vim.fn.stdpath("config") .. "/undo"
 opt.undofile = true
 opt.updatetime = 50
 opt.virtualedit = block
