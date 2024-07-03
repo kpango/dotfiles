@@ -80,7 +80,7 @@ autocmd({ "TextYankPost" }, {
 	desc = "Highlight yanked text",
 	pattern = "*",
 	callback = function()
-		safe_require("vim.highlight").on_yank({ higroup = "IncSearch", timeout = 1000 })
+		require("vim.highlight").on_yank({ higroup = "IncSearch", timeout = 1000 })
 	end,
 })
 
@@ -89,7 +89,7 @@ autocmd({ "BufWipeout" }, {
 	pattern = "NvimTree_*",
 	callback = function()
 		vim.schedule(function()
-			safe_require("bufferline.state").set_offset(0)
+			require("bufferline.state").set_offset(0)
 		end)
 	end,
 })
