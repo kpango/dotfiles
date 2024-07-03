@@ -1,4 +1,6 @@
 -- Initialize necessary paths
+vim.loader.enable()
+
 local fn = vim.fn
 local pkg_path = fn.stdpath("config") .. "/lazy"
 local lazypath = pkg_path .. "/lazy.nvim"
@@ -49,21 +51,23 @@ local languages = {
 
 local lsps = {
 	"clangd",
-	"delve",
 	"dockerls",
-	"gofumpt",
-	"golancci-lint",
-	"golancci-lint-langserver",
-	"golines",
-	"gomodifytags",
 	"gopls",
-	"hadolint",
-	"nimlanguageserver",
+	"nim_langserver",
 	"pyright",
 	"rust_analyzer",
+	"zls",
+}
+
+local tools = {
+	"delve",
+	"gofumpt",
+	"golancci-lint",
+	"golines",
+	"gomodifytags",
+	"hadolint",
 	"snyk",
 	"trivy",
-	"zls",
 }
 
 safe_require("lazy").setup({
@@ -76,7 +80,15 @@ safe_require("lazy").setup({
 			"williamboman/mason-lspconfig.nvim",
 		},
 		config = function()
-			safe_require("mason").setup()
+			safe_require("mason").setup({
+				ui = {
+					icons = {
+						package_installed = "✓",
+						package_pending = "➜",
+						package_uninstalled = "✗",
+					},
+				},
+			})
 			safe_require("mason-lspconfig").setup({
 				ensure_installed = lsps,
 			})
@@ -170,7 +182,7 @@ safe_require("lazy").setup({
 						if cmp.visible() and has_words_before() then
 							cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
 						elseif safe_require("copilot.suggestion").is_visible() then
-							require("copilot.suggestion").accept()
+							safe_require("copilot.suggestion").accept()
 						elseif luasnip.expandable() then
 							luasnip.expand()
 						elseif luasnip.expand_or_jumpable() then
@@ -933,11 +945,11 @@ safe_require("lazy").setup({
 			-- 保存時に自動フォーマットを有効にする
 			vim.api.nvim_exec(
 				[[
-                augroup FormatAutogroup
-                    autocmd!
-                    autocmd BufWritePost * FormatWrite
-                augroup END
-            ]],
+					augroup FormatAutogroup
+						autocmd!
+						autocmd BufWritePost * FormatWrite
+					augroup END
+				]],
 				true
 			)
 
@@ -1122,7 +1134,7 @@ safe_require("lazy").setup({
 			vim.api.nvim_create_autocmd("BufWritePost", {
 				pattern = "*",
 				callback = function()
-					require("lint").try_lint()
+					safe_require("lint").try_lint()
 				end,
 			})
 		end,
