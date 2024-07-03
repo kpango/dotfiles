@@ -105,7 +105,7 @@ safe_require("lazy").setup({
 		"hrsh7th/nvim-cmp",
 		event = { "InsertEnter", "CmdlineEnter" },
 		dependencies = {
-			{ "neovim/nvim-lspconfig", event = "InsertEnter" },
+			{ "neovim/nvim-lspconfig", event = "BufReadPre" },
 			{
 				"L3MON4D3/LuaSnip",
 				build = "make install_jsregexp",
@@ -121,7 +121,7 @@ safe_require("lazy").setup({
 			{ "hrsh7th/cmp-buffer", event = "InsertEnter" },
 			{ "hrsh7th/cmp-calc", event = "InsertEnter" },
 			{ "hrsh7th/cmp-cmdline", event = "ModeChanged" },
-			{ "hrsh7th/cmp-nvim-lsp", event = "InsertEnter" },
+			{ "hrsh7th/cmp-nvim-lsp", event = { "InsertEnter", "BufReadPre" } },
 			{ "hrsh7th/cmp-nvim-lsp-document-symbol", event = "InsertEnter" },
 			{ "hrsh7th/cmp-nvim-lsp-signature-help", event = "InsertEnter" },
 			{ "hrsh7th/cmp-nvim-lua", event = "InsertEnter" },
@@ -489,6 +489,7 @@ safe_require("lazy").setup({
 	},
 	{
 		"zbirenbaum/copilot.lua",
+		event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
 		config = function()
 			safe_require("copilot").setup({
 				panel = {
