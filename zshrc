@@ -153,9 +153,18 @@ if [ -z $DOTENV_LOADED ]; then
 
     if type nvim >/dev/null 2>&1; then
         export VIM=$(which nvim)
-        if [ -d "/usr/share/nvim/runtime" ]; then
-            export VIMRUNTIME="/usr/share/nvim/runtime"
-        fi
+        case ${OSTYPE} in
+        darwin*)
+            if [ -d "/opt/homebrew/Cellar/neovim/*/share/nvim/runtime" ]; then
+                export VIMRUNTIME="/opt/homebrew/Cellar/neovim/*/share/nvim/runtime"
+            fi
+            ;;
+        linux*)
+            if [ -d "/usr/share/nvim/runtime" ]; then
+                export VIMRUNTIME="/usr/share/nvim/runtime"
+            fi
+            ;;
+        esac
         export NVIM_HOME=$XDG_CONFIG_HOME/nvim
         export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME/log
         export NVIM_TUI_ENABLE_TRUE_COLOR=1
@@ -164,9 +173,18 @@ if [ -z $DOTENV_LOADED ]; then
         export NVIM_LISTEN_ADDRESS="127.0.0.1:7650"
     elif type vim >/dev/null 2>&1; then
         export VIM=$(which vim)
-        if [ -d "/usr/share/vim/vim*" ]; then
-            export VIMRUNTIME="/usr/share/vim/vim*"
-        fi
+        case ${OSTYPE} in
+        darwin*)
+            if [ -d "/opt/homebrew/Cellar/neovim/*/share/nvim/runtime" ]; then
+                export VIMRUNTIME="/opt/homebrew/Cellar/neovim/*/share/nvim/runtime"
+            fi
+            ;;
+        linux*)
+            if [ -d "/usr/share/nvim/runtime" ]; then
+                export VIMRUNTIME="/usr/share/nvim/runtime"
+            fi
+            ;;
+        esac
     else
         export VIM=$(which vi)
     fi
