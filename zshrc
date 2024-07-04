@@ -136,7 +136,9 @@ if [ -z $DOTENV_LOADED ]; then
     export XDG_DATA_HOME=$HOME/.data
 
     if type gcloud >/dev/null 2>&1; then
-        export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
+        if [ -d "/usr/lib/google-cloud-sdk" ]; then
+	    export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
+        fi
         export USE_GKE_GCLOUD_AUTH_PLUGIN=True
     fi
 
@@ -151,7 +153,9 @@ if [ -z $DOTENV_LOADED ]; then
 
     if type nvim >/dev/null 2>&1; then
         export VIM=$(which nvim)
-        export VIMRUNTIME=/usr/share/nvim/runtime
+        if [ -d "/usr/share/nvim/runtime" ]; then
+            export VIMRUNTIME="/usr/share/nvim/runtime"
+        fi
         export NVIM_HOME=$XDG_CONFIG_HOME/nvim
         export NVIM_LOG_FILE_PATH=$XDG_DATA_HOME/log
         export NVIM_TUI_ENABLE_TRUE_COLOR=1
@@ -160,7 +164,9 @@ if [ -z $DOTENV_LOADED ]; then
         export NVIM_LISTEN_ADDRESS="127.0.0.1:7650"
     elif type vim >/dev/null 2>&1; then
         export VIM=$(which vim)
-        export VIMRUNTIME=/usr/share/vim/vim*
+        if [ -d "/usr/share/vim/vim*" ]; then
+            export VIMRUNTIME="/usr/share/vim/vim*"
+        fi
     else
         export VIM=$(which vi)
     fi
@@ -175,7 +181,9 @@ if [ -z $DOTENV_LOADED ]; then
 
     export LD_LIBRARY_PATH=/lib:/usr/local/lib:${GCLOUD_PATH}/lib:/opt/containerd/lib:/opt/cuda/lib:${LD_LIBRARY_PATH}
 
-    export RUST_HOME=/usr/local/lib/rust
+    if [ -d "/usr/local/lib/rust" ]; then
+        export RUST_HOME="/usr/local/lib/rust"
+    fi
     export CARGO_HOME=$RUST_HOME/cargo
     export RUSTUP_HOME=$RUST_HOME/rustup
 
