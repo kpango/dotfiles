@@ -17,7 +17,7 @@ if type tmux >/dev/null 2>&1; then
         TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/$HOST"
         export TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins"
         TPM_PATH="$TMUX_PLUGIN_MANAGER_PATH/tpm"
-        if [ ! -d "$TPM_PATH" ]; then
+        if [ ! -d $TPM_PATH ]; then
             git clone --depth 1 --recursive https://github.com/tmux-plugins/tpm $TPM_PATH
         fi
         # If connected via SSH
@@ -136,7 +136,7 @@ if [ -z $DOTENV_LOADED ]; then
     export XDG_DATA_HOME=$HOME/.data
 
     if type gcloud >/dev/null 2>&1; then
-        if [ -d "/usr/lib/google-cloud-sdk" ]; then
+        if [ -d /usr/lib/google-cloud-sdk ]; then
 	    export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
         fi
         export USE_GKE_GCLOUD_AUTH_PLUGIN=True
@@ -155,12 +155,12 @@ if [ -z $DOTENV_LOADED ]; then
         export VIM=$(which nvim)
         case ${OSTYPE} in
         darwin*)
-            if [ -d "/opt/homebrew/Cellar/neovim/*/share/nvim/runtime" ]; then
+            if [ -d /opt/homebrew/Cellar/neovim/*/share/nvim/runtime ]; then
                 export VIMRUNTIME="/opt/homebrew/Cellar/neovim/*/share/nvim/runtime"
             fi
             ;;
         linux*)
-            if [ -d "/usr/share/nvim/runtime" ]; then
+            if [ -d /usr/share/nvim/runtime ]; then
                 export VIMRUNTIME="/usr/share/nvim/runtime"
             fi
             ;;
@@ -175,12 +175,12 @@ if [ -z $DOTENV_LOADED ]; then
         export VIM=$(which vim)
         case ${OSTYPE} in
         darwin*)
-            if [ -d "/opt/homebrew/Cellar/neovim/*/share/nvim/runtime" ]; then
+            if [ -d /opt/homebrew/Cellar/neovim/*/share/nvim/runtime ]; then
                 export VIMRUNTIME="/opt/homebrew/Cellar/neovim/*/share/nvim/runtime"
             fi
             ;;
         linux*)
-            if [ -d "/usr/share/nvim/runtime" ]; then
+            if [ -d /usr/share/nvim/runtime ]; then
                 export VIMRUNTIME="/usr/share/nvim/runtime"
             fi
             ;;
