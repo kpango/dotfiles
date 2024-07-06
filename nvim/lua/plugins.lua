@@ -82,19 +82,21 @@ safe_require("lazy").setup({
 				dependencies = {
 					"williamboman/mason.nvim",
 					"williamboman/mason-lspconfig.nvim",
+					{
+						"ray-x/go.nvim",
+						ft = { "go" },
+						config = true,
+						opts = {
+							gofmt = "gofumpt",
+							goimports = "strictgoimports",
+							lsp_cfg = false,
+						},
+					},
+					{ "hrsh7th/cmp-nvim-lsp", event = { "InsertEnter", "BufReadPre" } },
 				},
 				config = function()
 					local servers = {
-						gopls = {
-							settings = {
-								gopls = {
-									analyses = {
-										unusedparams = true,
-									},
-									staticcheck = true,
-								},
-							},
-						},
+						gopls = safe_require("go.lsp").config(),
 						rust_analyzer = {
 							settings = {
 								["rust-analyzer"] = {
@@ -162,6 +164,9 @@ safe_require("lazy").setup({
 						flags = {
 							debounce_text_changes = 150,
 						},
+						capabilities = safe_require("cmp_nvim_lsp").default_capabilities(
+							vim.lsp.protocol.make_client_capabilities()
+						),
 					}
 					safe_require("mason").setup({
 						ui = {
@@ -178,9 +183,7 @@ safe_require("lazy").setup({
 
 					local lspconfig = safe_require("lspconfig")
 					for _, server_name in ipairs(lsps) do
-						local config = servers[server_name] or {}
-						config = vim.tbl_deep_extend("force", default_config, config)
-						lspconfig[server_name].setup(config)
+						lspconfig[server_name].setup(vim.tbl_deep_extend("force", default_config, servers[server_name] or {}))
 					end
 				end,
 			},
@@ -199,7 +202,6 @@ safe_require("lazy").setup({
 			{ "hrsh7th/cmp-buffer", event = "InsertEnter" },
 			{ "hrsh7th/cmp-calc", event = "InsertEnter" },
 			{ "hrsh7th/cmp-cmdline", event = "ModeChanged" },
-			{ "hrsh7th/cmp-nvim-lsp", event = { "InsertEnter", "BufReadPre" } },
 			{ "hrsh7th/cmp-nvim-lsp-document-symbol", event = "InsertEnter" },
 			{ "hrsh7th/cmp-nvim-lsp-signature-help", event = "InsertEnter" },
 			{ "hrsh7th/cmp-nvim-lua", event = "InsertEnter" },
@@ -219,9 +221,6 @@ safe_require("lazy").setup({
 			local cmp = safe_require("cmp")
 			local luasnip = safe_require("luasnip")
 			local lspkind = safe_require("lspkind")
-			local capabilities =
-				safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-
 			local has_words_before = function()
 				if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
 					return false
@@ -1214,13 +1213,6 @@ safe_require("lazy").setup({
 		end,
 	},
 	-- Language specific plugins and configurations
-	{
-		"fatih/vim-go",
-		ft = { "go" },
-		config = function()
-			vim.g.go_fmt_command = "gofumpt"
-		end,
-	},
 	{
 		"rust-lang/rust.vim",
 		ft = { "rust" },
