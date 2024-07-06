@@ -420,7 +420,7 @@ perm:
 	sudo chmod -R 755 $(ROOTDIR)/.*
 	sudo chown -R $(USER):$(GROUP_ID) $(ROOTDIR)/*
 	sudo chown -R $(USER):$(GROUP_ID) $(ROOTDIR)/.*
-	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f -print | xargs -I {} nkf -Lu -w --overwrite {}
+	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f -exec nkf -Lu -w --overwrite {} \;
 
 git_push:
 	git add -A
