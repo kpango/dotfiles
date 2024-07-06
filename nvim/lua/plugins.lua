@@ -53,6 +53,7 @@ local lsps = {
 	"clangd",
 	"dockerls",
 	"gopls",
+	"lua_ls",
 	"nim_langserver",
 	"pyright",
 	"rust_analyzer",
@@ -80,6 +81,85 @@ safe_require("lazy").setup({
 			"williamboman/mason-lspconfig.nvim",
 		},
 		config = function()
+			local servers = {
+				gopls = {
+					settings = {
+						gopls = {
+							analyses = {
+								unusedparams = true,
+							},
+							staticcheck = true,
+						},
+					},
+				},
+				rust_analyzer = {
+					settings = {
+						["rust-analyzer"] = {
+							cargo = {
+								allFeatures = true,
+							},
+							checkOnSave = {
+								command = "clippy",
+							},
+						},
+					},
+				},
+				clangd = {},
+				dockerls = {},
+				lua_ls = { -- or "sumneko_lua"
+					settings = {
+						Lua = {
+							runtime = {
+								version = "LuaJIT",
+								path = vim.split(package.path, ";"),
+							},
+							diagnostics = {
+								globals = { "vim" },
+							},
+							workspace = {
+								library = vim.api.nvim_get_runtime_file("", true),
+								checkThirdParty = false,
+							},
+							telemetry = {
+								enable = false,
+							},
+						},
+					},
+				},
+				nimls = {},
+				pyright = {
+					settings = {
+						python = {
+							analysis = {
+								typeCheckingMode = "strict",
+							},
+						},
+					},
+				},
+				zls = {},
+			}
+
+			local default_config = {
+				on_attach = function(client, bufnr)
+					vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
+					if client.server_capabilities.document_highlight then
+						vim.api.nvim_create_augroup("lsp_document_highlight", { clear = false })
+						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+							group = "lsp_document_highlight",
+							buffer = bufnr,
+							callback = vim.lsp.buf.document_highlight,
+						})
+						vim.api.nvim_create_autocmd("CursorMoved", {
+							group = "lsp_document_highlight",
+							buffer = bufnr,
+							callback = vim.lsp.buf.clear_references,
+						})
+					end
+				end,
+				flags = {
+					debounce_text_changes = 150,
+				},
+			}
 			safe_require("mason").setup({
 				ui = {
 					icons = {
@@ -92,12 +172,13 @@ safe_require("lazy").setup({
 			safe_require("mason-lspconfig").setup({
 				ensure_installed = lsps,
 			})
+
 			local lspconfig = safe_require("lspconfig")
-			local on_attach = function(client, bufnr)
-				vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-			end
-			for _, server in ipairs(lsps) do
-				lspconfig[server].setup({ on_attach = on_attach })
+			for _, server_name in ipairs(lsps) do
+				-- lspconfig[server].setup({ on_attach = on_attach })
+				local config = servers[server_name] or {}
+				config = vim.tbl_deep_extend("force", default_config, config)
+				lspconfig[server_name].setup(config)
 			end
 		end,
 	},
@@ -943,16 +1024,11 @@ safe_require("lazy").setup({
 		"mhartington/formatter.nvim",
 		event = "BufWritePost",
 		config = function()
-			-- 保存時に自動フォーマットを有効にする
-			vim.api.nvim_exec(
-				[[
-					augroup FormatAutogroup
-						autocmd!
-						autocmd BufWritePost * FormatWrite
-					augroup END
-				]],
-				true
-			)
+			vim.api.nvim_create_autocmd("BufWritePost", {
+				group = vim.api.nvim_create_augroup("FormatAutogroup", { clear = true }),
+				pattern = "*",
+				command = "FormatWrite",
+			})
 
 			-- フォーマッタの設定
 			safe_require("formatter").setup({
@@ -1108,18 +1184,17 @@ safe_require("lazy").setup({
 		config = function()
 			local lint = safe_require("lint")
 			lint.linters_by_ft = {
-				go = { "golangcilint" },
-				cpp = { "clangtidy" },
-				rust = { "clippy" },
-				zig = { "zigfmt" },
-				nim = { "nimlint" },
-				python = { "flake8", "pylint" },
-				lua = { "luacheck" },
-				sh = { "shellcheck" },
-				make = { "checkmake" },
-				yaml = { "yamllint" },
-				proto = { "protoc-gen-lint" },
 				buf = { "buf" },
+				cpp = { "clangtidy" },
+				go = { "golangcilint" },
+				make = { "checkmake" },
+				nim = { "nimlint" },
+				proto = { "protoc-gen-lint" },
+				python = { "flake8", "pylint" },
+				rust = { "clippy" },
+				sh = { "shellcheck" },
+				yaml = { "yamllint" },
+				zig = { "zigfmt" },
 			}
 
 			-- 各言語ごとのリンター設定 (必要に応じて追加)

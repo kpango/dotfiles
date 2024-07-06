@@ -1,19 +1,19 @@
 local autocmd = vim.api.nvim_create_autocmd
+local usercmd = vim.api.nvim_create_user_command
 local augroup = function(name)
 	return vim.api.nvim_create_augroup(name, { clear = true })
 end
 
-vim.api.nvim_exec(
-	[[
-	        augroup AutoGroup
-	                autocmd!
-	        augroup END
-
-	        command! -nargs=* Autocmd autocmd AutoGroup <args>
-	        command! -nargs=* AutocmdFT autocmd AutoGroup FileType <args>
-        ]],
-	true
-)
+local auto_group = augroup("AutoGroup")
+usercmd("Autocmd", function(opts)
+	autocmd(opts.args, { group = auto_group })
+end, { nargs = "*" })
+usercmd("AutocmdFT", function(opts)
+	autocmd("FileType", {
+		group = auto_group,
+		pattern = opts.args,
+	})
+end, { nargs = "*" })
 
 -- local cmp_load_group = augroup('CustomCMPLoad')
 --
@@ -21,7 +21,7 @@ vim.api.nvim_exec(
 --     desc = 'Load auto completion for crates only when a toml file is open',
 --     pattern = 'toml',
 --     callback = function()
---         require('cmp').setup.buffer({ sources = { { name = 'crates' } } })
+--         safe_require('cmp').setup.buffer({ sources = { { name = 'crates' } } })
 --     end,
 --     group = cmp_load_group,
 -- })
@@ -30,7 +30,7 @@ vim.api.nvim_exec(
 --     desc = 'Load auto completion using the buffer only for md files',
 --     pattern = 'markdown',
 --     callback = function()
---         require('cmp').setup.buffer({ sources = { { name = 'buffer' } } })
+--         safe_require('cmp').setup.buffer({ sources = { { name = 'buffer' } } })
 --     end,
 --     group = cmp_load_group,
 -- })
@@ -39,11 +39,12 @@ vim.api.nvim_exec(
 --     desc = 'Stop snippets when you leave to normal mode',
 --     pattern = '*',
 --     callback = function()
+--         local luasnip = safe_require('luasnip')
 --         if ((vim.v.event.old_mode == 's' and vim.v.event.new_mode == 'n') or vim.v.event.old_mode == 'i')
---             and require('luasnip').session.current_nodes[vim.api.nvim_get_current_buf()]
---             and not require('luasnip').session.jump_active
+--             and luasnip.session.current_nodes[vim.api.nvim_get_current_buf()]
+--             and not luasnip.session.jump_active
 --         then
---             require('luasnip').unlink_current()
+--             luasnip.unlink_current()
 --         end
 --     end,
 -- })
@@ -80,7 +81,7 @@ autocmd({ "TextYankPost" }, {
 	desc = "Highlight yanked text",
 	pattern = "*",
 	callback = function()
-		require("vim.highlight").on_yank({ higroup = "IncSearch", timeout = 1000 })
+		safe_require("vim.highlight").on_yank({ higroup = "IncSearch", timeout = 1000 })
 	end,
 })
 
@@ -89,7 +90,7 @@ autocmd({ "BufWipeout" }, {
 	pattern = "NvimTree_*",
 	callback = function()
 		vim.schedule(function()
-			require("bufferline.state").set_offset(0)
+			safe_require("bufferline.state").set_offset(0)
 		end)
 	end,
 })
