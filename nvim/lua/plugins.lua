@@ -78,7 +78,7 @@ safe_require("lazy").setup({
 		dependencies = {
 			{
 				"neovim/nvim-lspconfig",
-				event = "BufEnter",
+				event = "BufReadPre",
 				dependencies = {
 					"williamboman/mason.nvim",
 					"williamboman/mason-lspconfig.nvim",
@@ -1218,7 +1218,7 @@ safe_require("lazy").setup({
 		"fatih/vim-go",
 		ft = { "go" },
 		config = function()
-			vim.g.go_fmt_command = "goimports"
+			vim.g.go_fmt_command = "gofumpt"
 		end,
 	},
 	{
