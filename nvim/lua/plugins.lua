@@ -1,5 +1,4 @@
 -- Initialize necessary paths
-vim.loader.enable()
 
 local fn = vim.fn
 local pkg_path = fn.stdpath("config") .. "/lazy"
