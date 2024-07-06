@@ -93,6 +93,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     mariadb-client \
     mtr \
     ncurses-term \
+    nkf \
     nodejs \
     npm \
     openssh-client \
