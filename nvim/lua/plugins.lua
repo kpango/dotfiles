@@ -73,119 +73,117 @@ local tools = {
 safe_require("lazy").setup({
 	-- General plugins
 	{
-		"neovim/nvim-lspconfig",
-		event = "BufReadPre",
-		dependencies = {
-			"williamboman/mason.nvim",
-			"williamboman/mason-lspconfig.nvim",
-		},
-		config = function()
-			local servers = {
-				gopls = {
-					settings = {
-						gopls = {
-							analyses = {
-								unusedparams = true,
-							},
-							staticcheck = true,
-						},
-					},
-				},
-				rust_analyzer = {
-					settings = {
-						["rust-analyzer"] = {
-							cargo = {
-								allFeatures = true,
-							},
-							checkOnSave = {
-								command = "clippy",
-							},
-						},
-					},
-				},
-				clangd = {},
-				dockerls = {},
-				lua_ls = { -- or "sumneko_lua"
-					settings = {
-						Lua = {
-							runtime = {
-								version = "LuaJIT",
-								path = vim.split(package.path, ";"),
-							},
-							diagnostics = {
-								globals = { "vim" },
-							},
-							workspace = {
-								library = vim.api.nvim_get_runtime_file("", true),
-								checkThirdParty = false,
-							},
-							telemetry = {
-								enable = false,
-							},
-						},
-					},
-				},
-				nimls = {},
-				pyright = {
-					settings = {
-						python = {
-							analysis = {
-								typeCheckingMode = "strict",
-							},
-						},
-					},
-				},
-				zls = {},
-			}
-
-			local default_config = {
-				on_attach = function(client, bufnr)
-					vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
-					if client.server_capabilities.document_highlight then
-						vim.api.nvim_create_augroup("lsp_document_highlight", { clear = false })
-						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-							group = "lsp_document_highlight",
-							buffer = bufnr,
-							callback = vim.lsp.buf.document_highlight,
-						})
-						vim.api.nvim_create_autocmd("CursorMoved", {
-							group = "lsp_document_highlight",
-							buffer = bufnr,
-							callback = vim.lsp.buf.clear_references,
-						})
-					end
-				end,
-				flags = {
-					debounce_text_changes = 150,
-				},
-			}
-			safe_require("mason").setup({
-				ui = {
-					icons = {
-						package_installed = "✓",
-						package_pending = "➜",
-						package_uninstalled = "✗",
-					},
-				},
-			})
-			safe_require("mason-lspconfig").setup({
-				ensure_installed = lsps,
-			})
-
-			local lspconfig = safe_require("lspconfig")
-			for _, server_name in ipairs(lsps) do
-				-- lspconfig[server].setup({ on_attach = on_attach })
-				local config = servers[server_name] or {}
-				config = vim.tbl_deep_extend("force", default_config, config)
-				lspconfig[server_name].setup(config)
-			end
-		end,
-	},
-	{
 		"hrsh7th/nvim-cmp",
 		event = { "InsertEnter", "CmdlineEnter" },
 		dependencies = {
-			{ "neovim/nvim-lspconfig", event = "BufReadPre" },
+			{
+				"neovim/nvim-lspconfig",
+				event = "BufEnter",
+				dependencies = {
+					"williamboman/mason.nvim",
+					"williamboman/mason-lspconfig.nvim",
+				},
+				config = function()
+					local servers = {
+						gopls = {
+							settings = {
+								gopls = {
+									analyses = {
+										unusedparams = true,
+									},
+									staticcheck = true,
+								},
+							},
+						},
+						rust_analyzer = {
+							settings = {
+								["rust-analyzer"] = {
+									cargo = {
+										allFeatures = true,
+									},
+									checkOnSave = {
+										command = "clippy",
+									},
+								},
+							},
+						},
+						clangd = {},
+						dockerls = {},
+						lua_ls = { -- or "sumneko_lua"
+							settings = {
+								Lua = {
+									runtime = {
+										version = "LuaJIT",
+										path = vim.split(package.path, ";"),
+									},
+									diagnostics = {
+										globals = { "vim" },
+									},
+									workspace = {
+										library = vim.api.nvim_get_runtime_file("", true),
+										checkThirdParty = false,
+									},
+									telemetry = {
+										enable = false,
+									},
+								},
+							},
+						},
+						nimls = {},
+						pyright = {
+							settings = {
+								python = {
+									analysis = {
+										typeCheckingMode = "strict",
+									},
+								},
+							},
+						},
+						zls = {},
+					}
+
+					local default_config = {
+						on_attach = function(client, bufnr)
+							vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
+							if client.server_capabilities.document_highlight then
+								vim.api.nvim_create_augroup("lsp_document_highlight", { clear = false })
+								vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+									group = "lsp_document_highlight",
+									buffer = bufnr,
+									callback = vim.lsp.buf.document_highlight,
+								})
+								vim.api.nvim_create_autocmd("CursorMoved", {
+									group = "lsp_document_highlight",
+									buffer = bufnr,
+									callback = vim.lsp.buf.clear_references,
+								})
+							end
+						end,
+						flags = {
+							debounce_text_changes = 150,
+						},
+					}
+					safe_require("mason").setup({
+						ui = {
+							icons = {
+								package_installed = "✓",
+								package_pending = "➜",
+								package_uninstalled = "✗",
+							},
+						},
+					})
+					safe_require("mason-lspconfig").setup({
+						ensure_installed = lsps,
+					})
+
+					local lspconfig = safe_require("lspconfig")
+					for _, server_name in ipairs(lsps) do
+						local config = servers[server_name] or {}
+						config = vim.tbl_deep_extend("force", default_config, config)
+						lspconfig[server_name].setup(config)
+					end
+				end,
+			},
 			{
 				"L3MON4D3/LuaSnip",
 				build = "make install_jsregexp",
@@ -568,61 +566,63 @@ safe_require("lazy").setup({
 		end,
 	},
 	{
-		"zbirenbaum/copilot.lua",
-		event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
-		config = function()
-			safe_require("copilot").setup({
-				panel = {
-					enabled = false,
-					auto_refresh = true,
-					keymap = {
-						jump_prev = "[[",
-						jump_next = "]]",
-						accept = "<CR>",
-						refresh = "gr",
-						open = "<M-CR>",
-					},
-					layout = {
-						position = "bottom", -- | top | left | right
-						ratio = 0.4,
-					},
-				},
-				suggestion = {
-					enabled = false,
-					auto_trigger = true,
-					debounce = 75,
-					keymap = {
-						accept = false,
-						accept_word = false,
-						accept_line = false,
-						next = "<M-]>",
-						prev = "<M-[>",
-						dismiss = "<C-]>",
-					},
-				},
-				filetypes = {
-					yaml = false,
-					markdown = false,
-					help = false,
-					gitcommit = false,
-					gitrebase = false,
-					hgcommit = false,
-					svn = false,
-					cvs = false,
-					["."] = false,
-				},
-				copilot_node_command = "node", -- Node.js version must be > 16.x
-				server_opts_overrides = {},
-				on_status_update = safe_require("lualine").refresh,
-			})
-		end,
-	},
-	{
 		"zbirenbaum/copilot-cmp",
 		after = { "copilot.lua", "nvim-cmp" },
-		event = { "InsertEnter", "LspAttach" },
+		event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
 		fix_pairs = true,
 		config = true,
+		dependencies = {
+			"zbirenbaum/copilot.lua",
+			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
+			config = function()
+				safe_require("copilot").setup({
+					panel = {
+						enabled = false,
+						auto_refresh = true,
+						keymap = {
+							jump_prev = "[[",
+							jump_next = "]]",
+							accept = "<CR>",
+							refresh = "gr",
+							open = "<M-CR>",
+						},
+						layout = {
+							position = "bottom", -- | top | left | right
+							ratio = 0.4,
+						},
+					},
+					suggestion = {
+						enabled = false,
+						auto_trigger = true,
+						debounce = 75,
+						keymap = {
+							accept = false,
+							accept_word = false,
+							accept_line = false,
+							next = "<M-]>",
+							prev = "<M-[>",
+							dismiss = "<C-]>",
+						},
+					},
+					filetypes = {
+						yaml = false,
+						markdown = false,
+						help = false,
+						gitcommit = false,
+						gitrebase = false,
+						hgcommit = false,
+						svn = false,
+						cvs = false,
+						["."] = false,
+					},
+					copilot_node_command = "node", -- Node.js version must be > 16.x
+					server_opts_overrides = {
+						autostart = true, -- Ensure Copilot autostarts
+					},
+					on_status_update = safe_require("lualine").refresh,
+				})
+			end,
+		},
 	},
 	{
 		"numToStr/Comment.nvim",
@@ -1196,7 +1196,6 @@ safe_require("lazy").setup({
 				zig = { "zigfmt" },
 			}
 
-			-- 各言語ごとのリンター設定 (必要に応じて追加)
 			lint.linters.golangcilint = {
 				cmd = "golangci-lint",
 				args = { "run", "--out-format", "json" },
