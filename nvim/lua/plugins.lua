@@ -80,8 +80,28 @@ safe_require("lazy").setup({
 				"neovim/nvim-lspconfig",
 				event = "BufReadPre",
 				dependencies = {
-					"williamboman/mason.nvim",
-					"williamboman/mason-lspconfig.nvim",
+					{
+						"williamboman/mason.nvim",
+						config = function()
+							safe_require("mason").setup({
+								ui = {
+									icons = {
+										package_installed = "✓",
+										package_pending = "➜",
+										package_uninstalled = "✗",
+									},
+								},
+							})
+						end,
+					},
+					{
+						"williamboman/mason-lspconfig.nvim",
+						config = function()
+							safe_require("mason-lspconfig").setup({
+								ensure_installed = lsps,
+							})
+						end,
+					},
 					{
 						"ray-x/go.nvim",
 						ft = { "go" },
@@ -93,6 +113,20 @@ safe_require("lazy").setup({
 						},
 					},
 					{ "hrsh7th/cmp-nvim-lsp", event = { "InsertEnter", "BufReadPre" } },
+					{
+						"ray-x/lsp_signature.nvim",
+						event = { "InsertEnter", "BufReadPre" },
+						config = function()
+							safe_require("lsp_signature").setup({
+								bind = true, -- This is mandatory, otherwise border config won't get registered.
+								handler_opts = {
+									border = "none",
+								},
+								padding = " ",
+								toggle_key = "<C-x>",
+							})
+						end,
+					},
 				},
 				config = function()
 					local servers = {
@@ -168,19 +202,6 @@ safe_require("lazy").setup({
 							vim.lsp.protocol.make_client_capabilities()
 						),
 					}
-					safe_require("mason").setup({
-						ui = {
-							icons = {
-								package_installed = "✓",
-								package_pending = "➜",
-								package_uninstalled = "✗",
-							},
-						},
-					})
-					safe_require("mason-lspconfig").setup({
-						ensure_installed = lsps,
-					})
-
 					local lspconfig = safe_require("lspconfig")
 					for _, server_name in ipairs(lsps) do
 						lspconfig[server_name].setup(vim.tbl_deep_extend("force", default_config, servers[server_name] or {}))
@@ -850,6 +871,12 @@ safe_require("lazy").setup({
 		config = true,
 	},
 	{
+		"norcalli/nvim-colorizer.lua",
+		config = function()
+			safe_require("colorizer").setup()
+		end,
+	},
+	{
 		"lewis6991/gitsigns.nvim",
 		event = "BufReadPost",
 		config = true,
@@ -1036,9 +1063,35 @@ safe_require("lazy").setup({
 			telescope.setup({
 				defaults = {
 					mappings = {
+						n = {
+							["q"] = actions.close,
+						},
 						i = {
 							["<C-n>"] = safe_require("telescope.actions").move_selection_next,
 							["<C-p>"] = safe_require("telescope.actions").move_selection_previous,
+						},
+					},
+				},
+				extensions = {
+					file_browser = {
+						theme = "dropdown",
+						-- disables netrw and use telescope-file-browser in its place
+						hijack_netrw = true,
+						mappings = {
+							-- your custom insert mode mappings
+							["i"] = {
+								["<C-w>"] = function()
+									vim.cmd("normal vbd")
+								end,
+							},
+							["n"] = {
+								-- your custom normal mode mappings
+								["N"] = fb_actions.create,
+								["h"] = fb_actions.goto_parent_dir,
+								["/"] = function()
+									vim.cmd("startinsert")
+								end,
+							},
 						},
 					},
 				},

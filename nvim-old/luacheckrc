@@ -1,5 +1,0 @@
-
-std = {
-    cache = true
-    read_globals = { 'vim' }, -- these globals can only be accessed.
-}
