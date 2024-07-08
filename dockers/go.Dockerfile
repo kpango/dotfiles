@@ -111,6 +111,19 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
+FROM --platform=$BUILDPLATFORM go-base AS crlfmt
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -x && cd "$(mktemp -d)" \
+    && BIN_NAME="crlfmt" \
+    && REPO="cockroachdb/${BIN_NAME}" \
+    && go install \
+    ${GO_FLAGS} \
+    "${GITHUBCOM}/${REPO}@upgrade" \
+    && chmod a+x "${GOBIN}/${BIN_NAME}" \
+    && upx -9 "${GOBIN}/${BIN_NAME}"
+
 # FROM --platform=$BUILDPLATFORM go-base AS dataloaden
 # RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
 #     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
@@ -1136,6 +1149,7 @@ FROM --platform=$BUILDPLATFORM go-base AS go-bins
 COPY --from=air $GOBIN/air $GOBIN/air
 COPY --from=buf $GOBIN/buf $GOBIN/buf
 COPY --from=chidley $GOBIN/chidley $GOBIN/chidley
+COPY --from=crlfmt $GOBIN/crlfmt $GOBIN/crlfmt
 # COPY --from=dataloaden $GOBIN/dataloaden $GOBIN/dataloaden
 COPY --from=dagger $GOBIN/dagger $GOBIN/dagger
 COPY --from=dbmate $GOBIN/dbmate $GOBIN/dbmate
