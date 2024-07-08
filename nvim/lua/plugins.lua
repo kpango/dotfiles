@@ -16,10 +16,12 @@ if not vim.loop.fs_stat(lazypath) then
 	})
 end
 
+-- Add lazy.nvim to runtime path
 vim.opt.rtp:prepend(lazypath)
 vim.opt.completeopt = { "menuone", "noselect", "noinsert", "preview" }
 vim.opt.shortmess:append("c")
 
+-- Function to safely require a module
 local function safe_require(module_name)
 	local status, module = pcall(require, module_name)
 	if not status then
@@ -29,6 +31,7 @@ local function safe_require(module_name)
 	return module
 end
 
+-- List of languages for nvim-treesitter
 local languages = {
 	"bash",
 	"c",
@@ -47,6 +50,7 @@ local languages = {
 	"zig",
 }
 
+-- List of LSP servers to ensure installed
 local lsps = {
 	"clangd",
 	"dockerls",
@@ -58,6 +62,7 @@ local lsps = {
 	"zls",
 }
 
+-- List of development tools to ensure installed
 local tools = {
 	"delve",
 	"gofumpt",
@@ -69,6 +74,7 @@ local tools = {
 	"trivy",
 }
 
+-- Setup lazy.nvim with plugins
 safe_require("lazy").setup({
 	-- General plugins
 	{
@@ -144,7 +150,7 @@ safe_require("lazy").setup({
 						},
 						clangd = {},
 						dockerls = {},
-						lua_ls = { -- or "sumneko_lua"
+						lua_ls = {
 							settings = {
 								Lua = {
 									runtime = {
@@ -1104,7 +1110,7 @@ safe_require("lazy").setup({
 				command = "FormatWrite",
 			})
 
-			-- フォーマッタの設定
+			-- Formatter settings
 			safe_require("formatter").setup({
 				logging = false,
 				filetype = {
@@ -1252,7 +1258,7 @@ safe_require("lazy").setup({
 			})
 		end,
 	},
-	-- linter
+	-- Linter settings
 	{
 		"mfussenegger/nvim-lint",
 		config = function()
@@ -1344,8 +1350,10 @@ safe_require("lazy").setup({
 	root = pkg_path,
 })
 
+-- Load onedark colorscheme
 safe_require("onedark").load()
 
+-- Customize LSP diagnostic handler
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.diagnostic.on_publish_diagnostics, {
 	underline = true,
 	virtual_text = {
