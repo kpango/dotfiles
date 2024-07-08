@@ -137,7 +137,7 @@ if [ -z $DOTENV_LOADED ]; then
 
     if type gcloud >/dev/null 2>&1; then
         if [ -d /usr/lib/google-cloud-sdk ]; then
-	    export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
+            export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
         fi
         export USE_GKE_GCLOUD_AUTH_PLUGIN=True
     fi
@@ -1566,7 +1566,7 @@ if [ -z $ZSH_LOADED ]; then
             make helm/docs/vald-helm-operator
             make -k update
             make format/yaml
-	    chword $GOPATH/src/github.com/vdaas/vald "interface\{\}" "any"
+            chword $GOPATH/src/github.com/vdaas/vald "interface\{\}" "any"
         }
         alias valdup=valdup
         valddep() {
