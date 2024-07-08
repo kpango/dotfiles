@@ -153,17 +153,6 @@ safe_require("lazy").setup({
 						safe_require("luasnip").lsp_expand(args.body)
 					end,
 				},
-				window = {
-					completion = cmp.config.window.bordered({
-						border = "single",
-						col_offset = -3,
-						side_padding = 0,
-					}),
-					documentation = cmp.config.window.bordered({
-						border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-						winhiglight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
-					}),
-				},
 				sources = cmp.config.sources({
 					{ name = "copilot_cmp", keyword_length = 2 },
 					{ name = "nvim_lsp" },
@@ -185,6 +174,17 @@ safe_require("lazy").setup({
 					{ name = "cmdline" },
 					{ name = "git" },
 				}),
+				window = {
+					completion = cmp.config.window.bordered({
+						border = "single",
+						col_offset = -3,
+						side_padding = 0,
+					}),
+					documentation = cmp.config.window.bordered({
+						border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+						winhiglight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
+					}),
+				},
 				formatting = {
 					format = safe_require("lspkind").cmp_format({
 						mode = "symbol_text",

@@ -233,7 +233,6 @@ safe_require("lazy").setup({
 				local col = vim.fn.col(".") - 1
 				return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
 			end
-
 			cmp.setup({
 				flags = {
 					debounce_text_changes = 150,
@@ -289,12 +288,13 @@ safe_require("lazy").setup({
 				sources = cmp.config.sources({
 					-- Copilot Source
 					{ name = "copilot", group_index = 2 },
+					{ name = "copilot_cmp", group_index = 2 },
 					-- Other Sources
 					{ name = "nvim_lsp", group_index = 2 },
 					{ name = "nvim_lsp_signature_help" },
-					{ name = "path", group_index = 2 },
-					{ name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, group_index = 2 },
 					{ name = "luasnip", group_index = 2 },
+					{ name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, group_index = 2 },
+					{ name = "path", group_index = 2 },
 					{
 						name = "look",
 						keyword_length = 2,
@@ -815,6 +815,41 @@ safe_require("lazy").setup({
 		},
 	},
 	{
+		"akinsho/bufferline.nvim",
+		version = "*",
+		dependencies = "nvim-tree/nvim-web-devicons",
+		config = true,
+		opts = {
+			options = {
+				mode = "tabs",
+				separator_style = "slant",
+				always_show_bufferline = false,
+				show_buffer_close_icons = false,
+				show_close_icon = false,
+				color_icons = true,
+			},
+			highlights = {
+				separator = {
+					fg = "#073642",
+					bg = "#002b36",
+				},
+				separator_selected = {
+					fg = "#073642",
+				},
+				background = {
+					fg = "#657b83",
+					bg = "#002b36",
+				},
+				buffer_selected = {
+					fg = "#fdf6e3",
+				},
+				fill = {
+					bg = "#073642",
+				},
+			},
+		},
+	},
+	{
 		"windwp/nvim-autopairs",
 		opts = {
 			disable_filetype = { "TelescopePrompt", "vim" },
@@ -1269,3 +1304,16 @@ safe_require("lazy").setup({
 })
 
 safe_require("onedark").load()
+
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.diagnostic.on_publish_diagnostics, {
+	underline = true,
+	virtual_text = {
+		spacing = 4,
+		prefix = "",
+		format = function(diagnostic, virtual_text)
+			return string.format("%s %s (%s: %s)", virtual_text, diagnostic.message, diagnostic.source, diagnostic.code)
+		end,
+	},
+	signs = true,
+	update_in_insert = false,
+})
