@@ -1566,6 +1566,7 @@ if [ -z $ZSH_LOADED ]; then
             make helm/docs/vald-helm-operator
             make -k update
             make format/yaml
+	    chword $GOPATH/src/github.com/vdaas/vald "interface\{\}" "any"
         }
         alias valdup=valdup
         valddep() {
