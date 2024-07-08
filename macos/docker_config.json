@@ -1,7 +1,6 @@
 {
-  "auths": {},
-  "credsStore": "osxkeychain",
-  "experimental": "enabled",
-  "stackOrchestrator": "swarm",
-  "currentContext": "rancher-desktop"
+	"auths": {},
+	"credsStore": "osxkeychain",
+	"experimental": "enabled",
+	"currentContext": "orbstack"
 }
