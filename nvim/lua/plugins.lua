@@ -213,6 +213,7 @@ safe_require("lazy").setup({
 				event = "InsertEnter",
 				dependencies = { "nvim-lua/plenary.nvim" },
 			},
+			{ "octaltree/cmp-look", event = "InsertEnter" },
 			{ "onsails/lspkind.nvim", event = "InsertEnter" },
 			{ "rafamadriz/friendly-snippets", event = "InsertEnter" },
 			{ "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
@@ -294,16 +295,8 @@ safe_require("lazy").setup({
 					{ name = "nvim_lsp_signature_help" },
 					{ name = "luasnip", group_index = 2 },
 					{ name = "buffer", get_bufnrs = vim.api.nvim_list_bufs, group_index = 2 },
+					{ name = "look", group_index = 2 },
 					{ name = "path", group_index = 2 },
-					{
-						name = "look",
-						keyword_length = 2,
-						option = {
-							convert_case = true,
-							loud = true,
-							-- dict = '/usr/share/dict/words'
-						},
-					},
 					{ name = "cmdline" },
 					{ name = "git" },
 				}),
@@ -327,7 +320,7 @@ safe_require("lazy").setup({
 				window = {
 					completion = cmp.config.window.bordered({
 						border = "single",
-						col_offset = 0,
+						col_offset = -3,
 						side_padding = 0,
 					}),
 					documentation = cmp.config.window.bordered({
