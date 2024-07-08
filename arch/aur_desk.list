@@ -17,6 +17,7 @@ milcheck
 mkinitcpio-firmware
 netrc
 ngrok
+nkf-git
 noto-fonts-emoji-git
 pakku
 paru-bin
