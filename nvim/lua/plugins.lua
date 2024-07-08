@@ -1,5 +1,4 @@
 -- Initialize necessary paths
-
 local fn = vim.fn
 local pkg_path = fn.stdpath("config") .. "/lazy"
 local lazypath = pkg_path .. "/lazy.nvim"
@@ -632,7 +631,9 @@ safe_require("lazy").setup({
 					server_opts_overrides = {
 						autostart = true, -- Ensure Copilot autostarts
 					},
-					on_status_update = safe_require("lualine").refresh,
+					on_status_update = function()
+						safe_require("lualine").refresh()
+					end,
 				})
 			end,
 		},
