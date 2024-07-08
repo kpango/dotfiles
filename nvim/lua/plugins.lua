@@ -871,12 +871,6 @@ safe_require("lazy").setup({
 		config = true,
 	},
 	{
-		"norcalli/nvim-colorizer.lua",
-		config = function()
-			safe_require("colorizer").setup()
-		end,
-	},
-	{
 		"lewis6991/gitsigns.nvim",
 		event = "BufReadPost",
 		config = true,
