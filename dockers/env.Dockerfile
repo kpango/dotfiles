@@ -9,30 +9,30 @@ LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
-ENV AARCH aarch_64
-ENV XARCH x86_64
-ENV GITHUBCOM github.com
-ENV GITHUB https://${GITHUBCOM}
-ENV API_GITHUB https://api.${GITHUBCOM}/repos
-ENV RAWGITHUB https://raw.githubusercontent.com
-ENV GOOGLE https://storage.googleapis.com
-ENV RELEASE_DL releases/download
-ENV RELEASE_LATEST releases/latest
-ENV LOCAL /usr/local
-ENV BIN_PATH ${LOCAL}/bin
+ENV AARCH=aarch_64
+ENV XARCH=x86_64
+ENV GITHUBCOM=github.com
+ENV GITHUB=https://${GITHUBCOM}
+ENV API_GITHUB=https://api.${GITHUBCOM}/repos
+ENV RAWGITHUB=https://raw.githubusercontent.com
+ENV GOOGLE=https://storage.googleapis.com
+ENV RELEASE_DL=releases/download
+ENV RELEASE_LATEST=releases/latest
+ENV LOCAL=/usr/local
+ENV BIN_PATH=${LOCAL}/bin
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG GROUP_IDS=${GROUP_ID}
 ARG WHOAMI=kpango
 
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
-ENV BASE_DIR /home
-ENV USER ${WHOAMI}
-ENV HOME ${BASE_DIR}/${USER}
-ENV SHELL /usr/bin/zsh
-ENV GROUP sudo,root,users,docker,wheel
-ENV UID ${USER_ID}
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
+ENV BASE_DIR=/home
+ENV USER=${WHOAMI}
+ENV HOME=${BASE_DIR}/${USER}
+ENV SHELL=/usr/bin/zsh
+ENV GROUP=sudo,root,users,docker,wheel
+ENV UID=${USER_ID}
 
 RUN groupadd --non-unique --gid ${GROUP_ID} docker \
     && groupadd --non-unique --gid ${GROUP_ID} wheel \
@@ -185,10 +185,10 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
 
 FROM --platform=$BUILDPLATFORM env-base AS ngt
 WORKDIR /tmp
-ENV NGT_VERSION main
+ENV NGT_VERSION=main
 ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
-ENV CXXFLAGS ${CFLAGS}
-ENV LDFLAGS="-L/etc/altenatives ${LDFLAGS}"
+ENV CXXFLAGS=${CFLAGS}
+ENV LDFLAGS="-L/etc/altenatives=${LDFLAGS}"
 RUN echo $(ldconfig) \
     && echo ${LDFLAGS} \
     && rm -rf /tmp/* /var/cache \

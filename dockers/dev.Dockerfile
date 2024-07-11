@@ -24,19 +24,19 @@ ARG WHOAMI=kpango
 
 LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
-ENV GROUP sudo,root,users,docker,wheel
-ENV TZ Asia/Tokyo
-ENV HOME /home/${WHOAMI}
-ENV GOPATH $HOME/go
-ENV GOROOT /usr/local/go
-ENV GCLOUD_PATH /google-cloud-sdk
+ENV GROUP=sudo,root,users,docker,wheel
+ENV TZ=Asia/Tokyo
+ENV HOME=/home/${WHOAMI}
+ENV GOPATH=$HOME/go
+ENV GOROOT=/usr/local/go
+ENV GCLOUD_PATH=/google-cloud-sdk
 ENV RUST_HOME=/usr/local/lib/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
-ENV DART_PATH /usr/lib/dart
-ENV NVIM_HOME $HOME/.config/nvim
-ENV LIBRARY_PATH /usr/local/lib:$LIBRARY_PATH
-ENV PATH $GOPATH/bin:/usr/local/go/bin:$CARGO_HOME/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
+ENV DART_PATH=/usr/lib/dart
+ENV NVIM_HOME=$HOME/.config/nvim
+ENV LIBRARY_PATH=/usr/local/lib:$LIBRARY_PATH
+ENV PATH=$GOPATH/bin:/usr/local/go/bin:$CARGO_HOME/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
 
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-compose /usr/lib/docker/cli-plugins/docker-compose

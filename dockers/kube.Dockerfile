@@ -5,17 +5,17 @@ ARG TARGETOS
 ARG TARGETARCH
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
-ENV AARCH aarch64
-ENV XARCH x86_64
-ENV GITHUBCOM github.com
-ENV GITHUB https://${GITHUBCOM}
-ENV API_GITHUB https://api.github.com/repos
-ENV RAWGITHUB https://raw.githubusercontent.com
-ENV GOOGLE https://storage.googleapis.com
-ENV RELEASE_DL releases/download
-ENV RELEASE_LATEST releases/latest
-ENV LOCAL /usr/local
-ENV BIN_PATH ${LOCAL}/bin
+ENV AARCH=aarch64
+ENV XARCH=x86_64
+ENV GITHUBCOM=github.com
+ENV GITHUB=https://${GITHUBCOM}
+ENV API_GITHUB=https://api.github.com/repos
+ENV RAWGITHUB=https://raw.githubusercontent.com
+ENV GOOGLE=https://storage.googleapis.com
+ENV RELEASE_DL=releases/download
+ENV RELEASE_LATEST=releases/latest
+ENV LOCAL=/usr/local
+ENV BIN_PATH=${LOCAL}/bin
 
 RUN mkdir -p "${BIN_PATH}"
 
@@ -23,9 +23,9 @@ FROM --platform=$BUILDPLATFORM kpango/go:latest AS golang
 FROM --platform=$BUILDPLATFORM kube-base AS kube-golang-base
 COPY --from=golang /opt/go /usr/local/go
 COPY --from=golang /go /go
-ENV GOPATH /go
-ENV GOROOT /usr/local/go
-ENV PATH $PATH:$GOPATH/bin:$GOROOT/bin
+ENV GOPATH=/go
+ENV GOROOT=/usr/local/go
+ENV PATH=$PATH:$GOPATH/bin:$GOROOT/bin
 COPY go.env $GOROOT/go.env
 
 FROM --platform=$BUILDPLATFORM kube-base AS kubectl
@@ -595,10 +595,10 @@ ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango
 LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
-ENV BIN_PATH /usr/local/bin
-ENV LIB_PATH /usr/local/libexec
-ENV K8S_PATH /usr/k8s/bin
-ENV K8S_LIB_PATH /usr/k8s/lib
+ENV BIN_PATH=/usr/local/bin
+ENV LIB_PATH=/usr/local/libexec
+ENV K8S_PATH=/usr/k8s/bin
+ENV K8S_LIB_PATH=/usr/k8s/lib
 
 COPY --from=check-ownerreferences ${BIN_PATH}/kubectl-check-ownerreferences ${K8S_PATH}/kubectl-check-ownerreferences
 COPY --from=helm ${BIN_PATH}/helm ${K8S_PATH}/helm

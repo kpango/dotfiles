@@ -9,18 +9,18 @@ LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
-ENV XARCH x86_64
-ENV AARCH aarch64
-ENV DEBIAN_FRONTEND noninteractive
-ENV INITRD No
-ENV LANG en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-ENV TZ Asia/Tokyo
-ENV CC /usr/bin/clang
-ENV CXX /usr/bin/clang++
-ENV CLANG_PATH /usr/local/clang
-ENV PATH ${PATH}:${CLANG_PATH}/bin
-ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
+ENV XARCH=x86_64
+ENV AARCH=aarch64
+ENV DEBIAN_FRONTEND=noninteractive
+ENV INITRD=No
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV TZ=Asia/Tokyo
+ENV CC=/usr/bin/clang
+ENV CXX=/usr/bin/clang++
+ENV CLANG_PATH=/usr/local/clang
+ENV PATH=${PATH}:${CLANG_PATH}/bin
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CLANG_PATH}/lib
 
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \

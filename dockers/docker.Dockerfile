@@ -6,15 +6,15 @@ ARG TARGETARCH
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
-ENV AARCH aarch64
-ENV XARCH x86_64
-ENV GITHUB https://github.com
-ENV API_GITHUB https://api.github.com/repos
-ENV GOOGLE https://storage.googleapis.com
-ENV RELEASE_DL releases/download
-ENV RELEASE_LATEST releases/latest
-ENV LOCAL /usr/local
-ENV BIN_PATH ${LOCAL}/bin
+ENV AARCH=aarch64
+ENV XARCH=x86_64
+ENV GITHUB=https://github.com
+ENV API_GITHUB=https://api.github.com/repos
+ENV GOOGLE=https://storage.googleapis.com
+ENV RELEASE_DL=releases/download
+ENV RELEASE_LATEST=releases/latest
+ENV LOCAL=/usr/local
+ENV BIN_PATH=${LOCAL}/bin
 
 FROM --platform=$BUILDPLATFORM aquasec/trivy:latest AS trivy
 
@@ -94,7 +94,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && upx -9 ${BIN_PATH}/${BIN_NAME}
 
 FROM --platform=$BUILDPLATFORM docker-base AS buildx
-ENV CLI_LIB_PATH /usr/lib/docker/cli-plugins
+ENV CLI_LIB_PATH=/usr/lib/docker/cli-plugins
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mkdir -p ${CLI_LIB_PATH} \
     && NAME="buildx" \
@@ -221,10 +221,10 @@ RUN upx -9 \
 
 FROM --platform=$BUILDPLATFORM kpango/base:latest AS docker
 
-ENV BIN_PATH /usr/local/bin
-ENV LIB_PATH /usr/local/libexec
-ENV DOCKER_PATH /usr/docker/bin
-ENV DOCKER_LIB_PATH /usr/lib/docker
+ENV BIN_PATH=/usr/local/bin
+ENV LIB_PATH=/usr/local/libexec
+ENV DOCKER_PATH=/usr/docker/bin
+ENV DOCKER_LIB_PATH=/usr/lib/docker
 
 COPY --from=buildx ${DOCKER_LIB_PATH}/cli-plugins/docker-buildx ${DOCKER_LIB_PATH}/cli-plugins/docker-buildx
 COPY --from=common ${BIN_PATH}/dind ${DOCKER_PATH}/dind

@@ -6,27 +6,27 @@ ARG TARGETARCH
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
-ENV AARCH aarch_64
-ENV XARCH x86_64
+ENV AARCH=aarch_64
+ENV XARCH=x86_64
 
-ENV GO111MODULE on
-ENV DEBIAN_FRONTEND noninteractive
-ENV INITRD No
-ENV LANG en_US.UTF-8
-ENV GOROOT /opt/go
-ENV GOPATH /go
-ENV GOBIN ${GOPATH}/bin
-ENV GOARCH ${ARCH}
-ENV GOOS ${OS}
+ENV GO111MODULE=on
+ENV DEBIAN_FRONTEND=noninteractive
+ENV INITRD=No
+ENV LANG=en_US.UTF-8
+ENV GOROOT=/opt/go
+ENV GOPATH=/go
+ENV GOBIN=${GOPATH}/bin
+ENV GOARCH=${ARCH}
+ENV GOOS=${OS}
 ENV GOFLAGS "-ldflags=-w -ldflags=-s"
-ENV GOORG "golang.org"
-ENV GODEV "https://go.dev"
-ENV GITHUBCOM github.com
-ENV API_GITHUB https://api.${GITHUBCOM}/repos
-ENV GITHUB https://${GITHUBCOM}
-ENV PATH ${PATH}:${GOROOT}/bin:${GOBIN}
-ENV RELEASE_DL releases/download
-ENV RELEASE_LATEST releases/latest
+ENV GOORG="golang.org"
+ENV GODEV="https://go.dev"
+ENV GITHUBCOM=github.com
+ENV API_GITHUB=https://api.${GITHUBCOM}/repos
+ENV GITHUB=https://${GITHUBCOM}
+ENV PATH=${PATH}:${GOROOT}/bin:${GOBIN}
+ENV RELEASE_DL=releases/download
+ENV RELEASE_LATEST=releases/latest
 ENV GO_FLAGS "-trimpath -modcacherw -a -tags netgo"
 
 WORKDIR /tmp
@@ -523,7 +523,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
 
 FROM --platform=$BUILDPLATFORM golangci/golangci-lint:latest AS golangci-lint-base
 FROM --platform=$BUILDPLATFORM go-base AS golangci-lint
-ENV BIN_NAME golangci-lint
+ENV BIN_NAME=golangci-lint
 COPY --from=golangci-lint-base /usr/bin/${BIN_NAME} ${GOBIN}/${BIN_NAME}
 RUN upx -9 ${GOBIN}/${BIN_NAME}
 
@@ -1229,8 +1229,8 @@ COPY --from=xo $GOBIN/xo $GOBIN/xo
 COPY --from=yamlfmt $GOBIN/yamlfmt $GOBIN/yamlfmt
 
 FROM --platform=$BUILDPLATFORM scratch
-ENV GOROOT /opt/go
-ENV GOPATH /go
+ENV GOROOT=/opt/go
+ENV GOPATH=/go
 COPY --from=go $GOROOT/bin $GOROOT/bin
 COPY --from=go $GOROOT/src $GOROOT/src
 COPY --from=go $GOROOT/lib $GOROOT/lib

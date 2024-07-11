@@ -3,12 +3,12 @@ FROM --platform=$BUILDPLATFORM kpango/base:latest AS rust-base
 
 ARG TOOLCHAIN=nightly
 
-ENV HOME /root
+ENV HOME=/root
 ENV RUST_HOME=/usr/local/lib/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
-ENV BIN_PATH ${CARGO_HOME}/bin
-ENV PATH ${BIN_PATH}:$PATH
+ENV BIN_PATH=${CARGO_HOME}/bin
+ENV PATH=${BIN_PATH}:$PATH
 
 RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} sh -s -- --default-toolchain nightly -y \
     && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup install stable \
@@ -211,11 +211,11 @@ RUN rustup update stable \
     xh
 
 FROM --platform=$BUILDPLATFORM scratch AS rust
-ENV HOME /root
+ENV HOME=/root
 ENV RUST_HOME=/usr/local/lib/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
-ENV BIN_PATH ${CARGO_HOME}/bin
+ENV BIN_PATH=${CARGO_HOME}/bin
 
 COPY --from=rust-base ${CARGO_HOME} ${CARGO_HOME}
 COPY --from=rust-base ${RUSTUP_HOME}/settings.toml ${RUSTUP_HOME}/settings.toml
