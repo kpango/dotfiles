@@ -74,6 +74,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     bash \
     ccls \
     clang-format \
+    clang-tidy \
     clangd \
     diffutils \
     exuberant-ctags \
