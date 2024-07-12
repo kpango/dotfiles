@@ -187,7 +187,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
 FROM --platform=$BUILDPLATFORM env-base AS ngt
 WORKDIR /tmp
 ENV NGT_VERSION=main
-ENV CFLAGS "-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
+ENV CFLAGS="-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS=${CFLAGS}
 ENV LDFLAGS="-L/etc/altenatives=${LDFLAGS}"
 RUN echo $(ldconfig) \
