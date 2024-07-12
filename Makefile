@@ -306,6 +306,8 @@ docker_build:
 		--build-arg GROUP_IDS="$(GROUP_IDS)" \
 		--build-arg USER_ID="$(USER_ID)" \
 		--build-arg WHOAMI="$(USER)" \
+		--build-arg USER="$(USER)" \
+		--build-arg HOME="$(HOME)" \
 		--builder "$(DOCKER_BUILDER_NAME)" \
 		--cache-to type=registry,ref=$(USER)/$(NAME):buildcache,mode=max \
 		--cache-from type=registry,ref=$(USER)/$(NAME):buildcache \

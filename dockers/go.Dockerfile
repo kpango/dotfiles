@@ -3,6 +3,8 @@ FROM --platform=$BUILDPLATFORM kpango/base:latest AS go-base
 
 ARG TARGETOS
 ARG TARGETARCH
+ARG USER=kpango
+ARG HOME=/home/${USER}
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
@@ -18,7 +20,7 @@ ENV GOPATH=/go
 ENV GOBIN=${GOPATH}/bin
 ENV GOARCH=${ARCH}
 ENV GOOS=${OS}
-ENV GOFLAGS "-ldflags=-w -ldflags=-s"
+ENV GOFLAGS="-ldflags=-w -ldflags=-s"
 ENV GOORG="golang.org"
 ENV GODEV="https://go.dev"
 ENV GITHUBCOM=github.com
@@ -27,7 +29,7 @@ ENV GITHUB=https://${GITHUBCOM}
 ENV PATH=${PATH}:${GOROOT}/bin:${GOBIN}
 ENV RELEASE_DL=releases/download
 ENV RELEASE_LATEST=releases/latest
-ENV GO_FLAGS "-trimpath -modcacherw -a -tags netgo"
+ENV GO_FLAGS="-trimpath -modcacherw -a -tags netgo"
 
 WORKDIR /tmp
 
