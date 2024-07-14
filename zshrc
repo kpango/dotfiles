@@ -235,15 +235,11 @@ if [ -z $DOTENV_LOADED ]; then
         else
             export LD_LIBRARY_PATH=/usr/lib/clang/*/lib:$LD_LIBRARY_PATH
         fi
-        export LDFLAGS="-g -flto -march=native -fno-plt -Wl,-Ofast,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden"
-        export CFLAGS=$LDFLAGS
-        export CPPFLAGS=$LDFLAGS
-        export CXXFLAGS=$LDFLAGS
+        export LDFLAGS="-g -flto -march=native -fno-plt -Wl,-Ofast,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden -L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS"
         export FFLAGS=$LDFLAGS
         #CLANG
         export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS
         export CPPFLAGS=$CFLAGS
-        export LDFLAGS=-L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS
         export C_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$C_INCLUDE_PATH
         export CPLUS_INCLUDE_PATH=$LLVM_HOME/include:$QT_HOME/include:$CPLUS_INCLUDE_PATH
     fi
