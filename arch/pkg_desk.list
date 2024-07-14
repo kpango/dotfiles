@@ -85,6 +85,7 @@ psensor
 pulseaudio-alsa
 ranger
 rclone
+rebuild-detector
 ripgrep
 rmlint
 seatd
