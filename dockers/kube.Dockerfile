@@ -256,28 +256,6 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && mv "${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-# FROM --platform=$BUILDPLATFORM kube-golang-base AS kprofefe
-# RUN set -x; cd "$(mktemp -d)" \
-#     && NAME="kube-profefe" \
-#     && REPO="gianarb/${NAME}" \
-#     && BIN_NAME="kprofefe" \
-#     &&GO111MODULE=on go install  \
-#       --ldflags "-s -w" --trimpath \
-#       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
-#     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-#
-# FROM --platform=$BUILDPLATFORM kube-golang-base AS kubectl-profefe
-# RUN set -x; cd "$(mktemp -d)" \
-#     && NAME="kube-profefe" \
-#     && REPO="gianarb/${NAME}" \
-#     && BIN_NAME="kubectl-profefe" \
-#     &&GO111MODULE=on go install  \
-#       --ldflags "-s -w" --trimpath \
-#       "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@master" \
-#     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
-
 FROM --platform=$BUILDPLATFORM kube-base AS conftest
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && BIN_NAME="conftest" \
@@ -490,35 +468,9 @@ RUN set -x; cd "$(mktemp -d)" \
     && mv "${GOPATH}/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
-# FROM --platform=$BUILDPLATFORM kube-base AS wasme
-# RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
-#     && NAME="wasme" \
-#     && REPO="solo-io/wasm" \
-#     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-#     && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
-#     && unset HEADER \
-#     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-#     && if [ -z "${VERSION}" ]; then \
-#          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-#          BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-#          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-#        fi \
-#     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-#     && BIN_NAME="${NAME}-${OS}-${ARCH}" \
-#     && curl -fsSLo "${BIN_PATH}/${NAME}" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${BIN_NAME}" \
-#     && chmod a+x "${BIN_PATH}/${NAME}" \
-#     && upx -9 "${BIN_PATH}/${NAME}"
-
 FROM --platform=$BUILDPLATFORM kube-base AS telepresence
 RUN curl -fsSLo ${BIN_PATH}/telepresence "https://app.getambassador.io/download/tel2/${OS}/${ARCH}/nightly/telepresence" \
     && chmod a+x "${BIN_PATH}/telepresence"
-
-# FROM --platform=$BUILDPLATFORM kube-base AS pixie
-# RUN set -x; cd "$(mktemp -d)" \
-#     && BIN_NAME="pixie" \
-#     && curl -fsSLo "${BIN_PATH}/${BIN_NAME}" "${GOOGLE}/${BIN_NAME}-prod-artifacts/cli/latest/cli_${OS}_${ARCH}" \
-#     && chmod a+x "${BIN_PATH}/${BIN_NAME}" \
-#     && upx -9 "${BIN_PATH}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM kube-golang-base AS helmfile
 RUN set -x; cd "$(mktemp -d)" \
@@ -609,7 +561,6 @@ COPY --from=k3d ${BIN_PATH}/k3d ${K8S_PATH}/k3d
 COPY --from=k8sviz ${BIN_PATH}/k8sviz ${K8S_PATH}/k8sviz
 COPY --from=k9s ${BIN_PATH}/k9s ${K8S_PATH}/k9s
 COPY --from=kind ${BIN_PATH}/kind ${K8S_PATH}/kind
-# COPY --from=kprofefe ${BIN_PATH}/kprofefe ${K8S_PATH}/kprofefe
 COPY --from=kpt ${BIN_PATH}/kpt ${K8S_PATH}/kpt
 COPY --from=kdash ${BIN_PATH}/kdash ${K8S_PATH}/kdash
 COPY --from=krew ${BIN_PATH}/kubectl-krew ${K8S_PATH}/kubectl-krew
@@ -624,7 +575,6 @@ COPY --from=kubectl ${BIN_PATH}/kubectl ${K8S_PATH}/kubectl
 COPY --from=kubectl-fzf-server ${BIN_PATH}/kubectl-fzf-server ${K8S_PATH}/kubectl-fzf-server
 COPY --from=kubectl-fzf-completion ${BIN_PATH}/kubectl-fzf-completion ${K8S_PATH}/kubectl-fzf-completion
 COPY --from=kubectl-gadget ${BIN_PATH}/kubectl-gadget ${K8S_PATH}/kubectl-gadget
-# COPY --from=kubectl-profefe ${BIN_PATH}/kubectl-profefe ${K8S_PATH}/kubectl-profefe
 COPY --from=kubectl-rolesum ${BIN_PATH}/kubectl-rolesum ${K8S_PATH}/kubectl-rolesum
 COPY --from=kubectl-trace ${BIN_PATH}/kubectl-trace ${K8S_PATH}/kubectl-trace
 COPY --from=kubectl-tree ${BIN_PATH}/kubectl-tree ${K8S_PATH}/kubectl-tree
@@ -635,9 +585,7 @@ COPY --from=kubens ${BIN_PATH}/kubens ${K8S_PATH}/kubens
 COPY --from=kubeval ${BIN_PATH}/kubeval ${K8S_PATH}/kubeval
 COPY --from=kustomize ${BIN_PATH}/kustomize ${K8S_PATH}/kustomize
 COPY --from=linkerd ${BIN_PATH}/linkerd ${K8S_PATH}/linkerd
-# COPY --from=pixie ${BIN_PATH}/pixie ${K8S_PATH}/pixie
 COPY --from=popeye ${BIN_PATH}/popeye ${K8S_PATH}/popeye
 COPY --from=skaffold ${BIN_PATH}/skaffold ${K8S_PATH}/skaffold
 COPY --from=stern ${BIN_PATH}/stern ${K8S_PATH}/stern
 COPY --from=telepresence ${BIN_PATH}/telepresence ${K8S_PATH}/telepresence
-# COPY --from=wasme ${BIN_PATH}/wasme ${K8S_PATH}/wasme
