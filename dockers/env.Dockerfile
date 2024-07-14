@@ -112,7 +112,6 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     tmux \
     ugrep \
     xclip \
-    && curl -fsSL https://tailscale.com/install.sh | sh \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 https://github.com/neovim/neovim \
     && cd neovim \
@@ -120,7 +119,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX:PATH=/usr" CMAKE_BUILD_TYPE=Release \
     && make install \
     && cd /tmp && rm -rf /tmp/neovim \
-    && pip3 install --upgrade --break-system-packages pip neovim ranger-fm thefuck httpie python-language-server vim-vint grpcio-tools \
+    && pip3 install --upgrade --break-system-packages neovim \
     && gem install neovim -N \
     && git clone --depth 1 https://github.com/soimort/translate-shell \
     && cd /tmp/translate-shell/ \
@@ -134,6 +133,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && npm install -g n
+    # && curl -fsSL https://tailscale.com/install.sh | sh \
 
 FROM --platform=$BUILDPLATFORM env-base AS env-stage
 WORKDIR /tmp
@@ -189,7 +189,7 @@ WORKDIR /tmp
 ENV NGT_VERSION=main
 ENV CFLAGS="-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS=${CFLAGS}
-ENV LDFLAGS="-L/etc/altenatives=${LDFLAGS}"
+ENV LDFLAGS="-L/etc/alternatives -flto -march=native -fno-plt -Wl,-Ofast,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden"
 RUN echo $(ldconfig) \
     && echo ${LDFLAGS} \
     && rm -rf /tmp/* /var/cache \

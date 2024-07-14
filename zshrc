@@ -217,12 +217,11 @@ if [ -z $DOTENV_LOADED ]; then
         export GO15VENDOREXPERIMENT=1
         export GOPRIVATE="*.yahoo.co.jp,github.com/vdaas/vald,github.com/vdaas/vald/apis,github.com/vdaas/vald-client-go"
         export NVIM_GO_LOG_FILE=$XDG_DATA_HOME/go
-        # export GOFLAGS="-ldflags=\"-w\ -s\""
-        export CGO_CFLAGS="-g -Ofast -march=native"
-        export CGO_CPPFLAGS="-g -Ofast -march=native"
-        export CGO_CXXFLAGS="-g -Ofast -march=native"
-        export CGO_FFLAGS="-g -Ofast -march=native"
-        export CGO_LDFLAGS="-g -Ofast -march=native"
+        export CGO_LDFLAGS="-g -flto -march=native -fno-plt -Wl,-Ofast,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden"
+        export CGO_CFLAGS=$CGO_LDFLAGS
+        export CGO_CPPFLAGS=$CGO_LDFLAGS
+        export CGO_CXXFLAGS=$CGO_LDFLAGS
+        export CGO_FFLAGS=$CGO_LDFLAGS
     fi
 
     if type clang >/dev/null 2>&1; then
@@ -236,11 +235,11 @@ if [ -z $DOTENV_LOADED ]; then
         else
             export LD_LIBRARY_PATH=/usr/lib/clang/*/lib:$LD_LIBRARY_PATH
         fi
-        export CFLAGS="-g -Ofast -march=native -ffp-contract=fast"
-        export CPPFLAGS="-g -Ofast -march=native -ffp-contract=fast"
-        export CXXFLAGS="-g -Ofast -march=native -ffp-contract=fast"
-        export FFLAGS="-g -Ofast -march=native -ffp-contract=fast"
-        export LDFLAGS="-g -Ofast -march=native -ffp-contract=fast"
+        export LDFLAGS="-g -flto -march=native -fno-plt -Wl,-Ofast,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden"
+        export CFLAGS=$LDFLAGS
+        export CPPFLAGS=$LDFLAGS
+        export CXXFLAGS=$LDFLAGS
+        export FFLAGS=$LDFLAGS
         #CLANG
         export CFLAGS=-I$LLVM_HOME/include:-I$QT_HOME/include:-I/usr/local/opt/openssl/include:$CFLAGS
         export CPPFLAGS=$CFLAGS
