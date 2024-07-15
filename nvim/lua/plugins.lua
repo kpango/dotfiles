@@ -1271,7 +1271,7 @@ safe_require("lazy").setup({
 				nim = { "nimlint" },
 				proto = { "protoc-gen-lint" },
 				python = { "flake8", "pylint" },
-				rust = { "clippy" },
+				-- rust = { "clippy" },
 				sh = { "shellcheck" },
 				yaml = { "yamllint" },
 				zig = { "zigfmt" },
