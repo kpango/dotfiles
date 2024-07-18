@@ -70,6 +70,7 @@ nmap
 nvidia-container-toolkit
 nvidia-open-dkms
 nvidia-settings
+nvidia-utils
 nvme-cli
 openssl-1.1
 pacman-contrib
@@ -86,6 +87,7 @@ psensor
 pulseaudio-alsa
 ranger
 rclone
+rebuild-detector
 ripgrep
 rmlint
 seatd

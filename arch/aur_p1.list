@@ -21,8 +21,9 @@ paru-bin
 rate-mirrors-bin
 slack-desktop
 swaybg-git
-sway-git
+sway-git-wlroots-git
 tpacpi-bat-git
 ttf-hackgen
 wdisplays-git
+wlroots-hidpi-xprop-git
 zoom

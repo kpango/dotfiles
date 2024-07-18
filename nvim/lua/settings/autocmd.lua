@@ -95,18 +95,6 @@ autocmd({ "BufWipeout" }, {
 	end,
 })
 
-autocmd({ "BufReadPost" }, {
-	desc = "Make files readonly when outside of current working dir",
-	pattern = "*",
-	callback = function()
-		vim.api.nvim_exec('silent! normal! g`"zv', false)
-		if string.sub(vim.api.nvim_buf_get_name(0), 1, string.len(vim.fn.getcwd())) ~= vim.fn.getcwd() then
-			vim.bo.readonly = true
-			vim.bo.modifiable = false
-		end
-	end,
-})
-
 local spaces_highlight_group = augroup("SpacesHighlightGroup")
 autocmd({ "VimEnter", "WinNew" }, {
 	desc = "Highlight all tabs and trailing whitespaces",
