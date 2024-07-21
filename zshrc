@@ -1543,12 +1543,7 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if [ -d "$GOPATH/src/github.com/vdaas/vald" ]; then
-        valdup() {
-            cd "$GOPATH/src/github.com/vdaas/vald"
-            sudo chmod -R 777 $CARGO_HOME
-            sudo chmod -R 777 $RUSTUP_HOME
-            sudo chown -R $USER $CARGO_HOME
-            sudo chown -R $USER $RUSTUP_HOME
+        valdmanifest() {
             make files
             make helm/schema/all
             make helm/schema/crd/all
@@ -1556,8 +1551,17 @@ if [ -z $ZSH_LOADED ]; then
             make k8s/manifest/helm-operator/update
             make helm/docs/vald
             make helm/docs/vald-helm-operator
+        }
+        alias valdmanifest=valdmanifest
+        valdup() {
+            cd "$GOPATH/src/github.com/vdaas/vald"
+            sudo chmod -R 777 $CARGO_HOME
+            sudo chmod -R 777 $RUSTUP_HOME
+            sudo chown -R $USER $CARGO_HOME
+            sudo chown -R $USER $RUSTUP_HOME
+            valdmanifest
             make -k update
-            make format/yaml
+            make format
             chword $GOPATH/src/github.com/vdaas/vald "interface\{\}" "any"
         }
         alias valdup=valdup
