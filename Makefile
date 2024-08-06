@@ -321,8 +321,8 @@ docker_build:
 		--network=host \
 		--output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 		--platform $(DOCKER_BUILDER_PLATFORM) \
+		--attest type=sbom,generator=docker/buildkit-syft-scanner:edge \
 		--provenance=mode=max \
-		--sbom=true \
 		--secret id=gat,src="$(TMP_DIR)/gat" \
 		-t "$(USER)/$(NAME):$(VERSION)" \
 		-f $(DOCKERFILE) .
