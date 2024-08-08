@@ -231,5 +231,5 @@ diverged = "⇕⇡${ahead_count}⇣${behind_count}😵"
 style = "white"
 
 [kubernetes]
-format = 'on [$symbol $context \($namespace\)]($style) '
+format = 'on [$symbol $context\($namespace\)]($style) '
 disabled = false

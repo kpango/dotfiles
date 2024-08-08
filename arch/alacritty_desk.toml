@@ -34,15 +34,15 @@ text = "0xeaeaea"
 size = 14
 
 [font.bold]
-family = "HackGen35ConsoleNF"
+family = "HackGen35 Console NF"
 style = "Bold"
 
 [font.italic]
-family = "HackGen35ConsoleNF"
+family = "HackGen35 Console NF"
 style = "Italic"
 
 [font.normal]
-family = "HackGen35ConsoleNF"
+family = "HackGen35 Console NF"
 style = "Regular"
 
 [[keyboard.bindings]]
