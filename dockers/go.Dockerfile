@@ -794,18 +794,18 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS keyify
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="keyify" \
-    && REPO="honnef.co/go/tools" \
-    && go install \
-    ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
+# FROM --platform=$BUILDPLATFORM go-base AS keyify
+# RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+#     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
+#     --mount=type=tmpfs,target="${GOPATH}/src" \
+#     set -x && cd "$(mktemp -d)" \
+#     && BIN_NAME="keyify" \
+#     && REPO="honnef.co/go/tools" \
+#     && go install \
+#     ${GO_FLAGS} \
+#     "${REPO}/cmd/${BIN_NAME}@upgrade" \
+#     && chmod a+x "${GOBIN}/${BIN_NAME}" \
+#     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS kratos
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -1137,7 +1137,7 @@ COPY --from=hugo $GOBIN/hugo $GOBIN/hugo
 COPY --from=iferr $GOBIN/iferr $GOBIN/iferr
 COPY --from=impl $GOBIN/impl $GOBIN/impl
 COPY --from=k6 $GOBIN/k6 $GOBIN/k6
-COPY --from=keyify $GOBIN/keyify $GOBIN/keyify
+# COPY --from=keyify $GOBIN/keyify $GOBIN/keyify
 COPY --from=kratos $GOBIN/kratos $GOBIN/kratos
 COPY --from=licenses $GOBIN/go-licenses $GOBIN/licenses
 COPY --from=markdown2medium $GOBIN/markdown2medium $GOBIN/markdown2medium
