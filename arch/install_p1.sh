@@ -173,7 +173,7 @@ echo "raid partitioning"
 partraid
 echo "raid partitioned"
 sleep 10
-lsblk
+lsblk -a
 
 echo "raid formatting"
 mkfs.vfat -cvIF32 ${BOOT_PART} && sync
@@ -181,11 +181,9 @@ mkfs.vfat -cvIF32 ${BOOT_PART} && sync
 mkfs.${FILESYS} -f ${ROOT_PART} && sync
 echo "raid formatted"
 sleep 10
-lsblk
-
-sleep 20
+lsblk -a
 echo "raid mount"
-rm -rf ${root}
+rm -rf ${ROOT}
 mkdir ${ROOT}
 mount ${ROOT_PART} ${ROOT} && sync
 sleep 10
@@ -195,9 +193,6 @@ mount ${BOOT_PART} ${BOOT} && sync
 echo "raid mounted"
 sleep 20
 
-mkdir -p ${ROOT}/home/kpango
-df -aT
-echo "download deps"
 mkdir -p ${ROOT}/home/kpango/go/src/github.com/kpango
 echo "mounted"
 df -aT

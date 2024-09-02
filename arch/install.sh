@@ -4,7 +4,7 @@ BOOT_PART=${DEVICE}p1
 ROOT_PART=${DEVICE}p2
 ROOT=/mnt
 BOOT=${ROOT}/boot
-ESP_SIZE=300MiB
+ESP_SIZE=32GiB
 FILESYS=xfs
 
 unmount(){
@@ -91,9 +91,11 @@ echo "mount"
 rm -rf ${ROOT}
 mkdir -p ${ROOT}
 mount ${ROOT_PART} ${ROOT} && sync
+sleep 10
 rm -rf ${BOOT}
 mkdir -p ${BOOT}
 mount ${BOOT_PART} ${BOOT} && sync
+sleep 20
 mkdir -p ${ROOT}/home/kpango/go/src/github.com/kpango
 echo "mounted"
 df -aT

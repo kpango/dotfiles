@@ -23,6 +23,13 @@ blacklist intel_pmc_bxt
 blacklist iTCO_vendor_support
 blacklist iTCO_wdt
 EOF
+cat <<EOF >>/etc/modprobe.d/iwlwifi.conf
+options iwlwifi 11n_disable=1 swcrypto=0 bt_coex_active=0 power_save=0
+options iwlmvm power_scheme=1
+options iwlwifi d0i3_disable=1
+options iwlwifi uapsd_disable=1
+options iwlwifi lar_disable=1
+EOF
 
 HOST="archpango"
 echo ${HOST} >>/etc/hostname
@@ -36,7 +43,8 @@ hwclock --systohc --localtime
 echo LANG=en_US.UTF-8 >>/etc/locale.conf
 timedatectl set-timezone Asia/Tokyo
 
-fallocate -l 24G ${SWAP_PART}
+# https://itsfoss.com/swap-size/
+fallocate -l 24G /swapfile
 chmod 600 ${SWAP_PART}
 mkswap ${SWAP_PART} && sync
 swapon ${SWAP_PART} && sync
@@ -95,7 +103,7 @@ systemctl enable tlp-sleep
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
-sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress zstd)/g" /etc/mkinitcpio.conf
+sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 zstd)/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block resume filesystems/g" /etc/mkinitcpio.conf
 
 mkinitcpio -p linux-zen
@@ -111,7 +119,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /intel-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} resume_offset=${SWAP_PHYS_OFFSET} rw acpi_osi=! acpi_osi="Windows 2013" acpi_backlight=native acpi.ec_no_wakeup=1 iommu=force,merge,nopanic,nopt intel_iommu=on amd_iommu=on swiotlb=noforce i915.enable_fbc=1 i915.enable_guc=2 i915.enable_ips=0 i915.enable_psr=0 i915.enable_rc6=0 i915.fastboot=1 i915.semaphores=1 loglevel=1 mitigations=off nowatchdog psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 quiet sysrq_always_enabled=1 rd.systemd.show_status=auto rd.udev.log_priority=3 vt.global_cursor_default=0 zswap.enabled=1 zswap.compressor=zstd zswap.zpool=z3fold zswap.max_pool_percent=25 systemd.unified_cgroup_hierarchy=1 cgroup_no_v1=all
+options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} resume_offset=${SWAP_PHYS_OFFSET} rw loglevel=1 nowatchdog quiet acpi.ec_no_wakeup=1 acpi_backlight=native acpi_osi=! acpi_osi="Windows 2013" cgroup_no_v1=all i915.enable_fbc=1 i915.enable_guc=2 i915.fastboot=1 i915.semaphores=1 intel_iommu=on iommu=force,merge,nopanic,nopt mitigations=off psmouse.elantech_smbus=0 psmouse.synaptics_intertouch=1 rd.systemd.show_status=auto rd.udev.log_priority=3 swiotlb=noforce sysrq_always_enabled=1 systemd.unified_cgroup_hierarchy=1 usbcore.autosuspend=-1 video.use_native_backlight=1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=25 zswap.zpool=z3fold
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf

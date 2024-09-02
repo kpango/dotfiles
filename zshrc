@@ -1063,18 +1063,29 @@ if [ -z $ZSH_LOADED ]; then
         alias nmcliwifie=nmcliwifie
         nmcliwifi() {
             if [ $# -eq 2 ]; then
-                sudo nmcli c delete $1
+                SSID=$1
+                PSK=$2
+
+                SECURITY=$(nmcli -f SSID,SECURITY dev wifi | grep "$SSID" | awk '{print $2}')
+                KEY_MGMT="wpa-psk"
+                if [[ "$SECURITY" == *"WPA3"* ]]; then
+                    KEY_MGMT="sae"
+                elif [[ "$SECURITY" == *"WPA2"* ]]; then
+                    KEY_MGMT="wpa-psk"
+                fi
+                sudo nmcli c delete "$SSID"
                 nmcli d
                 nmcli r wifi
                 nmcli d wifi list
-                sudo nmcli c add type wifi ifname $(nmcli d | grep wifi | head -1 | awk '{print $1}') con-name $1 ssid $1 -- \
+                IFNAME=$(nmcli d | grep wifi | head -1 | awk '{print $1}')
+                sudo nmcli c add type wifi ifname "$IFNAME" con-name "$SSID" ssid "$SSID" -- \
                     connection.autoconnect yes \
                     ipv4.method auto \
-                    802-11-wireless.ssid $1 \
-                    802-11-wireless-security.key-mgmt wpa-psk \
+                    802-11-wireless.ssid "$SSID" \
+                    802-11-wireless-security.key-mgmt "$KEY_MGMT" \
                     802-11-wireless-security.psk-flags 0 \
-                    802-11-wireless-security.psk $2
-                sudo nmcli c up $1
+                    802-11-wireless-security.psk "$PSK"
+                sudo nmcli c up "$SSID"
             else
                 echo "invalid argument, SSID and PSK is required"
             fi
