@@ -45,6 +45,7 @@ linux-zen
 linux-zen-headers
 lsd
 lshw
+lsof
 make
 mako
 mdadm
