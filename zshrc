@@ -540,6 +540,24 @@ if [ -z $ZSH_LOADED ]; then
             git push --force-with-lease
         }
         alias gfp=gfp
+        grs() {
+            if [ $# -eq 1 ] || [ $# -eq 2 ]; then
+                branch="$(tb)"
+                msg="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
+                git checkout $1
+                gfr
+                git checkout -b tmp
+                git merge --squash $branch
+                if [ $# -eq 2 ]; then
+                    git checkout $2 .
+                fi
+                git branch -D $branch
+                git branch -m $branch
+            else
+                echo "invalid argument, rebase branch name required"
+            fi
+        }
+        alias grs=grs
         grsp() {
             if [ $# -eq 1 ] || [ $# -eq 2 ]; then
                 branch="$(tb)"
