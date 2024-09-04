@@ -31,6 +31,7 @@ copy:
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.docker
+	mkdir -p $(HOME)/.gnupg
 	sudo mkdir -p /etc/docker
 	cp $(ROOTDIR)/alias $(HOME)/.aliases
 	cp $(ROOTDIR)/arch/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
@@ -40,6 +41,7 @@ copy:
 	cp $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
 	cp $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
 	cp $(ROOTDIR)/gitignore $(HOME)/.gitignore
+	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	cp $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
 	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
 	cp $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
@@ -58,6 +60,7 @@ link:
 	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.config/sheldon
 	mkdir -p $(HOME)/.docker
+	mkdir -p $(HOME)/.gnupg
 	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
 	ln -sfv $(ROOTDIR)/arch/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
 	ln -sfv $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
@@ -66,6 +69,7 @@ link:
 	ln -sfv $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
 	ln -sfv $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
 	ln -sfv $(ROOTDIR)/gitignore $(HOME)/.gitignore
+	ln -sfv $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	ln -sfv $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
 	ln -sfv $(ROOTDIR)/nvim/lua $(HOME)/.config/nvim/lua
 	ln -sfv $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
@@ -231,6 +235,7 @@ clean:
 		$(HOME)/.tmux.new-session \
 		$(HOME)/.xinitrc \
 		$(HOME)/.zshrc \
+		$(HOME)/.gnupg/gpg-agent.conf \
 		/etc/NetworkManager/NetworkManager.conf \
 		/etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
 		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
