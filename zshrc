@@ -275,6 +275,7 @@ fi
 
 if type gpg >/dev/null 2>&1; then
     export GPG_TTY=$(tty)
+    # export PINENTRY_USER_DATA="USE_CURSES=1"
 fi
 
 if [ ! -f "$HOME/.zshrc.zwc" -o "$HOME/.zshrc" -nt "$HOME/.zshrc.zwc" ]; then
