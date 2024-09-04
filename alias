@@ -92,7 +92,7 @@ devrun(){
             # -e DISPLAY \
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
 	    if type nvidia-smi >/dev/null 2>&1; then
-	        gpu_option="--gpus all"
+	        gpu_option="--gpus=all"
 	    fi
             docker run \
                 --cap-add=ALL \
