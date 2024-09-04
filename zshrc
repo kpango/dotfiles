@@ -581,8 +581,7 @@ if [ -z $ZSH_LOADED ]; then
                 git checkout "$1" || { echo "Failed to checkout branch $1"; return 1; }
                 gfr
                 git checkout -b tmp || { echo "Failed to create tmp branch"; return 1; }
-                git merge --squash "$branch" || { echo "Failed to squash merge branch $branch"; return 1; }
-
+                git merge --squash "$branch"
                 if [ $# -eq 2 ]; then
                     git checkout "$2" . || { echo "Failed to checkout files from $2"; return 1; }
                 fi
