@@ -117,6 +117,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     openssh-client \
     pass \
     perl \
+    pinentry-tty \
     pkg-config \
     python3-dev \
     python3-pip \
