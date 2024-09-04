@@ -181,6 +181,7 @@ mac_link: \
 		$(HOME)/.docker/config.json \
 		$(HOME)/.docker/daemon.json \
 		$(HOME)/.tmux.conf \
+		$(HOME)/.gnupg/gpg-agent.conf \
 		/etc/docker/config.json \
 		/etc/docker/daemon.json
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
