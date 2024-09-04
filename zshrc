@@ -473,123 +473,161 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type git >/dev/null 2>&1; then
+        # General Git aliases
         alias gco="git checkout"
         alias gsta="git status"
         alias gcom="git commit -m"
         alias gdiff="git diff"
         alias gbra="git branch"
+
+        # Get current repository branch name
         gitthisrepo() {
             git symbolic-ref --short HEAD | tr -d "\n"
         }
         alias tb=gitthisrepo
+
+        # Get default branch name
         gitdefaultbranch() {
             git remote show origin | grep 'HEAD' | cut -d':' -f2 | sed -e 's/^ *//g' -e 's/ *$//g'
         }
         alias gitdb=gitdefaultbranch
+
+        # Check for merged branches that can be removed
         gitremovalcheck() {
-            git branch -r --merged $(gitdb) | grep -v -e $(gitdb) -e develop -e release | \sed -E 's% *origin/%%'
-            git branch --merged $(gitdb) | grep -vE '^\*|master$|develop$|main$'
+            local db=$(gitdb)
+            git branch -r --merged "$db" | grep -v -e "$db" -e develop -e release | sed -E 's% *origin/%%'
+            git branch --merged "$db" | grep -vE '^\*|master$|develop$|main$'
         }
         alias grc=gitremovalcheck
+
+        # Common function for fetch, reset, and cleanup
+        git_fetch_reset() {
+            local tb=$(tb)
+            local db=$(gitdb)
+            git fetch --prune
+            git reset --hard origin/$tb || { echo "Failed to reset"; return 1; }
+            git branch -r --merged $db | grep -v -e $db -e develop -e release | sed -E 's% *origin/%%' | xargs -I% git push --delete origin % || { echo "Failed to delete merged branches"; return 1; }
+            git fetch --prune
+            git reset --hard origin/$tb || { echo "Failed to reset"; return 1; }
+            git branch --merged $db | grep -vE '^\*|master$|develop$|main$' | xargs -I % git branch -d % || { echo "Failed to delete local branches"; return 1; }
+        }
+
+        # Fetch, reset, and clean up branches
         gfr() {
-            git fetch --prune
-            git reset --hard origin/$(tb)
-            git branch -r --merged $(gitdb) | grep -v -e $(gitdb) -e develop -e release | \sed -E 's% *origin/%%' | xargs -I% git push --delete origin %
-            git fetch --prune
-            git reset --hard origin/$(tb)
-            git branch --merged $(gitdb) | grep -vE '^\*|master$|develop$|main$' | xargs -I % git branch -d %
+            git_fetch_reset
         }
         alias gfr=gfr
+
+        # Fetch, reset, and update submodules
         gfrs() {
-            gfr
-            git submodule foreach git pull origin $(gitdb)
+            gfr && git submodule foreach git pull origin "$(gitdb)" || { echo "Failed to update submodules"; return 1; }
         }
         alias gfrs=gfrs
+
+        # Pull with rebase
         gitpull() {
-            git pull --rebase origin $(tb)
+            git pull --rebase origin "$(tb)" || { echo "Failed to pull with rebase"; return 1; }
         }
         alias gpull=gitpull
+
+        # Push to current branch
         gpush() {
-            git push -u origin $(tb)
+            git push -u origin "$(tb)" || { echo "Failed to push to origin"; return 1; }
         }
         alias gpush=gpush
+
+        # Commit, signoff, and push
         gitcompush() {
-            git add -A
-            git commit --signoff -m $1
-            git push -u origin $2
+            git add -A || { echo "Failed to stage changes"; return 1; }
+            git commit --signoff -m "$1" || { echo "Failed to commit"; return 1; }
+            git push -u origin "$2" || { echo "Failed to push to origin"; return 1; }
         }
         alias gitcompush=gitcompush
+
+        # Commit, signoff, and push to current branch
         gcp() {
-            gitcompush $1 "$(tb)"
+            gitcompush "$1" "$(tb)"
         }
         alias gcp=gcp
         alias gfix="gcp fix"
+
+        # Commit, signoff, and force push with lease
         gitcompushf() {
-            git add -A
-            git commit --signoff -m $1
-            git push --force-with-lease --set-upstream origin $2
+            git add -A || { echo "Failed to stage changes"; return 1; }
+            git commit --signoff -m "$1" || { echo "Failed to commit"; return 1; }
+            git push --force-with-lease --set-upstream origin "$2" || { echo "Failed to force push to origin"; return 1; }
         }
         alias gitcompushf=gitcompushf
+
+        # Commit, signoff, and force push to current branch
         gcpf() {
-            gitcompushf $1 "$(tb)"
+            gitcompushf "$1" "$(tb)"
         }
         alias gcpf=gcpf
+
+        # Amend last commit and force push
         gfp() {
-            git add -A
-            git commit --signoff --amend
-            git push --force-with-lease
+            git add -A || { echo "Failed to stage changes"; return 1; }
+            git commit --signoff --amend || { echo "Failed to amend commit"; return 1; }
+            git push --force-with-lease || { echo "Failed to force push"; return 1; }
         }
         alias gfp=gfp
+
+        # Rebase and squash changes
         grs() {
             if [ $# -eq 1 ] || [ $# -eq 2 ]; then
-                branch="$(tb)"
-                msg="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
-                git checkout $1
+                local branch="$(tb)"
+                git checkout "$1" || { echo "Failed to checkout branch $1"; return 1; }
                 gfr
-                git checkout -b tmp
-                git merge --squash $branch
+                git checkout -b tmp || { echo "Failed to create tmp branch"; return 1; }
+                git merge --squash "$branch" || { echo "Failed to squash merge branch $branch"; return 1; }
+
                 if [ $# -eq 2 ]; then
-                    git checkout $2 .
+                    git checkout "$2" . || { echo "Failed to checkout files from $2"; return 1; }
                 fi
-                git branch -D $branch
-                git branch -m $branch
+
+                git branch -D "$branch" || { echo "Failed to delete branch $branch"; return 1; }
+                git branch -m "$branch" || { echo "Failed to rename branch"; return 1; }
             else
                 echo "invalid argument, rebase branch name required"
+                return 1
             fi
         }
         alias grs=grs
+
+        # Rebase, squash, and push changes
         grsp() {
             if [ $# -eq 1 ] || [ $# -eq 2 ]; then
-                branch="$(tb)"
-                msg="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
-                git checkout $1
-                gfr
-                git checkout -b tmp
-                git merge --squash $branch
-                if [ $# -eq 2 ]; then
-                    git checkout $2 .
+                grs "$@"
+                if [ $? -eq 0 ]; then
+                    gcpf "$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
+                else
+                    echo "Merge failed, not pushing changes."
+                    return 1
                 fi
-                git branch -D $branch
-                git branch -m $branch
-                gcpf $msg
             else
                 echo "invalid argument, rebase branch name required"
+                return 1
             fi
         }
         alias grsp=grsp
 
+        # Edit Git config
         alias gedit="$EDITOR $HOME/.gitconfig"
-        git-remote-add-merge() {
-            git remote add upstream $1
-            git fetch upstream
-            git merge upstream/$(gitdb)
-        }
-        alias grfa=git-remote-add-merge
+
+
+        # Fetch and merge from upstream
         git-remote-merge() {
-            git fetch upstream
-            git merge upstream/$(gitdb)
+            git fetch upstream || { echo "Failed to fetch from upstream"; return 1; }
+            git merge upstream/$(gitdb) || { echo "Failed to merge upstream branch"; return 1; }
         }
         alias grf=git-remote-merge
+        # Add and merge remote repository
+        git-remote-add-merge() {
+            git remote add upstream "$1" || { echo "Failed to add remote upstream"; return 1; }
+            grf
+        }
+        alias grfa=git-remote-add-merge
     fi
 
     if type rg >/dev/null 2>&1; then
