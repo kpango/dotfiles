@@ -67,29 +67,46 @@ RUN --mount=type=cache,target=${HOME}/.npm \
 /usr/lib/node_modules/lib\n\
 /google-cloud-sdk/lib' > /etc/ld.so.conf.d/usr-local-lib.conf \
     && echo $(ldconfig) \
-    && apt update -y \
-    && apt upgrade -y \
-    && apt install -y --no-install-recommends --fix-missing \
+    && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
+    && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends \
+    && apt-get clean \
+    && apt-get update -y \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends --fix-missing \
     automake \
     bash \
+    build-essential \
+    ca-certificates \
     ccls \
     clang-format \
     clang-tidy \
     clangd \
+    cmake \
+    curl \
     diffutils \
     exuberant-ctags \
+    g++ \
     gawk \
+    gcc \
     gettext \
+    gfortran \
+    git \
+    gnupg \
+    gnupg2 \
     graphviz \
     jq \
     less \
+    libaec-dev \
+    libhdf5-dev \
     libhdf5-serial-dev \
     liblapack-dev \
     libncurses5-dev \
     libomp-dev \
     libopenblas-dev \
+    libssl-dev \
     libtool \
     libtool-bin \
+    locales \
     luajit \
     mariadb-client \
     mtr \
@@ -107,11 +124,15 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     ruby-dev \
     sass \
     sed \
+    software-properties-common \
     tar \
     tig \
     tmux \
+    tzdata \
     ugrep \
+    unzip \
     xclip \
+    zip \
     && rm -rf /var/lib/apt/lists/* \
     && git clone --depth 1 https://github.com/neovim/neovim \
     && cd neovim \
