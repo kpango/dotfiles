@@ -599,12 +599,7 @@ if [ -z $ZSH_LOADED ]; then
         grsp() {
             if [ $# -eq 1 ] || [ $# -eq 2 ]; then
                 grs "$@"
-                if [ $? -eq 0 ]; then
-                    gcpf "$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
-                else
-                    echo "Merge failed, not pushing changes."
-                    return 1
-                fi
+                gcpf "$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
             else
                 echo "invalid argument, rebase branch name required"
                 return 1

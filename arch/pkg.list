@@ -55,6 +55,7 @@ mtr
 neovim
 networkmanager
 nmap
+openssh
 openssl-1.1
 pacman-contrib
 pass
