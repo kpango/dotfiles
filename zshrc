@@ -539,9 +539,9 @@ if [ -z $ZSH_LOADED ]; then
 
         # Commit, signoff, and push
         gitcompush() {
-            git add -A || { echo "Failed to stage changes"; return 1; }
-            git commit --signoff -m "$1" || { echo "Failed to commit"; return 1; }
-            git push -u origin "$2" || { echo "Failed to push to origin"; return 1; }
+            git add -A
+            git commit --signoff -m "$1"
+            git push -u origin "$2"
         }
         alias gitcompush=gitcompush
 
@@ -554,9 +554,9 @@ if [ -z $ZSH_LOADED ]; then
 
         # Commit, signoff, and force push with lease
         gitcompushf() {
-            git add -A || { echo "Failed to stage changes"; return 1; }
-            git commit --signoff -m "$1" || { echo "Failed to commit"; return 1; }
-            git push --force-with-lease --set-upstream origin "$2" || { echo "Failed to force push to origin"; return 1; }
+            git add -A
+            git commit --signoff -m "$1"
+            git push --force-with-lease --set-upstream origin "$2"
         }
         alias gitcompushf=gitcompushf
 
