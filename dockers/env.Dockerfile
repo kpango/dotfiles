@@ -97,6 +97,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     jq \
     less \
     libaec-dev \
+    libfp16-dev \
     libhdf5-dev \
     libhdf5-serial-dev \
     liblapack-dev \
@@ -104,6 +105,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     libomp-dev \
     libopenblas-dev \
     libssl-dev \
+    libstringzilla-dev \
     libtool \
     libtool-bin \
     locales \

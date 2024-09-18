@@ -170,7 +170,6 @@ if [ -z $DOTENV_LOADED ]; then
         export NVIM_TUI_ENABLE_TRUE_COLOR=1
         export NVIM_PYTHON_LOG_LEVEL=WARNING
         export NVIM_PYTHON_LOG_FILE=$NVIM_LOG_FILE_PATH/nvim.log
-        export NVIM_LISTEN_ADDRESS="127.0.0.1:7650"
     elif type vim >/dev/null 2>&1; then
         export VIM=$(which vim)
         case ${OSTYPE} in
