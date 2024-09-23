@@ -105,7 +105,6 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     libomp-dev \
     libopenblas-dev \
     libssl-dev \
-    libstringzilla-dev \
     libtool \
     libtool-bin \
     locales \
