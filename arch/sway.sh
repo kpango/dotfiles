@@ -39,6 +39,7 @@ export __GL_GSYNC_ALLOWED=0
 export __GL_THREADED_OPTIMIZATIONS=1
 export __GL_VRR_ALLOWED=1
 export __GL_YIELD="USLEEP"
+export ALACRITTY_LOG="debug"
 
 # Map Ctrl key to Caps Lock
 setxkbmap -option ctrl:nocaps
@@ -48,5 +49,5 @@ ulimit -n 500000
 
 # Start sway if no display server is running and the terminal is tty1
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
-    exec sway --unsupported-gpu --debug "$@"
+    exec sway --unsupported-gpu "$@"
 fi

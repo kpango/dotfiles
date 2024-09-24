@@ -597,8 +597,9 @@ if [ -z $ZSH_LOADED ]; then
         # Rebase, squash, and push changes
         grsp() {
             if [ $# -eq 1 ] || [ $# -eq 2 ]; then
+		local message="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
                 grs "$@"
-                gcpf "$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
+                gcpf $message
             else
                 echo "invalid argument, rebase branch name required"
                 return 1
