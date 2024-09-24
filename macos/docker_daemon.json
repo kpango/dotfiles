@@ -6,12 +6,12 @@
     }
   },
   "debug":false,
+  "log-driver":"json-file",
   "log-opts":{
     "max-file":"3",
     "max-size":"10m"
   },
   "live-restore":true,
-  "log-driver":"json-file",
   "experimental":true,
 
   "features": {

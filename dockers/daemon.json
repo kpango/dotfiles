@@ -1,4 +1,12 @@
 {
+  "builder": {
+    "gc": {
+      "defaultKeepStorage": "50GB",
+      "enabled": true,
+      "keepDuration": "48h"
+    },
+    "driver": "docker-container"
+  },
   "runtimes": {
     "runsc": {
       "path": "/usr/local/bin/runsc"
@@ -8,6 +16,7 @@
       "runtimeArgs": []
     }
   },
+  "debug": false,
   "log-driver": "json-file",
   "log-opts": {
     "cache-disabled": "false",
@@ -17,7 +26,6 @@
     "max-size": "10m",
     "max-file": "3"
   },
-  "debug": false,
   "live-restore": true,
   "experimental": true,
   "features": {
@@ -42,30 +50,30 @@
       "soft": -1
     }
   },
+  "ipv6": true,
+  "bip": "192.168.249.1/24",
+  "fixed-cidr": "192.168.249.0/25",
+  "fixed-cidr-v6": "2001:db8:1::/64",
+  "default-gateway": "192.168.249.254",
+  "default-gateway-v6": "2001:db8:abcd::89",
   "default-address-pools": [
     {
-      "base": "192.168.0.0/16",
+      "base": "10.201.0.0/16",
       "size": 24
     },
     {
-      "base" : "10.201.0.0/16",
-      "size" : 24
+      "base": "10.202.0.0/16",
+      "size": 24
     },
     {
-      "base" : "10.202.0.0/16",
-      "size" : 24
+      "base": "10.203.0.0/16",
+      "size": 24
     },
     {
-      "base" : "10.203.0.0/16",
-      "size" : 24
-    },
-    {
-      "base" : "10.27.16.0/22",
-      "size" : 24
+      "base": "10.27.16.0/22",
+      "size": 24
     }
   ],
-  "ipv6": true,
-  "fixed-cidr-v6": "2001:db8:1::/64",
   "dns": [
     "1.1.1.2",
     "1.1.1.1",
@@ -92,7 +100,7 @@
     "2620:fe::10",
     "2620:fe::fe:10"
   ],
-  "dns-opts":[
+  "dns-opts": [
     "timeout:5"
   ],
   "registry-mirrors": [
