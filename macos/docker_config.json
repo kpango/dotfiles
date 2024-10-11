@@ -2,5 +2,4 @@
 	"auths": {},
 	"credsStore": "osxkeychain",
 	"experimental": "enabled",
-	"currentContext": "orbstack"
 }

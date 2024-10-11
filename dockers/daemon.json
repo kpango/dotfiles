@@ -2,8 +2,7 @@
   "builder": {
     "gc": {
       "defaultKeepStorage": "50GB",
-      "enabled": true,
-      "keepDuration": "48h"
+      "enabled": true
     },
     "driver": "docker-container"
   },
@@ -55,7 +54,6 @@
   "fixed-cidr": "192.168.249.0/25",
   "fixed-cidr-v6": "2001:db8:1::/64",
   "default-gateway": "192.168.249.254",
-  "default-gateway-v6": "2001:db8:abcd::89",
   "default-address-pools": [
     {
       "base": "10.201.0.0/16",
