@@ -190,9 +190,9 @@ mac_link: \
 	sed -i.bak 's|/usr/bin/pinentry-tty|/opt/homebrew/bin/pinentry-mac|g' $(HOME)/.gnupg/gpg-agent.conf
 	ln -sfv $(ROOTDIR)/macos/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
 	ln -sfv $(ROOTDIR)/macos/docker_config.json $(HOME)/.docker/config.json
-	ln -sfv $(ROOTDIR)/macos/docker_daemon.json $(HOME)/.docker/daemon.json
+	cp $(ROOTDIR)/docker/daemon.json $(HOME)/.docker/daemon.json
 	sudo ln -sfv $(ROOTDIR)/macos/docker_config.json /etc/docker/config.json
-	sudo ln -sfv $(ROOTDIR)/macos/docker_daemon.json /etc/docker/daemon.json
+	sudo cp $(ROOTDIR)/docker/daemon.json /etc/docker/daemon.json
 	sudo ln -sfv $(ROOTDIR)/macos/localhost.homebrew-autoupdate.plist $(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
 	sudo ln -sfv $(ROOTDIR)/macos/ulimit.plist $(HOME)/Library/LaunchAgents/ulimit.plist
 	sudo chmod 600 $(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist
