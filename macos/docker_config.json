@@ -2,4 +2,5 @@
 	"auths": {},
 	"credsStore": "osxkeychain",
 	"experimental": "enabled",
+	"currentContext": "colima"
 }
