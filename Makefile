@@ -290,8 +290,8 @@ prod: \
 	login \
 	remove_buildx \
 	init_buildx \
-	create_buildx \
-	prod_build
+	create_buildx
+	@make DOCKER_EXTRA_OPTS="--no-cache" prod_build
 
 github_check:
 	curl --request GET \
@@ -307,6 +307,7 @@ docker_build:
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 docker buildx build \
+		$(DOCKER_EXTRA_OPTS) \
 		--allow "network.host" \
 		--build-arg BUILDKIT_MULTI_PLATFORM=1 \
 		--build-arg EMAIL="$(EMAIL)" \

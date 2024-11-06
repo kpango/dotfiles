@@ -995,6 +995,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && git clone https://github.com/${REPO} \
     && cd talos \
     && rm -rf go.mod go.sum \
+    && sed -i "s/^go [0-9]\+\.[0-9]\+\.[0-9]\+/go $(go version | awk '{print $3}' | sed 's/go//')/" go.work \
     && go mod init "${GITHUBCOM}/${REPO}" \
     && go mod tidy \
     && cd cmd/${BIN_NAME} \

@@ -1354,15 +1354,15 @@ safe_require("lazy").setup({
 safe_require("onedark").load()
 
 -- Customize LSP diagnostic handler
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.diagnostic.on_publish_diagnostics, {
-	underline = true,
-	virtual_text = {
-		spacing = 4,
-		prefix = "",
-		format = function(diagnostic, virtual_text)
-			return string.format("%s %s (%s: %s)", virtual_text, diagnostic.message, diagnostic.source, diagnostic.code)
-		end,
-	},
-	signs = true,
-	update_in_insert = false,
-})
+--vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.diagnostic.on_publish_diagnostics, {
+--	underline = true,
+--	virtual_text = {
+--		spacing = 4,
+--		prefix = "",
+--		format = function(diagnostic, virtual_text)
+--			return string.format("%s %s (%s: %s)", virtual_text, diagnostic.message, diagnostic.source, diagnostic.code)
+--		end,
+--	},
+--	signs = true,
+--	update_in_insert = false,
+--})
