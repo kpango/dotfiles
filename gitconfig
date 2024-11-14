@@ -1,10 +1,10 @@
 [core]
-    pager = delta
     attributesfile = ~/.gitattributes
-    autocrlf = input                 # CRLFを自動変換
+    autocrlf = false
     editor = nvim
     excludesfile = ~/.gitignore  # globalな.gitignoreの指定
     fileMode = false
+    pager = delta
     precomposeunicode = true
     quotepath = false
 

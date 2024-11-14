@@ -2,29 +2,139 @@
 # .gitattributes
 #
 
-*.c diff=cpp
-*.h diff=cpp
-*.cpp diff=cpp
-*.hpp diff=cpp
-*.cs diff=csharp
-*.m diff=objc
-*.go diff=go
-*.java diff=java
-*.xhtml diff=html
-*.html diff=html
-*.xml diff=html
-*.pl diff=perl
-*.pm diff=perl
-*.t diff=perl
-*.php diff=php
-*.ptml diff=php
-*.py diff=python
-*.rb diff=ruby
-*.js diff=javascript
-*.jsx diff=javascript
-*.csv encoding=utf-8
-*.json diff=json
-*.ex diff=elixir
-*.exs diff=elixir
-*.nim diff=nim
-*.rs diff=rust
+# Text files with default encoding and line endings
+* text encoding=utf-8 eol=lf
+
+# Windows batch and command files with CRLF line endings
+*.{bat,[bB][aA][tT]} text encoding=utf-8 eol=crlf
+*.{cmd,[cC][mM][dD]} text encoding=utf-8 eol=crlf
+*.ini                text encoding=utf-8 eol=crlf
+
+# Project files and configs with UTF-8 encoding and LF line endings
+*.*proj   text encoding=utf-8 eol=lf
+*.asax    text encoding=utf-8 eol=lf
+*.c       text encoding=utf-8 eol=lf diff=cpp
+*.clj     text encoding=utf-8 eol=lf diff=clojure
+*.conf    text encoding=utf-8 eol=lf
+*.config  text encoding=utf-8 eol=lf
+*.cpp     text encoding=utf-8 eol=lf diff=cpp
+*.cs      text encoding=utf-8 eol=lf diff=csharp
+*.cshtml  text encoding=utf-8 eol=lf diff=html
+*.css     text encoding=utf-8 eol=lf
+*.csv     text encoding=utf-8 eol=lf linguist-language=CSV
+*.elm     text encoding=utf-8 eol=lf diff=elm
+*.erl     text encoding=utf-8 eol=lf diff=erlang
+*.es      text encoding=utf-8 eol=lf linguist-language=JS
+*.ex      text encoding=utf-8 eol=lf diff=elixir
+*.exs     text encoding=utf-8 eol=lf diff=elixir
+*.go      text encoding=utf-8 eol=lf diff=go
+*.h       text encoding=utf-8 eol=lf diff=cpp
+*.hpp     text encoding=utf-8 eol=lf diff=cpp
+*.hs      text encoding=utf-8 eol=lf diff=haskell
+*.html    text encoding=utf-8 eol=lf diff=html
+*.java    text encoding=utf-8 eol=lf diff=java
+*.js      text encoding=utf-8 eol=lf diff=javascript
+*.json    text encoding=utf-8 eol=lf diff=json linguist-language=JSON
+*.jsx     text encoding=utf-8 eol=lf diff=javascript
+*.less    text encoding=utf-8 eol=lf
+*.m       text encoding=utf-8 eol=lf diff=objc
+*.md      text encoding=utf-8 eol=lf
+*.ml      text encoding=utf-8 eol=lf diff=ocaml
+*.nim     text encoding=utf-8 eol=lf diff=nim
+*.php     text encoding=utf-8 eol=lf diff=php
+*.pl      text encoding=utf-8 eol=lf diff=perl
+*.pm      text encoding=utf-8 eol=lf diff=perl
+*.proto   text encoding=utf-8 eol=lf diff=proto
+*.ps1     text encoding=utf-8 eol=lf
+*.ptml    text encoding=utf-8 eol=lf diff=php
+*.py      text encoding=utf-8 eol=lf diff=python
+*.rb      text encoding=utf-8 eol=lf diff=ruby linguist-language=Ruby
+*.rs      text encoding=utf-8 eol=lf diff=rust
+*.rst     text encoding=utf-8 eol=lf diff=rst
+*.sass    text encoding=utf-8 eol=lf diff=css
+*.scss    text encoding=utf-8 eol=lf diff=css
+*.sh      text encoding=utf-8 eol=lf
+*.sln     text encoding=utf-8 eol=lf
+*.sql     text encoding=utf-8 eol=lf diff=sql
+*.t       text encoding=utf-8 eol=lf diff=perl
+*.targets text encoding=utf-8 eol=lf
+*.tsx     text encoding=utf-8 eol=lf diff=javascript
+*.tt      text encoding=utf-8 eol=lf
+*.txt     text encoding=utf-8 eol=lf
+*.vue     text encoding=utf-8 eol=lf diff=javascript
+*.xaml    text encoding=utf-8 eol=lf
+*.xhtml   text encoding=utf-8 eol=lf diff=html
+*.xml     text encoding=utf-8 eol=lf diff=html
+*.yaml    text encoding=utf-8 eol=lf
+*.yml     text encoding=utf-8 eol=lf
+
+# Dockerfile and license files
+Dockerfile   text encoding=utf-8 eol=lf
+LICENSE.txt  text encoding=utf-8 eol=lf
+LICENSE      text encoding=utf-8 eol=lf
+.githooks/*  text encoding=utf-8 eol=lf
+
+# RTF files with UTF-16 encoding
+*.rtf text encoding=utf-16
+
+# Binary files
+*.7z      binary
+*.a       binary
+*.dll     binary
+*.dylib   binary
+*.exe     binary
+*.gif     binary
+*.gz      binary
+*.jar     binary
+*.jpeg    binary
+*.o       binary
+*.pdf     binary
+*.psb     binary
+*.so      binary
+*.zip     binary
+*.xlsx    binary
+*.docx    binary
+
+# Git Large File Storage (LFS) for large assets
+*.jpg  binary filter=lfs diff=lfs merge=lfs -text
+*.mov  binary filter=lfs diff=lfs merge=lfs -text
+*.mp3  binary filter=lfs diff=lfs merge=lfs -text
+*.mp4  binary filter=lfs diff=lfs merge=lfs -text
+*.png  binary filter=lfs diff=lfs merge=lfs -text
+*.psd  binary filter=lfs diff=lfs merge=lfs -text
+*.wav  binary filter=lfs diff=lfs merge=lfs -text
+
+# Custom merge strategy for specific file types
+*.lock                merge=ours linguist-vendored
+*.json                merge=ours
+*.mod                 merge=ours
+*.sum                 merge=ours
+*.svg                 merge=ours
+package-lock.json     merge=ours linguist-vendored
+yarn.lock             merge=ours linguist-vendored
+
+# Linguist settings for GitHub
+vendor/**    linguist-vendored
+
+# Exclude files from archive export
+**/.mypy_cache            export-ignore
+**/__pycache__            export-ignore
+*.bak                     export-ignore
+*.cache                   export-ignore
+*.log                     export-ignore
+*.orig                    export-ignore
+*.rej                     export-ignore
+*.swp                     export-ignore
+*.tmp                     export-ignore
+*.tmp.*                   export-ignore
+*~                        export-ignore
+.DS_Store                 export-ignore
+.coverage/                export-ignore
+.gitattributes            export-ignore
+.gitignore                export-ignore
+.idea/                    export-ignore
+.package-metadata.json    export-ignore
+.~lock.*                  export-ignore
+Thumbs.db                 export-ignore
+dist/                     export-ignore
+node_modules/             export-ignore

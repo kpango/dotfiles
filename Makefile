@@ -10,7 +10,7 @@ GITHUB_SHA = $(eval GITHUB_SHA := $(shell git rev-parse HEAD))$(GITHUB_SHA)
 GITHUB_URL = https://github.com/kpango/dotfiles
 EMAIL = kpango@vdaas.org
 
-DOCKER_EXTRA_OPTS = ""
+DOCKER_EXTRA_OPTS ?=
 DOCKER_BUILDER_NAME = "kpango-builder"
 DOCKER_BUILDER_DRIVER = "docker-container"
 DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64/v8"

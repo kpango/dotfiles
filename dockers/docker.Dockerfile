@@ -186,16 +186,14 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && curl -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}" \
     && mv "bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && mv "bin/${BIN_NAME}-shim" "${BIN_PATH}/${BIN_NAME}-shim" \
-    && mv "bin/${BIN_NAME}-shim-runc-v1" "${BIN_PATH}/${BIN_NAME}-shim-runc-v1" \
     && mv "bin/${BIN_NAME}-shim-runc-v2" "${BIN_PATH}/${BIN_NAME}-shim-runc-v2" \
     && mv "bin/${BIN_NAME}-stress" "${BIN_PATH}/${BIN_NAME}-stress" \
     && mv "bin/ctr" "${BIN_PATH}/ctr" \
     && upx -9 \
         "${BIN_PATH}/${BIN_NAME}" \
-        "${BIN_PATH}/${BIN_NAME}-shim" \
-        "${BIN_PATH}/${BIN_NAME}-shim-runc-v1" \
-        "${BIN_PATH}/${BIN_NAME}-shim-runc-v2"
+        "${BIN_PATH}/${BIN_NAME}-shim-runc-v2" \
+        "${BIN_PATH}/${BIN_NAME}-stress" \
+        "${BIN_PATH}/ctr"
 
 FROM --platform=$BUILDPLATFORM docker:rc-dind AS common-base
 
@@ -239,10 +237,8 @@ COPY --from=common ${BIN_PATH}/runc ${DOCKER_PATH}/docker-runc
 # COPY --from=container-diff ${BIN_PATH}/container-diff ${DOCKER_PATH}/container-diff
 COPY --from=containerd ${BIN_PATH}/containerd ${DOCKER_PATH}/containerd
 COPY --from=containerd ${BIN_PATH}/containerd ${DOCKER_PATH}/docker-containerd
-COPY --from=containerd ${BIN_PATH}/containerd-shim ${DOCKER_PATH}/containerd-shim
-COPY --from=containerd ${BIN_PATH}/containerd-shim ${DOCKER_PATH}/docker-containerd-shim
-COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v1 ${DOCKER_PATH}/containerd-shim-runc-v1
-COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v1 ${DOCKER_PATH}/docker-containerd-shim-runc-v1
+COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v2 ${DOCKER_PATH}/containerd-shim
+COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v2 ${DOCKER_PATH}/docker-containerd-shim
 COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v2 ${DOCKER_PATH}/containerd-shim-runc-v2
 COPY --from=containerd ${BIN_PATH}/containerd-shim-runc-v2 ${DOCKER_PATH}/docker-containerd-shim-runc-v2
 COPY --from=containerd ${BIN_PATH}/containerd-stress ${DOCKER_PATH}/containerd-stress

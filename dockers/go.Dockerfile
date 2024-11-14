@@ -116,6 +116,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
+# Special
 FROM --platform=$BUILDPLATFORM go-base AS dagger
 RUN set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dagger" \
@@ -283,6 +284,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
+#Special
 FROM --platform=$BUILDPLATFORM go-base AS flamegraph
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
@@ -299,6 +301,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && cp ${TMPDIR}/stackcollapse.pl ${GOBIN}/ \
     && cp ${TMPDIR}/stackcollapse-go.pl ${GOBIN}/
 
+#Special
 FROM --platform=$BUILDPLATFORM go-base AS fzf
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
@@ -500,12 +503,12 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
+# Special
 FROM --platform=$BUILDPLATFORM golangci/golangci-lint:latest AS golangci-lint-base
 FROM --platform=$BUILDPLATFORM go-base AS golangci-lint
 ENV BIN_NAME=golangci-lint
 COPY --from=golangci-lint-base /usr/bin/${BIN_NAME} ${GOBIN}/${BIN_NAME}
 RUN upx -9 ${GOBIN}/${BIN_NAME}
-
 
 FROM --platform=$BUILDPLATFORM go-base AS golines
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -985,30 +988,29 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS talosctl
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="talosctl" \
-    && REPO="siderolabs/talos" \
-    && git clone https://github.com/${REPO} \
-    && cd talos \
-    && rm -rf go.mod go.sum \
-    && sed -i "s/^go [0-9]\+\.[0-9]\+\.[0-9]\+/go $(go version | awk '{print $3}' | sed 's/go//')/" go.work \
-    && go mod init "${GITHUBCOM}/${REPO}" \
-    && go mod tidy \
-    && cd cmd/${BIN_NAME} \
-    && CGO_ENABLED=0 \
-    go build \
-        --ldflags "-w -s -buildid=" \
-        -modcacherw \
-        -mod=readonly \
-        -a \
-        -trimpath \
-        -o "${GOBIN}/${BIN_NAME}" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
+# FROM --platform=$BUILDPLATFORM go-base AS talosctl
+# RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+#     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
+#     --mount=type=tmpfs,target="${GOPATH}/src" \
+#     set -x && cd "$(mktemp -d)" \
+#     && BIN_NAME="talosctl" \
+#     && REPO="siderolabs/talos" \
+#     && git clone https://github.com/${REPO} \
+#     && cd talos \
+#     && rm -rf go.sum \
+#     && sed -i "s/^go [0-9]\+\.[0-9]\+\.[0-9]\+/go $(go version | awk '{print $3}' | sed 's/go//')/" go.work go.mod \
+#     && go mod tidy \
+#     && cd cmd/${BIN_NAME} \
+#     && CGO_ENABLED=0 \
+#     go build \
+#         --ldflags "-w -s -buildid=" \
+#         -modcacherw \
+#         -mod=readonly \
+#         -a \
+#         -trimpath \
+#         -o "${GOBIN}/${BIN_NAME}" \
+#     && chmod a+x "${GOBIN}/${BIN_NAME}" \
+#     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS tinygo
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -1177,7 +1179,7 @@ COPY --from=shfmt $GOBIN/shfmt $GOBIN/shfmt
 COPY --from=strictgoimports $GOBIN/strictgoimports $GOBIN/strictgoimports
 COPY --from=swagger $GOBIN/swagger $GOBIN/swagger
 COPY --from=syncmap $GOBIN/syncmap $GOBIN/syncmap
-COPY --from=talosctl $GOBIN/talosctl $GOBIN/talosctl
+# COPY --from=talosctl $GOBIN/talosctl $GOBIN/talosctl
 COPY --from=tinygo $GOBIN/tinygo $GOBIN/tinygo
 COPY --from=tparse $GOBIN/tparse $GOBIN/tparse
 COPY --from=vegeta $GOBIN/vegeta $GOBIN/vegeta

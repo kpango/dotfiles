@@ -151,7 +151,7 @@ FROM --platform=$BUILDPLATFORM rust-base AS rg
 RUN rustup update stable \
     && rustup default stable \
     && RUSTFLAGS="-C target-cpu=native" \
-    cargo +nightly install --force --features 'pcre2 simd-accel' \
+    cargo +nightly install --force --features 'pcre2' \
     ripgrep
 
 FROM --platform=$BUILDPLATFORM rg AS rga
