@@ -64,10 +64,12 @@ mods = "Control|Shift"
 save_to_clipboard = true
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
-[shell]
+[terminal.shell]
 args = ["--login"]
 program = "/usr/bin/zsh"
 
 [window]
 dynamic_padding = true
 opacity = 1.2
+
+[terminal]
