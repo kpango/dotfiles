@@ -136,7 +136,7 @@ if [ -z $DOTENV_LOADED ]; then
     export XDG_DATA_HOME=$HOME/.data
 
     if type gcloud >/dev/null 2>&1; then
-        if [ -d /usr/lib/google-cloud-sdk ]; then
+        if [ -d /usr/local/lib/google-cloud-sdk ]; then
             export GCLOUD_PATH="/usr/lib/google-cloud-sdk"
         fi
         export USE_GKE_GCLOUD_AUTH_PLUGIN=True

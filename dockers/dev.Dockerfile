@@ -27,30 +27,34 @@ LABEL maintainer="${WHOAMI} <${EMAIL}>"
 ENV GROUP=sudo,root,users,docker,wheel
 ENV TZ=Asia/Tokyo
 ENV HOME=/home/${WHOAMI}
-ENV GOPATH=$HOME/go
-ENV GOROOT=/usr/local/go
-ENV GCLOUD_PATH=/google-cloud-sdk
-ENV RUST_HOME=/usr/local/lib/rust
+ENV USR_LOCAL=/usr/local
+ENV BIN_PATH=${USR_LOCAL}/bin
+ENV LIBRARY_PATH=${USR_LOCAL}/lib
+ENV GOPATH=${HOME}/go
+ENV GOROOT=${USR_LOCAL}/go
+ENV GCLOUD_PATH=${LIBRARY_PATH}/google-cloud-sdk
+ENV RUST_HOME=${LIBRARY_PATH}/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
-ENV DART_PATH=/usr/lib/dart
+ENV DART_PATH=${LIBRARY_PATH}}/dart
 ENV NVIM_HOME=$HOME/.config/nvim
-ENV LIBRARY_PATH=/usr/local/lib
-ENV PATH=$GOPATH/bin:/usr/local/go/bin:$CARGO_HOME/bin:$DART_PATH/bin:$GCLOUD_PATH/bin:$PATH
+ENV PATH=${BIN_PATH}:$GOPATH/bin:${GOROOT}/bin:$CARGO_HOME/bin:$DART_PATH/bin:$PATH
+ENV LD_LIBRARY_PATH=/lib:/usr/lib:${LIBRARY_PATH}
 
-COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx /usr/lib/docker/cli-plugins/docker-buildx
-COPY --from=docker /usr/lib/docker/cli-plugins/docker-compose /usr/lib/docker/cli-plugins/docker-compose
-COPY --from=docker /usr/docker/bin/ /usr/bin/
-COPY --from=kube /usr/k8s/bin/ /usr/bin/
+COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx ${LIBRARY_PATH}/docker/cli-plugins/docker-buildx
+COPY --from=docker /usr/lib/docker/cli-plugins/docker-compose ${LIBRARY_PATH}/docker/cli-plugins/docker-compose
+COPY --from=docker /usr/docker/bin ${BIN_PATH}
+COPY --from=kube /usr/k8s/bin ${BIN_PATH}
 
-COPY --from=gcloud /usr/lib/google-cloud-sdk /usr/lib/google-cloud-sdk
-COPY --from=gcloud /usr/lib/google-cloud-sdk/lib /usr/lib
+COPY --from=gcloud ${GCLOUD_PATH} ${GCLOUD_PATH}
+COPY --from=gcloud ${GCLOUD_PATH}/lib ${LIBRARY_PATH}
+COPY --from=gcloud ${GCLOUD_PATH}/bin ${BIN_PATH}
 COPY --from=gcloud /root/.config/gcloud $HOME/.config/gcloud
 
-COPY --from=nim /bin/nim /usr/local/bin/nim
-COPY --from=nim /bin/nimble /usr/local/bin/nimble
-COPY --from=nim /bin/nimsuggest /usr/local/bin/nimsuggest
-COPY --from=nim /nim/lib /usr/local/lib/nim
+COPY --from=nim /bin/nim ${BIN_PATH}/nim
+COPY --from=nim /bin/nimble ${BIN_PATH}/nimble
+COPY --from=nim /bin/nimsuggest ${BIN_PATH}/nimsuggest
+COPY --from=nim /nim/lib ${LIBRARY_PATH}/nim
 COPY --from=nim /root/.cache/nim $HOME/.cache/nim
 COPY --from=nim /nim /nim
 
@@ -89,18 +93,18 @@ RUN usermod -aG ${GROUP} ${WHOAMI} \
     && rm -rf ${HOME}/.cache \
     && rm -rf ${HOME}/.npm/_cacache \
     && rm -rf ${CARGO_HOME}/registry/cache \
-    && rm -rf /usr/local/share/.cache \
+    && rm -rf ${USR_LOCAL}/share/.cache \
     && rm -rf /tmp/* \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* \
-    && chown -R ${USER_ID}:${GROUP_ID} /usr/local/lib/node_modules \
-    && chown -R ${USER_ID}:${GROUP_ID} /usr/local/bin/npm \
-    && chown -R ${USER_ID}:${GROUP_ID} /usr/local/include/google/protobuf \
+    && chown -R ${USER_ID}:${GROUP_ID} ${LIBRARY_PATH}/node_modules \
+    && chown -R ${USER_ID}:${GROUP_ID} ${BIN_PATH}/npm \
+    && chown -R ${USER_ID}:${GROUP_ID} ${USR_LOCAL}/include/google/protobuf \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
-    && chmod -R 755 /usr/local/lib/node_modules \
-    && chmod -R 755 /usr/local/bin/npm \
-    && chmod -R 755 /usr/local/include/google/protobuf
+    && chmod -R 755 ${LIBRARY_PATH}/node_modules \
+    && chmod -R 755 ${BIN_PATH}/npm \
+    && chmod -R 755 ${USR_LOCAL}}/include/google/protobuf
 
 USER ${USER_ID}
 WORKDIR ${HOME}
