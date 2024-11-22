@@ -36,7 +36,7 @@ ENV GCLOUD_PATH=${LIBRARY_PATH}/google-cloud-sdk
 ENV RUST_HOME=${LIBRARY_PATH}/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
-ENV DART_PATH=${LIBRARY_PATH}}/dart
+ENV DART_PATH=${LIBRARY_PATH}/dart
 ENV NVIM_HOME=$HOME/.config/nvim
 ENV PATH=${BIN_PATH}:$GOPATH/bin:${GOROOT}/bin:$CARGO_HOME/bin:$DART_PATH/bin:$PATH
 ENV LD_LIBRARY_PATH=/lib:/usr/lib:${LIBRARY_PATH}
@@ -104,7 +104,7 @@ RUN usermod -aG ${GROUP} ${WHOAMI} \
     && chmod -R 755 ${HOME}/.* \
     && chmod -R 755 ${LIBRARY_PATH}/node_modules \
     && chmod -R 755 ${BIN_PATH}/npm \
-    && chmod -R 755 ${USR_LOCAL}}/include/google/protobuf
+    && chmod -R 755 ${USR_LOCAL}/include/google/protobuf
 
 USER ${USER_ID}
 WORKDIR ${HOME}
