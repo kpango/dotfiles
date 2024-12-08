@@ -29,7 +29,7 @@ ENV TZ=Asia/Tokyo
 ENV HOME=/home/${WHOAMI}
 ENV USR_LOCAL=/usr/local
 ENV BIN_PATH=${USR_LOCAL}/bin
-ENV LIBRARY_PATH=${USR_LOCAL}/lib
+ENV LIBRARY_PATH=/lib:/usr/lib:${USR_LOCAL}/lib
 ENV GOPATH=${HOME}/go
 ENV GOROOT=${USR_LOCAL}/go
 ENV GCLOUD_PATH=${LIBRARY_PATH}/google-cloud-sdk
@@ -39,7 +39,6 @@ ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV DART_PATH=${LIBRARY_PATH}/dart
 ENV NVIM_HOME=$HOME/.config/nvim
 ENV PATH=${BIN_PATH}:$GOPATH/bin:${GOROOT}/bin:$CARGO_HOME/bin:$DART_PATH/bin:$PATH
-ENV LD_LIBRARY_PATH=/lib:/usr/lib:${LIBRARY_PATH}
 
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-buildx ${LIBRARY_PATH}/docker/cli-plugins/docker-buildx
 COPY --from=docker /usr/lib/docker/cli-plugins/docker-compose ${LIBRARY_PATH}/docker/cli-plugins/docker-compose
