@@ -19,7 +19,7 @@ import (
     _ "github.com/go-task/task/v3/cmd/task"
     _ "github.com/golang/mock/mockgen"
     _ "github.com/google/go-licenses"
-    _ "github.com/gotesttools/gotestfmt/v2/cmd/gotesttools"
+    _ "github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt"
     _ "github.com/hexdigest/gowrap/cmd/gowrap"
     _ "github.com/incu6us/goimports-reviser"
     _ "github.com/jstemmer/gotags"
