@@ -32,13 +32,13 @@ export XKB_DEFAULT_LAYOUT=us
 export XKB_DEFAULT_OPTIONS=ctrl:nocaps
 export XMODIFIERS="@im=fcitx5"
 export XWAYLAND_NO_GLAMOR=1
-export __EGL_VENDOR_LIBRARY_DIRS="/usr/share/glvnd/egl_vendor.d/"
-export __GLX_SYNC_TO_VBLANK=1
-export __GLX_VENDOR_LIBRARY_NAME="nvidia"
-export __GL_GSYNC_ALLOWED=0
-export __GL_THREADED_OPTIMIZATIONS=1
-export __GL_VRR_ALLOWED=1
-export __GL_YIELD="USLEEP"
+# export __EGL_VENDOR_LIBRARY_DIRS="/usr/share/glvnd/egl_vendor.d/"
+# export __GLX_SYNC_TO_VBLANK=1
+# export __GLX_VENDOR_LIBRARY_NAME="nvidia"
+# export __GL_GSYNC_ALLOWED=0
+# export __GL_THREADED_OPTIMIZATIONS=1
+# export __GL_VRR_ALLOWED=1
+# export __GL_YIELD="USLEEP"
 export ALACRITTY_LOG="debug"
 
 # Map Ctrl key to Caps Lock
