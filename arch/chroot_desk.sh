@@ -110,7 +110,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /amd-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw quiet loglevel=3 acpi_backlight=native amd_iommu=on amd_pstate=active cgroup_no_v1=all i8042.nomux=1 i8042.reset=1 idle=nomwait module_blacklist=i2c-nvidia-gpu nvidia-drm.fbdev=1 nvidia-drm.modeset=1 rd.systemd.show_status=auto rd.udev.log_priority=3 swiotlb=noforce sysrq_always_enabled=1 systemd.unified_cgroup_hierarchy=1 usbcore.autosuspend=-1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=10 zswap.zpool=z3fold
+options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw quiet loglevel=1 nowatchdog acpi_backlight=none amd_iommu=on amd_pstate=active cgroup_no_v1=all i8042.nomux=1 i8042.reset=1 idle=nomwait nvidia-drm.fbdev=1 nvidia-drm.modeset=1 rd.systemd.show_status=auto rd.udev.log_priority=3 swiotlb=noforce sysrq_always_enabled=1 systemd.unified_cgroup_hierarchy=1 usbcore.autosuspend=-1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=10 zswap.zpool=z3fold
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf
