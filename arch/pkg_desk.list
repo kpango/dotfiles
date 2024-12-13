@@ -30,7 +30,6 @@ fcitx5
 fcitx5-configtool
 fcitx5-gtk
 fd
-foot
 fwupd
 fwupd-efi
 gettext
@@ -47,7 +46,6 @@ imagemagick
 inetutils
 iptables-nft
 kanshi
-kitty
 kubectl
 kubectx
 less
@@ -69,8 +67,6 @@ networkmanager
 nmap
 nvidia-container-toolkit
 nvidia-open-dkms
-nvidia-settings
-nvidia-utils
 nvme-cli
 openssl-1.1
 pacman-contrib
