@@ -645,6 +645,80 @@ safe_require("lazy").setup({
 		},
 	},
 	{
+		"CopilotC-Nvim/CopilotChat.nvim",
+		branch = "canary",
+		dependencies = {
+			{ "zbirenbaum/copilot.lua" },
+			{ "nvim-lua/plenary.nvim" },
+		},
+		build = "make tiktoken",
+		config = true,
+		opts = {
+			debug = true,
+			show_help = "yes",
+			window = {
+				layout = "float",
+				relative = "editor",
+			},
+			prompts = {
+				Explain = {
+					prompt = "/COPILOT_EXPLAIN 選択されたコードの説明を段落をつけて書いてください。",
+					mapping = "<leader>ce",
+					description = "コードの説明をお願いする",
+				},
+				Review = {
+					prompt = "/COPILOT_REVIEW 選択されたコードをレビューしてください。",
+					mapping = "<leader>cr",
+					description = "コードのレビューをお願いする",
+				},
+				Fix = {
+					prompt = "/COPILOT_FIX このコードには問題があります。バグを修正したコードに書き直してください。",
+					mapping = "<leader>cf",
+					description = "コードの修正をお願いする",
+				},
+				Optimize = {
+					prompt = "/COPILOT_REFACTOR 選択されたコードを最適化してパフォーマンスと可読性を向上させてください。",
+					mapping = "<leader>co",
+					description = "コードの最適化をお願いする",
+				},
+				Docs = {
+					prompt = "/COPILOT_DOCS 選択されたコードに対してドキュメンテーションコメントを追加してください。",
+					mapping = "<leader>cd",
+					description = "コードのドキュメント作成をお願いする",
+				},
+				Tests = {
+					prompt = "/COPILOT_TESTS 選択されたコードの詳細な単体テスト関数を書いてください。",
+					mapping = "<leader>ct",
+					description = "テストコード作成をお願いする",
+				},
+				FixDiagnostic = {
+					prompt = "ファイル内の次のような診断上の問題を解決してください:",
+					mapping = "<leader>cd",
+					description = "コードの修正をお願いする",
+					selection = function(source)
+						return safe_require("CopilotChat.select").diagnostics(source, true)
+					end,
+				},
+				Commit = {
+					prompt = "実装差分に対するコミットメッセージを日本語で記述してください。",
+					mapping = "<leader>cco",
+					description = "コミットメッセージの作成をお願いする",
+					selection = function(source)
+						return require("CopilotChat.select").gitdiff(source, true)
+					end,
+				},
+				CommitStaged = {
+					prompt = "ステージ済みの変更に対するコミットメッセージを日本語で記述してください。",
+					mapping = "<leader>cs",
+					description = "ステージ済みのコミットメッセージの作成をお願いする",
+					selection = function(source)
+						return require("CopilotChat.select").gitdiff(source, true)
+					end,
+				},
+			},
+		},
+	},
+	{
 		"numToStr/Comment.nvim",
 		event = "BufReadPost",
 		config = true,

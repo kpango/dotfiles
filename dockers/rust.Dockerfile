@@ -139,6 +139,10 @@ FROM --platform=$BUILDPLATFORM rust-base AS lsd
 RUN cargo install --force --no-default-features \
     --git https://github.com/Peltoche/lsd --branch master
 
+FROM --platform=$BUILDPLATFORM rust-base AS lsp-ai
+RUN cargo install --force --no-default-features \
+    --git https://github.com/SilasMarvin/lsp-ai --branch master -F llama_cpp
+
 # FROM --platform=$BUILDPLATFORM rust-base AS nushell
 # RUN cargo install --force --features=extra \
 #     --git https://github.com/nushell/nushell nu
@@ -223,6 +227,8 @@ COPY --from=rust-base ${RUSTUP_HOME}/toolchains ${RUSTUP_HOME}/toolchains
 # COPY --from=frawk ${BIN_PATH}/frawk ${BIN_PATH}/frawk
 # COPY --from=nushell ${BIN_PATH}/nu ${BIN_PATH}/nu
 # COPY --from=ast-grep ${BIN_PATH}/sg ${BIN_PATH}/sg
+# COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
+# COPY --from=watchexec ${BIN_PATH}/watchexec ${BIN_PATH}/watchexec
 COPY --from=bandwhich ${BIN_PATH}/bandwhich ${BIN_PATH}/bandwhich
 COPY --from=bat ${BIN_PATH}/bat ${BIN_PATH}/bat
 COPY --from=bottom ${BIN_PATH}/btm ${BIN_PATH}/btm
@@ -241,7 +247,6 @@ COPY --from=cargo-fix ${BIN_PATH}/cargo-fix ${BIN_PATH}/cargo-fix
 COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
 COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
 COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta
-# COPY --from=deno ${BIN_PATH}/deno ${BIN_PATH}/deno
 COPY --from=dog ${BIN_PATH}/dog ${BIN_PATH}/dog
 COPY --from=dutree ${BIN_PATH}/dutree ${BIN_PATH}/dutree
 COPY --from=erdtree ${BIN_PATH}/erd ${BIN_PATH}/erd
@@ -250,6 +255,7 @@ COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
+COPY --from=lsp-ai ${BIN_PATH}/lsp-ai ${BIN_PATH}/lsp-ai
 COPY --from=procs ${BIN_PATH}/procs ${BIN_PATH}/procs
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
 COPY --from=rga ${BIN_PATH}/rga ${BIN_PATH}/rga
@@ -263,5 +269,4 @@ COPY --from=stylua ${BIN_PATH}/stylua ${BIN_PATH}/stylua
 COPY --from=t-rec ${BIN_PATH}/t-rec ${BIN_PATH}/t-rec
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
 COPY --from=tree-sitter ${BIN_PATH}/tree-sitter ${BIN_PATH}/tree-sitter
-# COPY --from=watchexec ${BIN_PATH}/watchexec ${BIN_PATH}/watchexec
 COPY --from=xh ${BIN_PATH}/xh ${BIN_PATH}/xh
