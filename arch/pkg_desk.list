@@ -75,6 +75,8 @@ pass
 patch
 pavucontrol
 pipewire
+pipewire-alsa
+pipewire-pulse
 pkgconf
 powertop
 procs
