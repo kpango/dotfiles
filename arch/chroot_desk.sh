@@ -92,7 +92,7 @@ systemctl enable docker
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
 
-sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
+sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm bonding)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/FILES=()/FILES=(\"\/etc\/mdadm.conf\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/block filesystems/block mdadm mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
