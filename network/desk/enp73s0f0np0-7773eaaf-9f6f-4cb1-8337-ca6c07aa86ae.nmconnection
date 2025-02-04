@@ -1,0 +1,17 @@
+[connection]
+id=enp73s0f0np0
+uuid=7773eaaf-9f6f-4cb1-8337-ca6c07aa86ae
+type=ethernet
+controller=adc411f1-dbe1-4771-91a4-298fa56df5b5
+interface-name=enp73s0f0np0
+port-type=bond
+timestamp=1738635599
+
+[ethernet]
+auto-negotiate=true
+
+[bond-port]
+
+[ethtool]
+feature-rx-gro-list=false
+feature-rx-udp-gro-forwarding=true
