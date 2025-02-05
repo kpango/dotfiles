@@ -185,4 +185,4 @@ alias devkill="devkill"
 
 alias devres="devkill && devrun"
 
-alias devref="devkill && dockerrm && devrun"
+alias devref="devkill && dockerrm && sudo systemctl restart docker;devrun"
