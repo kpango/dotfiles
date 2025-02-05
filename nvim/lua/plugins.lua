@@ -3,8 +3,9 @@
 --
 -- この設定ファイルは以下を実現します：
 -- - lazy.nvim によるプラグイン管理（自動ブートストラップ）
--- - nvim-lspconfig によりホストにインストール済みの LSP サーバー（clangd、gopls、rust_analyzer、zls、pyright、およびカスタム設定した nimlsp）を利用
--- - nvim-cmp + LuaSnip による自動補完
+-- - lsp-zero.nvim による LSP の設定（ホストに既にインストール済みのサーバーを利用）
+--   ※ nimlsp はカスタム設定を追加
+-- - nvim-cmp の管理は lsp-zero に任せる（manage_nvim_cmp = true）
 -- - none-ls (nvimtools/none-ls.nvim) によるフォーマッター／リンターの設定
 -- - nvim-dap / nvim-dap-ui によるデバッガー環境
 -- - GitHub Copilot (copilot.lua) の統合
@@ -12,8 +13,8 @@
 -- - nvim-treesitter によるシンタックスハイライト・インデント
 -- - lualine によるステータスライン
 -- - 効率的な開発を支援する補助プラグイン：
---   which-key, Telescope, gitsigns, Comment.nvim (Ctrl+C でコメント切替),
---   indent-blankline, nvim-autopairs, persisted.nvim
+--   which-key, Telescope, gitsigns, Comment.nvim (Ctrl+C によるコメント切替),
+--   indent-blankline (v3仕様), nvim-autopairs, persisted.nvim
 -----------------------------------------------------------
 
 -- 1. lazy.nvim の自動ブートストラップ
@@ -71,99 +72,51 @@ require("lazy").setup({
   },
 
   ------------------------------------------------------------------
-  -- Plugin: nvim-lspconfig (LSP: ホストにインストール済みのサーバーを利用)
+  -- Plugin: lsp-zero.nvim (LSP の設定)
+  -- ※ ホストに既にインストール済みの LSP サーバー（clangd, gopls, rust_analyzer, zls, pyright）
+  --     およびカスタム設定の nimlsp を利用
   ------------------------------------------------------------------
   {
-    "neovim/nvim-lspconfig",
+    "VonHeikemen/lsp-zero.nvim",
+    branch = "v4.x",
+    lazy = false,
     config = function()
+      local lsp = safe_require("lsp-zero")
+      if not lsp then return end
+
+      -- lsp-zero のプリセット設定。manage_nvim_cmp = true で nvim-cmp の管理を任せる
+      lsp.preset({
+        float_border = "rounded",
+        set_lsp_keymaps = true,
+        manage_nvim_cmp = true,
+        suggest_lsp_servers = false,
+      })
+
+      -- lsp-zero は default_keymaps を自動設定するので、on_attach 設定は不要
+      -- カスタム設定：nimlsp を明示的に設定（ホストにインストール済みである前提）
       local lspconfig = safe_require("lspconfig")
-      if not lspconfig then return end
-
-      -- 共通 on_attach 関数: 各バッファに LSP 関連キーマッピングを設定
-      local on_attach = function(client, bufnr)
-        local opts = { noremap = true, silent = true, buffer = bufnr }
-        vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-        vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-        vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-        vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-        vim.keymap.set("n", "<leader>f", function() vim.lsp.buf.format({ async = true }) end, opts)
-      end
-
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      local cmp_nvim_lsp = safe_require("cmp_nvim_lsp")
-      if cmp_nvim_lsp then
-        capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
-      end
-
-      -- ホストに既にインストールされている LSP サーバー（nimlsp はカスタム設定）
-      local servers = { "clangd", "gopls", "rust_analyzer", "zls", "pyright" }
-      for _, server in ipairs(servers) do
-        lspconfig[server].setup({
-          on_attach = on_attach,
-          capabilities = capabilities,
+      if lspconfig then
+        lspconfig.nimlsp = lspconfig.nimlsp or {}
+        lspconfig.nimlsp.setup({
+          cmd = { "nimlsp" },
+          filetypes = { "nim" },
+          root_dir = lspconfig.util.root_pattern("nim.cfg", ".git"),
+          on_attach = function(client, bufnr)
+            lsp.default_keymaps({ buffer = bufnr })
+          end,
+          capabilities = lsp.capabilities,
         })
       end
-      -- nimlsp: カスタム設定（ホストにインストール済みである前提）
-      if not lspconfig["nimlsp"] then
-        lspconfig["nimlsp"] = {
-          default_config = {
-            cmd = { "nimlsp" },
-            filetypes = { "nim" },
-            root_dir = lspconfig.util.root_pattern("nim.cfg", ".git"),
-          },
-        }
-      end
-      lspconfig["nimlsp"].setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
+
+      lsp.setup()
     end,
   },
 
   ------------------------------------------------------------------
-  -- Plugin: nvim-cmp (自動補完)
+  -- Plugin: nvim-cmp 関連プラグイン
+  -- lsp-zero による管理に任せるため、個別の設定は行わずプラグインとして登録
   ------------------------------------------------------------------
-  {
-    "hrsh7th/nvim-cmp",
-    config = function()
-      local cmp = safe_require("cmp")
-      if not cmp then return end
-      cmp.setup({
-        snippet = {
-          expand = function(args)
-            safe_require("luasnip").lsp_expand(args.body)
-          end,
-        },
-        mapping = cmp.mapping.preset.insert({
-          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.complete(),
-          ["<C-e>"] = cmp.mapping.abort(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
-          ["<S-Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            else
-              fallback()
-            end
-          end, { "i", "s" }),
-        }),
-        sources = cmp.config.sources({
-          { name = "nvim_lsp" },
-          { name = "luasnip" },
-        }, {
-          { name = "buffer" },
-        }),
-      })
-    end,
-  },
+  { "hrsh7th/nvim-cmp" },
   { "hrsh7th/cmp-nvim-lsp" },
   { "hrsh7th/cmp-buffer" },
   { "hrsh7th/cmp-path" },
@@ -173,7 +126,7 @@ require("lazy").setup({
 
   ------------------------------------------------------------------
   -- Plugin: none-ls (フォーマッター／リンター)
-  -- ※ 参照: https://github.com/nvimtools/none-ls.nvim
+  -- 参考: https://github.com/nvimtools/none-ls.nvim
   ------------------------------------------------------------------
   {
     "nvimtools/none-ls.nvim",
@@ -324,7 +277,7 @@ require("lazy").setup({
   -- 以下、効率的な開発を支援する追加プラグイン
   ------------------------------------------------------------------
 
-  -- which-key: キーバインドのヘルプ表示
+  -- which-key: キーバインドヘルプ表示
   {
     "folke/which-key.nvim",
     config = function()
@@ -339,7 +292,7 @@ require("lazy").setup({
     event = "VeryLazy",
   },
 
-  -- telescope: ファジーファインダー (ファイル検索、ライブグレップ等)
+  -- telescope: ファジーファインダー（ファイル検索、ライブグレップ等）
   {
     "nvim-telescope/telescope.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
@@ -357,7 +310,7 @@ require("lazy").setup({
     cmd = "Telescope",
   },
 
-  -- gitsigns: Git の差分表示
+  -- gitsigns: Git 差分表示
   {
     "lewis6991/gitsigns.nvim",
     event = "BufRead",
@@ -377,7 +330,7 @@ require("lazy").setup({
     end,
   },
 
-  -- Comment.nvim: コメントの切り替え (Ctrl+C で操作)
+  -- Comment.nvim: Ctrl+C でコメント切替
   {
     "numToStr/Comment.nvim",
     config = function()
@@ -386,9 +339,7 @@ require("lazy").setup({
         comment.setup()
         local api = safe_require("Comment.api")
         if api then
-          -- 通常モード：現在行のコメント切り替え
           vim.keymap.set("n", "<C-c>", api.toggle.linewise.current, { desc = "Toggle comment" })
-          -- ビジュアルモード：選択範囲のコメント切り替え
           vim.keymap.set("v", "<C-c>", api.toggle.linewise, { desc = "Toggle comment" })
         end
       end
@@ -396,7 +347,7 @@ require("lazy").setup({
     keys = { "<C-c>" },
   },
 
-  -- indent-blankline: インデントガイド表示
+  -- indent-blankline: インデントガイド表示 (v3仕様)
   {
     "lukas-reineke/indent-blankline.nvim",
     event = "BufRead",
@@ -405,7 +356,6 @@ require("lazy").setup({
       if ibl then
         ibl.setup({
           char = "│",
-          -- ※ v3 では `show_trailing_blankline_indent` は廃止
         })
       end
     end,
