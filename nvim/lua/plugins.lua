@@ -7,7 +7,6 @@
 --   ※ Nim 用の nimlsp はカスタム設定を追加
 -- - nvim-cmp の管理は lsp-zero に任せる（manage_nvim_cmp = true）
 -- - none-ls (nvimtools/none-ls.nvim) によるフォーマッター／リンターの設定
--- - nvim-dap / nvim-dap-ui によるデバッガー環境
 -- - GitHub Copilot (copilot.lua) の統合
 -- - EditorConfig の連携
 -- - nvim-treesitter によるシンタックスハイライト・インデント
@@ -61,16 +60,63 @@ require("lazy").setup({
   -- ※ lazy を無効にして確実にロード
   ------------------------------------------------------------------
   {
-    "yetone/avante.nvim",
-    lazy = false,
-    config = function()
-      local avante = safe_require("avante")
-      if avante then
-        avante.setup({ theme = "default" })
-      end
-    end,
+  "yetone/avante.nvim",
+  event = "VeryLazy",
+  lazy = false,
+  version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
+  opts = {
+    -- add any opts here
+    -- for example
+    provider = "openai",
+    openai = {
+      endpoint = "https://api.openai.com/v1",
+      model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
+      timeout = 30000, -- timeout in milliseconds
+      temperature = 0, -- adjust if needed
+      max_tokens = 4096,
+    },
   },
-
+  -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+  build = "make",
+  -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+  dependencies = {
+    "stevearc/dressing.nvim",
+    "nvim-lua/plenary.nvim",
+    "MunifTanjim/nui.nvim",
+    --- The below dependencies are optional,
+    "echasnovski/mini.pick", -- for file_selector provider mini.pick
+    "nvim-telescope/telescope.nvim", -- for file_selector provider telescope
+    "hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
+    "ibhagwan/fzf-lua", -- for file_selector provider fzf
+    "nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
+    "zbirenbaum/copilot.lua", -- for providers='copilot'
+    {
+      -- support for image pasting
+      "HakonHarnes/img-clip.nvim",
+      event = "VeryLazy",
+      opts = {
+        -- recommended settings
+        default = {
+          embed_image_as_base64 = false,
+          prompt_for_file_name = false,
+          drag_and_drop = {
+            insert_mode = true,
+          },
+          -- required for Windows users
+          use_absolute_path = true,
+        },
+      },
+    },
+    {
+      -- Make sure to set this up properly if you have lazy=true
+      'MeanderingProgrammer/render-markdown.nvim',
+      opts = {
+        file_types = { "markdown", "Avante" },
+      },
+      ft = { "markdown", "Avante" },
+    },
+  },
+},
   ------------------------------------------------------------------
   -- Plugin: lsp-zero.nvim (LSP の設定)
   -- ※ ホストに既にインストール済みの LSP サーバー（clangd, gopls, rust_analyzer, zls, pyright）
@@ -80,18 +126,14 @@ require("lazy").setup({
     "VonHeikemen/lsp-zero.nvim",
     branch = "v4.x",
     lazy = false,
+    dependencies = {
+      { "neovim/nvim-lspconfig" },
+{'hrsh7th/cmp-nvim-lsp'},
+{'hrsh7th/nvim-cmp'},
+    },
     config = function()
       local lsp = safe_require("lsp-zero")
       if not lsp then return end
-
-      -- lsp-zero のプリセット設定。manage_nvim_cmp を true にして nvim-cmp の管理を任せる
-      lsp.preset({
-        float_border = "rounded",
-        set_lsp_keymaps = true,
-        manage_nvim_cmp = true,
-        suggest_lsp_servers = false,
-      })
-
       -- ※ lsp-zero は default_keymaps を自動設定するので、on_attach の個別設定は不要です
 
       -- カスタム設定：nimlsp を明示的に設定（ホストにインストール済みである前提）
@@ -174,7 +216,7 @@ require("lazy").setup({
     "nvimtools/none-ls.nvim",
     lazy = false,
     config = function()
-      local none_ls = safe_require("none-ls")
+      local none_ls = safe_require("null-ls")
       if not none_ls then return end
       none_ls.setup({
         sources = {
@@ -187,64 +229,6 @@ require("lazy").setup({
           none_ls.builtins.diagnostics.flake8,
         },
       })
-    end,
-  },
-
-  ------------------------------------------------------------------
-  -- Plugin: nvim-dap (デバッガー) と nvim-dap-ui
-  ------------------------------------------------------------------
-  {
-    "mfussenegger/nvim-dap",
-    config = function()
-      local dap = safe_require("dap")
-      if not dap then return end
-      -- 例: C/C++ 用のデバッガー (cppdbg) ※ 各自パスを調整してください
-      dap.adapters.cppdbg = {
-        id = "cppdbg",
-        type = "executable",
-        command = os.getenv("CPPDBG_PATH") or "path/to/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
-      }
-      dap.configurations.cpp = {
-        {
-          name = "Launch file",
-          type = "cppdbg",
-          request = "launch",
-          program = function()
-            return vim.fn.input("Path to executable: ", vim.fn.getcwd() .. "/", "file")
-          end,
-          cwd = "${workspaceFolder}",
-          stopAtEntry = true,
-        },
-      }
-      -- Python 用の例 (debugpy)
-      dap.adapters.python = {
-        type = "executable",
-        command = os.getenv("PYTHON_DEBUG_PATH") or "python",
-        args = { "-m", "debugpy.adapter" },
-      }
-      dap.configurations.python = {
-        {
-          type = "python",
-          request = "launch",
-          name = "Launch file",
-          program = "${file}",
-          pythonPath = function() return os.getenv("PYTHON") or "python" end,
-        },
-      }
-    end,
-  },
-  {
-    "rcarriga/nvim-dap-ui",
-    lazy = false,
-    dependencies = { "mfussenegger/nvim-dap" },
-    config = function()
-      local dap = safe_require("dap")
-      local dapui = safe_require("dapui")
-      if not (dap and dapui) then return end
-      dapui.setup()
-      dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
-      dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
-      dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
     end,
   },
 
@@ -359,15 +343,7 @@ require("lazy").setup({
     config = function()
       local gitsigns = safe_require("gitsigns")
       if gitsigns then
-        gitsigns.setup({
-          signs = {
-            add = function() return { text = "│" } end,
-            change = function() return { text = "│" } end,
-            delete = function() return { text = "_" } end,
-            topdelete = function() return { text = "‾" } end,
-            changedelete = function() return { text = "~" } end,
-          },
-        })
+        gitsigns.setup()
       end
     end,
   },
@@ -387,20 +363,6 @@ require("lazy").setup({
       end
     end,
     keys = { "<C-c>" },
-  },
-
-  -- indent-blankline: インデントガイド表示 (v3仕様)
-  {
-    "lukas-reineke/indent-blankline.nvim",
-    event = "BufRead",
-    config = function()
-      local ibl = safe_require("indent_blankline")
-      if ibl then
-        ibl.setup({
-          char = "│",
-        })
-      end
-    end,
   },
 
   -- nvim-autopairs: 自動括弧補完
@@ -436,12 +398,6 @@ require("lazy").setup({
 -----------------------------------------------------------
 -- 5. グローバルキーマッピング
 -----------------------------------------------------------
--- DAP 用のキーマッピング
-vim.keymap.set("n", "<F5>", function() safe_require("dap").continue() end, { silent = true })
-vim.keymap.set("n", "<F10>", function() safe_require("dap").step_over() end, { silent = true })
-vim.keymap.set("n", "<F11>", function() safe_require("dap").step_into() end, { silent = true })
-vim.keymap.set("n", "<F12>", function() safe_require("dap").step_out() end, { silent = true })
-
 -- Telescope を用いたファジー検索のキーマッピング
 vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { silent = true, noremap = true })
 vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { silent = true, noremap = true })
