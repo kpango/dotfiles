@@ -92,23 +92,6 @@ require("lazy").setup({
 			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
 			"zbirenbaum/copilot.lua", -- for providers='copilot'
 			{
-				-- support for image pasting
-				"HakonHarnes/img-clip.nvim",
-				event = "VeryLazy",
-				opts = {
-					-- recommended settings
-					default = {
-						embed_image_as_base64 = false,
-						prompt_for_file_name = false,
-						drag_and_drop = {
-							insert_mode = true,
-						},
-						-- required for Windows users
-						use_absolute_path = true,
-					},
-				},
-			},
-			{
 				-- Make sure to set this up properly if you have lazy=true
 				"MeanderingProgrammer/render-markdown.nvim",
 				opts = {
@@ -129,33 +112,23 @@ require("lazy").setup({
 		lazy = false,
 		dependencies = {
 			{ "neovim/nvim-lspconfig" },
-			{ "hrsh7th/cmp-nvim-lsp" },
 			{ "hrsh7th/nvim-cmp" },
+			{ "hrsh7th/cmp-nvim-lsp" },
+			{ "hrsh7th/cmp-buffer" }, -- Optional
+			{ "hrsh7th/cmp-path" }, -- Optional
+			{ "hrsh7th/cmp-cmdline" },
+			{ "saadparwaiz1/cmp_luasnip" }, -- Optional
+			{ "hrsh7th/cmp-nvim-lua" }, -- Optional
+			-- Snippets
+			{ "L3MON4D3/LuaSnip" }, -- Required
+			{ "saadparwaiz1/cmp_luasnip" },
 		},
 		config = function()
 			local lsp = safe_require("lsp-zero")
 			if not lsp then
 				return
 			end
-			-- ※ lsp-zero は default_keymaps を自動設定するので、on_attach の個別設定は不要です
-
-			-- カスタム設定：nimlsp を明示的に設定（ホストにインストール済みである前提）
-			local lspconfig = safe_require("lspconfig")
-			if lspconfig then
-				lspconfig.nimlsp = lspconfig.nimlsp or {}
-				lspconfig.nimlsp.setup({
-					cmd = { os.getenv("NIMLSP_PATH") or "nimlsp" },
-					filetypes = { "nim" },
-					root_dir = lspconfig.util.root_pattern("nim.cfg", ".git"),
-					on_attach = function(client, bufnr)
-						lsp.default_keymaps({ buffer = bufnr })
-					end,
-					capabilities = lsp.capabilities,
-				})
-			end
-
 			local lsputil = safe_require("lspconfig.util")
-
 			if lsputil then
 				-- 各言語サーバーごとに、環境変数でバイナリのパスを指定する設定例
 				lsp.configure("clangd", {
@@ -198,19 +171,6 @@ require("lazy").setup({
 			lsp.setup()
 		end,
 	},
-
-	------------------------------------------------------------------
-	-- Plugin: nvim-cmp 関連プラグイン
-	-- lsp-zero による管理に任せるため、個別の設定は行わずプラグインとして登録
-	------------------------------------------------------------------
-	{ "hrsh7th/nvim-cmp" },
-	{ "hrsh7th/cmp-nvim-lsp" },
-	{ "hrsh7th/cmp-buffer" },
-	{ "hrsh7th/cmp-path" },
-	{ "hrsh7th/cmp-cmdline" },
-	{ "L3MON4D3/LuaSnip" },
-	{ "saadparwaiz1/cmp_luasnip" },
-
 	------------------------------------------------------------------
 	-- Plugin: GitHub Copilot の統合 (copilot.lua)
 	------------------------------------------------------------------
@@ -443,21 +403,6 @@ require("lazy").setup({
 	------------------------------------------------------------------
 	-- 以下、効率的な開発を支援する追加プラグイン
 	------------------------------------------------------------------
-
-	-- which-key: キーバインドヘルプ表示
-	{
-		"folke/which-key.nvim",
-		config = function()
-			local wk = safe_require("which-key")
-			if wk then
-				wk.setup({
-					plugins = { spelling = true },
-					window = { border = "single" },
-				})
-			end
-		end,
-		event = "VeryLazy",
-	},
 
 	-- telescope: ファジーファインダー（ファイル検索、ライブグレップ等）
 	{
