@@ -3,7 +3,7 @@
 --
 -- この設定ファイルは以下を実現します：
 -- - lazy.nvim によるプラグイン管理（自動ブートストラップ）
--- - nvim-lspconfig による LSP (ホストにすでにインストール済みのサーバーを利用)
+-- - nvim-lspconfig によりホストにインストール済みの LSP サーバー（clangd、gopls、rust_analyzer、zls、pyright、およびカスタム設定した nimlsp）を利用
 -- - nvim-cmp + LuaSnip による自動補完
 -- - none-ls (nvimtools/none-ls.nvim) によるフォーマッター／リンターの設定
 -- - nvim-dap / nvim-dap-ui によるデバッガー環境
@@ -11,7 +11,7 @@
 -- - EditorConfig の連携
 -- - nvim-treesitter によるシンタックスハイライト・インデント
 -- - lualine によるステータスライン
--- - 効率的な開発を支援する補助プラグイン:
+-- - 効率的な開発を支援する補助プラグイン：
 --   which-key, Telescope, gitsigns, Comment.nvim (Ctrl+C でコメント切替),
 --   indent-blankline, nvim-autopairs, persisted.nvim
 -----------------------------------------------------------
@@ -57,9 +57,11 @@ require("lazy").setup({
 
   ------------------------------------------------------------------
   -- Plugin: Avante.nvim
+  -- ※ lazy を無効にして確実にロード
   ------------------------------------------------------------------
   {
     "yetone/avante.nvim",
+    lazy = false,
     config = function()
       local avante = safe_require("avante")
       if avante then
@@ -93,14 +95,28 @@ require("lazy").setup({
         capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
       end
 
-      -- ホストに既にインストールされている LSP サーバーを利用
-      local servers = { "clangd", "gopls", "rust_analyzer", "zls", "nimlsp", "pyright" }
+      -- ホストに既にインストールされている LSP サーバー（nimlsp はカスタム設定）
+      local servers = { "clangd", "gopls", "rust_analyzer", "zls", "pyright" }
       for _, server in ipairs(servers) do
         lspconfig[server].setup({
           on_attach = on_attach,
           capabilities = capabilities,
         })
       end
+      -- nimlsp: カスタム設定（ホストにインストール済みである前提）
+      if not lspconfig["nimlsp"] then
+        lspconfig["nimlsp"] = {
+          default_config = {
+            cmd = { "nimlsp" },
+            filetypes = { "nim" },
+            root_dir = lspconfig.util.root_pattern("nim.cfg", ".git"),
+          },
+        }
+      end
+      lspconfig["nimlsp"].setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+      })
     end,
   },
 
@@ -157,10 +173,11 @@ require("lazy").setup({
 
   ------------------------------------------------------------------
   -- Plugin: none-ls (フォーマッター／リンター)
-  -- 参考: https://github.com/nvimtools/none-ls.nvim
+  -- ※ 参照: https://github.com/nvimtools/none-ls.nvim
   ------------------------------------------------------------------
   {
     "nvimtools/none-ls.nvim",
+    lazy = false,
     config = function()
       local none_ls = safe_require("none-ls")
       if not none_ls then return end
@@ -186,7 +203,7 @@ require("lazy").setup({
     config = function()
       local dap = safe_require("dap")
       if not dap then return end
-      -- 例: C/C++ 用のデバッガー (cppdbg) ※各自パスを調整してください
+      -- 例: C/C++ 用のデバッガー (cppdbg) ※ 各自パスを調整してください
       dap.adapters.cppdbg = {
         id = "cppdbg",
         type = "executable",
@@ -223,6 +240,7 @@ require("lazy").setup({
   },
   {
     "rcarriga/nvim-dap-ui",
+    lazy = false,
     dependencies = { "mfussenegger/nvim-dap" },
     config = function()
       local dap = safe_require("dap")
@@ -262,7 +280,7 @@ require("lazy").setup({
   },
 
   ------------------------------------------------------------------
-  -- Plugin: nvim-treesitter (シンタックスハイライト等)
+  -- Plugin: nvim-treesitter (シンタックスハイライト・インデント)
   ------------------------------------------------------------------
   {
     "nvim-treesitter/nvim-treesitter",
@@ -287,7 +305,7 @@ require("lazy").setup({
   {
     "nvim-lualine/lualine.nvim",
     event = "VimEnter",
-    dependencies = { "nvim-tree/nvim-web-devicons" }, -- devicons は Telescope などでも利用
+    dependencies = { "nvim-tree/nvim-web-devicons" }, -- devicons は Telescope 等でも利用
     config = function()
       local lualine = safe_require("lualine")
       if lualine then
@@ -348,11 +366,11 @@ require("lazy").setup({
       if gitsigns then
         gitsigns.setup({
           signs = {
-            add = { text = "│" },
-            change = { text = "│" },
-            delete = { text = "_" },
-            topdelete = { text = "‾" },
-            changedelete = { text = "~" },
+            add = function() return { text = "│" } end,
+            change = function() return { text = "│" } end,
+            delete = function() return { text = "_" } end,
+            topdelete = function() return { text = "‾" } end,
+            changedelete = function() return { text = "~" } end,
           },
         })
       end
@@ -368,7 +386,9 @@ require("lazy").setup({
         comment.setup()
         local api = safe_require("Comment.api")
         if api then
+          -- 通常モード：現在行のコメント切り替え
           vim.keymap.set("n", "<C-c>", api.toggle.linewise.current, { desc = "Toggle comment" })
+          -- ビジュアルモード：選択範囲のコメント切り替え
           vim.keymap.set("v", "<C-c>", api.toggle.linewise, { desc = "Toggle comment" })
         end
       end
@@ -385,7 +405,7 @@ require("lazy").setup({
       if ibl then
         ibl.setup({
           char = "│",
-          show_trailing_blankline_indent = false,
+          -- ※ v3 では `show_trailing_blankline_indent` は廃止
         })
       end
     end,
