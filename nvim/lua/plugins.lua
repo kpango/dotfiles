@@ -31,7 +31,7 @@ local function safe_require(module_name)
 	return module
 end
 
--- List of languages for nvim-treesitter
+-- List of languages, LSP servers and tools
 local languages = {
 	"bash",
 	"c",
@@ -50,7 +50,6 @@ local languages = {
 	"zig",
 }
 
--- List of LSP servers to ensure installed
 local lsps = {
 	"clangd",
 	"dockerls",
@@ -62,7 +61,6 @@ local lsps = {
 	"zls",
 }
 
--- List of development tools to ensure installed
 local tools = {
 	"delve",
 	"gofumpt",
@@ -76,7 +74,9 @@ local tools = {
 
 -- Setup lazy.nvim with plugins
 safe_require("lazy").setup({
-	-- General plugins
+
+	----------------------------------------------------------------
+	-- nvim-cmp および LSP 関連の設定
 	{
 		"hrsh7th/nvim-cmp",
 		event = { "InsertEnter", "CmdlineEnter" },
@@ -88,23 +88,27 @@ safe_require("lazy").setup({
 					{
 						"williamboman/mason.nvim",
 						config = function()
-							safe_require("mason").setup({
-								ui = {
-									icons = {
-										package_installed = "✓",
-										package_pending = "➜",
-										package_uninstalled = "✗",
+							local mason = safe_require("mason")
+							if mason then
+								mason.setup({
+									ui = {
+										icons = {
+											package_installed = "✓",
+											package_pending = "➜",
+											package_uninstalled = "✗",
+										},
 									},
-								},
-							})
+								})
+							end
 						end,
 					},
 					{
 						"williamboman/mason-lspconfig.nvim",
 						config = function()
-							safe_require("mason-lspconfig").setup({
-								ensure_installed = lsps,
-							})
+							local mason_lspconfig = safe_require("mason-lspconfig")
+							if mason_lspconfig then
+								mason_lspconfig.setup({ ensure_installed = lsps })
+							end
 						end,
 					},
 					{
@@ -114,7 +118,7 @@ safe_require("lazy").setup({
 						opts = {
 							gofmt = "gofumpt",
 							goimports = "strictgoimports",
-							lsp_cfg = false,
+							lsp_cfg = true,
 						},
 					},
 					{ "hrsh7th/cmp-nvim-lsp", event = { "InsertEnter", "BufReadPre" } },
@@ -122,29 +126,41 @@ safe_require("lazy").setup({
 						"ray-x/lsp_signature.nvim",
 						event = { "InsertEnter", "BufReadPre" },
 						config = function()
-							safe_require("lsp_signature").setup({
-								bind = true, -- This is mandatory, otherwise border config won't get registered.
-								handler_opts = {
-									border = "none",
-								},
-								padding = " ",
-								toggle_key = "<C-x>",
-							})
+							local lsp_signature = safe_require("lsp_signature")
+							if lsp_signature then
+								lsp_signature.setup({
+									bind = true, -- 必須: バッファに自動的にハンドラーをバインドする
+									extra_trigger_chars = { "(", "," }, -- トリガー文字の指定
+									fix_pos = true, -- ポジションの固定
+									floating_window = true, -- フローティングウィンドウを有効にする
+									handler_opts = { border = "none" }, -- ウィンドウの枠線設定
+									hi_parameter = "PmenuSel", -- 現在のパラメータをハイライトするためのハイライトグループ
+									hint_enable = true, -- ヒント表示を有効にする
+									hint_prefix = " ", -- ヒントのプレフィックス
+									max_height = 12, -- ウィンドウの最大高さ
+									max_width = 120, -- ウィンドウの最大幅
+									timer_interval = 200, -- 更新間隔（ミリ秒）
+									toggle_key = "<C-x>", -- signatureHelp のトグルキー
+									zindex = 99, -- ウィンドウの z-index
+								})
+							end
 						end,
 					},
 				},
 				config = function()
+					local lspconfig = safe_require("lspconfig")
+					if not lspconfig then
+						return
+					end
+
+					local golsp = safe_require("go.lsp")
 					local servers = {
-						gopls = safe_require("go.lsp").config(),
+						gopls = golsp and golsp.config() or {},
 						rust_analyzer = {
 							settings = {
 								["rust-analyzer"] = {
-									cargo = {
-										allFeatures = true,
-									},
-									checkOnSave = {
-										command = "clippy",
-									},
+									cargo = { allFeatures = true },
+									checkOnSave = { command = "clippy" },
 								},
 							},
 						},
@@ -153,31 +169,17 @@ safe_require("lazy").setup({
 						lua_ls = {
 							settings = {
 								Lua = {
-									runtime = {
-										version = "LuaJIT",
-										path = vim.split(package.path, ";"),
-									},
-									diagnostics = {
-										globals = { "vim" },
-									},
-									workspace = {
-										library = vim.api.nvim_get_runtime_file("", true),
-										checkThirdParty = false,
-									},
-									telemetry = {
-										enable = false,
-									},
+									runtime = { version = "LuaJIT", path = vim.split(package.path, ";") },
+									diagnostics = { globals = { "vim" } },
+									workspace = { library = vim.api.nvim_get_runtime_file("", true), checkThirdParty = false },
+									telemetry = { enable = false },
 								},
 							},
 						},
 						nimls = {},
 						pyright = {
 							settings = {
-								python = {
-									analysis = {
-										typeCheckingMode = "strict",
-									},
-								},
+								python = { analysis = { typeCheckingMode = "strict" } },
 							},
 						},
 						zls = {},
@@ -187,29 +189,28 @@ safe_require("lazy").setup({
 						on_attach = function(client, bufnr)
 							vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 							if client.server_capabilities.document_highlight then
-								vim.api.nvim_create_augroup("lsp_document_highlight", { clear = false })
+								local group = vim.api.nvim_create_augroup("lsp_document_highlight", { clear = false })
 								vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-									group = "lsp_document_highlight",
+									group = group,
 									buffer = bufnr,
 									callback = vim.lsp.buf.document_highlight,
 								})
 								vim.api.nvim_create_autocmd("CursorMoved", {
-									group = "lsp_document_highlight",
+									group = group,
 									buffer = bufnr,
 									callback = vim.lsp.buf.clear_references,
 								})
 							end
 						end,
-						flags = {
-							debounce_text_changes = 150,
-						},
-						capabilities = safe_require("cmp_nvim_lsp").default_capabilities(
-							vim.lsp.protocol.make_client_capabilities()
-						),
+						flags = { debounce_text_changes = 150 },
+						capabilities = (safe_require("cmp_nvim_lsp") or {}).default_capabilities
+								and safe_require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+							or vim.lsp.protocol.make_client_capabilities(),
 					}
-					local lspconfig = safe_require("lspconfig")
+
 					for _, server_name in ipairs(lsps) do
-						lspconfig[server_name].setup(vim.tbl_deep_extend("force", default_config, servers[server_name] or {}))
+						local server_config = servers[server_name] or {}
+						lspconfig[server_name].setup(vim.tbl_deep_extend("force", default_config, server_config))
 					end
 				end,
 			},
@@ -218,11 +219,17 @@ safe_require("lazy").setup({
 				build = "make install_jsregexp",
 				event = "InsertEnter",
 				config = function()
-					safe_require("luasnip").config.set_config({
-						history = true,
-						updateevents = "TextChanged,TextChangedI",
-					})
-					safe_require("luasnip.loaders.from_vscode").lazy_load()
+					local luasnip = safe_require("luasnip")
+					if luasnip then
+						luasnip.config.set_config({
+							history = true,
+							updateevents = "TextChanged,TextChangedI",
+						})
+						local vscode_loader = safe_require("luasnip.loaders.from_vscode")
+						if vscode_loader then
+							vscode_loader.lazy_load()
+						end
+					end
 				end,
 			},
 			{ "hrsh7th/cmp-buffer", event = "InsertEnter" },
@@ -243,27 +250,95 @@ safe_require("lazy").setup({
 			{ "onsails/lspkind.nvim", event = "InsertEnter" },
 			{ "rafamadriz/friendly-snippets", event = "InsertEnter" },
 			{ "saadparwaiz1/cmp_luasnip", event = "InsertEnter" },
+			{
+				"zbirenbaum/copilot-cmp",
+				after = { "copilot.lua", "nvim-cmp" },
+				event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
+				fix_pairs = true,
+				config = true,
+				dependencies = {
+					{
+						"zbirenbaum/copilot.lua",
+						event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
+						config = function()
+							local copilot = safe_require("copilot")
+							if copilot then
+								copilot.setup({
+									panel = {
+										enabled = false,
+										auto_refresh = true,
+										keymap = {
+											jump_prev = "[[",
+											jump_next = "]]",
+											accept = "<CR>",
+											refresh = "gr",
+											open = "<M-CR>",
+										},
+										layout = { position = "bottom", ratio = 0.4 },
+									},
+									suggestion = {
+										enabled = false,
+										auto_trigger = true,
+										debounce = 75,
+										keymap = {
+											accept = false,
+											accept_word = false,
+											accept_line = false,
+											next = "<M-]>",
+											prev = "<M-[>",
+											dismiss = "<C-]>",
+										},
+									},
+									filetypes = {
+										yaml = false,
+										markdown = false,
+										help = false,
+										gitcommit = false,
+										gitrebase = false,
+										hgcommit = false,
+										svn = false,
+										cvs = false,
+										["."] = false,
+									},
+									copilot_node_command = "node",
+									server_opts_overrides = { autostart = true },
+									on_status_update = function()
+										local lualine = safe_require("lualine")
+										if lualine then
+											lualine.refresh()
+										end
+									end,
+								})
+							end
+						end,
+					},
+				},
+			},
 		},
 		config = function()
 			local cmp = safe_require("cmp")
 			local luasnip = safe_require("luasnip")
 			local lspkind = safe_require("lspkind")
+			if not cmp or not luasnip or not lspkind then
+				return
+			end
+
 			local has_words_before = function()
 				if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
 					return false
 				end
 				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-				return col ~= 0 and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
+				local text = vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]
+				return col ~= 0 and text and not text:match("^%s*$")
 			end
 
 			local check_backspace = function()
 				local col = vim.fn.col(".") - 1
 				return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
 			end
+
 			cmp.setup({
-				flags = {
-					debounce_text_changes = 150,
-				},
+				flags = { debounce_text_changes = 150 },
 				snippet = {
 					expand = function(args)
 						luasnip.lsp_expand(args.body)
@@ -284,21 +359,21 @@ safe_require("lazy").setup({
 					["<Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() and has_words_before() then
 							cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-						elseif safe_require("copilot.suggestion").is_visible() then
-							safe_require("copilot.suggestion").accept()
-						elseif luasnip.expandable() then
-							luasnip.expand()
-						elseif luasnip.expand_or_jumpable() then
-							luasnip.expand_or_jump()
-						elseif check_backspace() then
-							fallback()
 						else
-							fallback()
+							local copilot_suggestion = safe_require("copilot.suggestion")
+							if copilot_suggestion and copilot_suggestion.is_visible() then
+								copilot_suggestion.accept()
+							elseif luasnip.expandable() then
+								luasnip.expand()
+							elseif luasnip.expand_or_jumpable() then
+								luasnip.expand_or_jump()
+							elseif check_backspace() then
+								fallback()
+							else
+								fallback()
+							end
 						end
-					end, {
-						"i",
-						"s",
-					}),
+					end, { "i", "s" }),
 					["<S-Tab>"] = cmp.mapping(function(fallback)
 						if cmp.visible() and has_words_before() then
 							cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
@@ -307,16 +382,11 @@ safe_require("lazy").setup({
 						else
 							fallback()
 						end
-					end, {
-						"i",
-						"s",
-					}),
+					end, { "i", "s" }),
 				},
 				sources = cmp.config.sources({
-					-- Copilot Source
 					{ name = "copilot", group_index = 2 },
 					{ name = "copilot_cmp", group_index = 2 },
-					-- Other Sources
 					{ name = "nvim_lsp", group_index = 2 },
 					{ name = "nvim_lsp_signature_help" },
 					{ name = "luasnip", group_index = 2 },
@@ -329,10 +399,8 @@ safe_require("lazy").setup({
 				sorting = {
 					priority_weight = 2,
 					comparators = {
-						safe_require("copilot_cmp.comparators").prioritize,
-						-- Below is the default comparitor list and order for nvim-cmp
+						safe_require("copilot_cmp.comparators") and safe_require("copilot_cmp.comparators").prioritize or nil,
 						cmp.config.compare.offset,
-						-- cmp.config.compare.scopes, --this is commented in nvim-cmp too
 						cmp.config.compare.exact,
 						cmp.config.compare.score,
 						cmp.config.compare.recently_used,
@@ -349,15 +417,15 @@ safe_require("lazy").setup({
 						col_offset = -3,
 						side_padding = 0,
 					}),
+					-- 修正："winhiglight" → "winhighlight"
 					documentation = cmp.config.window.bordered({
-						winhiglight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
+						winhighlight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
 					}),
 				},
 				formatting = {
 					format = lspkind.cmp_format({
 						mode = "symbol_text",
 						preset = "codicons",
-						-- with_text = false,
 						maxwidth = 50,
 						ellipsis_char = "...",
 						menu = {
@@ -381,175 +449,80 @@ safe_require("lazy").setup({
 							Enum = " ",
 							EnumMember = " ",
 							Event = " ",
-							Field = " ",
+							Field = "",
 							File = " ",
-							Folder = " ",
+							Folder = "",
 							Function = " ",
-							Interface = " ",
+							Interface = "",
 							Key = "",
-							Keyword = " ",
+							Keyword = "",
 							Method = " ",
-							Module = " ",
+							Module = "",
 							Namespace = "",
 							Null = "",
 							Number = "",
 							Object = "",
 							Operator = " ",
 							Package = "",
-							Property = " ",
+							Property = "",
 							Reference = " ",
-							Snippet = " ",
+							Snippet = "",
 							String = "",
 							Struct = " ",
-							Text = " ",
-							TypeParameter = " ",
+							Text = "",
+							TypeParameter = "",
 							Unit = " ",
-							Value = " ",
-							Variable = " ",
+							Value = "",
+							Variable = "",
 						},
 					}),
 				},
 				keys = {
-					{
-						"gD",
-						vim.lsp.buf.declaration,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"gd",
-						vim.lsp.buf.definition,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"gr",
-						vim.lsp.buf.references,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"gi",
-						vim.lsp.buf.implementation,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"K",
-						vim.lsp.buf.hover,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<C-k>",
-						vim.lsp.buf.signature_help,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>wa",
-						vim.lsp.buf.add_workspace_folder,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>wr",
-						vim.lsp.buf.remove_workspace_folder,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
+					{ "gD", vim.lsp.buf.declaration, mode = "n", noremap = true, silent = true },
+					{ "gd", vim.lsp.buf.definition, mode = "n", noremap = true, silent = true },
+					{ "gr", vim.lsp.buf.references, mode = "n", noremap = true, silent = true },
+					{ "gi", vim.lsp.buf.implementation, mode = "n", noremap = true, silent = true },
+					{ "K", vim.lsp.buf.hover, mode = "n", noremap = true, silent = true },
+					{ "<C-k>", vim.lsp.buf.signature_help, mode = "n", noremap = true, silent = true },
+					{ "<space>wa", vim.lsp.buf.add_workspace_folder, mode = "n", noremap = true, silent = true },
+					{ "<space>wr", vim.lsp.buf.remove_workspace_folder, mode = "n", noremap = true, silent = true },
 					{
 						"<space>wl",
 						function()
 							print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
 						end,
 						mode = "n",
-						desc = "",
 						noremap = true,
 						silent = true,
 					},
-					{
-						"<space>D",
-						vim.lsp.buf.type_definition,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>rn",
-						vim.lsp.buf.rename,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>ca",
-						vim.lsp.buf.code_action,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
+					{ "<space>D", vim.lsp.buf.type_definition, mode = "n", noremap = true, silent = true },
+					{ "<space>rn", vim.lsp.buf.rename, mode = "n", noremap = true, silent = true },
+					{ "<space>ca", vim.lsp.buf.code_action, mode = "n", noremap = true, silent = true },
 					{
 						"<space>f",
 						function()
 							vim.lsp.buf.format({ async = true })
 						end,
 						mode = "n",
-						desc = "",
 						noremap = true,
 						silent = true,
 					},
 					{
 						"<space>e",
-						vim.diagnostic.show_line_diagnostics,
+						vim.diagnostic.open_float or vim.diagnostic.show_line_diagnostics,
 						mode = "n",
-						desc = "",
 						noremap = true,
 						silent = true,
 					},
 					{
 						"<space>q",
-						vim.diagnostic.set_loclist,
+						vim.diagnostic.setloclist or vim.diagnostic.set_loclist,
 						mode = "n",
-						desc = "",
 						noremap = true,
 						silent = true,
 					},
-					{
-						"[d",
-						vim.diagnostic.goto_prev,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"]d",
-						vim.diagnostic.goto_next,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
+					{ "[d", vim.diagnostic.goto_prev, mode = "n", noremap = true, silent = true },
+					{ "]d", vim.diagnostic.goto_next, mode = "n", noremap = true, silent = true },
 				},
 				experimental = {
 					ghost_text = false,
@@ -558,31 +531,34 @@ safe_require("lazy").setup({
 			})
 		end,
 	},
+
+	----------------------------------------------------------------
+	-- nvim-treesitter の設定（build キーに変更）
 	{
 		"nvim-treesitter/nvim-treesitter",
-		run = ":TSUpdate",
+		build = ":TSUpdate", -- run → build に変更
 		event = "BufReadPost",
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter-textobjects",
 			{ "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
 		},
 		config = function()
-			safe_require("nvim-treesitter.configs").setup({
-				auto_install = true,
-				sync_install = false,
-				ensure_installed = languages,
-				highlight = {
-					enable = true,
-				},
-				indent = {
-					enable = true,
-				},
-				autotag = {
-					enable = true,
-				},
-			})
+			local ts_configs = safe_require("nvim-treesitter.configs")
+			if ts_configs then
+				ts_configs.setup({
+					auto_install = true,
+					sync_install = false,
+					ensure_installed = languages,
+					highlight = { enable = true },
+					indent = { enable = true },
+					autotag = { enable = true },
+				})
+			end
 		end,
 	},
+
+	----------------------------------------------------------------
+	-- copilot-cmp 再設定（依存プラグインのテーブル指定に修正）
 	{
 		"zbirenbaum/copilot-cmp",
 		after = { "copilot.lua", "nvim-cmp" },
@@ -590,60 +566,66 @@ safe_require("lazy").setup({
 		fix_pairs = true,
 		config = true,
 		dependencies = {
-			"zbirenbaum/copilot.lua",
-			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
-			config = function()
-				safe_require("copilot").setup({
-					panel = {
-						enabled = false,
-						auto_refresh = true,
-						keymap = {
-							jump_prev = "[[",
-							jump_next = "]]",
-							accept = "<CR>",
-							refresh = "gr",
-							open = "<M-CR>",
-						},
-						layout = {
-							position = "bottom", -- | top | left | right
-							ratio = 0.4,
-						},
-					},
-					suggestion = {
-						enabled = false,
-						auto_trigger = true,
-						debounce = 75,
-						keymap = {
-							accept = false,
-							accept_word = false,
-							accept_line = false,
-							next = "<M-]>",
-							prev = "<M-[>",
-							dismiss = "<C-]>",
-						},
-					},
-					filetypes = {
-						yaml = false,
-						markdown = false,
-						help = false,
-						gitcommit = false,
-						gitrebase = false,
-						hgcommit = false,
-						svn = false,
-						cvs = false,
-						["."] = false,
-					},
-					copilot_node_command = "node", -- Node.js version must be > 16.x
-					server_opts_overrides = {
-						autostart = true, -- Ensure Copilot autostarts
-					},
-					on_status_update = function()
-						safe_require("lualine").refresh()
-					end,
-				})
-			end,
+			{
+				"zbirenbaum/copilot.lua",
+				event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
+				config = function()
+					local copilot = safe_require("copilot")
+					if copilot then
+						copilot.setup({
+							panel = {
+								enabled = false,
+								auto_refresh = true,
+								keymap = {
+									jump_prev = "[[",
+									jump_next = "]]",
+									accept = "<CR>",
+									refresh = "gr",
+									open = "<M-CR>",
+								},
+								layout = { position = "bottom", ratio = 0.4 },
+							},
+							suggestion = {
+								enabled = false,
+								auto_trigger = true,
+								debounce = 75,
+								keymap = {
+									accept = false,
+									accept_word = false,
+									accept_line = false,
+									next = "<M-]>",
+									prev = "<M-[>",
+									dismiss = "<C-]>",
+								},
+							},
+							filetypes = {
+								yaml = false,
+								markdown = false,
+								help = false,
+								gitcommit = false,
+								gitrebase = false,
+								hgcommit = false,
+								svn = false,
+								cvs = false,
+								["."] = false,
+							},
+							copilot_node_command = "node",
+							server_opts_overrides = { autostart = true },
+							on_status_update = function()
+								local lualine = safe_require("lualine")
+								if lualine then
+									lualine.refresh()
+								end
+							end,
+						})
+					end
+				end,
+			},
 		},
 	},
+
+	----------------------------------------------------------------
+	-- CopilotChat の設定
 	{
 		"CopilotC-Nvim/CopilotChat.nvim",
 		branch = "main",
@@ -656,10 +638,7 @@ safe_require("lazy").setup({
 		opts = {
 			debug = true,
 			show_help = "yes",
-			window = {
-				layout = "float",
-				relative = "editor",
-			},
+			window = { layout = "float", relative = "editor" },
 			prompts = {
 				Explain = {
 					prompt = "/COPILOT_EXPLAIN 選択されたコードの説明を段落をつけて書いてください。",
@@ -718,21 +697,24 @@ safe_require("lazy").setup({
 			},
 		},
 	},
+
+	----------------------------------------------------------------
+	-- Comment プラグイン
 	{
 		"numToStr/Comment.nvim",
 		event = "BufReadPost",
 		config = true,
 		lazy = true,
-		opts = {
-			ignore = "^$",
-		},
+		opts = { ignore = "^$" },
 		keys = {
 			{
 				"<C-c>",
 				function()
-					safe_require("Comment.api").toggle.linewise.current()
+					local comment_api = safe_require("Comment.api")
+					if comment_api then
+						comment_api.toggle.linewise.current()
+					end
 				end,
-				desc = "",
 				mode = "n",
 				noremap = true,
 				silent = true,
@@ -740,9 +722,11 @@ safe_require("lazy").setup({
 			{
 				"<C-c>",
 				function()
-					safe_require("Comment.api").toggle.linewise(fn.visualmode())
+					local comment_api = safe_require("Comment.api")
+					if comment_api then
+						comment_api.toggle.linewise(fn.visualmode())
+					end
 				end,
-				desc = "",
 				mode = "x",
 				noremap = true,
 				silent = true,
@@ -750,22 +734,24 @@ safe_require("lazy").setup({
 			{
 				"<C-c>",
 				function()
-					safe_require("Comment.api").toggle.linewise.current()
+					local comment_api = safe_require("Comment.api")
+					if comment_api then
+						comment_api.toggle.linewise.current()
+					end
 				end,
-				desc = "",
 				mode = "i",
 				noremap = true,
 				silent = true,
 			},
 		},
 	},
+
+	----------------------------------------------------------------
+	-- lualine と nvim-navic の設定（navic コンポーネントを直接テーブルで指定）
 	{
 		"nvim-lualine/lualine.nvim",
 		event = "VimEnter",
-		dependencies = {
-			"nvim-tree/nvim-web-devicons",
-			"SmiteshP/nvim-navic",
-		},
+		dependencies = { "nvim-tree/nvim-web-devicons", "SmiteshP/nvim-navic" },
 		opts = {
 			options = {
 				icons_enabled = true,
@@ -783,12 +769,7 @@ safe_require("lazy").setup({
 				lualine_b = {
 					"branch",
 					"diff",
-					{
-						"diagnostics",
-						sources = { "nvim_lsp", "coc" },
-						update_in_insert = true,
-						always_visible = true,
-					},
+					{ "diagnostics", sources = { "nvim_lsp", "coc" }, update_in_insert = true, always_visible = true },
 				},
 				lualine_c = {
 					{
@@ -796,41 +777,31 @@ safe_require("lazy").setup({
 						path = 1,
 						file_status = true,
 						shorting_target = 40,
-						symbols = {
-							modified = "[+]",
-							readonly = "[RO]",
-							unnamed = "Untitled",
-						},
+						symbols = { modified = "[+]", readonly = "[RO]", unnamed = "Untitled" },
 					},
-					function()
-						local navic = safe_require("nvim-navic")
-						return {
-							function()
-								return navic.get_location()
-							end,
-							cond = function()
-								return navic.is_available()
-							end,
-						}
-					end,
+					{
+						function()
+							local navic = safe_require("nvim-navic")
+							return navic and navic.get_location() or ""
+						end,
+						cond = function()
+							local navic = safe_require("nvim-navic")
+							return navic and navic.is_available()
+						end,
+					},
 				},
 				lualine_x = {
 					{
 						"diagnostics",
 						sources = { "nvim_diagnostic" },
-						symbols = {
-							error = " ",
-							warn = " ",
-							info = " ",
-							hint = " ",
-						},
+						symbols = { error = " ", warn = " ", info = " ", hint = " " },
 					},
 					"encoding",
 					"filetype",
 				},
 				lualine_y = {
 					{ "diagnostics", source = { "nvim-lsp" } },
-					{ "progress" },
+					"progress",
 				},
 				lualine_z = { "location" },
 			},
@@ -843,11 +814,7 @@ safe_require("lazy").setup({
 						path = 2,
 						file_status = true,
 						shorting_target = 40,
-						symbols = {
-							modified = " [+]",
-							readonly = " [RO]",
-							unnamed = "Untitled",
-						},
+						symbols = { modified = " [+]", readonly = " [RO]", unnamed = "Untitled" },
 					},
 				},
 				lualine_x = { "filetype" },
@@ -857,19 +824,16 @@ safe_require("lazy").setup({
 			tabline = {},
 			extensions = { "fugitive", "fzf", "nvim-tree" },
 		},
-		dependencies = "nvim-tree/nvim-web-devicons",
 		config = true,
 	},
+
+	----------------------------------------------------------------
+	-- その他各種プラグイン（bufferline, autopairs, gitsigns, telescope, formatter, lint, 各言語固有の設定, DAP など）
 	{
 		"mvllow/modes.nvim",
 		config = true,
 		opts = {
-			colors = {
-				copy = "#FFEE55",
-				delete = "#DC669B",
-				insert = "#55AAEE",
-				visual = "#DD5522",
-			},
+			colors = { copy = "#FFEE55", delete = "#DC669B", insert = "#55AAEE", visual = "#DD5522" },
 		},
 	},
 	{
@@ -880,9 +844,7 @@ safe_require("lazy").setup({
 			overrides = {
 				extensions = {},
 				literal = {},
-				complex = {
-					[".*git/config"] = "gitconfig",
-				},
+				complex = { [".*git/config"] = "gitconfig" },
 				function_extensions = {
 					["cpp"] = function()
 						vim.bo.filetype = "cpp"
@@ -903,16 +865,14 @@ safe_require("lazy").setup({
 						vim.cmd("iabbrev $ $$")
 					end,
 				},
-				shebang = {
-					dash = "sh",
-				},
+				shebang = { dash = "sh" },
 			},
 		},
 	},
 	{
 		"akinsho/bufferline.nvim",
 		version = "*",
-		dependencies = "nvim-tree/nvim-web-devicons",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
 		config = true,
 		opts = {
 			options = {
@@ -924,31 +884,17 @@ safe_require("lazy").setup({
 				color_icons = true,
 			},
 			highlights = {
-				separator = {
-					fg = "#073642",
-					bg = "#002b36",
-				},
-				separator_selected = {
-					fg = "#073642",
-				},
-				background = {
-					fg = "#657b83",
-					bg = "#002b36",
-				},
-				buffer_selected = {
-					fg = "#fdf6e3",
-				},
-				fill = {
-					bg = "#073642",
-				},
+				separator = { fg = "#073642", bg = "#002b36" },
+				separator_selected = { fg = "#073642" },
+				background = { fg = "#657b83", bg = "#002b36" },
+				buffer_selected = { fg = "#fdf6e3" },
+				fill = { bg = "#073642" },
 			},
 		},
 	},
 	{
 		"windwp/nvim-autopairs",
-		opts = {
-			disable_filetype = { "TelescopePrompt", "vim" },
-		},
+		opts = { disable_filetype = { "TelescopePrompt", "vim" } },
 		config = true,
 	},
 	{
@@ -956,37 +902,38 @@ safe_require("lazy").setup({
 		event = "BufReadPost",
 		config = true,
 		opts = {
-			signs = {
-				add = { text = "┃" },
-				change = { text = "┃" },
-				delete = { text = "_" },
-				topdelete = { text = "‾" },
-				changedelete = { text = "~" },
-				untracked = { text = "┆" },
-			},
-			signcolumn = true, -- Toggle with :Gitsigns toggle_signs
-			numhl = false, -- Toggle with :Gitsigns toggle_numhl
-			linehl = false, -- Toggle with :Gitsigns toggle_linehl
-			word_diff = false, -- Toggle with :Gitsigns toggle_word_diff
+			signs = function()
+				return {
+					add = { text = "┃" },
+					change = { text = "┃" },
+					delete = { text = "_" },
+					topdelete = { text = "‾" },
+					changedelete = { text = "~" },
+					untracked = { text = "┆" },
+				}
+			end,
+			signcolumn = true, -- signcolumn の表示設定（必要に応じて）
+			numhl = false,
+			linehl = false,
+			word_diff = false,
 			watch_gitdir = {
 				interval = 1000,
 				follow_files = true,
 			},
 			attach_to_untracked = true,
-			current_line_blame = false, -- Toggle with :Gitsigns toggle_current_line_blame
+			current_line_blame = false,
 			current_line_blame_opts = {
 				virt_text = true,
-				virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+				virt_text_pos = "eol",
 				delay = 1000,
 				ignore_whitespace = false,
 			},
 			current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
 			sign_priority = 6,
 			update_debounce = 100,
-			status_formatter = nil, -- Use default
-			max_file_length = 40000, -- Disable if file is longer than this (in lines)
+			status_formatter = nil,
+			max_file_length = 40000,
 			preview_config = {
-				-- Options passed to nvim_open_win
 				border = "single",
 				style = "minimal",
 				relative = "cursor",
@@ -1007,7 +954,6 @@ safe_require("lazy").setup({
 						end)
 						return "<Ignore>"
 					end,
-					desc = "",
 					mode = "n",
 					expr = true,
 				},
@@ -1022,14 +968,12 @@ safe_require("lazy").setup({
 						end)
 						return "<Ignore>"
 					end,
-					desc = "",
 					mode = "n",
 					expr = true,
 				},
 				{
 					"<leader>hs",
 					"<Cmd>Gitsigns stage_hunk<CR>",
-					desc = "",
 					mode = { "n", "v" },
 					silent = true,
 					noremap = true,
@@ -1037,95 +981,36 @@ safe_require("lazy").setup({
 				{
 					"<leader>hr",
 					"<Cmd>Gitsigns reset_hunk<CR>",
-					desc = "",
 					mode = { "n", "v" },
 					silent = true,
 					noremap = true,
 				},
-				{
-					"<leader>hS",
-					gs.stage_buffer,
-					desc = "",
-					mode = "n",
-					silent = true,
-					noremap = true,
-				},
-				{
-					"<leader>hR",
-					gs.reset_buffer,
-					desc = "",
-					mode = "n",
-					silent = true,
-					noremap = true,
-				},
-				{
-					"<leader>hu",
-					gs.undo_stage_hunk,
-					desc = "",
-					mode = "n",
-					silent = true,
-					noremap = true,
-				},
-				{
-					"<leader>hp",
-					gs.preview_hunk,
-					desc = "",
-					mode = "n",
-					silent = true,
-					noremap = true,
-				},
+				{ "<leader>hS", gs.stage_buffer, mode = "n", silent = true, noremap = true },
+				{ "<leader>hR", gs.reset_buffer, mode = "n", silent = true, noremap = true },
+				{ "<leader>hu", gs.undo_stage_hunk, mode = "n", silent = true, noremap = true },
+				{ "<leader>hp", gs.preview_hunk, mode = "n", silent = true, noremap = true },
 				{
 					"<leader>hb",
 					function()
 						gs.blame_line({ full = true })
 					end,
-					desc = "",
 					mode = "n",
 					silent = true,
 					noremap = true,
 				},
-				{
-					"<leader>hd",
-					gs.diffthis,
-					desc = "",
-					mode = "n",
-					silent = true,
-					noremap = true,
-				},
+				{ "<leader>hd", gs.diffthis, mode = "n", silent = true, noremap = true },
 				{
 					"<leader>hD",
 					function()
 						gs.diffthis("~")
 					end,
-					desc = "",
 					mode = "n",
 					silent = true,
 					noremap = true,
 				},
-				{
-					"<leader>tb",
-					gs.toggle_current_line_blame,
-					desc = "",
-					mode = "n",
-					silent = true,
-					noremap = true,
-				},
-				{
-					"<leader>td",
-					gs.toggle_deleted,
-					desc = "",
-					mode = "n",
-					silent = true,
-					noremap = true,
-				},
-				{
-					"ih",
-					"<Cmd>Gitsigns select_hunk<CR>",
-					desc = "",
-					mode = { "o", "x" },
-					silent = true,
-					noremap = true,
-				},
+				{ "<leader>tb", gs.toggle_current_line_blame, mode = "n", silent = true, noremap = true },
+				{ "<leader>td", gs.toggle_deleted, mode = "n", silent = true, noremap = true },
+				{ "ih", "<Cmd>Gitsigns select_hunk<CR>", mode = { "o", "x" }, silent = true, noremap = true },
 			}
 		end,
 	},
@@ -1135,34 +1020,36 @@ safe_require("lazy").setup({
 		dependencies = { "nvim-lua/plenary.nvim" },
 		config = function()
 			local telescope = safe_require("telescope")
+			if not telescope then
+				return
+			end
+			local actions = require("telescope.actions")
+			local fb_actions = require("telescope").extensions.file_browser
+					and require("telescope").extensions.file_browser.actions
+				or {}
 			telescope.setup({
 				defaults = {
 					mappings = {
-						n = {
-							["q"] = actions.close,
-						},
+						n = { ["q"] = actions.close },
 						i = {
-							["<C-n>"] = safe_require("telescope.actions").move_selection_next,
-							["<C-p>"] = safe_require("telescope.actions").move_selection_previous,
+							["<C-n>"] = actions.move_selection_next,
+							["<C-p>"] = actions.move_selection_previous,
 						},
 					},
 				},
 				extensions = {
 					file_browser = {
 						theme = "dropdown",
-						-- disables netrw and use telescope-file-browser in its place
 						hijack_netrw = true,
 						mappings = {
-							-- your custom insert mode mappings
 							["i"] = {
 								["<C-w>"] = function()
 									vim.cmd("normal vbd")
 								end,
 							},
 							["n"] = {
-								-- your custom normal mode mappings
-								["N"] = fb_actions.create,
-								["h"] = fb_actions.goto_parent_dir,
+								["N"] = fb_actions.create or function() end,
+								["h"] = fb_actions.goto_parent_dir or function() end,
 								["/"] = function()
 									vim.cmd("startinsert")
 								end,
@@ -1171,9 +1058,9 @@ safe_require("lazy").setup({
 					},
 				},
 			})
+			telescope.load_extension("file_browser")
 		end,
 	},
-	-- code formatter setting
 	{
 		"mhartington/formatter.nvim",
 		event = "BufWritePost",
@@ -1184,159 +1071,164 @@ safe_require("lazy").setup({
 				command = "FormatWrite",
 			})
 
-			-- Formatter settings
-			safe_require("formatter").setup({
-				logging = false,
-				filetype = {
-					lua = {
-						function()
-							return {
-								exe = "stylua",
-								args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), "--", "-" },
-								stdin = true,
-							}
-						end,
+			local formatter = safe_require("formatter")
+			if formatter then
+				formatter.setup({
+					logging = false,
+					filetype = {
+						lua = {
+							function()
+								return {
+									exe = "stylua",
+									args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), "--", "-" },
+									stdin = true,
+								}
+							end,
+						},
+						go = {
+							function()
+								return {
+									exe = "golines",
+									args = { "-w", "--max-len=200", "--base-formatter=gofumpt" },
+									stdin = true,
+								}
+							end,
+							function()
+								return {
+									exe = "gofumpt",
+									args = { "-w" },
+									stdin = true,
+								}
+							end,
+							function()
+								return {
+									exe = "strictgoimports",
+									args = { "-w" },
+									stdin = true,
+								}
+							end,
+							function()
+								return {
+									exe = "goimports",
+									args = { "-w" },
+									stdin = true,
+								}
+							end,
+						},
+						cpp = {
+							function()
+								return {
+									exe = "clang-format",
+									args = { "--assume-filename", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+									stdin = true,
+									cwd = vim.fn.expand("%:p:h"),
+								}
+							end,
+						},
+						rust = {
+							function()
+								return {
+									exe = "rustfmt",
+									args = { "--emit=stdout" },
+									stdin = true,
+								}
+							end,
+						},
+						zig = {
+							function()
+								return {
+									exe = "zig",
+									args = { "fmt", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+									stdin = false,
+								}
+							end,
+						},
+						nim = {
+							function()
+								return {
+									exe = "nimpretty",
+									args = { "--backup:off", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+									stdin = false,
+								}
+							end,
+						},
+						python = {
+							function()
+								return {
+									exe = "black",
+									args = { "-" },
+									stdin = true,
+								}
+							end,
+						},
+						sh = {
+							function()
+								return {
+									exe = "shfmt",
+									args = { "-i", "4", "-w", "-s" },
+									stdin = true,
+								}
+							end,
+						},
+						zsh = {
+							function()
+								return {
+									exe = "shfmt",
+									args = { "-i", "4", "-w", "-s" },
+									stdin = true,
+								}
+							end,
+						},
+						make = {
+							function()
+								return {
+									exe = "gmake",
+									args = { "-f", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+									stdin = false,
+								}
+							end,
+						},
+						yaml = {
+							function()
+								return {
+									exe = "prettier",
+									args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+									stdin = true,
+								}
+							end,
+						},
+						json = {
+							function()
+								return {
+									exe = "jq",
+									args = { "." },
+									stdin = true,
+								}
+							end,
+						},
+						proto = {
+							function()
+								return {
+									exe = "clang-format",
+									args = { "--assume-filename", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
+									stdin = true,
+									cwd = vim.fn.expand("%:p:h"),
+								}
+							end,
+						},
 					},
-					go = {
-						function()
-							return {
-								exe = "golines",
-								args = { "-w", "--max-len=200", "--base-formatter=gofumpt" },
-								stdin = true,
-							}
-						end,
-						function()
-							return {
-								exe = "gofumpt",
-								args = { "-w" },
-								stdin = true,
-							}
-						end,
-						function()
-							return {
-								exe = "strictgoimports",
-								args = { "-w" },
-								stdin = true,
-							}
-						end,
-						function()
-							return {
-								exe = "goimports",
-								args = { "-w" },
-								stdin = true,
-							}
-						end,
-					},
-					cpp = {
-						function()
-							return {
-								exe = "clang-format",
-								args = { "--assume-filename", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = true,
-								cwd = vim.fn.expand("%:p:h"),
-							}
-						end,
-					},
-					rust = {
-						function()
-							return {
-								exe = "rustfmt",
-								args = { "--emit=stdout" },
-								stdin = true,
-							}
-						end,
-					},
-					zig = {
-						function()
-							return {
-								exe = "zig",
-								args = { "fmt", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = false,
-							}
-						end,
-					},
-					nim = {
-						function()
-							return {
-								exe = "nimpretty",
-								args = { "--backup:off", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = false,
-							}
-						end,
-					},
-					python = {
-						function()
-							return {
-								exe = "black",
-								args = { "-" },
-								stdin = true,
-							}
-						end,
-					},
-					sh = {
-						function()
-							return {
-								exe = "shfmt",
-								args = { "-i", "4", "-w", "-s" },
-								stdin = true,
-							}
-						end,
-					},
-					zsh = {
-						function()
-							return {
-								exe = "shfmt",
-								args = { "-i", "4", "-w", "-s" },
-								stdin = true,
-							}
-						end,
-					},
-					make = {
-						function()
-							return {
-								exe = "gmake",
-								args = { "-f", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = false,
-							}
-						end,
-					},
-					yaml = {
-						function()
-							return {
-								exe = "prettier",
-								args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = true,
-							}
-						end,
-					},
-					json = {
-						function()
-							return {
-								exe = "jq",
-								args = { "." },
-								stdin = true,
-							}
-						end,
-					},
-					proto = {
-						function()
-							return {
-								exe = "clang-format",
-								args = { "--assume-filename", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = true,
-								cwd = vim.fn.expand("%:p:h"),
-							}
-						end,
-					},
-				},
-			})
+				})
+			end
 		end,
 	},
-	-- Linter settings
 	{
 		"mfussenegger/nvim-lint",
 		config = function()
 			local lint = safe_require("lint")
+			if not lint then
+				return
+			end
+
 			lint.linters_by_ft = {
 				buf = { "buf" },
 				cpp = { "clangtidy" },
@@ -1345,7 +1237,6 @@ safe_require("lazy").setup({
 				nim = { "nimlint" },
 				proto = { "protoc-gen-lint" },
 				python = { "flake8", "pylint" },
-				-- rust = { "clippy" },
 				sh = { "shellcheck" },
 				yaml = { "yamllint" },
 				zig = { "zigfmt" },
@@ -1355,20 +1246,21 @@ safe_require("lazy").setup({
 				cmd = "golangci-lint",
 				args = { "run", "--out-format", "json" },
 				stream = "stdout",
-				parser = safe_require("lint.parser").from_errorformat("[%trror] %f:%l:%c: %m, [%tarning] %f:%l:%c: %m", {
-					source = "golangcilint",
-				}),
+				parser = safe_require("lint.parser")
+						and safe_require("lint.parser").from_errorformat("[%trror] %f:%l:%c: %m, [%tarning] %f:%l:%c: %m", {
+							source = "golangcilint",
+						})
+					or nil,
 			}
 
 			vim.api.nvim_create_autocmd("BufWritePost", {
 				pattern = "*",
 				callback = function()
-					safe_require("lint").try_lint()
+					lint.try_lint()
 				end,
 			})
 		end,
 	},
-	-- Language specific plugins and configurations
 	{
 		"rust-lang/rust.vim",
 		ft = { "rust" },
@@ -1391,15 +1283,17 @@ safe_require("lazy").setup({
 			vim.g.python_highlight_all = 1
 		end,
 	},
-	-- Debug Adapter Protocol
 	{
 		"mfussenegger/nvim-dap",
 		ft = { "c", "cpp", "rust", "go" },
 		config = function()
 			local dap = safe_require("dap")
+			if not dap then
+				return
+			end
 			dap.adapters.lldb = {
 				type = "executable",
-				command = "/usr/bin/lldb-vscode", -- adjust as needed
+				command = "/usr/bin/lldb-vscode",
 				name = "lldb",
 			}
 			dap.configurations.cpp = {
@@ -1413,30 +1307,16 @@ safe_require("lazy").setup({
 					cwd = "${workspaceFolder}",
 					stopOnEntry = false,
 					args = {},
-
 					runInTerminal = false,
 				},
 			}
 			dap.configurations.c = dap.configurations.cpp
 		end,
 	},
-}, {
-	root = pkg_path,
-})
+}, { root = pkg_path })
 
 -- Load onedark colorscheme
-safe_require("onedark").load()
-
--- Customize LSP diagnostic handler
---vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.diagnostic.on_publish_diagnostics, {
---	underline = true,
---	virtual_text = {
---		spacing = 4,
---		prefix = "",
---		format = function(diagnostic, virtual_text)
---			return string.format("%s %s (%s: %s)", virtual_text, diagnostic.message, diagnostic.source, diagnostic.code)
---		end,
---	},
---	signs = true,
---	update_in_insert = false,
---})
+local onedark = safe_require("onedark")
+if onedark then
+	onedark.load()
+end
