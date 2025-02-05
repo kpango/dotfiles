@@ -4,7 +4,7 @@
 -- この設定ファイルは以下を実現します：
 -- - lazy.nvim によるプラグイン管理（自動ブートストラップ）
 -- - lsp-zero.nvim による LSP の設定（ホストに既にインストール済みのサーバーを利用）
---   ※ nimlsp はカスタム設定を追加
+--   ※ Nim 用の nimlsp はカスタム設定を追加
 -- - nvim-cmp の管理は lsp-zero に任せる（manage_nvim_cmp = true）
 -- - none-ls (nvimtools/none-ls.nvim) によるフォーマッター／リンターの設定
 -- - nvim-dap / nvim-dap-ui によるデバッガー環境
@@ -84,7 +84,7 @@ require("lazy").setup({
       local lsp = safe_require("lsp-zero")
       if not lsp then return end
 
-      -- lsp-zero のプリセット設定。manage_nvim_cmp = true で nvim-cmp の管理を任せる
+      -- lsp-zero のプリセット設定。manage_nvim_cmp を true にして nvim-cmp の管理を任せる
       lsp.preset({
         float_border = "rounded",
         set_lsp_keymaps = true,
@@ -92,13 +92,14 @@ require("lazy").setup({
         suggest_lsp_servers = false,
       })
 
-      -- lsp-zero は default_keymaps を自動設定するので、on_attach 設定は不要
+      -- ※ lsp-zero は default_keymaps を自動設定するので、on_attach の個別設定は不要です
+
       -- カスタム設定：nimlsp を明示的に設定（ホストにインストール済みである前提）
       local lspconfig = safe_require("lspconfig")
       if lspconfig then
         lspconfig.nimlsp = lspconfig.nimlsp or {}
         lspconfig.nimlsp.setup({
-          cmd = { "nimlsp" },
+          cmd = { os.getenv("NIMLSP_PATH") or "nimlsp" },
           filetypes = { "nim" },
           root_dir = lspconfig.util.root_pattern("nim.cfg", ".git"),
           on_attach = function(client, bufnr)
@@ -106,6 +107,47 @@ require("lazy").setup({
           end,
           capabilities = lsp.capabilities,
         })
+      end
+
+      local lsputil = safe_require("lspconfig.util")
+
+      if lsputil then
+      -- 各言語サーバーごとに、環境変数でバイナリのパスを指定する設定例
+      lsp.configure("clangd", {
+        cmd = { "/usr/bin/clangd", "--background-index" },
+        filetypes = { "c", "cpp", "objc", "objcpp" },
+        root_dir = lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git"),
+      })
+
+      lsp.configure("gopls", {
+        cmd = { os.getenv("GOPATH").."/bin/gopls" or "gopls" },
+        filetypes = { "go", "gomod" },
+        root_dir = lsputil.root_pattern("go.work", "go.mod", ".git"),
+      })
+
+      lsp.configure("rust_analyzer", {
+        cmd = { os.getenv("CARGO_HOME").."/bin/rust-analyzer" or "rust-analyzer" },
+        filetypes = { "rust" },
+        settings = {
+          ["rust-analyzer"] = {
+            cargo = { allFeatures = true },
+            checkOnSave = { command = "clippy" },
+          },
+        },
+        root_dir = lsputil.root_pattern("Cargo.toml", "rust-project.json", ".git"),
+      })
+
+      lsp.configure("zls", {
+        cmd = { os.getenv("ZLS_PATH") or "zls" },
+        filetypes = { "zig" },
+        root_dir = lsputil.root_pattern("build.zig", ".git"),
+      })
+
+      lsp.configure("pyright", {
+        cmd = { os.getenv("PYRIGHT_PATH") or "pyright-langserver", "--stdio" },
+        filetypes = { "python" },
+        root_dir = lsputil.root_pattern("pyproject.toml", "setup.py", ".git"),
+      })
       end
 
       lsp.setup()
@@ -160,7 +202,7 @@ require("lazy").setup({
       dap.adapters.cppdbg = {
         id = "cppdbg",
         type = "executable",
-        command = "path/to/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+        command = os.getenv("CPPDBG_PATH") or "path/to/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
       }
       dap.configurations.cpp = {
         {
@@ -177,7 +219,7 @@ require("lazy").setup({
       -- Python 用の例 (debugpy)
       dap.adapters.python = {
         type = "executable",
-        command = "python",
+        command = os.getenv("PYTHON_DEBUG_PATH") or "python",
         args = { "-m", "debugpy.adapter" },
       }
       dap.configurations.python = {
@@ -186,7 +228,7 @@ require("lazy").setup({
           request = "launch",
           name = "Launch file",
           program = "${file}",
-          pythonPath = function() return "python" end,
+          pythonPath = function() return os.getenv("PYTHON") or "python" end,
         },
       }
     end,
@@ -258,7 +300,7 @@ require("lazy").setup({
   {
     "nvim-lualine/lualine.nvim",
     event = "VimEnter",
-    dependencies = { "nvim-tree/nvim-web-devicons" }, -- devicons は Telescope 等でも利用
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       local lualine = safe_require("lualine")
       if lualine then
