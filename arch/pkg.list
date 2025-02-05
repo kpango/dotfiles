@@ -24,6 +24,7 @@ fd
 fwupd
 fwupd-efi
 gettext
+ghostty
 git
 git-delta
 go
