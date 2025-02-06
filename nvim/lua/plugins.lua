@@ -58,41 +58,34 @@ require("lazy").setup({
 
 	------------------------------------------------------------------
 	-- Plugin: Avante.nvim
-	-- ※ lazy を無効にして確実にロード
 	------------------------------------------------------------------
 	{
 		"yetone/avante.nvim",
 		event = "VeryLazy",
 		lazy = false,
-		version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
+		version = false,
 		opts = {
-			-- add any opts here
-			-- for example
 			provider = "openai",
 			openai = {
 				endpoint = "https://api.openai.com/v1",
-				model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)
-				timeout = 30000, -- timeout in milliseconds
-				temperature = 0, -- adjust if needed
+				model = "gpt-4o",
+				timeout = 30000,
+				temperature = 0,
 				max_tokens = 4096,
 			},
 		},
-		-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 		build = "make",
-		-- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
 		dependencies = {
 			"stevearc/dressing.nvim",
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",
-			--- The below dependencies are optional,
-			"echasnovski/mini.pick", -- for file_selector provider mini.pick
-			"nvim-telescope/telescope.nvim", -- for file_selector provider telescope
-			"hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
-			"ibhagwan/fzf-lua", -- for file_selector provider fzf
-			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-			"zbirenbaum/copilot.lua", -- for providers='copilot'
+			"echasnovski/mini.pick",
+			"nvim-telescope/telescope.nvim",
+			"hrsh7th/nvim-cmp",
+			"ibhagwan/fzf-lua",
+			"nvim-tree/nvim-web-devicons",
+			"zbirenbaum/copilot.lua",
 			{
-				-- Make sure to set this up properly if you have lazy=true
 				"MeanderingProgrammer/render-markdown.nvim",
 				opts = {
 					file_types = { "markdown", "Avante" },
@@ -101,10 +94,9 @@ require("lazy").setup({
 			},
 		},
 	},
+
 	------------------------------------------------------------------
 	-- Plugin: lsp-zero.nvim (LSP の設定)
-	-- ※ ホストに既にインストール済みの LSP サーバー（clangd, gopls, rust_analyzer, zls, pyright）
-	--     およびカスタム設定の nimlsp を利用
 	------------------------------------------------------------------
 	{
 		"VonHeikemen/lsp-zero.nvim",
@@ -114,63 +106,73 @@ require("lazy").setup({
 			{ "neovim/nvim-lspconfig" },
 			{ "hrsh7th/nvim-cmp" },
 			{ "hrsh7th/cmp-nvim-lsp" },
-			{ "hrsh7th/cmp-buffer" }, -- Optional
-			{ "hrsh7th/cmp-path" }, -- Optional
+			{ "hrsh7th/cmp-buffer" },
+			{ "hrsh7th/cmp-path" },
 			{ "hrsh7th/cmp-cmdline" },
-			{ "saadparwaiz1/cmp_luasnip" }, -- Optional
-			{ "hrsh7th/cmp-nvim-lua" }, -- Optional
-			-- Snippets
-			{ "L3MON4D3/LuaSnip" }, -- Required
+			{ "saadparwaiz1/cmp_luasnip" },
+			{ "hrsh7th/cmp-nvim-lua" },
+			{ "L3MON4D3/LuaSnip" },
 			{ "saadparwaiz1/cmp_luasnip" },
 		},
 		config = function()
+			-- on_attach や補完の設定が自動で適用される
 			local lsp = safe_require("lsp-zero")
 			if not lsp then
 				return
 			end
+
 			local lsputil = safe_require("lspconfig.util")
-			if lsputil then
-				-- 各言語サーバーごとに、環境変数でバイナリのパスを指定する設定例
-				lsp.configure("clangd", {
-					cmd = { "/usr/bin/clangd", "--background-index" },
-					filetypes = { "c", "cpp", "objc", "objcpp" },
-					root_dir = lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git"),
-				})
 
-				lsp.configure("gopls", {
-					cmd = { os.getenv("GOPATH") .. "/bin/gopls" or "gopls" },
-					filetypes = { "go", "gomod" },
-					root_dir = lsputil.root_pattern("go.work", "go.mod", ".git"),
-				})
-
-				lsp.configure("rust_analyzer", {
-					cmd = { os.getenv("CARGO_HOME") .. "/bin/rust-analyzer" or "rust-analyzer" },
-					filetypes = { "rust" },
-					settings = {
-						["rust-analyzer"] = {
-							cargo = { allFeatures = true },
-							checkOnSave = { command = "clippy" },
-						},
-					},
-					root_dir = lsputil.root_pattern("Cargo.toml", "rust-project.json", ".git"),
-				})
-
-				lsp.configure("zls", {
-					cmd = { os.getenv("ZLS_PATH") or "zls" },
-					filetypes = { "zig" },
-					root_dir = lsputil.root_pattern("build.zig", ".git"),
-				})
-
-				lsp.configure("pyright", {
-					cmd = { os.getenv("PYRIGHT_PATH") or "pyright-langserver", "--stdio" },
-					filetypes = { "python" },
-					root_dir = lsputil.root_pattern("pyproject.toml", "setup.py", ".git"),
-				})
+			-- 環境変数の存在チェックを実施してコマンドを設定
+			local function get_cmd(env_var, fallback)
+				local env = os.getenv(env_var)
+				if env and env ~= "" then
+					return env .. "/bin/" .. fallback
+				else
+					return fallback
+				end
 			end
+
+			lsp.configure("clangd", {
+				cmd = { "/usr/bin/clangd", "--background-index" },
+				filetypes = { "c", "cpp", "objc", "objcpp" },
+				root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
+			})
+
+			lsp.configure("gopls", {
+				cmd = { get_cmd("GOPATH", "gopls") },
+				filetypes = { "go", "gomod" },
+				root_dir = lsputil and lsputil.root_pattern("go.work", "go.mod", ".git") or nil,
+			})
+
+			lsp.configure("rust_analyzer", {
+				cmd = { get_cmd("CARGO_HOME", "rust-analyzer") },
+				filetypes = { "rust" },
+				settings = {
+					["rust-analyzer"] = {
+						cargo = { allFeatures = true },
+						checkOnSave = { command = "clippy" },
+					},
+				},
+				root_dir = lsputil and lsputil.root_pattern("Cargo.toml", "rust-project.json", ".git") or nil,
+			})
+
+			lsp.configure("zls", {
+				cmd = { os.getenv("ZLS_PATH") or "zls" },
+				filetypes = { "zig" },
+				root_dir = lsputil and lsputil.root_pattern("build.zig", ".git") or nil,
+			})
+
+			lsp.configure("pyright", {
+				cmd = { os.getenv("PYRIGHT_PATH") or "pyright-langserver", "--stdio" },
+				filetypes = { "python" },
+				root_dir = lsputil and lsputil.root_pattern("pyproject.toml", "setup.py", ".git") or nil,
+			})
 
 			lsp.setup()
 		end,
 	},
+
 	------------------------------------------------------------------
 	-- Plugin: GitHub Copilot の統合 (copilot.lua)
 	------------------------------------------------------------------
@@ -210,7 +212,6 @@ require("lazy").setup({
 				command = "FormatWrite",
 			})
 
-			-- Formatter settings
 			safe_require("formatter").setup({
 				logging = false,
 				filetype = {
@@ -483,7 +484,6 @@ require("lazy").setup({
 -----------------------------------------------------------
 -- 5. グローバルキーマッピング
 -----------------------------------------------------------
--- Telescope を用いたファジー検索のキーマッピング
 vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { silent = true, noremap = true })
 vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { silent = true, noremap = true })
 vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { silent = true, noremap = true })
