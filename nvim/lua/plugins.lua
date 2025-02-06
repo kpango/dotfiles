@@ -781,17 +781,35 @@ require("lazy").setup({
 		"nvim-treesitter/nvim-treesitter",
 		run = ":TSUpdate",
 		event = "BufReadPost",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter-textobjects",
+			{ "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
+		},
 		config = function()
 			local ts_configs = safe_require("nvim-treesitter.configs")
 			if ts_configs then
 				ts_configs.setup({
 					auto_install = true,
+					autotag = { enable = true },
+					ensure_installed = { "bash", "c", "cpp", "go", "lua", "rust", "zig", "nim", "python" },
 					highlight = { enable = true },
 					indent = { enable = true },
-					ensure_installed = { "bash", "c", "cpp", "go", "lua", "rust", "zig", "nim", "python" },
+					sync_install = false,
 				})
 			end
 		end,
+	},
+	{
+		"mvllow/modes.nvim",
+		config = true,
+		opts = {
+			colors = {
+				copy = "#FFEE55",
+				delete = "#DC669B",
+				insert = "#55AAEE",
+				visual = "#DD5522",
+			},
+		},
 	},
 
 	------------------------------------------------------------------
@@ -852,18 +870,44 @@ require("lazy").setup({
 	-- Comment.nvim: Ctrl+C でコメント切替
 	{
 		"numToStr/Comment.nvim",
-		config = function()
-			local comment = safe_require("Comment")
-			if comment then
-				comment.setup()
-				local api = safe_require("Comment.api")
-				if api then
-					vim.keymap.set("n", "<C-c>", api.toggle.linewise.current, { desc = "Toggle comment" })
-					vim.keymap.set("v", "<C-c>", api.toggle.linewise, { desc = "Toggle comment" })
-				end
-			end
-		end,
-		keys = { "<C-c>" },
+		event = "BufReadPost",
+		config = true,
+		lazy = true,
+		opts = {
+			ignore = "^$",
+		},
+		keys = {
+			{
+				"<C-c>",
+				function()
+					safe_require("Comment.api").toggle.linewise.current()
+				end,
+				desc = "",
+				mode = "n",
+				noremap = true,
+				silent = true,
+			},
+			{
+				"<C-c>",
+				function()
+					safe_require("Comment.api").toggle.linewise(fn.visualmode())
+				end,
+				desc = "",
+				mode = "x",
+				noremap = true,
+				silent = true,
+			},
+			{
+				"<C-c>",
+				function()
+					safe_require("Comment.api").toggle.linewise.current()
+				end,
+				desc = "",
+				mode = "i",
+				noremap = true,
+				silent = true,
+			},
+		},
 	},
 
 	-- nvim-autopairs: 自動括弧補完
@@ -895,6 +939,7 @@ require("lazy").setup({
 	root = fn.stdpath("config") .. "/lazy", -- プラグイン配置ディレクトリ
 })
 
+safe_require("onedark").load()
 -----------------------------------------------------------
 -- 5. グローバルキーマッピング
 -----------------------------------------------------------
