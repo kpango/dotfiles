@@ -113,6 +113,7 @@ require("lazy").setup({
 			{ "hrsh7th/cmp-nvim-lua" },
 			{ "L3MON4D3/LuaSnip" },
 			{ "saadparwaiz1/cmp_luasnip" },
+			{ "onsails/lspkind.nvim" },
 		},
 		config = function()
 			-- on_attach や補完の設定が自動で適用される
@@ -199,6 +200,7 @@ require("lazy").setup({
 			local cmp = require("cmp")
 			local cmp_select = { behavior = cmp.SelectBehavior.Select }
 			local luasnip = safe_require("luasnip")
+			local lspkind = safe_require("lspkind")
 			local has_words_before = function()
 				if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
 					return false
@@ -302,6 +304,62 @@ require("lazy").setup({
 					}),
 					documentation = cmp.config.window.bordered({
 						winhiglight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
+					}),
+				},
+				formatting = {
+					format = lspkind.cmp_format({
+						mode = "symbol_text",
+						preset = "codicons",
+						-- with_text = false,
+						maxwidth = 50,
+						ellipsis_char = "...",
+						menu = {
+							copilot = "[COP]",
+							nvim_lua = "[LUA]",
+							nvim_lsp = "[LSP]",
+							cmp_tabnine = "[TN]",
+							luasnip = "[LSN]",
+							buffer = "[Buf]",
+							path = "[PH]",
+							look = "[LK]",
+						},
+						symbol_map = {
+							Array = "",
+							Boolean = "",
+							Class = " ",
+							Color = " ",
+							Constant = " ",
+							Constructor = " ",
+							Copilot = "",
+							Enum = " ",
+							EnumMember = " ",
+							Event = " ",
+							Field = " ",
+							File = " ",
+							Folder = " ",
+							Function = " ",
+							Interface = " ",
+							Key = "",
+							Keyword = " ",
+							Method = " ",
+							Module = " ",
+							Namespace = "",
+							Null = "",
+							Number = "",
+							Object = "",
+							Operator = " ",
+							Package = "",
+							Property = " ",
+							Reference = " ",
+							Snippet = " ",
+							String = "",
+							Struct = " ",
+							Text = " ",
+							TypeParameter = " ",
+							Unit = " ",
+							Value = " ",
+							Variable = " ",
+						},
 					}),
 				},
 				keys = {
@@ -455,7 +513,19 @@ require("lazy").setup({
 			lsp.setup()
 		end,
 	},
-
+	------------------------------------------------------------------
+	-- Plugin: 言語特有のPlugin
+	------------------------------------------------------------------
+	{
+		"ray-x/go.nvim",
+		ft = { "go" },
+		config = true,
+		opts = {
+			gofmt = "gofumpt",
+			goimports = "strictgoimports",
+			lsp_cfg = false,
+		},
+	},
 	------------------------------------------------------------------
 	-- Plugin: GitHub Copilot の統合 (copilot.lua)
 	------------------------------------------------------------------
