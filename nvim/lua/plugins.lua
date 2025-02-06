@@ -125,7 +125,6 @@ require("lazy").setup({
 			local lsputil = safe_require("lspconfig.util")
 
 			local lspconfig = require("lspconfig")
-
 			-- LSPのキーマッピング設定
 			lsp.on_attach(function(client, bufnr)
 				local opts = { buffer = bufnr, remap = false }
@@ -160,6 +159,7 @@ require("lazy").setup({
 				vim.keymap.set("i", "<C-h>", function()
 					vim.lsp.buf.signature_help()
 				end, opts)
+				lsp.buffer_autoformat()
 			end)
 			-- 環境変数の存在チェックを実施してコマンドを設定
 			local function get_cmd(env_var, fallback)
@@ -177,13 +177,34 @@ require("lazy").setup({
 				filetypes = { "c", "cpp", "objc", "objcpp" },
 				root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
 			})
-
 			lspconfig.gopls.setup({
 				cmd = { get_cmd("GOPATH", "gopls") },
 				filetypes = { "go", "gomod" },
 				root_dir = lsputil and lsputil.root_pattern("go.work", "go.mod", "go.sum", ".git") or nil,
+				settings = {
+					gopls = {
+						analyses = {
+							unusedparams = true,
+							shadow = true,
+						},
+						staticcheck = true,
+						gofumpt = true,
+						usePlaceholders = true,
+						completeUnimported = true,
+						semanticTokens = true,
+						codelenses = {
+							gc_details = false,
+							generate = true,
+							regenerate_cgo = true,
+							run_govulncheck = true,
+							test = true,
+							tidy = true,
+							upgrade_dependency = true,
+							vendor = true,
+						},
+					},
+				},
 			})
-
 			lspconfig.rust_analyzer.setup({
 				cmd = { get_cmd("CARGO_HOME", "rust-analyzer") },
 				filetypes = { "rust" },
@@ -519,11 +540,22 @@ require("lazy").setup({
 	{
 		"ray-x/go.nvim",
 		ft = { "go" },
-		config = true,
-		opts = {
-			gofmt = "gofumpt",
-			goimports = "strictgoimports",
-			lsp_cfg = true,
+		config = function()
+			safe_require("go").setup({
+				gofmt = "gofumpt", -- gofumpt は gofmt の代替
+				goimpors = "goimpors", -- gopls による import
+				fillstruct = "gopls",
+				gofmt_on_save = true,
+				goimport_on_save = true,
+				lsp_cfg = true,
+				lsp_gofumpt = true, -- gofumptを使用
+				lsp_on_attach = true,
+				dap_debug = true,
+			})
+		end,
+		dependencies = {
+			"neovim/nvim-lspconfig",
+			"nvim-treesitter/nvim-treesitter",
 		},
 	},
 	------------------------------------------------------------------
@@ -616,164 +648,6 @@ require("lazy").setup({
 	------------------------------------------------------------------
 	-- Plugin: Code Formatter
 	------------------------------------------------------------------
-	{
-		"mhartington/formatter.nvim",
-		event = "BufWritePost",
-		config = function()
-			vim.api.nvim_create_autocmd("BufWritePost", {
-				group = vim.api.nvim_create_augroup("FormatAutogroup", { clear = true }),
-				pattern = "*",
-				command = "FormatWrite",
-			})
-
-			safe_require("formatter").setup({
-				logging = false,
-				filetype = {
-					lua = {
-						function()
-							return {
-								exe = "stylua",
-								args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)), "--", "-" },
-								stdin = true,
-							}
-						end,
-					},
-					go = {
-						function()
-							return {
-								exe = "golines",
-								args = { "-w", "--max-len=200", "--base-formatter=gofumpt" },
-								stdin = true,
-							}
-						end,
-						function()
-							return {
-								exe = "gofumpt",
-								args = { "-w" },
-								stdin = true,
-							}
-						end,
-						function()
-							return {
-								exe = "strictgoimports",
-								args = { "-w" },
-								stdin = true,
-							}
-						end,
-						function()
-							return {
-								exe = "goimports",
-								args = { "-w" },
-								stdin = true,
-							}
-						end,
-					},
-					cpp = {
-						function()
-							return {
-								exe = "clang-format",
-								args = { "--assume-filename", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = true,
-								cwd = vim.fn.expand("%:p:h"),
-							}
-						end,
-					},
-					rust = {
-						function()
-							return {
-								exe = "rustfmt",
-								args = { "--emit=stdout" },
-								stdin = true,
-							}
-						end,
-					},
-					zig = {
-						function()
-							return {
-								exe = "zig",
-								args = { "fmt", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = false,
-							}
-						end,
-					},
-					nim = {
-						function()
-							return {
-								exe = "nimpretty",
-								args = { "--backup:off", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = false,
-							}
-						end,
-					},
-					python = {
-						function()
-							return {
-								exe = "black",
-								args = { "-" },
-								stdin = true,
-							}
-						end,
-					},
-					sh = {
-						function()
-							return {
-								exe = "shfmt",
-								args = { "-i", "4", "-w", "-s" },
-								stdin = true,
-							}
-						end,
-					},
-					zsh = {
-						function()
-							return {
-								exe = "shfmt",
-								args = { "-i", "4", "-w", "-s" },
-								stdin = true,
-							}
-						end,
-					},
-					make = {
-						function()
-							return {
-								exe = "gmake",
-								args = { "-f", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = false,
-							}
-						end,
-					},
-					yaml = {
-						function()
-							return {
-								exe = "prettier",
-								args = { "--stdin-filepath", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = true,
-							}
-						end,
-					},
-					json = {
-						function()
-							return {
-								exe = "jq",
-								args = { "." },
-								stdin = true,
-							}
-						end,
-					},
-					proto = {
-						function()
-							return {
-								exe = "clang-format",
-								args = { "--assume-filename", vim.fn.fnameescape(vim.api.nvim_buf_get_name(0)) },
-								stdin = true,
-								cwd = vim.fn.expand("%:p:h"),
-							}
-						end,
-					},
-				},
-			})
-		end,
-	},
-
 	------------------------------------------------------------------
 	-- Plugin: nvim-treesitter (シンタックスハイライト・インデント)
 	------------------------------------------------------------------
