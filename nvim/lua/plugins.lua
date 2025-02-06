@@ -523,7 +523,7 @@ require("lazy").setup({
 		opts = {
 			gofmt = "gofumpt",
 			goimports = "strictgoimports",
-			lsp_cfg = false,
+			lsp_cfg = true,
 		},
 	},
 	------------------------------------------------------------------
