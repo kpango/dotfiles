@@ -562,6 +562,41 @@ require("lazy").setup({
 			lsp.setup()
 		end,
 	},
+	-- Linter settings
+	{
+		"mfussenegger/nvim-lint",
+		config = function()
+			local lint = safe_require("lint")
+			lint.linters_by_ft = {
+				buf = { "buf" },
+				cpp = { "clangtidy" },
+				go = { "golangcilint" },
+				make = { "checkmake" },
+				nim = { "nimlint" },
+				proto = { "protoc-gen-lint" },
+				python = { "flake8", "pylint" },
+				-- rust = { "clippy" },
+				sh = { "shellcheck" },
+				yaml = { "yamllint" },
+				zig = { "zigfmt" },
+			}
+			lint.linters.golangcilint = {
+				cmd = "golangci-lint",
+				args = { "run", "--out-format", "json" },
+				stream = "stdout",
+				parser = safe_require("lint.parser").from_errorformat("[%trror] %f:%l:%c: %m, [%tarning] %f:%l:%c: %m", {
+					source = "golangcilint",
+				}),
+			}
+
+			vim.api.nvim_create_autocmd("BufWritePost", {
+				pattern = "*",
+				callback = function()
+					safe_require("lint").try_lint()
+				end,
+			})
+		end,
+	},
 	------------------------------------------------------------------
 	-- Plugin: 言語特有のPlugin
 	------------------------------------------------------------------
@@ -585,6 +620,21 @@ require("lazy").setup({
 			"neovim/nvim-lspconfig",
 			"nvim-treesitter/nvim-treesitter",
 		},
+	},
+	{
+		"rust-lang/rust.vim",
+		ft = { "rust" },
+		config = function()
+			vim.g.rustfmt_autosave = 1
+		end,
+	},
+	{
+		"ziglang/zig.vim",
+		ft = { "zig" },
+	},
+	{
+		"alaviss/nim.nvim",
+		ft = { "nim" },
 	},
 	------------------------------------------------------------------
 	-- Plugin: GitHub Copilot の統合 (copilot.lua)
@@ -896,6 +946,10 @@ require("lazy").setup({
 					defaults = {
 						prompt_prefix = " ",
 						selection_caret = " ",
+						i = {
+							["<C-n>"] = safe_require("telescope.actions").move_selection_next,
+							["<C-p>"] = safe_require("telescope.actions").move_selection_previous,
+						},
 					},
 				})
 			end
@@ -907,11 +961,184 @@ require("lazy").setup({
 	{
 		"lewis6991/gitsigns.nvim",
 		event = "BufRead",
+		opts = {
+			signs = {
+				add = { text = "┃" },
+				change = { text = "┃" },
+				delete = { text = "_" },
+				topdelete = { text = "‾" },
+				changedelete = { text = "~" },
+				untracked = { text = "┆" },
+			},
+			signcolumn = true, -- Toggle with :Gitsigns toggle_signs
+			numhl = false, -- Toggle with :Gitsigns toggle_numhl
+			linehl = false, -- Toggle with :Gitsigns toggle_linehl
+			word_diff = false, -- Toggle with :Gitsigns toggle_word_diff
+			watch_gitdir = {
+				interval = 1000,
+				follow_files = true,
+			},
+			attach_to_untracked = true,
+			current_line_blame = false, -- Toggle with :Gitsigns toggle_current_line_blame
+			current_line_blame_opts = {
+				virt_text = true,
+				virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+				delay = 1000,
+				ignore_whitespace = false,
+			},
+			current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
+			sign_priority = 6,
+			update_debounce = 100,
+			status_formatter = nil, -- Use default
+			max_file_length = 40000, -- Disable if file is longer than this (in lines)
+			preview_config = {
+				-- Options passed to nvim_open_win
+				border = "single",
+				style = "minimal",
+				relative = "cursor",
+				row = 0,
+				col = 1,
+			},
+		},
 		config = function()
 			local gitsigns = safe_require("gitsigns")
 			if gitsigns then
 				gitsigns.setup()
 			end
+		end,
+		keys = function(gs, keys)
+			return {
+				{
+					"]c",
+					function()
+						if vim.wo.diff then
+							return "]c"
+						end
+						vim.schedule(function()
+							gs.next_hunk()
+						end)
+						return "<Ignore>"
+					end,
+					desc = "",
+					mode = "n",
+					expr = true,
+				},
+				{
+					"[c",
+					function()
+						if vim.wo.diff then
+							return "[c"
+						end
+						vim.schedule(function()
+							gs.prev_hunk()
+						end)
+						return "<Ignore>"
+					end,
+					desc = "",
+					mode = "n",
+					expr = true,
+				},
+				{
+					"<leader>hs",
+					"<Cmd>Gitsigns stage_hunk<CR>",
+					desc = "",
+					mode = { "n", "v" },
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>hr",
+					"<Cmd>Gitsigns reset_hunk<CR>",
+					desc = "",
+					mode = { "n", "v" },
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>hS",
+					gs.stage_buffer,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>hR",
+					gs.reset_buffer,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>hu",
+					gs.undo_stage_hunk,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>hp",
+					gs.preview_hunk,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>hb",
+					function()
+						gs.blame_line({ full = true })
+					end,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>hd",
+					gs.diffthis,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>hD",
+					function()
+						gs.diffthis("~")
+					end,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>tb",
+					gs.toggle_current_line_blame,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"<leader>td",
+					gs.toggle_deleted,
+					desc = "",
+					mode = "n",
+					silent = true,
+					noremap = true,
+				},
+				{
+					"ih",
+					"<Cmd>Gitsigns select_hunk<CR>",
+					desc = "",
+					mode = { "o", "x" },
+					silent = true,
+					noremap = true,
+				},
+			}
 		end,
 	},
 
