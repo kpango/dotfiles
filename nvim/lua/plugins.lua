@@ -63,8 +63,9 @@ require("lazy").setup({
 		lazy = false,
 		version = false,
 		opts = {
-			provider = "openai",
+			provider = "groq",
 			openai = {
+				api_key_name = "OPEN_AI_API_KEY",
 				endpoint = "https://api.openai.com/v1",
 				model = "gpt-o1-mini",
 				timeout = 30000,
@@ -132,16 +133,22 @@ require("lazy").setup({
 		lazy = false,
 		dependencies = {
 			{ "neovim/nvim-lspconfig" },
-			{ "hrsh7th/nvim-cmp" },
-			{ "hrsh7th/cmp-nvim-lsp" },
-			{ "hrsh7th/cmp-buffer" },
-			{ "hrsh7th/cmp-path" },
-			{ "hrsh7th/cmp-cmdline" },
-			{ "saadparwaiz1/cmp_luasnip" },
-			{ "hrsh7th/cmp-nvim-lua" },
 			{ "L3MON4D3/LuaSnip" },
-			{ "saadparwaiz1/cmp_luasnip" },
+			{ "hrsh7th/cmp-buffer" },
+			{ "hrsh7th/cmp-calc"},
+			{ "hrsh7th/cmp-cmdline" },
+			{ "hrsh7th/cmp-nvim-lsp" },
+			{ "hrsh7th/cmp-nvim-lua" },
+			{ "hrsh7th/cmp-path" },
+			{ "hrsh7th/nvim-cmp" },
 			{ "onsails/lspkind.nvim" },
+			{ "saadparwaiz1/cmp_luasnip" },
+			{
+				"petertriho/cmp-git",
+				config = true,
+				dependencies = { "nvim-lua/plenary.nvim" },
+			},
+			{ "octaltree/cmp-look", event = "InsertEnter" },
 		},
 		config = function()
 			-- on_attach や補完の設定が自動で適用される
@@ -152,7 +159,7 @@ require("lazy").setup({
 
 			local lsputil = safe_require("lspconfig.util")
 
-			local lspconfig = require("lspconfig")
+			local lspconfig = safe_require("lspconfig")
 			-- LSPのキーマッピング設定
 			lsp.on_attach(function(client, bufnr)
 				local opts = { buffer = bufnr, remap = false }
@@ -246,7 +253,7 @@ require("lazy").setup({
 			})
 
 			-- 補完の設定
-			local cmp = require("cmp")
+			local cmp = safe_require("cmp")
 			local cmp_select = { behavior = cmp.SelectBehavior.Select }
 			local luasnip = safe_require("luasnip")
 			local lspkind = safe_require("lspkind")

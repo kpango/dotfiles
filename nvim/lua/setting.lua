@@ -7,7 +7,8 @@ function safe_require(module_name)
 	return module
 end
 
-require("settings.skip_default")
-require("settings.autocmd")
-require("settings.base")
-require("settings.keymap")
+safe_require("settings.skip_default")
+safe_require("settings.autocmd")
+safe_require("settings.base")
+safe_require("settings.keymap")
+safe_require("settings.env")
