@@ -64,6 +64,9 @@ require("lazy").setup({
 		version = false,
 		opts = {
 			provider = "groq",
+			claude = {
+				api_key_name = "ANTHROPIC_API_KEY",
+			},
 			openai = {
 				api_key_name = "OPEN_AI_API_KEY",
 				endpoint = "https://api.openai.com/v1",
@@ -135,7 +138,7 @@ require("lazy").setup({
 			{ "neovim/nvim-lspconfig" },
 			{ "L3MON4D3/LuaSnip" },
 			{ "hrsh7th/cmp-buffer" },
-			{ "hrsh7th/cmp-calc"},
+			{ "hrsh7th/cmp-calc" },
 			{ "hrsh7th/cmp-cmdline" },
 			{ "hrsh7th/cmp-nvim-lsp" },
 			{ "hrsh7th/cmp-nvim-lua" },
