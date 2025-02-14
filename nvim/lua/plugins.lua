@@ -141,7 +141,6 @@ safe_require("lazy").setup({
 			},
 		},
 	},
-
 	------------------------------------------------------------------
 	-- Plugin: lsp-zero.nvim (LSP の設定)
 	------------------------------------------------------------------
@@ -165,7 +164,7 @@ safe_require("lazy").setup({
 			{
 				"petertriho/cmp-git",
 				config = true,
-				event = "VeryLazy",
+				event = "InsertEnter",
 				lazy = true,
 				dependencies = { "nvim-lua/plenary.nvim" },
 			},
@@ -590,41 +589,6 @@ safe_require("lazy").setup({
 			lsp.setup()
 		end,
 	},
-	-- Linter settings
-	{
-		"mfussenegger/nvim-lint",
-		config = function()
-			local lint = safe_require("lint")
-			lint.linters_by_ft = {
-				buf = { "buf" },
-				cpp = { "clangtidy" },
-				go = { "golangcilint" },
-				make = { "checkmake" },
-				nim = { "nimlint" },
-				proto = { "protoc-gen-lint" },
-				python = { "flake8", "pylint" },
-				-- rust = { "clippy" },
-				sh = { "shellcheck" },
-				yaml = { "yamllint" },
-				zig = { "zigfmt" },
-			}
-			lint.linters.golangcilint = {
-				cmd = "golangci-lint",
-				args = { "run", "--out-format", "json" },
-				stream = "stdout",
-				parser = safe_require("lint.parser").from_errorformat("[%trror] %f:%l:%c: %m, [%tarning] %f:%l:%c: %m", {
-					source = "golangcilint",
-				}),
-			}
-
-			vim.api.nvim_create_autocmd("BufWritePost", {
-				pattern = "*",
-				callback = function()
-					safe_require("lint").try_lint()
-				end,
-			})
-		end,
-	},
 	------------------------------------------------------------------
 	-- Plugin: 言語特有のPlugin
 	------------------------------------------------------------------
@@ -729,18 +693,10 @@ safe_require("lazy").setup({
 			end,
 		},
 	},
-
-	------------------------------------------------------------------
-	-- Plugin: EditorConfig (エディタ設定の統一)
-	------------------------------------------------------------------
-	{
-		"editorconfig/editorconfig-vim",
-		lazy = false,
-	},
-
 	------------------------------------------------------------------
 	-- Plugin: Code Formatter
 	------------------------------------------------------------------
+
 	------------------------------------------------------------------
 	-- Plugin: nvim-treesitter (シンタックスハイライト・インデント)
 	------------------------------------------------------------------
@@ -778,7 +734,44 @@ safe_require("lazy").setup({
 			},
 		},
 	},
-
+	------------------------------------------------------------------
+	-- Plugin: bufferline (Tabステータス)
+	------------------------------------------------------------------
+	{
+		"akinsho/bufferline.nvim",
+		version = "*",
+		dependencies = "nvim-tree/nvim-web-devicons",
+		config = true,
+		opts = {
+			options = {
+				mode = "tabs",
+				separator_style = "slant",
+				always_show_bufferline = false,
+				show_buffer_close_icons = false,
+				show_close_icon = false,
+				color_icons = true,
+			},
+			highlights = {
+				separator = {
+					fg = "#073642",
+					bg = "#002b36",
+				},
+				separator_selected = {
+					fg = "#073642",
+				},
+				background = {
+					fg = "#657b83",
+					bg = "#002b36",
+				},
+				buffer_selected = {
+					fg = "#fdf6e3",
+				},
+				fill = {
+					bg = "#073642",
+				},
+			},
+		},
+	},
 	------------------------------------------------------------------
 	-- Plugin: lualine (ステータスライン)
 	------------------------------------------------------------------
