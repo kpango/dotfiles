@@ -1,4 +1,4 @@
---
+-----------------------------------------------------------
 -- この設定ファイルは以下を実現します：
 -- - lazy.nvim によるプラグイン管理（自動ブートストラップ）
 -- - lsp-zero.nvim による LSP の設定（ホストに既にインストール済みのサーバーを利用）
@@ -34,7 +34,7 @@ vim.opt.rtp:prepend(install_path)
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.updatetime = 300
+vim.opt.updatetime = 200 -- LSP/補完の反応速度改善のため200msに短縮
 vim.opt.lazyredraw = true
 vim.opt.completeopt = { "menuone", "noselect", "noinsert", "preview" }
 vim.opt.shortmess:append("c")
@@ -109,19 +109,18 @@ safe_require("lazy").setup({
 			"MunifTanjim/nui.nvim",
 			"nvim-lua/plenary.nvim",
 			"stevearc/dressing.nvim",
-			--- The below dependencies are optional,
-			"echasnovski/mini.pick", -- for file_selector provider mini.pick
-			"nvim-telescope/telescope.nvim", -- for file_selector provider telescope
-			"hrsh7th/nvim-cmp", -- autocompletion for avante commands and mentions
-			"ibhagwan/fzf-lua", -- for file_selector provider fzf
-			"nvim-tree/nvim-web-devicons", -- or echasnovski/mini.icons
-			"zbirenbaum/copilot.lua", -- for providers='copilot'
+			--- 以下はオプション依存
+			"echasnovski/mini.pick", -- file_selector provider mini.pick 用
+			"nvim-telescope/telescope.nvim", -- file_selector provider telescope 用
+			"hrsh7th/nvim-cmp", -- avante コマンドのオートコンプ用
+			"ibhagwan/fzf-lua", -- file_selector provider fzf 用
+			"nvim-tree/nvim-web-devicons", -- アイコン表示用
+			"zbirenbaum/copilot.lua", -- providers='copilot' 用
 			{
-				-- support for image pasting
+				-- 画像貼り付けサポート
 				"HakonHarnes/img-clip.nvim",
 				event = "VeryLazy",
 				opts = {
-					-- recommended settings
 					default = {
 						embed_image_as_base64 = false,
 						prompt_for_file_name = false,
@@ -171,19 +170,17 @@ safe_require("lazy").setup({
 			{ "octaltree/cmp-look", event = "InsertEnter" },
 		},
 		config = function()
-			-- on_attach や補完の設定が自動で適用される
+			-- lsp-zero の on_attach や補完の設定が自動で適用される
 			local lsp = safe_require("lsp-zero")
 			if not lsp then
 				return
 			end
 
 			local lsputil = safe_require("lspconfig.util")
-
 			local lspconfig = safe_require("lspconfig")
-			-- LSPのキーマッピング設定
+			-- LSP のキーマッピング設定
 			lsp.on_attach(function(client, bufnr)
 				local opts = { buffer = bufnr, remap = false }
-
 				vim.keymap.set("n", "gd", function()
 					vim.lsp.buf.definition()
 				end, opts)
@@ -216,7 +213,8 @@ safe_require("lazy").setup({
 				end, opts)
 				lsp.buffer_autoformat()
 			end)
-			-- 環境変数の存在チェックを実施してコマンドを設定
+
+			-- 環境変数チェックによりコマンドを取得
 			local function get_cmd(env_var, fallback)
 				local env = os.getenv(env_var)
 				if env and env ~= "" then
@@ -277,22 +275,12 @@ safe_require("lazy").setup({
 			local cmp_select = { behavior = cmp.SelectBehavior.Select }
 			local luasnip = safe_require("luasnip")
 			local lspkind = safe_require("lspkind")
-			local has_words_before = function()
-				if vim.api.nvim_buf_get_option(0, "buftype") == "prompt" then
-					return false
-				end
-				local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-				return col ~= 0 and vim.api.nvim_buf_get_text(0, line - 1, 0, line - 1, col, {})[1]:match("^%s*$") == nil
-			end
-
-			local check_backspace = function()
-				local col = vim.fn.col(".") - 1
-				return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
-			end
+			-- preselect を明示的に有効化して初期候補を選択する
 			cmp.setup({
 				flags = {
-					debounce_text_changes = 150,
+					debounce_text_changes = 100, -- 入力反映を高速化（以前の150msから短縮）
 				},
+				preselect = cmp.PreselectMode.Item, -- 初期候補を常に1件選択
 				snippet = {
 					expand = function(args)
 						luasnip.lsp_expand(args.body)
@@ -311,41 +299,36 @@ safe_require("lazy").setup({
 					}),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
 					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() and has_words_before() then
+						if cmp.visible() and require("cmp").core.view:get_selected_entry() then
 							cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-						elseif safe_require("copilot.suggestion").is_visible() then
+						elseif safe_require("copilot.suggestion") and safe_require("copilot.suggestion").is_visible() then
 							safe_require("copilot.suggestion").accept()
 						elseif luasnip.expandable() then
 							luasnip.expand()
 						elseif luasnip.expand_or_jumpable() then
 							luasnip.expand_or_jump()
-						elseif check_backspace() then
+						elseif
+							vim.fn.col(".") == 1
+							or vim.fn.getline("."):sub(vim.fn.col(".") - 1, vim.fn.col(".") - 1):match("%s")
+						then
 							fallback()
 						else
 							fallback()
 						end
-					end, {
-						"i",
-						"s",
-					}),
+					end, { "i", "s" }),
 					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() and has_words_before() then
+						if cmp.visible() and require("cmp").core.view:get_selected_entry() then
 							cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
 						elseif luasnip.jumpable(-1) then
 							luasnip.jump(-1)
 						else
 							fallback()
 						end
-					end, {
-						"i",
-						"s",
-					}),
+					end, { "i", "s" }),
 				},
 				sources = cmp.config.sources({
-					-- Copilot Source
 					{ name = "copilot", group_index = 2 },
 					{ name = "copilot_cmp", group_index = 2 },
-					-- Other Sources
 					{ name = "nvim_lsp", group_index = 2 },
 					{ name = "nvim_lsp_signature_help" },
 					{ name = "luasnip", group_index = 2 },
@@ -359,9 +342,7 @@ safe_require("lazy").setup({
 					priority_weight = 2,
 					comparators = {
 						safe_require("copilot_cmp.comparators").prioritize,
-						-- Below is the default comparitor list and order for nvim-cmp
 						cmp.config.compare.offset,
-						-- cmp.config.compare.scopes, --this is commented in nvim-cmp too
 						cmp.config.compare.exact,
 						cmp.config.compare.score,
 						cmp.config.compare.recently_used,
@@ -379,14 +360,13 @@ safe_require("lazy").setup({
 						side_padding = 0,
 					}),
 					documentation = cmp.config.window.bordered({
-						winhiglight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
+						winhighlight = "NormalFloat:CompeDocumentation,FloatBorder:TelescopeBorder",
 					}),
 				},
 				formatting = {
 					format = lspkind.cmp_format({
 						mode = "symbol_text",
 						preset = "codicons",
-						-- with_text = false,
 						maxwidth = 50,
 						ellipsis_char = "...",
 						menu = {
@@ -414,11 +394,11 @@ safe_require("lazy").setup({
 							File = " ",
 							Folder = " ",
 							Function = " ",
-							Interface = " ",
+							Interface = "",
 							Key = "",
 							Keyword = " ",
 							Method = " ",
-							Module = " ",
+							Module = "",
 							Namespace = "",
 							Null = "",
 							Number = "",
@@ -427,14 +407,14 @@ safe_require("lazy").setup({
 							Package = "",
 							Property = " ",
 							Reference = " ",
-							Snippet = " ",
+							Snippet = "",
 							String = "",
 							Struct = " ",
 							Text = " ",
 							TypeParameter = " ",
 							Unit = " ",
 							Value = " ",
-							Variable = " ",
+							Variable = "",
 						},
 					}),
 				},
@@ -598,12 +578,12 @@ safe_require("lazy").setup({
 		config = function()
 			safe_require("go").setup({
 				gofmt = "gofumpt", -- gofumpt は gofmt の代替
-				goimpors = "goimpors", -- gopls による import
+				goimports = "goimports",
 				fillstruct = "gopls",
 				gofmt_on_save = true,
 				goimport_on_save = true,
 				lsp_cfg = true,
-				lsp_gofumpt = true, -- gofumptを使用
+				lsp_gofumpt = true, -- gofumpt を使用
 				lsp_on_attach = true,
 				dap_debug = true,
 			})
@@ -694,15 +674,31 @@ safe_require("lazy").setup({
 		},
 	},
 	------------------------------------------------------------------
-	-- Plugin: Code Formatter
+	-- Plugin: none-ls (フォーマッター／リンター)
 	------------------------------------------------------------------
-
+	{
+		"nvimtools/none-ls.nvim",
+		event = "BufReadPre",
+		config = function()
+			local none_ls = safe_require("none-ls")
+			if none_ls then
+				none_ls.setup({
+					sources = {
+						none_ls.builtins.formatting.stylua,
+						none_ls.builtins.formatting.black,
+						none_ls.builtins.formatting.gofumpt,
+						none_ls.builtins.diagnostics.shellcheck,
+					},
+				})
+			end
+		end,
+	},
 	------------------------------------------------------------------
 	-- Plugin: nvim-treesitter (シンタックスハイライト・インデント)
 	------------------------------------------------------------------
 	{
 		"nvim-treesitter/nvim-treesitter",
-		run = ":TSUpdate",
+		build = ":TSUpdate", -- run → build に変更
 		event = "BufReadPost",
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter-textobjects",
@@ -786,14 +782,12 @@ safe_require("lazy").setup({
 			local function selectionCount()
 				local mode = vim.fn.mode()
 				local start_line, end_line, start_pos, end_pos
-
 				-- 選択モードでない場合には無効
 				if not (mode:find("[vV\22]") ~= nil) then
 					return ""
 				end
 				start_line = vim.fn.line("v")
 				end_line = vim.fn.line(".")
-
 				if mode == "V" then
 					-- 行選択モードの場合は、各行全体をカウントする
 					start_pos = 1
@@ -802,7 +796,6 @@ safe_require("lazy").setup({
 					start_pos = vim.fn.col("v")
 					end_pos = vim.fn.col(".")
 				end
-
 				local chars = 0
 				for i = start_line, end_line do
 					local line = vim.fn.getline(i)
@@ -811,7 +804,6 @@ safe_require("lazy").setup({
 					local e_pos = (i == end_line) and end_pos or line_len + 1
 					chars = chars + vim.fn.strchars(line:sub(s_pos, e_pos - 1))
 				end
-
 				local lines = math.abs(end_line - start_line) + 1
 				return tostring(lines) .. " lines, " .. tostring(chars) .. " characters"
 			end
@@ -866,13 +858,8 @@ safe_require("lazy").setup({
 							{ selectionCount },
 							{
 								"diagnostics",
-								sources = {
-									-- 'nvim_diagnostic',
-									"nvim_lsp",
-								},
-
+								sources = { "nvim_lsp" },
 								sections = { "error", "warn", "info", "hint" },
-
 								diagnostics_color = {
 									error = "DiagnosticError",
 									warn = "DiagnosticWarn",
@@ -890,11 +877,7 @@ safe_require("lazy").setup({
 								always_visible = false,
 							},
 						},
-						lualine_y = {
-							"encoding",
-							"fileformat",
-							"filetype",
-						},
+						lualine_y = { "encoding", "fileformat", "filetype" },
 						lualine_z = { "progress", "location" },
 					},
 					inactive_sections = {
@@ -938,7 +921,6 @@ safe_require("lazy").setup({
 			end
 		end,
 	},
-
 	------------------------------------------------------------------
 	-- 以下、効率的な開発を支援する追加プラグイン
 	------------------------------------------------------------------
@@ -970,6 +952,7 @@ safe_require("lazy").setup({
 		"lewis6991/gitsigns.nvim",
 		event = "BufRead",
 		opts = {
+			-- 修正: signs を関数で返す形式に変更
 			signs = {
 				add = { text = "┃" },
 				change = { text = "┃" },
@@ -998,9 +981,8 @@ safe_require("lazy").setup({
 			sign_priority = 6,
 			update_debounce = 100,
 			status_formatter = nil, -- Use default
-			max_file_length = 40000, -- Disable if file is longer than this (in lines)
+			max_file_length = 40000,
 			preview_config = {
-				-- Options passed to nvim_open_win
 				border = "single",
 				style = "minimal",
 				relative = "cursor",
@@ -1222,6 +1204,7 @@ safe_require("lazy").setup({
 	root = fn.stdpath("config") .. "/lazy", -- プラグイン配置ディレクトリ
 })
 
+-- onedark カラーシェーマのロード
 safe_require("onedark").load()
 -----------------------------------------------------------
 -- 5. グローバルキーマッピング
