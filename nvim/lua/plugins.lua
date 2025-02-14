@@ -72,7 +72,7 @@ safe_require("lazy").setup({
 			openai = {
 				api_key_name = "OPEN_AI_API_KEY",
 				endpoint = "https://api.openai.com/v1",
-				model = "gpt-o1-mini",
+				model = "gpt-4o-mini",
 				timeout = 30000,
 				temperature = 0,
 				max_tokens = 4096,
@@ -82,10 +82,11 @@ safe_require("lazy").setup({
 					__inherited_from = "openai",
 					api_key_name = "GROQ_API_KEY",
 					endpoint = "https://api.groq.com/openai/v1/",
-					model = "deepseek-r1-distill-llama-70b",
+					model = "gemma2-9b-it",
 					max_tokens = 4096,
-					--model = "llama-3.3-70b-specdec",
-					--model = "llama-3.3-70b-versatile",
+					-- model = "deepseek-r1-distill-llama-70b",
+					-- model = "llama-3.3-70b-specdec",
+					-- model = "llama-3.3-70b-versatile",
 				},
 			},
 			dual_boost = {
