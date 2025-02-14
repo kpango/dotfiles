@@ -60,8 +60,9 @@ safe_require("lazy").setup({
 	{
 		"yetone/avante.nvim",
 		event = "VeryLazy",
-		lazy = false,
+		lazy = true,
 		version = false,
+		build = "make",
 		opts = {
 			provider = "groq",
 			auto_suggestions_provider = "groq",
@@ -88,14 +89,14 @@ safe_require("lazy").setup({
 				},
 			},
 			dual_boost = {
-				enabled = false,
+				enabled = true,
 				first_provider = "groq",
 				second_provider = "openai",
 				prompt = "Based on the two reference outputs below, generate a response that incorporates elements from both but reflects your own judgment and unique perspective. Do not provide any explanation, just give the response directly. Reference Output 1: [{{provider1_output}}], Reference Output 2: [{{provider2_output}}]",
 				timeout = 60000, -- Timeout in milliseconds
 			},
 			behaviour = {
-				auto_suggestions = true, -- Experimental stage
+				auto_suggestions = false, -- Experimental stage
 				auto_set_highlight_group = true,
 				auto_set_keymaps = true,
 				auto_apply_diff_after_generation = true,
@@ -104,7 +105,6 @@ safe_require("lazy").setup({
 				enable_token_counting = true, -- Whether to enable token counting. Default to true.
 			},
 		},
-		build = "make",
 		dependencies = {
 			"MunifTanjim/nui.nvim",
 			"nvim-lua/plenary.nvim",
@@ -148,7 +148,8 @@ safe_require("lazy").setup({
 	{
 		"VonHeikemen/lsp-zero.nvim",
 		branch = "v4.x",
-		lazy = false,
+		event = "InsertEnter",
+		lazy = true,
 		dependencies = {
 			{ "neovim/nvim-lspconfig" },
 			{ "L3MON4D3/LuaSnip" },
@@ -164,6 +165,8 @@ safe_require("lazy").setup({
 			{
 				"petertriho/cmp-git",
 				config = true,
+				event = "VeryLazy",
+				lazy = true,
 				dependencies = { "nvim-lua/plenary.nvim" },
 			},
 			{ "octaltree/cmp-look", event = "InsertEnter" },
@@ -665,20 +668,6 @@ safe_require("lazy").setup({
 	-- Plugin: GitHub Copilot の統合 (copilot.lua)
 	------------------------------------------------------------------
 	{
-		"zbirenbaum/copilot.lua",
-		cmd = "Copilot",
-		event = "InsertEnter",
-		config = function()
-			local copilot = safe_require("copilot")
-			if copilot then
-				copilot.setup({
-					panel = { enabled = true },
-					suggestion = { enabled = true },
-				})
-			end
-		end,
-	},
-	{
 		"zbirenbaum/copilot-cmp",
 		after = { "copilot.lua", "nvim-cmp" },
 		event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
@@ -686,11 +675,12 @@ safe_require("lazy").setup({
 		config = true,
 		dependencies = {
 			"zbirenbaum/copilot.lua",
+			cmd = "Copilot",
 			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
 			config = function()
 				safe_require("copilot").setup({
 					panel = {
-						enabled = false,
+						enabled = true,
 						auto_refresh = true,
 						keymap = {
 							jump_prev = "[[",
@@ -705,7 +695,7 @@ safe_require("lazy").setup({
 						},
 					},
 					suggestion = {
-						enabled = false,
+						enabled = true,
 						auto_trigger = true,
 						debounce = 75,
 						keymap = {
