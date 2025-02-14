@@ -52,7 +52,7 @@ end
 -----------------------------------------------------------
 -- 4. lazy.nvim を用いたプラグイン設定
 -----------------------------------------------------------
-require("lazy").setup({
+safe_require("lazy").setup({
 
 	------------------------------------------------------------------
 	-- Plugin: Avante.nvim
@@ -64,6 +64,7 @@ require("lazy").setup({
 		version = false,
 		opts = {
 			provider = "groq",
+			auto_suggestions_provider = "groq",
 			claude = {
 				api_key_name = "ANTHROPIC_API_KEY",
 			},
@@ -81,12 +82,26 @@ require("lazy").setup({
 					api_key_name = "GROQ_API_KEY",
 					endpoint = "https://api.groq.com/openai/v1/",
 					model = "deepseek-r1-distill-llama-70b",
+					max_tokens = 4096,
 					--model = "llama-3.3-70b-specdec",
 					--model = "llama-3.3-70b-versatile",
 				},
 			},
+			dual_boost = {
+				enabled = false,
+				first_provider = "groq",
+				second_provider = "openai",
+				prompt = "Based on the two reference outputs below, generate a response that incorporates elements from both but reflects your own judgment and unique perspective. Do not provide any explanation, just give the response directly. Reference Output 1: [{{provider1_output}}], Reference Output 2: [{{provider2_output}}]",
+				timeout = 60000, -- Timeout in milliseconds
+			},
 			behaviour = {
+				auto_suggestions = true, -- Experimental stage
+				auto_set_highlight_group = true,
+				auto_set_keymaps = true,
 				auto_apply_diff_after_generation = true,
+				support_paste_from_clipboard = false,
+				minimize_diff = true, -- Whether to remove unchanged lines when applying a code block
+				enable_token_counting = true, -- Whether to enable token counting. Default to true.
 			},
 		},
 		build = "make",
