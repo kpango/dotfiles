@@ -674,26 +674,6 @@ safe_require("lazy").setup({
 		},
 	},
 	------------------------------------------------------------------
-	-- Plugin: none-ls (フォーマッター／リンター)
-	------------------------------------------------------------------
-	{
-		"nvimtools/none-ls.nvim",
-		event = "BufReadPre",
-		config = function()
-			local none_ls = safe_require("none-ls")
-			if none_ls then
-				none_ls.setup({
-					sources = {
-						none_ls.builtins.formatting.stylua,
-						none_ls.builtins.formatting.black,
-						none_ls.builtins.formatting.gofumpt,
-						none_ls.builtins.diagnostics.shellcheck,
-					},
-				})
-			end
-		end,
-	},
-	------------------------------------------------------------------
 	-- Plugin: nvim-treesitter (シンタックスハイライト・インデント)
 	------------------------------------------------------------------
 	{
