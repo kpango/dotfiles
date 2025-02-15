@@ -431,6 +431,7 @@ perm:
 	sudo chmod -R 755 $(ROOTDIR)/.*
 	sudo chown -R $(USER):$(GROUP_ID) $(ROOTDIR)/*
 	sudo chown -R $(USER):$(GROUP_ID) $(ROOTDIR)/.*
+	sudo chmod -R 644 $(ROOTDIR)/gpg-agent.conf
 	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f -not -name 'tmux.conf' -exec nkf -Lu -w --overwrite {} \;
 
 
