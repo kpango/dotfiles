@@ -189,7 +189,7 @@ if [ -z $DOTENV_LOADED ]; then
     fi
 
     export EDITOR=$VIM
-    export VISUAL=$VIM
+    export VISUAL=$EDITOR
     export PAGER=$(which less)
     export SUDO_EDITOR=$EDITOR
 
@@ -597,7 +597,7 @@ if [ -z $ZSH_LOADED ]; then
         # Rebase, squash, and push changes
         grsp() {
             if [ $# -eq 1 ] || [ $# -eq 2 ]; then
-		local message="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
+                local message="$(git log remotes/origin/$1..$branch --reverse --pretty=%s)"
                 grs "$@"
                 gcpf $message
             else
@@ -608,7 +608,7 @@ if [ -z $ZSH_LOADED ]; then
         alias grsp=grsp
 
         # Edit Git config
-        alias gedit="$EDITOR $HOME/.gitconfig"
+        alias gedit="vim $HOME/.gitconfig"
 
 
         # Fetch and merge from upstream
@@ -797,7 +797,7 @@ if [ -z $ZSH_LOADED ]; then
             sshperm
         }
         alias edgen=edgen
-        alias sedit="$EDITOR $HOME/.ssh/config"
+        alias sedit="vim $HOME/.ssh/config"
         sshls() {
             rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
         }
@@ -853,7 +853,7 @@ if [ -z $ZSH_LOADED ]; then
             esac
         fi
     fi
-    alias tedit="$EDITOR $HOME/.tmux.conf"
+    alias tedit="vim $HOME/.tmux.conf"
 
     zscompile() {
         for f in $(find $HOME -name "*.zsh"); do
@@ -886,9 +886,9 @@ if [ -z $ZSH_LOADED ]; then
     alias zstime=zstime
 
     if { [ -L "$HOME/.zshrc" ] || [ -f "/.dockerenv" ]; } && [ -f "$DOTFILES_DIR/zshrc" ]; then
-        alias zedit="$EDITOR $DOTFILES_DIR/zshrc"
+        alias zedit="vim $DOTFILES_DIR/zshrc"
     else
-        alias zedit="$EDITOR $HOME/.zshrc"
+        alias zedit="vim $HOME/.zshrc"
     fi
 
     alias zsback="cp $HOME/.zshrc $HOME/.zshrc.back"
@@ -963,6 +963,18 @@ if [ -z $ZSH_LOADED ]; then
     alias 777='chmod -R 777'
 
     if type nvim >/dev/null 2>&1; then
+        neovim() {
+            local neovim="$(whence -p nvim 2>/dev/null)"
+            if type pass >/dev/null 2>&1; then
+                pass show neovim
+            fi
+            "$neovim" "$@"
+        }
+        alias nvim=neovim
+        alias vim=neovim
+        alias vi=neovim
+        alias bim=neovim
+        alias cim=neovim
         alias nvup="nvim --headless -c 'UpdateRemotePlugins' -c 'PackerSync' -c 'PackerCompile'"
         nvim-init() {
             rm -rf "$HOME/.config/gocode"
@@ -974,27 +986,25 @@ if [ -z $ZSH_LOADED ]; then
             rm "$HOME/.nvimlog"
             rm "$HOME/.viminfo"
         }
-        alias vedit="$EDITOR $HOME/.config/nvim/init.lua"
         alias nvinit="nvim-init"
+        alias vake="nvim Makefile"
         alias vback="cp $HOME/.config/nvim/init.lua $HOME/.config/nvim/init.lua.back"
+        alias vedit="nvim $HOME/.config/nvim/init.lua"
+        alias vocker="nvim Dockerfile"
         alias vrestore="cp $HOME/.config/nvim/init.lua.back $HOME/.config/nvim/init.lua"
-        alias vake="$EDITOR Makefile"
-        alias vocker="$EDITOR Dockerfile"
+        alias vspdchk="rm -rf /tmp/starup.log && nvim --startuptime /tmp/startup.log +q && less /tmp/startup.log"
+        alias wedit="nvim $HOME/.config/sway/config"
+        alias xedit="nvim $HOME/.Xdefaults"
     else
         alias vedit="$EDITOR $HOME/.vimrc"
+        alias vi="$EDITOR"
+        alias vim="$EDITOR"
+        alias bim="$EDITOR"
+        alias cim="$EDITOR"
+        alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
+        alias xedit="$EDITOR $HOME/.Xdefaults"
+        alias wedit="$EDITOR $HOME/.config/sway/config"
     fi
-
-    alias vi="$EDITOR"
-    alias vim="$EDITOR"
-    alias bim="$EDITOR"
-    alias cim="$EDITOR"
-    alias v="$EDITOR"
-    alias vspdchk="rm -rf /tmp/starup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
-    alias xedit="$EDITOR $HOME/.Xdefaults"
-    alias wedit="$EDITOR $HOME/.config/sway/config"
-    # if type thefuck >/dev/null 2>&1; then
-    #     eval $(thefuck --alias --enable-experimental-instant-mode)
-    # fi
 
     if type kubectl >/dev/null 2>&1; then
         kubectl() {
@@ -1654,8 +1664,8 @@ if [ -z $ZSH_LOADED ]; then
                 echo ")" >>hack/go.mod.default3 &&
                 rm -rf go.mod go.sum &&
                 mv /tmp/go.mod /tmp/go.sum .
-            $EDITOR -d hack/go.mod.default hack/go.mod.default2
-            $EDITOR -d hack/go.mod.default hack/go.mod.default3
+            vim -d hack/go.mod.default hack/go.mod.default2
+            vim -d hack/go.mod.default hack/go.mod.default3
             cd -
         }
         alias valddep=valddep
