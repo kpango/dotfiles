@@ -105,7 +105,7 @@ arch_link: \
 	ln -sfv $(ROOTDIR)/arch/psd.conf $(HOME)/.config/psd/psd.conf
 	ln -sfv $(ROOTDIR)/arch/ranger $(HOME)/.config/ranger
 	ln -sfv $(ROOTDIR)/arch/sway.conf $(HOME)/.config/sway/config
-	ln -sfv $(ROOTDIR)/arch/waybar.conf $(HOME)/.config/waybar/config
+	ln -sfv $(ROOTDIR)/arch/waybar.json $(HOME)/.config/waybar/config
 	ln -sfv $(ROOTDIR)/arch/waybar.css $(HOME)/.config/waybar/style.css
 	ln -sfv $(ROOTDIR)/arch/wofi/style.css $(HOME)/.config/wofi/style.css
 	ln -sfv $(ROOTDIR)/arch/wofi/wofi.conf $(HOME)/.config/wofi/config
