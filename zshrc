@@ -966,9 +966,15 @@ if [ -z $ZSH_LOADED ]; then
         neovim() {
             local neovim="$(whence -p nvim 2>/dev/null)"
             if type pass >/dev/null 2>&1; then
-                pass show neovim
+	        if pass show neovim; then
+                    "$neovim" "$@"
+                else
+                    echo "failed to load openai key"
+                    exit 1 # Exit if failed to create tmux session
+                fi
+            else
+                "$neovim" "$@"
             fi
-            "$neovim" "$@"
         }
         alias nvim=neovim
         alias vim=neovim
@@ -989,7 +995,7 @@ if [ -z $ZSH_LOADED ]; then
         alias nvinit="nvim-init"
         alias vake="nvim Makefile"
         alias vback="cp $HOME/.config/nvim/init.lua $HOME/.config/nvim/init.lua.back"
-        alias vedit="nvim $HOME/.config/nvim/init.lua"
+        alias vedit="nvim $HOME/.config/nvim/"
         alias vocker="nvim Dockerfile"
         alias vrestore="cp $HOME/.config/nvim/init.lua.back $HOME/.config/nvim/init.lua"
         alias vspdchk="rm -rf /tmp/starup.log && nvim --startuptime /tmp/startup.log +q && less /tmp/startup.log"

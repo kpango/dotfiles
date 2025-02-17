@@ -935,12 +935,12 @@ safe_require("lazy").setup({
 		opts = {
 			-- 修正: signs を関数で返す形式に変更
 			signs = {
-				add = { text = "┃" },
-				change = { text = "┃" },
-				delete = { text = "_" },
-				topdelete = { text = "‾" },
-				changedelete = { text = "~" },
-				untracked = { text = "┆" },
+			  	add          = {hl = 'GitGutterAdd',    text = "┃" , numhl='GitGutterAdd'},
+			        change       = {hl = 'GitGutterChange', text = "┃", numhl='GitGutterChange'},
+			        delete       = {hl = 'GitGutterDelete', text = "_", numhl='GitGutterDelete'},
+			        topdelete    = {hl = 'GitGutterDelete', text = "‾", numhl='GitGutterDelete'},
+			        changedelete = {hl = 'GitGutterChange', text = "~", numhl='GitGutterChange'},
+				untracked    = {hl = 'GitGutterUntracked', text = "┆", numhl='GitGutterUntracked'},
 			},
 			signcolumn = true, -- Toggle with :Gitsigns toggle_signs
 			numhl = false, -- Toggle with :Gitsigns toggle_numhl
