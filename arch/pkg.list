@@ -36,6 +36,7 @@ inetutils
 intel-ucode
 iptables-nft
 iwd
+jq
 kanshi
 kitty
 kubectl
@@ -63,12 +64,13 @@ pass
 patch
 pavucontrol
 pipewire
+pipewire-alsa
+pipewire-pulse
 pkgconf
 powertop
 procs
 profile-sync-daemon
 psensor
-pulseaudio-alsa
 ranger
 rclone
 rebuild-detector
@@ -78,6 +80,7 @@ sed
 sheldon
 slurp
 smartmontools
+sof-firmware
 starship
 sudo
 systemd
