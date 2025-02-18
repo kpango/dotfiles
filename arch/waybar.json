@@ -18,6 +18,7 @@
   ],
   "modules-right": [
     "idle_inhibitor",
+    "pipewire",
     "network",
     "cpu",
     "temperature",
@@ -40,13 +41,6 @@
   },
   "sway/window": {
     "format": "{}"
-  },
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "format-icons": {
-      "activated": "",
-      "deactivated": ""
-    }
   },
   "tray": {
     "spacing": 10
@@ -147,6 +141,28 @@
     "format-disconnected": "⚠ Disconnected",
     "format-alt": "{ifname}: {ipaddr}/{cidr}, up: {bandwidthUpBits}, down: {bandwidthDownBits}",
     "on-click": "alacritty -e nmtui"
+  },
+  "pipewire": {
+    "format": "{volume}% {icon} {format_source}",
+    "format-bluetooth": "{volume}% {icon} {format_source}",
+    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-muted": " {format_source}",
+    "format-source": "{volume}% ",
+    "format-source-muted": "",
+    "format-icons": {
+      "headphones": "",
+      "handsfree": "",
+      "headset": "",
+      "phone": "",
+      "portable": "📱",
+      "car": "",
+      "default": [
+        "",
+        "",
+        ""
+      ]
+    },
+    "on-click": "pavucontrol"
   },
   "bluetooth": {
     "format": " {status}",
