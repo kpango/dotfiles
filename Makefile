@@ -205,9 +205,9 @@ mac_link: \
 	sudo launchctl load -w $(HOME)/Library/LaunchAgents/ulimit.plist
 	sudo rm -rf $(ROOTDIR)/nvim/lua/lua
 
-clean:
-	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.bashrc
-	# sed -e "/\[\ \-f\ \$HOME\/\.aliases\ \]\ \&\&\ source\ \$HOME\/\.aliases/d" ~/.zshrc
+clean: perm
+	$(eval TMP_DIR := $(shell mktemp -d))
+	jq . $(ROOTDIR)/arch/waybar.json > $(TMP_DIR)/waybar.json.tmp && mv $(TMP_DIR)/waybar.json.tmp $(ROOTDIR)/arch/waybar.json
 	sudo rm -rf \
 		$(HOME)/.Xdefaults \
 		$(HOME)/.Xmodmap \
