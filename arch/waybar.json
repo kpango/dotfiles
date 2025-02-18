@@ -18,7 +18,7 @@
   ],
   "modules-right": [
     "idle_inhibitor",
-    "pipewire",
+    "pulseaudio",
     "network",
     "cpu",
     "temperature",
@@ -142,7 +142,7 @@
     "format-alt": "{ifname}: {ipaddr}/{cidr}, up: {bandwidthUpBits}, down: {bandwidthDownBits}",
     "on-click": "alacritty -e nmtui"
   },
-  "pipewire": {
+  "pulseaudio": {
     "format": "{volume}% {icon} {format_source}",
     "format-bluetooth": "{volume}% {icon} {format_source}",
     "format-bluetooth-muted": " {icon} {format_source}",
