@@ -23,7 +23,9 @@ discord
 dmidecode
 dnsmasq
 docker
+docker-buildx
 dosfstools
+egl-x11
 fakeroot
 fastfetch
 fcitx5
