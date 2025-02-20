@@ -969,8 +969,7 @@ if [ -z $ZSH_LOADED ]; then
 	        if pass show neovim; then
                     "$neovim" "$@"
                 else
-                    echo "failed to load openai key"
-                    exit 1 # Exit if failed to create tmux session
+                    echo "failed to open $@ due to the open ai api key load failure"
                 fi
             else
                 "$neovim" "$@"
