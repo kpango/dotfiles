@@ -300,10 +300,11 @@ safe_require("lazy").setup({
 					}),
 					["<CR>"] = cmp.mapping.confirm({ select = true }),
 					["<Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() and require("cmp").core.view:get_selected_entry() then
+						local copilot = safe_require("copilot.suggestion")
+						if cmp.visible() and cmp.core.view:get_selected_entry() then
 							cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-						elseif safe_require("copilot.suggestion") and safe_require("copilot.suggestion").is_visible() then
-							safe_require("copilot.suggestion").accept()
+						elseif copilot and copilot.is_visible() then
+							copilot.accept()
 						elseif luasnip.expandable() then
 							luasnip.expand()
 						elseif luasnip.expand_or_jumpable() then
@@ -318,7 +319,7 @@ safe_require("lazy").setup({
 						end
 					end, { "i", "s" }),
 					["<S-Tab>"] = cmp.mapping(function(fallback)
-						if cmp.visible() and require("cmp").core.view:get_selected_entry() then
+						if cmp.visible() and cmp.core.view:get_selected_entry() then
 							cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
 						elseif luasnip.jumpable(-1) then
 							luasnip.jump(-1)
