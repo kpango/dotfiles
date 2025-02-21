@@ -18,10 +18,10 @@ mac-address=F0:2F:74:D4:37:35
 duplex=full
 
 [ipv4]
-method=manual
 address1=10.0.0.40/24,10.0.0.1
 dns=1.1.1.1;8.8.8.8;1.0.0.1;8.8.4.4;
 ignore-auto-routes=true
+method=manual
 route-metric=1000
 
 [ipv6]
