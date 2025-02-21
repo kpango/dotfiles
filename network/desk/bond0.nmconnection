@@ -9,17 +9,18 @@ timestamp=1738638159
 cloned-mac-address=1A:FD:3D:9C:B0:4D
 
 [bond]
-downdelay=0
+lacp_rate=fast
 miimon=100
 mode=802.3ad
+downdelay=0
 updelay=0
 xmit_hash_policy=layer2+3
 
 [ipv4]
-method=manual
 address1=10.0.0.41/24,10.0.0.1
 dns=1.1.1.1;8.8.8.8;1.0.0.1;8.8.4.4;
 ignore-auto-routes=true
+method=manual
 route-metric=100
 
 [ipv6]
