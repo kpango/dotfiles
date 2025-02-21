@@ -171,6 +171,9 @@ arch_desk_link: \
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
 	sudo ln -sfv $(ROOTDIR)/network/desk/70-persistent-network.rules /etc/udev/rules.d/70-persistent-network.rules
+	sudo mkdir -p /etc/systemd/system/irqbalance.service.d
+	sudo rm -rf /etc/systemd/system/irqbalance.service.d/override.conf
+	sudo ln -sfv $(ROOTDIR)/arch/irqbalance.service /etc/systemd/system/irqbalance.service.d/override.conf
 	sudo rm -rf /etc/NetworkManager/system-connections
 	sudo mkdir -p /etc/NetworkManager/system-connections
 	sudo cp $(ROOTDIR)/network/desk/bond0.nmconnection /etc/NetworkManager/system-connections/bond0.nmconnection
