@@ -176,7 +176,6 @@ arch_desk_link: \
 	sudo ln -sfv $(ROOTDIR)/network/desk/eth0.nmconnection /etc/NetworkManager/system-connections/eth0.nmconnection
 	sudo ln -sfv $(ROOTDIR)/network/desk/slave0.nmconnection /etc/NetworkManager/system-connections/slave0.nmconnection
 	sudo ln -sfv $(ROOTDIR)/network/desk/slave1.nmconnection /etc/NetworkManager/system-connections/slave1.nmconnection
-	sudo bootctl update
 	sudo mkinitcpio -p linux-zen
 	udevadm control --reload-rules
 	udevadm trigger
