@@ -17,5 +17,31 @@ duplex=full
 [bond-port]
 
 [ethtool]
+# オフロード機能の設定
+feature-rx=true
+feature-tx=true
+feature-sg=true
+feature-tso=true
+feature-gso=true
+feature-gro=true
+feature-rx-gro-hw=true
+feature-tx-tcp-segmentation=true
+feature-tx-tcp6-segmentation=true
 feature-rx-gro-list=false
 feature-rx-udp-gro-forwarding=true
+
+# 割り込み結合設定
+coalesce-adaptive-rx=true
+coalesce-adaptive-tx=true
+coalesce-rx-frames=32
+coalesce-rx-usecs=16
+coalesce-tx-frames=32
+coalesce-tx-usecs=16
+
+# リングバッファサイズ
+ring-rx=8192
+ring-tx=8192
+
+# フロー制御
+pause-rx=true
+pause-tx=true
