@@ -2,7 +2,7 @@
 id=slave1
 uuid=2780dc6e-e321-40e6-9e26-6988aa71525a
 type=ethernet
-controller=adc411f1-dbe1-4771-91a4-298fa56df5b5
+controller=0923038c-ae5e-4b46-aeba-05e630fcf1be
 interface-name=sfp1
 port-type=bond
 timestamp=1738635599
