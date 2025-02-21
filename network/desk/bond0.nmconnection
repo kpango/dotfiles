@@ -14,7 +14,12 @@ miimon=100
 mode=802.3ad
 downdelay=0
 updelay=0
-xmit_hash_policy=layer2+3
+min_links=1
+xmit_hash_policy=layer3+4
+use_carrier=1
+ad_select=stable
+all_slaves_active=1
+resend_igmp=1
 
 [ipv4]
 address1=10.0.0.41/24,10.0.0.1
