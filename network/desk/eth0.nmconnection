@@ -1,10 +1,10 @@
 [connection]
-id=enp67s0
-uuid=55231d65-6322-3c9e-809a-27976e16e9c0
+id=eth0
+uuid=4daa7b41-566e-415f-85b0-d10c98c5d3be
 type=ethernet
-autoconnect-priority=-999
-interface-name=enp67s0
+interface-name=eth0
 timestamp=1738636791
+autoconnect-priority=-999
 
 [ethernet]
 auto-negotiate=true
@@ -13,11 +13,15 @@ auto-negotiate=true
 feature-rx-gro-list=false
 feature-rx-udp-gro-forwarding=true
 
+[802-3-ethernet]
+mac-address=F0:2F:74:D4:37:35
+duplex=full
+
 [ipv4]
+method=manual
 address1=10.0.0.40/24,10.0.0.1
 dns=1.1.1.1;8.8.8.8;1.0.0.1;8.8.4.4;
 ignore-auto-routes=true
-method=manual
 route-metric=1000
 
 [ipv6]
