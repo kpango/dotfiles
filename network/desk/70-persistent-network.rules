@@ -1,0 +1,8 @@
+# Intel I221 Gigabit Ethernet
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="f0:2f:74:d4:37:35", NAME="eth0"
+
+# X710 Cards
+# SFP+ Port 1
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="64:9d:99:b1:03:44", NAME="sfp0"
+# SFP+ Port 2
+SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="64:9d:99:b1:03:45", NAME="sfp1"

@@ -1,14 +1,18 @@
 [connection]
-id=enp73s0f1np1
+id=slave1
 uuid=2780dc6e-e321-40e6-9e26-6988aa71525a
 type=ethernet
 controller=adc411f1-dbe1-4771-91a4-298fa56df5b5
-interface-name=enp73s0f1np1
+interface-name=sfp1
 port-type=bond
 timestamp=1738635599
 
 [ethernet]
 auto-negotiate=true
+
+[802-3-ethernet]
+mac-address=64:9D:99:B1:03:45
+duplex=full
 
 [bond-port]
 

@@ -170,7 +170,18 @@ arch_desk_link: \
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
+	sudo ln -sfv $(ROOTDIR)/network/desk/70-persistent-network.rules /etc/udev/rules.d/70-persistent-network.rules
+	sudo rm -rf /etc/NetworkManager/system-connections/*
+	sudo ln -sfv $(ROOTDIR)/network/desk/bond0.nmconnection /etc/NetworkManager/system-connections/bond0.nmconnection
+	sudo ln -sfv $(ROOTDIR)/network/desk/eth0.nmconnection /etc/NetworkManager/system-connections/eth0.nmconnection
+	sudo ln -sfv $(ROOTDIR)/network/desk/slave0.nmconnection /etc/NetworkManager/system-connections/slave0.nmconnection
+	sudo ln -sfv $(ROOTDIR)/network/desk/slave1.nmconnection /etc/NetworkManager/system-connections/slave1.nmconnection
+	sudo bootctl update
+	sudo mkinitcpio -p linux-zen
+	udevadm control --reload-rules
+	udevadm trigger
 	sudo systemctl daemon-reload
+	sudo systemctl restart NetworkManager
 
 mac_link: \
 	link
