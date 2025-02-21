@@ -176,8 +176,8 @@ arch_desk_link: \
 	sudo ln -sfv $(ROOTDIR)/network/desk/eth0.nmconnection /etc/NetworkManager/system-connections/eth0.nmconnection
 	sudo ln -sfv $(ROOTDIR)/network/desk/slave0.nmconnection /etc/NetworkManager/system-connections/slave0.nmconnection
 	sudo ln -sfv $(ROOTDIR)/network/desk/slave1.nmconnection /etc/NetworkManager/system-connections/slave1.nmconnection
-	sudo chmod -R 600 /etc/NetworkManager/system-connections/*.nmconnection
-	sudo chown -R root:root /etc/NetworkManager/system-connections/*.nmconnection
+	sudo chmod -R 600 /etc/NetworkManager/system-connections
+	sudo chown -R root:root /etc/NetworkManager/system-connections
 	sudo udevadm control --reload-rules
 	sudo udevadm trigger
 	sudo nmcli connection reload
