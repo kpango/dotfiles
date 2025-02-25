@@ -231,34 +231,7 @@ safe_require("lazy").setup({
 				filetypes = { "c", "cpp", "objc", "objcpp" },
 				root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
 			})
-			lspconfig.gopls.setup({
-				cmd = { get_cmd("GOPATH", "gopls") },
-				filetypes = { "go", "gomod" },
-				root_dir = lsputil and lsputil.root_pattern("go.work", "go.mod", "go.sum", ".git") or nil,
-				settings = {
-					gopls = {
-						analyses = {
-							unusedparams = true,
-							shadow = true,
-						},
-						staticcheck = true,
-						gofumpt = true,
-						usePlaceholders = true,
-						completeUnimported = true,
-						semanticTokens = true,
-						codelenses = {
-							gc_details = false,
-							generate = true,
-							regenerate_cgo = true,
-							run_govulncheck = true,
-							test = true,
-							tidy = true,
-							upgrade_dependency = true,
-							vendor = true,
-						},
-					},
-				},
-			})
+			lspconfig.gopls.setup(safe_require("go.lsp").config())
 			lspconfig.rust_analyzer.setup({
 				cmd = { get_cmd("CARGO_HOME", "rust-analyzer") },
 				filetypes = { "rust" },
@@ -586,7 +559,9 @@ safe_require("lazy").setup({
 				fillstruct = "gopls",
 				gofmt_on_save = true,
 				goimport_on_save = true,
-				lsp_cfg = true,
+				lsp_cfg = {
+				    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
+				},
 				lsp_gofumpt = true, -- gofumpt を使用
 				lsp_on_attach = true,
 				dap_debug = true,
