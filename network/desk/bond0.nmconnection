@@ -21,7 +21,7 @@ use_carrier=1
 xmit_hash_policy=layer3+4
 
 [ipv4]
-address1=10.0.0.41/24,10.0.0.1
+address1=10.0.0.40/24,10.0.0.1
 dns=1.1.1.1;8.8.8.8;1.0.0.1;8.8.4.4;
 ignore-auto-routes=true
 method=manual
