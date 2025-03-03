@@ -212,7 +212,7 @@ WORKDIR /tmp
 ENV NGT_VERSION=main
 ENV CFLAGS="-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
 ENV CXXFLAGS=${CFLAGS}
-ENV LDFLAGS="-L/etc/alternatives -flto -march=native -fno-plt -Wl,-Ofast,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden"
+ENV LDFLAGS="-L/etc/alternatives -flto -march=native -fno-plt -Wl,-O3 -ffast-math,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden"
 RUN echo $(ldconfig) \
     && echo ${LDFLAGS} \
     && rm -rf /tmp/* /var/cache \

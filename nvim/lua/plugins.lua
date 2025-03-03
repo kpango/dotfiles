@@ -304,7 +304,7 @@ safe_require("lazy").setup({
 				sources = cmp.config.sources({
 					{ name = "copilot", group_index = 2 },
 					{ name = "copilot_cmp", group_index = 2 },
-					{ name = "cody", group_index = 2 },
+					-- { name = "cody", group_index = 2 },
 					{ name = "nvim_lsp", group_index = 2 },
 					{ name = "nvim_lsp_signature_help" },
 					{ name = "luasnip", group_index = 2 },
@@ -347,7 +347,7 @@ safe_require("lazy").setup({
 						ellipsis_char = "...",
 						menu = {
 							copilot = "[COP]",
-							cody = "[COD]",
+							-- cody = "[COD]",
 							nvim_lua = "[LUA]",
 							nvim_lsp = "[LSP]",
 							cmp_tabnine = "[TN]",
@@ -590,11 +590,11 @@ safe_require("lazy").setup({
 	------------------------------------------------------------------
 	-- Plugin: SourceGraph Cody の統合 (sg.nvim)
 	------------------------------------------------------------------
-	{
-		"sourcegraph/sg.nvim",
-		event = { "LspAttach" },
-		config = true,
-	},
+	-- {
+	-- 	"sourcegraph/sg.nvim",
+	-- 	event = { "LspAttach" },
+	-- 	config = true,
+	-- },
 	------------------------------------------------------------------
 	-- Plugin: GitHub Copilot の統合 (copilot.lua)
 	------------------------------------------------------------------
