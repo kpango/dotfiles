@@ -88,7 +88,7 @@ ranger
 rclone
 rebuild-detector
 ripgrep
-rmlint
+sdl2-compat
 seatd
 sed
 sheldon
