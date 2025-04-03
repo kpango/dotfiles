@@ -1413,6 +1413,7 @@ if [ -z $ZSH_LOADED ]; then
                 sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
                 TMPFILE="$(mktemp)"
                 rate-mirrors \
+                    --protocol https \
                     --allow-root \
                     --disable-comments \
                     --disable-comments-in-file \
