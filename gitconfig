@@ -1,7 +1,7 @@
 [core]
     attributesfile = ~/.gitattributes
     autocrlf = false
-    editor = nvim
+    editor = "nvim --clean"
     excludesfile = ~/.gitignore  # globalな.gitignoreの指定
     fileMode = false
     pager = delta

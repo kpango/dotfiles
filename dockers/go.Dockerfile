@@ -61,6 +61,13 @@ RUN set -x && cd "$(mktemp -d)" \
     && ${BIN_NAME} version
 
 COPY go.env "${GOROOT}/go.env"
+WORKDIR ${GOPATH}/src/kpango.com/dotfiles/mod
+COPY dockers/go.mod "${GOPATH}/src/kpango.com/dotfiles/mod/go.mod"
+COPY dockers/go.sum "${GOPATH}/src/kpango.com/dotfiles/mod/go.sum"
+RUN set -x && cd "$(mktemp -d)" \
+    && go mod tidy \
+    && go get tool \
+    && go install tool
 
 # Special
 FROM --platform=$BUILDPLATFORM go-base AS dagger
@@ -68,32 +75,6 @@ RUN set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dagger" \
     && curl -fsSL https://dl.${BIN_NAME}.io/${BIN_NAME}/install.sh | BIN_DIR=${GOBIN} sh \
     && upx -9 ${GOBIN}/${BIN_NAME}
-
-FROM --platform=$BUILDPLATFORM go-base AS direnv
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="direnv" \
-    && REPO="direnv/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS dragon-imports
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="dragon-imports" \
-    && REPO="rerost/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 #Special
 FROM --platform=$BUILDPLATFORM go-base AS flamegraph
@@ -138,160 +119,12 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && mv ${BIN_NAME} ${GOBIN}/${BIN_NAME} \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
-FROM --platform=$BUILDPLATFORM go-base AS ghq
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="ghq" \
-    && REPO="x-motemen/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS git-codereview
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="git-codereview" \
-    && REPO="${GOORG}/x/review" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${REPO}/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS gitleaks
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="gitleaks" \
-    && REPO="zricethezav/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-
-FROM --platform=$BUILDPLATFORM go-base AS glice
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="glice" \
-    && REPO="ribice/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS go-contrib-init
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="go-contrib-init" \
-    && REPO="${GOORG}/x/tools" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS gofumpt
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="gofumpt" \
-    && REPO="mvdan.cc/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS goimports
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="goimports" \
-    && REPO="${GOORG}/x/tools" \
-    && go install \
-    ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS goimports-update-ignore
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="goimports-update-ignore" \
-    && REPO="pwaller/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS gojson
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="gojson" \
-    && REPO="y4v8/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
 # Special
 FROM --platform=$BUILDPLATFORM golangci/golangci-lint:latest AS golangci-lint-base
 FROM --platform=$BUILDPLATFORM go-base AS golangci-lint
 ENV BIN_NAME=golangci-lint
 COPY --from=golangci-lint-base /usr/bin/${BIN_NAME} ${GOBIN}/${BIN_NAME}
 RUN upx -9 ${GOBIN}/${BIN_NAME}
-
-FROM --platform=$BUILDPLATFORM go-base AS golines
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="golines" \
-    && REPO="segmentio/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS golint
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="golint" \
-    && REPO="${GOORG}/x/lint" \
-    && go install \
-    ${GO_FLAGS} \
-    "${REPO}/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS gopls
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -304,77 +137,6 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     go install \
     ${GO_FLAGS} \
     "${REPO}/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS gorename
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="gorename" \
-    && REPO="${GOORG}/x/tools" \
-    && go install \
-    ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS goreturns
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="goreturns" \
-    && REPO="sqs/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS gosec
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="gosec" \
-    && REPO="securego/${BIN_NAME}" \
-    && GOOS=${GOOS} GOARCH=${GOARCH} \
-    CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS gotip
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && echo "gcc VERSION is $(gcc --version)" \
-    && BIN_NAME="gotip" \
-    && ORG="${GOORG}/dl" \
-    && REPO="${ORG}/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS govulncheck
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="govulncheck" \
-    && REPO="${GOORG}/x/vuln" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@upgrade" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
@@ -391,19 +153,6 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS hub
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="hub" \
-    && REPO="github/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS hugo
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -419,99 +168,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS impl
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="impl" \
-    && REPO="josharian/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS k6
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="k6" \
-    && REPO="go.${BIN_NAME}.io/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${REPO}@master" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-# FROM --platform=$BUILDPLATFORM go-base AS keyify
-# RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-#     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-#     --mount=type=tmpfs,target="${GOPATH}/src" \
-#     set -x && cd "$(mktemp -d)" \
-#     && BIN_NAME="keyify" \
-#     && REPO="honnef.co/go/tools" \
-#     && go install \
-#     ${GO_FLAGS} \
-#     "${REPO}/cmd/${BIN_NAME}@upgrade" \
-#     && chmod a+x "${GOBIN}/${BIN_NAME}" \
-#     && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS kratos
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="kratos" \
-    && REPO="go-kratos/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS protoc-gen-connect-go
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="protoc-gen-connect-go" \
-    && REPO="bufbuild/connect-go" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS protoc-gen-go
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="protoc-gen-go" \
-    && REPO="protobuf" \
-    && go install \
-    ${GO_FLAGS} \
-    "google.${GOORG}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS prototool
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="prototool" \
-    && REPO="uber/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@dev" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS pulumi
 RUN set -x && cd "$(mktemp -d)" \
@@ -519,94 +176,6 @@ RUN set -x && cd "$(mktemp -d)" \
     && curl -fsSL https://get.${BIN_NAME}.com | sh \
     && mv ${HOME}/.${BIN_NAME}/bin/${BIN_NAME} ${GOBIN}/${BIN_NAME} \
     && upx -9 ${GOBIN}/${BIN_NAME}
-
-FROM --platform=$BUILDPLATFORM go-base AS ruleguard
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="ruleguard" \
-    && REPO="quasilyte/go-${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS shfmt
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="shfmt" \
-    && REPO="mvdan.cc/sh/v3/cmd/${BIN_NAME}" \
-    && go install ${GO_FLAGS} "${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS strictgoimports
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="strictgoimports" \
-    && REPO="momotaro98/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS swagger
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="swagger" \
-    && REPO="go-${BIN_NAME}/go-${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS syncmap
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="syncmap" \
-    && REPO="a8m/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-# FROM --platform=$BUILDPLATFORM go-base AS talosctl
-# RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-#     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-#     --mount=type=tmpfs,target="${GOPATH}/src" \
-#     set -x && cd "$(mktemp -d)" \
-#     && BIN_NAME="talosctl" \
-#     && REPO="siderolabs/talos" \
-#     && git clone https://github.com/${REPO} \
-#     && cd talos \
-#     && rm -rf go.sum \
-#     && sed -i "s/^go [0-9]\+\.[0-9]\+\.[0-9]\+/go $(go version | awk '{print $3}' | sed 's/go//')/" go.work go.mod \
-#     && go mod tidy \
-#     && cd cmd/${BIN_NAME} \
-#     && CGO_ENABLED=0 \
-#     go build \
-#         --ldflags "-w -s -buildid=" \
-#         -modcacherw \
-#         -mod=readonly \
-#         -a \
-#         -trimpath \
-#         -o "${GOBIN}/${BIN_NAME}" \
-#     && chmod a+x "${GOBIN}/${BIN_NAME}" \
-#     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 FROM --platform=$BUILDPLATFORM go-base AS tinygo
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -633,129 +202,22 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && mv ${BIN_NAME}/bin/${BIN_NAME} ${GOBIN}/${BIN_NAME} \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
-FROM --platform=$BUILDPLATFORM go-base AS vegeta
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="vegeta" \
-    && REPO="tsenart/${BIN_NAME}" \
-    && go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS xo
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="xo" \
-    && REPO="${BIN_NAME}/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM --platform=$BUILDPLATFORM go-base AS yamlfmt
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="yamlfmt" \
-    && REPO="google/${BIN_NAME}" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
 FROM --platform=$BUILDPLATFORM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
 FROM --platform=$BUILDPLATFORM go-base AS go-bins
-COPY --from=air $GOBIN/air $GOBIN/air
-COPY --from=buf $GOBIN/buf $GOBIN/buf
-COPY --from=chidley $GOBIN/chidley $GOBIN/chidley
-COPY --from=crlfmt $GOBIN/crlfmt $GOBIN/crlfmt
 COPY --from=dagger $GOBIN/dagger $GOBIN/dagger
-COPY --from=dbmate $GOBIN/dbmate $GOBIN/dbmate
-COPY --from=direnv $GOBIN/direnv $GOBIN/direnv
-COPY --from=dlayer $GOBIN/dlayer $GOBIN/dlayer
-COPY --from=dlv $GOBIN/dlv $GOBIN/dlv
-COPY --from=dragon-imports $GOBIN/dragon-imports $GOBIN/dragon-imports
-COPY --from=duf $GOBIN/duf $GOBIN/duf
-COPY --from=efm $GOBIN/efm-langserver $GOBIN/efm-langserver
-COPY --from=errcheck $GOBIN/errcheck $GOBIN/errcheck
-COPY --from=evans $GOBIN/evans $GOBIN/evans
-COPY --from=fillstruct $GOBIN/fillstruct $GOBIN/fillstruct
-COPY --from=fillswitch $GOBIN/fillswitch $GOBIN/fillswitch
-COPY --from=fixplurals $GOBIN/fixplurals $GOBIN/fixplurals
 COPY --from=flamegraph $GOBIN/flamegraph.pl $GOBIN/flamegraph.pl
 COPY --from=flamegraph $GOBIN/stackcollapse-go.pl $GOBIN/stackcollapse-go.pl
 COPY --from=flamegraph $GOBIN/stackcollapse.pl $GOBIN/stackcollapse.pl
 COPY --from=fzf $GOBIN/fzf $GOBIN/fzf
-COPY --from=ghq $GOBIN/ghq $GOBIN/ghq
-COPY --from=ghz $GOBIN/ghz $GOBIN/ghz
-COPY --from=git-codereview $GOBIN/git-codereview $GOBIN/git-codereview
-COPY --from=gitleaks $GOBIN/gitleaks $GOBIN/gitleaks
-COPY --from=glice $GOBIN/glice $GOBIN/glice
-COPY --from=go-contrib-init $GOBIN/go-contrib-init $GOBIN/go-contrib-init
-COPY --from=go-task $GOBIN/task $GOBIN/task
-COPY --from=gocode $GOBIN/gocode $GOBIN/gocode
-COPY --from=gofumpt $GOBIN/gofumpt $GOBIN/gofumpt
-COPY --from=goimports $GOBIN/goimports $GOBIN/goimports
-COPY --from=goimports-reviser $GOBIN/goimports-reviser $GOBIN/goimports-reviser
-COPY --from=goimports-update-ignore $GOBIN/goimports-update-ignore $GOBIN/goimports-update-ignore
-COPY --from=gojson $GOBIN/gojson $GOBIN/gojson
 COPY --from=golangci-lint $GOBIN/golangci-lint $GOBIN/golangci-lint
-COPY --from=golines $GOBIN/golines $GOBIN/golines
-COPY --from=golint $GOBIN/golint $GOBIN/golint
-COPY --from=gomodifytags $GOBIN/gomodifytags $GOBIN/gomodifytags
 COPY --from=gopls $GOBIN/gopls $GOBIN/gopls
-COPY --from=gorename $GOBIN/gorename $GOBIN/gorename
-COPY --from=goreturns $GOBIN/goreturns $GOBIN/goreturns
-COPY --from=gosec $GOBIN/gosec $GOBIN/gosec
-COPY --from=gotags $GOBIN/gotags $GOBIN/gotags
-COPY --from=gotestfmt $GOBIN/gotestfmt $GOBIN/gotestfmt
-COPY --from=gotests $GOBIN/gotests $GOBIN/gotests
-COPY --from=gotip $GOBIN/gotip $GOBIN/gotip
-COPY --from=govulncheck $GOBIN/govulncheck $GOBIN/govulncheck
-COPY --from=gowrap $GOBIN/gowrap $GOBIN/gowrap
-COPY --from=gqlgen $GOBIN/gqlgen $GOBIN/gqlgen
-COPY --from=grpcurl $GOBIN/grpcurl $GOBIN/grpcurl
 COPY --from=guru $GOBIN/guru $GOBIN/guru
-COPY --from=hub $GOBIN/hub $GOBIN/hub
 COPY --from=hugo $GOBIN/hugo $GOBIN/hugo
-COPY --from=iferr $GOBIN/iferr $GOBIN/iferr
-COPY --from=impl $GOBIN/impl $GOBIN/impl
-COPY --from=k6 $GOBIN/k6 $GOBIN/k6
-# COPY --from=keyify $GOBIN/keyify $GOBIN/keyify
-COPY --from=kratos $GOBIN/kratos $GOBIN/kratos
-COPY --from=licenses $GOBIN/go-licenses $GOBIN/licenses
-COPY --from=markdown2medium $GOBIN/markdown2medium $GOBIN/markdown2medium
-COPY --from=mockgen $GOBIN/mockgen $GOBIN/mockgen
-COPY --from=protoc-gen-connect-go $GOBIN/protoc-gen-connect-go $GOBIN/protoc-gen-connect-go
-COPY --from=protoc-gen-go $GOBIN/protoc-gen-go $GOBIN/protoc-gen-go
-COPY --from=prototool $GOBIN/prototool $GOBIN/prototool
 COPY --from=pulumi $GOBIN/pulumi $GOBIN/pulumi
-COPY --from=reddit2wallpaper $GOBIN/reddit2wallpaper $GOBIN/reddit2wallpaper
-COPY --from=ruleguard $GOBIN/ruleguard $GOBIN/ruleguard
-COPY --from=shfmt $GOBIN/shfmt $GOBIN/shfmt
-COPY --from=strictgoimports $GOBIN/strictgoimports $GOBIN/strictgoimports
-COPY --from=swagger $GOBIN/swagger $GOBIN/swagger
-COPY --from=syncmap $GOBIN/syncmap $GOBIN/syncmap
-# COPY --from=talosctl $GOBIN/talosctl $GOBIN/talosctl
 COPY --from=tinygo $GOBIN/tinygo $GOBIN/tinygo
-COPY --from=tparse $GOBIN/tparse $GOBIN/tparse
-COPY --from=vegeta $GOBIN/vegeta $GOBIN/vegeta
-COPY --from=vgrun $GOBIN/vgrun $GOBIN/vgrun
-COPY --from=xo $GOBIN/xo $GOBIN/xo
-COPY --from=yamlfmt $GOBIN/yamlfmt $GOBIN/yamlfmt
+# COPY --from=markdown2medium $GOBIN/markdown2medium $GOBIN/markdown2medium
 
 FROM --platform=$BUILDPLATFORM scratch
 ENV GOROOT=/opt/go
