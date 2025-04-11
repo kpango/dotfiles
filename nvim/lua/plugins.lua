@@ -65,7 +65,6 @@ safe_require("lazy").setup({
 	{
 		"saghen/blink.cmp",
 		version = "*",
-		build = 'cargo build --release',
 		event = "InsertEnter",
 		lazy = true,
 		dependencies = {
@@ -147,15 +146,36 @@ safe_require("lazy").setup({
 			},
 		},
 		opts = {
-			keymap = { preset = "default" },
-		},
-		default = { "lsp", "path", "snippets", "buffer", "copilot" },
-		providers = {
-			copilot = {
-				name = "copilot",
-				module = "blink-copilot",
-				score_offset = 100,
-				async = true,
+			keymap = {
+				preset = "enter",
+				["<Tab>"] = { "select_next", "fallback" },
+				["<S-Tab>"] = { "select_prev", "fallback" },
+				["<C-Space>"] = { "show", "fallback" },
+				["<C-e>"] = { "hide", "fallback" },
+			},
+			snippets = {
+				expand = function(args)
+					local luasnip = safe_require("luasnip")
+					luasnip.lsp_expand(args.body)
+				end,
+				default = { "lsp", "path", "snippets", "buffer", "copilot", "git" },
+				providers = {
+					copilot = {
+						name = "copilot",
+						module = "blink-copilot",
+						score_offset = 100,
+						async = true,
+					},
+				},
+			},
+			completion = {
+				documentation = {
+					auto_show = true,
+					auto_show_delay_ms = 200,
+				},
+				ghost_text = {
+					enabled = false,
+				},
 			},
 		},
 		config = function()
@@ -207,14 +227,15 @@ safe_require("lazy").setup({
 				end
 			end
 
-			local capabilities = safe_require("blink.cmp").get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities()),
-			-- 各言語サーバーの設定
-			lspconfig.clangd.setup({
-				cmd = { "/usr/bin/clangd", "--background-index" },
-				capabilities = capabilities,
-				filetypes = { "c", "cpp", "objc", "objcpp" },
-				root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
-			})
+			local capabilities =
+				safe_require("blink.cmp").get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities()),
+				-- 各言語サーバーの設定
+				lspconfig.clangd.setup({
+					cmd = { "/usr/bin/clangd", "--background-index" },
+					capabilities = capabilities,
+					filetypes = { "c", "cpp", "objc", "objcpp" },
+					root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
+				})
 			lspconfig.gopls.setup(safe_require("go.lsp").config())
 			lspconfig.rust_analyzer.setup({
 				cmd = { get_cmd("CARGO_HOME", "rust-analyzer") },
