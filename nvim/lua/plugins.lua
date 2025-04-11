@@ -108,6 +108,7 @@ if lazy then
 			"saghen/blink.cmp",
 			version = "*",
 			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
+			build = "cargo +nightly build --force --no-default-features --release",
 			lazy = true,
 			dependencies = {
 				{
@@ -141,6 +142,68 @@ if lazy then
 				-- 	dependencies = { "nvim-lua/plenary.nvim" },
 				-- },
 				-- { "octaltree/cmp-look", event = "InsertEnter" },
+				{
+					"zbirenbaum/copilot.lua",
+					cmd = "Copilot",
+					build = ":Copilot auth",
+					event = "BufReadPost",
+					dependencies = {
+						{
+							"fang2hou/blink-copilot",
+							config = true,
+						},
+					},
+					opts = {
+						panel = {
+							enabled = true,
+							auto_refresh = true,
+							keymap = {
+								jump_prev = "[[",
+								jump_next = "]]",
+								accept = "<CR>",
+								refresh = "gr",
+								open = "<M-CR>",
+							},
+							layout = {
+								position = "bottom",
+								ratio = 0.4,
+							},
+						},
+						suggestion = {
+							enabled = true,
+							auto_trigger = true,
+							debounce = 75,
+							keymap = {
+								accept = false,
+								accept_word = false,
+								accept_line = false,
+								next = "<M-]>",
+								prev = "<M-[>",
+								dismiss = "<C-]>",
+							},
+						},
+						filetypes = {
+							yaml = false,
+							markdown = false,
+							help = false,
+							gitcommit = false,
+							gitrebase = false,
+							hgcommit = false,
+							svn = false,
+							cvs = false,
+							["."] = false,
+						},
+						copilot_node_command = "node",
+						server_opts_overrides = { autostart = true },
+						on_status_update = function()
+							local lualine = safe_require("lualine")
+							if lualine then
+								lualine.refresh()
+							end
+						end,
+					},
+					config = true,
+				},
 			},
 			opts = {
 				optional = true,
@@ -238,7 +301,7 @@ if lazy then
 					providers = {
 						copilot = {
 							name = "copilot",
-							module = "blink-cmp-copilot",
+							module = "blink-copilot",
 							score_offset = 100,
 							async = true,
 						},
@@ -387,22 +450,6 @@ if lazy then
 				end
 			end,
 		},
-		{
-			"zbirenbaum/copilot.lua",
-			cmd = "Copilot",
-			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
-			dependencies = {
-				"giuxtaposition/blink-cmp-copilot",
-			},
-			opts = {
-				suggestion = { enabled = false },
-				panel = { enabled = false },
-				filetypes = {
-					markdown = true,
-					help = true,
-				},
-			},
-		},
 		------------------------------------------------------------------
 		-- Plugin: 言語特有のPlugin
 		------------------------------------------------------------------
@@ -431,7 +478,7 @@ if lazy then
 				"neovim/nvim-lspconfig",
 				"nvim-treesitter/nvim-treesitter",
 			},
-			build = ':lua require("go.install").update_all_sync()',
+			-- build = ':lua require("go.install").update_all_sync()',
 		},
 		{
 			"rust-lang/rust.vim",

@@ -109,6 +109,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     libtool-bin \
     locales \
     luajit \
+    luarocks \
     mariadb-client \
     mtr \
     ncurses-term \
