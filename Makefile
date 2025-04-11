@@ -249,12 +249,14 @@ clean: perm
 		$(HOME)/.gitattributes \
 		$(HOME)/.gitconfig \
 		$(HOME)/.gitignore \
+		$(HOME)/.gnupg/gpg-agent.conf \
 		$(HOME)/.tmux-kube \
 		$(HOME)/.tmux.conf \
 		$(HOME)/.tmux.new-session \
 		$(HOME)/.xinitrc \
 		$(HOME)/.zshrc \
-		$(HOME)/.gnupg/gpg-agent.conf \
+		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
+		$(HOME)/Library/LaunchAgents/ulimit.plist \
 		/etc/NetworkManager/NetworkManager.conf \
 		/etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
 		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
@@ -286,6 +288,7 @@ clean: perm
 		/etc/tlp.conf \
 		/etc/udev/rules.d/60-ioschedulers.rules \
 		/etc/udev/rules.d/60-nvidia.rules
+
 
 
 zsh: link
