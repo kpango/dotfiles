@@ -125,24 +125,25 @@ if lazy then
 				},
 				{ "onsails/lspkind.nvim" },
 				-- 不要なコメントアウトを削除（依存関係を明確化）
-				{ "hrsh7th/cmp-buffer" },
-				{ "hrsh7th/cmp-calc" },
-				{ "hrsh7th/cmp-cmdline" },
-				{ "hrsh7th/cmp-nvim-lsp" },
-				{ "hrsh7th/cmp-nvim-lua" },
-				{ "hrsh7th/cmp-path" },
-				{ "hrsh7th/nvim-cmp" },
-				{ "saadparwaiz1/cmp_luasnip" },
-				{
-					"petertriho/cmp-git",
-					config = true,
-					event = "InsertEnter",
-					lazy = true,
-					dependencies = { "nvim-lua/plenary.nvim" },
-				},
-				{ "octaltree/cmp-look", event = "InsertEnter" },
+				-- { "hrsh7th/cmp-buffer" },
+				-- { "hrsh7th/cmp-calc" },
+				-- { "hrsh7th/cmp-cmdline" },
+				-- { "hrsh7th/cmp-nvim-lsp" },
+				-- { "hrsh7th/cmp-nvim-lua" },
+				-- { "hrsh7th/cmp-path" },
+				-- { "hrsh7th/nvim-cmp" },
+				-- { "saadparwaiz1/cmp_luasnip" },
+				-- {
+				-- 	"petertriho/cmp-git",
+				-- 	config = true,
+				-- 	event = "InsertEnter",
+				-- 	lazy = true,
+				-- 	dependencies = { "nvim-lua/plenary.nvim" },
+				-- },
+				-- { "octaltree/cmp-look", event = "InsertEnter" },
 			},
 			opts = {
+				optional = true,
 				keymap = {
 					preset = "super-tab",
 					["<Tab>"] = { "select_next", "fallback" },
@@ -159,14 +160,6 @@ if lazy then
 							luasnip.lsp_expand(args.body)
 						end
 					end,
-					providers = {
-						copilot = {
-							name = "copilot",
-							module = "blink-copilot",
-							score_offset = 100,
-							async = true,
-						},
-					},
 				},
 				completion = {
 					keyword = { range = "prefix" },
@@ -242,6 +235,14 @@ if lazy then
 				},
 				sources = {
 					default = { "lsp", "path", "snippets", "buffer", "copilot", "omni", "git" },
+					providers = {
+						copilot = {
+							name = "copilot",
+							module = "blink-cmp-copilot",
+							score_offset = 100,
+							async = true,
+						},
+					},
 				},
 				sorting = {
 					priority_weight = 2,
@@ -389,12 +390,18 @@ if lazy then
 		{
 			"zbirenbaum/copilot.lua",
 			cmd = "Copilot",
-			dependencies = {
-				"fang2hou/blink-copilot",
-				config = true,
-			}, -- blink.cmp用のCopilotソース
 			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
-			config = true,
+			dependencies = {
+				"giuxtaposition/blink-cmp-copilot",
+			},
+			opts = {
+				suggestion = { enabled = false },
+				panel = { enabled = false },
+				filetypes = {
+					markdown = true,
+					help = true,
+				},
+			},
 		},
 		------------------------------------------------------------------
 		-- Plugin: 言語特有のPlugin
