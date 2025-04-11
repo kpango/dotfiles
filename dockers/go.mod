@@ -164,7 +164,6 @@ require (
 	github.com/bmizerany/perks v0.0.0-20230307044200-03f9df79da1e // indirect
 	github.com/bojand/ghz v0.120.0 // indirect
 	github.com/braydonk/yaml v0.9.0 // indirect
-	github.com/btcsuite/btcd v0.22.1 // indirect
 	github.com/bufbuild/buf v1.52.1 // indirect
 	github.com/bufbuild/connect-go v1.10.0 // indirect
 	github.com/bufbuild/protocompile v0.14.1 // indirect
