@@ -54,7 +54,7 @@ end
 -----------------------------------------------------------
 safe_require("lazy").setup({
 	------------------------------------------------------------------
-	-- Plugin: lsp-zero.nvim (LSP の設定)
+	-- Plugin: blink.nvim (LSP の設定)
 	------------------------------------------------------------------
 	{
 		"saghen/blink.cmp",
@@ -71,7 +71,11 @@ safe_require("lazy").setup({
 			{ "rafamadriz/friendly-snippets" },
 			{ "fang2hou/blink-copilot" },
 			{ "neovim/nvim-lspconfig" },
-			{ "L3MON4D3/LuaSnip" },
+			{
+				"L3MON4D3/LuaSnip",
+				version = "v2.*",
+				build = "make install_jsregexp",
+			},
 			{ "onsails/lspkind.nvim" },
 			-- { "hrsh7th/cmp-buffer" },
 			-- { "hrsh7th/cmp-calc" },
@@ -158,6 +162,7 @@ safe_require("lazy").setup({
 				["<CR>"] = { "confirm", "fallback" }, -- Enter キーで補完候補を確定
 			},
 			snippets = {
+				preset = "default" | "luasnip" | "mini_snippets",
 				expand = function(args)
 					local luasnip = safe_require("luasnip")
 					if luasnip then
@@ -175,6 +180,7 @@ safe_require("lazy").setup({
 				},
 			},
 			completion = {
+				keyword = { range = "prefix" },
 				documentation = {
 					auto_show = true,
 					auto_show_delay_ms = 200,
