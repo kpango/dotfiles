@@ -472,7 +472,7 @@ require (
 	github.com/quic-go/quic-go v0.50.1 // indirect
 	github.com/r3labs/sse/v2 v2.10.0 // indirect
 	github.com/radovskyb/watcher v1.0.7 // indirect
-	github.com/redis/go-redis/v9 v9.6.1 // indirect
+	github.com/redis/go-redis/v9 v9.6.3 // indirect
 	github.com/rerost/dragon-imports v0.0.0-20200512170120-c6226dfec3a1 // indirect
 	github.com/reviewdog/errorformat v0.0.0-20240608101709-1d3280ed6bd4 // indirect
 	github.com/ribice/glice v1.0.0 // indirect
