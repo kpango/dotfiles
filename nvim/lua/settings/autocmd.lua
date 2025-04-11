@@ -130,3 +130,11 @@ autocmd({ "BufWinEnter" }, {
 		end
 	end,
 })
+
+-- usercmd({"InitLua"}, function()
+--         vim.cmd.edit(vim.fn.stdpath('config') .. '/init.lua')
+--     end, {})
+--
+-- usercmd({"PluginsLua"}, function()
+--         vim.cmd.edit(vim.fn.stdpath('config') .. '/lua/plugins.lua')
+--     end, {})

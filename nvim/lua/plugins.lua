@@ -21,9 +21,11 @@ if not vim.loop.fs_stat(install_path) then
 		"--depth",
 		"1",
 		"--filter=blob:none",
+		"--branch=stable",
 		"https://github.com/folke/lazy.nvim.git",
 		install_path,
 	})
+	print("lazy.nvim installed")
 end
 vim.opt.rtp:prepend(install_path)
 
@@ -92,8 +94,11 @@ local function on_attach(client, bufnr)
 		end, { buffer = bufnr, desc = "Format Document" })
 	end
 	-- デバッグ通知を削除（本番環境では不要）
-	-- vim.notify("on_attach executed")
+	vim.notify("on_attach executed")
 end
+
+local languages =
+	{ "bash", "c", "cpp", "go", "json", "lua", "make", "nim", "proto", "python", "rust", "sh", "yaml", "zig" }
 
 -----------------------------------------------------------
 -- 4. lazy.nvim を用いたプラグイン設定
@@ -101,6 +106,120 @@ end
 local lazy = safe_require("lazy")
 if lazy then
 	lazy.setup({
+		{
+			"neovim/nvim-lspconfig",
+			ft = languages,
+			config = function()
+				local blink = safe_require("blink.cmp")
+				if not blink then
+					return
+				end
+				local lspconfig = safe_require("lspconfig")
+				if not lspconfig then
+					return
+				end
+
+				local lsputil = safe_require("lspconfig.util")
+				if not lsputil then
+					return
+				end
+				local capabilities = blink.get_lsp_capabilities()
+
+				if vim.fn.executable("gopls") == 1 then
+					-- lspconfig.gopls.setup({ capabilities = capabilities, on_attach = on_attach })
+					local go = safe_require("go")
+					if go then
+						local gocfg = go and go.lsp and go.lsp.config() or {}
+						gocfg.capabilities = capabilities
+						gocfg.on_attach = on_attach
+						lspconfig.gopls.setup(gocfg)
+					end
+					-- lspconfig.gopls.setup({
+					-- 	capabilities = capabilities,
+					-- 	cmd = { "gopls", "-remote=auto" },
+					-- 	settings = {
+					-- 		gopls = {
+					-- 			usePlaceholders = true,
+					-- 			completeUnimported = true,
+					-- 			analyses = { unusedparams = true, nilness = true, unusedwrite = true },
+					-- 		},
+					-- 	},
+					-- 	on_attach = on_attach,
+					-- })
+				end
+
+				if vim.fn.executable("rust-analyzer") == 1 then
+					lspconfig.rust_analyzer.setup({
+						cmd = { (os.getenv("CARGO_HOME") or os.getenv("HOME") .. "/.cargo") .. "/bin/rust-analyzer" },
+						capabilities = capabilities,
+						on_attach = on_attach,
+						filetypes = { "rust", "cargo" },
+						settings = {
+							["rust-analyzer"] = {
+								cargo = { allFeatures = true },
+								checkOnSave = { command = "clippy" },
+								procMacro = { enable = true },
+								inlayHints = {
+									maxLength = 25,
+									typeHints = { enable = true },
+									parameterHints = { enable = true },
+								},
+							},
+						},
+						root_dir = lsputil and lsputil.root_pattern("Cargo.toml", "rust-project.json", ".git") or nil,
+					})
+				end
+
+				if vim.fn.executable("clangd") == 1 then
+					lspconfig.clangd.setup({
+						cmd = { "/usr/bin/clangd", "--background-index" },
+						capabilities = capabilities,
+						on_attach = on_attach,
+						filetypes = { "c", "cpp", "objc", "objcpp" },
+						root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
+					})
+				end
+				if vim.fn.executable("zls") == 1 then
+					lspconfig.zls.setup({ capabilities = capabilities, on_attach = on_attach })
+				end
+
+				if vim.fn.executable("pyright") == 1 then
+					lspconfig.pyright.setup({
+						capabilities = capabilities,
+						on_attach = on_attach,
+						settings = {
+							python = {
+								analysis = {
+									autoSearchPaths = true,
+									diagnosticMode = "workspace",
+									useLibraryCodeForTypes = true,
+								},
+							},
+						},
+					})
+				end
+
+				if vim.fn.executable("nimls") == 1 then
+					lspconfig.nimls.setup({ capabilities = capabilities, on_attach = on_attach })
+				end
+
+				if vim.fn.executable("lua-language-server") == 1 then
+					lspconfig.lua_ls.setup({
+						capabilities = capabilities,
+						on_attach = on_attach,
+						settings = {
+							Lua = { diagnostics = { globals = { "vim" } }, telemetry = { enable = false } },
+						},
+					})
+				end
+				lspconfig.bashls.setup({ capabilities = capabilities, on_attach = on_attach })
+				lspconfig.yamlls.setup({ capabilities = capabilities, on_attach = on_attach })
+				lspconfig.jsonls.setup({ capabilities = capabilities, on_attach = on_attach })
+				if lspconfig.buf_ls then
+					lspconfig.buf_ls.setup({ capabilities = capabilities, on_attach = on_attach })
+				end
+			end,
+		},
 		------------------------------------------------------------------
 		-- Plugin: blink.nvim (LSP の設定)
 		------------------------------------------------------------------
@@ -108,7 +227,7 @@ if lazy then
 			"saghen/blink.cmp",
 			version = "*",
 			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
-			build = "cargo +nightly build --force --no-default-features --release",
+			build = "cargo +nightly build --release",
 			lazy = true,
 			dependencies = {
 				{
@@ -123,6 +242,16 @@ if lazy then
 					"L3MON4D3/LuaSnip",
 					version = "v2.*",
 					build = "make install_jsregexp",
+					opts = {
+						history = true,
+						updateevents = "TextChanged,TextChangedI",
+					},
+					config = function(_, opts)
+						local luasnip = safe_require("luasnip")
+						if luasnip then
+							luasnip.config.set_config(opts)
+						end
+					end,
 				},
 				{ "onsails/lspkind.nvim" },
 				-- 不要なコメントアウトを削除（依存関係を明確化）
@@ -142,71 +271,88 @@ if lazy then
 				-- 	dependencies = { "nvim-lua/plenary.nvim" },
 				-- },
 				-- { "octaltree/cmp-look", event = "InsertEnter" },
-				{
-					"zbirenbaum/copilot.lua",
-					cmd = "Copilot",
-					build = ":Copilot auth",
-					event = "BufReadPost",
-					dependencies = {
-						{
-							"fang2hou/blink-copilot",
-							config = true,
-						},
-					},
-					opts = {
-						panel = {
-							enabled = true,
-							auto_refresh = true,
-							keymap = {
-								jump_prev = "[[",
-								jump_next = "]]",
-								accept = "<CR>",
-								refresh = "gr",
-								open = "<M-CR>",
-							},
-							layout = {
-								position = "bottom",
-								ratio = 0.4,
-							},
-						},
-						suggestion = {
-							enabled = true,
-							auto_trigger = true,
-							debounce = 75,
-							keymap = {
-								accept = false,
-								accept_word = false,
-								accept_line = false,
-								next = "<M-]>",
-								prev = "<M-[>",
-								dismiss = "<C-]>",
-							},
-						},
-						filetypes = {
-							yaml = false,
-							markdown = false,
-							help = false,
-							gitcommit = false,
-							gitrebase = false,
-							hgcommit = false,
-							svn = false,
-							cvs = false,
-							["."] = false,
-						},
-						copilot_node_command = "node",
-						server_opts_overrides = { autostart = true },
-						on_status_update = function()
-							local lualine = safe_require("lualine")
-							if lualine then
-								lualine.refresh()
-							end
-						end,
-					},
-					config = true,
-				},
+				-- {
+				-- 	"zbirenbaum/copilot.lua",
+				-- 	cmd = "Copilot",
+				-- 	build = ":Copilot auth",
+				-- 	event = "BufReadPost",
+				-- 	dependencies = {
+				-- 		{
+				-- 			"fang2hou/blink-copilot",
+				-- 			config = true,
+				-- 		},
+				-- 	},
+				-- 	opts = {
+				-- 		panel = {
+				-- 			enabled = true,
+				-- 			auto_refresh = true,
+				-- 			keymap = {
+				-- 				jump_prev = "[[",
+				-- 				jump_next = "]]",
+				-- 				accept = "<CR>",
+				-- 				refresh = "gr",
+				-- 				open = "<M-CR>",
+				-- 			},
+				-- 			layout = {
+				-- 				position = "bottom",
+				-- 				ratio = 0.4,
+				-- 			},
+				-- 		},
+				-- 		suggestion = {
+				-- 			enabled = true,
+				-- 			auto_trigger = true,
+				-- 			debounce = 75,
+				-- 			keymap = {
+				-- 				accept = false,
+				-- 				accept_word = false,
+				-- 				accept_line = false,
+				-- 				next = "<M-]>",
+				-- 				prev = "<M-[>",
+				-- 				dismiss = "<C-]>",
+				-- 			},
+				-- 		},
+				-- 		filetypes = {
+				-- 			yaml = false,
+				-- 			markdown = false,
+				-- 			help = false,
+				-- 			gitcommit = false,
+				-- 			gitrebase = false,
+				-- 			hgcommit = false,
+				-- 			svn = false,
+				-- 			cvs = false,
+				-- 			["."] = false,
+				-- 		},
+				-- 		copilot_node_command = "node",
+				-- 		server_opts_overrides = { autostart = true },
+				-- 		on_status_update = function()
+				-- 			local lualine = safe_require("lualine")
+				-- 			if lualine then
+				-- 				lualine.refresh()
+				-- 			end
+				-- 		end,
+				-- 	},
+				-- 	config = true,
+				-- },
 			},
 			opts = {
 				optional = true,
+
+				appearance = {
+					menu = {
+						draw = {
+							kind_icon = {
+								text = function(item)
+									local lspkind = safe_require("lspkind")
+									if lspkind then
+										return lspkind.symbol_map[item.kind]
+									end
+									return ""
+								end,
+								highlight = "CmpItemKind",
+							},
+						},
+					},
+				},
 				keymap = {
 					preset = "super-tab",
 					["<Tab>"] = { "select_next", "fallback" },
@@ -252,7 +398,7 @@ if lazy then
 									look = "[LK]",
 									luasnip = "[LSN]",
 									nvim_lua = "[LUA]",
-									copilot = "[COP]",
+									-- copilot = "[COP]",
 								},
 								symbol_map = {
 									Array = "",
@@ -297,15 +443,16 @@ if lazy then
 					end,
 				},
 				sources = {
-					default = { "lsp", "path", "snippets", "buffer", "copilot", "omni", "git" },
-					providers = {
-						copilot = {
-							name = "copilot",
-							module = "blink-copilot",
-							score_offset = 100,
-							async = true,
-						},
-					},
+					-- default = { "lsp", "path", "snippets", "buffer", "copilot", "omni", "git" },
+					default = { "lsp", "path", "snippets", "buffer", "omni", "git" },
+					-- providers = {
+					-- 	copilot = {
+					-- 		name = "copilot",
+					-- 		module = "blink-copilot",
+					-- 		score_offset = 100,
+					-- 		async = true,
+					-- 	},
+					-- },
 				},
 				sorting = {
 					priority_weight = 2,
@@ -344,111 +491,6 @@ if lazy then
 				},
 			},
 			opts_extend = { "sources.default" },
-			config = function(_, opts)
-				local blink = safe_require("blink.cmp")
-				if not blink then
-					return
-				end
-
-				local lspconfig = safe_require("lspconfig")
-				if not lspconfig then
-					return
-				end
-
-				local lsputil = safe_require("lspconfig.util")
-				if not lsputil then
-					return
-				end
-				-- LSPサーバー共通の設定を準備
-				local capabilities = blink.get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
-				capabilities.general.positionEncodings = { "utf-16" }
-
-				-- C/C++の設定
-				lspconfig.clangd.setup({
-					cmd = { "/usr/bin/clangd", "--background-index" },
-					capabilities = capabilities,
-					filetypes = { "c", "cpp", "objc", "objcpp" },
-					root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
-					on_attach = on_attach,
-				})
-
-				-- Goの設定
-				local go = safe_require("go")
-				if go then
-					local gocfg = go and go.lsp and go.lsp.config() or {}
-					gocfg.capabilities = capabilities
-					gocfg.on_attach = on_attach
-					lspconfig.gopls.setup(gocfg)
-				end
-				-- lspconfig.gopls.setup({
-				-- 	capabilities = capabilities,
-				-- 	cmd = { "gopls", "-remote=auto" },
-				-- 	settings = {
-				-- 		gopls = {
-				-- 			usePlaceholders = true,
-				-- 			completeUnimported = true,
-				-- 			analyses = { unusedparams = true, nilness = true, unusedwrite = true },
-				-- 		},
-				-- 	},
-				-- 	on_attach = on_attach,
-				-- })
-
-				-- Rustの設定
-				lspconfig.rust_analyzer.setup({
-					cmd = { (os.getenv("CARGO_HOME") or os.getenv("HOME") .. "/.cargo") .. "/bin/rust-analyzer" },
-					capabilities = capabilities,
-					filetypes = { "rust" },
-					settings = {
-						["rust-analyzer"] = {
-							cargo = { allFeatures = true },
-							checkOnSave = { command = "clippy" },
-							-- procMacro設定を追加してマクロ展開を改善
-							procMacro = { enable = true },
-							-- 型ヒントの設定を追加
-							inlayHints = {
-								maxLength = 25,
-								typeHints = { enable = true },
-								parameterHints = { enable = true },
-							},
-						},
-					},
-					root_dir = lsputil and lsputil.root_pattern("Cargo.toml", "rust-project.json", ".git") or nil,
-					on_attach = on_attach,
-				})
-
-				if vim.fn.executable("zls") == 1 then
-					-- Zigの設定を追加
-					lspconfig.zls.setup({
-						capabilities = capabilities,
-						on_attach = on_attach,
-					})
-				end
-
-				if vim.fn.executable("pyright") == 1 then
-					-- Pythonの設定を追加
-					lspconfig.pyright.setup({
-						capabilities = capabilities,
-						on_attach = on_attach,
-						settings = {
-							python = {
-								analysis = {
-									autoSearchPaths = true,
-									diagnosticMode = "workspace",
-									useLibraryCodeForTypes = true,
-								},
-							},
-						},
-					})
-				end
-
-				if vim.fn.executable("nimls") == 1 then
-					-- Nimの設定を追加
-					lspconfig.nimls.setup({
-						capabilities = capabilities,
-						on_attach = on_attach,
-					})
-				end
-			end,
 		},
 		------------------------------------------------------------------
 		-- Plugin: 言語特有のPlugin
@@ -463,7 +505,7 @@ if lazy then
 				fillstruct = "gopls",
 				gofmt_on_save = true,
 				goimport_on_save = true,
-				lsp_cfg = true, -- goplsのセットアップをプラグイン側で行わない
+				lsp_cfg = true,
 				lsp_on_attach = false,
 				dap_debug = true,
 			},
@@ -501,7 +543,7 @@ if lazy then
 		{
 			"nvim-treesitter/nvim-treesitter",
 			build = ":TSUpdate",
-			event = "BufReadPost",
+			event = { "BufReadPost", "BufNewFile" },
 			dependencies = {
 				"nvim-treesitter/nvim-treesitter-textobjects",
 				{
@@ -522,7 +564,7 @@ if lazy then
 					ts_configs.setup({
 						auto_install = true,
 						autotag = { enable = true },
-						ensure_installed = { "bash", "c", "cpp", "go", "lua", "rust", "zig", "nim", "python" },
+						ensure_installed = languages,
 						highlight = { enable = true },
 						indent = { enable = true },
 						sync_install = false,
