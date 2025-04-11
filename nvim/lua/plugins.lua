@@ -1,9 +1,7 @@
 -----------------------------------------------------------
 -- この設定ファイルは以下を実現します：
 -- - lazy.nvim によるプラグイン管理（自動ブートストラップ）
--- - lsp-zero.nvim による LSP の設定（ホストに既にインストール済みのサーバーを利用）
---   ※ Nim 用の nimlsp はカスタム設定を追加
--- - nvim-cmp の管理は lsp-zero に任せる（manage_nvim_cmp = true）
+--   blink.cmpを用いたGo, Rust, C++, Zig, Nim, V の補完設定
 -- - none-ls (nvimtools/none-ls.nvim) によるフォーマッター／リンターの設定
 -- - GitHub Copilot (copilot.lua) の統合
 -- - EditorConfig の連携
@@ -13,7 +11,6 @@
 --   which-key, Telescope, gitsigns, Comment.nvim (Ctrl+C によるコメント切替),
 --   indent-blankline (v3仕様), nvim-autopairs, persisted.nvim
 -----------------------------------------------------------
-
 -- 1. lazy.nvim の自動ブートストラップ
 local fn = vim.fn
 local install_path = fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -34,29 +31,46 @@ vim.opt.rtp:prepend(install_path)
 vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.relativenumber = true
-vim.opt.updatetime = 200 -- LSP/補完の反応速度改善のため200msに短縮
+vim.opt.updatetime = 150
 vim.opt.lazyredraw = true
 vim.opt.completeopt = { "menuone", "noselect", "noinsert", "preview" }
 vim.opt.shortmess:append("c")
+
+-- リーダーキーの設定（プラグイン設定前に行う必要がある）
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
 
 -- 3. 安全なモジュール読み込み用関数
 local function safe_require(module_name)
 	local status, module = pcall(require, module_name)
 	if not status then
-		vim.notify("Error loading module: " .. module_name, vim.log.levels.ERROR)
+		-- エラーメッセージをより静かに表示（デバッグ用通知を削除）
+		vim.defer_fn(function()
+			vim.api.nvim_echo({ { "Failed to load module: " .. module_name, "ErrorMsg" } }, false, {})
+		end, 100)
 		return nil
 	end
 	return module
 end
 
+-- LSP共通のon_attach関数（すべてのLSPサーバーで一貫して使用）
 local function on_attach(client, bufnr)
 	local opts = { buffer = bufnr, remap = false }
-	vim.keymap.set("i", "<C-h>", vim.lsp.buf.signature_help, opts)
+
+	-- キーマッピングの設定
+	vim.keymap.set("n", "<C-h>", vim.lsp.buf.signature_help, opts) -- Insertモードではblink.cmpが<C-k>を使用
+	vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, opts)
 	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, opts)
 	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 	vim.keymap.set("n", "<leader>rr", vim.lsp.buf.references, opts)
 	vim.keymap.set("n", "<leader>vd", vim.diagnostic.open_float, opts)
 	vim.keymap.set("n", "<leader>vws", vim.lsp.buf.workspace_symbol, opts)
+	vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts)
+	vim.keymap.set("n", "<leader>wl", function()
+		print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+	end, opts)
+	vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts)
 	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 	vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
 	vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
@@ -65,9 +79,20 @@ local function on_attach(client, bufnr)
 	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
 	vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
 
-	vim.cmd("lua vim.lsp.buf.format({ async = true })")
-
-	vim.notify("on_attach executed")
+	-- 保存時の自動フォーマットを設定（非同期実行）
+	if client.supports_method("textDocument/formatting") then
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			buffer = bufnr,
+			callback = function()
+				vim.lsp.buf.format({ async = false, bufnr = bufnr })
+			end,
+		})
+		vim.keymap.set("n", "<leader>fm", function()
+			vim.lsp.buf.format({ async = true })
+		end, { buffer = bufnr, desc = "Format Document" })
+	end
+	-- デバッグ通知を削除（本番環境では不要）
+	-- vim.notify("on_attach executed")
 end
 
 -----------------------------------------------------------
@@ -99,22 +124,23 @@ if lazy then
 					build = "make install_jsregexp",
 				},
 				{ "onsails/lspkind.nvim" },
-				-- { "hrsh7th/cmp-buffer" },
-				-- { "hrsh7th/cmp-calc" },
-				-- { "hrsh7th/cmp-cmdline" },
-				-- { "hrsh7th/cmp-nvim-lsp" },
-				-- { "hrsh7th/cmp-nvim-lua" },
-				-- { "hrsh7th/cmp-path" },
-				-- { "hrsh7th/nvim-cmp" },
-				-- { "saadparwaiz1/cmp_luasnip" },
-				-- {
-				-- 	"petertriho/cmp-git",
-				-- 	config = true,
-				-- 	event = "InsertEnter",
-				-- 	lazy = true,
-				-- 	dependencies = { "nvim-lua/plenary.nvim" },
-				-- },
-				-- { "octaltree/cmp-look", event = "InsertEnter" },
+				-- 不要なコメントアウトを削除（依存関係を明確化）
+				{ "hrsh7th/cmp-buffer" },
+				{ "hrsh7th/cmp-calc" },
+				{ "hrsh7th/cmp-cmdline" },
+				{ "hrsh7th/cmp-nvim-lsp" },
+				{ "hrsh7th/cmp-nvim-lua" },
+				{ "hrsh7th/cmp-path" },
+				{ "hrsh7th/nvim-cmp" },
+				{ "saadparwaiz1/cmp_luasnip" },
+				{
+					"petertriho/cmp-git",
+					config = true,
+					event = "InsertEnter",
+					lazy = true,
+					dependencies = { "nvim-lua/plenary.nvim" },
+				},
+				{ "octaltree/cmp-look", event = "InsertEnter" },
 			},
 			opts = {
 				keymap = {
@@ -146,29 +172,31 @@ if lazy then
 					keyword = { range = "prefix" },
 					documentation = {
 						auto_show = true,
-						auto_show_delay_ms = 200,
+						auto_show_delay_ms = 100, -- 200msから100msに短縮して応答性向上
 					},
 					ghost_text = {
-						enabled = false,
+						enabled = true, -- Copilotとの連携のため有効化
 					},
 				},
 				formatting = {
-					format = function()
+					format = function(entry, item)
 						local lspkind = safe_require("lspkind")
 						if lspkind then
-							lspkind.cmp_format({
+							return lspkind.cmp_format({
 								mode = "symbol_text",
 								preset = "codicons",
 								maxwidth = 50,
 								ellipsis_char = "...",
 								menu = {
-									copilot = "[COP]",
-									nvim_lua = "[LUA]",
+									lsp = "[LSP]",
 									nvim_lsp = "[LSP]",
-									luasnip = "[LSN]",
 									buffer = "[Buf]",
-									path = "[PH]",
+									path = "[Path]",
+									snippets = "[SNIP]",
 									look = "[LK]",
+									luasnip = "[LSN]",
+									nvim_lua = "[LUA]",
+									copilot = "[COP]",
 								},
 								symbol_map = {
 									Array = "",
@@ -176,7 +204,7 @@ if lazy then
 									Class = " ",
 									Color = " ",
 									Constant = " ",
-									Constructor = " ",
+									Constructor = "",
 									Copilot = "",
 									Enum = " ",
 									EnumMember = " ",
@@ -184,11 +212,11 @@ if lazy then
 									Field = " ",
 									File = " ",
 									Folder = " ",
-									Function = " ",
-									Interface = "",
+									Function = "",
+									Interface = " ",
 									Key = "",
 									Keyword = " ",
-									Method = " ",
+									Method = "",
 									Module = "",
 									Namespace = "",
 									Null = "",
@@ -201,14 +229,15 @@ if lazy then
 									Snippet = "",
 									String = "",
 									Struct = " ",
-									Text = " ",
+									Text = "",
 									TypeParameter = " ",
 									Unit = " ",
 									Value = " ",
 									Variable = "",
 								},
-							})
+							})(entry, item)
 						end
+						return vim_item
 					end,
 				},
 				sources = {
@@ -216,6 +245,20 @@ if lazy then
 				},
 				sorting = {
 					priority_weight = 2,
+					comparators = function()
+						local compare = safe_require("cmp.config.compare")
+						return {
+							compare.offset,
+							compare.exact,
+							compare.score,
+							compare.recently_used,
+							compare.locality,
+							compare.kind,
+							compare.sort_text,
+							compare.length,
+							compare.order,
+						}
+					end,
 				},
 				signature = { enabled = true },
 				window = {
@@ -232,200 +275,114 @@ if lazy then
 				},
 				fuzzy = { implementation = "prefer_rust_with_warning" },
 				experimental = {
-					ghost_text = false,
+					ghost_text = true, -- Copilotとの連携のため有効化
 					native_menu = false,
-				},
-				keys = {
-					{
-						"gD",
-						vim.lsp.buf.declaration,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"gd",
-						vim.lsp.buf.definition,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"gr",
-						vim.lsp.buf.references,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"gi",
-						vim.lsp.buf.implementation,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"K",
-						vim.lsp.buf.hover,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<C-k>",
-						vim.lsp.buf.signature_help,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>wa",
-						vim.lsp.buf.add_workspace_folder,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>wr",
-						vim.lsp.buf.remove_workspace_folder,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>wl",
-						function()
-							print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-						end,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>D",
-						vim.lsp.buf.type_definition,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>rn",
-						vim.lsp.buf.rename,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>ca",
-						vim.lsp.buf.code_action,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>f",
-						function()
-							vim.lsp.buf.format({ async = true })
-						end,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>e",
-						vim.diagnostic.show_line_diagnostics,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"<space>q",
-						vim.diagnostic.set_loclist,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"[d",
-						vim.diagnostic.goto_prev,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
-					{
-						"]d",
-						vim.diagnostic.goto_next,
-						mode = "n",
-						desc = "",
-						noremap = true,
-						silent = true,
-					},
 				},
 			},
 			opts_extend = { "sources.default" },
-			config = function()
-				local function get_cmd(env_var, fallback)
-					local env = os.getenv(env_var)
-					if env and env ~= "" then
-						return env .. "/bin/" .. fallback
-					else
-						return fallback
-					end
+			config = function(_, opts)
+				local blink = safe_require("blink.cmp")
+				if not blink then
+					return
+				end
+
+				local lspconfig = safe_require("lspconfig")
+				if not lspconfig then
+					return
 				end
 
 				local lsputil = safe_require("lspconfig.util")
-				local lspconfig = safe_require("lspconfig")
-				if lspconfig then
-					if lsputil then
-						local capabilities = vim.lsp.protocol.make_client_capabilities()
-						local blink = safe_require("blink.cmp")
-						if blink then
-							capabilities = blink.get_lsp_capabilities(capabilities)
-						end
-						lspconfig.clangd.setup({
-							cmd = { "/usr/bin/clangd", "--background-index" },
-							capabilities = capabilities,
-							filetypes = { "c", "cpp", "objc", "objcpp" },
-							root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
-							on_attach = on_attach,
-						})
-						-- local gocfg = {}
-						-- local golsp = safe_require("go.lsp")
-						-- if golsp then
-						-- 	gocfg = golsp.config()
-						-- end
-						-- gocfg.on_attach = on_attach
-						-- lspconfig.gopls.setup(gocfg)
-						lspconfig.rust_analyzer.setup({
-							cmd = { get_cmd("CARGO_HOME", "rust-analyzer") },
-							capabilities = capabilities,
-							filetypes = { "rust" },
-							settings = {
-								["rust-analyzer"] = {
-									cargo = { allFeatures = true },
-									checkOnSave = { command = "clippy" },
+				if not lsputil then
+					return
+				end
+				-- LSPサーバー共通の設定を準備
+				local capabilities = blink.get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
+				capabilities.general.positionEncodings = { "utf-16" }
+
+				-- C/C++の設定
+				lspconfig.clangd.setup({
+					cmd = { "/usr/bin/clangd", "--background-index" },
+					capabilities = capabilities,
+					filetypes = { "c", "cpp", "objc", "objcpp" },
+					root_dir = lsputil and lsputil.root_pattern("compile_commands.json", "compile_flags.txt", ".git") or nil,
+					on_attach = on_attach,
+				})
+
+				-- Goの設定
+				local go = safe_require("go")
+				if go then
+					local gocfg = go and go.lsp and go.lsp.config() or {}
+					gocfg.capabilities = capabilities
+					gocfg.on_attach = on_attach
+					lspconfig.gopls.setup(gocfg)
+				end
+				-- lspconfig.gopls.setup({
+				-- 	capabilities = capabilities,
+				-- 	cmd = { "gopls", "-remote=auto" },
+				-- 	settings = {
+				-- 		gopls = {
+				-- 			usePlaceholders = true,
+				-- 			completeUnimported = true,
+				-- 			analyses = { unusedparams = true, nilness = true, unusedwrite = true },
+				-- 		},
+				-- 	},
+				-- 	on_attach = on_attach,
+				-- })
+
+				-- Rustの設定
+				lspconfig.rust_analyzer.setup({
+					cmd = { (os.getenv("CARGO_HOME") or os.getenv("HOME") .. "/.cargo") .. "/bin/rust-analyzer" },
+					capabilities = capabilities,
+					filetypes = { "rust" },
+					settings = {
+						["rust-analyzer"] = {
+							cargo = { allFeatures = true },
+							checkOnSave = { command = "clippy" },
+							-- procMacro設定を追加してマクロ展開を改善
+							procMacro = { enable = true },
+							-- 型ヒントの設定を追加
+							inlayHints = {
+								maxLength = 25,
+								typeHints = { enable = true },
+								parameterHints = { enable = true },
+							},
+						},
+					},
+					root_dir = lsputil and lsputil.root_pattern("Cargo.toml", "rust-project.json", ".git") or nil,
+					on_attach = on_attach,
+				})
+
+				if vim.fn.executable("zls") == 1 then
+					-- Zigの設定を追加
+					lspconfig.zls.setup({
+						capabilities = capabilities,
+						on_attach = on_attach,
+					})
+				end
+
+				if vim.fn.executable("pyright") == 1 then
+					-- Pythonの設定を追加
+					lspconfig.pyright.setup({
+						capabilities = capabilities,
+						on_attach = on_attach,
+						settings = {
+							python = {
+								analysis = {
+									autoSearchPaths = true,
+									diagnosticMode = "workspace",
+									useLibraryCodeForTypes = true,
 								},
 							},
-							root_dir = lsputil and lsputil.root_pattern("Cargo.toml", "rust-project.json", ".git") or nil,
-							on_attach = on_attach,
-						})
-					end
+						},
+					})
+				end
+
+				if vim.fn.executable("nimls") == 1 then
+					-- Nimの設定を追加
+					lspconfig.nimls.setup({
+						capabilities = capabilities,
+						on_attach = on_attach,
+					})
 				end
 			end,
 		},
@@ -433,60 +390,10 @@ if lazy then
 			"zbirenbaum/copilot.lua",
 			cmd = "Copilot",
 			dependencies = {
-				{ "fang2hou/blink-copilot" },
-			},
+				"fang2hou/blink-copilot",
+				config = true,
+			}, -- blink.cmp用のCopilotソース
 			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
-			opts = {
-				panel = {
-					enabled = true,
-					auto_refresh = true,
-					keymap = {
-						jump_prev = "[[",
-						jump_next = "]]",
-						accept = "<CR>",
-						refresh = "gr",
-						open = "<M-CR>",
-					},
-					layout = {
-						position = "bottom", -- | top | left | right
-						ratio = 0.4,
-					},
-				},
-				suggestion = {
-					enabled = true,
-					auto_trigger = true,
-					debounce = 75,
-					keymap = {
-						accept = false,
-						accept_word = false,
-						accept_line = false,
-						next = "<M-]>",
-						prev = "<M-[>",
-						dismiss = "<C-]>",
-					},
-				},
-				filetypes = {
-					yaml = false,
-					markdown = false,
-					help = false,
-					gitcommit = false,
-					gitrebase = false,
-					hgcommit = false,
-					svn = false,
-					cvs = false,
-					["."] = false,
-				},
-				copilot_node_command = "node", -- Node.js version must be > 16.x
-				server_opts_overrides = {
-					autostart = true, -- Ensure Copilot autostarts
-				},
-				on_status_update = function()
-					local lualine = safe_require("luasnip")
-					if lualine then
-						lualine.refresh()
-					end
-				end,
-			},
 			config = true,
 		},
 		------------------------------------------------------------------
@@ -494,31 +401,22 @@ if lazy then
 		------------------------------------------------------------------
 		{
 			"ray-x/go.nvim",
-			event = { "CmdlineEnter" },
+			event = { "InsertEnter", "CmdlineEnter", "LspAttach" },
 			ft = { "go", "gomod" },
-			config = function()
-				local capabilities = vim.lsp.protocol.make_client_capabilities()
-				local blink = safe_require("blink.cmp")
-				if blink then
-					capabilities = blink.get_lsp_capabilities(capabilities)
-				end
+			opts = {
+				gofmt = "gofumpt",
+				goimports = "goimports",
+				fillstruct = "gopls",
+				gofmt_on_save = true,
+				goimport_on_save = true,
+				lsp_cfg = true, -- goplsのセットアップをプラグイン側で行わない
+				lsp_on_attach = false,
+				dap_debug = true,
+			},
+			config = function(_, opts)
 				local go = safe_require("go")
 				if go then
-					go.setup({
-						gofmt = "gofumpt", -- gofumpt は gofmt の代替
-						goimports = "goimports",
-						fillstruct = "gopls",
-						gofmt_on_save = true,
-						goimport_on_save = true,
-						lsp_cfg = {
-							-- capabilities = safe_require("blink.cmp").get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities()),
-							capabilities = capabilities,
-							on_attach = on_attach,
-						},
-						lsp_gofumpt = true, -- gofumpt を使用
-						lsp_on_attach = true,
-						dap_debug = true,
-					})
+					go.setup(opts)
 				end
 			end,
 			dependencies = {
@@ -544,23 +442,25 @@ if lazy then
 			ft = { "nim" },
 		},
 		------------------------------------------------------------------
-		-- Plugin: SourceGraph Cody の統合 (sg.nvim)
-		------------------------------------------------------------------
-		-- {
-		-- 	"sourcegraph/sg.nvim",
-		-- 	event = { "LspAttach" },
-		-- 	config = true,
-		-- },
-		------------------------------------------------------------------
 		-- Plugin: nvim-treesitter (シンタックスハイライト・インデント)
 		------------------------------------------------------------------
 		{
 			"nvim-treesitter/nvim-treesitter",
-			build = ":TSUpdate", -- run → build に変更
+			build = ":TSUpdate",
 			event = "BufReadPost",
 			dependencies = {
 				"nvim-treesitter/nvim-treesitter-textobjects",
-				{ "navarasu/onedark.nvim", config = true, opts = { style = "darker" } },
+				{
+					"navarasu/onedark.nvim",
+					opts = { style = "darker" },
+					config = function(_, opts)
+						local onedark = safe_require("onedark")
+						if onedark then
+							onedark.setup(opts)
+							onedark.load()
+						end
+					end,
+				},
 			},
 			config = function()
 				local ts_configs = safe_require("nvim-treesitter.configs")
@@ -572,12 +472,23 @@ if lazy then
 						highlight = { enable = true },
 						indent = { enable = true },
 						sync_install = false,
+						-- インクリメンタル選択機能を追加
+						incremental_selection = {
+							enable = true,
+							keymaps = {
+								init_selection = "gnn",
+								node_incremental = "grn",
+								scope_incremental = "grc",
+								node_decremental = "grm",
+							},
+						},
 					})
 				end
 			end,
 		},
 		{
 			"mvllow/modes.nvim",
+			event = "BufReadPre",
 			config = true,
 			opts = {
 				colors = {
@@ -598,11 +509,11 @@ if lazy then
 			config = true,
 			opts = {
 				options = {
-					mode = "tabs",
+					mode = "buffers",
 					separator_style = "slant",
-					always_show_bufferline = false,
-					show_buffer_close_icons = false,
-					show_close_icon = false,
+					always_show_bufferline = true,
+					show_buffer_close_icons = true,
+					show_close_icon = true,
 					color_icons = true,
 				},
 				highlights = {
@@ -619,6 +530,7 @@ if lazy then
 					},
 					buffer_selected = {
 						fg = "#fdf6e3",
+						bold = true,
 					},
 					fill = {
 						bg = "#073642",
@@ -637,40 +549,32 @@ if lazy then
 				"takeshid/avante-status.nvim",
 			},
 			config = function()
-				local function selectionCount()
+				local selectionCount = function()
 					local mode = vim.fn.mode()
-					local start_line, end_line, start_pos, end_pos
-					-- 選択モードでない場合には無効
-					if not (mode:find("[vV\22]") ~= nil) then
+					if not mode:match("[vV\22]") then
 						return ""
-					end
-					start_line = vim.fn.line("v")
-					end_line = vim.fn.line(".")
-					if mode == "V" then
-						-- 行選択モードの場合は、各行全体をカウントする
-						start_pos = 1
-						end_pos = vim.fn.strlen(vim.fn.getline(end_line)) + 1
-					else
-						start_pos = vim.fn.col("v")
-						end_pos = vim.fn.col(".")
-					end
-					local chars = 0
-					for i = start_line, end_line do
-						local line = vim.fn.getline(i)
-						local line_len = vim.fn.strlen(line)
-						local s_pos = (i == start_line) and start_pos or 1
-						local e_pos = (i == end_line) and end_pos or line_len + 1
-						chars = chars + vim.fn.strchars(line:sub(s_pos, e_pos - 1))
-					end
+					end -- ビジュアルモードでなければ空
+					local start_line = vim.fn.line("v")
+					local end_line = vim.fn.line(".")
+					local start_col = (mode == "V") and 1 or vim.fn.col("v")
+					local end_col = (mode == "V") and (vim.fn.col("$") - 1) or vim.fn.col(".")
+					-- 行数と文字数を計算
 					local lines = math.abs(end_line - start_line) + 1
-					return tostring(lines) .. " lines, " .. tostring(chars) .. " characters"
+					local chars = 0
+					for l = start_line, end_line do
+						local line_text = vim.fn.getline(l)
+						local from = (l == start_line) and start_col or 1
+						local to = (l == end_line) and end_col or #line_text
+						chars = chars + vim.fn.strchars(line_text:sub(from, to))
+					end
+					return lines .. " lines, " .. chars .. " chars"
 				end
 				local lualine = safe_require("lualine")
 				if lualine then
 					lualine.setup({
 						options = {
 							icons_enabled = true,
-							theme = "palenight",
+							theme = "onedark",
 							component_separators = { left = "", right = "" },
 							section_separators = { left = "", right = "" },
 							disabled_filetypes = {
@@ -780,45 +684,66 @@ if lazy then
 			end,
 		},
 		------------------------------------------------------------------
-		-- 以下、効率的な開発を支援する追加プラグイン
+		-- Plugin: Telescope (ファジーファインダー)
 		------------------------------------------------------------------
-
-		-- telescope: ファジーファインダー（ファイル検索、ライブグレップ等）
 		{
 			"nvim-telescope/telescope.nvim",
-			dependencies = { "nvim-lua/plenary.nvim" },
+			dependencies = {
+				"nvim-lua/plenary.nvim",
+				{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+			},
+			cmd = "Telescope",
+			keys = {
+				{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find Files" },
+				{ "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Grep" },
+				{ "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
+				{ "<leader>fh", "<cmd>Telescope help_tags<cr>", desc = "Help Tags" },
+			},
 			config = function()
 				local telescope = safe_require("telescope")
 				if telescope then
 					telescope.setup({
 						defaults = {
-							prompt_prefix = " ",
+							prompt_prefix = "🔍 ",
 							selection_caret = " ",
-							i = {
-								["<C-n>"] = safe_require("telescope.actions").move_selection_next,
-								["<C-p>"] = safe_require("telescope.actions").move_selection_previous,
+							path_display = { "smart" },
+							file_ignore_patterns = { ".git/", "node_modules" },
+							mappings = {
+								i = {
+									["<C-n>"] = safe_require("telescope.actions").move_selection_next,
+									["<C-p>"] = safe_require("telescope.actions").move_selection_previous,
+								},
+							},
+						},
+						extensions = {
+							fzf = {
+								fuzzy = true,
+								override_generic_sorter = true,
+								override_file_sorter = true,
+								case_mode = "smart_case",
 							},
 						},
 					})
+					telescope.load_extension("fzf")
 				end
 			end,
 			cmd = "Telescope",
 		},
-
-		-- gitsigns: Git 差分表示
+		------------------------------------------------------------------
+		-- Plugin: gitsigns (Gitの変更表示)
+		------------------------------------------------------------------
 		{
 			"lewis6991/gitsigns.nvim",
-			event = "BufRead",
+			event = { "BufReadPre", "BufNewFile" },
 			opts = {
-				-- 修正: signs を関数で返す形式に変更
-				signs = {
-					add = { hl = "GitGutterAdd", text = "┃", numhl = "GitGutterAdd" },
-					change = { hl = "GitGutterChange", text = "┃", numhl = "GitGutterChange" },
-					delete = { hl = "GitGutterDelete", text = "_", numhl = "GitGutterDelete" },
-					topdelete = { hl = "GitGutterDelete", text = "‾", numhl = "GitGutterDelete" },
-					changedelete = { hl = "GitGutterChange", text = "~", numhl = "GitGutterChange" },
-					untracked = { hl = "GitGutterUntracked", text = "┆", numhl = "GitGutterUntracked" },
-				},
+				-- signs = {
+				-- 	add = { hl = "GitGutterAdd", text = "┃", numhl = "GitGutterAdd" },
+				-- 	change = { hl = "GitGutterChange", text = "┃", numhl = "GitGutterChange" },
+				-- 	delete = { hl = "GitGutterDelete", text = "_", numhl = "GitGutterDelete" },
+				-- 	topdelete = { hl = "GitGutterDelete", text = "‾", numhl = "GitGutterDelete" },
+				-- 	changedelete = { hl = "GitGutterChange", text = "~", numhl = "GitGutterChange" },
+				-- 	untracked = { hl = "GitGutterUntracked", text = "┆", numhl = "GitGutterUntracked" },
+				-- },
 				signcolumn = true, -- Toggle with :Gitsigns toggle_signs
 				numhl = false, -- Toggle with :Gitsigns toggle_numhl
 				linehl = false, -- Toggle with :Gitsigns toggle_linehl
@@ -848,10 +773,10 @@ if lazy then
 					col = 1,
 				},
 			},
-			config = function()
+			config = function(_, opts)
 				local gitsigns = safe_require("gitsigns")
 				if gitsigns then
-					gitsigns.setup()
+					gitsigns.setup(opts)
 				end
 			end,
 			keys = function(gs, keys)
@@ -989,15 +914,36 @@ if lazy then
 				}
 			end,
 		},
-
-		-- Comment.nvim: Ctrl+C でコメント切替
+		------------------------------------------------------------------
+		-- Plugin: Comment.nvim (コメント切替)
+		------------------------------------------------------------------
 		{
 			"numToStr/Comment.nvim",
 			event = "BufReadPost",
-			config = true,
-			lazy = true,
 			opts = {
 				ignore = "^$",
+				padding = true,
+				sticky = true,
+				toggler = {
+					line = "gcc",
+					block = "gbc",
+				},
+				opleader = {
+					line = "gc",
+					block = "gb",
+				},
+				extra = {
+					above = "gcO",
+					below = "gco",
+					eol = "gcA",
+				},
+				mappings = {
+					basic = true,
+					extra = true,
+					extended = false,
+				},
+				pre_hook = nil,
+				post_hook = nil,
 			},
 			keys = function()
 				local capi = safe_require("Comment.api")
@@ -1005,10 +951,8 @@ if lazy then
 					return {
 						{
 							"<C-c>",
-							function()
-								capi.toggle.linewise.current()
-							end,
-							desc = "",
+							capi.toggle.linewise.current,
+							desc = "Toggle comment",
 							mode = "n",
 							noremap = true,
 							silent = true,
@@ -1016,19 +960,18 @@ if lazy then
 						{
 							"<C-c>",
 							function()
+								local fn = vim.fn
 								capi.toggle.linewise(fn.visualmode())
 							end,
-							desc = "",
+							desc = "Toggle comment",
 							mode = "x",
 							noremap = true,
 							silent = true,
 						},
 						{
 							"<C-c>",
-							function()
-								capi.toggle.linewise.current()
-							end,
-							desc = "",
+							capi.toggle.linewise.current,
+							desc = "Toggle comment",
 							mode = "i",
 							noremap = true,
 							silent = true,
@@ -1036,33 +979,114 @@ if lazy then
 					}
 				end
 			end,
+			config = function(_, opts)
+				local comment = safe_require("Comment")
+				if comment then
+					comment.setup(opts)
+				end
+			end,
 		},
-
-		-- nvim-autopairs: 自動括弧補完
+		------------------------------------------------------------------
+		-- Plugin: nvim-autopairs (自動ペア補完)
+		------------------------------------------------------------------
 		{
 			"windwp/nvim-autopairs",
 			event = "InsertEnter",
 			config = function()
 				local npairs = safe_require("nvim-autopairs")
 				if npairs then
-					npairs.setup({})
+					npairs.setup({
+						check_ts = true,
+						ts_config = {
+							lua = { "string", "source" },
+							javascript = { "string", "template_string" },
+							java = false,
+						},
+						disable_filetype = { "TelescopePrompt", "spectre_panel" },
+						fast_wrap = {
+							map = "<M-e>",
+							chars = { "{", "[", "(", '"', "'" },
+							pattern = string.gsub([[ [%'%"%)%>%]%)%}%,] ]], "%s+", ""),
+							offset = 0,
+							end_key = "$",
+							keys = "qwertyuiopzxcvbnmasdfghjkl",
+							check_comma = true,
+							highlight = "PmenuSel",
+							highlight_grey = "LineNr",
+						},
+					})
+
+					-- cmpとの連携設定
+					local blink = safe_require("blink.cmp")
+					if blink then
+						local cmp_autopairs = safe_require("nvim-autopairs.completion.blink")
+						if cmp_autopairs then
+							blink.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+						end
+					end
 				end
 			end,
 		},
-
 		-- persisted.nvim: セッション管理
 		{
 			"olimorris/persisted.nvim",
-			config = function()
+			cmd = { "SessionSave", "SessionLoad" },
+			opts = {
+				use_git_branch = true,
+				autosave = true, -- 自動保存を有効化
+				autoload = false, -- 自動読み込みは無効化
+				follow_cwd = true, -- カレントディレクトリに従う
+				allowed_dirs = nil, -- 全てのディレクトリを許可
+				ignored_dirs = nil, -- 無視するディレクトリなし
+			},
+			config = function(_, opts)
 				local persisted = safe_require("persisted")
 				if persisted then
-					persisted.setup({
-						use_git_branch = true,
-					})
+					persisted.setup(opts)
 				end
 			end,
-			cmd = { "SessionSave", "SessionLoad" },
+			cmd = { "SessionSave", "SessionLoad", "SessionDelete" },
+			keys = {
+				{ "<leader>ss", "<cmd>SessionSave<cr>", desc = "Save Session" },
+				{ "<leader>sl", "<cmd>SessionLoad<cr>", desc = "Load Session" },
+				{ "<leader>sd", "<cmd>SessionDelete<cr>", desc = "Delete Session" },
+			},
 		},
+		------------------------------------------------------------------
+		-- Plugin: none-ls.nvim (フォーマッターとリンター)
+		------------------------------------------------------------------
+		-- {
+		-- 	"nvimtools/none-ls.nvim",
+		-- 	event = { "BufReadPre", "BufNewFile" },
+		-- 	dependencies = { "nvim-lua/plenary.nvim" },
+		-- 	config = function()
+		-- 		local null_ls = safe_require("null-ls")
+		-- 		if null_ls then
+		-- 			null_ls.setup({
+		-- 				sources = {
+		-- 					-- フォーマッター
+		-- 					null_ls.builtins.formatting.prettier,
+		-- 					null_ls.builtins.formatting.stylua,
+		-- 					null_ls.builtins.formatting.gofumpt,
+		-- 					null_ls.builtins.formatting.shfmt,
+		-- 					null_ls.builtins.formatting.rustfmt,
+		-- 					null_ls.builtins.formatting.clang_format,
+
+		-- 					-- リンター
+		-- 					null_ls.builtins.diagnostics.eslint,
+		-- 					null_ls.builtins.diagnostics.shellcheck,
+		-- 					null_ls.builtins.diagnostics.golangci_lint,
+		-- 					null_ls.builtins.diagnostics.luacheck,
+		-- 					null_ls.builtins.diagnostics.cpplint,
+
+		-- 					-- コード補完
+		-- 					null_ls.builtins.completion.spell,
+		-- 				},
+		-- 				on_attach = on_attach,
+		-- 			})
+		-- 		end
+		-- 	end,
+		-- },
 	}, {
 		root = fn.stdpath("config") .. "/lazy", -- プラグイン配置ディレクトリ
 	})
@@ -1073,13 +1097,36 @@ local onedark = safe_require("onedark")
 if onedark then
 	onedark.load()
 end
+
 -----------------------------------------------------------
 -- 5. グローバルキーマッピング
 -----------------------------------------------------------
-vim.keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>fg", "<cmd>Telescope live_grep<CR>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { silent = true, noremap = true })
-vim.keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { silent = true, noremap = true })
+-- Telescopeのキーマッピングはプラグイン定義内に移動済み
+
+-- ウィンドウ操作のキーマッピング
+vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true, noremap = true })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true, noremap = true })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true, noremap = true })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { silent = true, noremap = true })
+
+-- バッファ操作のキーマッピング
+vim.keymap.set("n", "<leader>bn", ":bnext<CR>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>bp", ":bprevious<CR>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader>bd", ":bdelete<CR>", { silent = true, noremap = true })
+
+-- 検索ハイライトをクリア
+vim.keymap.set("n", "<Esc><Esc>", ":nohlsearch<CR>", { silent = true, noremap = true })
+
+-- 行の移動（ビジュアルモードでも選択を維持）
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { silent = true, noremap = true })
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { silent = true, noremap = true })
+
+-- 自動保存の設定
+vim.api.nvim_create_autocmd({ "FocusLost", "BufLeave" }, {
+	pattern = "*",
+	command = "silent! wall",
+	nested = true,
+})
 
 -----------------------------------------------------------
 -- End of configuration
