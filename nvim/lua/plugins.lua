@@ -162,7 +162,7 @@ safe_require("lazy").setup({
 				["<CR>"] = { "confirm", "fallback" }, -- Enter キーで補完候補を確定
 			},
 			snippets = {
-				preset = "default" | "luasnip" | "mini_snippets",
+				preset = "luasnip",
 				expand = function(args)
 					local luasnip = safe_require("luasnip")
 					if luasnip then
@@ -254,6 +254,7 @@ safe_require("lazy").setup({
 			sorting = {
 				priority_weight = 2,
 			},
+			signature = { enabled = true },
 			window = {
 				completion = {
 					bordered = true,
