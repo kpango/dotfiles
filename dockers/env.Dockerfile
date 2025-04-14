@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$BUILDPLATFORM kpango/base:latest AS env-base
+FROM kpango/base:latest AS env-base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -108,6 +108,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     libtool \
     libtool-bin \
     locales \
+    lua5.4 \
     luajit \
     luarocks \
     mariadb-client \
@@ -159,7 +160,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && npm install -g n
     # && curl -fsSL https://tailscale.com/install.sh | sh \
 
-FROM --platform=$BUILDPLATFORM env-base AS env-stage
+FROM env-base AS env-stage
 WORKDIR /tmp
 RUN --mount=type=cache,target=${HOME}/.npm \
     n latest \
@@ -178,12 +179,13 @@ RUN --mount=type=cache,target=${HOME}/.npm \
         typescript-language-server \
         terminalizer \
         prettier \
+	@openai/codex \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && apt purge -y nodejs npm \
     && apt -y autoremove
 
-FROM --platform=$BUILDPLATFORM env-base AS protoc
+FROM env-base AS protoc
 WORKDIR /tmp
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO_NAME="protobuf" \
@@ -208,7 +210,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && rm -f /tmp/protoc.zip \
     && rm -rf /tmp/*
 
-FROM --platform=$BUILDPLATFORM env-base AS ngt
+FROM env-base AS ngt
 WORKDIR /tmp
 ENV NGT_VERSION=main
 ENV CFLAGS="-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
@@ -220,13 +222,21 @@ RUN echo $(ldconfig) \
     && git clone -b ${NGT_VERSION} --depth 1 https://github.com/yahoojapan/NGT "/tmp/NGT-${NGT_VERSION}" \
     && cd "/tmp/NGT-${NGT_VERSION}" \
     && if [ "${ARCH}" = "arm64" ] ; then  CFLAGS="" && CXXFLAGS="" ; fi \
-    && CC=$(which gcc) CXX=$(which g++) cmake -DNGT_LARGE_DATASET=ON . \
-    && CC=$(which gcc) CXX=$(which g++) make -j -C "/tmp/NGT-${NGT_VERSION}" \
-    && CC=$(which gcc) CXX=$(which g++) make install -C "/tmp/NGT-${NGT_VERSION}" \
+    && CC=$(which gcc) CXX=$(which g++) cmake -DCMAKE_BUILD_TYPE=Release \
+		-DBUILD_SHARED_LIBS=OFF \
+		-DBUILD_STATIC_EXECS=ON \
+		-DBUILD_TESTING=OFF \
+		-DCMAKE_C_FLAGS="${CFLAGS}" \
+		-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+		-DNGT_LARGE_DATASET=ON \
+		-DCMAKE_INSTALL_PREFIX=/usr/local \
+		-B /tmp/NGT-${NGT_VERSION}/build /tmp/NGT-${NGT_VERSION} \
+    && CC=$(which gcc) CXX=$(which g++) make -C /tmp/NGT-${NGT_VERSION}/build -j12 ngt \
+    && CC=$(which gcc) CXX=$(which g++) make -C /tmp/NGT-${NGT_VERSION}/build install \
     && cd /tmp \
     && rm -rf /tmp/*
 
-# FROM --platform=$BUILDPLATFORM env-base AS tensorflow
+# FROM env-base AS tensorflow
 # WORKDIR /tmp
 # RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
 #     && REPO_NAME="tensorflow" \
@@ -252,7 +262,7 @@ RUN echo $(ldconfig) \
 #     && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
 #     && rm -rf /tmp/*
 
-FROM --platform=$BUILDPLATFORM env-stage AS env
+FROM env-stage AS env
 
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango

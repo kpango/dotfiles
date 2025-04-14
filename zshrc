@@ -151,7 +151,9 @@ if [ -z $DOTENV_LOADED ]; then
         export PYTHONIOENCODING="utf-8"
     fi
 
-    if type nvim >/dev/null 2>&1; then
+    if type hx >/dev/null 2>&1; then
+        export VIM=$(which hx)
+    elif type nvim >/dev/null 2>&1; then
         export VIM=$(which nvim)
         case ${OSTYPE} in
         darwin*)
@@ -962,7 +964,13 @@ if [ -z $ZSH_LOADED ]; then
     alias 755='chmod -R 755'
     alias 777='chmod -R 777'
 
-    if type nvim >/dev/null 2>&1; then
+    if type hx >/dev/null 2>&1; then
+        alias nvim=hx
+        alias vim=hx
+        alias vi=hx
+        alias bim=hx
+        alias cim=hx
+    elif type nvim >/dev/null 2>&1; then
         neovim() {
             local neovim="$(whence -p nvim 2>/dev/null)"
             if type pass >/dev/null 2>&1; then

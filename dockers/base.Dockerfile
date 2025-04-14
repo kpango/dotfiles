@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$BUILDPLATFORM ubuntu:devel AS base
+FROM ubuntu:devel AS base
 
 ARG TARGETOS
 ARG TARGETARCH
