@@ -1,7 +1,7 @@
 [core]
     attributesfile = ~/.gitattributes
     autocrlf = false
-    editor = "nvim --clean -c \"filetype plugin indent on\" -c \"syntax on\" -c \"set number\" -c \"set cursorline\""
+    editor = "hx"
     excludesfile = ~/.gitignore  # globalな.gitignoreの指定
     fileMode = false
     pager = delta

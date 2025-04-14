@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$BUILDPLATFORM kpango/base:latest AS env-base
+FROM kpango/base:latest AS env-base
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -108,6 +108,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     libtool \
     libtool-bin \
     locales \
+    lua5.4 \
     luajit \
     luarocks \
     mariadb-client \
@@ -159,31 +160,30 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && npm install -g n
     # && curl -fsSL https://tailscale.com/install.sh | sh \
 
-FROM --platform=$BUILDPLATFORM env-base AS env-stage
+FROM env-base AS env-stage
 WORKDIR /tmp
 RUN --mount=type=cache,target=${HOME}/.npm \
     n latest \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && npm install -g \
-        yarn \
-    && yarn global add \
-        diagnostic-languageserver \
+        yarn
+RUN yarn global add \
+        prettier \
+        markdownlint-cli \
         dockerfile-language-server-nodejs \
         bash-language-server \
-        markdownlint-cli \
-        neovim \
         npm \
         typescript \
         typescript-language-server \
-        terminalizer \
-        prettier \
+        n \
+        @openai/codex \
     && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
     && apt purge -y nodejs npm \
     && apt -y autoremove
 
-FROM --platform=$BUILDPLATFORM env-base AS protoc
+FROM env-base AS protoc
 WORKDIR /tmp
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && REPO_NAME="protobuf" \
@@ -208,51 +208,25 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && rm -f /tmp/protoc.zip \
     && rm -rf /tmp/*
 
-FROM --platform=$BUILDPLATFORM env-base AS ngt
+FROM env-base AS cmake-base
 WORKDIR /tmp
-ENV NGT_VERSION=main
-ENV CFLAGS="-mno-avx512f -mno-avx512dq -mno-avx512cd -mno-avx512bw -mno-avx512vl"
-ENV CXXFLAGS=${CFLAGS}
-ENV LDFLAGS="-L/etc/alternatives -flto -march=native -fno-plt -Wl,-O3 -ffast-math,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden"
-RUN echo $(ldconfig) \
-    && echo ${LDFLAGS} \
-    && rm -rf /tmp/* /var/cache \
-    && git clone -b ${NGT_VERSION} --depth 1 https://github.com/yahoojapan/NGT "/tmp/NGT-${NGT_VERSION}" \
-    && cd "/tmp/NGT-${NGT_VERSION}" \
-    && if [ "${ARCH}" = "arm64" ] ; then  CFLAGS="" && CXXFLAGS="" ; fi \
-    && CC=$(which gcc) CXX=$(which g++) cmake -DNGT_LARGE_DATASET=ON . \
-    && CC=$(which gcc) CXX=$(which g++) make -j -C "/tmp/NGT-${NGT_VERSION}" \
-    && CC=$(which gcc) CXX=$(which g++) make install -C "/tmp/NGT-${NGT_VERSION}" \
-    && cd /tmp \
-    && rm -rf /tmp/*
+RUN git clone --depth 1 https://github.com/vdaas/vald "/tmp/vald" \
+    && cd "/tmp/vald" \
+    && make cmake/install
 
-# FROM --platform=$BUILDPLATFORM env-base AS tensorflow
-# WORKDIR /tmp
-# RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
-#     && REPO_NAME="tensorflow" \
-#     && BIN_NAME="${REPO_NAME}" \
-#     && REPO="${REPO_NAME}/${BIN_NAME}" \
-#     && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
-#     && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
-#     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-#     && unset HEADER \
-#     && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
-#     && if [ -z "${VERSION}" ]; then \
-#          echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
-#          BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
-#          VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
-#        fi \
-#     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
-#     && BIN_NAME="lib${REPO_NAME}" \
-#     && REPO="${REPO_NAME}/${BIN_NAME}" \
-#     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-#     && URL="${GOOGLE}/${REPO}/${BIN_NAME}-cpu-${OS}-${ARCH}-${VERSION}.tar.gz" \
-#     && echo "${URL}" \
-#     && curl -fsSLo "/tmp/${BIN_NAME}.tar.gz" "${URL}" \
-#     && tar -C /usr/local -xzf "/tmp/${BIN_NAME}.tar.gz" \
-#     && rm -rf /tmp/*
+FROM cmake-base AS ngt
+WORKDIR /tmp/vald
+RUN make ngt/install
 
-FROM --platform=$BUILDPLATFORM env-stage AS env
+FROM cmake-base AS faiss
+WORKDIR /tmp/vald
+RUN make faiss/install
+
+FROM cmake-base AS usearch
+WORKDIR /tmp/vald
+RUN make usearch/install
+
+FROM env-stage AS env
 
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango

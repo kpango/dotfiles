@@ -1,6 +1,8 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$BUILDPLATFORM kpango/base:latest AS go-base
+FROM kpango/base:latest AS go-base
 
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
 ARG TARGETOS
 ARG TARGETARCH
 ARG USER=kpango
@@ -15,7 +17,7 @@ ENV GO111MODULE=on
 ENV DEBIAN_FRONTEND=noninteractive
 ENV INITRD=No
 ENV LANG=en_US.UTF-8
-ENV GOROOT=/opt/go
+ENV GOROOT=/usr/local/go
 ENV GOPATH=/go
 ENV GOBIN=${GOPATH}/bin
 ENV GOARCH=${ARCH}
@@ -33,7 +35,8 @@ ENV GO_FLAGS="-trimpath -modcacherw -a -tags netgo"
 
 WORKDIR /tmp
 
-RUN apt update -y \
+RUN echo "BUILDPLATFORM: $BUILDPLATFORM → TARGETPLATFORM: $TARGETPLATFORM" \
+    && apt update -y \
     && apt upgrade -y \
     && if [ "${ARCH}" = "amd64" ] ; then  \
          apt install -y --no-install-recommends --fix-missing gcc-${XARCH}-${OS}-gnu; \
@@ -44,7 +47,6 @@ RUN apt update -y \
          export CC=${AARCH}-${OS}-gnu-gcc; \
          export CC_FOR_TARGET=${CC}; \
        fi
-
 
 WORKDIR /opt
 RUN set -x && cd "$(mktemp -d)" \
@@ -58,26 +60,28 @@ RUN set -x && cd "$(mktemp -d)" \
     && rm "${TAR_NAME}" \
     && mv ${BIN_NAME} ${GOROOT} \
     && mkdir -p ${GOBIN} \
+    && which ${BIN_NAME} \
     && ${BIN_NAME} version
-
 COPY go.env "${GOROOT}/go.env"
+
+FROM go-base AS go-tools
 WORKDIR ${GOPATH}/src/kpango.com/dotfiles/mod
 COPY dockers/go.mod "${GOPATH}/src/kpango.com/dotfiles/mod/go.mod"
 COPY dockers/go.sum "${GOPATH}/src/kpango.com/dotfiles/mod/go.sum"
-RUN set -x && cd "$(mktemp -d)" \
+RUN set -ex \
     && go mod tidy \
     && go get tool \
     && go install tool
 
 # Special
-FROM --platform=$BUILDPLATFORM go-base AS dagger
+FROM go-base AS dagger
 RUN set -x && cd "$(mktemp -d)" \
     && BIN_NAME="dagger" \
     && curl -fsSL https://dl.${BIN_NAME}.io/${BIN_NAME}/install.sh | BIN_DIR=${GOBIN} sh \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
 #Special
-FROM --platform=$BUILDPLATFORM go-base AS flamegraph
+FROM go-base AS flamegraph
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -94,7 +98,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && cp ${TMPDIR}/stackcollapse-go.pl ${GOBIN}/
 
 #Special
-FROM --platform=$BUILDPLATFORM go-base AS fzf
+FROM go-base AS fzf
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -119,14 +123,9 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && mv ${BIN_NAME} ${GOBIN}/${BIN_NAME} \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
-# Special
-FROM --platform=$BUILDPLATFORM golangci/golangci-lint:latest AS golangci-lint-base
-FROM --platform=$BUILDPLATFORM go-base AS golangci-lint
-ENV BIN_NAME=golangci-lint
-COPY --from=golangci-lint-base /usr/bin/${BIN_NAME} ${GOBIN}/${BIN_NAME}
-RUN upx -9 ${GOBIN}/${BIN_NAME}
 
-FROM --platform=$BUILDPLATFORM go-base AS gopls
+# Special
+FROM go-base AS gopls
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -140,7 +139,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-FROM --platform=$BUILDPLATFORM go-base AS guru
+FROM go-base AS guru
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -154,7 +153,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
 
-FROM --platform=$BUILDPLATFORM go-base AS hugo
+FROM go-base AS hugo
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -170,14 +169,14 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
 
 
 
-FROM --platform=$BUILDPLATFORM go-base AS pulumi
+FROM go-base AS pulumi
 RUN set -x && cd "$(mktemp -d)" \
     && BIN_NAME="pulumi" \
     && curl -fsSL https://get.${BIN_NAME}.com | sh \
     && mv ${HOME}/.${BIN_NAME}/bin/${BIN_NAME} ${GOBIN}/${BIN_NAME} \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
-FROM --platform=$BUILDPLATFORM go-base AS tinygo
+FROM go-base AS tinygo
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
     --mount=type=tmpfs,target="${GOPATH}/src" \
@@ -202,16 +201,15 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && mv ${BIN_NAME}/bin/${BIN_NAME} ${GOBIN}/${BIN_NAME} \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
-FROM --platform=$BUILDPLATFORM go-base AS go
+FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
-FROM --platform=$BUILDPLATFORM go-base AS go-bins
+FROM go-base AS go-bins
 COPY --from=dagger $GOBIN/dagger $GOBIN/dagger
 COPY --from=flamegraph $GOBIN/flamegraph.pl $GOBIN/flamegraph.pl
 COPY --from=flamegraph $GOBIN/stackcollapse-go.pl $GOBIN/stackcollapse-go.pl
 COPY --from=flamegraph $GOBIN/stackcollapse.pl $GOBIN/stackcollapse.pl
 COPY --from=fzf $GOBIN/fzf $GOBIN/fzf
-COPY --from=golangci-lint $GOBIN/golangci-lint $GOBIN/golangci-lint
 COPY --from=gopls $GOBIN/gopls $GOBIN/gopls
 COPY --from=guru $GOBIN/guru $GOBIN/guru
 COPY --from=hugo $GOBIN/hugo $GOBIN/hugo
@@ -219,8 +217,8 @@ COPY --from=pulumi $GOBIN/pulumi $GOBIN/pulumi
 COPY --from=tinygo $GOBIN/tinygo $GOBIN/tinygo
 # COPY --from=markdown2medium $GOBIN/markdown2medium $GOBIN/markdown2medium
 
-FROM --platform=$BUILDPLATFORM scratch
-ENV GOROOT=/opt/go
+FROM scratch
+ENV GOROOT=/usr/local/go
 ENV GOPATH=/go
 COPY --from=go $GOROOT/bin $GOROOT/bin
 COPY --from=go $GOROOT/src $GOROOT/src
@@ -228,3 +226,4 @@ COPY --from=go $GOROOT/lib $GOROOT/lib
 COPY --from=go $GOROOT/pkg $GOROOT/pkg
 COPY --from=go $GOROOT/misc $GOROOT/misc
 COPY --from=go-bins $GOPATH/bin $GOPATH/bin
+COPY --from=go-tools $GOPATH/bin $GOPATH/bin

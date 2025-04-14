@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$BUILDPLATFORM kpango/base:latest AS rust-base
+FROM kpango/base:latest AS rust-base
 
 ARG TOOLCHAIN=nightly
 
@@ -10,11 +10,9 @@ ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin
 ENV PATH=${BIN_PATH}:$PATH
 
-RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} sh -s -- --default-toolchain nightly -y \
-    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup install stable \
-    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup install beta \
-    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup install nightly \
-    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup toolchain install nightly \
+RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs \
+    | CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} sh -s -- --default-toolchain nightly -y \
+    && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup install stable beta \
     && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup default nightly \
     && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup update \
     && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup component add \
@@ -24,96 +22,96 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | CARGO_HOME=${CA
        clippy \
        --toolchain nightly
 
-FROM --platform=$BUILDPLATFORM kpango/rust:latest AS old
+FROM kpango/rust:latest AS old
 
-# FROM --platform=$BUILDPLATFORM rust-base AS ast-grep
+# FROM rust-base AS ast-grep
 # RUN cargo +nightly install --force --no-default-features \
 #     ast-grep
 
-FROM --platform=$BUILDPLATFORM rust-base AS bandwhich
+FROM rust-base AS bandwhich
 RUN cargo +nightly install --force --no-default-features \
     bandwhich
 
-FROM --platform=$BUILDPLATFORM rust-base AS bat
+FROM rust-base AS bat
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --locked \
     bat
 
-FROM --platform=$BUILDPLATFORM rust-base AS bottom
+FROM rust-base AS bottom
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --no-default-features \
     bottom
 
-FROM --platform=$BUILDPLATFORM rust-base AS broot
+FROM rust-base AS broot
 # RUN cargo +nightly install --force --no-default-features \
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --locked \
     broot
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-asm
+FROM rust-base AS cargo-asm
 RUN cargo install cargo-asm
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-binutils
+FROM rust-base AS cargo-binutils
 RUN cargo install --git https://github.com/japaric/cargo-binutils
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-bloat
+FROM rust-base AS cargo-bloat
 RUN cargo install --force --no-default-features \
     --git https://github.com/RazrFalcon/cargo-bloat
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-check
+FROM rust-base AS cargo-check
 RUN cargo install cargo-check
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-edit
+FROM rust-base AS cargo-edit
 RUN cargo install cargo-edit
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-expand
+FROM rust-base AS cargo-expand
 RUN cargo install cargo-expand
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-fix
+FROM rust-base AS cargo-fix
 RUN cargo +nightly install --force --no-default-features \
     cargo-fix
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-tree
+FROM rust-base AS cargo-tree
 RUN cargo install cargo-tree
 
-FROM --platform=$BUILDPLATFORM rust-base AS cargo-watch
+FROM rust-base AS cargo-watch
 RUN cargo install cargo-watch
 
-FROM --platform=$BUILDPLATFORM rust-base AS delta
+FROM rust-base AS delta
 RUN cargo +nightly install --force --no-default-features \
     git-delta
 
-# FROM --platform=$BUILDPLATFORM rust-base AS deno
+# FROM rust-base AS deno
 # RUN RUST_BACKTRACE=full cargo install --force --locked --all-features \
 #     deno
 
-FROM --platform=$BUILDPLATFORM rust-base AS dog
+FROM rust-base AS dog
 RUN cargo install --force --no-default-features \
     --git https://github.com/ogham/dog dog
 
-FROM --platform=$BUILDPLATFORM rust-base AS dutree
+FROM rust-base AS dutree
 RUN cargo +nightly install --force --no-default-features \
     dutree
 
-FROM --platform=$BUILDPLATFORM rust-base AS erdtree
+FROM rust-base AS erdtree
 RUN cargo +nightly install --force --no-default-features \
     erdtree
 
-FROM --platform=$BUILDPLATFORM rust-base AS eza
+FROM rust-base AS eza
 # RUN cargo +nightly install --force --no-default-features \
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --no-default-features \
     eza
 
-FROM --platform=$BUILDPLATFORM rust-base AS fd
+FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
     --git https://github.com/sharkdp/fd
 
-# FROM --platform=$BUILDPLATFORM rust-base AS frawk
+# FROM rust-base AS frawk
 # RUN apt update -y \
 #     && apt upgrade -y \
 #     && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
@@ -125,96 +123,104 @@ RUN cargo install --force --no-default-features \
 #     --features use_jemalloc,allow_avx2,unstable \
 #     --git https://github.com/ezrosent/frawk frawk
 
-FROM --platform=$BUILDPLATFORM rust-base AS gping
+FROM rust-base AS gping
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --no-default-features \
     gping
 
-FROM --platform=$BUILDPLATFORM rust-base AS hyperfine
+FROM rust-base AS helix
+RUN git clone --depth 1 https://github.com/helix-editor/helix \
+    && cd helix \
+    && cargo install --path helix-term --locked \
+    && mkdir -p /usr/lib/helix/runtime \
+    && cp -r ./runtime /usr/lib/helix/runtime
+
+FROM rust-base AS hyperfine
 RUN cargo +nightly install --force --no-default-features \
     hyperfine
 
-FROM --platform=$BUILDPLATFORM rust-base AS lsd
+FROM rust-base AS lsd
 RUN cargo install --force --no-default-features \
     --git https://github.com/Peltoche/lsd --branch master
 
-FROM --platform=$BUILDPLATFORM rust-base AS lsp-ai
-RUN cargo install --force --no-default-features \
-    --git https://github.com/SilasMarvin/lsp-ai --branch master -F llama_cpp
+# FROM rust-base AS lsp-ai
+# RUN cargo install --locked --force --no-default-features \
+#       --git https://github.com/SilasMarvin/lsp-ai lsp-ai \
+#       --branch main -F llama_cpp
 
-# FROM --platform=$BUILDPLATFORM rust-base AS nushell
+# FROM rust-base AS nushell
 # RUN cargo install --force --features=extra \
 #     --git https://github.com/nushell/nushell nu
 
-FROM --platform=$BUILDPLATFORM rust-base AS procs
+FROM rust-base AS procs
 RUN cargo +nightly install --force --no-default-features \
     --git https://github.com/dalance/procs
 
-FROM --platform=$BUILDPLATFORM rust-base AS rg
+FROM rust-base AS rg
 RUN rustup update stable \
     && rustup default stable \
     && RUSTFLAGS="-C target-cpu=native" \
     cargo +nightly install --force --features 'pcre2' \
     ripgrep
 
-FROM --platform=$BUILDPLATFORM rg AS rga
+FROM rg AS rga
 RUN cargo install --locked --force --no-default-features \
     ripgrep_all
 
-FROM --platform=$BUILDPLATFORM rust-base AS rnix-lsp
+FROM rust-base AS rnix-lsp
 RUN cargo install --force --no-default-features \
     --git https://github.com/nix-community/rnix-lsp
 
-FROM --platform=$BUILDPLATFORM rust-base AS sad
+FROM rust-base AS sad
 RUN git clone --depth 1 https://github.com/ms-jpq/sad \
     && cd sad \
     && cargo install --force --locked --all-features --path .
 
-FROM --platform=$BUILDPLATFORM rust-base AS sd
+FROM rust-base AS sd
 RUN cargo +nightly install --force --no-default-features \
     sd
 
-FROM --platform=$BUILDPLATFORM rust-base AS shellharden
+FROM rust-base AS shellharden
 RUN cargo +nightly install --force --no-default-features \
     shellharden
 
-FROM --platform=$BUILDPLATFORM rust-base AS sheldon
+FROM rust-base AS sheldon
 RUN cargo install --force --no-default-features \
     --git https://github.com/rossmacarthur/sheldon
 
-FROM --platform=$BUILDPLATFORM rust-base AS starship
+FROM rust-base AS starship
 RUN cargo +nightly install --force --no-default-features starship
 
-FROM --platform=$BUILDPLATFORM rust-base AS stylua
+FROM rust-base AS stylua
 RUN cargo +nightly install --force --features lua54 stylua
 
-FROM --platform=$BUILDPLATFORM rust-base AS t-rec
+FROM rust-base AS t-rec
 RUN cargo +nightly install --force --no-default-features \
     t-rec
 
-FROM --platform=$BUILDPLATFORM rust-base AS tokei
+FROM rust-base AS tokei
 RUN cargo +nightly install --force --no-default-features \
     tokei
 
-FROM --platform=$BUILDPLATFORM rust-base AS tree-sitter
+FROM rust-base AS tree-sitter
 RUN cargo +nightly install --force --no-default-features \
     tree-sitter-cli
 
-# FROM --platform=$BUILDPLATFORM rust-base AS watchexec
+# FROM rust-base AS watchexec
 # # RUN cargo +nightly install --force --no-default-features \
 # RUN rustup update stable \
 #     && rustup default stable \
 #     && cargo install watchexec-cli
 
-FROM --platform=$BUILDPLATFORM rust-base AS xh
+FROM rust-base AS xh
 # RUN cargo +nightly install --force --locked --all-features \
 RUN rustup update stable \
     && rustup default stable \
     && cargo install --force --locked --all-features \
     xh
 
-FROM --platform=$BUILDPLATFORM scratch AS rust
+FROM scratch AS rust
 ENV HOME=/root
 ENV RUST_HOME=/usr/local/lib/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
@@ -253,9 +259,11 @@ COPY --from=erdtree ${BIN_PATH}/erd ${BIN_PATH}/erd
 COPY --from=eza ${BIN_PATH}/eza ${BIN_PATH}/eza
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
+COPY --from=helix ${BIN_PATH}/hx ${BIN_PATH}/hx
+COPY --from=helix /usr/lib/helix/runtime /usr/lib/helix/runtime
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
-COPY --from=lsp-ai ${BIN_PATH}/lsp-ai ${BIN_PATH}/lsp-ai
+# COPY --from=lsp-ai ${BIN_PATH}/lsp-ai ${BIN_PATH}/lsp-ai
 COPY --from=procs ${BIN_PATH}/procs ${BIN_PATH}/procs
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
 COPY --from=rga ${BIN_PATH}/rga ${BIN_PATH}/rga
