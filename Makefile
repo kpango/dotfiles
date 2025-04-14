@@ -28,6 +28,7 @@ run:
 copy:
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.config/alacritty
+	mkdir -p $(HOME)/.config/helix
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.docker
@@ -42,7 +43,11 @@ copy:
 	cp $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
 	cp $(ROOTDIR)/gitignore $(HOME)/.gitignore
 	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
+	cp $(ROOTDIR)/helix/config.toml $(HOME)/.config/helix/config.toml
+	cp $(ROOTDIR)/helix/languages.toml $(HOME)/.config/helix/languages.toml
+	cp $(ROOTDIR)/helix/themes $(HOME)/.config/helix/themes
 	cp $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
+	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
 	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
 	cp $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
 	cp $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
@@ -56,6 +61,7 @@ copy:
 link:
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.config/alacritty
+	mkdir -p $(HOME)/.config/helix
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.config/sheldon
@@ -70,6 +76,9 @@ link:
 	ln -sfv $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
 	ln -sfv $(ROOTDIR)/gitignore $(HOME)/.gitignore
 	ln -sfv $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
+	ln -sfv $(ROOTDIR)/helix/config.toml $(HOME)/.config/helix/config.toml
+	ln -sfv $(ROOTDIR)/helix/languages.toml $(HOME)/.config/helix/languages.toml
+	ln -sfv $(ROOTDIR)/helix/themes $(HOME)/.config/helix/themes
 	ln -sfv $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
 	ln -sfv $(ROOTDIR)/nvim/lua $(HOME)/.config/nvim/lua
 	ln -sfv $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
@@ -236,6 +245,9 @@ clean: perm
 		$(HOME)/.config/i3 \
 		$(HOME)/.config/i3status \
 		$(HOME)/.config/nvim \
+		$(HOME)/.config/helix/config.toml \
+		$(HOME)/.config/helix/languages.toml \
+		$(HOME)/.config/helix/themes \
 		$(HOME)/.config/ranger \
 		$(HOME)/.config/sheldon \
 		$(HOME)/.config/starship.toml \

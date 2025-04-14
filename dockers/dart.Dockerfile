@@ -1,2 +1,2 @@
 # syntax = docker/dockerfile:latest
-FROM --platform=$BUILDPLATFORM dart:beta AS dart
+FROM dart:beta AS dart

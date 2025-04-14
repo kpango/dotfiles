@@ -1,0 +1,90 @@
+# AI用言語サーバーの定義
+[language-server.ai]
+command = "lsp-ai"   # PATHが通っている前提
+
+# Rustの設定
+[language-server.rust-analyzer]
+command = "rust-analyzer"
+
+[[language]]
+name = "rust"
+language-servers = [ "rust-analyzer" ]
+formatter = { command = "rustfmt" }
+auto-format = true
+
+# C/C++の設定
+[language-server.clangd]
+command = "clangd"
+
+[[language]]
+name = "cpp"      # C++ (`name = "c"`も同様に設定可能)
+language-servers = [ "clangd" ]
+# フォーマッターはclangdが内部でclang-formatを使用
+
+[language-server.gopls]
+command = "gopls"
+
+[[language]]
+name = "go"
+language-servers = [ "gopls" ]
+auto-format = true
+# goplsは内部でgofmt相当の整形に対応
+
+# Pythonの設定
+[language-server.pylsp]
+command = "pylsp"
+
+[[language]]
+name = "python"
+language-servers = [ "pylsp" ]
+formatter = { command = "black", args = ["-"] }   # Blackでフォーマット
+auto-format = true
+
+# Luaの設定
+[language-server.lua-language-server]
+command = "lua-language-server"
+
+[[language]]
+name = "lua"
+language-servers = [ "lua-language-server" ]
+formatter = { command = "stylua", args = ["-"] }  # (任意) stylua導入時
+auto-format = true
+
+# YAMLの設定
+[language-server.yamlls]
+command = "yaml-language-server"
+args = ["--stdio"]
+
+[[language]]
+name = "yaml"
+language-servers = [ "yamlls" ]
+# YAML LSPはフォーマット対応（内部でPrettier相当の整形機能あり）
+
+# JSONの設定
+[language-server.json]
+command = "vscode-json-languageserver"
+args = ["--stdio"]
+
+[[language]]
+name = "json"
+language-servers = [ "json" ]
+# JSON LSPはフォーマット対応（VSCodeと同等の整形機能）
+
+# TOMLの設定
+[language-server.taplo]
+command = "taplo"  # taplo-cli に含まれるコマンド
+
+[[language]]
+name = "toml"
+language-servers = [ "taplo" ]
+# taploはフォーマット対応（内部で整形機能あり）
+
+# Protobufの設定
+[language-server.protobuf-ls]
+command = "protobuf-language-server"
+
+[[language]]
+name = "protobuf"
+language-servers = [ "protobuf-ls" ]
+# (format は特になし：protoファイルのフォーマッタは未確立)
+
