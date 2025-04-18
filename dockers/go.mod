@@ -207,6 +207,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.7.1 // indirect
+	github.com/bmizerany/perks v0.0.0-20230307044200-03f9df79da1e // indirect
 	github.com/bojand/ghz v0.120.0 // indirect
 	github.com/bonnefoa/kubectl-fzf/v3 v3.0.4 // indirect
 	github.com/braydonk/yaml v0.9.0 // indirect
@@ -216,15 +217,16 @@ require (
 	github.com/bufbuild/protocompile v0.14.1 // indirect
 	github.com/bufbuild/protoplugin v0.0.0-20250218205857-750e09ce93e1 // indirect
 	github.com/bufbuild/protovalidate-go v0.9.3-0.20250403190939-663657418457 // indirect
+	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/c2h5oh/datasize v0.0.0-20231215233829-aa82cc1e6500 // indirect
 	github.com/ccojocar/zxcvbn-go v1.0.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
-	github.com/census-instrumentation/opencensus-proto v0.4.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chai2010/gettext-go v1.0.2 // indirect
 	github.com/chainguard-dev/git-urls v1.0.2 // indirect
 	github.com/charmbracelet/lipgloss v1.0.0 // indirect
 	github.com/charmbracelet/x/ansi v0.8.0 // indirect
+	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/chromedp/cdproto v0.0.0-20240919203636-12af5e8a671f // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/chzyer/readline v1.5.1 // indirect
@@ -264,6 +266,8 @@ require (
 	github.com/davidrjenni/reftools v0.0.0-20240211192525-f5f96ef18854 // indirect
 	github.com/derailed/popeye v0.22.1 // indirect
 	github.com/derekparker/trie v0.0.0-20230829180723-39f4de51ef7d // indirect
+	github.com/dgryski/go-gk v0.0.0-20200319235926-a69029f61654 // indirect
+	github.com/dgryski/go-lttb v0.0.0-20230207170358-f8fc36cdbff1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/direnv/direnv v2.20.1+incompatible // indirect
@@ -285,7 +289,6 @@ require (
 	github.com/emicklei/go-restful/v3 v3.12.0 // indirect
 	github.com/emicklei/proto v1.9.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/envoyproxy/go-control-plane v0.13.4 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/evanphx/json-patch v5.9.0+incompatible // indirect
@@ -306,6 +309,7 @@ require (
 	github.com/fullstorydev/grpcurl v1.9.3 // indirect
 	github.com/fvbommel/sortorder v1.1.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/gdamore/encoding v1.0.0 // indirect
 	github.com/gdamore/tcell/v2 v2.7.4 // indirect
 	github.com/gertd/go-pluralize v0.2.1 // indirect
@@ -313,7 +317,7 @@ require (
 	github.com/getsops/sops/v3 v3.9.2 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
-	github.com/gin-gonic/gin v1.8.1 // indirect
+	github.com/gin-gonic/gin v1.9.1 // indirect
 	github.com/github/hub v2.11.2+incompatible // indirect
 	github.com/gizak/termui/v3 v3.1.0 // indirect
 	github.com/gnewton/chidley v0.0.0-20211230221022-09b9269092fb // indirect
@@ -341,8 +345,8 @@ require (
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-openapi/validate v0.24.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-playground/validator/v10 v10.11.0 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.14.0 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/go-swagger/go-swagger v0.31.0 // indirect
@@ -476,7 +480,7 @@ require (
 	github.com/ktr0731/go-updater v0.1.6 // indirect
 	github.com/ktr0731/grpc-web-go-client v0.2.8 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
-	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
 	github.com/lmittmann/tint v1.0.4 // indirect
@@ -639,6 +643,7 @@ require (
 	github.com/spf13/viper v1.19.0 // indirect
 	github.com/sqs/goreturns v0.0.0-20231030191505-16fc3d8edd91 // indirect
 	github.com/stoewer/go-strcase v1.3.0 // indirect
+	github.com/streadway/quantile v0.0.0-20220407130108-4246515d968d // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939 // indirect
 	github.com/tdewolff/parse/v2 v2.7.15 // indirect
@@ -652,6 +657,7 @@ require (
 	github.com/toqueteos/webbrowser v1.2.0 // indirect
 	github.com/tsenart/go-tsz v0.0.0-20180814235614-0bd30b3df1c3 // indirect
 	github.com/tsenart/vegeta v12.7.0+incompatible // indirect
+	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/u-root/uio v0.0.0-20240224005618-d2acac8f3701 // indirect
 	github.com/uber/jaeger-client-go v2.30.0+incompatible // indirect
 	github.com/uber/jaeger-lib v2.4.1+incompatible // indirect
