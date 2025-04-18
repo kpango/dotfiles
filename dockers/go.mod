@@ -210,7 +210,6 @@ require (
 	github.com/bojand/ghz v0.120.0 // indirect
 	github.com/bonnefoa/kubectl-fzf/v3 v3.0.4 // indirect
 	github.com/braydonk/yaml v0.9.0 // indirect
-	github.com/btcsuite/btcd v0.22.1 // indirect
 	github.com/bufbuild/buf v1.52.1 // indirect
 	github.com/bufbuild/connect-go v1.10.0 // indirect
 	github.com/bufbuild/protocompile v0.14.1 // indirect
