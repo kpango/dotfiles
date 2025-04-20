@@ -229,6 +229,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/blizzy78/varnamelen v0.8.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.7.1 // indirect
+	github.com/bmizerany/perks v0.0.0-20230307044200-03f9df79da1e // indirect
 	github.com/bojand/ghz v0.120.0 // indirect
 	github.com/bombsimon/wsl/v4 v4.7.0 // indirect
 	github.com/bonnefoa/kubectl-fzf/v3 v3.0.4 // indirect
@@ -247,7 +248,6 @@ require (
 	github.com/catenacyber/perfsprint v0.9.1 // indirect
 	github.com/ccojocar/zxcvbn-go v1.0.2 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
-	github.com/census-instrumentation/opencensus-proto v0.4.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chai2010/gettext-go v1.0.2 // indirect
 	github.com/chainguard-dev/git-urls v1.0.2 // indirect
@@ -301,6 +301,8 @@ require (
 	github.com/denis-tingaikin/go-header v0.5.0 // indirect
 	github.com/derailed/popeye v0.22.1 // indirect
 	github.com/derekparker/trie v0.0.0-20230829180723-39f4de51ef7d // indirect
+	github.com/dgryski/go-gk v0.0.0-20200319235926-a69029f61654 // indirect
+	github.com/dgryski/go-lttb v0.0.0-20230207170358-f8fc36cdbff1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/direnv/direnv v2.20.1+incompatible // indirect
@@ -322,7 +324,6 @@ require (
 	github.com/emicklei/go-restful/v3 v3.12.0 // indirect
 	github.com/emicklei/proto v1.9.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
-	github.com/envoyproxy/go-control-plane v0.13.4 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/ettle/strcase v0.2.0 // indirect
@@ -674,7 +675,7 @@ require (
 	github.com/r3labs/sse/v2 v2.10.0 // indirect
 	github.com/radovskyb/watcher v1.0.7 // indirect
 	github.com/raeperd/recvcheck v0.2.0 // indirect
-	github.com/redis/go-redis/v9 v9.7.0 // indirect
+	github.com/redis/go-redis/v9 v9.7.3 // indirect
 	github.com/rerost/dragon-imports v0.0.0-20200512170120-c6226dfec3a1 // indirect
 	github.com/reviewdog/errorformat v0.0.0-20240608101709-1d3280ed6bd4 // indirect
 	github.com/ribice/glice v1.0.0 // indirect
@@ -746,6 +747,7 @@ require (
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stbenjam/no-sprintf-host-port v0.2.0 // indirect
 	github.com/stoewer/go-strcase v1.3.0 // indirect
+	github.com/streadway/quantile v0.0.0-20220407130108-4246515d968d // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
