@@ -9,6 +9,7 @@ ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin
 ENV PATH=${BIN_PATH}:$PATH
+ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
 
 RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs \
     | CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} sh -s -- --default-toolchain nightly -y \
@@ -133,8 +134,8 @@ FROM rust-base AS helix
 RUN git clone --depth 1 https://github.com/helix-editor/helix \
     && cd helix \
     && cargo install --path helix-term --locked \
-    && mkdir -p /usr/lib/helix/runtime \
-    && cp -r ./runtime /usr/lib/helix/runtime
+    && mkdir -p ${HELIX_DEFAULT_RUNTIME} \
+    && cp -r ./runtime ${HELIX_DEFAULT_RUNTIME}
 
 FROM rust-base AS hyperfine
 RUN cargo +nightly install --force --no-default-features \
@@ -226,6 +227,7 @@ ENV RUST_HOME=/usr/local/lib/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin
+ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
 
 COPY --from=rust-base ${CARGO_HOME} ${CARGO_HOME}
 COPY --from=rust-base ${RUSTUP_HOME}/settings.toml ${RUSTUP_HOME}/settings.toml
@@ -260,7 +262,7 @@ COPY --from=eza ${BIN_PATH}/eza ${BIN_PATH}/eza
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=helix ${BIN_PATH}/hx ${BIN_PATH}/hx
-COPY --from=helix /usr/lib/helix/runtime /usr/lib/helix/runtime
+COPY --from=helix ${HELIX_DEFAULT_RUNTIME} ${HELIX_DEFAULT_RUNTIME}
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
 # COPY --from=lsp-ai ${BIN_PATH}/lsp-ai ${BIN_PATH}/lsp-ai

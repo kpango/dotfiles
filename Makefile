@@ -416,6 +416,7 @@ build_mkl:
 	@make NAME="mkl" do_build
 
 build_go:
+	cd $(ROOTDIR)/dockers && go get tool && cd -
 	@make NAME="go" do_build
 
 build_rust:
