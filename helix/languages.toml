@@ -24,11 +24,22 @@ language-servers = [ "clangd" ]
 [language-server.gopls]
 command = "gopls"
 
+[language-server.gopls.config]
+buildFlags = ["-tags=e2e linux"]
+
 [[language]]
 name = "go"
-language-servers = [ "gopls" ]
+roots = ["go.work", "go.mod"]
 auto-format = true
-# goplsは内部でgofmt相当の整形に対応
+formatter = ["gofmt"]
+comment-token = "//"
+language-servers = [ "gopls", "golangci-lint-lsp" ]
+
+[language-server.golangci-lint-lsp]
+command = "golangci-lint-langserver"
+
+[language-server.golangci-lint-lsp.config]
+command = ["golangci-lint", "run", "--output.json.path", "stdout", "--show-stats=false", "--issues-exit-code=1"]
 
 # Pythonの設定
 [language-server.pylsp]
@@ -36,9 +47,17 @@ command = "pylsp"
 
 [[language]]
 name = "python"
-language-servers = [ "pylsp" ]
-formatter = { command = "black", args = ["-"] }   # Blackでフォーマット
+scope = "source.python"
+file-types = ["py"]
 auto-format = true
+formatter = {command = "black", args = ["-q", "-"]}
+language-servers = [ "pyright" ]
+indent = { tab-width = 4, unit = "    " }
+
+[language-server.pyright]
+command = "pyright-langserver"
+args = ["--stdio"]
+config = {}
 
 # Luaの設定
 [language-server.lua-language-server]
