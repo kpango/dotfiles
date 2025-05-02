@@ -1,15 +1,18 @@
 theme = "zed_onedark"
 
 [editor]
-true-color = true # デフォルトがfalaseなのでこれをtrueにする、これのせいでテーマが上手く機能しない
-cursorline = true # これもデフォルトでfalseなのでtrueにするとlihgtlineみたいな見た目になる
-color-modes = true # ステータスラインにモードごとに色が表示されるようにする,テーマ依存なので色が変になったらテーマが対応していないので注意が必要
-auto-completion = true # 任意のキーで補完をしたい人はfalseにする
-auto-save = true # これも任意で保存したい人はfalseにする
+true-color = true
+cursorline = true
+color-modes = true
+auto-completion = true
+auto-save = true
+auto-pairs = true
 end-of-line-diagnostics = "hint"
+trim-final-newlines = true
+trim-trailing-whitespace = true
 
 [editor.inline-diagnostics]
-cursor-line = "error" # Show inline diagnostics when the cursor is on the line
+cursor-line = "error"
 other-lines = "disable"
 
 [editor.cursor-shape]
@@ -17,23 +20,23 @@ insert = "bar"
 normal = "block"
 select = "underline"
 
-# デフォルトのこれで個人的には良い気がする
+
 [editor.statusline]
 left = ["mode", "spinner", "version-control"]
 center = ["file-name"]
 right = ["diagnostics", "selections", "position", "file-encoding", "file-line-ending", "file-type"]
-separator = "│" # 正直わかっていない
-# 左下のモード名を任意の文字列に変えられる．ここで絵文字を使っても面白いかも
+separator = "│"
+
 mode.normal = "NOR"
 mode.insert = "INS"
 mode.select = "SEL"
 
 [editor.file-picker]
-max-depth = 6 # pickerの検索するフォルダーの深さ
-hidden = false # 隠しファイルフォルダーを検索しない
+max-depth = 6
+hidden = false
 
 [editor.whitespace.render]
-space = "all" # "all"か"none"の2択しかない
+space = "all"
 tab = "all"
 newline = "all"
 
@@ -42,36 +45,36 @@ space = "·"
 nbsp = "⍽"
 tab = "→"
 newline = "↲"
-# newline = "✔" # やろうと思えばこういうのもできる
+
 
 [editor.indent-guides]
-render = true # 個人の好みで、スペースよりもガイド派はこちらをtrueにする
-character = "|" # バーティカルバーも好きにできるので:とかにしても良いかも
+render = true
+character = "|"
 
-# EDIT(2023/2/06)
+
 [editor.soft-wrap]
-enable = true # ソフトラップによる改行を追加
-# よくわかっていない
-max-wrap = 20 # increase value to reduce forced mid-word wrapping
-max-indent-retain = 20 # 改行ごのインデントの数
-wrap-indicator = ""  # ソフトラップ改行したところの改行を表示
+enable = true
+
+max-wrap = 20
+max-indent-retain = 20
+wrap-indicator = ""
 
 [editor.lsp]
-display-inlay-hints = true # 型を表示
-# Disable automatically popups of signature parameter help
+display-inlay-hints = true
+
 auto-signature-help = true
-# Show LSP messages in the status line
+
 display-messages = true
 
 [keys.insert]
-j = { j = "normal_mode" } # jjでノーマルモード
-C-space = "completion" # Ctrl + spaceで補完
+j = { j = "normal_mode" }
+C-space = "completion"
 
 [keys.normal]
-ret = ["open_below", "normal_mode"] # ノーマルモードでもenterで改行
-backspace = "delete_char_backward" # 簡易的な一文字削除もできる
-tab = ":bn" # tabで次のバッファーへ移動
-S-tab = ":bp" # Shift + tabで前のバッファーへ移動
+ret = ["open_below", "normal_mode"]
+backspace = "delete_char_backward"
+tab = ":bn"
+S-tab = ":bp"
 p = "paste_clipboard_after"
 P = "paste_clipboard_before"
 y = "yank_to_clipboard"
@@ -86,3 +89,4 @@ y = "yank_to_clipboard"
 Y = "yank_joined_to_clipboard"
 R = "replace_selections_with_clipboard"
 d = ["yank_to_clipboard", "delete_selection_noyank"]
+
