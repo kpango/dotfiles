@@ -71,5 +71,7 @@ ulimit -n 500000
 
 # Start sway if no display server is running and the terminal is tty1
 if [[ -z $DISPLAY ]] && [[ $TTY = /dev/tty1 ]]; then
-    exec sway $SWAY_GPU_OPTION "$@"
+    #exec sway $SWAY_GPU_OPTION "$@"
+    exec SWAY_DEBUG=1 SWAY_IGNORE_INPUT_GRAB=1 sway --verbose $SWAY_GPU_OPTION "$@" > ~/.cache/sway/sway.debug.log 2>&1
+
 fi
