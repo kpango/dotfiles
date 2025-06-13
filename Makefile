@@ -78,7 +78,7 @@ link:
 	ln -sfv $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	ln -sfv $(ROOTDIR)/helix/config.toml $(HOME)/.config/helix/config.toml
 	ln -sfv $(ROOTDIR)/helix/languages.toml $(HOME)/.config/helix/languages.toml
-	ln -sfv $(ROOTDIR)/helix/themes $(HOME)/.config/helix/themes
+	ln -sfv $(ROOTDIR)/helix/themes/zed_kpango.toml $(HOME)/.config/helix/themes/zed_kpango.toml
 	ln -sfv $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
 	ln -sfv $(ROOTDIR)/nvim/lua $(HOME)/.config/nvim/lua
 	ln -sfv $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
