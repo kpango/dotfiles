@@ -50,8 +50,10 @@
 "warning" = { fg = "yellow", modifiers = ["bold"] }
 "error" = { fg = "red", modifiers = ["bold"] }
 
-"ui.background" = { bg = "ui-text-reversed" }
-"ui.gutter" = { bg = "gray" }
+# "ui.background" = { bg = "ui-text-reversed" }
+# "ui.gutter" = { bg = "gray" }
+"ui.gutter" = { fg = "grey", bg = "bg2" }
+"ui.gutter.selected" =  { fg = "grey", bg = "bg2" }
 "ui.virtual" = { fg = "faint-gray" }
 "ui.virtual.indent-guide" = { fg = "faint-gray" }
 "ui.virtual.whitespace" = { fg = "light-gray" }
@@ -61,8 +63,6 @@
 "ui.cursor" = { fg = "white", modifiers = ["reversed"] }
 "ui.cursor.primary" = { fg = "white", modifiers = ["reversed"] }
 "ui.cursor.match" = { fg = "blue", modifiers = ["underlined"] }
-# Malformed ANSI: dark-blue. See 'https://github.com/helix-editor/helix/issues/5709'
-# "ui.cursor.insert" = { fg = "dark-blue" }
 
 "ui.selection" = { bg = "faint-gray" }
 "ui.selection.primary" = { bg = "#293b5bff" }
@@ -71,8 +71,8 @@
 "ui.highlight" = { bg = "gray" }
 "ui.highlight.frameline" = { bg = "#97202a" }
 
-"ui.linenr" = { fg = "linenr" }
-"ui.linenr.selected" = { fg = "ui-text" }
+"ui.linenr" = { fg = "linenr", bg = "background" }
+"ui.linenr.selected" = { fg = "ui-text",  modifiers = ["bold"] }
 
 "ui.statusline" = { fg = "white", bg = "gray" }
 "ui.statusline.inactive" = { fg = "light-gray", bg = "black" }
