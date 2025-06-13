@@ -1,5 +1,5 @@
-# Zed OneDark
-# Author : EricHenry
+# Zed Kpango
+# Author : Yusuke Kato
 
 "attribute" = { fg = "yellow" }
 "comment" = { fg = "light-gray", modifiers = ["italic"] }
@@ -50,8 +50,8 @@
 "warning" = { fg = "yellow", modifiers = ["bold"] }
 "error" = { fg = "red", modifiers = ["bold"] }
 
-"ui.background" = { bg = "ui-text-reversed" }
-"ui.gutter" = { bg = "gray" }
+"ui.background" = { bg = "None" }
+"ui.gutter" = { bg = "None" }
 "ui.virtual" = { fg = "faint-gray" }
 "ui.virtual.indent-guide" = { fg = "faint-gray" }
 "ui.virtual.whitespace" = { fg = "light-gray" }
@@ -73,7 +73,7 @@
 "ui.highlight.frameline" = { bg = "#97202a" }
 
 "ui.linenr" = { fg = "linenr" }
-"ui.linenr.selected" = { fg = "ui-text" }
+"ui.linenr.selected" = { fg = "ui-text", modifiers = "bold" }
 
 "ui.statusline" = { fg = "white", bg = "gray" }
 "ui.statusline.inactive" = { fg = "light-gray", bg = "black" }
