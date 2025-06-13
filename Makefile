@@ -28,7 +28,7 @@ run:
 copy:
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.config/alacritty
-	mkdir -p $(HOME)/.config/helix
+	mkdir -p $(HOME)/.config/helix/themes
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.docker
@@ -45,7 +45,7 @@ copy:
 	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	cp $(ROOTDIR)/helix/config.toml $(HOME)/.config/helix/config.toml
 	cp $(ROOTDIR)/helix/languages.toml $(HOME)/.config/helix/languages.toml
-	cp $(ROOTDIR)/helix/themes $(HOME)/.config/helix/themes
+	cp $(ROOTDIR)/helix/themes/zed_kpango.toml $(HOME)/.config/helix/themes/zed_kpango.toml
 	cp $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
 	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
 	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
@@ -245,9 +245,7 @@ clean: perm
 		$(HOME)/.config/i3 \
 		$(HOME)/.config/i3status \
 		$(HOME)/.config/nvim \
-		$(HOME)/.config/helix/config.toml \
-		$(HOME)/.config/helix/languages.toml \
-		$(HOME)/.config/helix/themes \
+		$(HOME)/.config/helix \
 		$(HOME)/.config/ranger \
 		$(HOME)/.config/sheldon \
 		$(HOME)/.config/starship.toml \
