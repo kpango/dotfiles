@@ -8,8 +8,8 @@ auto-completion = true
 auto-save = true
 auto-pairs = true
 end-of-line-diagnostics = "hint"
-trim-final-newlines = true
-trim-trailing-whitespace = true
+# trim-final-newlines = true
+# trim-trailing-whitespace = true
 
 [editor.inline-diagnostics]
 cursor-line = "error"
@@ -89,4 +89,3 @@ y = "yank_to_clipboard"
 Y = "yank_joined_to_clipboard"
 R = "replace_selections_with_clipboard"
 d = ["yank_to_clipboard", "delete_selection_noyank"]
-

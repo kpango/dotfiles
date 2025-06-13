@@ -39,13 +39,9 @@ devrun(){
             echo 'Docker on macOS start'
             # -e DISPLAY \
             # -v /tmp/.X11-unix:/tmp/.X11-unix \
-            docker run \
-                --cap-add=ALL \
+            container run \
                 --name $container_name \
-                --restart always \
-                --privileged=$privileged \
                 --workdir $container_home \
-                -p $port_range:$port_range \
                 -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json \
                 -v $HOME/.gitconfig:$container_home/.gitconfig \
                 -v $HOME/.gnupg:$container_home/.gnupg \

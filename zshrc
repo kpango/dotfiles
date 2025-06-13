@@ -446,16 +446,32 @@ if [ -z $ZSH_LOADED ]; then
     zle -N fzf-z-search
     bindkey '^s' fzf-z-search
 
-    if type docker >/dev/null 2>&1; then
-        export DOCKER_BUILDKIT=1
-        export DOCKER_CLI_EXPERIMENTAL="enabled"
-        alias dls='docker ps'
-        alias dsh='docker run -it '
-        [ -z "$_lazy_docker_aliases" ] && {
-            [ -f $HOME/.aliases ] && source $HOME/.aliases
-            _lazy_docker_aliases=1
-        }
-    fi
+    case ${OSTYPE} in
+    darwin*)
+        if type container >/dev/null 2>&1; then
+            export DOCKER_BUILDKIT=1
+            export DOCKER_CLI_EXPERIMENTAL="enabled"
+            alias dls='container ps'
+            alias dsh='container run -it '
+            [ -z "$_lazy_docker_aliases" ] && {
+                [ -f $HOME/.aliases ] && source $HOME/.aliases
+                _lazy_docker_aliases=1
+            }
+        fi
+        ;;
+    linux*)
+        if type docker >/dev/null 2>&1; then
+            export DOCKER_BUILDKIT=1
+            export DOCKER_CLI_EXPERIMENTAL="enabled"
+            alias dls='docker ps'
+            alias dsh='docker run -it '
+            [ -z "$_lazy_docker_aliases" ] && {
+                [ -f $HOME/.aliases ] && source $HOME/.aliases
+                _lazy_docker_aliases=1
+            }
+        fi
+        ;;
+    esac
 
     if type octant >/dev/null 2>&1; then
         export OCTANT_LISTENER_ADDR="0.0.0.0:8900"
@@ -1624,7 +1640,14 @@ if [ -z $ZSH_LOADED ]; then
             export PATH=/usr/lib/unifi/bin:/usr/share/sensible-utils/bin:/usr/share/ubios-udapi-server/ips/bin:/usr/share/ubios-udapi-server/utm/bin:/usr/share/unifi-core/bin:$PATH
             alias tailup="sudo tailscale up --ssh --reset --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29 --stateful-filtering"
         else
-            alias tailup="sudo tailscale up --ssh --reset --accept-routes --stateful-filtering"
+            case ${OSTYPE} in
+            darwin*)
+                alias tailup="sudo tailscale up --reset --accept-routes"
+                ;;
+            linux*)
+                alias tailup="sudo tailscale up --ssh --reset --accept-routes --stateful-filtering"
+                ;;
+            esac
         fi
     fi
 
