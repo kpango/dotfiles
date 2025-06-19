@@ -26,11 +26,12 @@ run:
 	source $(ROOTDIR)/alias && devrun
 
 copy:
-	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.config/alacritty
 	mkdir -p $(HOME)/.config/helix/themes
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
+	mkdir -p $(HOME)/.config/sheldon
+	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
 	mkdir -p $(HOME)/.gnupg
 	sudo mkdir -p /etc/docker
@@ -39,6 +40,7 @@ copy:
 	cp $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	cp $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
+	cp $(ROOTDIR)/ghostty.conf $(HOME)/.config/ghostty/config
 	cp $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
 	cp $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
 	cp $(ROOTDIR)/gitignore $(HOME)/.gitignore
@@ -48,7 +50,7 @@ copy:
 	cp $(ROOTDIR)/helix/themes/zed_kpango.toml $(HOME)/.config/helix/themes/zed_kpango.toml
 	cp $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
 	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
-	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
+	cp $(ROOTDIR)/sheldon.toml $(HOME)/.config/sheldon/plugins.toml
 	cp $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
 	cp $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
@@ -59,12 +61,12 @@ copy:
 	sudo cp $(ROOTDIR)/dockers/daemon.json /etc/docker/daemon.json
 
 link:
-	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.config/alacritty
-	mkdir -p $(HOME)/.config/helix
+	mkdir -p $(HOME)/.config/helix/themes
 	mkdir -p $(HOME)/.config/nvim/colors
 	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.config/sheldon
+	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
 	mkdir -p $(HOME)/.gnupg
 	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
@@ -72,6 +74,7 @@ link:
 	ln -sfv $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	ln -sfv $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	ln -sfv $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
+	ln -sfv $(ROOTDIR)/ghostty.conf $(HOME)/.config/ghostty/config
 	ln -sfv $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
 	ln -sfv $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
 	ln -sfv $(ROOTDIR)/gitignore $(HOME)/.gitignore
@@ -96,17 +99,16 @@ arch_link: \
 	clean \
 	link
 	mkdir -p $(HOME)/.config/fcitx5/conf
-	mkdir -p $(HOME)/.config/sway
 	mkdir -p $(HOME)/.config/kanshi
+	mkdir -p $(HOME)/.config/psd
+	mkdir -p $(HOME)/.config/sway
 	mkdir -p $(HOME)/.config/waybar
 	mkdir -p $(HOME)/.config/wofi
-	mkdir -p $(HOME)/.config/psd
 	mkdir -p $(HOME)/.config/workstyle
-	sudo mkdir -p /root/.docker
-	sudo mkdir -p /etc/udev/rules.d
 	sudo mkdir -p /etc/modules-load.d/
+	sudo mkdir -p /etc/udev/rules.d
+	sudo mkdir -p /root/.docker
 	# ln -sfv $(ROOTDIR)/arch/swaylock.sh $(HOME)/.config/sway/swaylock.sh
-	ln -sfv $(ROOTDIR)/arch/Xmodmap $(HOME)/.Xmodmap
 	ln -sfv $(ROOTDIR)/arch/fcitx.classicui.conf $(HOME)/.config/fcitx5/conf/classicui.conf
 	ln -sfv $(ROOTDIR)/arch/fcitx.conf $(HOME)/.config/fcitx5/config
 	ln -sfv $(ROOTDIR)/arch/fcitx.profile $(HOME)/.config/fcitx5/profile
@@ -114,12 +116,13 @@ arch_link: \
 	ln -sfv $(ROOTDIR)/arch/psd.conf $(HOME)/.config/psd/psd.conf
 	ln -sfv $(ROOTDIR)/arch/ranger $(HOME)/.config/ranger
 	ln -sfv $(ROOTDIR)/arch/sway.conf $(HOME)/.config/sway/config
-	ln -sfv $(ROOTDIR)/arch/waybar.json $(HOME)/.config/waybar/config
 	ln -sfv $(ROOTDIR)/arch/waybar.css $(HOME)/.config/waybar/style.css
+	ln -sfv $(ROOTDIR)/arch/waybar.json $(HOME)/.config/waybar/config
 	ln -sfv $(ROOTDIR)/arch/wofi/style.css $(HOME)/.config/wofi/style.css
 	ln -sfv $(ROOTDIR)/arch/wofi/wofi.conf $(HOME)/.config/wofi/config
 	ln -sfv $(ROOTDIR)/arch/workstyle.toml $(HOME)/.config/workstyle/config.toml
 	ln -sfv $(ROOTDIR)/arch/xinitrc $(HOME)/.xinitrc
+	ln -sfv $(ROOTDIR)/arch/Xmodmap $(HOME)/.Xmodmap
 	sudo cp $(ROOTDIR)/arch/chrony.conf /etc/chrony.conf
 	sudo cp $(ROOTDIR)/arch/suduers /etc/sudoers.d/$(USER)
 	sudo cp $(ROOTDIR)/arch/xinitrc /etc/environment
@@ -139,8 +142,8 @@ arch_link: \
 	sudo ln -sfv $(ROOTDIR)/arch/xinitrc /etc/profile.d/fcitx.sh
 	sudo ln -sfv $(ROOTDIR)/dockers/config.json /root/.docker/config.json
 	sudo ln -sfv $(ROOTDIR)/dockers/daemon.json /root/.docker/daemon.json
-	sudo ln -sfv $(ROOTDIR)/network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
 	sudo ln -sfv $(ROOTDIR)/network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
+	sudo ln -sfv $(ROOTDIR)/network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
 	sudo ln -sfv $(ROOTDIR)/network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
 	sudo ln -sfv $(ROOTDIR)/network/sysctl.conf /etc/sysctl.d/99-sysctl.conf
 	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
@@ -200,15 +203,15 @@ arch_desk_link: \
 mac_link: \
 	link
 	sudo rm -rf \
-		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
-		$(HOME)/Library/LaunchAgents/ulimit.plist \
+		/etc/docker/config.json \
+		/etc/docker/daemon.json \
 		$(HOME)/.config/alacritty/alacritty.toml \
 		$(HOME)/.docker/config.json \
 		$(HOME)/.docker/daemon.json \
-		$(HOME)/.tmux.conf \
 		$(HOME)/.gnupg/gpg-agent.conf \
-		/etc/docker/config.json \
-		/etc/docker/daemon.json
+		$(HOME)/.tmux.conf \
+		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
+		$(HOME)/Library/LaunchAgents/ulimit.plist
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
 	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
@@ -234,18 +237,48 @@ clean: perm
 	$(eval TMP_DIR := $(shell mktemp -d))
 	jq . $(ROOTDIR)/arch/waybar.json > $(TMP_DIR)/waybar.json.tmp && mv $(TMP_DIR)/waybar.json.tmp $(ROOTDIR)/arch/waybar.json
 	sudo rm -rf \
-		$(HOME)/.Xdefaults \
-		$(HOME)/.Xmodmap \
+		/etc/chrony.conf \
+		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
+		/etc/default/tlp \
+		/etc/docker/config.json \
+		/etc/docker/daemon.json \
+		/etc/environment \
+		/etc/lightdm \
+		/etc/makepkg.conf \
+		/etc/modprobe.d/bbswitch.conf \
+		/etc/modprobe.d/nvidia-tweaks.conf \
+		/etc/modprobe.d/thinkfan.conf \
+		/etc/modules-load.d/bbr.conf \
+		/etc/modules-load.d/nvidia-uvm.conf \
+		/etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
+		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
+		/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
+		/etc/NetworkManager/NetworkManager.conf \
+		/etc/pacman.conf \
+		/etc/profile.d/fcitx.sh \
+		/etc/profile.d/sway.sh \
+		/etc/pulse/default.pa \
+		/etc/sudoers.d/$(USER) \
+		/etc/sysctl.conf \
+		/etc/sysctl.d/99-sysctl.conf \
+		/etc/systemd/system/NetworkManager-dispatcher.service \
+		/etc/systemd/system/nvidia-disable-resume.service \
+		/etc/systemd/system/nvidia-enable-power-off.service \
+		/etc/systemd/system/pulseaudio.service \
+		/etc/tlp.conf \
+		/etc/udev/rules.d/60-ioschedulers.rules \
+		/etc/udev/rules.d/60-nvidia.rules \
 		$(HOME)/.aliases \
 		$(HOME)/.config/alacritty \
 		$(HOME)/.config/compton \
 		$(HOME)/.config/fcitx5/conf/classicui.conf \
 		$(HOME)/.config/fcitx5/config \
 		$(HOME)/.config/fcitx5/profile \
+		$(HOME)/.config/ghostty \
+		$(HOME)/.config/helix \
 		$(HOME)/.config/i3 \
 		$(HOME)/.config/i3status \
 		$(HOME)/.config/nvim \
-		$(HOME)/.config/helix \
 		$(HOME)/.config/ranger \
 		$(HOME)/.config/sheldon \
 		$(HOME)/.config/starship.toml \
@@ -263,41 +296,12 @@ clean: perm
 		$(HOME)/.tmux-kube \
 		$(HOME)/.tmux.conf \
 		$(HOME)/.tmux.new-session \
+		$(HOME)/.Xdefaults \
 		$(HOME)/.xinitrc \
+		$(HOME)/.Xmodmap \
 		$(HOME)/.zshrc \
 		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
-		$(HOME)/Library/LaunchAgents/ulimit.plist \
-		/etc/NetworkManager/NetworkManager.conf \
-		/etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
-		/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
-		/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
-		/etc/chrony.conf \
-		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
-		/etc/default/tlp \
-		/etc/docker/config.json \
-		/etc/docker/daemon.json \
-		/etc/environment \
-		/etc/lightdm \
-		/etc/makepkg.conf \
-		/etc/modprobe.d/bbswitch.conf \
-		/etc/modprobe.d/nvidia-tweaks.conf \
-		/etc/modprobe.d/thinkfan.conf \
-		/etc/modules-load.d/bbr.conf \
-		/etc/modules-load.d/nvidia-uvm.conf \
-		/etc/pacman.conf \
-		/etc/profile.d/fcitx.sh \
-		/etc/profile.d/sway.sh \
-		/etc/pulse/default.pa \
-		/etc/sudoers.d/$(USER) \
-		/etc/sysctl.conf \
-		/etc/sysctl.d/99-sysctl.conf \
-		/etc/systemd/system/NetworkManager-dispatcher.service \
-		/etc/systemd/system/nvidia-disable-resume.service \
-		/etc/systemd/system/nvidia-enable-power-off.service \
-		/etc/systemd/system/pulseaudio.service \
-		/etc/tlp.conf \
-		/etc/udev/rules.d/60-ioschedulers.rules \
-		/etc/udev/rules.d/60-nvidia.rules
+		$(HOME)/Library/LaunchAgents/ulimit.plist
 
 
 
