@@ -14,6 +14,8 @@ DOCKER_EXTRA_OPTS ?=
 DOCKER_BUILDER_NAME = "kpango-builder"
 DOCKER_BUILDER_DRIVER = "docker-container"
 DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64/v8"
+DOCKER_CACHE_REPO := $(USER)/$(NAME):buildcache
+DOCKER_BUILD_CACHE_DIR:= $(HOME)/.docker/buildcache
 
 VERSION = latest
 
@@ -341,18 +343,23 @@ docker_build:
 	@chmod 600 $(TMP_DIR)/gat
 	DOCKER_BUILDKIT=1 docker buildx build \
 		$(DOCKER_EXTRA_OPTS) \
+		--builder "$(DOCKER_BUILDER_NAME)" \
+		--platform "$(DOCKER_BUILDER_PLATFORM)" \
 		--allow "network.host" \
+		--attest type=sbom,generator=docker/buildkit-syft-scanner:edge \
+		--build-arg BUILDKIT_INLINE_CACHE=1 \
 		--build-arg BUILDKIT_MULTI_PLATFORM=1 \
 		--build-arg EMAIL="$(EMAIL)" \
 		--build-arg GROUP_ID="$(GROUP_ID)" \
 		--build-arg GROUP_IDS="$(GROUP_IDS)" \
+		--build-arg HOME="$(HOME)" \
+		--build-arg USER="$(USER)" \
 		--build-arg USER_ID="$(USER_ID)" \
 		--build-arg WHOAMI="$(USER)" \
-		--build-arg USER="$(USER)" \
-		--build-arg HOME="$(HOME)" \
-		--builder "$(DOCKER_BUILDER_NAME)" \
-		--cache-to type=registry,ref=$(USER)/$(NAME):buildcache,mode=max \
-		--cache-from type=registry,ref=$(USER)/$(NAME):buildcache \
+		--cache-from type=local,src=$(DOCKER_BUILD_CACHE_DIR) \
+		--cache-from type=registry,ref=$(DOCKER_CACHE_REPO) \
+		--cache-to type=local,dest=$(DOCKER_BUILD_CACHE_DIR),mode=max \
+		--cache-to type=registry,ref=$(DOCKER_CACHE_REPO),mode=max,inline=true \
 		--label org.opencontainers.image.revision="$(GITHUB_SHA)" \
 		--label org.opencontainers.image.source="$(GITHUB_URL)" \
 		--label org.opencontainers.image.title="$(USER)/$(NAME)" \
@@ -362,17 +369,12 @@ docker_build:
 		--memory-swap 32G \
 		--network=host \
 		--output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
-		--platform $(DOCKER_BUILDER_PLATFORM) \
-		--attest type=sbom,generator=docker/buildkit-syft-scanner:edge \
 		--provenance=mode=max \
 		--secret id=gat,src="$(TMP_DIR)/gat" \
 		-t "$(USER)/$(NAME):$(VERSION)" \
 		-f $(DOCKERFILE) .
 	docker buildx rm --force "$(DOCKER_BUILDER_NAME)"
 	@rm -rf $(TMP_DIR)
-
-docker_push:
-	# docker push $(NAME):latest
 
 init_buildx:
 	docker run \
