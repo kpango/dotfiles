@@ -75,6 +75,10 @@ FROM rust-base AS cargo-fix
 RUN cargo +nightly install --force --no-default-features \
     cargo-fix
 
+FROM rust-base AS cargo-machete
+RUN cargo +nightly install --force --no-default-features \
+    cargo-machete
+
 FROM rust-base AS cargo-tree
 RUN cargo install cargo-tree
 
@@ -252,6 +256,7 @@ COPY --from=cargo-edit ${BIN_PATH}/cargo-set-version ${BIN_PATH}/cargo-set-versi
 COPY --from=cargo-edit ${BIN_PATH}/cargo-upgrade ${BIN_PATH}/cargo-upgrade
 COPY --from=cargo-expand ${BIN_PATH}/cargo-expand ${BIN_PATH}/cargo-expand
 COPY --from=cargo-fix ${BIN_PATH}/cargo-fix ${BIN_PATH}/cargo-fix
+COPY --from=cargo-machete ${BIN_PATH}/cargo-machete ${BIN_PATH}/cargo-machete
 COPY --from=cargo-tree ${BIN_PATH}/cargo-tree ${BIN_PATH}/cargo-tree
 COPY --from=cargo-watch ${BIN_PATH}/cargo-watch ${BIN_PATH}/cargo-watch
 COPY --from=delta ${BIN_PATH}/delta ${BIN_PATH}/delta

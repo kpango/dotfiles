@@ -16,6 +16,7 @@ DOCKER_BUILDER_DRIVER = "docker-container"
 DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64/v8"
 DOCKER_CACHE_REPO := $(USER)/$(NAME):buildcache
 DOCKER_BUILD_CACHE_DIR:= $(HOME)/.docker/buildcache
+DOCKER_MEMORY_LIMIT = 32G
 
 VERSION = latest
 
@@ -365,8 +366,8 @@ docker_build:
 		--label org.opencontainers.image.title="$(USER)/$(NAME)" \
 		--label org.opencontainers.image.url="$(GITHUB_URL)" \
 		--label org.opencontainers.image.version="$(VERSION)" \
-		--memory 32G \
-		--memory-swap 32G \
+		--memory $(DOCKER_MEMORY_LIMIT) \
+		--memory-swap $(DOCKER_MEMORY_LIMIT) \
 		--network=host \
 		--output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
 		--provenance=mode=max \
@@ -411,7 +412,12 @@ remove_buildx:
 	docker buildx ls
 
 do_build:
-	@make DOCKERFILE="$(ROOTDIR)/dockers/$(NAME).Dockerfile" NAME="$(NAME)" DOCKER_BUILDER_NAME="$(DOCKER_BUILDER_NAME)-$(NAME)" docker_build
+	@make DOCKERFILE="$(ROOTDIR)/dockers/$(NAME).Dockerfile" \
+		NAME="$(NAME)" \
+		DOCKER_BUILDER_NAME="$(DOCKER_BUILDER_NAME)-$(NAME)" \
+		DOCKER_BUILDER_PLATFORM="$(DOCKER_BUILDER_PLATFORM)" \
+		DOCKER_MEMORY_LIMIT=$(DOCKER_MEMORY_LIMIT) \
+		docker_build
 
 prod_build:
 	@make NAME="dev" do_build
