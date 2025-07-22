@@ -1034,6 +1034,21 @@ if [ -z $ZSH_LOADED ]; then
         alias xedit="$EDITOR $HOME/.Xdefaults"
         alias wedit="$EDITOR $HOME/.config/sway/config"
     fi
+    if type gemini >/dev/null 2>&1; then
+        gemini() {
+            local gemini="$(whence -p gemini 2>/dev/null)"
+            if type pass >/dev/null 2>&1; then
+                local key="$(pass show ai/gemini)"
+                GEMINI_API_KEY="$key" "$gemini" "$@"
+            fi
+            if [[ -z "${key}" ]]; then
+                GEMINI_API_KEY="$key" "$gemini" "$@"
+            else
+                "$gemini" "$@"
+            fi
+        }
+        alias gemini=gemini
+    fi
 
     if type kubectl >/dev/null 2>&1; then
         kubectl() {
