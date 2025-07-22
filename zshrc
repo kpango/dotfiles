@@ -1039,7 +1039,8 @@ if [ -z $ZSH_LOADED ]; then
             local gemini="$(whence -p gemini 2>/dev/null)"
             local key
             if type pass >/dev/null 2>&1; then
-                key=$(pass show ai/gemini 2>/dev/null) || key=""
+                local pass="$(whence -p pass 2>/dev/null)"
+                key=$("$pass" show ai/gemini 2>/dev/null) || key=""
             fi
             if [[ -n "$key" ]]; then
                 GEMINI_API_KEY="$key" "$gemini" "$@"
