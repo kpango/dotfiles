@@ -24,7 +24,6 @@ ENV BIN_PATH=${LOCAL}/bin
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG GROUP_IDS=${GROUP_ID}
-ARG WHOAMI=kpango
 
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 ENV BASE_DIR=/home
@@ -55,7 +54,7 @@ RUN groupadd --non-unique --gid ${GROUP_ID} docker \
     && visudo -c
 
 WORKDIR /tmp
-RUN --mount=type=cache,target=${HOME}/.npm \
+RUN --mount=type=cache,target=${HOME}/.bun \
     echo '/lib\n\
 /lib64\n\
 /var/lib\n\
@@ -66,7 +65,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
 /usr/lib/dart/lib\n\
 /usr/lib/node_modules/lib\n\
 /google-cloud-sdk/lib' > /etc/ld.so.conf.d/usr-local-lib.conf \
-    && echo $(ldconfig) \
+    && ldconfig \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
     && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends \
     && apt-get clean \
@@ -116,7 +115,6 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     ncurses-term \
     nkf \
     nodejs \
-    npm \
     openssh-client \
     pass \
     perl \
@@ -138,14 +136,6 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     xclip \
     zip \
     && rm -rf /var/lib/apt/lists/* \
-    && git clone --depth 1 https://github.com/neovim/neovim \
-    && cd neovim \
-    && rm -rf build \
-    && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX:PATH=/usr" CMAKE_BUILD_TYPE=Release \
-    && make install \
-    && cd /tmp && rm -rf /tmp/neovim \
-    && pip3 install --upgrade --break-system-packages neovim \
-    && gem install neovim -N \
     && git clone --depth 1 https://github.com/soimort/translate-shell \
     && cd /tmp/translate-shell/ \
     && make TARGET=zsh -j -C /tmp/translate-shell \
@@ -157,32 +147,28 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && chown -R ${USER}:users ${HOME}/.* \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
-    && npm install -g n
+    && export BUN_INSTALL=${LOCAL} && curl -fsSL https://bun.sh/install | bash
     # && curl -fsSL https://tailscale.com/install.sh | sh \
 
 FROM env-base AS env-stage
 WORKDIR /tmp
-RUN --mount=type=cache,target=${HOME}/.npm \
-    n latest \
-    && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && npm install -g \
-        yarn
-RUN yarn global add \
+ENV PATH=${LOCAL}/bin:${PATH}
+ENV BUN_INSTALL=/usr/local/bun
+RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
         prettier \
         markdownlint-cli \
         dockerfile-language-server-nodejs \
         bash-language-server \
-        npm \
         typescript \
         typescript-language-server \
         n \
         @openai/codex \
-    && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && apt purge -y nodejs npm \
-    && apt -y autoremove
+        @google/gemini-cli \
+        @anthropic-ai/claude-code \
+        @qwen-code/qwen-code \
+    && ${BUN_INSTALL}/bin/n latest
 
+USER root
 FROM env-base AS protoc
 WORKDIR /tmp
 RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
@@ -235,8 +221,10 @@ LABEL maintainer="${WHOAMI} <${EMAIL}>"
 COPY --from=ngt ${BIN_PATH}/ng* ${BIN_PATH}/
 COPY --from=ngt ${LOCAL}/include/NGT ${LOCAL}/include/NGT
 COPY --from=ngt ${LOCAL}/lib/libngt.* ${LOCAL}/lib/
-# COPY --from=tensorflow ${LOCAL}/include/tensorflow ${LOCAL}/include/tensorflow
-# COPY --from=tensorflow ${LOCAL}/lib/libtensorflow* ${LOCAL}/lib/
+COPY --from=faiss ${LOCAL}/include/faiss ${LOCAL}/include/faiss
+COPY --from=faiss ${LOCAL}/lib/libfaiss.* ${LOCAL}/lib/
+COPY --from=usearch ${LOCAL}/include/usearch.h ${LOCAL}/include/usearch.h
+COPY --from=usearch ${LOCAL}/lib/libusearch* ${LOCAL}/lib/
 COPY --from=protoc ${BIN_PATH}/protoc ${BIN_PATH}/protoc
 COPY --from=protoc ${LOCAL}/include/google/protobuf ${LOCAL}/include/google/protobuf
 

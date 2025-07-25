@@ -18,6 +18,8 @@ github = 'junegunn/fzf'
 apply = ['fzf-install', 'fzf-source', 'defer']
 [plugins.kubectl-fzf]
 remote = "https://raw.githubusercontent.com/bonnefoa/kubectl-fzf/main/shell/kubectl_fzf.plugin.zsh"
+[plugins.bun-completions-zsh]
+remote = "https://raw.githubusercontent.com/oven-sh/bun/refs/heads/main/completions/bun.zsh"
 [plugins.rust-zsh-completions]
 github = "ryutok/rust-zsh-completions"
 apply = ['defer']
@@ -25,9 +27,6 @@ apply = ['defer']
 inline = 'eval "$(starship init zsh)"'
 [plugins.zsh-autosuggestions]
 github = "zsh-users/zsh-autosuggestions"
-apply = ['defer']
-[plugins.zsh-better-npm-completion]
-github = "lukechilds/zsh-better-npm-completion"
 apply = ['defer']
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"

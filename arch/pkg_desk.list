@@ -42,6 +42,7 @@ graphviz
 grep
 grim
 gzip
+helix
 helvum
 htop
 imagemagick
@@ -120,6 +121,5 @@ wofi
 xf86-video-nouveau
 xfsprogs
 xorg-xwayland
-yarn
 yt-dlp
 zsh
