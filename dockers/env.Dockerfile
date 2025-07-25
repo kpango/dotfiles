@@ -66,7 +66,7 @@ RUN --mount=type=cache,target=${HOME}/.npm \
 /usr/lib/dart/lib\n\
 /usr/lib/node_modules/lib\n\
 /google-cloud-sdk/lib' > /etc/ld.so.conf.d/usr-local-lib.conf \
-    && echo $(ldconfig) \
+    && ldconfig \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
     && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends \
     && apt-get clean \
@@ -115,8 +115,6 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     mtr \
     ncurses-term \
     nkf \
-    nodejs \
-    npm \
     openssh-client \
     pass \
     perl \
@@ -138,14 +136,6 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     xclip \
     zip \
     && rm -rf /var/lib/apt/lists/* \
-    && git clone --depth 1 https://github.com/neovim/neovim \
-    && cd neovim \
-    && rm -rf build \
-    && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX:PATH=/usr" CMAKE_BUILD_TYPE=Release \
-    && make install \
-    && cd /tmp && rm -rf /tmp/neovim \
-    && pip3 install --upgrade --break-system-packages neovim \
-    && gem install neovim -N \
     && git clone --depth 1 https://github.com/soimort/translate-shell \
     && cd /tmp/translate-shell/ \
     && make TARGET=zsh -j -C /tmp/translate-shell \
@@ -157,31 +147,26 @@ RUN --mount=type=cache,target=${HOME}/.npm \
     && chown -R ${USER}:users ${HOME}/.* \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
-    && npm install -g n
+    && export BUN_INSTALL=${LOCAL} && curl -fsSL https://bun.sh/install | bash
     # && curl -fsSL https://tailscale.com/install.sh | sh \
 
 FROM env-base AS env-stage
 WORKDIR /tmp
-RUN --mount=type=cache,target=${HOME}/.npm \
-    n latest \
-    && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && npm install -g \
-        yarn
-RUN yarn global add \
+ENV PATH=${LOCAL}/bin:${PATH}
+USER ${USER_ID}
+RUN bun install -g \
         prettier \
         markdownlint-cli \
         dockerfile-language-server-nodejs \
         bash-language-server \
-        npm \
         typescript \
         typescript-language-server \
         n \
         @openai/codex \
-    && bash -c "chown -R ${USER} $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && bash -c "chmod -R 755 $(npm config get prefix)/{lib/node_modules,bin,share}" \
-    && apt purge -y nodejs npm \
-    && apt -y autoremove
+        @google/gemini-cli \
+        @anthropic-ai/claude-code \
+        @qwen-code/qwen-code
+USER root
 
 FROM env-base AS protoc
 WORKDIR /tmp

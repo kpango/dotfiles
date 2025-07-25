@@ -100,19 +100,14 @@ RUN usermod -aG ${GROUP} ${WHOAMI} \
     && chmod -R 755 ${HOME}/.* \
     && rm -rf ${VIM_PLUG_HOME}/autoload \
     && rm -rf ${HOME}/.cache \
-    && rm -rf ${HOME}/.npm/_cacache \
     && rm -rf ${CARGO_HOME}/registry/cache \
     && rm -rf ${USR_LOCAL}/share/.cache \
     && rm -rf /tmp/* \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME} \
     && chown -R ${USER_ID}:${GROUP_ID} ${HOME}/.* \
-    && chown -R ${USER_ID}:${GROUP_ID} ${USR_LOCAL_LIB}/node_modules \
-    && chown -R ${USER_ID}:${GROUP_ID} ${BIN_PATH}/npm \
     && chown -R ${USER_ID}:${GROUP_ID} ${USR_LOCAL}/include/google/protobuf \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
-    && chmod -R 755 ${USR_LOCAL_LIB}/node_modules \
-    && chmod -R 755 ${BIN_PATH}/npm \
     && chmod -R 755 ${USR_LOCAL}/include/google/protobuf
 
 USER ${USER_ID}
