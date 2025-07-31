@@ -626,7 +626,7 @@ if [ -z $ZSH_LOADED ]; then
         alias grsp=grsp
 
         # Edit Git config
-        alias gedit="vim $HOME/.gitconfig"
+        alias gedit="$EDITOR $HOME/.gitconfig"
 
 
         # Fetch and merge from upstream
@@ -775,7 +775,7 @@ if [ -z $ZSH_LOADED ]; then
         if type fzf-tmux >/dev/null 2>&1; then
             if type fd >/dev/null 2>&1; then
                 alias s='mkcd $(fd -a -H -t d . | fzf-tmux +m)'
-                alias vf='vim $(fd -a -H -t f . | fzf-tmux +m)'
+                alias vf="$EDITOR $(fd -a -H -t f . | fzf-tmux +m)"
             fi
             if type rg >/dev/null 2>&1; then
                 fbr() {
@@ -815,7 +815,7 @@ if [ -z $ZSH_LOADED ]; then
             sshperm
         }
         alias edgen=edgen
-        alias sedit="vim $HOME/.ssh/config"
+        alias sedit="$EDITOR $HOME/.ssh/config"
         sshls() {
             rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
         }
@@ -871,7 +871,7 @@ if [ -z $ZSH_LOADED ]; then
             esac
         fi
     fi
-    alias tedit="vim $HOME/.tmux.conf"
+    alias tedit="$EDITOR $HOME/.tmux.conf"
 
     zscompile() {
         for f in $(find $HOME -name "*.zsh"); do
@@ -904,9 +904,9 @@ if [ -z $ZSH_LOADED ]; then
     alias zstime=zstime
 
     if { [ -L "$HOME/.zshrc" ] || [ -f "/.dockerenv" ]; } && [ -f "$DOTFILES_DIR/zshrc" ]; then
-        alias zedit="vim $DOTFILES_DIR/zshrc"
+        alias zedit="$EDITOR $DOTFILES_DIR/zshrc"
     else
-        alias zedit="vim $HOME/.zshrc"
+        alias zedit="$EDITOR $HOME/.zshrc"
     fi
 
     alias zsback="cp $HOME/.zshrc $HOME/.zshrc.back"
@@ -1034,6 +1034,7 @@ if [ -z $ZSH_LOADED ]; then
         alias xedit="$EDITOR $HOME/.Xdefaults"
         alias wedit="$EDITOR $HOME/.config/sway/config"
     fi
+
     if type gemini >/dev/null 2>&1; then
         gemini() {
             local gemini="$(whence -p gemini 2>/dev/null)"
@@ -1652,16 +1653,21 @@ if [ -z $ZSH_LOADED ]; then
     fi
 
     if type tailscale >/dev/null 2>&1; then
+        tailscaleup(){
+            local tailscale="$(whence -p tailscale 2>/dev/null)"
+            sudo "$tailscale" "down"
+            sudo "$tailscale" "up" "$@"
+        }
         if type ubnt-systool >/dev/null 2>&1; then
             export PATH=/usr/lib/unifi/bin:/usr/share/sensible-utils/bin:/usr/share/ubios-udapi-server/ips/bin:/usr/share/ubios-udapi-server/utm/bin:/usr/share/unifi-core/bin:$PATH
-            alias tailup="sudo tailscale up --ssh --reset --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29 --stateful-filtering"
+            alias tailup="tailscaleup --ssh --reset --advertise-exit-node --advertise-routes=10.0.0.0/24,10.0.1.0/29 --stateful-filtering"
         else
             case ${OSTYPE} in
             darwin*)
-                alias tailup="sudo tailscale up --reset --accept-routes"
+                alias tailup="tailscaleup --reset --accept-routes"
                 ;;
             linux*)
-                alias tailup="sudo tailscale up --ssh --reset --accept-routes --stateful-filtering"
+                alias tailup="tailscaleup --ssh --reset --accept-routes --stateful-filtering"
                 ;;
             esac
         fi
@@ -1719,8 +1725,8 @@ if [ -z $ZSH_LOADED ]; then
                 echo ")" >>hack/go.mod.default3 &&
                 rm -rf go.mod go.sum &&
                 mv /tmp/go.mod /tmp/go.sum .
-            vim -d hack/go.mod.default hack/go.mod.default2
-            vim -d hack/go.mod.default hack/go.mod.default3
+            $EDITOR -d hack/go.mod.default hack/go.mod.default2
+            $EDITOR -d hack/go.mod.default hack/go.mod.default3
             cd -
         }
         alias valddep=valddep

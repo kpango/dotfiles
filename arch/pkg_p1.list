@@ -64,7 +64,7 @@ mesa
 mpv
 mtr
 mysql-workbench
-neovim
+helix
 networkmanager
 nmap
 nvidia-container-toolkit
@@ -125,6 +125,6 @@ xf86-input-synaptics
 xf86-video-nouveau
 xfsprogs
 xorg-xwayland
-yarn
+bun-bin
 yt-dlp
 zsh

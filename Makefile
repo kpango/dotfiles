@@ -31,8 +31,6 @@ run:
 copy:
 	mkdir -p $(HOME)/.config/alacritty
 	mkdir -p $(HOME)/.config/helix/themes
-	mkdir -p $(HOME)/.config/nvim/colors
-	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.config/sheldon
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
@@ -51,23 +49,18 @@ copy:
 	cp $(ROOTDIR)/helix/config.toml $(HOME)/.config/helix/config.toml
 	cp $(ROOTDIR)/helix/languages.toml $(HOME)/.config/helix/languages.toml
 	cp $(ROOTDIR)/helix/themes/zed_kpango.toml $(HOME)/.config/helix/themes/zed_kpango.toml
-	cp $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
-	cp $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
 	cp $(ROOTDIR)/sheldon.toml $(HOME)/.config/sheldon/plugins.toml
 	cp $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
 	cp $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
 	cp $(ROOTDIR)/tmux.new-session $(HOME)/.tmux.new-session
 	cp $(ROOTDIR)/zshrc $(HOME)/.zshrc
-	cp -r $(ROOTDIR)/nvim/lua $(HOME)/.config/nvim/lua
 	sudo cp $(ROOTDIR)/dockers/config.json /etc/docker/config.json
 	sudo cp $(ROOTDIR)/dockers/daemon.json /etc/docker/daemon.json
 
 link:
 	mkdir -p $(HOME)/.config/alacritty
 	mkdir -p $(HOME)/.config/helix/themes
-	mkdir -p $(HOME)/.config/nvim/colors
-	mkdir -p $(HOME)/.config/nvim/syntax
 	mkdir -p $(HOME)/.config/sheldon
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
@@ -85,9 +78,6 @@ link:
 	ln -sfv $(ROOTDIR)/helix/config.toml $(HOME)/.config/helix/config.toml
 	ln -sfv $(ROOTDIR)/helix/languages.toml $(HOME)/.config/helix/languages.toml
 	ln -sfv $(ROOTDIR)/helix/themes/zed_kpango.toml $(HOME)/.config/helix/themes/zed_kpango.toml
-	ln -sfv $(ROOTDIR)/nvim/init.lua $(HOME)/.config/nvim/init.lua
-	ln -sfv $(ROOTDIR)/nvim/lua $(HOME)/.config/nvim/lua
-	ln -sfv $(ROOTDIR)/nvim/luacheckrc $(HOME)/.config/nvim/luacheckrc
 	ln -sfv $(ROOTDIR)/sheldon.toml $(HOME)/.config/sheldon/plugins.toml
 	ln -sfv $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
 	ln -sfv $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube

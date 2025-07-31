@@ -72,8 +72,8 @@
 
     variables = {
       NIX_PATH = lib.mkForce "nixpkgs=/etc/nixos/nixpkgs-channels:nixos-config=/etc/nixos/configuration.nix";
-      GIT_EDITOR = lib.mkForce "nvim";
-      EDITOR = lib.mkForce "nvim";
+      GIT_EDITOR = lib.mkForce "hx";
+      EDITOR = lib.mkForce "hx";
     };
     etc = {
       "resolv.conf" = with lib; with pkgs; {

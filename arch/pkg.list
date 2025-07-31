@@ -54,7 +54,7 @@ mako
 mdadm
 mpv
 mtr
-neovim
+helix
 networkmanager
 nmap
 openssh
@@ -106,5 +106,5 @@ wpscan
 xf86-input-synaptics
 xfsprogs
 xorg-xwayland
-yarn
+bun-bin
 zsh

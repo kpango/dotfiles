@@ -7,10 +7,7 @@ Fullstack Develop Environment in Docker
 
 ## Description
 
-- neovim (https://neovim.io)
-  - vim-plug (https://github.com/junegunn/vim-plug)
-  - vim-lsp (https://github.com/prabirshrestha/vim-lsp)
-  - python3 deoplete dependency
+- helix (https://helix-editor.com/)
   - language
     - Go
     - Rust
@@ -21,7 +18,7 @@ Fullstack Develop Environment in Docker
     - JavaScript
     - HTML CSS
 - zsh
-  - zplug (https://github.com/zplug/zplug)
+  - sheldon (https://github.com/rossmacarthur/sheldon)
 - tmux
 - git
   - gitconfig

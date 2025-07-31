@@ -16,7 +16,6 @@ gopreload-git
 light
 milcheck
 mkinitcpio-firmware
-neovim-git
 netrc
 ngrok
 nkf-git

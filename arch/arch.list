@@ -53,7 +53,7 @@ milcheck
 mpv
 mtr
 mysql-workbench
-neovim
+helix
 networkmanager-iwd
 noto-fonts-emoji-git
 nvme-cli
@@ -110,6 +110,6 @@ wpscan
 xf86-input-synaptics
 xfsprogs
 xorg-xwayland
-yarn
+bun-bin
 yt-dlp
 zsh
