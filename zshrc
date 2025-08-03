@@ -529,12 +529,7 @@ if [ -z $ZSH_LOADED ]; then
             git reset --hard origin/$tb || { echo "Failed to reset"; return 1; }
             git branch --merged $db | grep -vE '^\*|master$|develop$|main$' | xargs -I % git branch -d % || { echo "Failed to delete local branches"; return 1; }
         }
-
-        # Fetch, reset, and clean up branches
-        gfr() {
-            git_fetch_reset
-        }
-        alias gfr=gfr
+        alias gfr=git_fetch_reset
 
         # Fetch, reset, and update submodules
         gfrs() {

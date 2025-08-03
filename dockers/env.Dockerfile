@@ -25,7 +25,7 @@ ARG USER_ID=1000
 ARG GROUP_ID=1000
 ARG GROUP_IDS=${GROUP_ID}
 
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
+ENV LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:/lib:/lib64:/var/lib:/google-cloud-sdk/lib:/usr/local/go/lib:/usr/lib/dart/lib:/usr/lib/node_modules/lib
 ENV BASE_DIR=/home
 ENV USER=${WHOAMI}
 ENV HOME=${BASE_DIR}/${USER}
