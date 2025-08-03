@@ -770,7 +770,7 @@ if [ -z $ZSH_LOADED ]; then
         if type fzf-tmux >/dev/null 2>&1; then
             if type fd >/dev/null 2>&1; then
                 alias s='mkcd $(fd -a -H -t d . | fzf-tmux +m)'
-                alias vf="$EDITOR $(fd -a -H -t f . | fzf-tmux +m)"
+                alias vf='hx $(fd -a -H -t f . | fzf-tmux +m)'
             fi
             if type rg >/dev/null 2>&1; then
                 fbr() {

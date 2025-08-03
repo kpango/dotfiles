@@ -32,6 +32,7 @@ copy:
 	mkdir -p $(HOME)/.config/alacritty
 	mkdir -p $(HOME)/.config/helix/themes
 	mkdir -p $(HOME)/.config/sheldon
+	mkdir -p $(HOME)/.config/ghostty
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
 	mkdir -p $(HOME)/.gnupg
@@ -62,6 +63,7 @@ link:
 	mkdir -p $(HOME)/.config/alacritty
 	mkdir -p $(HOME)/.config/helix/themes
 	mkdir -p $(HOME)/.config/sheldon
+	mkdir -p $(HOME)/.config/ghostty
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
 	mkdir -p $(HOME)/.gnupg
