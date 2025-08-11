@@ -1,0 +1,111 @@
+{
+  "selectedAuthType": "oauth-personal",
+  "model": "gemini-2.5-pro",
+  "theme": "GitHub",
+  "checkpointing": true,
+  "mcpServers": {
+    "serena": {
+      "command": "docker",
+      "args": [
+        "run", "--rm", "-i",
+        "--pull=missing",
+        "--cap-drop=ALL", "--security-opt", "no-new-privileges", "--pids-limit", "256",
+        "--read-only",
+        "--network", "none",
+        "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
+        "-v", ".:/workspace:ro",
+        "-v", "./.serena:/workspace/.serena:rw",
+        "-w", "/workspace",
+        "ghcr.io/oraios/serena:latest",
+        "serena-mcp-server", "--transport", "stdio", "--context", "ide-assistant", "--enable-web-dashboard", "false", "--project", "/workspace"
+      ],
+      "timeout": 60000
+    },
+    "k8s-native": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "set -euo pipefail; exec docker run --rm -i --pull=missing --network host --cap-drop=ALL --security-opt no-new-privileges --pids-limit 256 -v \"$HOME/.kube:/root/.kube:ro\" -e KUBECONFIG=/root/.kube/config ghcr.io/manusa/kubernetes-mcp-server:v0.0.49"
+      ],
+      "timeout": 60000
+    },
+    "k8s-cli": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "set -euo pipefail; exec docker run --rm -i --pull=missing --network host --cap-drop=ALL --security-opt no-new-privileges --pids-limit 256 -v \"$HOME/.kube:/root/.kube:ro\" -e KUBECONFIG=/root/.kube/config -e MASK_SECRETS=true mcp/kubernetes:latest"
+      ],
+      "timeout": 60000
+    },
+    "cipher": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "set -euo pipefail; " +
+        "export GEMINI_API_KEY=\"$(pass show -q ai/gemini | head -n1 | tr -d '\\r')\"; " +
+        "export OPENAI_API_KEY=\"$(pass show -q ai/openai | head -n1 | tr -d '\\r')\"; " +
+        "export ANTHROPIC_API_KEY=\"$(pass show -q ai/anthropic | head -n1 | tr -d '\\r')\"; " +
+        "mkdir -p \"$HOME/.local/share/cipher\"; " +
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 512 --tmpfs /tmp:rw,noexec,nosuid,nodev -v \".:/workspace:ro\" -v \"$HOME/.local/share/cipher:/data:rw\" -w /workspace -e GEMINI_API_KEY -e OPENAI_API_KEY -e ANTHROPIC_API_KEY ghcr.io/campfirein/cipher:latest cipher --mode mcp --transport stdio"
+      ],
+      "timeout": 90000
+    },
+
+    "github": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "set -euo pipefail; export GITHUB_PERSONAL_ACCESS_TOKEN=\"$(pass show -q github/api/pat | head -n1 | tr -d '\\r')\"; exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 128 -e GITHUB_PERSONAL_ACCESS_TOKEN ghcr.io/github/github-mcp-server:latest"
+      ],
+      "timeout": 60000
+    },
+
+    "slack": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "set -euo pipefail; " +
+        "export SLACK_BOT_TOKEN=\"$(pass show -q slack/bot-token | head -n1 | tr -d '\\r')\"; " +
+        "export SLACK_TEAM_ID=\"$(pass show -q slack/team-id | head -n1 | tr -d '\\r')\"; " +
+        "export SLACK_CHANNEL_IDS=\"$(pass show -q slack/channel-ids | head -n1 | tr -d '\\r')\"; " +
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 128 -e SLACK_BOT_TOKEN -e SLACK_TEAM_ID -e SLACK_CHANNEL_IDS mcp/slack:latest"
+      ],
+      "timeout": 60000
+    },
+    "lsp-go": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", ".", "--lsp", "gopls"],
+      "timeout": 60000
+    },
+    "lsp-rust": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", ".", "--lsp", "rust-analyzer"],
+      "timeout": 60000
+    },
+    "lsp-ts": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", ".", "--lsp", "typescript-language-server", "--", "--stdio"],
+      "timeout": 60000
+    },
+    "lsp-python": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", ".", "--lsp", "pyright-langserver", "--", "--stdio"],
+      "timeout": 60000
+    },
+    "lsp-cpp": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", ".", "--lsp", "clangd", "--", "--compile-commands-dir=./build"],
+      "timeout": 60000
+    },
+    "lsp-zig": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", ".", "--lsp", "zls"],
+      "timeout": 60000
+    },
+    "lsp-nim": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", ".", "--lsp", "nimlangserver"],
+      "timeout": 60000
+    }
+  }
+}
