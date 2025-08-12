@@ -112,6 +112,7 @@ devrun(){
                 -v $HOME/.docker:$container_root/.docker \
                 -v $HOME/Documents:$container_home/Documents \
                 -v $HOME/Downloads:$container_home/Downloads \
+                -v $HOME/.gemini:$container_home/.gemini \
                 -v $HOME/.gnupg:$container_home/.gnupg \
                 -v $HOME/.gnupg:$container_root/.gnupg \
                 -v $HOME/go/src:$container_goroot/src \
