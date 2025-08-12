@@ -144,6 +144,7 @@ arch_link: \
 	sudo ln -sfv $(ROOTDIR)/network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
 	sudo ln -sfv $(ROOTDIR)/network/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
 	sudo ln -sfv $(ROOTDIR)/network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
+	sudo ln -sfv $(ROOTDIR)/network/resolv.dnsmasq.conf /etc/resolv.pre-tailscale-backup.conf
 	sudo ln -sfv $(ROOTDIR)/network/sysctl.conf /etc/sysctl.d/99-sysctl.conf
 	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
 	# sudo modprobe -rv thinkpad_acpi
@@ -292,6 +293,8 @@ clean: perm
 		/etc/profile.d/fcitx.sh \
 		/etc/profile.d/sway.sh \
 		/etc/pulse/default.pa \
+		/etc/resolv.dnsmasq.conf \
+		/etc/resolv.pre-tailscale-backup.conf \
 		/etc/sudoers.d/$(USER) \
 		/etc/sysctl.conf \
 		/etc/sysctl.d/99-sysctl.conf \
