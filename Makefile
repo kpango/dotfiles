@@ -35,6 +35,7 @@ copy:
 	mkdir -p $(HOME)/.config/ghostty
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
+	mkdir -p $(HOME)/.gemini
 	mkdir -p $(HOME)/.gnupg
 	sudo mkdir -p /etc/docker
 	cp $(ROOTDIR)/alias $(HOME)/.aliases
@@ -42,6 +43,7 @@ copy:
 	cp $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	cp $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
+	cp $(ROOTDIR)/gemini.json $(HOME)/.gemini/settings.json
 	cp $(ROOTDIR)/ghostty.conf $(HOME)/.config/ghostty/config
 	cp $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
 	cp $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
@@ -52,8 +54,8 @@ copy:
 	cp $(ROOTDIR)/helix/themes/zed_kpango.toml $(HOME)/.config/helix/themes/zed_kpango.toml
 	cp $(ROOTDIR)/sheldon.toml $(HOME)/.config/sheldon/plugins.toml
 	cp $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
-	cp $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
+	cp $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
 	cp $(ROOTDIR)/tmux.new-session $(HOME)/.tmux.new-session
 	cp $(ROOTDIR)/zshrc $(HOME)/.zshrc
 	sudo cp $(ROOTDIR)/dockers/config.json /etc/docker/config.json
@@ -66,12 +68,14 @@ link:
 	mkdir -p $(HOME)/.config/ghostty
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
+	mkdir -p $(HOME)/.gemini
 	mkdir -p $(HOME)/.gnupg
 	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
 	ln -sfv $(ROOTDIR)/arch/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
 	ln -sfv $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	ln -sfv $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	ln -sfv $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
+	ln -sfv $(ROOTDIR)/gemini.json $(HOME)/.gemini/settings.json
 	ln -sfv $(ROOTDIR)/ghostty.conf $(HOME)/.config/ghostty/config
 	ln -sfv $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
 	ln -sfv $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
@@ -82,8 +86,8 @@ link:
 	ln -sfv $(ROOTDIR)/helix/themes/zed_kpango.toml $(HOME)/.config/helix/themes/zed_kpango.toml
 	ln -sfv $(ROOTDIR)/sheldon.toml $(HOME)/.config/sheldon/plugins.toml
 	ln -sfv $(ROOTDIR)/starship.toml $(HOME)/.config/starship.toml
-	ln -sfv $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
 	ln -sfv $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
+	ln -sfv $(ROOTDIR)/tmux-kube $(HOME)/.tmux-kube
 	ln -sfv $(ROOTDIR)/tmux.new-session $(HOME)/.tmux.new-session
 	ln -sfv $(ROOTDIR)/zshrc $(HOME)/.zshrc
 	sudo mkdir -p /etc/docker
@@ -232,6 +236,41 @@ clean: perm
 	$(eval TMP_DIR := $(shell mktemp -d))
 	jq . $(ROOTDIR)/arch/waybar.json > $(TMP_DIR)/waybar.json.tmp && mv $(TMP_DIR)/waybar.json.tmp $(ROOTDIR)/arch/waybar.json
 	sudo rm -rf \
+		$(HOME)/.aliases \
+		$(HOME)/.config/alacritty \
+		$(HOME)/.config/compton \
+		$(HOME)/.config/fcitx5/conf/classicui.conf \
+		$(HOME)/.config/fcitx5/config \
+		$(HOME)/.config/fcitx5/profile \
+		$(HOME)/.config/ghostty \
+		$(HOME)/.config/helix \
+		$(HOME)/.config/i3 \
+		$(HOME)/.config/i3status \
+		$(HOME)/.config/nvim \
+		$(HOME)/.config/ranger \
+		$(HOME)/.config/sheldon \
+		$(HOME)/.config/starship.toml \
+		$(HOME)/.config/sway \
+		$(HOME)/.config/waybar \
+		$(HOME)/.config/wofi \
+		$(HOME)/.config/workstyle \
+		$(HOME)/.docker/config.json \
+		$(HOME)/.docker/daemon.json \
+		$(HOME)/.editorconfig \
+		$(HOME)/.gemini/settings.json \
+		$(HOME)/.gitattributes \
+		$(HOME)/.gitconfig \
+		$(HOME)/.gitignore \
+		$(HOME)/.gnupg/gpg-agent.conf \
+		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
+		$(HOME)/Library/LaunchAgents/ulimit.plist \
+		$(HOME)/.tmux.conf \
+		$(HOME)/.tmux-kube \
+		$(HOME)/.tmux.new-session \
+		$(HOME)/.Xdefaults \
+		$(HOME)/.xinitrc \
+		$(HOME)/.Xmodmap \
+		$(HOME)/.zshrc \
 		/etc/chrony.conf \
 		/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
 		/etc/default/tlp \
@@ -262,41 +301,7 @@ clean: perm
 		/etc/systemd/system/pulseaudio.service \
 		/etc/tlp.conf \
 		/etc/udev/rules.d/60-ioschedulers.rules \
-		/etc/udev/rules.d/60-nvidia.rules \
-		$(HOME)/.aliases \
-		$(HOME)/.config/alacritty \
-		$(HOME)/.config/compton \
-		$(HOME)/.config/fcitx5/conf/classicui.conf \
-		$(HOME)/.config/fcitx5/config \
-		$(HOME)/.config/fcitx5/profile \
-		$(HOME)/.config/ghostty \
-		$(HOME)/.config/helix \
-		$(HOME)/.config/i3 \
-		$(HOME)/.config/i3status \
-		$(HOME)/.config/nvim \
-		$(HOME)/.config/ranger \
-		$(HOME)/.config/sheldon \
-		$(HOME)/.config/starship.toml \
-		$(HOME)/.config/sway \
-		$(HOME)/.config/waybar \
-		$(HOME)/.config/wofi \
-		$(HOME)/.config/workstyle \
-		$(HOME)/.docker/config.json \
-		$(HOME)/.docker/daemon.json \
-		$(HOME)/.editorconfig \
-		$(HOME)/.gitattributes \
-		$(HOME)/.gitconfig \
-		$(HOME)/.gitignore \
-		$(HOME)/.gnupg/gpg-agent.conf \
-		$(HOME)/.tmux-kube \
-		$(HOME)/.tmux.conf \
-		$(HOME)/.tmux.new-session \
-		$(HOME)/.Xdefaults \
-		$(HOME)/.xinitrc \
-		$(HOME)/.Xmodmap \
-		$(HOME)/.zshrc \
-		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
-		$(HOME)/Library/LaunchAgents/ulimit.plist
+		/etc/udev/rules.d/60-nvidia.rules
 
 
 

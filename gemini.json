@@ -43,7 +43,7 @@
         "-lc",
         "set -euo pipefail; " +
         "export GEMINI_API_KEY=\"$(pass show -q ai/gemini | head -n1 | tr -d '\\r')\"; " +
-        "export OPENAI_API_KEY=\"$(pass show -q ai/openai | head -n1 | tr -d '\\r')\"; " +
+        "export OPENAI_API_KEY=\"$(pass show -q ai/open_ai | head -n1 | tr -d '\\r')\"; " +
         "export ANTHROPIC_API_KEY=\"$(pass show -q ai/anthropic | head -n1 | tr -d '\\r')\"; " +
         "mkdir -p \"$HOME/.local/share/cipher\"; " +
         "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 512 --tmpfs /tmp:rw,noexec,nosuid,nodev -v \".:/workspace:ro\" -v \"$HOME/.local/share/cipher:/data:rw\" -w /workspace -e GEMINI_API_KEY -e OPENAI_API_KEY -e ANTHROPIC_API_KEY ghcr.io/campfirein/cipher:latest cipher --mode mcp --transport stdio"
@@ -55,11 +55,12 @@
       "command": "bash",
       "args": [
         "-lc",
-        "set -euo pipefail; export GITHUB_PERSONAL_ACCESS_TOKEN=\"$(pass show -q github/api/pat | head -n1 | tr -d '\\r')\"; exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 128 -e GITHUB_PERSONAL_ACCESS_TOKEN ghcr.io/github/github-mcp-server:latest"
+        "set -euo pipefail; " +
+        "export GITHUB_PERSONAL_ACCESS_TOKEN=\"$(pass show -q github.api.ro.token | head -n1 | tr -d '\\r')\"; " +
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 128 -e GITHUB_PERSONAL_ACCESS_TOKEN ghcr.io/github/github-mcp-server:latest"
       ],
       "timeout": 60000
     },
-
     "slack": {
       "command": "bash",
       "args": [

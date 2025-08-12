@@ -42,22 +42,23 @@ devrun(){
             container run \
                 --name $container_name \
                 --workdir $container_home \
+                -v $docker_config:/etc/docker/config.json \
+                -v $docker_daemon:/etc/docker/daemon.json \
+                -v $docker_sock:$docker_sock \
+                -v $font_dir:/usr/share/fonts:ro \
                 -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json \
+                -v $HOME/Documents:$container_home/Documents \
+                -v $HOME/Downloads:$container_home/Downloads \
+                -v $HOME/.gemini:$container_home/.gemini \
                 -v $HOME/.gitconfig:$container_home/.gitconfig \
                 -v $HOME/.gnupg:$container_home/.gnupg \
+                -v $HOME/go/src:$container_goroot/src:cached \
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.netrc:$container_home/.netrc \
                 -v $HOME/.ssh:$container_home/.ssh \
                 -v $HOME/.talos:$container_home/.talos \
                 -v $HOME/.tmux:$container_home/.tmux \
                 -v $HOME/.zsh_history:$container_home/.zsh_history \
-                -v $HOME/Documents:$container_home/Documents \
-                -v $HOME/Downloads:$container_home/Downloads \
-                -v $HOME/go/src:$container_goroot/src:cached \
-                -v $docker_config:/etc/docker/config.json \
-                -v $docker_daemon:/etc/docker/daemon.json \
-                -v $docker_sock:$docker_sock \
-                -v $font_dir:/usr/share/fonts:ro \
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/gitattributes:$container_home/.gitattributes \
@@ -68,8 +69,8 @@ devrun(){
                 -v $rcpath/network/sysctl.conf:/etc/sysctl.conf \
                 -v $rcpath/sheldon.toml:$container_home/.config/sheldon/plugins.toml \
                 -v $rcpath/starship.toml:$container_home/.config/starship.toml \
-                -v $rcpath/tmux-kube:$container_home/.tmux-kube \
                 -v $rcpath/tmux.conf:$container_home/.tmux.conf \
+                -v $rcpath/tmux-kube:$container_home/.tmux-kube \
                 -v $rcpath/zshrc:$container_home/.zshrc \
                 -v $tz_path:/etc/localtime:ro \
                 -dit $image_name
@@ -101,12 +102,19 @@ devrun(){
                 --add-host=host.docker.internal:host-gateway \
 		--memory=200G \
                 -u "$(id -u $USER):$(id -g $USER)" \
+                -v $docker_config:$docker_config:ro,cached \
+                -v $docker_daemon:$docker_daemon:ro,cached \
+                -v $docker_sock:$docker_sock \
+                -v $font_dir:$font_dir \
                 -v $HOME/.aws:$container_home/.aws \
                 -v $HOME/.config/gcloud:$container_home/.config/gcloud \
                 -v $HOME/.docker:$container_home/.docker \
                 -v $HOME/.docker:$container_root/.docker \
+                -v $HOME/Documents:$container_home/Documents \
+                -v $HOME/Downloads:$container_home/Downloads \
                 -v $HOME/.gnupg:$container_home/.gnupg \
                 -v $HOME/.gnupg:$container_root/.gnupg \
+                -v $HOME/go/src:$container_goroot/src \
                 -v $HOME/.kube:$container_home/.kube \
                 -v $HOME/.netrc:$container_home/.netrc:ro \
                 -v $HOME/.password-store:$container_home/.password-store \
@@ -116,13 +124,6 @@ devrun(){
                 -v $HOME/.tig_history:$container_home/.tig_history \
                 -v $HOME/.tmux:$container_home/.tmux \
                 -v $HOME/.zsh_history:$container_home/.zsh_history:cached \
-                -v $HOME/Documents:$container_home/Documents \
-                -v $HOME/Downloads:$container_home/Downloads \
-                -v $HOME/go/src:$container_goroot/src \
-                -v $docker_config:$docker_config:ro,cached \
-                -v $docker_daemon:$docker_daemon:ro,cached \
-                -v $docker_sock:$docker_sock \
-                -v $font_dir:$font_dir \
                 -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
                 -v $rcpath/editorconfig:$container_home/.editorconfig \
                 -v $rcpath/gitattributes:$container_home/.gitattributes \
@@ -130,14 +131,14 @@ devrun(){
                 -v $rcpath/gitignore:$container_home/.gitignore \
                 -v $rcpath/go.env:$container_goroot/go.env:ro \
                 -v $rcpath/go.env:$goroot/go.env:ro \
-                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf:ro,cached \
                 -v $rcpath/helix/config.toml:$container_home/.config/helix/config.toml \
                 -v $rcpath/helix/languages.toml:$container_home/.config/helix/languages.toml \
                 -v $rcpath/helix/themes/zed_kpango.toml:$container_home/.config/helix/themes/zed_kpango.toml \
+                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf:ro,cached \
                 -v $rcpath/sheldon.toml:$container_home/.config/sheldon/plugins.toml \
                 -v $rcpath/starship.toml:$container_home/.config/starship.toml \
-                -v $rcpath/tmux-kube:$container_home/.tmux-kube \
                 -v $rcpath/tmux.conf:$container_home/.tmux.conf \
+                -v $rcpath/tmux-kube:$container_home/.tmux-kube \
                 -v $rcpath/zshrc:$container_home/.zshrc:ro,cached \
                 -v $tz_path:/etc/localtime:ro,cached \
                 -v /etc/group:/etc/group:ro \
@@ -164,7 +165,26 @@ devrun(){
 alias devrun="devrun"
 
 # alias devin="docker exec -it $container_name $zsh_path -c \"tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST\""
-alias devin="docker exec -it $container_name $zsh_path"
+
+devin(){
+    case "$(uname -s)" in
+        Darwin)
+            tailup
+            ssh tr -v
+            ;;
+        Linux)
+            docker exec -it $container_name $zsh_path
+            ;;
+        CYGWIN*|MINGW32*|MSYS*)
+            echo 'MS Windows Dev Environment is not ready for this environment'
+            ;;
+        *)
+            echo 'other OS'
+            ;;
+    esac
+}
+
+alias devin=devin
 
 devkill(){
     docker update --restart=no $container_name \
