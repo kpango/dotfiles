@@ -170,7 +170,8 @@ alias devrun="devrun"
 devin(){
     case "$(uname -s)" in
         Darwin)
-            tailup
+            tailscale down
+            tailscale up --reset --accept-routes
             ssh tr -v
             ;;
         Linux)

@@ -20,6 +20,9 @@
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
         "-v", "${PWD}:/workspace:ro",
         "-v", "${HOME}/.serena:/home/user/.serena:rw",
+        "-p", "9121:9121",
+        "-p", "24282:24282",
+        "-e", "SERENA_DOCKER=1",
         "ghcr.io/oraios/serena:latest",
         "serena start-mcp-server", "--transport", "stdio"
       ],
