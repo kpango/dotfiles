@@ -314,6 +314,9 @@ zsh: link
 bash: link
 	[ -f $(HOME)/.bashrc ] && echo "[ -f $$HOME/.aliases ] && source $$HOME/.aliases" >> $(HOME)/.bashrc
 
+go/deps:
+	cd $(ROOTDIR)/dockers && rm -rf go.mod go.sum && cp go.mod.default go.mod && go mod tidy && go get -u tool && go mod tidy && cd -
+
 build: \
 	login \
 	remove_buildx \
@@ -426,7 +429,6 @@ build_mkl:
 	@make NAME="mkl" do_build
 
 build_go:
-	cd $(ROOTDIR)/dockers && go get tool && cd -
 	@make NAME="go" do_build
 
 build_rust:

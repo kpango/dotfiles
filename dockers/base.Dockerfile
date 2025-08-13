@@ -41,9 +41,13 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean \
         ffmpeg \
         git \
         gnupg \
+        gnupg2 \
+        libncurses-dev \
         libssl-dev \
         libx11-dev \
         libxcb-composite0-dev \
+        lld \
+        llvm \
         locales \
         pandoc \
         pkg-config \

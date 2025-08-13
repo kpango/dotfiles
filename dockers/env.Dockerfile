@@ -74,14 +74,11 @@ RUN --mount=type=cache,target=${HOME}/.bun \
     && apt-get install -y --no-install-recommends --fix-missing \
     automake \
     bash \
-    build-essential \
     ca-certificates \
     ccls \
     clang-format \
     clang-tidy \
     clangd \
-    cmake \
-    curl \
     diffutils \
     exuberant-ctags \
     g++ \
@@ -89,9 +86,6 @@ RUN --mount=type=cache,target=${HOME}/.bun \
     gcc \
     gettext \
     gfortran \
-    git \
-    gnupg \
-    gnupg2 \
     graphviz \
     jq \
     less \
@@ -100,13 +94,12 @@ RUN --mount=type=cache,target=${HOME}/.bun \
     libhdf5-dev \
     libhdf5-serial-dev \
     liblapack-dev \
-    libncurses5-dev \
+    libncurses6-dev \
     libomp-dev \
     libopenblas-dev \
     libssl-dev \
     libtool \
     libtool-bin \
-    locales \
     lua5.4 \
     luajit \
     luarocks \
@@ -119,7 +112,6 @@ RUN --mount=type=cache,target=${HOME}/.bun \
     pass \
     perl \
     pinentry-tty \
-    pkg-config \
     python3-dev \
     python3-pip \
     python3-setuptools \
@@ -130,9 +122,7 @@ RUN --mount=type=cache,target=${HOME}/.bun \
     tar \
     tig \
     tmux \
-    tzdata \
     ugrep \
-    unzip \
     xclip \
     zip \
     && rm -rf /var/lib/apt/lists/* \
@@ -148,26 +138,6 @@ RUN --mount=type=cache,target=${HOME}/.bun \
     && chmod -R 755 ${HOME} \
     && chmod -R 755 ${HOME}/.* \
     && export BUN_INSTALL=${LOCAL} && curl -fsSL https://bun.sh/install | bash
-    # && curl -fsSL https://tailscale.com/install.sh | sh \
-
-FROM env-base AS env-stage
-WORKDIR /tmp
-ENV PATH=${LOCAL}/bin:${PATH}
-ENV BUN_INSTALL=/usr/local/bun
-RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
-        prettier \
-        markdownlint-cli \
-        dockerfile-language-server-nodejs \
-        bash-language-server \
-        typescript \
-        typescript-language-server \
-        n \
-        @openai/codex \
-        @google/gemini-cli \
-        @anthropic-ai/claude-code \
-        @qwen-code/qwen-code \
-        @byterover/cipher \
-    && ${BUN_INSTALL}/bin/n latest
 
 USER root
 FROM env-base AS protoc
@@ -195,7 +165,39 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && rm -f /tmp/protoc.zip \
     && rm -rf /tmp/*
 
-FROM env-base AS cmake-base
+FROM env-base AS zig_tools
+WORKDIR /tmp
+# Install Zig
+RUN set -x && cd "$(mktemp -d)" \
+    && ZIG_VERSION="0.13.0" \
+    && FILE_ARCH=${ARCH} \
+    && if [ "${ARCH}" = "amd64" ] ; then  FILE_ARCH="x86_64" ; fi \
+    && if [ "${ARCH}" = "arm64" ] ; then  FILE_ARCH="aarch64" ; fi \
+    && curl -fSLo zig.tar.xz "https://ziglang.org/download/${ZIG_VERSION}/zig-${OS}-${FILE_ARCH}-${ZIG_VERSION}.tar.xz" \
+    && tar -xf zig.tar.xz \
+    && mv zig-${OS}-${FILE_ARCH}-${ZIG_VERSION} /usr/local/zig \
+    && ln -s /usr/local/zig/zig /usr/local/bin/zig
+# Install ZLS (Zig Language Server)
+RUN set -x && cd "$(mktemp -d)" \
+    && REPO="zigtools/zls" \
+    && ZLS_VERSION="0.13.0" \
+    && FILE_ARCH=${ARCH} \
+    && if [ "${ARCH}" = "amd64" ] ; then  FILE_ARCH="x86_64" ; fi \
+    && if [ "${ARCH}" = "arm64" ] ; then  FILE_ARCH="aarch64" ; fi \
+    && curl -fSLo zls.tar.gz "${GITHUB}/${REPO}/${RELEASE_DL}/${ZLS_VERSION}/${FILE_ARCH}-${OS}.tar.gz" \
+    && tar -xzf zls.tar.gz \
+    && mv zls "${BIN_PATH}/zls" \
+    && chmod +x "${BIN_PATH}/zls"
+
+FROM env-base AS nim_tools
+USER ${USER}
+WORKDIR ${HOME}
+ENV PATH=${HOME}/.nimble/bin:${PATH}
+RUN curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y \
+    && nimble install nimlangserver -y
+USER root
+
+FROM cmake-base AS cmake-base
 WORKDIR /tmp
 RUN git clone --depth 1 https://github.com/vdaas/vald "/tmp/vald" \
     && cd "/tmp/vald" \
@@ -213,8 +215,27 @@ FROM cmake-base AS usearch
 WORKDIR /tmp/vald
 RUN make usearch/install
 
-FROM env-stage AS env
+FROM env-base AS env-stage
+WORKDIR /tmp
+ENV PATH=${LOCAL}/bin:${PATH}
+ENV BUN_INSTALL=/usr/local/bun
+RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
+        prettier \
+        pyright \
+        markdownlint-cli \
+        dockerfile-language-server-nodejs \
+        bash-language-server \
+        typescript \
+        typescript-language-server \
+        n \
+        @openai/codex \
+        @google/gemini-cli \
+        @anthropic-ai/claude-code \
+        @qwen-code/qwen-code \
+        @byterover/cipher \
+    && ${BUN_INSTALL}/bin/n latest
 
+FROM env-stage AS env
 ARG EMAIL=kpango@vdaas.org
 ARG WHOAMI=kpango
 LABEL maintainer="${WHOAMI} <${EMAIL}>"
@@ -228,6 +249,11 @@ COPY --from=usearch ${LOCAL}/include/usearch.h ${LOCAL}/include/usearch.h
 COPY --from=usearch ${LOCAL}/lib/libusearch* ${LOCAL}/lib/
 COPY --from=protoc ${BIN_PATH}/protoc ${BIN_PATH}/protoc
 COPY --from=protoc ${LOCAL}/include/google/protobuf ${LOCAL}/include/google/protobuf
+COPY --from=zig_tools ${BIN_PATH}/zig ${BIN_PATH}/
+COPY --from=zig_tools ${BIN_PATH}/zls ${BIN_PATH}/
+COPY --from=nim_tools ${HOME}/.nimble/bin/nim ${BIN_PATH}/
+COPY --from=nim_tools ${HOME}/.nimble/bin/nimble ${BIN_PATH}/
+COPY --from=nim_tools ${HOME}/.nimble/bin/nimlangserver ${BIN_PATH}/
 
 RUN ldconfig \
     && rm -rf /tmp/* /var/cache

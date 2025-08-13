@@ -12,16 +12,31 @@
         "-i",
         "--pull=missing",
         "--cap-drop=ALL",
-        "--security-opt", "no-new-privileges",
-        "--pids-limit", "256",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
         "--read-only",
-        "--network", "host",
-        "--user", "1000:1000",
-        "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-v", "${PWD}:/workspace:ro",
-        "-v", "${HOME}/.serena:/home/user/.serena:rw",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$PWD:/workspace:ro",
+        "-v",
+        "$HOME/.serena:/home/user/.serena:rw",
+        "-p",
+        "9121:9121",
+        "-p",
+        "24282:24282",
+        "-e",
+        "SERENA_DOCKER=1",
         "ghcr.io/oraios/serena:latest",
-        "serena start-mcp-server", "--transport", "stdio"
+        "serena start-mcp-server",
+        "--transport",
+        "stdio"
       ],
       "env": {
         "HOME": "$HOME",
@@ -37,14 +52,21 @@
         "-i",
         "--pull=missing",
         "--cap-drop=ALL",
-        "--security-opt", "no-new-privileges",
-        "--pids-limit", "256",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
         "--read-only",
-        "--network", "host",
-        "--user", "1000:1000",
-        "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-v", "${HOME}/.kube:/home/user/.kube:ro",
-        "-e", "KUBECONFIG=/home/user/.kube/config",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$HOME/.kube:/home/user/.kube:ro",
+        "-e",
+        "KUBECONFIG=/home/user/.kube/config",
         "quay.io/manusa/kubernetes_mcp_server:latest"
       ],
       "env": {
@@ -61,15 +83,23 @@
         "-i",
         "--pull=missing",
         "--cap-drop=ALL",
-        "--security-opt", "no-new-privileges",
-        "--pids-limit", "256",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
         "--read-only",
-        "--network", "host",
-        "--user", "1000:1000",
-        "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-v", "${HOME}/.kube:/home/user/.kube:ro",
-        "-e", "KUBECONFIG=/home/user/.kube/config",
-        "-e", "MASK_SECRETS=true",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$HOME/.kube:/home/user/.kube:ro",
+        "-e",
+        "KUBECONFIG=/home/user/.kube/config",
+        "-e",
+        "MASK_SECRETS=true",
         "mcp/kubernetes:latest"
       ],
       "env": {
@@ -86,21 +116,33 @@
         "-i",
         "--pull=missing",
         "--cap-drop=ALL",
-        "--security-opt", "no-new-privileges",
-        "--pids-limit", "512",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "512",
         "--read-only",
-        "--network", "host",
-        "--user", "1000:1000",
-        "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-v", "${PWD}:/workspace:ro",
-        "-v", "${HOME}/.local/share/cipher:/data:rw",
-        "-e", "GEMINI_API_KEY",
-        "-e", "OPENAI_API_KEY",
-        "-e", "ANTHROPIC_API_KEY",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$PWD:/workspace:ro",
+        "-v",
+        "$HOME/.local/share/cipher:/data:rw",
+        "-e",
+        "GEMINI_API_KEY",
+        "-e",
+        "OPENAI_API_KEY",
+        "-e",
+        "ANTHROPIC_API_KEY",
         "ghcr.io/campfirein/cipher:latest",
         "cipher",
-        "--mode", "mcp",
-        "--transport", "stdio"
+        "--mode",
+        "mcp",
+        "--transport",
+        "stdio"
       ],
       "env": {
         "HOME": "$HOME",
@@ -119,13 +161,19 @@
         "-i",
         "--pull=missing",
         "--cap-drop=ALL",
-        "--security-opt", "no-new-privileges",
-        "--pids-limit", "128",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "128",
         "--read-only",
-        "--network", "host",
-        "--user", "1000:1000",
-        "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
         "ghcr.io/github/github-mcp-server:latest"
       ],
       "env": {
@@ -143,15 +191,23 @@
         "-i",
         "--pull=missing",
         "--cap-drop=ALL",
-        "--security-opt", "no-new-privileges",
-        "--pids-limit", "128",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "128",
         "--read-only",
-        "--network", "host",
-        "--user", "1000:1000",
-        "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-e", "SLACK_BOT_TOKEN",
-        "-e", "SLACK_TEAM_ID",
-        "-e", "SLACK_CHANNEL_IDS",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-e",
+        "SLACK_BOT_TOKEN",
+        "-e",
+        "SLACK_TEAM_ID",
+        "-e",
+        "SLACK_CHANNEL_IDS",
         "mcp/slack:latest"
       ],
       "env": {
@@ -165,7 +221,12 @@
     },
     "lsp-go": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "${PWD}", "--lsp", "gopls"],
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "gopls"
+      ],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -174,7 +235,12 @@
     },
     "lsp-rust": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "${PWD}/rust", "--lsp", "rust-analyzer"],
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "rust-analyzer"
+      ],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -183,7 +249,14 @@
     },
     "lsp-ts": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "${PWD}", "--lsp", "typescript-language-server", "--", "--stdio"],
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "typescript-language-server",
+        "--",
+        "--stdio"
+      ],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -192,7 +265,14 @@
     },
     "lsp-python": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "${PWD}", "--lsp", "pyright-langserver", "--", "--stdio"],
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "pyright-langserver",
+        "--",
+        "--stdio"
+      ],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -201,7 +281,15 @@
     },
     "lsp-cpp": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "${PWD}", "--lsp", "clangd", "--", "--compile-commands-dir=${PWD}/build"],      "env": {
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "clangd",
+        "--",
+        "--compile-commands-dir=$PWD/build"
+      ],
+      "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
       },
@@ -209,7 +297,12 @@
     },
     "lsp-zig": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "${PWD}", "--lsp", "zls"],
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "zls"
+      ],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -218,7 +311,12 @@
     },
     "lsp-nim": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "${PWD}", "--lsp", "nimlangserver"],
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "nimlangserver"
+      ],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"

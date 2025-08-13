@@ -1,3 +1,4 @@
+btop-theme-catppuccin
 bun-bin
 chrome-remote-desktop
 docker-credential-pass-git
@@ -16,6 +17,7 @@ gopreload-git
 light
 milcheck
 mkinitcpio-firmware
+neovim-git
 netrc
 ngrok
 nkf-git
