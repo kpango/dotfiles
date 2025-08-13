@@ -166,6 +166,7 @@ RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
         @google/gemini-cli \
         @anthropic-ai/claude-code \
         @qwen-code/qwen-code \
+        @byterover/cipher \
     && ${BUN_INSTALL}/bin/n latest
 
 USER root

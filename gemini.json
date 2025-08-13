@@ -16,12 +16,12 @@
         "--pids-limit", "256",
         "--read-only",
         "--network", "host",
+        "--user", "1000:1000",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
         "-v", "${PWD}:/workspace:ro",
-        "-v", "${HOME}/.serena:/workspace/.serena:rw",
-        "-w", "/workspace",
+        "-v", "${HOME}/.serena:/home/user/.serena:rw",
         "ghcr.io/oraios/serena:latest",
-        "serena-mcp-server", "--transport", "stdio", "--context", "ide-assistant", "--enable-web-dashboard", "false", "--project", "/workspace"
+        "serena start-mcp-server", "--transport", "stdio"
       ],
       "env": {
         "HOME": "$HOME",
@@ -41,9 +41,10 @@
         "--pids-limit", "256",
         "--read-only",
         "--network", "host",
+        "--user", "1000:1000",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-v", "${HOME}/.kube:/root/.kube:ro",
-        "-e", "KUBECONFIG=/root/.kube/",
+        "-v", "${HOME}/.kube:/home/user/.kube:ro",
+        "-e", "KUBECONFIG=/home/user/.kube/config",
         "quay.io/manusa/kubernetes_mcp_server:latest"
       ],
       "env": {
@@ -64,9 +65,10 @@
         "--pids-limit", "256",
         "--read-only",
         "--network", "host",
+        "--user", "1000:1000",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-v", "${HOME}/.kube:/root/.kube:ro",
-        "-e", "KUBECONFIG=/root/.kube/",
+        "-v", "${HOME}/.kube:/home/user/.kube:ro",
+        "-e", "KUBECONFIG=/home/user/.kube/config",
         "-e", "MASK_SECRETS=true",
         "mcp/kubernetes:latest"
       ],
@@ -88,10 +90,10 @@
         "--pids-limit", "512",
         "--read-only",
         "--network", "host",
+        "--user", "1000:1000",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
         "-v", "${PWD}:/workspace:ro",
         "-v", "${HOME}/.local/share/cipher:/data:rw",
-        "-w", "/workspace",
         "-e", "GEMINI_API_KEY",
         "-e", "OPENAI_API_KEY",
         "-e", "ANTHROPIC_API_KEY",
@@ -121,6 +123,7 @@
         "--pids-limit", "128",
         "--read-only",
         "--network", "host",
+        "--user", "1000:1000",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
         "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
         "ghcr.io/github/github-mcp-server:latest"
@@ -144,6 +147,7 @@
         "--pids-limit", "128",
         "--read-only",
         "--network", "host",
+        "--user", "1000:1000",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
         "-e", "SLACK_BOT_TOKEN",
         "-e", "SLACK_TEAM_ID",
@@ -170,7 +174,7 @@
     },
     "lsp-rust": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "${PWD}", "--lsp", "rust-analyzer"],
+      "args": ["--workspace", "${PWD}/rust", "--lsp", "rust-analyzer"],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
