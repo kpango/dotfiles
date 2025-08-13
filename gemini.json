@@ -42,8 +42,8 @@
         "--read-only",
         "--network", "host",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-v ${HOME}/.kube:/root/.kube:ro",
-        "-e KUBECONFIG=/root/.kube/",
+        "-v", "${HOME}/.kube:/root/.kube:ro",
+        "-e", "KUBECONFIG=/root/.kube/",
         "quay.io/manusa/kubernetes_mcp_server:latest"
       ],
       "env": {
@@ -65,9 +65,9 @@
         "--read-only",
         "--network", "host",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-v ${HOME}/.kube:/root/.kube:ro",
-        "-e KUBECONFIG=/root/.kube/",
-        "-e MASK_SECRETS=true",
+        "-v", "${HOME}/.kube:/root/.kube:ro",
+        "-e", "KUBECONFIG=/root/.kube/",
+        "-e", "MASK_SECRETS=true",
         "mcp/kubernetes:latest"
       ],
       "env": {
@@ -92,9 +92,9 @@
         "-v", "${PWD}:/workspace:ro",
         "-v", "${HOME}/.local/share/cipher:/data:rw",
         "-w", "/workspace",
-        "-e GEMINI_API_KEY",
-        "-e OPENAI_API_KEY",
-        "-e ANTHROPIC_API_KEY",
+        "-e", "GEMINI_API_KEY",
+        "-e", "OPENAI_API_KEY",
+        "-e", "ANTHROPIC_API_KEY",
         "ghcr.io/campfirein/cipher:latest",
         "cipher",
         "--mode", "mcp",
@@ -122,7 +122,7 @@
         "--read-only",
         "--network", "host",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-e GITHUB_PERSONAL_ACCESS_TOKEN",
+        "-e", "GITHUB_PERSONAL_ACCESS_TOKEN",
         "ghcr.io/github/github-mcp-server:latest"
       ],
       "env": {
@@ -145,9 +145,9 @@
         "--read-only",
         "--network", "host",
         "--tmpfs", "/tmp:rw,noexec,nosuid,nodev",
-        "-e SLACK_BOT_TOKEN",
-        "-e SLACK_TEAM_ID",
-        "-e SLACK_CHANNEL_IDS",
+        "-e", "SLACK_BOT_TOKEN",
+        "-e", "SLACK_TEAM_ID",
+        "-e", "SLACK_CHANNEL_IDS",
         "mcp/slack:latest"
       ],
       "env": {
