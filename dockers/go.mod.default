@@ -16,7 +16,6 @@ tool (
 	github.com/davidrjenni/reftools/cmd/fillstruct
 	github.com/davidrjenni/reftools/cmd/fillswitch
 	github.com/davidrjenni/reftools/cmd/fixplurals
-	github.com/derailed/popeye
 	github.com/direnv/direnv
 	github.com/fatih/gomodifytags
 	github.com/fullstorydev/grpcurl
@@ -25,7 +24,6 @@ tool (
 	github.com/gnewton/chidley
 	github.com/go-delve/delve/cmd/dlv
 	github.com/go-kratos/kratos/cmd/kratos
-	github.com/go-swagger/go-swagger/cmd/swagger
 	github.com/go-task/task/v3/cmd/task
 	github.com/golang/mock/mockgen
 	github.com/google/yamlfmt/cmd/yamlfmt
@@ -53,7 +51,6 @@ tool (
 	github.com/quasilyte/go-ruleguard/cmd/ruleguard
 	github.com/rerost/dragon-imports
 	github.com/rerost/dragon-imports/cmd/dragon-imports
-	github.com/ribice/glice
 	github.com/rs/xid
 	github.com/securego/gosec/v2/cmd/gosec
 	github.com/siderolabs/talos/cmd/talosctl
@@ -65,7 +62,6 @@ tool (
 	github.com/x-motemen/ghq
 	github.com/y4v8/gojson/gojson
 	github.com/yannh/kubeconform/cmd/kubeconform
-	go.k6.io/k6
 	golang.org/dl/gotip
 	golang.org/x/lint/golint
 	golang.org/x/review/git-codereview
@@ -84,8 +80,4 @@ tool (
 
 replace (
 	github.com/ugorji/go => github.com/ugorji/go latest
-	github.com/olekukonko/tablewriter => github.com/olekukonko/tablewriter v0.0.5
-	github.com/mark3labs/mcp-go => github.com/mark3labs/mcp-go v0.25.0
-	github.com/go-openapi/swag => github.com/go-openapi/swag v0.25.1
-	github.com/cilium/statedb => github.com/cilium/statedb v0.3.6
 )
