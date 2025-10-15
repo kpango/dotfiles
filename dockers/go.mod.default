@@ -81,5 +81,5 @@ tool (
 replace (
 	github.com/mark3labs/mcp-go => github.com/mark3labs/mcp-go v0.28.0
 	github.com/olekukonko/tablewriter => github.com/olekukonko/tablewriter v0.0.5
-	github.com/ugorji/go => github.com/ugorji/go latest
+	github.com/ugorji/go => github.com/ugorji/go upgrade
 )
