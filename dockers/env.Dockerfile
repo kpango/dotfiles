@@ -216,14 +216,6 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && rm -rf ./* \
     && chmod +x "${BIN_PATH}/${BIN_NAME}"
 
-FROM env-base AS nim_tools
-USER ${USER}
-WORKDIR ${HOME}
-ENV PATH=${HOME}/.nimble/bin:${PATH}
-RUN curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y \
-    && nimble install nimlangserver -y
-USER root
-
 FROM env-base AS cmake-base
 WORKDIR /tmp
 RUN git clone --depth 1 https://github.com/vdaas/vald "/tmp/vald" \
@@ -278,9 +270,6 @@ COPY --from=protoc ${BIN_PATH}/protoc ${BIN_PATH}/protoc
 COPY --from=protoc ${LOCAL}/include/google/protobuf ${LOCAL}/include/google/protobuf
 COPY --from=zig_tools ${BIN_PATH}/zig ${BIN_PATH}/
 COPY --from=zig_tools ${BIN_PATH}/zls ${BIN_PATH}/
-COPY --from=nim_tools ${HOME}/.nimble/bin/nim ${BIN_PATH}/
-COPY --from=nim_tools ${HOME}/.nimble/bin/nimble ${BIN_PATH}/
-COPY --from=nim_tools ${HOME}/.nimble/bin/nimlangserver ${BIN_PATH}/
 
 RUN ldconfig \
     && rm -rf /tmp/* /var/cache
