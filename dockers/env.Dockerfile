@@ -167,26 +167,54 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
 FROM env-base AS zig_tools
 WORKDIR /tmp
 # Install Zig
-RUN set -x && cd "$(mktemp -d)" \
-    && ZIG_VERSION="0.13.0" \
-    && FILE_ARCH=${ARCH} \
-    && if [ "${ARCH}" = "amd64" ] ; then  FILE_ARCH="x86_64" ; fi \
-    && if [ "${ARCH}" = "arm64" ] ; then  FILE_ARCH="aarch64" ; fi \
-    && curl -fSLo zig.tar.xz "https://ziglang.org/download/${ZIG_VERSION}/zig-${OS}-${FILE_ARCH}-${ZIG_VERSION}.tar.xz" \
-    && tar -xf zig.tar.xz \
-    && mv zig-${OS}-${FILE_ARCH}-${ZIG_VERSION} /usr/local/zig \
-    && ln -s /usr/local/zig/zig /usr/local/bin/zig
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+    && REPO_NAME="ziglang" \
+    && BIN_NAME="zig" \
+    && REPO="${REPO_NAME}/${BIN_NAME}" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
+    && unset HEADER \
+    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
+    && if [ -z "${VERSION}" ]; then \
+         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
+       fi \
+    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
+    && TAR_NAME="${BIN_NAME}-${OS}-${ARCH}-${VERSION}" \
+    && curl -fsSLo "/tmp/${BIN_NAME}.tar.xz" "https://${REPO_NAME}.org/download/${ZIG_VERSION}/${TAR_NAME}.tar.xz" \
+    && tar -xf "/tmp/${BIN_NAME}.tar.xz" \
+    && rm -rf "/tmp/${BIN_NAME}.tar.xz" \
+    && mv "/tmp/${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}" \
+    && rm -rf "/tmp/${TAR_NAME}/${BIN_NAME}" \
+    && chmod +x "${BIN_PATH}/${BIN_NAME}"
+
 # Install ZLS (Zig Language Server)
-RUN set -x && cd "$(mktemp -d)" \
-    && REPO="zigtools/zls" \
-    && ZLS_VERSION="0.13.0" \
-    && FILE_ARCH=${ARCH} \
-    && if [ "${ARCH}" = "amd64" ] ; then  FILE_ARCH="x86_64" ; fi \
-    && if [ "${ARCH}" = "arm64" ] ; then  FILE_ARCH="aarch64" ; fi \
-    && curl -fSLo zls.tar.gz "${GITHUB}/${REPO}/${RELEASE_DL}/${ZLS_VERSION}/zls-${FILE_ARCH}-${OS}.tar.gz" \
-    && tar -xzf zls.tar.gz \
-    && mv zls "${BIN_PATH}/zls" \
-    && chmod +x "${BIN_PATH}/zls"
+RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+    && REPO_NAME="zigtools" \
+    && BIN_NAME="zls" \
+    && REPO="${REPO_NAME}/${BIN_NAME}" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
+    && unset HEADER \
+    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
+    && if [ -z "${VERSION}" ]; then \
+         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
+       fi \
+    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
+    && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
+    && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
+    && TAR_NAME="${BIN_NAME}-${ARCH}-${OS}" \
+    && curl -fsSLo "/tmp/${BIN_NAME}.tar.xz" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.xz" \
+    && tar -xf "/tmp/${BIN_NAME}.tar.xz" \
+    && rm -rf "/tmp/${BIN_NAME}.tar.xz" \
+    && mv "/tmp/${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}" \
+    && rm -rf "/tmp/${TAR_NAME}/${BIN_NAME}" \
+    && chmod +x "${BIN_PATH}/${BIN_NAME}"
 
 FROM env-base AS nim_tools
 USER ${USER}
