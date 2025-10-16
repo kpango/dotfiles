@@ -94,7 +94,6 @@ RUN --mount=type=cache,target=${HOME}/.bun \
     libhdf5-dev \
     libhdf5-serial-dev \
     liblapack-dev \
-    libncurses6-dev \
     libomp-dev \
     libopenblas-dev \
     libssl-dev \
@@ -184,7 +183,7 @@ RUN set -x && cd "$(mktemp -d)" \
     && FILE_ARCH=${ARCH} \
     && if [ "${ARCH}" = "amd64" ] ; then  FILE_ARCH="x86_64" ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  FILE_ARCH="aarch64" ; fi \
-    && curl -fSLo zls.tar.gz "${GITHUB}/${REPO}/${RELEASE_DL}/${ZLS_VERSION}/${FILE_ARCH}-${OS}.tar.gz" \
+    && curl -fSLo zls.tar.gz "${GITHUB}/${REPO}/${RELEASE_DL}/${ZLS_VERSION}/zls-${FILE_ARCH}-${OS}.tar.gz" \
     && tar -xzf zls.tar.gz \
     && mv zls "${BIN_PATH}/zls" \
     && chmod +x "${BIN_PATH}/zls"
@@ -197,7 +196,7 @@ RUN curl https://nim-lang.org/choosenim/init.sh -sSf | sh -s -- -y \
     && nimble install nimlangserver -y
 USER root
 
-FROM cmake-base AS cmake-base
+FROM env-base AS cmake-base
 WORKDIR /tmp
 RUN git clone --depth 1 https://github.com/vdaas/vald "/tmp/vald" \
     && cd "/tmp/vald" \
