@@ -183,12 +183,12 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
-    && TAR_NAME="${BIN_NAME}-${OS}-${ARCH}-${VERSION}" \
-    && curl -fsSLo "/tmp/${BIN_NAME}.tar.xz" "https://${REPO_NAME}.org/download/${ZIG_VERSION}/${TAR_NAME}.tar.xz" \
-    && tar -xf "/tmp/${BIN_NAME}.tar.xz" \
+    && TAR_NAME="${BIN_NAME}-${ARCH}-${OS}-${VERSION}" \
+    && curl -fsSLo "/tmp/${BIN_NAME}.tar.xz" "https://${REPO_NAME}.org/download/${VERSION}/${TAR_NAME}.tar.xz" \
+    && tar -xf "/tmp/${BIN_NAME}.tar.xz" -C /tmp \
+    && mv "/tmp/${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
     && rm -rf "/tmp/${BIN_NAME}.tar.xz" \
-    && mv "/tmp/${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}" \
-    && rm -rf "/tmp/${TAR_NAME}/${BIN_NAME}" \
+    && rm -rf "/tmp/${TAR_NAME}" \
     && chmod +x "${BIN_PATH}/${BIN_NAME}"
 
 # Install ZLS (Zig Language Server)
@@ -209,11 +209,11 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
     && TAR_NAME="${BIN_NAME}-${ARCH}-${OS}" \
-    && curl -fsSLo "/tmp/${BIN_NAME}.tar.xz" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.xz" \
-    && tar -xf "/tmp/${BIN_NAME}.tar.xz" \
-    && rm -rf "/tmp/${BIN_NAME}.tar.xz" \
+    && curl -fsSLo "/tmp/${BIN_NAME}.tar.xz" "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.xz" \
+    && tar -xf "/tmp/${BIN_NAME}.tar.xz" -C /tmp \
     && mv "/tmp/${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}" \
-    && rm -rf "/tmp/${TAR_NAME}/${BIN_NAME}" \
+    && rm -rf "/tmp/${BIN_NAME}.tar.xz" \
+    && rm -rf "/tmp/${TAR_NAME}" \
     && chmod +x "${BIN_PATH}/${BIN_NAME}"
 
 FROM env-base AS nim_tools
