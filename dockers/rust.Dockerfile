@@ -225,7 +225,7 @@ RUN rustup update stable \
     && cargo install --force --locked --all-features \
     xh
 
-FROM scratch AS rust
+FROM scratch AS rust-pre
 ENV HOME=/root
 ENV RUST_HOME=/usr/local/lib/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
@@ -285,3 +285,20 @@ COPY --from=t-rec ${BIN_PATH}/t-rec ${BIN_PATH}/t-rec
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
 COPY --from=tree-sitter ${BIN_PATH}/tree-sitter ${BIN_PATH}/tree-sitter
 COPY --from=xh ${BIN_PATH}/xh ${BIN_PATH}/xh
+
+RUN rustup component add rust-analyzer \
+    rustup update
+
+FROM scratch AS rust
+ENV RUST_HOME=/usr/local/lib/rust
+ENV CARGO_HOME=${RUST_HOME}/cargo
+ENV RUSTUP_HOME=${RUST_HOME}/rustup
+ENV BIN_PATH=${CARGO_HOME}/bin
+ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
+
+COPY --from=rust-pre ${RUST_HOME} ${RUST_HOME}
+COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME} ${HELIX_DEFAULT_RUNTIME}
+COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME}/runtime ${HELIX_RUNTIME}
+COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME}/runtime/themes ${HELIX_HOME}/themes
+COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME}/runtime/grammars ${HELIX_HOME}/grammars
+COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME}/runtime/queries ${HELIX_HOME}/queries

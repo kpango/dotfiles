@@ -9,7 +9,8 @@ LABEL maintainer="${WHOAMI} <${EMAIL}>"
 
 ENV OS=${TARGETOS}
 ENV ARCH=${TARGETARCH}
-ENV AARCH=aarch_64
+ENV AARCHS=aarch_64
+ENV AARCH=aarch64
 ENV XARCH=x86_64
 ENV GITHUBCOM=github.com
 ENV GITHUB=https://${GITHUBCOM}
@@ -156,7 +157,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
        fi \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
-    && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
+    && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCHS} ; fi \
     && ZIP_NAME="${BIN_NAME}-${VERSION}-${OS}-${ARCH}" \
     && curl -fsSLo "/tmp/${BIN_NAME}.zip" "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${ZIP_NAME}.zip" \
     && unzip -o "/tmp/${BIN_NAME}.zip" -d /usr/local "bin/${BIN_NAME}" \
