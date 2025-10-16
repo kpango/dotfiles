@@ -209,11 +209,11 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && if [ "${ARCH}" = "arm64" ] ; then  ARCH=${AARCH} ; fi \
     && TAR_NAME="${BIN_NAME}-${ARCH}-${OS}" \
-    && curl -fsSLo "/tmp/${BIN_NAME}.tar.xz" "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.xz" \
-    && tar -xf "/tmp/${BIN_NAME}.tar.xz" -C /tmp \
-    && mv "/tmp/${TAR_NAME}/${BIN_NAME}" "${BIN_PATH}" \
-    && rm -rf "/tmp/${BIN_NAME}.tar.xz" \
-    && rm -rf "/tmp/${TAR_NAME}" \
+    && curl -fsSLo "./${BIN_NAME}.tar.xz" "${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.xz" \
+    && tar -xf "./${BIN_NAME}.tar.xz" -C . \
+    && mv "./${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
+    && rm -rf "./${BIN_NAME}.tar.xz" \
+    && rm -rf ./* \
     && chmod +x "${BIN_PATH}/${BIN_NAME}"
 
 FROM env-base AS nim_tools
