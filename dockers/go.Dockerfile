@@ -22,6 +22,7 @@ ENV GOPATH=/go
 ENV GOBIN=${GOPATH}/bin
 ENV GOARCH=${ARCH}
 ENV GOOS=${OS}
+ENV GOPROXY="https://proxy.golang.org,https://goproxy.io,direct"
 ENV GOFLAGS="-ldflags=-w -ldflags=-s"
 ENV GOORG="golang.org"
 ENV GODEV="https://go.dev"
@@ -69,7 +70,14 @@ WORKDIR ${GOPATH}/src/kpango.com/dotfiles/mod
 COPY dockers/go.mod "${GOPATH}/src/kpango.com/dotfiles/mod/go.mod"
 COPY dockers/go.sum "${GOPATH}/src/kpango.com/dotfiles/mod/go.sum"
 RUN set -ex \
-    && go install tool
+    && env -u CC -u CXX -u CPPFLAGS -u CFLAGS -u CXXFLAGS -u LDFLAGS \
+           -u CGO_CFLAGS -u CGO_CXXFLAGS -u CGO_LDFLAGS \
+           CGO_ENABLED=0 \
+       GOTOOLCHAIN=local go mod download \
+    && env -u CC -u CXX -u CPPFLAGS -u CFLAGS -u CXXFLAGS -u LDFLAGS \
+           -u CGO_CFLAGS -u CGO_CXXFLAGS -u CGO_LDFLAGS \
+           CGO_ENABLED=0 \
+       GOTOOLCHAIN=local go install  ${GO_FLAGS} tool
 
 # Special
 FROM go-base AS dagger
@@ -189,8 +197,6 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && chmod a+x "${GOBIN}/${BIN_NAME}" \
     && upx -9 "${GOBIN}/${BIN_NAME}"
 
-
-
 FROM go-base AS pulumi
 RUN set -x && cd "$(mktemp -d)" \
     && BIN_NAME="pulumi" \
@@ -226,6 +232,9 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
 FROM go-base AS go
 RUN upx -9 ${GOROOT}/bin/*
 
+FROM go-tools AS tools
+RUN upx -9 ${GOPATH}/bin/*
+
 FROM go-base AS go-bins
 COPY --from=dagger $GOBIN/dagger $GOBIN/dagger
 COPY --from=flamegraph $GOBIN/flamegraph.pl $GOBIN/flamegraph.pl
@@ -249,4 +258,4 @@ COPY --from=go $GOROOT/lib $GOROOT/lib
 COPY --from=go $GOROOT/pkg $GOROOT/pkg
 COPY --from=go $GOROOT/misc $GOROOT/misc
 COPY --from=go-bins $GOPATH/bin $GOPATH/bin
-COPY --from=go-tools $GOPATH/bin $GOPATH/bin
+COPY --from=tools $GOPATH/bin $GOPATH/bin
