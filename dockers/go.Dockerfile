@@ -129,6 +129,32 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && mv ${BIN_NAME} ${GOBIN}/${BIN_NAME} \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
+#Special
+FROM go-base AS gh
+RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
+    && BIN_NAME="gh" \
+    && REPO="cli/cli" \
+    && HEADER="Authorization: Bearer $(cat /run/secrets/gat)" \
+    && BODY=$(curl -fsSLGH "${HEADER}" ${API_GITHUB}/${REPO}/${RELEASE_LATEST}) \
+    && unset HEADER \
+    && VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g') \
+    && if [ -z "${VERSION}" ]; then \
+         echo "Warning: VERSION is empty with auth. ${BODY}. Trying without auth..."; \
+         BODY="$(curl -fsSL ${API_GITHUB}/${REPO}/${RELEASE_LATEST})"; \
+         VERSION=$(echo "${BODY}" | grep -Po '"tag_name": "\K.*?(?=")' | sed 's/v//g'); \
+       fi \
+    && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
+    && OS="$(go env GOOS)" \
+    && ARCH="$(go env GOARCH)" \
+    && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
+    && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
+    && tar -zxvf "${TAR_NAME}.tar.gz" \
+    && mv ${BIN_NAME} ${GOBIN}/${BIN_NAME} \
+    && upx -9 ${GOBIN}/${BIN_NAME}
+
 # Special
 FROM go-base AS golangci-lint
 RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
@@ -241,6 +267,7 @@ COPY --from=flamegraph $GOBIN/flamegraph.pl $GOBIN/flamegraph.pl
 COPY --from=flamegraph $GOBIN/stackcollapse-go.pl $GOBIN/stackcollapse-go.pl
 COPY --from=flamegraph $GOBIN/stackcollapse.pl $GOBIN/stackcollapse.pl
 COPY --from=fzf $GOBIN/fzf $GOBIN/fzf
+COPY --from=gh $GOBIN/gh $GOBIN/gh
 COPY --from=golangci-lint $GOBIN/golangci-lint $GOBIN/golangci-lint
 COPY --from=gopls $GOBIN/gopls $GOBIN/gopls
 COPY --from=guru $GOBIN/guru $GOBIN/guru
