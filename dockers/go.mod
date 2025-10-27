@@ -51,10 +51,15 @@ tool (
 	github.com/quasilyte/go-ruleguard/cmd/ruleguard
 	github.com/rerost/dragon-imports
 	github.com/rerost/dragon-imports/cmd/dragon-imports
+	github.com/rhysd/actionlint/cmd/actionlint
 	github.com/rs/xid
 	github.com/securego/gosec/v2/cmd/gosec
+	github.com/segmentio/golines
 	github.com/siderolabs/talos/cmd/talosctl
 	github.com/sqs/goreturns
+	github.com/suzuki-shunsuke/ghalint/cmd/ghalint
+	github.com/suzuki-shunsuke/ghatm/cmd/ghatm
+	github.com/suzuki-shunsuke/pinact/cmd/pinact
 	github.com/tendermint/tendermint/libs/pubsub
 	github.com/tsenart/vegeta
 	github.com/uber/prototool/cmd/prototool
@@ -71,6 +76,7 @@ tool (
 	golang.org/x/tools/go/analysis/passes/fieldalignment
 	golang.org/x/vuln/cmd/govulncheck
 	google.golang.org/protobuf/cmd/protoc-gen-go
+	honnef.co/go/tools/cmd/staticcheck
 	mvdan.cc/gofumpt
 	mvdan.cc/sh/v3/cmd/shfmt
 	sigs.k8s.io/kind/cmd/kind
@@ -81,6 +87,7 @@ tool (
 replace (
 	github.com/mark3labs/mcp-go => github.com/mark3labs/mcp-go v0.28.0
 	github.com/olekukonko/tablewriter => github.com/olekukonko/tablewriter v0.0.5
+	github.com/suzuki-shunsuke/ghalint => github.com/suzuki-shunsuke/ghalint v1.5.4-0.20251025214124-95ea42b7e52a
 	github.com/ugorji/go => github.com/ugorji/go v1.2.14
 )
 
@@ -163,6 +170,7 @@ require (
 	github.com/agnivade/levenshtein v1.2.1 // indirect
 	github.com/alecthomas/chroma/v2 v2.20.0 // indirect
 	github.com/alecthomas/kingpin v1.3.8-0.20191105203113-8c96d1c22481 // indirect
+	github.com/alecthomas/kingpin/v2 v2.4.0 // indirect
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751 // indirect
 	github.com/alecthomas/units v0.0.0-20240927000941-0f3dac36c52b // indirect
 	github.com/alexflint/go-filemutex v1.3.0 // indirect
@@ -258,6 +266,7 @@ require (
 	github.com/cyberark/conjur-api-go v0.13.7 // indirect
 	github.com/cyphar/filepath-securejoin v0.5.0 // indirect
 	github.com/danieljoos/wincred v1.2.3 // indirect
+	github.com/dave/dst v0.27.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/daviddengcn/go-colortext v1.0.0 // indirect
 	github.com/davidrjenni/reftools v0.0.0-20250907133731-34b10582faa4 // indirect
@@ -376,6 +385,9 @@ require (
 	github.com/google/go-containerregistry v0.20.6 // indirect
 	github.com/google/go-dap v0.12.0 // indirect
 	github.com/google/go-github v17.0.0+incompatible // indirect
+	github.com/google/go-github/v70 v70.0.0 // indirect
+	github.com/google/go-github/v73 v73.0.0 // indirect
+	github.com/google/go-github/v76 v76.0.0 // indirect
 	github.com/google/go-jsonnet v0.21.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/go-tpm v0.9.6 // indirect
@@ -482,6 +494,7 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-pipeline v0.0.0-20190323144519-32d779b32768 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
+	github.com/mattn/go-shellwords v1.0.12 // indirect
 	github.com/mattn/go-sqlite3 v1.14.32 // indirect
 	github.com/mattn/go-tty v0.0.7 // indirect
 	github.com/mattn/go-unicodeclass v0.0.2 // indirect
@@ -554,8 +567,10 @@ require (
 	github.com/quic-go/quic-go v0.55.0 // indirect
 	github.com/rerost/dragon-imports v0.0.0-20200512170120-c6226dfec3a1 // indirect
 	github.com/reviewdog/errorformat v0.0.0-20250320004447-223c26dbe212 // indirect
+	github.com/rhysd/actionlint v1.7.8 // indirect
 	github.com/rivo/tview v0.42.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/rs/cors v1.11.1 // indirect
 	github.com/rs/xid v1.6.0 // indirect
@@ -567,6 +582,8 @@ require (
 	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06 // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
 	github.com/sajari/fuzzy v1.0.0 // indirect
+	github.com/samber/lo v1.52.0 // indirect
+	github.com/samber/slog-logrus v1.0.0 // indirect
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.2 // indirect
 	github.com/saracen/walker v0.1.4 // indirect
 	github.com/sasha-s/go-deadlock v0.3.6 // indirect
@@ -574,6 +591,7 @@ require (
 	github.com/securego/gosec/v2 v2.22.10 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/segmentio/encoding v0.5.3 // indirect
+	github.com/segmentio/golines v0.13.0 // indirect
 	github.com/sergi/go-diff v1.4.0 // indirect
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/siderolabs/crypto v0.6.4 // indirect
@@ -614,6 +632,16 @@ require (
 	github.com/stretchr/objx v0.5.3 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
+	github.com/suzuki-shunsuke/ghalint v0.0.0-00010101000000-000000000000 // indirect
+	github.com/suzuki-shunsuke/ghatm v0.3.7 // indirect
+	github.com/suzuki-shunsuke/go-stdutil v0.0.1 // indirect
+	github.com/suzuki-shunsuke/logrus-error v0.1.4 // indirect
+	github.com/suzuki-shunsuke/logrus-util v0.0.1 // indirect
+	github.com/suzuki-shunsuke/pinact v1.6.0 // indirect
+	github.com/suzuki-shunsuke/slog-error v0.2.0 // indirect
+	github.com/suzuki-shunsuke/slog-logrus v0.1.0 // indirect
+	github.com/suzuki-shunsuke/urfave-cli-help-all v0.0.4 // indirect
+	github.com/suzuki-shunsuke/urfave-cli-v3-util v0.1.0 // indirect
 	github.com/tatsushid/go-prettytable v0.0.0-20141013043238-ed2d14c29939 // indirect
 	github.com/tendermint/tendermint v0.35.9 // indirect
 	github.com/tetratelabs/wabin v0.0.0-20230304001439-f6f874872834 // indirect
@@ -636,18 +664,21 @@ require (
 	github.com/ulikunitz/xz v0.5.15 // indirect
 	github.com/urfave/cli v1.22.17 // indirect
 	github.com/urfave/cli/v2 v2.27.7 // indirect
+	github.com/urfave/cli/v3 v3.5.0 // indirect
 	github.com/variantdev/dag v1.1.0 // indirect
 	github.com/vbatts/tar-split v0.12.2 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.30 // indirect
 	github.com/vishvananda/netlink v1.3.1 // indirect
 	github.com/vishvananda/netns v0.0.5 // indirect
 	github.com/vugu/vgrun v0.0.0-20221010231011-b56916c1e8c2 // indirect
+	github.com/x-cray/logrus-prefixed-formatter v0.5.2 // indirect
 	github.com/x-motemen/ghq v1.8.0 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
+	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/xiang90/probing v0.0.0-20221125231312-a49e3df8f510 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
@@ -694,6 +725,7 @@ require (
 	go.uber.org/zap v1.27.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	go.yaml.in/yaml/v4 v4.0.0-rc.2 // indirect
 	go4.org/netipx v0.0.0-20231129151722-fdeea329fbba // indirect
 	golang.org/dl v0.0.0-20251013210724-90b1a3fbfb96 // indirect
 	golang.org/x/arch v0.22.0 // indirect
@@ -733,6 +765,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	helm.sh/helm/v3 v3.19.0 // indirect
+	honnef.co/go/tools v0.6.1 // indirect
 	k8s.io/api v0.34.1 // indirect
 	k8s.io/apiextensions-apiserver v0.34.1 // indirect
 	k8s.io/apimachinery v0.34.1 // indirect

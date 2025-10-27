@@ -51,10 +51,15 @@ tool (
 	github.com/quasilyte/go-ruleguard/cmd/ruleguard
 	github.com/rerost/dragon-imports
 	github.com/rerost/dragon-imports/cmd/dragon-imports
+	github.com/rhysd/actionlint/cmd/actionlint
 	github.com/rs/xid
 	github.com/securego/gosec/v2/cmd/gosec
+	github.com/segmentio/golines
 	github.com/siderolabs/talos/cmd/talosctl
 	github.com/sqs/goreturns
+	github.com/suzuki-shunsuke/ghalint/cmd/ghalint
+	github.com/suzuki-shunsuke/ghatm/cmd/ghatm
+	github.com/suzuki-shunsuke/pinact/cmd/pinact
 	github.com/tendermint/tendermint/libs/pubsub
 	github.com/tsenart/vegeta
 	github.com/uber/prototool/cmd/prototool
@@ -71,6 +76,7 @@ tool (
 	golang.org/x/tools/go/analysis/passes/fieldalignment
 	golang.org/x/vuln/cmd/govulncheck
 	google.golang.org/protobuf/cmd/protoc-gen-go
+	honnef.co/go/tools/cmd/staticcheck
 	mvdan.cc/gofumpt
 	mvdan.cc/sh/v3/cmd/shfmt
 	sigs.k8s.io/kind/cmd/kind
@@ -79,6 +85,7 @@ tool (
 )
 
 replace (
+	github.com/suzuki-shunsuke/ghalint => github.com/suzuki-shunsuke/ghalint main
 	github.com/mark3labs/mcp-go => github.com/mark3labs/mcp-go v0.28.0
 	github.com/olekukonko/tablewriter => github.com/olekukonko/tablewriter v0.0.5
 	github.com/ugorji/go => github.com/ugorji/go upgrade

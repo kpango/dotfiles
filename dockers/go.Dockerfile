@@ -152,8 +152,8 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && TAR_NAME="${BIN_NAME}_${VERSION}_${OS}_${ARCH}" \
     && curl -fsSLO "${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv ${BIN_NAME} ${GOBIN}/${BIN_NAME} \
-    && upx -9 ${GOBIN}/${BIN_NAME}
+    && mv "${TAR_NAME}/bin/${BIN_NAME}" "${GOBIN}/${BIN_NAME}" \
+    && upx -9 "${GOBIN}/${BIN_NAME}"
 
 # Special
 FROM go-base AS golangci-lint
