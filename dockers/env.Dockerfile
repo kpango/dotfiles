@@ -248,11 +248,12 @@ RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
         typescript \
         typescript-language-server \
         n \
-        @openai/codex \
-        @google/gemini-cli \
         @anthropic-ai/claude-code \
-        @qwen-code/qwen-code \
         @byterover/cipher \
+        @github/copilot \
+        @google/gemini-cli \
+        @openai/codex \
+        @qwen-code/qwen-code \
     && ${BUN_INSTALL}/bin/n latest
 
 FROM env-stage AS env
