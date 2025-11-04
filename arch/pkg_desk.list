@@ -20,7 +20,6 @@ ccache
 chrony
 clang
 cmake
-cuda
 discord
 dmidecode
 dnsmasq
@@ -37,6 +36,7 @@ fd
 fwupd
 fwupd-efi
 gettext
+ghostty
 git
 git-delta
 go
@@ -70,7 +70,6 @@ mysql-workbench
 networkmanager
 nmap
 nvidia-container-toolkit
-nvidia-open-dkms
 nvme-cli
 openssl-1.1
 pacman-contrib
@@ -120,7 +119,6 @@ which
 whois
 wl-clipboard
 wofi
-xf86-video-nouveau
 xfsprogs
 xorg-xwayland
 yt-dlp

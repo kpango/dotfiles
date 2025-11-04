@@ -3,7 +3,17 @@
 sudo rm -rf $HOME/.ccache
 
 # Detect GPU type
-GPU_VENDOR=$(lspci | grep -i 'vga\|3d\|display' | grep -i 'nvidia' && echo "nvidia" || echo "other")
+export GPU_VENDOR="$(
+  bash -c 'if command -v nvidia-smi >/dev/null 2>&1 && nvidia-smi -L >/dev/null 2>&1 \
+    && lsmod | grep -q "^nvidia" && ! lsmod | grep -q "^nouveau" \
+    && { [ -e /dev/nvidiactl ] || [ -e /dev/nvidia0 ]; } \
+    && command -v lspci >/dev/null 2>&1 \
+    && lspci | grep -Ei "VGA|3D|Display" | grep -qi nvidia; then
+      printf nvidia
+    else
+      printf other
+    fi'
+)"
 
 # Set environment variables for Wayland and GPU-specific settings
 export CLUTTER_BACKEND=wayland

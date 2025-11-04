@@ -6,7 +6,6 @@ downgrade
 duf-git
 ethtool-git
 fanctl-git
-fcitx5-mozc-ut
 fcitx5-skin-arc
 ggshield
 ghq-bin
@@ -16,13 +15,14 @@ google-cloud-cli-gke-gcloud-auth-plugin
 gopreload-git
 light
 milcheck
-mkinitcpio-firmware
 neovim-git
 netrc
 ngrok
 nkf-git
 noto-fonts-emoji-git
+nvidia-beta-dkms
 nvidia-settings-beta
+opencl-nvidia-beta
 pakku
 paru-bin
 rancher-k3d-beta-bin
