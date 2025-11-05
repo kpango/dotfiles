@@ -12,11 +12,12 @@ sway_systemd_install:
 	@sudo cp arch/sway.sh /usr/local/bin/sway-start
 	@sudo chmod +x /usr/local/bin/sway-start
 	@sudo cp arch/systemd-user/* /etc/systemd/user/
-	@systemctl --user daemon-reload
+	@echo "Please run the following command in your interactive shell:"
+	@echo "  systemctl --user daemon-reload"
 
 sway_systemd_enable_user:
-	@echo "Enabling sway systemd user service..."
-	@systemctl --user enable --now sway.service
+	@echo "Please run the following command in your interactive shell:"
+	@echo "  systemctl --user enable --now sway.service"
 
 sway_config_install:
 	@echo "Installing sway config..."
@@ -30,6 +31,7 @@ tmpfiles_install_safe:
 	@sudo cp arch/tmpfiles.d/30-docker.conf /etc/tmpfiles.d/
 	@sudo cp arch/tmpfiles.d/40-networking.conf /etc/tmpfiles.d/
 	@sudo cp arch/tmpfiles.d/50-system.conf /etc/tmpfiles.d/
+	@sudo mkdir -p /etc/user-tmpfiles.d/
 	@sudo cp arch/user-tmpfiles.d/10-desktop-caches.conf /etc/user-tmpfiles.d/
 
 tmpfiles_install_aggressive:
@@ -44,24 +46,29 @@ tmpfiles_install_very_aggressive:
 
 journald_coredump_install:
 	@echo "Installing journald and coredump configs..."
+	@sudo mkdir -p /etc/systemd/journald.conf.d/
+	@sudo mkdir -p /etc/systemd/coredump.conf.d/
 	@sudo cp arch/systemd/journald.conf.d/10-size.conf /etc/systemd/journald.conf.d/
 	@sudo cp arch/systemd/coredump.conf.d/10-limits.conf /etc/systemd/coredump.conf.d/
-	@sudo systemctl restart systemd-journald
+	@echo "Please run the following command to apply journald and coredump settings:"
+	@echo "  sudo systemctl restart systemd-journald"
 
 docker_setup:
 	@echo "Setting up Docker..."
 	@sudo cp arch/docker/daemon.json /etc/docker/daemon.json
-	@sudo systemctl restart docker
 	@sudo cp arch/systemd/system/docker-*.service /etc/systemd/system/
 	@sudo cp arch/systemd/system/docker-*.timer /etc/systemd/system/
+	@echo "Please run the following command to apply Docker settings:"
+	@echo "  sudo systemctl restart docker"
 
 enable_safe_services:
 	@echo "Enabling safe services..."
-	@sudo systemctl daemon-reload
-	@sudo systemctl enable --now systemd-tmpfiles-clean.timer
-	@sudo systemctl enable --now fstrim.timer || true
-	@sudo systemctl enable --now paccache.timer || true
-	@sudo systemctl enable --now docker-prune.timer
+	@echo "Please run the following commands to enable safe services:"
+	@echo "  sudo systemctl daemon-reload"
+	@echo "  sudo systemctl enable --now systemd-tmpfiles-clean.timer"
+	@echo "  sudo systemctl enable --now fstrim.timer"
+	@echo "  sudo systemctl enable --now paccache.timer"
+	@echo "  sudo systemctl enable --now docker-prune.timer"
 
 enable_optin_services:
 	@echo "Installing opt-in services..."
@@ -76,7 +83,7 @@ enable_optin_services:
 
 verify:
 	@echo "Verifying installation..."
-	@systemctl list-timers
-	@docker info --format '{{.LoggingDriver}}'
-	@ls /usr/local/bin/sway-start
-	@ls ~/.config/sway/config
+	@if [ -f /etc/systemd/system/docker-prune.timer ]; then echo "docker-prune.timer exists"; else echo "docker-prune.timer does not exist"; fi
+	@if [ -f /usr/local/bin/sway-start ]; then echo "sway-start exists"; else echo "sway-start does not exist"; fi
+	@if [ -f ~/.config/sway/config ]; then echo "sway config exists"; else echo "sway config does not exist"; fi
+	@if [ -f /etc/docker/daemon.json ]; then echo "daemon.json exists"; else echo "daemon.json does not exist"; fi
