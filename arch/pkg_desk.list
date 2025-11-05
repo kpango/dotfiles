@@ -20,6 +20,7 @@ ccache
 chrony
 clang
 cmake
+cuda
 discord
 dmidecode
 dnsmasq
@@ -36,7 +37,6 @@ fd
 fwupd
 fwupd-efi
 gettext
-ghostty
 git
 git-delta
 go
