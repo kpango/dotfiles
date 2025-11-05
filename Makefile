@@ -170,8 +170,8 @@ arch_p1_link: \
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
 	sudo systemctl daemon-reload
-	# sudo cp $(ROOTDIR)/arch/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
-	# sudo cp $(ROOTDIR)/arch/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
+	# sudo cp $(ROOTDIR)/arch/service/nvidia-enable-power-off.service /etc/systemd/system/nvidia-enable-power-off.service
+	# sudo cp $(ROOTDIR)/arch/service/nvidia-disable-resume.service /etc/systemd/system/nvidia-disable-resume.service
 
 arch_desk_link: \
 	arch_link
@@ -183,7 +183,7 @@ arch_desk_link: \
 	sudo ln -sfv $(ROOTDIR)/network/desk/70-persistent-network.rules /etc/udev/rules.d/70-persistent-network.rules
 	sudo mkdir -p /etc/systemd/system/irqbalance.service.d
 	sudo rm -rf /etc/systemd/system/irqbalance.service.d/override.conf
-	sudo ln -sfv $(ROOTDIR)/arch/irqbalance.service /etc/systemd/system/irqbalance.service.d/override.conf
+	sudo ln -sfv $(ROOTDIR)/arch/service/irqbalance.service /etc/systemd/system/irqbalance.service.d/override.conf
 	sudo rm -rf /etc/NetworkManager/system-connections
 	sudo mkdir -p /etc/NetworkManager/system-connections
 	sudo cp $(ROOTDIR)/network/desk/bond0.nmconnection /etc/NetworkManager/system-connections/bond0.nmconnection
