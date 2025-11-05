@@ -120,11 +120,10 @@ arch_link: \
 	ln -sfv $(ROOTDIR)/arch/wofi/style.css $(HOME)/.config/wofi/style.css
 	ln -sfv $(ROOTDIR)/arch/wofi/wofi.conf $(HOME)/.config/wofi/config
 	ln -sfv $(ROOTDIR)/arch/workstyle.toml $(HOME)/.config/workstyle/config.toml
-	ln -sfv $(ROOTDIR)/arch/xinitrc $(HOME)/.xinitrc
 	ln -sfv $(ROOTDIR)/arch/Xmodmap $(HOME)/.Xmodmap
 	sudo cp $(ROOTDIR)/arch/chrony.conf /etc/chrony.conf
 	sudo cp $(ROOTDIR)/arch/suduers /etc/sudoers.d/$(USER)
-	sudo cp $(ROOTDIR)/arch/xinitrc /etc/environment
+	sudo cp $(ROOTDIR)/arch/environment /etc/environment
 	sudo cp $(ROOTDIR)/network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
 	sudo cp $(ROOTDIR)/network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo cp $(ROOTDIR)/network/nmcli-bond-auto-connect.sh /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
@@ -138,7 +137,6 @@ arch_link: \
 	sudo ln -sfv $(ROOTDIR)/arch/thinkfan.conf /etc/thinkfan.conf
 	sudo ln -sfv $(ROOTDIR)/arch/tlp /etc/default/tlp
 	sudo ln -sfv $(ROOTDIR)/arch/tlp /etc/tlp.conf
-	sudo ln -sfv $(ROOTDIR)/arch/xinitrc /etc/profile.d/fcitx.sh
 	sudo ln -sfv $(ROOTDIR)/dockers/config.json /root/.docker/config.json
 	sudo ln -sfv $(ROOTDIR)/dockers/daemon.json /root/.docker/daemon.json
 	sudo ln -sfv $(ROOTDIR)/network/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
