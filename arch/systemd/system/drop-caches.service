@@ -1,0 +1,6 @@
+[Unit]
+Description=Drop kernel page cache
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "echo 3 > /proc/sys/vm/drop_caches"

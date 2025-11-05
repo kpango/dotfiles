@@ -1,0 +1,13 @@
+[Unit]
+Description=Ghostty Terminal Emulator
+PartOf=sway-session.target
+After=sway.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ghostty
+Restart=on-failure
+RestartSec=1
+
+[Install]
+WantedBy=sway-session.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Hourly drop of kernel page cache
+
+[Timer]
+OnCalendar=hourly
+AccuracySec=1m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

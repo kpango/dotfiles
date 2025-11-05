@@ -1,0 +1,4 @@
+[Unit]
+Description=Sway Wayland session
+Documentation=man:sway(1)
+PartOf=sway.service

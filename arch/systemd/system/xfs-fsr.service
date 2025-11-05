@@ -1,0 +1,6 @@
+[Unit]
+Description=Defragment XFS filesystem
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/xfs_fsr

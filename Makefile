@@ -482,3 +482,5 @@ git_push:
 	git add -A
 	git commit -m fix
 	git push
+
+include Makefile.d/os_sync.mk

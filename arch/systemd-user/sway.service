@@ -1,0 +1,15 @@
+[Unit]
+Description=Sway Wayland Compositor
+Documentation=man:sway(1)
+Wants=sway-session.target
+Before=sway-session.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/environment
+ExecStart=/usr/local/bin/sway-start
+Restart=on-failure
+RestartSec=1
+
+[Install]
+WantedBy=default.target

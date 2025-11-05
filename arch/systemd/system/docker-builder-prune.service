@@ -1,0 +1,6 @@
+[Unit]
+Description=Prune Docker builder cache
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker builder prune --force

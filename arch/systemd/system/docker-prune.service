@@ -1,0 +1,6 @@
+[Unit]
+Description=Prune unused Docker resources
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker system prune --force --filter "until=720h"
