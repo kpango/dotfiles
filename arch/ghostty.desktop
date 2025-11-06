@@ -1,26 +1,27 @@
 [Desktop Entry]
 Version=1.0
 Name=Ghostty
+GenericName=Terminal
+Comment=A GPU-accelerated terminal emulator
+StartupWMClass=com.mitchellh.ghostty
 Type=Application
-Comment=A terminal emulator
 TryExec=/usr/bin/ghostty
-Exec=/usr/bin/ghostty --gtk-single-instance=true
+Exec=/usr/bin/env sh -lc 'CFG="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/config"; exec /usr/bin/ghostty --config-file="$CFG"'
 Icon=com.mitchellh.ghostty
 Categories=System;TerminalEmulator;
-Keywords=terminal;tty;pty;
+Keywords=terminal;tty;pty;shell;
 StartupNotify=true
-StartupWMClass=com.mitchellh.ghostty
 Terminal=false
 Actions=new-window;
 X-GNOME-UsesNotifications=true
+X-KDE-Shortcuts=Ctrl+Alt+T
 X-TerminalArgExec=-e
 X-TerminalArgTitle=--title=
 X-TerminalArgAppId=--class=
 X-TerminalArgDir=--working-directory=
 X-TerminalArgHold=--wait-after-command
-DBusActivatable=true
-X-KDE-Shortcuts=Ctrl+Alt+T
+DBusActivatable=falseStartupWMClass=com.mitchellh.ghostty
 
 [Desktop Action new-window]
 Name=New Window
-Exec=/usr/bin/ghostty --gtk-single-instance=true
+Exec=/usr/bin/env sh -lc 'CFG="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/config"; exec /usr/bin/ghostty --config-file="$CFG"'

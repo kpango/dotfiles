@@ -144,6 +144,7 @@ arch_link: \
 	sudo ln -sfv $(ROOTDIR)/network/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
 	sudo ln -sfv $(ROOTDIR)/network/resolv.dnsmasq.conf /etc/resolv.pre-tailscale-backup.conf
 	sudo ln -sfv $(ROOTDIR)/network/sysctl.conf /etc/sysctl.d/99-sysctl.conf
+	sudo ln -sfv $(ROOTDIR)/arch/ghostty.desktop /usr/share/applications/com.mitchellh.ghostty.desktop
 	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
 	# sudo modprobe -rv thinkpad_acpi
 	# sudo modprobe -v thinkpad_acpi
@@ -302,7 +303,8 @@ clean: perm
 		/etc/systemd/system/pulseaudio.service \
 		/etc/tlp.conf \
 		/etc/udev/rules.d/60-ioschedulers.rules \
-		/etc/udev/rules.d/60-nvidia.rules
+		/etc/udev/rules.d/60-nvidia.rules \
+		/usr/share/applications/com.mitchellh.ghostty.desktop
 
 
 
