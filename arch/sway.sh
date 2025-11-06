@@ -3,7 +3,6 @@
 # (Improved Version)
 
 # 1) Strict mode and helpers
-set -Eeuo pipefail
 IFS=$'\n\t'
 log() { printf '[sway-start] %s\n' "$*" >&2; }
 
@@ -35,24 +34,21 @@ add_key "XDG_SESSION_DESKTOP"
 add_key "XDG_CURRENT_SESSION"
 
 # 3) GPU detection
-detect_gpu_vendor() {
-  # Check for a conjunction of signals that the proprietary NVIDIA driver is active.
-  # Use hash (shell builtin) for command checks - faster than `command -v`.
-  if hash nvidia-smi &>/dev/null && nvidia-smi -L &>/dev/null &&
-     lsmod | grep -q '^nvidia' &&
-     ! lsmod | grep -q '^nouveau' &&
-     { [ -e /dev/nvidiactl ] || [ -e /dev/nvidia0 ]; } &&
-     hash lspci &>/dev/null &&
-     lspci | grep -Eiq 'VGA|3D|Display.*NVIDIA'
-  then
-    printf "nvidia"
-  else
-    printf "other"
-  fi
-}
-
-GPU_VENDOR="$(detect_gpu_vendor)"
+export GPU_VENDOR="$(
+  bash -c 'if hash nvidia-smi >/dev/null 2>&1 && nvidia-smi -L >/dev/null 2>&1 \
+    && hash lsmod >/dev/null 2>&1 \
+    && lsmod | grep -q "^nvidia" && ! lsmod | grep -q "^nouveau" \
+    && { [ -e /dev/nvidiactl ] || [ -e /dev/nvidia0 ]; } \
+    && hash lspci >/dev/null 2>&1 \
+    && lspci | grep -Ei "VGA|3D|Display" | grep -qi nvidia; then
+      printf nvidia
+    else
+      printf other
+    fi'
+)"
 SWAY_GPU_OPTION=""
+
+echo $GPU_VENDOR
 
 # 4) GPU-specific additions
 if [[ "${GPU_VENDOR}" == "nvidia" ]]; then
@@ -71,7 +67,6 @@ if [[ "${GPU_VENDOR}" == "nvidia" ]]; then
   # Heuristic: Assume dGPU (NVIDIA) is the *last* DRM card (e.g., card1).
   # `head -n1` (original) often incorrectly selects iGPU (e.g., card0).
   # We use `ls -1v` for natural sort.
-  local card
   card=$(ls -1v /dev/dri/card* | tail -n1)
 
   # Only set WLR_DRM_DEVICES if not already set by the user/environment
