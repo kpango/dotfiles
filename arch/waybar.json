@@ -75,12 +75,12 @@
     "interval": 5,
     "format": "cpu {usage}% ",
     "tooltip": false,
-    "on-click": "alacritty -e htop"
+    "on-click": "ghostty -e btop"
   },
   "memory": {
     "interval": 5,
     "format": "mem {}% ",
-    "on-click": "alacritty -e htop"
+    "on-click": "ghostty -e btop"
   },
   "temperature": {
     "interval": 5,
@@ -139,7 +139,7 @@
     "format-linked": "{ifname} (No IP) ",
     "format-disconnected": "⚠ Disconnected",
     "format-alt": "{ifname}: {ipaddr}/{cidr}, up: {bandwidthUpBits}, down: {bandwidthDownBits}",
-    "on-click": "alacritty -e nmtui"
+    "on-click": "ghostty -e nmtui"
   },
   "pulseaudio": {
     "format": "{volume}% {icon} {format_source}",
@@ -179,6 +179,6 @@
     "format": "{}  ",
     "exec": "sudo nvme --smart-log /dev/nvme0 | grep temperature | awk '{print $3}'",
     "interval": 30,
-    "on-click": "alacritty -e watch sensors"
+    "on-click": "ghostty -e watch sensors"
   }
 }

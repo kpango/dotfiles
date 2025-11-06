@@ -1,6 +1,6 @@
 acpi
 acpi_call-dkms
-alacritty
+ghostty
 alsa-utils
 archlinux-keyring
 autoconf
@@ -41,7 +41,7 @@ grep
 grim
 gzip
 helvum
-htop
+btop
 imagemagick
 inetutils
 intel-ucode

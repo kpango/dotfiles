@@ -1,4 +1,4 @@
-alacritty
+ghostty
 alsa-firmware
 utoconf
 utomake
@@ -27,7 +27,7 @@ graphviz
 grep
 grim
 gzip
-htop
+btop
 imagemagick
 imv
 inetutils

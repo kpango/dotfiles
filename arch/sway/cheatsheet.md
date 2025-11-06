@@ -3,7 +3,7 @@
    = Super Key
 
 # common operations
-           Return      *term* (`alacritty`)
+           Return      *term* (`ghostty`)
            q           *quit* (kill focused window)
            p           *show activities*
            d           *show app menu (i3 like)* (`wofi`)

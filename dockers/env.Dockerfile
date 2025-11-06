@@ -238,7 +238,7 @@ RUN make usearch/install
 FROM env-base AS env-stage
 WORKDIR /tmp
 ENV PATH=${LOCAL}/bin:${PATH}
-ENV BUN_INSTALL=/usr/local/bun
+ENV BUN_INSTALL=/usr/local
 RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
         prettier \
         pyright \
@@ -254,7 +254,8 @@ RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
         @google/gemini-cli \
         @openai/codex \
         @qwen-code/qwen-code \
-    && ${BUN_INSTALL}/bin/n latest
+    && ${BUN_INSTALL}/bin/n latest \
+    && pip install mbake --prefix /usr
 
 FROM env-stage AS env
 ARG EMAIL=kpango@vdaas.org

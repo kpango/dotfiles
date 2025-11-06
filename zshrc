@@ -126,10 +126,12 @@ if [ -z $DOTENV_LOADED ]; then
         export CPUCORES="$(getconf _NPROCESSORS_ONLN)"
     fi
 
-    if type alacritty >/dev/null 2>&1; then
-        export TERMCMD="WINIT_UNIX_BACKEND=x11 alacritty -e $SHELL -c tmux -S /tmp/tmux.sock -q has-session  && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST"
+    if type ghostty >/dev/null 2>&1; then
+        export TERMCMD="ghostty -e $SHELL -c tmux -S /tmp/tmux.sock -q has-session  && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST"
+    elif type alacritty >/dev/null 2>&1; then
+        export TERMCMD="alacritty -e $SHELL -c tmux -S /tmp/tmux.sock -q has-session  && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST"
     elif type urxvtc >/dev/null 2>&1; then
-        export TERMCMD="urxvtc -e $SHELL -c tmux -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST"
+        export TERMCMD="urxvtc -e $SHELL -c tmux -S /tmp/tmux.sock -q has-session  && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST"
     fi
 
     export XDG_CONFIG_HOME=$HOME/.config
@@ -698,11 +700,18 @@ if [ -z $ZSH_LOADED ]; then
         alias ps='procs'
     fi
 
-    if type btm >/dev/null 2>&1; then
+    if type btop >/dev/null 2>&1; then
+        alias top='btop'
+        alias htop='btop'
+        alias btm='btop'
+    elif type btm >/dev/null 2>&1; then
         alias top='btm'
         alias htop='btm'
+        alias btop='btm'
     elif type htop >/dev/null 2>&1; then
-        alias top=htop
+        alias top='htop'
+        alias btop='htop'
+        alias btm='htop'
     fi
 
     if type lsd >/dev/null 2>&1; then

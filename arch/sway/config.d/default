@@ -8,7 +8,7 @@ set $up k
 set $right l
 
 # Your preferred terminal emulators
-set $term-float alacritty
+set $term-float ghostty
 
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened

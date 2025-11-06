@@ -29,7 +29,7 @@ run:
 	source $(ROOTDIR)/alias && devrun
 
 copy:
-	mkdir -p $(HOME)/.config/alacritty
+	mkdir -p $(HOME)/.config/ghostty
 	mkdir -p $(HOME)/.config/helix/themes
 	mkdir -p $(HOME)/.config/sheldon
 	mkdir -p $(HOME)/.config/ghostty
@@ -39,7 +39,7 @@ copy:
 	mkdir -p $(HOME)/.gnupg
 	sudo mkdir -p /etc/docker
 	cp $(ROOTDIR)/alias $(HOME)/.aliases
-	cp $(ROOTDIR)/arch/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
+	cp $(ROOTDIR)/arch/ghostty.conf $(HOME)/.config/ghostty/config
 	cp $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	cp $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
@@ -62,7 +62,7 @@ copy:
 	sudo cp $(ROOTDIR)/dockers/daemon.json /etc/docker/daemon.json
 
 link:
-	mkdir -p $(HOME)/.config/alacritty
+	mkdir -p $(HOME)/.config/ghostty
 	mkdir -p $(HOME)/.config/helix/themes
 	mkdir -p $(HOME)/.config/sheldon
 	mkdir -p $(HOME)/.config/ghostty
@@ -71,7 +71,7 @@ link:
 	mkdir -p $(HOME)/.gemini
 	mkdir -p $(HOME)/.gnupg
 	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
-	ln -sfv $(ROOTDIR)/arch/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
+	ln -sfv $(ROOTDIR)/arch/ghostty.conf $(HOME)/.config/ghostty/config
 	ln -sfv $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	ln -sfv $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	ln -sfv $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
@@ -161,8 +161,6 @@ arch_link: \
 
 arch_p1_link: \
 	arch_link
-	rm -rf $(HOME)/.config/alacritty/alacritty.toml
-	ln -sfv $(ROOTDIR)/arch/alacritty_p1.toml $(HOME)/.config/alacritty/alacritty.toml
 	rm -rf $(HOME)/.config/waybar/style.css
 	ln -sfv $(ROOTDIR)/arch/waybar_p1.css $(HOME)/.config/waybar/style.css
 	rm -rf $(HOME)/.config/psd
@@ -176,8 +174,6 @@ arch_p1_link: \
 
 arch_desk_link: \
 	arch_link
-	rm -rf $(HOME)/.config/alacritty/alacritty.toml
-	ln -sfv $(ROOTDIR)/arch/alacritty_desk.toml $(HOME)/.config/alacritty/alacritty.toml
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
@@ -204,7 +200,7 @@ mac_link: \
 	sudo rm -rf \
 		/etc/docker/config.json \
 		/etc/docker/daemon.json \
-		$(HOME)/.config/alacritty/alacritty.toml \
+		$(HOME)/.config/ghostty/config \
 		$(HOME)/.docker/config.json \
 		$(HOME)/.docker/daemon.json \
 		$(HOME)/.gnupg/gpg-agent.conf \
@@ -215,7 +211,7 @@ mac_link: \
 	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
 	sed -i.bak 's|/usr/bin/pinentry-tty|/opt/homebrew/bin/pinentry-mac|g' $(HOME)/.gnupg/gpg-agent.conf
-	ln -sfv $(ROOTDIR)/macos/alacritty.toml $(HOME)/.config/alacritty/alacritty.toml
+	ln -sfv $(ROOTDIR)/macos/ghostty.conf $(HOME)/.config/ghostty/config
 	ln -sfv $(ROOTDIR)/macos/docker_config.json $(HOME)/.docker/config.json
 	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	sudo ln -sfv $(ROOTDIR)/macos/docker_config.json /etc/docker/config.json
@@ -237,7 +233,7 @@ clean: perm
 	jq . $(ROOTDIR)/arch/waybar.json > $(TMP_DIR)/waybar.json.tmp && mv $(TMP_DIR)/waybar.json.tmp $(ROOTDIR)/arch/waybar.json
 	sudo rm -rf \
 		$(HOME)/.aliases \
-		$(HOME)/.config/alacritty \
+		$(HOME)/.config/ghostty \
 		$(HOME)/.config/compton \
 		$(HOME)/.config/fcitx5/conf/classicui.conf \
 		$(HOME)/.config/fcitx5/config \

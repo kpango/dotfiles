@@ -1,5 +1,5 @@
 acpi
-alacritty
+ghostty
 alsa-utils
 archlinux-keyring
 autoconf
@@ -31,7 +31,7 @@ go
 grep
 grim
 gzip
-htop
+btop
 inetutils
 intel-ucode
 iptables-nft
