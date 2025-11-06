@@ -1,0 +1,13 @@
+[Unit]
+Description=Kanshi - a dynamic output manager for Wayland
+PartOf=sway-session.target
+After=sway.service
+
+[Service]
+Type=simple
+ExecStart=kanshi
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=sway-session.target

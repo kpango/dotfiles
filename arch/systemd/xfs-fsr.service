@@ -1,0 +1,5 @@
+[Unit]
+Description=Weekly XFS defragmentation
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/xfs_fsr

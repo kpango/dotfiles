@@ -1,0 +1,4 @@
+[Unit]
+Description=Sway Session Target
+Documentation=man:systemd.special(7)
+PartOf=sway.service

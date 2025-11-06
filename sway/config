@@ -1,0 +1,17 @@
+# Sway configuration file
+#
+# Copy this file to ~/.config/sway/config and edit it to your liking.
+#
+# For a full list of options, see sway(5).
+
+# Your display name
+set $display DPY-1
+
+# Your terminal emulator
+set $term kitty
+
+# Your application launcher
+set $menu wofi --show drun
+
+# Your keybindings
+# ...

@@ -1,0 +1,5 @@
+[Unit]
+Description=Weekly docker prune
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker system prune -af --filter "until=720h"

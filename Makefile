@@ -1,5 +1,7 @@
 .PHONY: all link zsh bash build prod_build profile run push pull
 
+include Makefile.d/os_sync.mk
+
 ROOTDIR = $(eval ROOTDIR := $(shell git rev-parse --show-toplevel))$(ROOTDIR)
 USER = $(eval USER := $(shell whoami))$(USER)
 USER_ID = $(eval USER_ID := $(shell id -u $(USER)))$(USER_ID)

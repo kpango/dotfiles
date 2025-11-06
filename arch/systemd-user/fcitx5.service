@@ -1,0 +1,13 @@
+[Unit]
+Description=Fcitx5 Input Method Framework
+PartOf=sway-session.target
+After=sway.service
+
+[Service]
+Type=simple
+ExecStart=fcitx5 -rd
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=sway-session.target

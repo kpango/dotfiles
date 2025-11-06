@@ -1,0 +1,5 @@
+[Unit]
+Description=Weekly docker builder prune
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker builder prune -af
