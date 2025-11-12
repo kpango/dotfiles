@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
 # /usr/local/bin/sway-start — system-wide sway launcher
-# (Improved Version)
+is_ssh_session() {
+    [ -n "${SSH_CONNECTION-}" ] || [ -n "${SSH_CLIENT-}" ] || [ -n "${SSH_TTY-}" ]
+}
+
+is_interactive_shell() {
+    case $- in
+      *i*) return 0 ;;
+      *)   return 1 ;;
+    esac
+}
+
+if ! is_interactive_shell || is_ssh_session; then
+    return 0 2>/dev/null
+fi
 
 # 1) Strict mode and helpers
 IFS=$'\n\t'
@@ -8,9 +21,9 @@ log() { printf '[sway-start] %s\n' "$*" >&2; }
 
 # 2) Environment variable setup
 export DESKTOP_SESSION=sway
-export XDG_CURRENT_DESKTOP=sway
-export XDG_CURRENT_SESSION=sway
-export XDG_SESSION_DESKTOP=sway
+export XDG_CURRENT_DESKTOP=$DESKTOP_SESSION
+export XDG_CURRENT_SESSION=$DESKTOP_SESSION
+export XDG_SESSION_DESKTOP=$DESKTOP_SESSION
 
 # --- Environment variable keys to import into systemd/D-Bus ---
 # We use an associative array to deduplicate keys
@@ -47,8 +60,6 @@ export GPU_VENDOR="$(
     fi'
 )"
 SWAY_GPU_OPTION=""
-
-echo $GPU_VENDOR
 
 # 4) GPU-specific additions
 if [[ "${GPU_VENDOR}" == "nvidia" ]]; then
@@ -140,9 +151,6 @@ if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
         >"/tmp/sway.debug.$(date +%Y%m%d%H%M%S).log" 2>&1
     else
       log "Starting sway..."
-      # --- Refactoring Improvement ---
-      # Use `exec ... "${sway_args[@]}"` to correctly handle empty $SWAY_GPU_OPTION
-      # and avoid word-splitting issues.
       exec sway "${sway_args[@]}"
     fi
   else

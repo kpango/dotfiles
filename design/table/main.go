@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math"
 
@@ -9,88 +10,128 @@ import (
 	"github.com/yofu/dxf/table"
 )
 
+// -------------------- Specs & constants --------------------
+
 type Spec struct {
 	W, D            float64
-	EllipseWidth    float64 // 楕円えぐりの幅
-	EllipseDepth    float64 // 楕円えぐりの深さ
-	DiagDepthY      float64 // えぐりを適用するY座標
+	EllipseWidth    float64 // width of inner recess (formerly ellipse)
+	EllipseDepth    float64 // depth of inner recess
+	DiagDepthY      float64 // front diagonal cut Y
 	BackNotchW      float64
 	BackNotchDepth  float64
 	BackNotchOffset float64
 }
 
-// Pt 構造体にベクトル演算メソッドを追加
-type Pt struct{ X, Y float64 }
-
-func (p Pt) Add(v Pt) Pt        { return Pt{X: p.X + v.X, Y: p.Y + v.Y} }
-func (p Pt) Sub(v Pt) Pt        { return Pt{X: p.X - v.X, Y: p.Y - v.Y} }
-func (p Pt) Scale(s float64) Pt { return Pt{X: p.X * s, Y: p.Y * s} }
-func (p Pt) Hypot() float64     { return math.Hypot(p.X, p.Y) }
-func (p Pt) Normalize() Pt {
-	l := p.Hypot()
-	if l < 1e-9 {
-		return Pt{}
-	}
-	return p.Scale(1.0 / l)
-}
-func (p Pt) Dot(v Pt) float64 { return p.X*v.X + p.Y*v.Y }
-
-// フィレット（角丸め）の指定
+// Fillet specification at a polygon vertex
 type Fillet struct {
 	X, Y, R float64
 }
 
-// 自動分割の弦高許容（小さいほど滑らか）
-const arcSagittaTol = 0.10 // mm
-const tolerance = 1e-9     // 座標比較用の許容誤差
+// global tolerances
+const (
+	tolerance     = 1e-9 // coordinate equality tolerance
+	arcSagittaTol = 0.10 // mm; smaller makes smoother arcs
+	keyGrid       = 1e-6 // grid for keying points to map (>= tolerance)
+)
+
+// -------------------- Geometry types & helpers --------------------
+
+// Pt is a 2D point / vector.
+type Pt struct{ X, Y float64 }
+
+// Basic vector ops (immutable)
+func (p Pt) Add(v Pt) Pt        { return Pt{p.X + v.X, p.Y + v.Y} }
+func (p Pt) Sub(v Pt) Pt        { return Pt{p.X - v.X, p.Y - v.Y} }
+func (p Pt) Scale(s float64) Pt { return Pt{p.X * s, p.Y * s} }
+func (p Pt) Dot(v Pt) float64   { return p.X*v.X + p.Y*v.Y }
+func (p Pt) Cross(v Pt) float64 { return p.X*v.Y - p.Y*v.X }
+func (p Pt) Hypot() float64     { return math.Hypot(p.X, p.Y) }
+
+func (p Pt) Normalize() Pt {
+	l := p.Hypot()
+	if l < tolerance {
+		return Pt{}
+	}
+	return p.Scale(1 / l)
+}
+
+// Rotate around origin by rad
+func (p Pt) Rotate(rad float64) Pt {
+	c, s := math.Cos(rad), math.Sin(rad)
+	return Pt{X: p.X*c - p.Y*s, Y: p.X*s + p.Y*c}
+}
+
+func nearlyEqual(a, b, tol float64) bool { return math.Abs(a-b) <= tol }
+func clamp(x, lo, hi float64) float64 {
+	if x < lo {
+		return lo
+	}
+	if x > hi {
+		return hi
+	}
+	return x
+}
+
+func angleBetween(u, v Pt) float64 {
+	nu, nv := u.Normalize(), v.Normalize()
+	d := clamp(nu.Dot(nv), -1, 1)
+	return math.Acos(d)
+}
+
+// Stable key for point lookup within tolerance (grid snapping).
+func keyOf(p Pt) string {
+	// snap to keyGrid; use fmt to avoid float drift in string
+	return fmt.Sprintf("%.0f/%.0f", math.Round(p.X/keyGrid), math.Round(p.Y/keyGrid))
+}
 
 func main() {
 	s := Spec{
 		W: 1400, D: 850,
-		EllipseWidth: 700, EllipseDepth: 200,
-		DiagDepthY: 50, // Y=50 のラインをえぐる
-		BackNotchW: 200, BackNotchDepth: 20, BackNotchOffset: 250,
+		EllipseWidth: 700, EllipseDepth: 210,
+		DiagDepthY: 50,
+		BackNotchW: 320, BackNotchDepth: 20, BackNotchOffset: 350,
 	}
 
-	d := dxf.NewDrawing()
-	if _, err := d.AddLayer("CUT", color.Red, table.LT_CONTINUOUS, true); err != nil {
-		log.Fatal(err)
-	}
-
-	// 1) “鋭角”のまま全シェイプ生成
+	// 1) sharp outline
 	out := buildOutlineSharp(s)
 
-	// 2) ★★★ 角丸め（フィレット）処理の適用 ★★★
+	// 2) apply fillets
 	out = applyFillets(out, []Fillet{
-		{X: s.W, Y: s.DiagDepthY, R: 100}, // 右前の角
-		{X: 0, Y: s.DiagDepthY, R: 100},   // 左前の角
-		{X: s.W, Y: s.D, R: 20},           // 右後ろの角
-		{X: 0, Y: s.D, R: 20},             // 左後ろの角
+		{X: s.W, Y: s.DiagDepthY, R: 100}, // front-right
+		{X: 0, Y: s.DiagDepthY, R: 100},   // front-left
+		{X: s.W, Y: s.D, R: 20},           // rear-right
+		{X: 0, Y: s.D, R: 20},             // rear-left
 
-		// ★★★ 修正 ★★★
-		// 楕円の代わりに、3つの「鋭角」の頂点をフィレットする
-		{X: s.W/2 + s.EllipseWidth/2, Y: 0, R: 100}, // (1050, 0)
-		{X: s.W / 2, Y: s.EllipseDepth, R: 500},     // (700, 150)
-		{X: s.W/2 - s.EllipseWidth/2, Y: 0, R: 100}, // (350, 0)
+		// Recess as sharp 3 points -> fillet them
+		{X: s.W/2 + s.EllipseWidth/2, Y: 0, R: 100},
+		{X: s.W / 2, Y: s.EllipseDepth, R: 600},
+		{X: s.W/2 - s.EllipseWidth/2, Y: 0, R: 100},
 
-		// 背面ノッチ
+		// rear notches (left)
 		{X: s.BackNotchOffset - s.BackNotchW/2, Y: s.D, R: 10},
 		{X: s.BackNotchOffset - s.BackNotchW/2, Y: s.D - s.BackNotchDepth, R: 8},
 		{X: s.BackNotchOffset + s.BackNotchW/2, Y: s.D - s.BackNotchDepth, R: 8},
 		{X: s.BackNotchOffset + s.BackNotchW/2, Y: s.D, R: 10},
+
+		// rear notches (right)
 		{X: s.W - s.BackNotchOffset - s.BackNotchW/2, Y: s.D, R: 10},
 		{X: s.W - s.BackNotchOffset - s.BackNotchW/2, Y: s.D - s.BackNotchDepth, R: 8},
 		{X: s.W - s.BackNotchOffset + s.BackNotchW/2, Y: s.D - s.BackNotchDepth, R: 8},
 		{X: s.W - s.BackNotchOffset + s.BackNotchW/2, Y: s.D, R: 10},
 	}, arcSagittaTol)
 
-	// 3) 直線連続点の軽い間引き
-	out = simplifyCollinear(out)
+	// 3) simplify collinear
+	out = simplifyCollinear(out, tolerance)
 
-	// 4) DXF（閉ループ LWPOLYLINE）
+	// 4) write DXF LWPOLYLINE (closed)
 	verts := make([][]float64, 0, len(out))
 	for _, p := range out {
 		verts = append(verts, []float64{p.X, p.Y})
+	}
+
+	d := dxf.NewDrawing()
+	if _, err := d.AddLayer("CUT", color.Red, table.LT_CONTINUOUS, true); err != nil {
+		log.Fatal(err)
 	}
 	if _, err := d.LwPolyline(true, verts...); err != nil {
 		log.Fatal(err)
@@ -100,198 +141,208 @@ func main() {
 	}
 }
 
-/***-------------------------
- * フィレット処理
- *-------------------------*/
+// -------------------- Outline (sharp) --------------------
+
+// Build the sharp (pre-fillet) polygon.
+// Replaces ellipse recess with three sharp vertices (to be filleted later).
+func buildOutlineSharp(s Spec) []Pt {
+	n1c := s.BackNotchOffset
+	n2c := s.W - s.BackNotchOffset
+	nHalf := s.BackNotchW / 2
+	nd := s.BackNotchDepth
+
+	return []Pt{
+		// start at rear-left corner, clockwise
+		{0, s.D},
+
+		// left rear notch
+		{n1c - nHalf, s.D},
+		{n1c - nHalf, s.D - nd},
+		{n1c + nHalf, s.D - nd},
+		{n1c + nHalf, s.D},
+
+		// right rear notch
+		{n2c - nHalf, s.D},
+		{n2c - nHalf, s.D - nd},
+		{n2c + nHalf, s.D - nd},
+		{n2c + nHalf, s.D},
+
+		// rear-right outer corner
+		{s.W, s.D},
+
+		// front-right diagonal vertex (to be filleted)
+		{s.W, s.DiagDepthY},
+
+		// inner recess (3 sharp points, to be filleted)
+		{s.W/2 + s.EllipseWidth/2, 0},
+		{s.W / 2, s.EllipseDepth},
+		{s.W/2 - s.EllipseWidth/2, 0},
+
+		// front-left diagonal vertex (to be filleted)
+		{0, s.DiagDepthY},
+
+		// loop closes back to {0, s.D}
+	}
+}
+
+// -------------------- Fillet application --------------------
+
+// applyFillets replaces specified polygon vertices with circular arcs.
+// in: closed polygon (CW/CCW, no duplicate end required)
+// fillets: (X,Y)->R list; matched by keyOf(Pt{X,Y})
+// sagitta: max sagitta for arc tessellation (smaller -> more segments)
 func applyFillets(in []Pt, fillets []Fillet, sagitta float64) []Pt {
-	if len(fillets) == 0 {
+	if len(in) == 0 || len(fillets) == 0 {
 		return in
 	}
 
-	n := len(in)
-	out := make([]Pt, 0, n*2) // 容量を多めに見積もる
+	// ---- localized helpers (kept private to this function) ----
 
-	// 頂点を順に処理し、フィレット対象の頂点を円弧に置き換える
-	for i := range n {
-		P_curr := in[i] // 現在の頂点
-
-		// --- ★ 簡素化ロジック ★ ---
-		// P_currがフィレット対象か、線形探索でチェック
-		var radius float64
-		isFillet := false
-		for _, f := range fillets {
-			if math.Abs(P_curr.X-f.X) < tolerance && math.Abs(P_curr.Y-f.Y) < tolerance {
-				radius = f.R
-				isFillet = true
-				break
-			}
+	// arc tessellation between two tangency points around center
+	tessArc := func(center, t1, t2 Pt, r, theta, s float64) []Pt {
+		// no arc (too small) -> return just tangency points
+		if theta < tolerance {
+			return []Pt{t1, t2}
 		}
-		// --- ★ 簡素化ロジック (ここまで) ★ ---
+		// segment angle from sagitta: s = R - R*cos(d/2) => d = 2*acos((R-s)/R)
+		seg := 2 * math.Acos(clamp((r-s)/r, -1, 1))
+		if seg < tolerance {
+			return []Pt{t1, t2}
+		}
+		num := max(int(math.Ceil(theta/seg)), 1)
+		step := theta / float64(num)
 
-		if !isFillet {
-			// フィレット対象でない頂点はそのまま追加
-			out = append(out, P_curr)
-			continue
+		// orientation: sign by cross(center->t1, center->t2)
+		v1, v2 := t1.Sub(center), t2.Sub(center)
+		if v1.Cross(v2) < 0 {
+			step = -step
 		}
 
-		// --- ここからフィレット処理 (幾何学計算) ---
-		P_prev := in[(i+n-1)%n]
-		P_next := in[(i+1)%n]
+		out := make([]Pt, 0, num+1)
+		out = append(out, t1)
 
-		v1 := P_prev.Sub(P_curr) // P_curr -> P_prev
-		v2 := P_next.Sub(P_curr) // P_curr -> P_next
-
-		lenV1 := v1.Hypot()
-		lenV2 := v2.Hypot()
-
-		if lenV1 < tolerance || lenV2 < tolerance {
-			out = append(out, P_curr)
-			continue
+		curr := v1
+		cs, sn := math.Cos(step), math.Sin(step)
+		for range num - 1 {
+			curr = Pt{X: curr.X*cs - curr.Y*sn, Y: curr.X*sn + curr.Y*cs}
+			out = append(out, center.Add(curr))
 		}
-
-		uv1 := v1.Normalize()
-		uv2 := v2.Normalize()
-		dot := uv1.Dot(uv2)
-
-		if dot > 1.0-tolerance || dot < -1.0+tolerance {
-			out = append(out, P_curr)
-			continue
-		}
-
-		theta := math.Acos(dot)
-		halfTheta := theta / 2.0
-
-		if math.Abs(math.Tan(halfTheta)) < tolerance {
-			out = append(out, P_curr)
-			continue
-		}
-		trimDist := radius / math.Tan(halfTheta)
-
-		// --- 安全性チェック (Rが線分長を超える場合) ---
-		trimDist = min(trimDist, lenV1) // min は Go 1.21+ 組み込み
-		trimDist = min(trimDist, lenV2)
-
-		R_actual := trimDist * math.Tan(halfTheta)
-
-		if R_actual < tolerance {
-			out = append(out, P_curr)
-			continue
-		}
-
-		// 接点 T1, T2
-		T1 := P_curr.Add(uv1.Scale(trimDist))
-		T2 := P_curr.Add(uv2.Scale(trimDist))
-
-		if math.Abs(math.Sin(halfTheta)) < tolerance {
-			out = append(out, P_curr)
-			continue
-		}
-		distC := R_actual / math.Sin(halfTheta)
-		uBisector := uv1.Add(uv2).Normalize() // 角の二等分線ベクトル
-		C := P_curr.Add(uBisector.Scale(distC))
-
-		// --- 円弧のテッセレーション（多角形近似） ---
-		arcSweepAngle := math.Pi - theta
-		segAngleRad := 2.0 * math.Acos(max(-1.0, min(1.0, (R_actual-sagitta)/R_actual))) // max/min は Go 1.21+
-
-		if segAngleRad < tolerance {
-			out = append(out, T1, T2)
-			continue
-		}
-
-		numSeg := max(int(math.Ceil(arcSweepAngle/segAngleRad)), 1)
-
-		deltaAngle := arcSweepAngle / float64(numSeg)
-
-		// 回転方向の決定 (T1 -> T2)
-		vecT1C := T1.Sub(C)
-		vecT2C := T2.Sub(C)
-		crossForRotation := vecT1C.X*vecT2C.Y - vecT1C.Y*vecT2C.X
-		if crossForRotation < 0 { // 時計回りの場合
-			deltaAngle = -deltaAngle
-		}
-
-		cosDelta := math.Cos(deltaAngle)
-		sinDelta := math.Sin(deltaAngle)
-
-		out = append(out, T1) // 円弧の開始点
-
-		currVec := T1.Sub(C) // 中心CからT1へのベクトル
-		for range numSeg - 1 {
-			rotatedVec := Pt{
-				X: currVec.X*cosDelta - currVec.Y*sinDelta,
-				Y: currVec.X*sinDelta + currVec.Y*cosDelta,
-			}
-			out = append(out, C.Add(rotatedVec))
-			currVec = rotatedVec
-		}
-
-		out = append(out, T2) // 円弧の終点
+		out = append(out, t2)
+		return out
 	}
 
+	// try to fillet one corner; returns (points, ok)
+	filletCorner := func(prev, curr, next Pt, r, sag float64) ([]Pt, bool) {
+		if r <= tolerance {
+			return nil, false
+		}
+		// edge vectors (pointing into the corner)
+		v1, v2 := prev.Sub(curr), next.Sub(curr)
+		l1, l2 := v1.Hypot(), v2.Hypot()
+		if l1 < tolerance || l2 < tolerance {
+			return nil, false
+		}
+		u1, u2 := v1.Normalize(), v2.Normalize()
+		theta := angleBetween(u1, u2)
+		// skip 0 or 180 degrees
+		if nearlyEqual(theta, 0, 1e-12) || nearlyEqual(theta, math.Pi, 1e-12) {
+			return nil, false
+		}
+
+		half := theta / 2
+		tanHalf := math.Tan(half)
+		if math.Abs(tanHalf) < tolerance {
+			return nil, false
+		}
+
+		// trim length along each edge from the corner to tangency
+		trim := math.Min(r/tanHalf, math.Min(l1, l2)) // clamp by edge length
+
+		// actual radius after clamping (safety for very short edges)
+		rActual := trim * tanHalf
+		if rActual < tolerance {
+			return nil, false
+		}
+		// center along angle bisector from corner
+		sinHalf := math.Sin(half)
+		if math.Abs(sinHalf) < tolerance {
+			return nil, false
+		}
+
+		uBis := u1.Add(u2)
+		if uBis.Hypot() < tolerance {
+			return nil, false
+		}
+
+		return tessArc(
+			curr.Add(uBis.Normalize().Scale(rActual/sinHalf)),
+			// tangency points
+			curr.Add(u1.Scale(trim)),
+			curr.Add(u2.Scale(trim)),
+			rActual,
+			// interior arc sweep = pi - theta  (0..pi)
+			math.Pi-theta,
+			sag), true
+	}
+
+	// ---- main loop ----
+
+	// build radius map for O(1) lookup
+	rmap := make(map[string]float64, len(fillets))
+	for _, f := range fillets {
+		rmap[keyOf(Pt{f.X, f.Y})] = f.R
+	}
+	n := len(in)
+	out := make([]Pt, 0, n*2)
+	for i := range n {
+		curr := in[i]
+		if r, ok := rmap[keyOf(curr)]; ok && r > tolerance {
+			prev, next := in[(i+n-1)%n], in[(i+1)%n]
+			if pts, ok := filletCorner(prev, curr, next, r, sagitta); ok {
+				out = append(out, pts...)
+				continue
+			}
+		}
+		out = append(out, curr)
+	}
 	return out
 }
 
-/***-------------------------
- * 外形（R適用前：鋭角）
- * buildRecessedEllipse の呼び出しを削除し、
- * 鋭角の頂点 (3点) に置き換える
- *-------------------------*/
-func buildOutlineSharp(s Spec) []Pt {
-	n1c := s.BackNotchOffset       // 250
-	n2c := s.W - s.BackNotchOffset // 1150
-	nHalf := s.BackNotchW / 2      // 100
-	notchDepth := s.BackNotchDepth //20
-	return []Pt{
-		// 1. 背面左上 (0, D) から時計回り
-		Pt{0, s.D}, // (0, 850)
-		// 2. 左ノッチ
-		Pt{n1c - nHalf, s.D},              // (150, 850)
-		Pt{n1c - nHalf, s.D - notchDepth}, // (150, 830)
-		Pt{n1c + nHalf, s.D - notchDepth}, // (350, 830)
-		Pt{n1c + nHalf, s.D},              // (350, 850)
-		// 3. 右ノッチ
-		Pt{n2c - nHalf, s.D},              // (1050, 850)
-		Pt{n2c - nHalf, s.D - notchDepth}, // (1050, 830)
-		Pt{n2c + nHalf, s.D - notchDepth}, // (1250, 830)
-		Pt{n2c + nHalf, s.D},              // (1250, 850)
-		// 4. 背面右上
-		Pt{s.W, s.D}, // (1400, 850)
-		// 5. 右前の角 (フィレット対象)
-		Pt{s.W, s.DiagDepthY}, // (1400, 50)
-		// 6. 3つの鋭角の頂点を追加内部の抉り
-		Pt{s.W/2 + s.EllipseWidth/2, 0}, // (1050, 0)
-		Pt{s.W / 2, s.EllipseDepth},     // (700, 150)
-		Pt{s.W/2 - s.EllipseWidth/2, 0}, // (350, 0)
-		// 7. 左前の角 (フィレット対象)
-		Pt{0, s.DiagDepthY}, // (0, 50)
-		// 8. 左側面 (始点 (0,850) は自動で閉じる)
-	}
-}
+// -------------------- Collinear simplification --------------------
 
-func simplifyCollinear(in []Pt) []Pt {
-	if len(in) < 3 {
-		return in
+// simplifyCollinear removes nearly-collinear middle vertices from a closed polygon.
+// - Keeps polygon closed without duplicating start/end.
+// - Uses area (cross) test with tolerance.
+func simplifyCollinear(pts []Pt, tol float64) []Pt {
+	n := len(pts)
+	if n < 3 {
+		return pts
 	}
-	out := make([]Pt, 0, len(in))
-	out = append(out, in[0])
-	for i := 1; i < len(in)-1; i++ {
-		a, b, c := in[i-1], in[i], in[i+1]
-		abx, aby := b.X-a.X, b.Y-a.Y
-		bcx, bcy := c.X-b.X, c.Y-b.Y
-		if math.Abs(abx*bcy-aby*bcx) > tolerance {
-			out = append(out, b)
+
+	// If first and last are the same within tol, drop the last
+	if nearlyEqual(pts[0].X, pts[n-1].X, tol) &&
+		nearlyEqual(pts[0].Y, pts[n-1].Y, tol) {
+		pts = pts[:n-1]
+		n--
+	}
+	if n < 3 {
+		return pts
+	}
+
+	out := make([]Pt, 0, n)
+	for i := range n {
+		curr := pts[i]
+		next := pts[(i+1)%n]
+		// If cross is small -> a, b, c are nearly collinear; drop b.
+		if math.Abs(curr.Sub(pts[(i+n-1)%n]).
+			Cross(next.Sub(curr))) > tol {
+			out = append(out, curr)
 		}
 	}
-	out = append(out, in[len(in)-1])
 
-	// 閉ループの始点と終点の重複を処理
-	if len(out) > 1 {
-		a := out[len(out)-1]
-		b := out[0]
-		if math.Abs(a.X-b.X) < tolerance && math.Abs(a.Y-b.Y) < tolerance {
-			out = out[:len(out)-1] // 最後の点を削除
-		}
+	// If simplification removed too much and broke shape, fall back
+	if len(out) < 3 {
+		return pts
 	}
 	return out
 }
