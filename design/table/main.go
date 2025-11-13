@@ -91,37 +91,83 @@ func main() {
 		DiagDepthY: 50,
 		BackNotchW: 320, BackNotchDepth: 20, BackNotchOffset: 350,
 	}
+	nh := s.BackNotchW / 2
+	nd := s.D - s.BackNotchDepth
+	n1l := s.BackNotchOffset - nh
+	n1r := s.BackNotchOffset + nh
+	n2l := s.W - s.BackNotchOffset - nh
+	n2r := s.W - s.BackNotchOffset + nh
+	ewh := s.EllipseWidth / 2
+	ewl := s.W/2 - ewh
+	ewr := s.W/2 + ewh
 
-	// 1) sharp outline
-	out := buildOutlineSharp(s)
-
-	// 2) apply fillets
-	out = applyFillets(out, []Fillet{
-		{X: s.W, Y: s.DiagDepthY, R: 100}, // front-right
-		{X: 0, Y: s.DiagDepthY, R: 100},   // front-left
-		{X: s.W, Y: s.D, R: 20},           // rear-right
-		{X: 0, Y: s.D, R: 20},             // rear-left
-
-		// Recess as sharp 3 points -> fillet them
-		{X: s.W/2 + s.EllipseWidth/2, Y: 0, R: 100},
-		{X: s.W / 2, Y: s.EllipseDepth, R: 600},
-		{X: s.W/2 - s.EllipseWidth/2, Y: 0, R: 100},
-
-		// rear notches (left)
-		{X: s.BackNotchOffset - s.BackNotchW/2, Y: s.D, R: 10},
-		{X: s.BackNotchOffset - s.BackNotchW/2, Y: s.D - s.BackNotchDepth, R: 8},
-		{X: s.BackNotchOffset + s.BackNotchW/2, Y: s.D - s.BackNotchDepth, R: 8},
-		{X: s.BackNotchOffset + s.BackNotchW/2, Y: s.D, R: 10},
-
-		// rear notches (right)
-		{X: s.W - s.BackNotchOffset - s.BackNotchW/2, Y: s.D, R: 10},
-		{X: s.W - s.BackNotchOffset - s.BackNotchW/2, Y: s.D - s.BackNotchDepth, R: 8},
-		{X: s.W - s.BackNotchOffset + s.BackNotchW/2, Y: s.D - s.BackNotchDepth, R: 8},
-		{X: s.W - s.BackNotchOffset + s.BackNotchW/2, Y: s.D, R: 10},
-	}, arcSagittaTol)
-
+	nfor := 10.0 // notch fillet outer R
+	nfir := 8.0  // notch fillet inner R
+	ffr := 100.0 // front fillet R
+	efr := 600.0 // eclipse fillet R
+	rfr := 20.0  // rear fillet R
 	// 3) simplify collinear
-	out = simplifyCollinear(out, tolerance)
+	out := simplifyCollinear(
+		// 2) apply fillets
+		applyFillets(
+			// 1) sharp shape outline
+			[]Pt{
+				// start at rear-left corner, clockwise
+				{0, s.D},
+
+				// left rear notch
+				{n1l, s.D},
+				{n1l, nd},
+				{n1r, nd},
+				{n1r, s.D},
+
+				// right rear notch
+				{n2l, s.D},
+				{n2l, nd},
+				{n2r, nd},
+				{n2r, s.D},
+
+				// rear-right outer corner
+				{s.W, s.D},
+
+				// front-right diagonal vertex (to be filleted)
+				{s.W, s.DiagDepthY},
+
+				// inner recess (3 sharp points, to be filleted)
+				{ewr, 0},              // front-center-right
+				{ewh, s.EllipseDepth}, // front-center
+				{ewl, 0},              // front-center-left
+
+				// front-left diagonal vertex (to be filleted)
+				{0, s.DiagDepthY},
+
+				// loop closes back to {0, s.D}
+			},
+			// fillet process list
+			[]Fillet{
+				// Fillet four edges
+				{X: s.W, Y: s.DiagDepthY, R: ffr}, // front-right
+				{X: 0, Y: s.DiagDepthY, R: ffr},   // front-left
+				{X: s.W, Y: s.D, R: rfr},          // rear-right
+				{X: 0, Y: s.D, R: rfr},            // rear-left
+
+				// Recess as sharp 3 points -> fillet them
+				{X: ewr, Y: 0, R: ffr},
+				{X: ewh, Y: s.EllipseDepth, R: efr},
+				{X: ewl, Y: 0, R: ffr},
+
+				// rear notches (left)
+				{X: n1l, Y: s.D, R: nfor},
+				{X: n1l, Y: nd, R: nfir},
+				{X: n1r, Y: nd, R: nfir},
+				{X: n1r, Y: s.D, R: nfor},
+
+				// rear notches (right)
+				{X: n2l, Y: s.D, R: nfor},
+				{X: n2l, Y: nd, R: nfir},
+				{X: n2r, Y: nd, R: nfir},
+				{X: n2r, Y: s.D, R: nfor},
+			}, arcSagittaTol), tolerance)
 
 	// 4) write DXF LWPOLYLINE (closed)
 	verts := make([][]float64, 0, len(out))
@@ -138,50 +184,6 @@ func main() {
 	}
 	if err := d.SaveAs("tabletop_emarf.dxf"); err != nil {
 		log.Fatal(err)
-	}
-}
-
-// -------------------- Outline (sharp) --------------------
-
-// Build the sharp (pre-fillet) polygon.
-// Replaces ellipse recess with three sharp vertices (to be filleted later).
-func buildOutlineSharp(s Spec) []Pt {
-	n1c := s.BackNotchOffset
-	n2c := s.W - s.BackNotchOffset
-	nHalf := s.BackNotchW / 2
-	nd := s.BackNotchDepth
-
-	return []Pt{
-		// start at rear-left corner, clockwise
-		{0, s.D},
-
-		// left rear notch
-		{n1c - nHalf, s.D},
-		{n1c - nHalf, s.D - nd},
-		{n1c + nHalf, s.D - nd},
-		{n1c + nHalf, s.D},
-
-		// right rear notch
-		{n2c - nHalf, s.D},
-		{n2c - nHalf, s.D - nd},
-		{n2c + nHalf, s.D - nd},
-		{n2c + nHalf, s.D},
-
-		// rear-right outer corner
-		{s.W, s.D},
-
-		// front-right diagonal vertex (to be filleted)
-		{s.W, s.DiagDepthY},
-
-		// inner recess (3 sharp points, to be filleted)
-		{s.W/2 + s.EllipseWidth/2, 0},
-		{s.W / 2, s.EllipseDepth},
-		{s.W/2 - s.EllipseWidth/2, 0},
-
-		// front-left diagonal vertex (to be filleted)
-		{0, s.DiagDepthY},
-
-		// loop closes back to {0, s.D}
 	}
 }
 
