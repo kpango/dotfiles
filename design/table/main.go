@@ -106,6 +106,7 @@ func main() {
 	ffr := 100.0 // front fillet R
 	efr := 600.0 // eclipse fillet R
 	rfr := 20.0  // rear fillet R
+
 	// 3) simplify collinear
 	out := simplifyCollinear(
 		// 2) apply fillets
