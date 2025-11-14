@@ -11,7 +11,6 @@ import (
 )
 
 // -------------------- Specs & constants --------------------
-
 type Spec struct {
 	W, D            float64
 	EllipseWidth    float64 // width of inner recess (formerly ellipse)
@@ -85,9 +84,11 @@ func keyOf(p Pt) string {
 }
 
 func main() {
+	width := 1400.0
+	depth := 850.0
 	s := Spec{
-		W: 1400, D: 850,
-		EllipseWidth: 700, EllipseDepth: 210,
+		W: width, D: depth,
+		EllipseWidth: width / 2, EllipseDepth: depth / 4,
 		DiagDepthY: 50,
 		BackNotchW: 320, BackNotchDepth: 20, BackNotchOffset: 350,
 	}
@@ -135,9 +136,9 @@ func main() {
 				{s.W, s.DiagDepthY},
 
 				// inner recess (3 sharp points, to be filleted)
-				{ewr, 0},              // front-center-right
-				{ewh, s.EllipseDepth}, // front-center
-				{ewl, 0},              // front-center-left
+				{ewr, 0},                         // front-center-right
+				{s.EllipseWidth, s.EllipseDepth}, // front-center
+				{ewl, 0},                         // front-center-left
 
 				// front-left diagonal vertex (to be filleted)
 				{0, s.DiagDepthY},
@@ -154,7 +155,7 @@ func main() {
 
 				// Recess as sharp 3 points -> fillet them
 				{X: ewr, Y: 0, R: ffr},
-				{X: ewh, Y: s.EllipseDepth, R: efr},
+				{X: s.EllipseWidth, Y: s.EllipseDepth, R: efr},
 				{X: ewl, Y: 0, R: ffr},
 
 				// rear notches (left)
