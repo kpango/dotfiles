@@ -92,6 +92,13 @@ func main() {
 		DiagDepthY: 50,
 		BackNotchW: 320, BackNotchDepth: 20, BackNotchOffset: 350,
 	}
+
+	nfor := 10.0 // notch fillet outer R
+	nfir := 8.0  // notch fillet inner R
+	ffr := 100.0 // front fillet R
+	efr := 600.0 // eclipse fillet R
+	rfr := 20.0  // rear fillet R
+
 	nh := s.BackNotchW / 2
 	nd := s.D - s.BackNotchDepth
 	n1l := s.BackNotchOffset - nh
@@ -101,12 +108,6 @@ func main() {
 	ewh := s.EllipseWidth / 2
 	ewl := s.W/2 - ewh
 	ewr := s.W/2 + ewh
-
-	nfor := 10.0 // notch fillet outer R
-	nfir := 8.0  // notch fillet inner R
-	ffr := 100.0 // front fillet R
-	efr := 600.0 // eclipse fillet R
-	rfr := 20.0  // rear fillet R
 
 	// 3) simplify collinear
 	out := simplifyCollinear(
