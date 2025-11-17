@@ -1,109 +1,148 @@
-# AI用言語サーバーの定義
+# ==========================================
+#  Global / AI Settings
+# ==========================================
 [language-server.ai]
-command = "lsp-ai"   # PATHが通っている前提
+command = "lsp-ai"
+# 必要に応じてargsでconfigパスなどを指定
 
-# Rustの設定
+# ==========================================
+#  Rust
+# ==========================================
 [language-server.rust-analyzer]
 command = "rust-analyzer"
 
+[language-server.rust-analyzer.config]
+checkOnSave = { command = "clippy" } # 保存時にClippyを実行
+procMacro = { enable = true }        # マクロの展開を有効化
+inlayHints = { bindingModeHints = { enable = false } } # ヒントがうるさい場合は調整
+
 [[language]]
 name = "rust"
-language-servers = [ "rust-analyzer" ]
+language-servers = [ "rust-analyzer" ] # AIを使う場合は [ "rust-analyzer", "ai" ]
 formatter = { command = "rustfmt" }
 auto-format = true
 
-# C/C++の設定
-[language-server.clangd]
-command = "clangd"
-
-[[language]]
-name = "cpp"      # C++ (`name = "c"`も同様に設定可能)
-language-servers = [ "clangd" ]
-# フォーマッターはclangdが内部でclang-formatを使用
-
+# ==========================================
+#  Go (Vald / High Performance)
+# ==========================================
 [language-server.gopls]
 command = "gopls"
 
 [language-server.gopls.config]
-buildFlags = ["-tags=e2e linux"]
+buildFlags = ["-tags=e2e,linux"] # カンマ区切りの方が安全な場合があります
+staticcheck = true               # 強力な静的解析を有効化
+gofumpt = true                   # より厳格なフォーマット (任意)
+usePlaceholders = true           # 補完時にプレースホルダを入れる
+analyze = { unusedparams = true, nilness = true, unusedwrite = true }
+
+[language-server.gopls.config.hints]
+assignVariableTypes = true
+compositeLiteralFields = true
+constantValues = true
+functionTypeParameters = true
+parameterNames = true            # 引数名ヒント (Rustのような体験)
+
+[language-server.golangci-lint-lsp]
+command = "golangci-lint-langserver"
+[language-server.golangci-lint-lsp.config]
+# outputをFileに逃がさずLSP経由で受け取る設定はOKですが、
+# 大規模PJでは重くなる可能性があるため注意してください。
+command = ["golangci-lint", "run", "--out-format", "json", "--issues-exit-code=1"]
 
 [[language]]
 name = "go"
 roots = ["go.work", "go.mod"]
 auto-format = true
-formatter = ["gofmt"]
-comment-token = "//"
+# gofmtではなくgoimports (またはgofumpt) を推奨。import整理が自動化されます。
+formatter = { command = "gofumpt" }
 language-servers = [ "gopls", "golangci-lint-lsp" ]
 
-[language-server.golangci-lint-lsp]
-command = "golangci-lint-langserver"
-
-[language-server.golangci-lint-lsp.config]
-command = ["golangci-lint", "run", "--output.json.path", "stdout", "--show-stats=false", "--issues-exit-code=1"]
-
-# Pythonの設定
-[language-server.pylsp]
-command = "pylsp"
+# ==========================================
+#  C / C++
+# ==========================================
+[language-server.clangd]
+command = "clangd"
+# バックグラウンドインデックスと並列化、ヘッダ補完を有効化
+args = ["--background-index", "--clang-tidy", "--completion-style=detailed", "--header-insertion=iwyu", "-j=4"]
 
 [[language]]
-name = "python"
-scope = "source.python"
-file-types = ["py"]
+name = "cpp"
+language-servers = [ "clangd" ]
 auto-format = true
-formatter = {command = "black", args = ["-q", "-"]}
-language-servers = [ "pyright" ]
-indent = { tab-width = 4, unit = "    " }
 
+# ==========================================
+#  Python (Modern / Rust-based)
+# ==========================================
+# MicrosoftのPyright (型チェック)
 [language-server.pyright]
 command = "pyright-langserver"
 args = ["--stdio"]
-config = {}
 
-# Luaの設定
-[language-server.lua-language-server]
-command = "lua-language-server"
+# Rust製の爆速Linter/Formatter "Ruff" (推奨)
+[language-server.ruff]
+command = "ruff-lsp" # pip install ruff-lsp
 
 [[language]]
-name = "lua"
-language-servers = [ "lua-language-server" ]
-formatter = { command = "stylua", args = ["-"] }  # (任意) stylua導入時
+name = "python"
+roots = ["pyproject.toml", "setup.py", "poetry.lock"]
 auto-format = true
+# Blackの代わりにRuffを使用 (圧倒的に高速)
+formatter = { command = "ruff", args = ["format", "-"] }
+language-servers = [ "pyright", "ruff" ]
 
-# YAMLの設定
+# ==========================================
+#  Cloud Native (YAML / Kubernetes)
+# ==========================================
 [language-server.yamlls]
 command = "yaml-language-server"
 args = ["--stdio"]
 
+[language-server.yamlls.config.yaml]
+keyOrdering = false
+format = { enable = true }
+validate = true
+# Kubernetesのスキーマ補完を有効化 (Vald開発に必須)
+schemas = { "kubernetes" = ["/*.yaml", "/*.k8s.yaml"] }
+
 [[language]]
 name = "yaml"
 language-servers = [ "yamlls" ]
-# YAML LSPはフォーマット対応（内部でPrettier相当の整形機能あり）
+formatter = { command = "prettier", args = ["--parser", "yaml"] } # Prettierの方が整形が綺麗な場合が多い
+auto-format = true
 
-# JSONの設定
-[language-server.json]
-command = "vscode-json-languageserver"
-args = ["--stdio"]
+# ==========================================
+#  Protobuf (Modern / Buf)
+# ==========================================
+# Googleのprotobuf-lsよりBufの方がエコシステムとして主流です
+[language-server.buf]
+command = "buf"
+args = ["lsp"]
 
 [[language]]
-name = "json"
-language-servers = [ "json" ]
-# JSON LSPはフォーマット対応（VSCodeと同等の整形機能）
+name = "protobuf"
+roots = ["buf.work.yaml", "buf.yaml"]
+language-servers = [ "buf" ]
+auto-format = true
+formatter = { command = "buf", args = ["format"] }
 
-# TOMLの設定
+# ==========================================
+#  Other Configs (Lua, TOML, JSON)
+# ==========================================
 [language-server.taplo]
-command = "taplo"  # taplo-cli に含まれるコマンド
+command = "taplo"
+args = ["lsp", "stdio"]
 
 [[language]]
 name = "toml"
 language-servers = [ "taplo" ]
-# taploはフォーマット対応（内部で整形機能あり）
-
-# Protobufの設定
-[language-server.protobuf-ls]
-command = "protobuf-language-server"
+auto-format = true
 
 [[language]]
-name = "protobuf"
-language-servers = [ "protobuf-ls" ]
-# (format は特になし：protoファイルのフォーマッタは未確立)
+name = "json"
+language-servers = [ { name = "vscode-json-language-server", args = ["--stdio"] } ]
+auto-format = true
 
+[[language]]
+name = "lua"
+auto-format = true
+formatter = { command = "stylua", args = ["-"] }

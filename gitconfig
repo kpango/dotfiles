@@ -165,3 +165,11 @@
 [credential]
     username    = kpango
     useHttpPath = true
+
+[credential "https://github.com"]
+    helper =
+    helper = !gh auth git-credential
+
+[credential "https://gist.github.com"]
+    helper =
+    helper = !gh auth git-credential

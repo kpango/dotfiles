@@ -593,7 +593,7 @@ if [ -z $ZSH_LOADED ]; then
             if [ $# -eq 1 ] || [ $# -eq 2 ]; then
                 local branch="$(tb)"
                 git checkout "$1" || { echo "Failed to checkout branch $1"; return 1; }
-                gfr
+                gfrs
                 git checkout -b tmp || { echo "Failed to create tmp branch"; return 1; }
                 git merge --squash "$branch"
                 if [ $# -eq 2 ]; then

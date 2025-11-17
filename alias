@@ -98,7 +98,7 @@ devrun(){
                 --restart always \
                 --workdir $container_home \
                 --network=host \
-                --mount type=bind,source=$resolve_dnsmasq_config,destination=$resolve_config,readonly \
+                --mount type=bind,source=$resolve_dnsmasq_config,destination=$resolve_config \
                 --add-host=host.docker.internal:host-gateway \
 		--memory=200G \
                 -u "$(id -u $USER):$(id -g $USER)" \
