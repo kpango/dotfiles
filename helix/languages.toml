@@ -3,7 +3,9 @@
 # ==========================================
 [language-server.ai]
 command = "lsp-ai"
-# 必要に応じてargsでconfigパスなどを指定
+
+[language-server.copilot]
+command = "copilot-language-server"
 
 # ==========================================
 #  Rust
@@ -55,7 +57,7 @@ roots = ["go.work", "go.mod"]
 auto-format = true
 # gofmtではなくgoimports (またはgofumpt) を推奨。import整理が自動化されます。
 formatter = { command = "gofumpt" }
-language-servers = [ "gopls", "golangci-lint-lsp" ]
+language-servers = [ "gopls", "golangci-lint-lsp", "copilot" ]
 
 # ==========================================
 #  C / C++
@@ -137,9 +139,13 @@ name = "toml"
 language-servers = [ "taplo" ]
 auto-format = true
 
+[language-server.json]
+command = "vscode-json-languageserver"
+args = ["--stdio"]
+
 [[language]]
 name = "json"
-language-servers = [ { name = "vscode-json-language-server", args = ["--stdio"] } ]
+language-servers = [ "json" ]
 auto-format = true
 
 [[language]]
