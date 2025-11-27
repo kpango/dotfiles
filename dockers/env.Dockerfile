@@ -76,7 +76,6 @@ RUN --mount=type=cache,target=${HOME}/.bun \
     automake \
     bash \
     ca-certificates \
-    ccls \
     clang-format \
     clang-tidy \
     clangd \

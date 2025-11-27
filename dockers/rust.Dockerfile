@@ -9,7 +9,6 @@ ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin
 ENV PATH=${BIN_PATH}:$PATH
-ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
 
 RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs \
     | CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} sh -s -- --default-toolchain nightly -y \
@@ -147,7 +146,7 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM rust-base AS lsd
 RUN cargo install --force --no-default-features \
-    --git https://github.com/Peltoche/lsd --branch master
+    --git https://github.com/lsd-rs/lsd --branch main
 
 # FROM rust-base AS lsp-ai
 # RUN cargo install --locked --force --no-default-features \
@@ -206,7 +205,7 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM rust-base AS tokei
 RUN cargo +nightly install --force --no-default-features \
-    tokei
+    --git https://github.com/XAMPPRocky/tokei
 
 FROM rust-base AS tree-sitter
 RUN cargo +nightly install --force --no-default-features \
@@ -231,7 +230,6 @@ ENV RUST_HOME=/usr/local/lib/rust
 ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin
-ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
 
 COPY --from=rust-base ${CARGO_HOME} ${CARGO_HOME}
 COPY --from=rust-base ${RUSTUP_HOME}/settings.toml ${RUSTUP_HOME}/settings.toml
@@ -267,7 +265,6 @@ COPY --from=eza ${BIN_PATH}/eza ${BIN_PATH}/eza
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=helix ${BIN_PATH}/hx ${BIN_PATH}/hx
-COPY --from=helix ${HELIX_DEFAULT_RUNTIME} ${HELIX_DEFAULT_RUNTIME}
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
 # COPY --from=lsp-ai ${BIN_PATH}/lsp-ai ${BIN_PATH}/lsp-ai
@@ -295,10 +292,12 @@ ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin
 ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
+ENV HELIX_HOME=${HOME}/.config/helix
+ENV HELIX_RUNTIME=${HELIX_HOME}/runtime
 
 COPY --from=rust-pre ${RUST_HOME} ${RUST_HOME}
-COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME} ${HELIX_DEFAULT_RUNTIME}
-COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME}/runtime ${HELIX_RUNTIME}
-COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME}/runtime/themes ${HELIX_HOME}/themes
-COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME}/runtime/grammars ${HELIX_HOME}/grammars
-COPY --from=rust-pre ${HELIX_DEFAULT_RUNTIME}/runtime/queries ${HELIX_HOME}/queries
+COPY --from=helix ${HELIX_DEFAULT_RUNTIME} ${HELIX_DEFAULT_RUNTIME}
+COPY --from=helix ${HELIX_DEFAULT_RUNTIME}/runtime ${HELIX_RUNTIME}
+COPY --from=helix ${HELIX_DEFAULT_RUNTIME}/runtime/themes ${HELIX_HOME}/themes
+COPY --from=helix ${HELIX_DEFAULT_RUNTIME}/runtime/grammars ${HELIX_HOME}/grammars
+COPY --from=helix ${HELIX_DEFAULT_RUNTIME}/runtime/queries ${HELIX_HOME}/queries

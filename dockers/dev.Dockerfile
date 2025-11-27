@@ -41,8 +41,8 @@ ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV DART_PATH=${USR_LIB}/dart
 ENV HELIX_HOME=${HOME}/.config/helix
 ENV HELIX_RUNTIME=${HELIX_HOME}/runtime
-ENV PATH=${BIN_PATH}:${GOPATH}/bin:${GOROOT}/bin:${CARGO_HOME}/bin:${DART_PATH}/bin:${PATH}
 ENV HELIX_DEFAULT_RUNTIME=${USR_LIB}/helix/runtime
+ENV PATH=${BIN_PATH}:${GOPATH}/bin:${GOROOT}/bin:${CARGO_HOME}/bin:${DART_PATH}/bin:${PATH}
 
 COPY --from=docker ${USR_LIB}/docker/cli-plugins/docker-buildx ${USR_LOCAL_LIB}/docker/cli-plugins/docker-buildx
 COPY --from=docker ${USR_LIB}/docker/cli-plugins/docker-compose ${USR_LOCAL_LIB}/docker/cli-plugins/docker-compose
