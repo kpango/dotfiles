@@ -134,9 +134,16 @@ RUN rustup update stable \
     gping
 
 FROM rust-base AS helix
+ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
 RUN git clone --depth 1 https://github.com/helix-editor/helix \
     && cd helix \
-    && cargo install --path helix-term --locked \
+    && RUST_BACKTRACE=full \
+    HELIX_DEFAULT_RUNTIME=${HELIX_DEFAULT_RUNTIME} \
+    cargo +nightly install --force \
+    --profile opt \
+    --config 'build.rustflags="-C target-cpu=native"' \
+    --path helix-term \
+    --locked \
     && mkdir -p ${HELIX_DEFAULT_RUNTIME} \
     && cp -r ./runtime ${HELIX_DEFAULT_RUNTIME}
 
@@ -220,9 +227,8 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM rust-base AS xh
 # RUN cargo +nightly install --force --locked --all-features \
-RUN rustup update stable \
-    && rustup default stable \
-    && cargo install --force --locked --all-features \
+RUN RUSTFLAGS="--cfg reqwest_unstable" \
+    cargo +nightly install --force --locked --all-features \
     xh
 
 FROM scratch AS rust-pre
