@@ -204,8 +204,9 @@ RUN cargo +nightly install --force --no-default-features \
     t-rec
 
 FROM rust-base AS tokei
-RUN cargo +nightly install --force --no-default-features \
-    --git https://github.com/XAMPPRocky/tokei
+RUN cargo +nightly install --force --features all \
+    --git https://github.com/XAMPPRocky/tokei \
+    tokei
 
 FROM rust-base AS tree-sitter
 RUN cargo +nightly install --force --no-default-features \
@@ -292,12 +293,6 @@ ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin
 ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
-ENV HELIX_HOME=${HOME}/.config/helix
-ENV HELIX_RUNTIME=${HELIX_HOME}/runtime
 
 COPY --from=rust-pre ${RUST_HOME} ${RUST_HOME}
 COPY --from=helix ${HELIX_DEFAULT_RUNTIME} ${HELIX_DEFAULT_RUNTIME}
-COPY --from=helix ${HELIX_DEFAULT_RUNTIME}/runtime ${HELIX_RUNTIME}
-COPY --from=helix ${HELIX_DEFAULT_RUNTIME}/runtime/themes ${HELIX_HOME}/themes
-COPY --from=helix ${HELIX_DEFAULT_RUNTIME}/runtime/grammars ${HELIX_HOME}/grammars
-COPY --from=helix ${HELIX_DEFAULT_RUNTIME}/runtime/queries ${HELIX_HOME}/queries
