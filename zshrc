@@ -521,7 +521,7 @@ if [ -z $ZSH_LOADED ]; then
         alias grc=gitremovalcheck
 
         # Common function for fetch, reset, and cleanup
-        git_fetch_reset() {
+        gfr() {
             local tb=$(tb)
             local db=$(gitdb)
             git fetch --prune
@@ -531,7 +531,7 @@ if [ -z $ZSH_LOADED ]; then
             git reset --hard origin/$tb || { echo "Failed to reset"; return 1; }
             git branch --merged $db | grep -vE '^\*|master$|develop$|main$' | xargs -I % git branch -d % || { echo "Failed to delete local branches"; return 1; }
         }
-        alias gfr=git_fetch_reset
+        alias gfr=gfr
 
         # Fetch, reset, and update submodules
         gfrs() {
