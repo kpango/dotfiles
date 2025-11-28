@@ -1463,15 +1463,15 @@ if [ -z $ZSH_LOADED ]; then
 
             # Call reflector
             if ! reflector \
-                  --country "Japan,South Korea,Taiwan,Hong Kong,Singapore,India,Indonesia,Philippines,Netherlands,Sweden,Finland,France,Germany,Greece,United States" \
+                  --country "Australia,Austria,Bulgaria,Canada,Czechia,France,Germany,India,Japan,New Zealand,Singapore,South Korea,Sweden,Taiwan,Thailand,United Kingdom,United States" \
                   --protocol https \
-                  --fastest 50 \
+                  --fastest 60 \
                   --sort score \
                   --threads 64 \
                   --age 24 \
                   --isos \
                   --ipv6 \
-                  --delay 0.5 \
+                  --delay 0.2 \
                   --completion-percent 100 \
                   --save "$tmpfile"; then
               echo "Reflector failed; keeping existing mirrorlist"
