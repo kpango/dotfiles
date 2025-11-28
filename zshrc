@@ -1430,6 +1430,10 @@ if [ -z $ZSH_LOADED ]; then
             log_file="$(mktemp)" || return 1
             trap '[[ -n "$log_file" && -e "$log_file" ]] && rm -f "$log_file"' RETURN
 
+            if type milcheck >/dev/null 2>&1; then
+                 run_command "milcheck" sudo milcheck || true
+            fi
+
             if kacman -Syy >"$log_file" 2>&1; then
                 return 0
             fi
@@ -1546,10 +1550,6 @@ if [ -z $ZSH_LOADED ]; then
 
             # Now the main event
             run_command "pacman full upgrade" kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop || return $?
-
-            if type milcheck >/dev/null 2>&1; then
-                 run_command "milcheck" sudo milcheck || true
-            fi
         }
 
         arch_maintenance() {
