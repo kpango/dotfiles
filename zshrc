@@ -1329,11 +1329,15 @@ if [ -z $ZSH_LOADED ]; then
         GXX=$(which g++)
         GCPP="$GCC -E"
         run_command() {
+            local desc="$1"
+            shift
+
+            echo "==> $desc"
             if ! "$@"; then
-                echo "Failed to execute the command: $@"
+                echo "ERROR: $desc failed (exit code $?)"
                 return 1
             fi
-            echo "Command executed successfully: $@"
+            return 0
         }
 
         try_package_manager() {
@@ -1341,19 +1345,19 @@ if [ -z $ZSH_LOADED ]; then
             shift
             if type $manager >/dev/null 2>&1; then
                 echo "Trying with $manager..."
-                if run_command $manager "$@"; then
+                if run_command "executing $manager" $manager "$@"; then
                     return 0
                 fi
                 echo "$manager failed, trying to ignore unnecessary packages."
-                if run_command $manager "$@" --ignore mozc --ignore fcitx5-mozc-ut; then
+                if run_command "executing $manager (ignore mozc)" $manager "$@" --ignore mozc --ignore fcitx5-mozc-ut; then
                     return 0
                 fi
                 echo "$manager with ignoreing unnecessary package failed, trying with gcc/g++ environment variables set."
-                if CC=$GCC CXX=$GXX CPP=$GCPP run_command $manager "$@"; then
+                if CC=$GCC CXX=$GXX CPP=$GCPP run_command "executing $manager (with gcc env)" $manager "$@"; then
                     return 0
                 fi
                 echo "$manager with gcc/g++ environment variables failed, trying to ignore unnecessary packages."
-                if CC=$GCC CXX=$GXX CPP=$GCPP run_command $manager "$@" --ignore mozc --ignore fcitx5-mozc-ut; then
+                if CC=$GCC CXX=$GXX CPP=$GCPP run_command "executing $manager (with gcc env + ignore mozc)" $manager "$@" --ignore mozc --ignore fcitx5-mozc-ut; then
                     return 0
                 fi
                 echo "$manager failed."
@@ -1421,22 +1425,101 @@ if [ -z $ZSH_LOADED ]; then
         }
         alias archback=archback
 
-        archup() {
-            kpangoup
+        test_pacman_mirror() {
+            local log_file
+            log_file="$(mktemp)" || return 1
+            trap '[[ -n "$log_file" && -e "$log_file" ]] && rm -f "$log_file"' RETURN
+
+            if kacman -Syy >"$log_file" 2>&1; then
+                return 0
+            fi
+
+            # DNS-related errors: attempt one quick retry
+            if grep -qE "Temporary failure in name resolution|could not resolve host|Name or service not known" "$log_file"; then
+                echo "DNS resolution error detected; retrying once after a short delay..."
+                sleep 3
+                if kacman -Syy; then
+                    return 0
+                fi
+            fi
+
+            echo "pacman -Syy failed; see log:"
+            cat "$log_file"
+            return 1
+        }
+
+        arch_update_mirrors() {
+            local mirror="/etc/pacman.d/mirrorlist"
+            local backup="/etc/pacman.d/mirrorlist.backup"
+            local tmpfile
+
+            tmpfile="$(mktemp)" || return 1
+            trap '[[ -n "$tmpfile" && -e "$tmpfile" ]] && rm -f "$tmpfile"' RETURN
+
+            # if there is no mirrorlist yet, handle gracefully
+            if [[ -f "$mirror" ]]; then
+                sudo cp "$mirror" "$backup"
+            fi
+
+            # Call reflector
+            if ! reflector \
+                  --country "Japan,South Korea,Taiwan,Hong Kong,Singapore" \
+                  --protocol https \
+                  --latest 30 \
+                  --sort rate \
+                  --save "$tmpfile"; then
+              echo "Reflector failed; keeping existing mirrorlist"
+              return 1
+            fi
+
+            # Minimal sanity check
+            if [[ ! -s "$tmpfile" || $(wc -l <"$tmpfile") -lt 5 ]]; then
+              echo "Reflector produced an unexpectedly small mirrorlist; aborting."
+              return 1
+            fi
+
+            # Apply new mirrorlist (but keep backup until tested)
+            sudo mv "$tmpfile" "$mirror"
+            sudo chown root:root "$mirror"
+            sudo chmod 0644 "$mirror"
+
+            # Test the new mirrorlist
+            if ! test_pacman_mirror; then
+              echo "New mirrorlist seems broken; restoring backup"
+
+              if [[ -f "$backup" ]]; then
+                sudo mv "$backup" "$mirror"
+                sudo chown root:root "$mirror"
+                sudo chmod 0644 "$mirror"
+              fi
+
+              return 1
+            fi
+
+            echo "New mirrorlist validated successfully; removing backup"
+            sudo rm -f "$backup"
+            return 0
+        }
+
+        arch_update_packages() {
+             # Pre-update maintenance (moved from start of old archup)
             sudo chown 0 /etc/sudoers.d/$USER
             sudo chmod -R 700 $HOME/.gnupg
             sudo chmod -R 600 $HOME/.gnupg/*
-            run_command sync &&
-                sudo sysctl -w vm.drop_caches=3 &&
-                sudo swapoff -a &&
-                sudo swapon -a &&
+
+            run_command "sync and clear cache" sh -c "sync && sudo sysctl -w vm.drop_caches=3 && sudo swapoff -a && sudo swapon -a" &&
                 printf '\n%s\n' 'RAM-cache and Swap were cleared.' &&
                 free
+
             sudo su -c "chown 0 /etc/sudoers.d/$USER"
-            kacclean
+
+            run_command "cleaning package cache (pre-update)" kacclean
+
             if type gpgconf >/dev/null 2>&1; then
                 sudo gpgconf --kill all
             fi
+
+            # Handling keys
             if [ $# -eq 1 ]; then
                 sudo chown -R $USER $HOME/.gnupg
                 touch $HOME/.gnupg/dirmngr_ldapservers.conf
@@ -1445,60 +1528,47 @@ if [ -z $ZSH_LOADED ]; then
                     sudo dirmngr </dev/null
                 fi
                 if type pacman-key >/dev/null 2>&1; then
-                    sudo pacman-key --init
-                    sudo pacman-key --populate archlinux
-                    sudo pacman-key --refresh-keys
+                    run_command "init pacman keys" sudo pacman-key --init
+                    run_command "populate archlinux keys" sudo pacman-key --populate archlinux
+                    run_command "refresh keys" sudo pacman-key --refresh-keys
                 fi
             elif type pacman-key >/dev/null 2>&1; then
-                sudo pacman-key --populate archlinux
+                run_command "populate archlinux keys" sudo pacman-key --populate archlinux
             fi
-            sudo pacman-db-upgrade
-            kacclean
-            if type rate-mirrors >/dev/null 2>&1; then
-                sudo cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-                TMPFILE="$(mktemp)"
-                rate-mirrors \
-                    --protocol https \
-                    --allow-root \
-                    --disable-comments \
-                    --disable-comments-in-file \
-                    --entry-country JP \
-                    --concurrency $CPUCORES \
-                    --save="$TMPFILE" \
-                    arch --max-delay=21600
-                if [[ $(wc -l <$TMPFILE) -lt 5 ]]; then
-                    echo "Failed to get new mirrorlist from rate-mirrors"
-                    sudo rm -rf $TMPFILE
-                    sudo rm -rf /etc/pacman.d/mirrorlist
-                    sudo mv /etc/pacman.d/mirrorlist.backup /etc/pacman.d/mirrorlist
-                else
-                    echo "Successfully got new mirrorlist from rate-mirrors"
-                    sudo rm -rf /etc/pacman.d/mirrorlist
-                    sudo mv $TMPFILE /etc/pacman.d/mirrorlist
-                    sudo chmod 755 /etc/pacman.d/mirrorlist
-                    sudo chown root:root /etc/pacman.d/mirrorlist
-                    sudo rm -f /etc/pacman.d/mirrorlist.backup
-                fi
-                kacman -Syy
-                if type milcheck >/dev/null 2>&1; then
-                    sudo milcheck
-                fi
+
+            run_command "cleaning package cache (pre-update 2)" kacclean
+
+            # Now the main event
+            run_command "pacman full upgrade" kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop || return $?
+
+            if type milcheck >/dev/null 2>&1; then
+                 run_command "milcheck" sudo milcheck || true
             fi
-            kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop
-            kacclean
-            sudo bootctl update
-            sudo mkinitcpio -p linux-zen
-            sudo journalctl --vacuum-time=2weeks
-            run_command sync &&
-                sudo sysctl -w vm.drop_caches=3 &&
-                sudo swapoff -a &&
-                sudo swapon -a &&
+        }
+
+        arch_maintenance() {
+            run_command "pacman db upgrade" sudo pacman-db-upgrade || return $?
+            run_command "cleaning package cache (post-update)" kacclean
+
+            run_command "update bootloader" sudo bootctl update || return $?
+            run_command "regenerate initramfs" sudo mkinitcpio -p linux-zen || return $?
+            run_command "vacuum journal" sudo journalctl --vacuum-time=2weeks
+
+            run_command "final sync and maintenance" sh -c "sync && sudo sysctl -w vm.drop_caches=3 && sudo swapoff -a && sudo swapon -a" &&
                 printf '\n%s\n' 'RAM-cache and Swap were cleared.' &&
                 sudo fsck -AR -a &&
                 sudo journalctl --vacuum-time=2weeks &&
                 systemd-analyze &&
                 sensors &&
                 free
+        }
+
+        archup() {
+            kpangoup
+
+            arch_update_mirrors || return $?
+            arch_update_packages "$@" || return $?
+            arch_maintenance || return $?
         }
         alias archup=archup
         alias up=archup
