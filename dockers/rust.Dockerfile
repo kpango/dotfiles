@@ -16,10 +16,10 @@ RUN curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs \
     && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup default nightly \
     && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup update \
     && CARGO_HOME=${CARGO_HOME} RUSTUP_HOME=${RUSTUP_HOME} ${CARGO_HOME}/bin/rustup component add \
-       rustfmt \
-       rust-analysis \
-       rust-src \
        clippy \
+       rust-analyzer \
+       rustfmt \
+       rust-src \
        --toolchain nightly
 
 FROM kpango/rust:latest AS old
@@ -289,9 +289,6 @@ COPY --from=t-rec ${BIN_PATH}/t-rec ${BIN_PATH}/t-rec
 COPY --from=tokei ${BIN_PATH}/tokei ${BIN_PATH}/tokei
 COPY --from=tree-sitter ${BIN_PATH}/tree-sitter ${BIN_PATH}/tree-sitter
 COPY --from=xh ${BIN_PATH}/xh ${BIN_PATH}/xh
-
-RUN rustup component add rust-analyzer \
-    rustup update
 
 FROM scratch AS rust
 ENV RUST_HOME=/usr/local/lib/rust

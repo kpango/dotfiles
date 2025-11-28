@@ -1,4 +1,3 @@
-antigravity-bin-hardened
 btop-theme-catppuccin
 bun-bin
 chrome-remote-desktop
@@ -10,6 +9,7 @@ fanctl-git
 fcitx5-mozc-ut
 fcitx5-skin-arc
 ggshield
+ghostmirror
 ghostty-x86_64-v3-git
 ghq-bin
 google-chrome-beta
@@ -18,7 +18,6 @@ google-cloud-cli-gke-gcloud-auth-plugin
 gopreload-git
 light
 milcheck
-neovim-git
 netrc
 ngrok
 nkf-git
