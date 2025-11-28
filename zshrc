@@ -1454,7 +1454,7 @@ if [ -z $ZSH_LOADED ]; then
             local tmpfile
 
             tmpfile="$(mktemp)" || return 1
-            trap '[[ -n "$tmpfile" && -e "$tmpfile" ]] && rm -f "$tmpfile"' RETURN
+            trap '[[ -n "$tmpfile" && -e "$tmpfile" ]] && rm -f "$tmpfile"'
 
             # if there is no mirrorlist yet, handle gracefully
             if [[ -f "$mirror" ]]; then
@@ -1465,8 +1465,14 @@ if [ -z $ZSH_LOADED ]; then
             if ! reflector \
                   --country "Japan,South Korea,Taiwan,Hong Kong,Singapore,India,Indonesia,Philippines,Netherlands,Sweden,Finland,France,Germany,Greece,United States" \
                   --protocol https \
-                  --latest 30 \
-                  --sort rate \
+                  --fastest 50 \
+                  --sort score \
+                  --threads 64 \
+                  --age 24 \
+                  --isos \
+                  --ipv6 \
+                  --delay 0.5 \
+                  --completion-percent 100 \
                   --save "$tmpfile"; then
               echo "Reflector failed; keeping existing mirrorlist"
               return 1
