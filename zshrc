@@ -1463,7 +1463,7 @@ if [ -z $ZSH_LOADED ]; then
 
             # Call reflector
             if ! reflector \
-                  --country "Japan,South Korea,Taiwan,Hong Kong,Singapore" \
+                  --country "Japan,South Korea,Taiwan,Hong Kong,Singapore,India,Indonesia,Philippines,Netherlands,Sweden,Finland,France,Germany,Greece,United States" \
                   --protocol https \
                   --latest 30 \
                   --sort rate \
