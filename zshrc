@@ -1461,25 +1461,20 @@ if [ -z $ZSH_LOADED ]; then
                 sudo cp "$mirror" "$backup"
             fi
 
-            # Call ghostmirror
-            if ! ghostmirror \
-                  -P \
-                  -T https \
-                  -c Japan \
-                  -m "$mirror" \
-                  -u \
-                  -o \
-                  -l "$tmpfile" \
-                  -L 30 \
-                  -s light \
-                  -S state,outofdate,morerecent,estimated,speed; then
-              echo "GhostMirror failed; keeping existing mirrorlist"
+            # Call reflector
+            if ! reflector \
+                  --country "Japan,South Korea,Taiwan,Hong Kong,Singapore" \
+                  --protocol https \
+                  --latest 30 \
+                  --sort rate \
+                  --save "$tmpfile"; then
+              echo "Reflector failed; keeping existing mirrorlist"
               return 1
             fi
 
             # Minimal sanity check
             if [[ ! -s "$tmpfile" || $(wc -l <"$tmpfile") -lt 5 ]]; then
-              echo "GhostMirror produced an unexpectedly small mirrorlist; aborting."
+              echo "Reflector produced an unexpectedly small mirrorlist; aborting."
               return 1
             fi
 
