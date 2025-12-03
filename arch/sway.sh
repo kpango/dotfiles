@@ -89,15 +89,22 @@ if [[ "${GPU_VENDOR}" == "nvidia" ]]; then
   export WLR_NO_HARDWARE_CURSORS=1
   export XWAYLAND_NO_GLAMOR=1
   export __GLX_VENDOR_LIBRARY_NAME="nvidia"
+  export __GL_GSYNC_ALLOWED=0
+  export __GL_VRR_ALLOWED=0
+
+  # please use vulkan for flicking problems occured
+  # export WLR_RENDERER=vulkan
 
   # Add them to the import list
   add_key "WLR_DRM_NO_ATOMIC"
   add_key "WLR_NO_HARDWARE_CURSORS"
   add_key "XWAYLAND_NO_GLAMOR"
   add_key "__GLX_VENDOR_LIBRARY_NAME"
+  add_key "__GL_GSYNC_ALLOWED"
+  add_key "__GL_VRR_ALLOWED"
 
   # Add --unsupported-gpu only for NVIDIA
-  SWAY_GPU_OPTION="--unsupported-gpu"
+  SWAY_GPU_OPTION="--unsupported-gpu -D noscanout"
 
 else
   log "Using generic GPU settings."

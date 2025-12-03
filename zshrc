@@ -1776,6 +1776,7 @@ if [ -z $ZSH_LOADED ]; then
             make -k update
             make format
             chword $GOPATH/src/github.com/vdaas/vald "interface\{\}" "any"
+            make proto/replace format/go format/go/test
         }
         alias valdup=valdup
         valddep() {
