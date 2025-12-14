@@ -1549,7 +1549,8 @@ if [ -z $ZSH_LOADED ]; then
             run_command "cleaning package cache (pre-update 2)" kacclean
 
             # Now the main event
-            run_command "pacman full upgrade" kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop || return $?
+            run_command "pacman full upgrade" kacman -Syyu --noconfirm || return $?
+            # run_command "pacman full upgrade" kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop || return $?
         }
 
         arch_maintenance() {
