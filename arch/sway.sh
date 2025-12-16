@@ -104,7 +104,7 @@ if [[ "${GPU_VENDOR}" == "nvidia" ]]; then
   add_key "__GL_VRR_ALLOWED"
 
   # Add --unsupported-gpu only for NVIDIA
-  SWAY_GPU_OPTION="--unsupported-gpu -D noscanout"
+  SWAY_GPU_OPTION="--unsupported-gpu"
 
 else
   log "Using generic GPU settings."
@@ -154,11 +154,11 @@ if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
       log "Starting sway (DEBUG MODE)..."
       # Add seconds to timestamp for uniqueness
       exec env SWAY_DEBUG=1 SWAY_IGNORE_INPUT_GRAB=1 \
-        sway --debug --verbose "${sway_args[@]}" \
+        sway --debug --verbose "${sway_args[@]}" -Dnoscanout \
         >"/tmp/sway.debug.$(date +%Y%m%d%H%M%S).log" 2>&1
     else
       log "Starting sway..."
-      exec sway "${sway_args[@]}"
+      exec sway "${sway_args[@]}" -Dnoscanout
     fi
   else
     log "Sway already running. Skipping launch."
