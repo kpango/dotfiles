@@ -37,6 +37,7 @@ fd
 fwupd
 fwupd-efi
 gettext
+ghq
 git
 git-delta
 go

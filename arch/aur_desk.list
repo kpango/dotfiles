@@ -1,6 +1,5 @@
 btop-theme-catppuccin
 bun-bin
-chrome-remote-desktop
 docker-credential-pass-git
 downgrade
 duf-git
@@ -9,9 +8,7 @@ fanctl-git
 fcitx5-mozc-ut
 fcitx5-skin-arc
 ggshield
-ghostmirror
 ghostty-x86_64-v3-git
-ghq-bin
 google-chrome-beta
 google-cloud-cli
 google-cloud-cli-gke-gcloud-auth-plugin
@@ -34,7 +31,6 @@ slack-desktop
 swaybg-git
 sway-git-wlroots-git
 talosctl-bin
-thunderbolt-utils
 ttf-hackgen
 wdisplays-git
 wlroots-hidpi-xprop-git

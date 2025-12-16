@@ -154,11 +154,11 @@ if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
       log "Starting sway (DEBUG MODE)..."
       # Add seconds to timestamp for uniqueness
       exec env SWAY_DEBUG=1 SWAY_IGNORE_INPUT_GRAB=1 \
-        sway --debug --verbose "${sway_args[@]}" -Dnoscanout \
+        sway --debug --verbose "${sway_args[@]}" \
         >"/tmp/sway.debug.$(date +%Y%m%d%H%M%S).log" 2>&1
     else
       log "Starting sway..."
-      exec sway "${sway_args[@]}" -Dnoscanout
+      exec sway "${sway_args[@]}"
     fi
   else
     log "Sway already running. Skipping launch."

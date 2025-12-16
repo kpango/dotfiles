@@ -188,6 +188,22 @@ devin(){
 
 alias devin=devin
 
+udmin(){
+    tailscale down
+    tailscale up --reset --accept-routes
+    ssh udmpro -v
+}
+
+alias udmin=udmin
+
+udrin(){
+    tailscale down
+    tailscale up --reset --accept-routes
+    ssh udr -v
+}
+
+alias udr=udr
+
 devkill(){
     docker update --restart=no $container_name \
         && docker container stop $(docker container ls -aq) \
