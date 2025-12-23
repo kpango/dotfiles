@@ -200,7 +200,6 @@ mac_link: \
 	sudo rm -rf \
 		/etc/docker/config.json \
 		/etc/docker/daemon.json \
-		$(HOME)/.config/ghostty/config \
 		$(HOME)/.docker/config.json \
 		$(HOME)/.docker/daemon.json \
 		$(HOME)/.gnupg/gpg-agent.conf \
@@ -211,8 +210,6 @@ mac_link: \
 	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
 	sed -i.bak 's|/usr/bin/pinentry-tty|/opt/homebrew/bin/pinentry-mac|g' $(HOME)/.gnupg/gpg-agent.conf
-	ln -sfv $(ROOTDIR)/macos/ghostty.conf $(HOME)/.config/ghostty/config
-	ln -sfv $(ROOTDIR)/ghostty.conf $(HOME)/.config/ghostty/ghostty.conf
 	ln -sfv $(ROOTDIR)/macos/docker_config.json $(HOME)/.docker/config.json
 	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	sudo ln -sfv $(ROOTDIR)/macos/docker_config.json /etc/docker/config.json
@@ -234,7 +231,6 @@ clean: perm
 	jq . $(ROOTDIR)/arch/waybar.json > $(TMP_DIR)/waybar.json.tmp && mv $(TMP_DIR)/waybar.json.tmp $(ROOTDIR)/arch/waybar.json
 	sudo rm -rf \
 		$(HOME)/.aliases \
-		$(HOME)/.config/ghostty \
 		$(HOME)/.config/compton \
 		$(HOME)/.config/fcitx5/conf/classicui.conf \
 		$(HOME)/.config/fcitx5/config \
