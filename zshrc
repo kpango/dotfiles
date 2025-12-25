@@ -529,7 +529,11 @@ if [ -z $ZSH_LOADED ]; then
             git branch -r --merged $db | grep -v -e $db -e develop -e release | sed -E 's% *origin/%%' | xargs -I% git push --delete origin % || { echo "Failed to delete merged branches"; return 1; }
             git fetch --prune
             git reset --hard origin/$tb || { echo "Failed to reset"; return 1; }
-            git branch --merged $db | grep -vE '^\*|master$|develop$|main$' | xargs -I % git branch -d % || { echo "Failed to delete local branches"; return 1; }
+            git branch --merged "$db" --format='%(refname:short)' \
+                | grep -vE '^(master|develop|main)$|^release/' \
+                | xargs -I % git branch -d % \
+                || { echo "Failed to delete local branches"; return 1; }
+
         }
         alias gfr=gfr
 
