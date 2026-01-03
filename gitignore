@@ -121,6 +121,8 @@ vim-plug/
 vim-plug/*
 .nvimlog
 
+.vscode/
+
 .envrc
 .env
 .air.*
