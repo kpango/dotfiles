@@ -165,7 +165,7 @@ arch_p1_link: \
 	ln -sfv $(ROOTDIR)/arch/waybar_p1.css $(HOME)/.config/waybar/style.css
 	rm -rf $(HOME)/.config/psd
 	mkdir $(HOME)/.config/psd
-	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
+	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-tweaks.conf /etc/modprobe.d/nvidia-tweaks.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
 	sudo systemctl daemon-reload
@@ -174,7 +174,7 @@ arch_p1_link: \
 
 arch_desk_link: \
 	arch_link
-	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia.conf /etc/modprobe.d/nvidia-tweaks.conf
+	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-tweaks.conf /etc/modprobe.d/nvidia-tweaks.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
 	sudo ln -sfv $(ROOTDIR)/network/desk/70-persistent-network.rules /etc/udev/rules.d/70-persistent-network.rules

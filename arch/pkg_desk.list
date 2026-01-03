@@ -27,6 +27,8 @@ dnsmasq
 docker
 docker-buildx
 dosfstools
+egl-gbm
+egl-wayland
 egl-x11
 fakeroot
 fastfetch

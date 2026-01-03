@@ -21,6 +21,7 @@ nkf-git
 noto-fonts-emoji-git
 nvidia-beta-dkms
 nvidia-settings-beta
+nvidia-utils-beta
 opencl-nvidia-beta
 pakku
 paru-bin
