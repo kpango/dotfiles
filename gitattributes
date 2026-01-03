@@ -3,7 +3,7 @@
 #
 
 # Text files with default encoding and line endings
-* text encoding=utf-8 eol=lf
+* text=auto encoding=utf-8 eol=lf
 
 # Windows batch and command files with CRLF line endings
 *.{bat,[bB][aA][tT]} text encoding=utf-8 eol=crlf
@@ -18,9 +18,11 @@
 *.conf    text encoding=utf-8 eol=lf
 *.config  text encoding=utf-8 eol=lf
 *.cpp     text encoding=utf-8 eol=lf diff=cpp
+*.cpp     text encoding=utf-8 eol=lf diff=cpp
 *.cs      text encoding=utf-8 eol=lf diff=csharp
 *.cshtml  text encoding=utf-8 eol=lf diff=html
 *.css     text encoding=utf-8 eol=lf
+*.csv     text encoding=utf-8 eol=lf linguist-language=CSV
 *.csv     text encoding=utf-8 eol=lf linguist-language=CSV
 *.elm     text encoding=utf-8 eol=lf diff=elm
 *.erl     text encoding=utf-8 eol=lf diff=erlang
@@ -34,7 +36,7 @@
 *.html    text encoding=utf-8 eol=lf diff=html
 *.java    text encoding=utf-8 eol=lf diff=java
 *.js      text encoding=utf-8 eol=lf diff=javascript
-*.json    text encoding=utf-8 eol=lf diff=json linguist-language=JSON
+*.json    text encoding=utf-8 eol=lf diff=json linguist-language=JSON merge=ours
 *.jsx     text encoding=utf-8 eol=lf diff=javascript
 *.less    text encoding=utf-8 eol=lf
 *.m       text encoding=utf-8 eol=lf diff=objc
@@ -69,10 +71,11 @@
 *.yml     text encoding=utf-8 eol=lf
 
 # Dockerfile and license files
-Dockerfile   text encoding=utf-8 eol=lf
-LICENSE.txt  text encoding=utf-8 eol=lf
-LICENSE      text encoding=utf-8 eol=lf
-.githooks/*  text encoding=utf-8 eol=lf
+Dockerfile             text encoding=utf-8 eol=lf
+LICENSE.txt            text encoding=utf-8 eol=lf
+LICENSE                text encoding=utf-8 eol=lf
+.githooks/*            text encoding=utf-8 eol=lf
+.all-contributorsrc    text encoding=utf-8 eol=lf linguist-language=JSON
 
 # RTF files with UTF-16 encoding
 *.rtf text encoding=utf-16
@@ -81,6 +84,7 @@ LICENSE      text encoding=utf-8 eol=lf
 *.7z      binary
 *.a       binary
 *.dll     binary
+*.docx    binary
 *.dylib   binary
 *.exe     binary
 *.gif     binary
@@ -91,9 +95,8 @@ LICENSE      text encoding=utf-8 eol=lf
 *.pdf     binary
 *.psb     binary
 *.so      binary
-*.zip     binary
 *.xlsx    binary
-*.docx    binary
+*.zip     binary
 
 # Git Large File Storage (LFS) for large assets
 *.jpg  binary filter=lfs diff=lfs merge=lfs -text

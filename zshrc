@@ -1574,6 +1574,8 @@ if [ -z $ZSH_LOADED ]; then
                 free
         }
 
+        alias archmain=arch_maintenance
+
         archup() {
             kpangoup
 
