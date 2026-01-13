@@ -204,9 +204,12 @@ if [ -z $DOTENV_LOADED ]; then
 
     if [ -d "/usr/local/lib/rust" ]; then
         export RUST_HOME="/usr/local/lib/rust"
+        export CARGO_HOME=$RUST_HOME/cargo
+        export RUSTUP_HOME=$RUST_HOME/rustup
+    else
+        export CARGO_HOME=$HOME/.cargo
+        export RUSTUP_HOME=$HOME/.rustup
     fi
-    export CARGO_HOME=$RUST_HOME/cargo
-    export RUSTUP_HOME=$RUST_HOME/rustup
 
     if type go >/dev/null 2>&1; then
         #GO
