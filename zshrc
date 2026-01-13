@@ -1560,6 +1560,8 @@ if [ -z $ZSH_LOADED ]; then
             # run_command "pacman full upgrade" kacman -Syyu --noconfirm --skipreview --removemake --cleanafter --useask --combinedupgrade --batchinstall --sudoloop || return $?
         }
 
+        alias archpkgs=arch_update_packages
+
         arch_maintenance() {
             run_command "pacman db upgrade" sudo pacman-db-upgrade || return $?
             run_command "cleaning package cache (post-update)" kacclean
@@ -1582,7 +1584,8 @@ if [ -z $ZSH_LOADED ]; then
         archup() {
             kpangoup
 
-            arch_update_mirrors || return $?
+            # arch_update_mirrors || return $?
+            arch_update_mirrors
             arch_update_packages "$@" || return $?
             arch_maintenance || return $?
         }
