@@ -5,7 +5,7 @@ downgrade
 duf-git
 ethtool-git
 fanctl-git
-fcitx5-mozc-ut
+fcitx5-mozc-ut-full
 fcitx5-skin-arc
 ggshield
 ghostty-x86_64-v3-git
@@ -15,6 +15,7 @@ google-cloud-cli-gke-gcloud-auth-plugin
 gopreload-git
 light
 milcheck
+mozc-ut-full-common
 netrc
 ngrok
 nkf-git
@@ -23,6 +24,7 @@ nvidia-beta-dkms
 nvidia-settings-beta
 nvidia-utils-beta
 opencl-nvidia-beta
+pacman-static
 pakku
 paru-bin
 rancher-k3d-beta-bin

@@ -71,6 +71,7 @@ COPY --from=go ${GOROOT}/lib ${GOROOT}/lib
 COPY --from=go ${GOROOT}/pkg ${GOROOT}/pkg
 COPY --from=go ${GOROOT}/misc ${GOROOT}/misc
 COPY --from=go /go/bin ${GOPATH}/bin
+COPY --from=go /go/bin/golangci-lint ${BIN_PATH}/golangci-lint
 
 COPY --from=rust ${RUST_HOME} ${RUST_HOME}
 COPY --from=rust ${HELIX_DEFAULT_RUNTIME} ${HELIX_DEFAULT_RUNTIME}
