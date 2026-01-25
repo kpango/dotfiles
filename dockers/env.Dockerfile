@@ -251,6 +251,7 @@ RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
         @byterover/cipher \
         @github/copilot \
         @google/gemini-cli \
+        @google/jules \
         @openai/codex \
         @qwen-code/qwen-code \
     && ${BUN_INSTALL}/bin/n latest \
