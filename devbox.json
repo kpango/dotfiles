@@ -1,0 +1,110 @@
+{
+  "packages": [
+    "zsh",
+    "sheldon",
+    "starship",
+    "tmux",
+    "direnv",
+    "git",
+    "ghq",
+    "fzf",
+    "ripgrep",
+    "bat",
+    "lsd",
+    "eza",
+    "fd",
+    "procs",
+    "btop",
+    "dutree",
+    "hyperfine",
+    "jq",
+    "yq-go",
+    "axel",
+    "ranger",
+    "translate-shell",
+    "fastfetch",
+    "helix",
+    "go",
+    "rustup",
+    "nim",
+    "dart",
+    "zig",
+    "zls",
+    "python3",
+    "nodejs",
+    "bun",
+    "clang",
+    "cmake",
+    "gnumake",
+    "protobuf",
+    "upx",
+    "gcc",
+    "gopls",
+    "golangci-lint",
+    "delve",
+    "hugo",
+    "gotools",
+    "air",
+    "tinygo",
+    "kubectl",
+    "kubecolor",
+    "kubernetes-helm",
+    "k9s",
+    "k3d",
+    "kind",
+    "skaffold",
+    "kustomize",
+    "linkerd",
+    "kubectx",
+    "stern",
+    "krew",
+    "kube-linter",
+    "kubebuilder",
+    "google-cloud-sdk",
+    "istioctl",
+    "docker-client",
+    "docker-compose",
+    "docker-buildx",
+    "trivy",
+    "dive"
+  ],
+  "env": {
+    "TZ": "Asia/Tokyo",
+    "LANG": "en_US.UTF-8",
+    "GOPATH": "$HOME/go",
+    "GOBIN": "$HOME/go/bin",
+    "GOROOT": "$PWD/.devbox/nix/profile/default/share/go",
+    "GOPRIVATE": "*.yahoo.co.jp,github.com/vdaas/vald,github.com/vdaas/vald/apis,github.com/vdaas/vald-client-go",
+    "GONOPROXY": "*.yahoo.co.jp,github.com/vdaas/vald,github.com/vdaas/vald/apis,github.com/vdaas/vald-client-go",
+    "GONOSUMDB": "*.yahoo.co.jp,github.com/vdaas/vald,github.com/vdaas/vald/apis,github.com/vdaas/vald-client-go",
+    "GOPROXY": "https://proxy.golang.org,https://goproxy.io,direct",
+    "GOSUMDB": "sum.golang.org",
+    "CGO_ENABLED": "1",
+    "USE_GKE_GCLOUD_AUTH_PLUGIN": "True",
+    "RUST_BACKTRACE": "1",
+    "EDITOR": "hx"
+  },
+  "shell": {
+    "init_hook": [
+
+      "export PATH=$GOPATH/bin:$HOME/.cargo/bin:$HOME/.krew/bin:$PATH",
+
+
+      "eval \"$(starship init zsh)\"",
+      "eval \"$(direnv hook zsh)\"",
+
+
+      "if ! command -v rustc &> /dev/null; then rustup default nightly && rustup component add rust-analyzer rust-src rustfmt clippy; fi",
+
+
+      "if ! command -v jvgrep &> /dev/null; then go install github.com/mattn/jvgrep@latest; fi",
+
+
+      "echo 'To fully activate your dotfiles configuration, run: exec zsh'"
+    ],
+    "scripts": {
+      "setup": "rustup default nightly && go install github.com/mattn/jvgrep@latest",
+      "update_tools": "go install google.golang.org/protobuf/cmd/protoc-gen-go@latest"
+    }
+  }
+}
