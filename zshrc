@@ -13,25 +13,25 @@ if type tmux >/dev/null 2>&1; then
         echo "welcome to tmux"
         USER="$(whoami)"
         HOST="$(hostname)"
-        TMUX_TMPDIR_PREFIX="/tmp/tmux-sockets-${UID}"
+        TMUX_TMPDIR_PREFIX="/tmp/tmux-sockets/${UID}"
         TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/$HOST"
         # If connected via SSH
         if [ ! -z "$SSH_CLIENT" ]; then
             SSH_IP="${SSH_CLIENT%% *}"
-            TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/ssh-from-$SSH_IP"
+            TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/ssh/$SSH_IP"
             echo "starting tmux for ssh $SSH_TTY from $SSH_CLIENT"
         fi
         export TMUX_TMPDIR=$TMUX_TMPDIR
         # Create tmux temp directory if it doesn't exist
         if [ ! -d $TMUX_TMPDIR ]; then
             if mkdir -p $TMUX_TMPDIR; then
-                chmod 700 "$TMUX_TMPDIR"
                 echo "Successfully created tmux temp directory on $TMUX_TMPDIR."
             else
                 echo "Failed to create tmux temp directory on $TMUX_TMPDIR."
                 exit 1 # Exit if failed to create directory
             fi
         fi
+        chmod 700 "$TMUX_TMPDIR"
         export TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins"
         TPM_PATH="$TMUX_PLUGIN_MANAGER_PATH/tpm"
         if [ ! -d $TPM_PATH ]; then
@@ -44,17 +44,19 @@ if type tmux >/dev/null 2>&1; then
             # Ensure the user has access to the Docker socket
             sudo chown -R $USER:$group /var/run/docker.sock
         fi
-        echo "Attaching to tmux session: $SESSION_NAME"
+	# Determine Session Name & Socket Path based on SSH context
+        SESSION_NAME="${USER}@${HOST}"
+        echo "Attaching to tmux session: $SESSION_NAME at $TMUX_TMPDIR"
         # Try to attach to the session, or create it if it doesn't exist.
         # -u: Force UTF-8
         # -2: Force 256 colors
         # new-session -A: Attach if exists, create if not (Atomic operation)
         # -s: Session name
-        if TMUX_TMPDIR=$TMUX_TMPDIR tmux -u -2 new-session -A -n$USER -s$USER@$HOST; then
-            echo "finished tmux session for $TMUX_TMPDIR:$USER@$HOST"
+        if TMUX_TMPDIR=$TMUX_TMPDIR tmux -u -2 new-session -A -n "$USER" -s "$SESSION_NAME"; then
+            echo "finished tmux session for $TMUX_TMPDIR:$SESSION_NAME"
         else
-            echo "failed to create new tmux session for $TMUX_TMPDIR:$USER@$HOST"
-            exit 1 # Exit if failed to create tmux session
+            echo "failed to create/attach tmux session for $TMUX_TMPDIR:$SESSION_NAME"
+            exit 1
         fi
         exit
     fi
