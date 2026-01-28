@@ -9,17 +9,12 @@ CPUTYPE=${CPUTYPE:-$(uname -m)}
 # Check if tmux is installed
 if type tmux >/dev/null 2>&1; then
     # If not inside a tmux session
-    if [ -z $TMUX ]; then
+    if [[ -z "$TMUX" && -o interactive ]]; then
         echo "welcome to tmux"
         USER="$(whoami)"
         HOST="$(hostname)"
-        TMUX_TMPDIR_PREFIX="/tmp/tmux-sockets"
+        TMUX_TMPDIR_PREFIX="/tmp/tmux-sockets-${UID}"
         TMUX_TMPDIR="$TMUX_TMPDIR_PREFIX/$HOST"
-        export TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins"
-        TPM_PATH="$TMUX_PLUGIN_MANAGER_PATH/tpm"
-        if [ ! -d $TPM_PATH ]; then
-            git clone --depth 1 --recursive https://github.com/tmux-plugins/tpm $TPM_PATH
-        fi
         # If connected via SSH
         if [ ! -z "$SSH_CLIENT" ]; then
             SSH_IP="${SSH_CLIENT%% *}"
@@ -28,40 +23,38 @@ if type tmux >/dev/null 2>&1; then
         fi
         export TMUX_TMPDIR=$TMUX_TMPDIR
         # Create tmux temp directory if it doesn't exist
-        if mkdir -p $TMUX_TMPDIR; then
-            echo "Successfully created tmux temp directory on $TMUX_TMPDIR."
-        else
-            echo "Failed to create tmux temp directory on $TMUX_TMPDIR."
-            exit 1 # Exit if failed to create directory
+        if [ ! -d $TMUX_TMPDIR ]; then
+            if mkdir -p $TMUX_TMPDIR; then
+                chmod 700 "$TMUX_TMPDIR"
+                echo "Successfully created tmux temp directory on $TMUX_TMPDIR."
+            else
+                echo "Failed to create tmux temp directory on $TMUX_TMPDIR."
+                exit 1 # Exit if failed to create directory
+            fi
         fi
-        TMUX_SESSIONS=$(tmux ls 2>/dev/null) # Check for existing tmux sessions on the specified socket directory
-        if [ $? -ne 0 ]; then                # Check for error from tmux command
-            if [ -f /.dockerenv ]; then      # Docker specific settings
-                group=$(id -g)
-                # Ensure the user has access to the Docker socket
-                sudo chown -R $USER:$group /var/run/docker.sock
-            fi
-            echo "creating new tmux session at $TMUX_TMPDIR"
-            if TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 new-session -n$USER -s$USER@$HOST; then
-                echo "created new tmux session for $TMUX_TMPDIR:$USER@$HOST"
-            else
-                echo "failed to create new tmux session for $TMUX_TMPDIR:$USER@$HOST"
-                exit 1 # Exit if failed to create tmux session
-            fi
+        export TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins"
+        TPM_PATH="$TMUX_PLUGIN_MANAGER_PATH/tpm"
+        if [ ! -d $TPM_PATH ]; then
+            echo "Installing Tmux Plugin Manager..."
+            git clone --depth 1 --recursive https://github.com/tmux-plugins/tpm $TPM_PATH
+        fi
+
+        if [[ -f /.dockerenv ]] && [[ -S /var/run/docker.sock ]] && ! [ -w /var/run/docker.sock ]; then # Docker specific settings
+            group=$(id -g)
+            # Ensure the user has access to the Docker socket
+            sudo chown -R $USER:$group /var/run/docker.sock
+        fi
+        echo "Attaching to tmux session: $SESSION_NAME"
+        # Try to attach to the session, or create it if it doesn't exist.
+        # -u: Force UTF-8
+        # -2: Force 256 colors
+        # new-session -A: Attach if exists, create if not (Atomic operation)
+        # -s: Session name
+        if TMUX_TMPDIR=$TMUX_TMPDIR tmux -u -2 new-session -A -n$USER -s$USER@$HOST; then
+            echo "finished tmux session for $TMUX_TMPDIR:$USER@$HOST"
         else
-            SESSION_NAME="$(tmux ls | cut -d: -f1 | head -n 1)" # get the name of a session
-            if [ -z "$SESSION_NAME" ]; then
-                echo "No sessions found in $USER@$HOST, global tmux ls = $(tmux ls)"
-                exit 1 # Exit if no sessions found
-            fi
-            echo "attaching tmux session $SESSION_NAME at $TMUX_TMPDIR"
-            # Attach to an existing tmux session
-            if TMUX_TMPDIR=$TMUX_TMPDIR tmux -2 attach-session -t "$SESSION_NAME"; then
-                echo "attached tmux session $SESSION_NAME"
-            else
-                echo "failed to attach tmux session for $SESSION_NAME"
-                exit 1 # Exit if failed to attach tmux session
-            fi
+            echo "failed to create new tmux session for $TMUX_TMPDIR:$USER@$HOST"
+            exit 1 # Exit if failed to create tmux session
         fi
         exit
     fi
