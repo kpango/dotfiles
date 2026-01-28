@@ -33,6 +33,15 @@ if type tmux >/dev/null 2>&1; then
         fi
         chmod 700 "$TMUX_TMPDIR"
         export TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins"
+        # Create tmux plugins directory if it doesn't exist
+        if [ ! -d $TMUX_PLUGIN_MANAGER_PATH ]; then
+            if mkdir -p $TMUX_PLUGIN_MANAGER_PATH; then
+                echo "Successfully created tmux plugin directory on $TMUX_PLUGIN_MANAGER_PATH."
+            else
+                echo "Failed to create tmux plugin directory on $TMUX_PLUGIN_MANAGER_PATH."
+                exit 1 # Exit if failed to create directory
+            fi
+        fi
         TPM_PATH="$TMUX_PLUGIN_MANAGER_PATH/tpm"
         if [ ! -d $TPM_PATH ]; then
             echo "Installing Tmux Plugin Manager..."
