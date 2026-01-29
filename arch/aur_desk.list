@@ -24,6 +24,7 @@ nvidia-beta-dkms
 nvidia-settings-beta
 nvidia-utils-beta
 opencl-nvidia-beta
+openssl-1.1
 pacman-static
 pakku
 paru-bin

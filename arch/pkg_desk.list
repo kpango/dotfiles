@@ -74,7 +74,6 @@ networkmanager
 nmap
 nvidia-container-toolkit
 nvme-cli
-openssl-1.1
 pacman-contrib
 parted
 pass
