@@ -45,11 +45,11 @@ RUN rustup update stable \
     bottom
 
 FROM rust-base AS broot
-# RUN cargo +nightly install --force --no-default-features \
-RUN rustup update stable \
-    && rustup default stable \
-    && cargo install --force --locked \
+RUN cargo +nightly install --force --locked --no-default-features \
     broot
+# RUN rustup update stable \
+    # && rustup default stable \
+    # && cargo install --force --locked \
 
 FROM rust-base AS cargo-asm
 RUN cargo install cargo-asm

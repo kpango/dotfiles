@@ -56,7 +56,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
     && [ -n "${VERSION}" ] || { echo "Error: VERSION is empty. Curl response was: ${BODY}" >&2; exit 1; } \
     && if [ "${ARCH}" = "amd64" ] ; then  ARCH=${XARCH} ; fi \
     && TAR_NAME="${BIN_NAME}_$(echo ${OS} | sed 's/.*/\u&/')_${ARCH}" \
-    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/${VERSION}/${TAR_NAME}.tar.gz" \
+    && URL="${GITHUB}/${REPO}/${RELEASE_DL}/v${VERSION}/${TAR_NAME}.tar.gz" \
     && echo ${URL} \
     && curl -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \

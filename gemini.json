@@ -1,8 +1,16 @@
 {
+  "general": {
+    "checkpointing": {
+      "enabled": true
+    }
+  },
+  "ui": {
+    "theme": "GitHub"
+  },
+  "model": {
+    "name": "gemini-3.0-pro"
+  },
   "selectedAuthType": "gemini-api-key",
-  "model": "gemini-2.5-pro",
-  "theme": "GitHub",
-  "checkpointing": true,
   "mcpServers": {
     "serena": {
       "command": "docker",
