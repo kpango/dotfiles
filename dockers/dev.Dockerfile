@@ -54,12 +54,12 @@ COPY --from=gcloud ${GCLOUD_PATH}/lib ${USR_LOCAL_LIB}
 COPY --from=gcloud ${GCLOUD_PATH}/bin ${BIN_PATH}
 COPY --from=gcloud /root/.config/gcloud ${HOME}/.config/gcloud
 
-COPY --from=nim /bin/nim ${BIN_PATH}/nim
-COPY --from=nim /bin/nimble ${BIN_PATH}/nimble
-COPY --from=nim /bin/nimsuggest ${BIN_PATH}/nimsuggest
-COPY --from=nim /nim/lib ${USR_LOCAL_LIB}/nim
-COPY --from=nim /root/.cache/nim ${HOME}/.cache/nim
-COPY --from=nim /nim /nim
+COPY --from=nim /usr/local/src/nim/bin/nim ${BIN_PATH}/nim
+COPY --from=nim /usr/local/src/nim/bin/nimble ${BIN_PATH}/nimble
+COPY --from=nim /usr/local/src/nim/bin/nimsuggest ${BIN_PATH}/nimsuggest
+COPY --from=nim /usr/local/src/nim/lib ${USR_LOCAL_LIB}/nim
+# COPY --from=nim /root/.cache/nim ${HOME}/.cache/nim
+COPY --from=nim /usr/local/src/nim /usr/local/src/nim
 
 COPY --from=dart ${DART_PATH}/bin ${DART_PATH}/bin
 COPY --from=dart ${DART_PATH}/lib ${DART_PATH}/lib
