@@ -210,6 +210,7 @@ devkill(){
         && docker container stop $(docker ps -a -q) \
         && docker ps -aq | xargs docker rm -f \
         && docker container prune -f
+    sudo systemctl restart docker
 }
 
 alias devkill="devkill"
