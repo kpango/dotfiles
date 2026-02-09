@@ -356,7 +356,6 @@ docker_build:
 		--cache-from type=local,src=$(DOCKER_BUILD_CACHE_DIR) \
 		--cache-from type=registry,ref=$(DOCKER_CACHE_REPO) \
 		--cache-to type=local,dest=$(DOCKER_BUILD_CACHE_DIR),mode=max \
-		--cache-to type=registry,ref=$(DOCKER_CACHE_REPO),mode=max,inline=true \
 		--label org.opencontainers.image.revision="$(GITHUB_SHA)" \
 		--label org.opencontainers.image.source="$(GITHUB_URL)" \
 		--label org.opencontainers.image.title="$(USER)/$(NAME)" \
@@ -370,6 +369,7 @@ docker_build:
 		--secret id=gat,src="$(TMP_DIR)/gat" \
 		-t "$(USER)/$(NAME):$(VERSION)" \
 		-f $(DOCKERFILE) .
+		# --cache-to type=registry,ref=$(DOCKER_CACHE_REPO),mode=max,inline=true \
 	docker buildx rm --force "$(DOCKER_BUILDER_NAME)"
 	@rm -rf $(TMP_DIR)
 
