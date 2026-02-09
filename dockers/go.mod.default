@@ -1,6 +1,6 @@
 module kpango.com/dotfiles/mod
 
-go 1.25.3
+go 1.25.7
 
 tool (
 	github.com/99designs/gqlgen
@@ -24,9 +24,9 @@ tool (
 	github.com/gnewton/chidley
 	github.com/go-delve/delve/cmd/dlv
 	github.com/go-kratos/kratos/cmd/kratos
+	github.com/go-task/task/v3/cmd/task
 	github.com/golang/mock/mockgen
 	github.com/google/yamlfmt/cmd/yamlfmt
-	github.com/go-task/task/v3/cmd/task
 	github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt
 	github.com/helmfile/helmfile
 	github.com/hexdigest/gowrap/cmd/gowrap
@@ -47,6 +47,7 @@ tool (
 	github.com/muesli/duf
 	github.com/nsf/gocode
 	github.com/orisano/dlayer
+	github.com/pranshuparmar/witr/cmd/witr
 	github.com/pwaller/goimports-update-ignore
 	github.com/quasilyte/go-ruleguard/cmd/ruleguard
 	github.com/rerost/dragon-imports
@@ -86,7 +87,7 @@ tool (
 
 replace (
 	github.com/suzuki-shunsuke/ghalint => github.com/suzuki-shunsuke/ghalint main
-	github.com/mark3labs/mcp-go => github.com/mark3labs/mcp-go v0.28.0
-	github.com/olekukonko/tablewriter => github.com/olekukonko/tablewriter v0.0.5
+	github.com/mark3labs/mcp-go => github.com/mark3labs/mcp-go upgrade
+	github.com/olekukonko/tablewriter => github.com/olekukonko/tablewriter upgrade
 	github.com/ugorji/go => github.com/ugorji/go upgrade
 )

@@ -164,6 +164,10 @@ RUN cargo install --force --no-default-features \
 # RUN cargo install --force --features=extra \
 #     --git https://github.com/nushell/nushell nu
 
+FROM rust-base AS prek
+RUN cargo install --locked --force --no-default-features \
+    prek
+
 FROM rust-base AS procs
 RUN cargo +nightly install --force --no-default-features \
     --git https://github.com/dalance/procs
@@ -275,6 +279,7 @@ COPY --from=helix ${BIN_PATH}/hx ${BIN_PATH}/hx
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
 # COPY --from=lsp-ai ${BIN_PATH}/lsp-ai ${BIN_PATH}/lsp-ai
+COPY --from=prek ${BIN_PATH}/prek ${BIN_PATH}/prek
 COPY --from=procs ${BIN_PATH}/procs ${BIN_PATH}/procs
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
 COPY --from=rga ${BIN_PATH}/rga ${BIN_PATH}/rga
