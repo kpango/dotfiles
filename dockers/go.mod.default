@@ -17,6 +17,7 @@ tool (
 	github.com/davidrjenni/reftools/cmd/fillswitch
 	github.com/davidrjenni/reftools/cmd/fixplurals
 	github.com/direnv/direnv
+	github.com/entireio/cli/cmd/entire
 	github.com/fatih/gomodifytags
 	github.com/fullstorydev/grpcurl
 	github.com/fullstorydev/grpcurl/cmd/grpcurl
