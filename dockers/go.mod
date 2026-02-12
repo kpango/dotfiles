@@ -87,10 +87,9 @@ tool (
 )
 
 replace (
-	github.com/mark3labs/mcp-go => github.com/mark3labs/mcp-go v0.43.2
-	github.com/olekukonko/tablewriter => github.com/olekukonko/tablewriter v1.1.3
 	github.com/suzuki-shunsuke/ghalint => github.com/suzuki-shunsuke/ghalint v1.5.6-0.20260211022825-1c84e4c75039
-	github.com/ugorji/go => github.com/ugorji/go v1.2.14
+	gopkg.in/yaml.v3 => go.yaml.in/yaml/v3 v3.0.4
+	github.com/charmbracelet/ultraviolet => github.com/charmbracelet/ultraviolet v0.1.0
 )
 
 require (
