@@ -64,7 +64,7 @@ golang.org/x/review/git-codereview@upgrade
 golang.org/x/tools/cmd/go-contrib-init@upgrade
 golang.org/x/tools/cmd/godoc@upgrade
 golang.org/x/tools/cmd/goimports@upgrade
-golang.org/x/tools/go/analysis/passes/fieldalignment@upgrade
+golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@upgrade
 golang.org/x/vuln/cmd/govulncheck@upgrade
 google.golang.org/protobuf/cmd/protoc-gen-go@upgrade
 honnef.co/go/tools/cmd/staticcheck@upgrade
