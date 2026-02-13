@@ -74,7 +74,7 @@ RUN set -ex \
         CGO_ENABLED=0 \
         GOTOOLCHAIN=${GO_VERSION} \
         xargs -P 64 -I {} \
-        sh -c 'go install {} > /dev/null || (echo "Failed to install {}" && exit 255)'
+        sh -c 'errfile=$(mktemp); if ! go install {} >/dev/null 2>"$errfile"; then echo "--- Failed to install {} ---" >&2; cat "$errfile" >&2; rm "$errfile"; exit 255; fi; rm "$errfile"'
 
 # Special
 FROM go-base AS dagger
