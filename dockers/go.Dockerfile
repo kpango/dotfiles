@@ -54,6 +54,7 @@ RUN set -x && cd "$(mktemp -d)" \
     && BIN_NAME="go" \
     && BODY="$(curl -fsSL ${GODEV}/VERSION?m=text)" \
     && GO_VERSION=$(echo "$BODY" | head -n 1) \
+    && export GO_VERSION=${GO_VERSION} \
     && [ -n "${GO_VERSION}" ] || { echo "Error: VERSION is empty. curl response was: ${BODY}" >&2; exit 1; } \
     && TAR_NAME="${GO_VERSION}.${OS}-${ARCH}.tar.gz" \
     && curl -fsSLO "${GODEV}/dl/${TAR_NAME}" \
@@ -67,17 +68,13 @@ COPY go.env "${GOROOT}/go.env"
 
 FROM go-base AS go-tools
 WORKDIR ${GOPATH}/src/kpango.com/dotfiles/mod
-COPY dockers/go.mod "${GOPATH}/src/kpango.com/dotfiles/mod/go.mod"
-COPY dockers/go.sum "${GOPATH}/src/kpango.com/dotfiles/mod/go.sum"
+COPY dockers/go.tools "${GOPATH}/src/kpango.com/dotfiles/mod/go.tools"
 RUN set -ex \
-    && env -u CC -u CXX -u CPPFLAGS -u CFLAGS -u CXXFLAGS -u LDFLAGS \
-           -u CGO_CFLAGS -u CGO_CXXFLAGS -u CGO_LDFLAGS \
-           CGO_ENABLED=0 \
-       GOTOOLCHAIN=local go mod download \
-    && env -u CC -u CXX -u CPPFLAGS -u CFLAGS -u CXXFLAGS -u LDFLAGS \
-           -u CGO_CFLAGS -u CGO_CXXFLAGS -u CGO_LDFLAGS \
-           CGO_ENABLED=0 \
-       GOTOOLCHAIN=local go install  ${GO_FLAGS} tool
+    && cat go.tools | \
+        CGO_ENABLED=0 \
+        GOTOOLCHAIN=${GO_VERSION} \
+        xargs -P 64 -I {} \
+        sh -c 'go install {} > /dev/null || (echo "Failed to install {}" && exit 255)'
 
 # Special
 FROM go-base AS dagger

@@ -247,6 +247,7 @@ RUN BUN_INSTALL=${BUN_INSTALL} bun install -g \
         typescript \
         typescript-language-server \
         n \
+        opencode-ai \
         @anthropic-ai/claude-code \
         @byterover/cipher \
         @github/copilot \

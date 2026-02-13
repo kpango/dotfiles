@@ -1,10 +1,17 @@
 [Unit]
 Description=Gopls Daemon Server
+After=network.target
 
 [Service]
 Type=simple
-ExecStart=/bin/bash -c 'PATH=$HOME/go/bin:$PATH gopls -listen=:37374 -logfile=/tmp/gopls.daemon.log'
-Restart=always
+User=kpango
+Environment="PATH=/home/kpango/go/bin:/usr/bin:/bin"
+ExecStart=/home/kpango/go/bin/gopls -listen=:37374 -logfile=/tmp/gopls.daemon.log
+Restart=on-failure
+RestartSec=5s
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=gopls
 
 [Install]
 WantedBy=default.target
