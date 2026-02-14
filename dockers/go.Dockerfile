@@ -35,7 +35,7 @@ ENV RELEASE_LATEST=releases/latest
 ENV GO_FLAGS="-trimpath -modcacherw -a -tags netgo"
 
 WORKDIR /tmp
-
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN echo "BUILDPLATFORM: $BUILDPLATFORM → TARGETPLATFORM: $TARGETPLATFORM" \
     && apt update -y \
     && apt upgrade -y \
@@ -50,7 +50,12 @@ RUN echo "BUILDPLATFORM: $BUILDPLATFORM → TARGETPLATFORM: $TARGETPLATFORM" \
        fi
 
 WORKDIR /opt
-RUN set -x && cd "$(mktemp -d)" \
+RUN --mount=type=bind,source=go.env,target=go.env,ro \
+    --mount=type=tmpfs,target=/tmp \
+    --mount=type=cache,target="${GOPATH}/pkg",id="go-pkg-${TARGETARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${TARGETARCH}" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -ex \
     && BIN_NAME="go" \
     && BODY="$(curl -fsSL ${GODEV}/VERSION?m=text)" \
     && GO_VERSION=$(echo "$BODY" | head -n 1) \
@@ -63,13 +68,16 @@ RUN set -x && cd "$(mktemp -d)" \
     && mv ${BIN_NAME} ${GOROOT} \
     && mkdir -p ${GOBIN} \
     && which ${BIN_NAME} \
-    && ${BIN_NAME} version
-COPY go.env "${GOROOT}/go.env"
+    && ${BIN_NAME} version \
+    && cp go.env "${GOROOT}/go.env"
 
 FROM go-base AS go-tools
-WORKDIR ${GOPATH}/src/kpango.com/dotfiles/mod
-COPY dockers/go.tools "${GOPATH}/src/kpango.com/dotfiles/mod/go.tools"
-RUN set -ex \
+RUN --mount=type=bind,source=dockers/go.tools,target=go.tools,ro \
+    --mount=type=tmpfs,target=/tmp \
+    --mount=type=cache,target="${GOPATH}/pkg",id="go-pkg-${TARGETARCH}" \
+    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${TARGETARCH}" \
+    --mount=type=tmpfs,target="${GOPATH}/src" \
+    set -ex \
     && cat go.tools | \
         CGO_ENABLED=0 \
         GOTOOLCHAIN=${GO_VERSION} \
@@ -178,48 +186,6 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
     && mv ${TAR_NAME}/${BIN_NAME} ${GOBIN}/${BIN_NAME} \
     && upx -9 ${GOBIN}/${BIN_NAME}
 
-FROM go-base AS gopls
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="gopls" \
-    && REPO="${GOORG}/x/tools" \
-    && CGO_ENABLED=0 \
-    go install \
-    ${GO_FLAGS} \
-    "${REPO}/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-FROM go-base AS guru
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="guru" \
-    && REPO="${GOORG}/x/tools" \
-    && go install \
-    ${GO_FLAGS} \
-    "${REPO}/cmd/${BIN_NAME}@upgrade" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
-
-FROM go-base AS hugo
-RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-build-${ARCH}" \
-    --mount=type=cache,target="${HOME}/.cache/go-build",id="go-build-${ARCH}" \
-    --mount=type=tmpfs,target="${GOPATH}/src" \
-    set -x && cd "$(mktemp -d)" \
-    && BIN_NAME="hugo" \
-    && REPO="gohugoio/${BIN_NAME}" \
-    && CGO_ENABLED=0 go install \
-    --tags extended \
-    ${GO_FLAGS} \
-    "${GITHUBCOM}/${REPO}@master" \
-    && chmod a+x "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
-
 FROM go-base AS pulumi
 RUN set -x && cd "$(mktemp -d)" \
     && BIN_NAME="pulumi" \
@@ -266,12 +232,8 @@ COPY --from=flamegraph $GOBIN/stackcollapse.pl $GOBIN/stackcollapse.pl
 COPY --from=fzf $GOBIN/fzf $GOBIN/fzf
 COPY --from=gh $GOBIN/gh $GOBIN/gh
 COPY --from=golangci-lint $GOBIN/golangci-lint $GOBIN/golangci-lint
-COPY --from=gopls $GOBIN/gopls $GOBIN/gopls
-COPY --from=guru $GOBIN/guru $GOBIN/guru
-COPY --from=hugo $GOBIN/hugo $GOBIN/hugo
 COPY --from=pulumi $GOBIN/pulumi $GOBIN/pulumi
 COPY --from=tinygo $GOBIN/tinygo $GOBIN/tinygo
-# COPY --from=markdown2medium $GOBIN/markdown2medium $GOBIN/markdown2medium
 
 FROM scratch
 ENV GOROOT=/usr/local/go

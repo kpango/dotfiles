@@ -19,6 +19,7 @@ github.com/github/hub@upgrade
 github.com/gnewton/chidley@upgrade
 github.com/go-delve/delve/cmd/dlv@upgrade
 github.com/go-task/task/v3/cmd/task@upgrade
+github.com/gohugoio/hugo@upgrade
 github.com/golang/mock/mockgen@upgrade
 github.com/google/yamlfmt/cmd/yamlfmt@upgrade
 github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt@upgrade
@@ -64,7 +65,9 @@ golang.org/x/review/git-codereview@upgrade
 golang.org/x/tools/cmd/go-contrib-init@upgrade
 golang.org/x/tools/cmd/godoc@upgrade
 golang.org/x/tools/cmd/goimports@upgrade
+golang.org/x/tools/cmd/guru@upgrade
 golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@upgrade
+golang.org/x/tools/gopls@upgrade
 golang.org/x/vuln/cmd/govulncheck@upgrade
 google.golang.org/protobuf/cmd/protoc-gen-go@upgrade
 honnef.co/go/tools/cmd/staticcheck@upgrade
