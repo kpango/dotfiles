@@ -264,11 +264,28 @@ class cd(Command):
         paths.sort()
 
         if self.fm.settings.cd_bookmarks:
-            paths[0:0] = [
-                os.path.relpath(v.path, paths_rel) if paths_rel else v.path
-                for v in self.fm.bookmarks.dct.values() for path in paths
-                if v.path.startswith(os.path.join(paths_rel, path) + sep)
-            ]
+            paths_set = set(paths)
+            bookmarks_results = []
+            for v in self.fm.bookmarks.dct.values():
+                if paths_rel:
+                    prefix = paths_rel if paths_rel.endswith(sep) else paths_rel + sep
+                    if not v.path.startswith(prefix):
+                        continue
+                    rel_v = os.path.relpath(v.path, paths_rel)
+                else:
+                    rel_v = v.path
+
+                curr = os.path.dirname(rel_v)
+                count = 0
+                while curr:
+                    if curr in paths_set:
+                        count += 1
+                    curr = os.path.dirname(curr)
+
+                if count > 0:
+                    bookmarks_results.extend([rel_v] * count)
+
+            paths[0:0] = bookmarks_results
 
         if not paths:
             return None
