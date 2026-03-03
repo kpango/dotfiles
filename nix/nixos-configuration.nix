@@ -1,14 +1,13 @@
 { config, pkgs, lib, username, hostname, ... }:
 
 {
-  # Bootloader setup (merged from boot.nix)
-  boot.loader.systemd-boot.enable = true; # Use efi or grub overrides depending on hardware
+  # Bootloader setup
+  boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.efi.efiSysMountPoint = "/boot/efi";
 
-  # Kernel configuration (merged from boot.nix)
+  # Kernel configuration (shared)
   boot.kernelPackages = pkgs.linuxPackages_zen;
-  boot.kernelModules = [ "kvm-intel" "xhci_pci" "nvme" "psmouse" ];
   boot.kernelParams = [
     "quiet" "nowatchdog" "acpi.ec_no_wakeup=1" "intel_iommu=on"
     "intel_pstate=no_hwp"
@@ -18,7 +17,7 @@
   ];
   boot.blacklistedKernelModules = [ "pcspkr" "intel_pmc_bxt" "iTCO_vendor_support" "iTCO_wdt" "snd_pcsp" ];
 
-  # High-performance Sysctls (merged from boot.nix)
+  # High-performance Sysctls
   boot.kernel.sysctl = {
     "fs.aio-max-nr" = 19349474;
     "fs.file-max" = 19349474;
@@ -37,7 +36,7 @@
   boot.tmp.cleanOnBoot = true;
   boot.supportedFilesystems = [ "xfs" ];
 
-  # FileSystems (merged from system.nix)
+  # FileSystems root (assumes generic bootstrap labels)
   fileSystems = {
     "/" = {
       device = "/dev/disk/by-label/root";
@@ -50,7 +49,7 @@
     };
   };
 
-  # Networking (merged from network.nix)
+  # Networking
   networking = {
     hostName = hostname;
     networkmanager = { enable = true; dns = "dnsmasq"; };
@@ -79,12 +78,12 @@
     interfaces.cbr0.ipv4.addresses = [ { address = "10.10.0.1"; prefixLength = 24; } ];
   };
 
-  # Time and Locale (merged from system.nix)
+  # Time and Locale
   time.timeZone = "Asia/Tokyo";
   time.hardwareClockInLocalTime = true;
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # Nix configuration and Overlays (merged from nixpkg.nix)
+  # Nix configuration and Overlays
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.auto-optimise-store = true;
   nixpkgs.config = {
@@ -98,7 +97,7 @@
     neovim = super.neovim.override { withPython3 = true; withRuby = true; vimAlias = true; };
   })];
 
-  # OS Level Programs (merged from programs.nix)
+  # OS Level Programs
   programs.zsh = {
     enable = true;
     autosuggestions.enable = true;
@@ -110,7 +109,7 @@
   programs.sway.enable = true;
   programs.light.enable = true;
 
-  # Core System Packages (merged from environment.nix)
+  # Core System Packages
   environment.systemPackages = with pkgs; [
     wget curl git tailscale lshw fwupd pciutils usbutils jq
     atool bat binutils coreutils cryptsetup efibootmgr exa inetutils iputils neovim psmisc tldr xbindkeys xclip xsel rxvt_unicode git-crypt autoconf automake clang-tools ctags flameGraph gcc hub shellcheck nix-prefetch-git patchelf
@@ -133,7 +132,7 @@
     AttrPressureRange=4:0
   '';
 
-  # System Services (merged from services.nix & system.nix)
+  # System Services
   services.tailscale.enable = true;
   services.fstrim.enable = true;
   services.timesyncd.enable = true;
@@ -144,32 +143,12 @@
     settings.PermitRootLogin = "no";
     extraConfig = "StreamLocalBindUnlink yes";
   };
-  services.tlp.enable = if hostname == "laptop" then true else false;
-  services.thinkfan.enable = if hostname == "laptop" then true else false;
   services.printing = {
     enable = true;
     drivers = with pkgs; [ gutenprint gutenprintBin hplip hplipWithPlugin cups-bjnp ];
   };
 
-  # Custom CPU Throttling timer for Thinkpads (merged from system.nix)
-  systemd.services.cpu-throttling = lib.mkIf (hostname == "laptop") {
-    description = "Set CPU temp offset to 3C, new trip point 97C";
-    path = [ pkgs.msr-tools ];
-    script = "wrmsr -a 0x1a2 0x3000000";
-    serviceConfig.Type = "oneshot";
-    wantedBy = [ "timers.target" ];
-  };
-  systemd.timers.cpu-throttling = lib.mkIf (hostname == "laptop") {
-    description = "Run cpu-throttling service on boot and periodically";
-    timerConfig = {
-      OnActiveSec = 60;
-      OnUnitActiveSec = 60;
-      Unit = "cpu-throttling.service";
-    };
-    wantedBy = [ "timers.target" ];
-  };
-
-  # Virtualization & Containers (merged from virtual.nix)
+  # Virtualization & Containers
   virtualisation = {
     docker = {
       enable = true;
@@ -183,7 +162,7 @@
     libvirtd.enable = true;
   };
 
-  # Security Hardening (merged from security.nix)
+  # Security Hardening
   security.sudo.wheelNeedsPassword = false;
   security.sudo.extraConfig = ''
     Defaults !always_set_home
@@ -194,7 +173,7 @@
     { domain = "*"; type = "hard"; item = "nofile"; value = "65535"; }
   ];
 
-  # User Configuration (merged from users.nix)
+  # User Configuration
   users.mutableUsers = false;
   users.users.${username} = {
     isNormalUser = true;
@@ -219,5 +198,5 @@
   fonts.packages = with pkgs; [ hackgen-nf-font noto-fonts-color-emoji ];
   fonts.fontconfig.defaultFonts = { monospace = [ "HackGen Console NF" ]; emoji = [ "Noto Color Emoji" ]; };
 
-  system.stateVersion = "23.11"; # Updated generic state version
+  system.stateVersion = "23.11";
 }

@@ -34,30 +34,39 @@
       };
     in
     {
-      # macOS Apple Silicon Configuration
-      darwinConfigurations."macbook" = darwin.lib.darwinSystem {
-        system = "aarch64-darwin";
-        specialArgs = { inherit inputs username; hostname = "macbook"; };
-        modules = [
-          ./configuration.nix
-          home-manager.darwinModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit inputs username; hostname = "macbook"; };
-            home-manager.users.${username} = import ./home.nix;
-          }
-        ];
+      # macOS Apple Silicon Configurations (M1/M4)
+      darwinConfigurations = {
+        "macbook" = darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+          specialArgs = { inherit inputs username; hostname = "macbook"; };
+          modules = [
+            ./configuration.nix
+            home-manager.darwinModules.home-manager
+            {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.extraSpecialArgs = { inherit inputs username; hostname = "macbook"; };
+              home-manager.users.${username} = import ./home.nix;
+            }
+          ];
+        };
       };
 
       # Generic NixOS Configurations based on Arch dotfiles
       nixosConfigurations = {
-        # Desktop profile
+        # Desktop profile (NVIDIA Desktop)
         "desk" = mkNixosSystem "desk" [
+          ./hosts/desk/hardware.nix
         ];
 
-        # Laptop profile (ThinkPad P1/X1 style)
-        "laptop" = mkNixosSystem "laptop" [
+        # Laptop profile (ThinkPad P1 - NVIDIA Optimus)
+        "thinkpad-p1" = mkNixosSystem "thinkpad-p1" [
+          ./hosts/thinkpad-p1/hardware.nix
+        ];
+
+        # Laptop profile (ThinkPad X1 Carbon Gen6 - Intel iGPU)
+        "thinkpad-x1" = mkNixosSystem "thinkpad-x1" [
+          ./hosts/thinkpad-x1/hardware.nix
         ];
       };
     };
