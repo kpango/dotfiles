@@ -3,28 +3,92 @@
 let
   isDarwin = pkgs.stdenv.isDarwin;
   isLinux = pkgs.stdenv.isLinux;
+
+  # Define shared packages
+  sharedPackages = with pkgs; [
+    axel
+    bun
+    ccache
+    cmake
+    fd
+    fastfetch
+    fwupd
+    gettext
+    ghq
+    ghostty
+    git
+    gnumake
+    go
+    graphviz
+    helix
+    jq
+    k3d
+    k9s
+    kubectl
+    lsd
+    lshw
+    lua
+    make
+    mdadm
+    mtr
+    nmap
+    pass
+    procs
+    ripgrep
+    rustup
+    sed
+    sheldon
+    starship
+    tar
+    tig
+    tmux
+    ugrep
+    unzip
+    wakeonlan
+    wget
+    zsh
+    # Extra Arch Linux dependencies explicitly requested
+    alsa-utils
+    btop
+  ];
+
+  # Define Darwin-specific packages
+  darwinPackages = with pkgs; [
+    colima
+    docker
+    zed-editor
+  ];
+
+  # Define Linux-specific packages
+  linuxPackages = with pkgs; [
+    grim
+    kanshi
+    light
+    mako
+    noto-fonts-emoji
+    pavucontrol
+    slurp
+    sway
+    swaybg
+    swayidle
+    waybar
+    wl-clipboard
+    wofi
+    xfce.thunar
+  ];
+
 in
 {
   # User level tools and configuration
-  home.username = "${username}";
-  home.homeDirectory = if isDarwin then "/Users/${username}" else "/home/${username}";
-  home.stateVersion = "23.11";
-
-  # Shared packages across all platforms
-  home.packages = with pkgs; [
-    # CLI Tools
-    ghostty zsh helix tmux git go rustup ghq tig fd axel cmake jq k3d k9s kubectl lua gnumake pass procs ugrep wakeonlan wget
-
-    # Extra Arch Linux dependencies explicitly requested
-    alsa-utils ccache fastfetch fwupd gettext graphviz btop lsd lshw make mdadm mtr nmap ripgrep sed starship tar unzip bun
-
-    # Sheldon plugin manager for Zsh
-    sheldon
-  ] ++ lib.optionals isDarwin [
-    zed-editor colima docker
-  ] ++ lib.optionals isLinux [
-    sway swaybg swayidle waybar wl-clipboard wofi mako kanshi grim slurp light pavucontrol xfce.thunar noto-fonts-emoji
-  ];
+  home = {
+    username = "${username}";
+    homeDirectory = if isDarwin then "/Users/${username}" else "/home/${username}";
+    stateVersion = "23.11";
+    # Shared packages across all platforms
+    packages = sharedPackages
+      ++ lib.optionals isDarwin darwinPackages
+      ++ lib.optionals isLinux linuxPackages;
+  };
 
   # Symlink dotfiles from the repository root natively using Home Manager
   home.file = {
@@ -101,13 +165,17 @@ in
     # Incorporate the root .gitignore and .gitconfig contents
     # Since existing `.gitconfig` has a lot of custom logic, we can inject it via extraConfig.
     extraConfig = {
-      core.excludesfile = "${../gitignore}";
+      core = {
+        excludesfile = "${../gitignore}";
+      };
     };
 
     # Append the raw gitconfig if necessary, or let Home Manager handle it.
     # To avoid clashes with native Home Manager git blocks, we use an include path:
     includes = [
-      { path = "${../gitconfig}"; }
+      {
+        path = "${../gitconfig}";
+      }
     ];
   };
 
@@ -118,9 +186,24 @@ in
       modifier = "Mod4";
       terminal = "ghostty -e zsh -c 'tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$(hostname)'";
       menu = "wofi --show drun -i";
-      bars = [{ command = "waybar"; }];
-      fonts = { names = [ "HackGen35ConsoleNF" ]; style = "Regular"; size = 16.0; };
-      output = { "*" = { bg = "~/.wallpapers/default.png fill"; scale = "1.00"; }; };
+      bars = [
+        {
+          command = "waybar";
+        }
+      ];
+      fonts = {
+        names = [
+          "HackGen35ConsoleNF"
+        ];
+        style = "Regular";
+        size = 16.0;
+      };
+      output = {
+        "*" = {
+          bg = "~/.wallpapers/default.png fill";
+          scale = "1.00";
+        };
+      };
       keybindings = lib.mkOptionDefault {
         "Mod4+Return" = "exec ghostty";
         "XF86AudioRaiseVolume" = "exec amixer -q set Master 5%+ unmute; notify-send 'Volume Increased'";
@@ -129,18 +212,45 @@ in
         "XF86MonBrightnessUp" = "exec sudo light -A 5; notify-send 'Brightness Increased'";
         "XF86MonBrightnessDown" = "exec sudo light -U 5; notify-send 'Brightness Decreased'";
       };
-      startup = [ { command = "kanshi"; } { command = "fcitx5 -rd"; } ];
+      startup = [
+        {
+          command = "kanshi";
+        }
+        {
+          command = "fcitx5 -rd";
+        }
+      ];
       window = {
         commands = [
-          { command = "floating enable, border normal"; criteria = { class = "mpv|Vlc"; }; }
-          { command = "floating enable, resize set 800 600"; criteria = { class = "Gimp"; }; }
+          {
+            command = "floating enable, border normal";
+            criteria = {
+              class = "mpv|Vlc";
+            };
+          }
+          {
+            command = "floating enable, resize set 800 600";
+            criteria = {
+              class = "Gimp";
+            };
+          }
         ];
       };
-      input = { "type:touchpad" = { tap = "enabled"; natural_scroll = "enabled"; dwt = "enabled"; }; };
+      input = {
+        "type:touchpad" = {
+          tap = "enabled";
+          natural_scroll = "enabled";
+          dwt = "enabled";
+        };
+      };
     };
   };
 
-  programs.waybar = lib.mkIf isLinux { enable = true; };
-  programs.wofi = lib.mkIf isLinux { enable = true; };
+  programs.waybar = lib.mkIf isLinux {
+    enable = true;
+  };
+  programs.wofi = lib.mkIf isLinux {
+    enable = true;
+  };
   programs.home-manager.enable = true;
 }
