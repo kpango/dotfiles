@@ -54,12 +54,10 @@
       nixosConfigurations = {
         # Desktop profile
         "desk" = mkNixosSystem "desk" [
-          ./nixos-hardware-desk.nix
         ];
 
         # Laptop profile (ThinkPad P1/X1 style)
         "laptop" = mkNixosSystem "laptop" [
-          ./nixos-hardware-laptop.nix
         ];
       };
     };

@@ -88,9 +88,9 @@ in
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
-    shellAliases = {
+    shellAliases = lib.optionalAttrs isDarwin {
       # The required Colima alias for extreme speed on Apple Silicon (only active on Darwin)
-      colima-fast = if isDarwin then "colima start --cpu 6 --memory 12 --disk 100 --arch aarch64 --vm-type vz --vz-rosetta" else "";
+      colima-fast = "colima start --cpu 6 --memory 12 --disk 100 --arch aarch64 --vm-type vz --vz-rosetta";
     };
   };
 
