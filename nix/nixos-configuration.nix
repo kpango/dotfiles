@@ -118,13 +118,6 @@
     GIT_EDITOR = lib.mkForce "hx";
     EDITOR = lib.mkForce "hx";
   };
-  environment.etc."resolv.conf".source = pkgs.writeText "resolv.conf" ''
-    1.1.1.1
-    1.0.0.1
-    8.8.8.8
-    8.8.4.4
-    options edns0
-  '';
   environment.etc."libinput/local-overrides.quirks".text = ''
     [Touchpad touch override]
     MatchUdevType=touchpad

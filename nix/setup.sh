@@ -32,6 +32,8 @@ echo "=> Apple Container installed successfully."
 # 3. Extract macOS GUI settings (defaults) using defaults2nix
 echo "=> Extracting macOS defaults to all-defaults.nix..."
 sudo nix run github:joshryandavis/defaults2nix -- -all -filter dates,state,uuids -o ./all-defaults.nix
+# Fix ownership of extracted file since sudo created it as root
+sudo chown $USER_NAME ./all-defaults.nix || true
 
 # Check if defaults extraction worked; if not, create an empty one to avoid breaking the build
 if [ ! -s ./all-defaults.nix ]; then
@@ -41,7 +43,7 @@ fi
 
 # 4. Initialize Git repository if not already one (required by Flakes)
 echo "=> Initializing Git repository (Flakes require files to be tracked by Git)..."
-if [ ! -d ".git" ]; then
+if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     git init
 fi
 
