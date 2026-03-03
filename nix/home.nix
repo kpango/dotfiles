@@ -115,6 +115,29 @@ in
     ".config/helix/config.toml".source = ../helix/config.toml;
     ".config/helix/languages.toml".source = ../helix/languages.toml;
     ".config/helix/themes".source = ../helix/themes;
+  } // lib.optionalAttrs isLinux {
+    # Mako Config
+    ".config/mako/config".source = ../arch/mako.conf;
+
+    # Kanshi Config
+    ".config/kanshi/config".source = ../arch/kanshi.conf;
+
+    # Workstyle Config
+    ".config/workstyle/config.toml".source = ../arch/workstyle.toml;
+
+    # Waybar Config
+    ".config/waybar/config".source = ../arch/waybar.json;
+    ".config/waybar/style.css".source = ../arch/waybar.css;
+
+    # Sway Config
+    ".config/sway/config".source = ../arch/sway.conf;
+
+    # Wofi Config
+    ".config/wofi/config".source = ../arch/wofi/wofi.conf;
+    ".config/wofi/style.css".source = ../arch/wofi/style.css;
+
+    # Ranger Config
+    ".config/ranger".source = ../arch/ranger;
   };
 
   # Zsh configuration
@@ -179,78 +202,13 @@ in
     ];
   };
 
-  # Linux Sway Configuration (mapped from arch/sway.conf)
-  wayland.windowManager.sway = lib.mkIf isLinux {
-    enable = true;
-    config = {
-      modifier = "Mod4";
-      terminal = "ghostty -e zsh -c 'tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$(hostname)'";
-      menu = "wofi --show drun -i";
-      bars = [
-        {
-          command = "waybar";
-        }
-      ];
-      fonts = {
-        names = [
-          "HackGen35ConsoleNF"
-        ];
-        style = "Regular";
-        size = 16.0;
-      };
-      output = {
-        "*" = {
-          bg = "~/.wallpapers/default.png fill";
-          scale = "1.00";
-        };
-      };
-      keybindings = lib.mkOptionDefault {
-        "Mod4+Return" = "exec ghostty";
-        "XF86AudioRaiseVolume" = "exec amixer -q set Master 5%+ unmute; notify-send 'Volume Increased'";
-        "XF86AudioLowerVolume" = "exec amixer -q set Master 5%- unmute; notify-send 'Volume Decreased'";
-        "XF86AudioMute" = "exec amixer -q set Master toggle; notify-send 'Mute Toggled'";
-        "XF86MonBrightnessUp" = "exec sudo light -A 5; notify-send 'Brightness Increased'";
-        "XF86MonBrightnessDown" = "exec sudo light -U 5; notify-send 'Brightness Decreased'";
-      };
-      startup = [
-        {
-          command = "kanshi";
-        }
-        {
-          command = "fcitx5 -rd";
-        }
-      ];
-      window = {
-        commands = [
-          {
-            command = "floating enable, border normal";
-            criteria = {
-              class = "mpv|Vlc";
-            };
-          }
-          {
-            command = "floating enable, resize set 800 600";
-            criteria = {
-              class = "Gimp";
-            };
-          }
-        ];
-      };
-      input = {
-        "type:touchpad" = {
-          tap = "enabled";
-          natural_scroll = "enabled";
-          dwt = "enabled";
-        };
-      };
-    };
-  };
 
-  programs.waybar = lib.mkIf isLinux {
-    enable = true;
-  };
-  programs.wofi = lib.mkIf isLinux {
-    enable = true;
-  };
+
+  # Linux dependencies are managed via packages,
+  # and all configurations are managed natively by symlinking
+  # the single-source-of-truth files from the `arch/` directory.
+  # We do not use Home Manager's native modules for sway, waybar, or wofi
+  # to prevent duplicate file definition errors.
+
   programs.home-manager.enable = true;
 }
