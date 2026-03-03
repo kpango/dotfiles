@@ -16,8 +16,8 @@
   # Load dynamically extracted macOS defaults via defaults2nix safely
   # This uses builtins.pathExists to prevent evaluation errors if the file doesn't exist yet
   system.defaults.CustomUserPreferences =
-    if builtins.pathExists ./all-defaults.nix then
-      import ./all-defaults.nix
+    if builtins.pathExists ./macos.nix then
+      import ./macos.nix
     else
       { };
 
