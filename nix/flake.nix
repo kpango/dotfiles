@@ -18,38 +18,47 @@
       # Use a statically defined username to avoid pure evaluation errors with builtins.getEnv
       username = "kpango";
 
+      # Shared Home Manager setup block to avoid duplication
+      mkHomeManagerBlock = hostname: {
+        home-manager = {
+          useGlobalPkgs = true;
+          useUserPackages = true;
+          extraSpecialArgs = {
+            inherit inputs username hostname;
+          };
+          users.${username} = import ./home.nix;
+        };
+      };
+
       mkNixosSystem = hostname: extraModules: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { inherit inputs username hostname; };
+        specialArgs = {
+          inherit inputs username hostname;
+        };
         modules = [
           ./nixos-configuration.nix
           home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = { inherit inputs username hostname; };
-            home-manager.users.${username} = import ./home.nix;
-          }
+          (mkHomeManagerBlock hostname)
         ] ++ extraModules;
       };
+
+      mkDarwinSystem = hostname: extraModules: darwin.lib.darwinSystem {
+        system = "aarch64-darwin";
+        specialArgs = {
+          inherit inputs username hostname;
+        };
+        modules = [
+          ./configuration.nix
+          home-manager.darwinModules.home-manager
+          (mkHomeManagerBlock hostname)
+        ] ++ extraModules;
+      };
+
     in
     {
       # macOS Apple Silicon Configurations (M1/M4)
       darwinConfigurations = {
-        "macbook" = darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
-          specialArgs = { inherit inputs username; hostname = "macbook"; };
-          modules = [
-            ./configuration.nix
-            home-manager.darwinModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = { inherit inputs username; hostname = "macbook"; };
-              home-manager.users.${username} = import ./home.nix;
-            }
-          ];
-        };
+        "macbook" = mkDarwinSystem "macbook" [];
       };
 
       # Generic NixOS Configurations based on Arch dotfiles

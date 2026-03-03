@@ -1,21 +1,38 @@
 { config, pkgs, lib, username, hostname, ... }:
 
 {
+  imports = [
+    ./common.nix
+  ];
+
   # Bootloader setup
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.efi.efiSysMountPoint = "/boot/efi";
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi = {
+      canTouchEfiVariables = true;
+      efiSysMountPoint = "/boot/efi";
+    };
+  };
 
   # Kernel configuration (shared)
   boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelParams = [
-    "quiet" "nowatchdog" "acpi.ec_no_wakeup=1" "intel_iommu=on"
+    "quiet"
+    "nowatchdog"
+    "acpi.ec_no_wakeup=1"
+    "intel_iommu=on"
     "intel_pstate=no_hwp"
     "psmouse.proto=imps"
     "psmouse.synaptics_intertouch=1"
     "console=ttyS0,19200n8"
   ];
-  boot.blacklistedKernelModules = [ "pcspkr" "intel_pmc_bxt" "iTCO_vendor_support" "iTCO_wdt" "snd_pcsp" ];
+  boot.blacklistedKernelModules = [
+    "pcspkr"
+    "intel_pmc_bxt"
+    "iTCO_vendor_support"
+    "iTCO_wdt"
+    "snd_pcsp"
+  ];
 
   # High-performance Sysctls
   boot.kernel.sysctl = {
@@ -32,16 +49,24 @@
     "vm.swappiness" = 1;
   };
 
-  boot.tmp.useTmpfs = true;
-  boot.tmp.cleanOnBoot = true;
-  boot.supportedFilesystems = [ "xfs" ];
+  boot.tmp = {
+    useTmpfs = true;
+    cleanOnBoot = true;
+  };
+  boot.supportedFilesystems = [
+    "xfs"
+  ];
 
   # FileSystems root (assumes generic bootstrap labels)
   fileSystems = {
     "/" = {
       device = "/dev/disk/by-label/root";
       fsType = "xfs";
-      options = [ "noatime" "nodiratime" "discard" ];
+      options = [
+        "noatime"
+        "nodiratime"
+        "discard"
+      ];
     };
     "/boot" = {
       device = "/dev/disk/by-label/boot";
@@ -52,19 +77,52 @@
   # Networking
   networking = {
     hostName = hostname;
-    networkmanager = { enable = true; dns = "dnsmasq"; };
-    nameservers = [ "1.1.1.1" "1.0.0.1" "8.8.8.8" "8.8.4.4" ];
+    networkmanager = {
+      enable = true;
+      dns = "dnsmasq";
+    };
+    nameservers = [
+      "1.1.1.1"
+      "1.0.0.1"
+      "8.8.8.8"
+      "8.8.4.4"
+    ];
     usePredictableInterfaceNames = false;
     firewall = {
       enable = true;
       allowPing = false;
-      allowedTCPPorts = [ 22 80 443 3000 8080 8000 8443 9999 27036 27037 ];
-      allowedUDPPorts = [ 27031 27037 ];
-      allowedUDPPortRanges = [ { from = 60000; to = 61000; } ];
+      allowedTCPPorts = [
+        22
+        80
+        443
+        3000
+        8080
+        8000
+        8443
+        9999
+        27036
+        27037
+      ];
+      allowedUDPPorts = [
+        27031
+        27037
+      ];
+      allowedUDPPortRanges = [
+        {
+          from = 60000;
+          to = 61000;
+        }
+      ];
       checkReversePath = false;
       extraCommands = "iptables -I INPUT -p udp -m udp --dport 32768:60999 -j ACCEPT";
     };
-    nat = { enable = true; internalInterfaces = ["ve-+"]; externalInterface = "wlp4s0"; };
+    nat = {
+      enable = true;
+      internalInterfaces = [
+        "ve-+"
+      ];
+      externalInterface = "wlp4s0";
+    };
     extraHosts = ''
       127.0.0.1 ${hostname} ${hostname}.local localhost
       127.0.0.2 other-localhost
@@ -74,32 +132,46 @@
       192.168.1.2 kato-switch
       ::1 ${hostname} ${hostname}.local localhost
     '';
-    bridges.cbr0.interfaces = [];
-    interfaces.cbr0.ipv4.addresses = [ { address = "10.10.0.1"; prefixLength = 24; } ];
+    bridges.cbr0.interfaces = [ ];
+    interfaces.cbr0.ipv4.addresses = [
+      {
+        address = "10.10.0.1";
+        prefixLength = 24;
+      }
+    ];
   };
 
   # Time and Locale
-  time.timeZone = "Asia/Tokyo";
-  time.hardwareClockInLocalTime = true;
+  time = {
+    timeZone = "Asia/Tokyo";
+    hardwareClockInLocalTime = true;
+  };
   i18n.defaultLocale = "en_US.UTF-8";
 
-  # Nix configuration and Overlays
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.settings.auto-optimise-store = true;
+  # Nixpkgs Config
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = false;
     allowUnfreeRedistributable = true;
     pulseaudio = true;
-    chromium = { enablePepperFlash = false; enablePepperPdf = true; enableWideVine = true; };
+    chromium = {
+      enablePepperFlash = false;
+      enablePepperPdf = true;
+      enableWideVine = true;
+    };
   };
-  nixpkgs.overlays = [(self: super: {
-    neovim = super.neovim.override { withPython3 = true; withRuby = true; vimAlias = true; };
-  })];
+  nixpkgs.overlays = [
+    (self: super: {
+      neovim = super.neovim.override {
+        withPython3 = true;
+        withRuby = true;
+        vimAlias = true;
+      };
+    })
+  ];
 
   # OS Level Programs
   programs.zsh = {
-    enable = true;
     autosuggestions.enable = true;
     enableCompletion = true;
     syntaxHighlighting.enable = true;
@@ -111,8 +183,41 @@
 
   # Core System Packages
   environment.systemPackages = with pkgs; [
-    wget curl git tailscale lshw fwupd pciutils usbutils jq
-    atool bat binutils coreutils cryptsetup efibootmgr exa inetutils iputils neovim psmisc tldr xbindkeys xclip xsel rxvt_unicode git-crypt autoconf automake clang-tools ctags flameGraph gcc hub shellcheck nix-prefetch-git patchelf
+    atool
+    autoconf
+    automake
+    bat
+    binutils
+    clang-tools
+    coreutils
+    cryptsetup
+    ctags
+    curl
+    efibootmgr
+    exa
+    flameGraph
+    fwupd
+    gcc
+    git
+    git-crypt
+    hub
+    inetutils
+    iputils
+    jq
+    lshw
+    neovim
+    nix-prefetch-git
+    patchelf
+    pciutils
+    psmisc
+    rxvt_unicode
+    shellcheck
+    tldr
+    usbutils
+    wget
+    xbindkeys
+    xclip
+    xsel
   ];
   environment.variables = {
     GIT_EDITOR = lib.mkForce "hx";
@@ -132,13 +237,21 @@
   services.locate.enable = true;
   services.openssh = {
     enable = true;
-    settings.PasswordAuthentication = false;
-    settings.PermitRootLogin = "no";
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
     extraConfig = "StreamLocalBindUnlink yes";
   };
   services.printing = {
     enable = true;
-    drivers = with pkgs; [ gutenprint gutenprintBin hplip hplipWithPlugin cups-bjnp ];
+    drivers = with pkgs; [
+      cups-bjnp
+      gutenprint
+      gutenprintBin
+      hplip
+      hplipWithPlugin
+    ];
   };
 
   # Virtualization & Containers
@@ -156,14 +269,26 @@
   };
 
   # Security Hardening
-  security.sudo.wheelNeedsPassword = false;
-  security.sudo.extraConfig = ''
-    Defaults !always_set_home
-    Defaults env_keep+="HOME"
-  '';
+  security.sudo = {
+    wheelNeedsPassword = false;
+    extraConfig = ''
+      Defaults !always_set_home
+      Defaults env_keep+="HOME"
+    '';
+  };
   security.pam.loginLimits = [
-    { domain = "*"; type = "soft"; item = "nofile"; value = "65535"; }
-    { domain = "*"; type = "hard"; item = "nofile"; value = "65535"; }
+    {
+      domain = "*";
+      type = "soft";
+      item = "nofile";
+      value = "65535";
+    }
+    {
+      domain = "*";
+      type = "hard";
+      item = "nofile";
+      value = "65535";
+    }
   ];
 
   # User Configuration
@@ -171,25 +296,47 @@
   users.users.${username} = {
     isNormalUser = true;
     uid = 1000;
-    home = "/home/${username}";
-    description = "${username}";
     createHome = true;
-    extraGroups = [ "wheel" "networkmanager" "vboxusers" "wireshark" "mysql" "docker" "lxd" "libvirtd" "disk" "audio" "video" "input" "systemd-journal" ];
-    shell = pkgs.zsh;
+    extraGroups = [
+      "audio"
+      "disk"
+      "docker"
+      "input"
+      "libvirtd"
+      "lxd"
+      "mysql"
+      "networkmanager"
+      "systemd-journal"
+      "vboxusers"
+      "video"
+      "wheel"
+      "wireshark"
+    ];
   };
 
   # Audio (Pipewire setup replacing pulseaudio/alsa from Arch config)
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
+    alsa = {
+      enable = true;
+      support32Bit = true;
+    };
     pulse.enable = true;
   };
 
   # Fonts
-  fonts.packages = with pkgs; [ hackgen-nf-font noto-fonts-color-emoji ];
-  fonts.fontconfig.defaultFonts = { monospace = [ "HackGen Console NF" ]; emoji = [ "Noto Color Emoji" ]; };
+  fonts.packages = with pkgs; [
+    noto-fonts-color-emoji
+  ];
+  fonts.fontconfig.defaultFonts = {
+    monospace = [
+      "HackGen Console NF"
+    ];
+    emoji = [
+      "Noto Color Emoji"
+    ];
+  };
 
   system.stateVersion = "23.11";
 }
