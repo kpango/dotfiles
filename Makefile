@@ -238,6 +238,17 @@ nix/setup:
 	@echo "=> Running initial nix build for host: $(NIX_HOST_NAME)..."
 	@if [ "$$(uname -s)" = "Darwin" ]; then \
 		. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix run nix-darwin -- switch --flake .#$(NIX_HOST_NAME); \
+	elif grep -q "NixOS" /etc/os-release >/dev/null 2>&1 || [ -f /etc/NIXOS ]; then \
+		echo "=> NixOS detected. Updating channels and flakes..."; \
+		sudo nix-channel --update; \
+		nix flake update; \
+		if [ -f /mnt/etc/nixos/configuration.nix ]; then \
+			echo "=> Installing NixOS to /mnt..."; \
+			sudo nixos-install --root /mnt --flake .#$(NIX_HOST_NAME); \
+		else \
+			echo "=> Rebuilding NixOS..."; \
+			sudo nixos-rebuild switch --flake .#$(NIX_HOST_NAME); \
+		fi; \
 	else \
 		. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && sudo nixos-rebuild switch --flake .#$(NIX_HOST_NAME); \
 	fi
