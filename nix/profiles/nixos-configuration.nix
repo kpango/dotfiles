@@ -1,8 +1,8 @@
-{ config, pkgs, lib, username, hostname, ... }:
+{ config, pkgs, lib, username, hostname, versions, ... }:
 
 {
   imports = [
-    ./common.nix
+    ../core/common.nix
   ];
 
   # Bootloader setup
@@ -338,5 +338,5 @@
     ];
   };
 
-  system.stateVersion = "23.11";
+  system.stateVersion = versions.nixos;
 }

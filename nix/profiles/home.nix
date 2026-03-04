@@ -1,4 +1,4 @@
-{ config, pkgs, lib, username, hostname, ... }:
+{ config, pkgs, lib, username, hostname, versions, ... }:
 
 let
   isDarwin = pkgs.stdenv.isDarwin;
@@ -83,7 +83,7 @@ in
   home = {
     username = "${username}";
     homeDirectory = if isDarwin then "/Users/${username}" else "/home/${username}";
-    stateVersion = "23.11";
+    stateVersion = versions.homeManager;
     # Shared packages across all platforms
     packages = sharedPackages
       ++ lib.optionals isDarwin darwinPackages

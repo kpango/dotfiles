@@ -18,25 +18,28 @@
       # Use a statically defined username to avoid pure evaluation errors with builtins.getEnv
       username = "kpango";
 
+      # Import centrally managed versions
+      versions = import ./core/versions.nix;
+
       # Shared Home Manager setup block to avoid duplication
       mkHomeManagerBlock = hostname: {
         home-manager = {
           useGlobalPkgs = true;
           useUserPackages = true;
           extraSpecialArgs = {
-            inherit inputs username hostname;
+            inherit inputs username hostname versions;
           };
-          users.${username} = import ./home.nix;
+          users.${username} = import ./profiles/home.nix;
         };
       };
 
       mkNixosSystem = hostname: extraModules: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = {
-          inherit inputs username hostname;
+          inherit inputs username hostname versions;
         };
         modules = [
-          ./nixos-configuration.nix
+          ./profiles/nixos-configuration.nix
           home-manager.nixosModules.home-manager
           (mkHomeManagerBlock hostname)
         ] ++ extraModules;
@@ -45,10 +48,10 @@
       mkDarwinSystem = hostname: extraModules: darwin.lib.darwinSystem {
         system = "aarch64-darwin";
         specialArgs = {
-          inherit inputs username hostname;
+          inherit inputs username hostname versions;
         };
         modules = [
-          ./configuration.nix
+          ./profiles/configuration.nix
           home-manager.darwinModules.home-manager
           (mkHomeManagerBlock hostname)
         ] ++ extraModules;
