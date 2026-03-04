@@ -1,8 +1,8 @@
-{ config, pkgs, lib, username, ... }:
+{ config, pkgs, lib, username, versions, ... }:
 
 {
   imports = [
-    ./common.nix
+    ../core/common.nix
   ];
 
   # To avoid path errors, use the recommended nix settings in macOS
@@ -16,8 +16,8 @@
   # Load dynamically extracted macOS defaults via defaults2nix safely
   # This uses builtins.pathExists to prevent evaluation errors if the file doesn't exist yet
   system.defaults.CustomUserPreferences =
-    if builtins.pathExists ./macos.nix then
-      import ./macos.nix
+    if builtins.pathExists ../modules/macos.nix then
+      import ../modules/macos.nix
     else
       { };
 
@@ -26,5 +26,5 @@
 
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
-  system.stateVersion = 4;
+  system.stateVersion = versions.darwin;
 }
