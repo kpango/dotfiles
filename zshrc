@@ -889,9 +889,10 @@ if [ -z $ZSH_LOADED ]; then
     alias tedit="$EDITOR $HOME/.tmux.conf"
 
     zscompile() {
-        for f in $(find $HOME -name "*.zsh"); do
-            zcompile $f
+        for f in $(find "$HOME" -name "*.zsh" -type f); do
+            zcompile "$f" &
         done
+        wait
     }
     alias zscompile=zscompile
 
