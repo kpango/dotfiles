@@ -164,6 +164,7 @@ in
 
     shellAliases = lib.optionalAttrs isDarwin {
       colima-fast = "colima start --cpu 6 --memory 12 --disk 100 --arch aarch64 --vm-type vz --vz-rosetta";
+      nix-update = "darwin-rebuild switch --flake ~/.config/nix-darwin#macbook";
     };
   };
 
