@@ -7,12 +7,14 @@ let
   # Define shared packages
   sharedPackages = with pkgs; [
     axel
+    bat
+    btop
     bun
     ccache
     cmake
+    eza
     fd
     fastfetch
-    fwupd
     gettext
     ghq
     ghostty
@@ -26,11 +28,10 @@ let
     k9s
     kubectl
     lsd
-    lshw
     lua
     make
-    mdadm
     mtr
+    neovim
     nmap
     pass
     procs
@@ -47,24 +48,32 @@ let
     wakeonlan
     wget
     zsh
-    # Extra Arch Linux dependencies explicitly requested
-    alsa-utils
-    btop
   ];
 
-  # Define Darwin-specific packages
+  # Define Darwin-specific packages (includes GUI apps formerly managed by Homebrew casks)
   darwinPackages = with pkgs; [
     colima
+    discord
     docker
+    google-chrome
+    nkf
+    reattach-to-user-namespace
+    slack
+    vscode
     zed-editor
+    zoom-us
   ];
 
   # Define Linux-specific packages
   linuxPackages = with pkgs; [
+    alsa-utils
+    fwupd
     grim
     kanshi
     light
+    lshw
     mako
+    mdadm
     noto-fonts-emoji
     pavucontrol
     slurp
@@ -106,6 +115,33 @@ in
 
     # Aliases
     ".aliases".source = ../alias;
+
+    # Editorconfig
+    ".editorconfig".source = ../editorconfig;
+
+    # Gemini Config
+    ".gemini/settings.json".source = ../gemini.json;
+
+    # Git Attributes
+    ".gitattributes".source = ../gitattributes;
+
+    # GPG Agent Config (macOS uses pinentry-mac, Linux uses pinentry-tty)
+    ".gnupg/gpg-agent.conf".text =
+      if isDarwin then
+        builtins.replaceStrings
+          ["/usr/bin/pinentry-tty"]
+          ["/opt/homebrew/bin/pinentry-mac"]
+          (builtins.readFile ../gpg-agent.conf)
+      else
+        builtins.readFile ../gpg-agent.conf;
+
+    # Docker Config (macOS uses osxkeychain, Linux uses pass for credential store)
+    ".docker/config.json".source =
+      if isDarwin then ../macos/docker_config.json
+      else ../dockers/config.json;
+
+    # Docker Daemon Config
+    ".docker/daemon.json".source = ../dockers/daemon.json;
 
     # Tmux specific configs
     ".tmux-kube".source = ../tmux-kube;
@@ -177,7 +213,18 @@ in
     clock24 = true;
     mouse = true;
     # Embed existing tmux.conf directly into the Home Manager config
-    extraConfig = builtins.readFile ../tmux.conf;
+    # On macOS, uncomment the set-environment PATH line for Homebrew support
+    extraConfig =
+      let
+        baseConfig = builtins.readFile ../tmux.conf;
+      in
+      if isDarwin then
+        builtins.replaceStrings
+          ["# set-environment -g PATH"]
+          ["set-environment -g PATH"]
+          baseConfig
+      else
+        baseConfig;
   };
 
   # Git setup
