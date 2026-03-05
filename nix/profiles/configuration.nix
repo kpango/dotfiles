@@ -21,6 +21,87 @@
     else
       { };
 
+  # Native nix-darwin system.defaults for Dock
+  system.defaults.dock = {
+    autohide = true;
+    largesize = 68;
+    launchanim = true;
+    mineffect = "genie";
+    show-recents = false;
+    wvous-br-corner = 14;
+  };
+
+  # Finder settings
+  system.defaults.finder = {
+    ShowExternalHardDrivesOnDesktop = true;
+    ShowHardDrivesOnDesktop = false;
+    ShowRemovableMediaOnDesktop = true;
+    _FXSortFoldersFirst = true;
+  };
+
+  # Global macOS preferences
+  system.defaults.NSGlobalDomain = {
+    AppleInterfaceStyle = "Dark";
+    "com.apple.sound.beep.flash" = false;
+    "com.apple.sound.uiaudio.enabled" = false;
+    "com.apple.springing.delay" = 0.5;
+    "com.apple.springing.enabled" = true;
+    "com.apple.trackpad.forceClick" = true;
+  };
+
+  # Screenshot settings
+  system.defaults.screencapture = {
+    type = "png";
+  };
+
+  # Trackpad settings
+  system.defaults.trackpad = {
+    TrackpadRightClick = true;
+    TrackpadThreeFingerDrag = false;
+  };
+
+  # Spaces settings
+  system.defaults.spaces.spans-displays = false;
+
+  # Homebrew integration for GUI apps (casks) from Brewfile
+  homebrew = {
+    enable = true;
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "zap";
+    };
+    taps = [
+      "homebrew/autoupdate"
+      "homebrew/bundle"
+    ];
+    casks = [
+      "discord"
+      "font-hackgen-nerd"
+      "google-chrome"
+      "google-japanese-ime"
+      "messenger"
+      "slack"
+      "visual-studio-code"
+      "zoom"
+    ];
+  };
+
+  # Launchd daemon to raise file descriptor limits (from macos/ulimit.plist)
+  launchd.daemons.limit-maxfiles = {
+    serviceConfig = {
+      Label = "limit.maxfiles";
+      ProgramArguments = [
+        "launchctl"
+        "limit"
+        "maxfiles"
+        "524288"
+        "524288"
+      ];
+      RunAtLoad = true;
+      ServiceIPC = false;
+    };
+  };
+
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
 

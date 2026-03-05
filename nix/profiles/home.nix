@@ -7,9 +7,11 @@ let
   # Define shared packages
   sharedPackages = with pkgs; [
     axel
+    bat
     bun
     ccache
     cmake
+    eza
     fd
     fastfetch
     fwupd
@@ -31,6 +33,7 @@ let
     make
     mdadm
     mtr
+    neovim
     nmap
     pass
     procs
@@ -56,6 +59,8 @@ let
   darwinPackages = with pkgs; [
     colima
     docker
+    nkf
+    reattach-to-user-namespace
     zed-editor
   ];
 
@@ -106,6 +111,33 @@ in
 
     # Aliases
     ".aliases".source = ../alias;
+
+    # Editorconfig
+    ".editorconfig".source = ../editorconfig;
+
+    # Gemini Config
+    ".gemini/settings.json".source = ../gemini.json;
+
+    # Git Attributes
+    ".gitattributes".source = ../gitattributes;
+
+    # GPG Agent Config (macOS uses pinentry-mac, Linux uses pinentry-tty)
+    ".gnupg/gpg-agent.conf".text =
+      if isDarwin then
+        builtins.replaceStrings
+          ["/usr/bin/pinentry-tty"]
+          ["/opt/homebrew/bin/pinentry-mac"]
+          (builtins.readFile ../gpg-agent.conf)
+      else
+        builtins.readFile ../gpg-agent.conf;
+
+    # Docker Config (macOS uses osxkeychain, Linux uses pass for credential store)
+    ".docker/config.json".source =
+      if isDarwin then ../macos/docker_config.json
+      else ../dockers/config.json;
+
+    # Docker Daemon Config
+    ".docker/daemon.json".source = ../dockers/daemon.json;
 
     # Tmux specific configs
     ".tmux-kube".source = ../tmux-kube;
@@ -177,7 +209,18 @@ in
     clock24 = true;
     mouse = true;
     # Embed existing tmux.conf directly into the Home Manager config
-    extraConfig = builtins.readFile ../tmux.conf;
+    # On macOS, uncomment the set-environment PATH line for Homebrew support
+    extraConfig =
+      let
+        baseConfig = builtins.readFile ../tmux.conf;
+      in
+      if isDarwin then
+        builtins.replaceStrings
+          ["# set-environment -g PATH"]
+          ["set-environment -g PATH"]
+          baseConfig
+      else
+        baseConfig;
   };
 
   # Git setup
