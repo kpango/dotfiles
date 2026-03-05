@@ -50,13 +50,18 @@ let
     zsh
   ];
 
-  # Define Darwin-specific packages
+  # Define Darwin-specific packages (includes GUI apps formerly managed by Homebrew casks)
   darwinPackages = with pkgs; [
     colima
+    discord
     docker
+    google-chrome
     nkf
     reattach-to-user-namespace
+    slack
+    vscode
     zed-editor
+    zoom-us
   ];
 
   # Define Linux-specific packages

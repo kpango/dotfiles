@@ -51,7 +51,7 @@
           inherit inputs username hostname versions;
         };
         modules = [
-          ./profiles/configuration.nix
+          ./modules/macos.nix
           home-manager.darwinModules.home-manager
           (mkHomeManagerBlock hostname)
         ] ++ extraModules;
