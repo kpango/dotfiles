@@ -8,13 +8,13 @@ let
   sharedPackages = with pkgs; [
     axel
     bat
+    btop
     bun
     ccache
     cmake
     eza
     fd
     fastfetch
-    fwupd
     gettext
     ghq
     ghostty
@@ -28,10 +28,8 @@ let
     k9s
     kubectl
     lsd
-    lshw
     lua
     make
-    mdadm
     mtr
     neovim
     nmap
@@ -50,9 +48,6 @@ let
     wakeonlan
     wget
     zsh
-    # Extra Arch Linux dependencies explicitly requested
-    alsa-utils
-    btop
   ];
 
   # Define Darwin-specific packages
@@ -66,10 +61,14 @@ let
 
   # Define Linux-specific packages
   linuxPackages = with pkgs; [
+    alsa-utils
+    fwupd
     grim
     kanshi
     light
+    lshw
     mako
+    mdadm
     noto-fonts-emoji
     pavucontrol
     slurp
