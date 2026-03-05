@@ -10,10 +10,10 @@
 
   # macOS defaults extracted via defaults2nix
   system.defaults.CustomUserPreferences = {
+    # Settings not covered by native system.defaults.NSGlobalDomain
     "Apple Global Domain" = {
       AppleAntiAliasingThreshold = 4;
       AppleIconAppearanceTintColor = "Green";
-      AppleInterfaceStyle = "Dark";
       AppleLanguages = [
         "en-JP"
         "ja-JP"
@@ -32,11 +32,6 @@
         "\U2019"
       ];
       "_HIHideMenuBar" = true;
-      "com.apple.sound.beep.flash" = false;
-      "com.apple.sound.uiaudio.enabled" = false;
-      "com.apple.springing.delay" = 0.5;
-      "com.apple.springing.enabled" = true;
-      "com.apple.trackpad.forceClick" = true;
     };
     "com.apple.Accessibility" = {
       AXSClassicInvertColorsPreference = false;
@@ -76,9 +71,8 @@
       TrackpadHorizScroll = true;
       TrackpadMomentumScroll = true;
       TrackpadPinch = true;
-      TrackpadRightClick = true;
+      # TrackpadRightClick and TrackpadThreeFingerDrag are managed by system.defaults.trackpad
       TrackpadScroll = true;
-      TrackpadThreeFingerDrag = false;
       TrackpadThreeFingerHorizSwipeGesture = 2;
       TrackpadThreeFingerTapGesture = false;
       TrackpadThreeFingerVertSwipeGesture = 2;
@@ -103,14 +97,7 @@
       AutoHideMenuBarOption = false;
       NumberOfRecents = false;
     };
-    "com.apple.dock" = {
-      autohide = true;
-      largesize = 68;
-      launchanim = true;
-      mineffect = "genie";
-      "show-recents" = false;
-      "wvous-br-corner" = 14;
-    };
+    # com.apple.dock settings are managed by system.defaults.dock
     "com.apple.driver.AppleBluetoothMultitouch.mouse" = {
       MouseButtonDivision = 55;
       MouseButtonMode = "OneButton";
@@ -159,26 +146,19 @@
       ScrollSSize = 30;
       ScrollV = true;
     };
+    # Settings not covered by native system.defaults.finder
     "com.apple.finder" = {
       FXICloudDriveDesktop = false;
       FXICloudDriveDocuments = false;
       FXICloudDriveEnabled = false;
       FXRemoveOldTrashItems = true;
-      ShowExternalHardDrivesOnDesktop = true;
-      ShowHardDrivesOnDesktop = false;
-      ShowRemovableMediaOnDesktop = true;
-      _FXSortFoldersFirst = true;
     };
     "com.apple.menuextra.clock" = {
       ShowAMPM = true;
       ShowDayOfWeek = true;
     };
-    "com.apple.screencapture" = {
-      type = "png";
-    };
-    "com.apple.spaces" = {
-      "spans-displays" = false;
-    };
+    # com.apple.screencapture is managed by system.defaults.screencapture
+    # com.apple.spaces is managed by system.defaults.spaces
     "com.apple.universalaccess" = {
       closeViewHotkeysEnabled = false;
       closeViewZoomDisplayID = false;
