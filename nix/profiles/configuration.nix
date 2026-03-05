@@ -28,7 +28,7 @@
     launchanim = true;
     mineffect = "genie";
     show-recents = false;
-    wvous-br-corner = 14;
+    wvous-br-corner = 14; # 14 = Put Display to Sleep
   };
 
   # Finder settings
@@ -90,6 +90,7 @@
   launchd.daemons.limit-maxfiles = {
     serviceConfig = {
       Label = "limit.maxfiles";
+      # Set soft and hard limits for maximum open file descriptors to 524288
       ProgramArguments = [
         "launchctl"
         "limit"
