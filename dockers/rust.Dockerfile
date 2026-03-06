@@ -147,6 +147,10 @@ RUN git clone --depth 1 https://github.com/helix-editor/helix \
     && mkdir -p ${HELIX_DEFAULT_RUNTIME} \
     && cp -r ./runtime ${HELIX_DEFAULT_RUNTIME}
 
+FROM rust-base AS herdr
+RUN cargo install --force --no-default-features \
+    --git https://github.com/ogulcancelik/herdr
+
 FROM rust-base AS hyperfine
 RUN cargo +nightly install --force --no-default-features \
     hyperfine
@@ -186,6 +190,10 @@ RUN cargo install --locked --force --no-default-features \
 FROM rust-base AS rnix-lsp
 RUN cargo install --force --no-default-features \
     --git https://github.com/nix-community/rnix-lsp
+
+FROM rust-base AS rtk
+RUN cargo install --force --locked \
+    --git https://github.com/rtk-ai/rtk
 
 FROM rust-base AS sad
 RUN git clone --depth 1 https://github.com/ms-jpq/sad \
@@ -276,6 +284,7 @@ COPY --from=eza ${BIN_PATH}/eza ${BIN_PATH}/eza
 COPY --from=fd ${BIN_PATH}/fd ${BIN_PATH}/fd
 COPY --from=gping ${BIN_PATH}/gping ${BIN_PATH}/gping
 COPY --from=helix ${BIN_PATH}/hx ${BIN_PATH}/hx
+COPY --from=herdr ${BIN_PATH}/herdr ${BIN_PATH}/herdr
 COPY --from=hyperfine ${BIN_PATH}/hyperfine ${BIN_PATH}/hyperfine
 COPY --from=lsd ${BIN_PATH}/lsd ${BIN_PATH}/lsd
 # COPY --from=lsp-ai ${BIN_PATH}/lsp-ai ${BIN_PATH}/lsp-ai
@@ -284,6 +293,7 @@ COPY --from=procs ${BIN_PATH}/procs ${BIN_PATH}/procs
 COPY --from=rg ${BIN_PATH}/rg ${BIN_PATH}/rg
 COPY --from=rga ${BIN_PATH}/rga ${BIN_PATH}/rga
 COPY --from=rnix-lsp ${BIN_PATH}/rnix-lsp ${BIN_PATH}/rnix-lsp
+COPY --from=rtk ${BIN_PATH}/rtk ${BIN_PATH}/rtk
 COPY --from=sad ${BIN_PATH}/sad ${BIN_PATH}/sad
 COPY --from=sd ${BIN_PATH}/sd ${BIN_PATH}/sd
 COPY --from=sheldon ${BIN_PATH}/sheldon ${BIN_PATH}/sheldon

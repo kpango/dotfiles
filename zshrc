@@ -1780,7 +1780,7 @@ if [ -z $ZSH_LOADED ]; then
             make k8s/manifest/helm-operator/update
             make helm/docs/vald
             make helm/docs/vald-helm-operator
-            make clean-empty-yaml
+            make clean/yaml
             make files
         }
         alias valdmanifest=valdmanifest

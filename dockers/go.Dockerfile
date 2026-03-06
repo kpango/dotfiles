@@ -22,7 +22,7 @@ ENV GOPATH=/go
 ENV GOBIN=${GOPATH}/bin
 ENV GOARCH=${ARCH}
 ENV GOOS=${OS}
-ENV GOPROXY="https://proxy.golang.org,https://goproxy.io,direct"
+ENV GOPROXY="https://proxy.golang.org,direct"
 ENV GOFLAGS="-ldflags=-w -ldflags=-s"
 ENV GOORG="golang.org"
 ENV GODEV="https://go.dev"
