@@ -237,6 +237,8 @@ nix/setup:
 	@git commit -m "Initial commit for Nix configuration" || true
 	@echo "=> Running initial nix build for host: $(NIX_HOST_NAME)..."
 	@if [ "$$(uname -s)" = "Darwin" ]; then \
+		echo "=> Note: Running nix-darwin switch as a regular user to avoid Home Manager conflicts."; \
+		echo "=> (sudo permissions will be automatically requested during the build process if needed)"; \
 		. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh && nix run nix-darwin -- switch --flake .#$(NIX_HOST_NAME); \
 	elif grep -q "NixOS" /etc/os-release >/dev/null 2>&1 || [ -f /etc/NIXOS ]; then \
 		echo "=> NixOS detected. Updating channels and flakes..."; \
