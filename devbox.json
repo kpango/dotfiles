@@ -77,7 +77,7 @@
     "GOPRIVATE": "*.yahoo.co.jp,github.com/vdaas/vald,github.com/vdaas/vald/apis,github.com/vdaas/vald-client-go",
     "GONOPROXY": "*.yahoo.co.jp,github.com/vdaas/vald,github.com/vdaas/vald/apis,github.com/vdaas/vald-client-go",
     "GONOSUMDB": "*.yahoo.co.jp,github.com/vdaas/vald,github.com/vdaas/vald/apis,github.com/vdaas/vald-client-go",
-    "GOPROXY": "https://proxy.golang.org,https://goproxy.io,direct",
+    "GOPROXY": "https://proxy.golang.org,direct",
     "GOSUMDB": "sum.golang.org",
     "CGO_ENABLED": "1",
     "USE_GKE_GCLOUD_AUTH_PLUGIN": "True",
