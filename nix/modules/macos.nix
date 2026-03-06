@@ -5,9 +5,6 @@
     ../core/common.nix
   ];
 
-  # To avoid path errors, use the recommended nix settings in macOS
-  nix.useDaemon = true;
-
   # macOS defaults extracted via defaults2nix
   system.defaults.CustomUserPreferences = {
     # Settings not covered by native system.defaults.NSGlobalDomain
@@ -237,7 +234,7 @@
   };
 
   # Auto upgrade nix package and the daemon service.
-  services.nix-daemon.enable = true;
+  nix.enable = true;
 
   # Used for backwards compatibility, please read the changelog before changing.
   # $ darwin-rebuild changelog
