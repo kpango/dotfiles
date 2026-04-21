@@ -9,7 +9,12 @@
     "theme": "GitHub"
   },
   "model": {
-    "name": "gemini-3.0-pro"
+    "name": "gemini-3.0-pro",
+    "summarizeToolOutput": {
+      "run_shell_command": {
+        "tokenBudget": 2000
+      }
+    }
   },
   "selectedAuthType": "gemini-api-key",
   "mcpServers": {
@@ -405,6 +410,13 @@
   "admin": {
     "skills": {
       "enabled": true
+    }
+  },
+  "contextManagement": {
+    "tools": {
+      "distillation": {
+        "maxOutputTokens": 8000
+      }
     }
   }
 }
