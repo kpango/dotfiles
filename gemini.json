@@ -346,7 +346,30 @@
     ],
     "exclude": [
       "run_shell_command(git add)",
-      "run_shell_command(git commit)"
+      "run_shell_command(git commit)",
+      "run_shell_command(git push)",
+      "run_shell_command(git rebase)",
+      "run_shell_command(git reset)",
+      "run_shell_command(git clean)",
+      "run_shell_command(git merge)",
+      "run_shell_command(git fetch)",
+      "run_shell_command(git pull)"
     ]
+  },
+  "telemetry": {
+    "enabled": true
+  },
+  "advanced": {
+    "autoConfigureMemory": true
+  },
+  "context": {
+    "fileFiltering": {
+      "respectGitIgnore": true,
+      "respectGeminiIgnore": true,
+      "enableFuzzySearch": true,
+      "customIgnoreFilePaths": [
+        "~/.geminiignore"
+      ]
+    }
   }
 }
