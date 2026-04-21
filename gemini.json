@@ -371,5 +371,28 @@
         "~/.geminiignore"
       ]
     }
+  },
+  "experimental": {
+    "adk": {
+      "agentSessionNoninteractiveEnabled": true,
+      "agentSessionInteractiveEnabled": true
+    },
+    "enableAgents": true,
+    "worktrees": true,
+    "extensionManagement": true,
+    "extensionConfig": true,
+    "extensionRegistry": true,
+    "extensionReloading": true,
+    "jitContext": true,
+    "useOSC52Paste": true,
+    "useOSC52Copy": true,
+    "taskTracker": true,
+    "modelSteering": true,
+    "directWebFetch": true,
+    "dynamicModelConfiguration": true,
+    "memoryManager": true,
+    "autoMemory": true,
+    "generalistProfile": true,
+    "contextManagement": true
   }
 }
