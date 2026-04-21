@@ -338,7 +338,11 @@
       "run_shell_command(cat)",
       "run_shell_command(curl)",
       "run_shell_command(go)",
-      "run_shell_command(make)"
+      "run_shell_command(make)",
+      "run_shell_command(git checkout)",
+      "run_shell_command(git branch)",
+      "run_shell_command(git log)",
+      "run_shell_command(git worktree)"
     ],
     "exclude": [
       "run_shell_command(git add)",
