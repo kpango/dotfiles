@@ -2,7 +2,8 @@
   "general": {
     "checkpointing": {
       "enabled": true
-    }
+    },
+    "defaultApprovalMode": "auto_edit"
   },
   "ui": {
     "theme": "GitHub"
@@ -354,7 +355,10 @@
       "run_shell_command(git merge)",
       "run_shell_command(git fetch)",
       "run_shell_command(git pull)"
-    ]
+    ],
+    "shell": {
+      "backgroundCompletionBehavior": "inject"
+    }
   },
   "telemetry": {
     "enabled": true
@@ -394,5 +398,13 @@
     "autoMemory": true,
     "generalistProfile": true,
     "contextManagement": true
+  },
+  "skills": {
+    "enabled": true
+  },
+  "admin": {
+    "skills": {
+      "enabled": true
+    }
   }
 }
