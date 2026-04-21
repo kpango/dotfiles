@@ -2,13 +2,19 @@
   "general": {
     "checkpointing": {
       "enabled": true
-    }
+    },
+    "defaultApprovalMode": "auto_edit"
   },
   "ui": {
     "theme": "GitHub"
   },
   "model": {
-    "name": "gemini-3.0-pro"
+    "name": "gemini-3.0-pro",
+    "summarizeToolOutput": {
+      "run_shell_command": {
+        "tokenBudget": 2000
+      }
+    }
   },
   "selectedAuthType": "gemini-api-key",
   "mcpServers": {
@@ -330,6 +336,87 @@
         "PWD": "$PWD"
       },
       "timeout": 60000
+    }
+  },
+  "tools": {
+    "allowed": [
+      "run_shell_command(ls)",
+      "run_shell_command(cat)",
+      "run_shell_command(curl)",
+      "run_shell_command(go)",
+      "run_shell_command(make)",
+      "run_shell_command(git checkout)",
+      "run_shell_command(git branch)",
+      "run_shell_command(git log)",
+      "run_shell_command(git worktree)"
+    ],
+    "exclude": [
+      "run_shell_command(git add)",
+      "run_shell_command(git commit)",
+      "run_shell_command(git push)",
+      "run_shell_command(git rebase)",
+      "run_shell_command(git reset)",
+      "run_shell_command(git clean)",
+      "run_shell_command(git merge)",
+      "run_shell_command(git fetch)",
+      "run_shell_command(git pull)"
+    ],
+    "shell": {
+      "backgroundCompletionBehavior": "inject"
+    }
+  },
+  "telemetry": {
+    "enabled": true
+  },
+  "advanced": {
+    "autoConfigureMemory": true
+  },
+  "context": {
+    "fileFiltering": {
+      "respectGitIgnore": true,
+      "respectGeminiIgnore": true,
+      "enableFuzzySearch": true,
+      "customIgnoreFilePaths": [
+        "~/.geminiignore"
+      ]
+    }
+  },
+  "experimental": {
+    "adk": {
+      "agentSessionNoninteractiveEnabled": true,
+      "agentSessionInteractiveEnabled": true
+    },
+    "enableAgents": true,
+    "worktrees": true,
+    "extensionManagement": true,
+    "extensionConfig": true,
+    "extensionRegistry": true,
+    "extensionReloading": true,
+    "jitContext": true,
+    "useOSC52Paste": true,
+    "useOSC52Copy": true,
+    "taskTracker": true,
+    "modelSteering": true,
+    "directWebFetch": true,
+    "dynamicModelConfiguration": true,
+    "memoryManager": true,
+    "autoMemory": true,
+    "generalistProfile": true,
+    "contextManagement": true
+  },
+  "skills": {
+    "enabled": true
+  },
+  "admin": {
+    "skills": {
+      "enabled": true
+    }
+  },
+  "contextManagement": {
+    "tools": {
+      "distillation": {
+        "maxOutputTokens": 8000
+      }
     }
   }
 }
