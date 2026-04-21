@@ -331,5 +331,18 @@
       },
       "timeout": 60000
     }
+  },
+  "tools": {
+    "allowed": [
+      "run_shell_command(ls)",
+      "run_shell_command(cat)",
+      "run_shell_command(curl)",
+      "run_shell_command(go)",
+      "run_shell_command(make)"
+    ],
+    "exclude": [
+      "run_shell_command(git add)",
+      "run_shell_command(git commit)"
+    ]
   }
 }
