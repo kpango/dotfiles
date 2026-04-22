@@ -1,4 +1,3 @@
-# syntax = docker/dockerfile:latest
 FROM kpango/base:latest AS rust-base
 
 ARG TOOLCHAIN=nightly
@@ -35,7 +34,6 @@ RUN cargo +nightly install --force --no-default-features \
 FROM rust-base AS bat
 RUN rustup update stable \
     && rustup default stable \
-    && cargo install --force --locked \
     bat
 
 FROM rust-base AS bottom
@@ -49,17 +47,16 @@ RUN cargo +nightly install --force --locked --no-default-features \
     broot
 # RUN rustup update stable \
     # && rustup default stable \
-    # && cargo install --force --locked \
 
 FROM rust-base AS cargo-asm
 RUN cargo install cargo-asm
 
 FROM rust-base AS cargo-binutils
-RUN cargo install --git https://github.com/japaric/cargo-binutils
+RUN cargo install cargo-binutils
 
 FROM rust-base AS cargo-bloat
 RUN cargo install --force --no-default-features \
-    --git https://github.com/RazrFalcon/cargo-bloat
+    cargo-bloat
 
 FROM rust-base AS cargo-check
 RUN cargo install cargo-check
@@ -94,7 +91,7 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM rust-base AS dog
 RUN cargo install --force --no-default-features \
-    --git https://github.com/ogham/dog dog
+    dog
 
 FROM rust-base AS dutree
 RUN cargo +nightly install --force --no-default-features \
@@ -113,7 +110,7 @@ RUN rustup update stable \
 
 FROM rust-base AS fd
 RUN cargo install --force --no-default-features \
-    --git https://github.com/sharkdp/fd
+    fd-find
 
 # FROM rust-base AS frawk
 # RUN apt update -y \
@@ -135,28 +132,10 @@ RUN rustup update stable \
 
 FROM rust-base AS helix
 ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
-RUN git clone --depth 1 https://github.com/helix-editor/helix \
-    && cd helix \
-    && RUST_BACKTRACE=full \
-    HELIX_DEFAULT_RUNTIME=${HELIX_DEFAULT_RUNTIME} \
-    cargo +nightly install --force \
-    --profile opt \
-    --config 'build.rustflags="-C target-cpu=native"' \
-    --path helix-term \
-    --locked \
-    && mkdir -p ${HELIX_DEFAULT_RUNTIME} \
-    && cp -r ./runtime ${HELIX_DEFAULT_RUNTIME}
+RUN cargo install --force helix-term
 
 FROM rust-base AS herdr
-RUN case "$(uname -m)" in \
-    aarch64) ARCH=aarch64 ;; \
-    x86_64) ARCH=x86_64 ;; \
-    *) echo "Unsupported architecture: $(uname -m)" && exit 1 ;; \
-  esac && \
-  HERDR_VERSION=$(curl -s https://api.github.com/repos/ogulcancelik/herdr/releases/latest | grep -o '"tag_name": *"[^"]*' | cut -d'"' -f4) && \
-  curl -L -o herdr "https://github.com/ogulcancelik/herdr/releases/download/${HERDR_VERSION}/herdr-linux-${ARCH}" && \
-  chmod +x herdr && \
-  mv herdr ${BIN_PATH}/herdr
+RUN cargo install herdr
 
 FROM rust-base AS hyperfine
 RUN cargo +nightly install --force --no-default-features \
@@ -164,7 +143,7 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM rust-base AS lsd
 RUN cargo install --force --no-default-features \
-    --git https://github.com/lsd-rs/lsd --branch main
+    lsd
 
 # FROM rust-base AS lsp-ai
 # RUN cargo install --locked --force --no-default-features \
@@ -181,7 +160,7 @@ RUN cargo install --locked --force --no-default-features \
 
 FROM rust-base AS procs
 RUN cargo +nightly install --force --no-default-features \
-    --git https://github.com/dalance/procs
+    procs
 
 FROM rust-base AS rg
 RUN rustup update stable \
@@ -196,16 +175,13 @@ RUN cargo install --locked --force --no-default-features \
 
 FROM rust-base AS rnix-lsp
 RUN cargo install --force --no-default-features \
-    --git https://github.com/nix-community/rnix-lsp
+    rnix-lsp
 
 FROM rust-base AS rtk
-RUN cargo install --force --locked \
-    --git https://github.com/rtk-ai/rtk
+RUN cargo install --force --locked rtk-ai
 
 FROM rust-base AS sad
-RUN git clone --depth 1 https://github.com/ms-jpq/sad \
-    && cd sad \
-    && cargo install --force --locked --all-features --path .
+RUN cargo install --force --locked --all-features sad
 
 FROM rust-base AS sd
 RUN cargo +nightly install --force --no-default-features \
@@ -217,7 +193,7 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM rust-base AS sheldon
 RUN cargo install --force --no-default-features \
-    --git https://github.com/rossmacarthur/sheldon
+    sheldon
 
 FROM rust-base AS starship
 RUN cargo +nightly install --force --no-default-features starship
@@ -231,7 +207,6 @@ RUN cargo +nightly install --force --no-default-features \
 
 FROM rust-base AS tokei
 RUN cargo +nightly install --force --features all \
-    --git https://github.com/XAMPPRocky/tokei \
     tokei
 
 FROM rust-base AS tree-sitter
@@ -320,4 +295,3 @@ ENV BIN_PATH=${CARGO_HOME}/bin
 ENV HELIX_DEFAULT_RUNTIME=/usr/lib/helix/runtime
 
 COPY --from=rust-pre ${RUST_HOME} ${RUST_HOME}
-COPY --from=helix ${HELIX_DEFAULT_RUNTIME} ${HELIX_DEFAULT_RUNTIME}
