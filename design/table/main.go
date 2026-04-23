@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math"
 
@@ -77,10 +76,16 @@ func angleBetween(u, v Pt) float64 {
 	return math.Acos(d)
 }
 
+// Key is a snap-to-grid coordinate for map lookups.
+type Key struct{ X, Y int64 }
+
 // Stable key for point lookup within tolerance (grid snapping).
-func keyOf(p Pt) string {
-	// snap to keyGrid; use fmt to avoid float drift in string
-	return fmt.Sprintf("%.0f/%.0f", math.Round(p.X/keyGrid), math.Round(p.Y/keyGrid))
+func keyOf(p Pt) Key {
+	// snap to keyGrid
+	return Key{
+		X: int64(math.Round(p.X / keyGrid)),
+		Y: int64(math.Round(p.Y / keyGrid)),
+	}
 }
 
 func main() {
@@ -293,7 +298,7 @@ func applyFillets(in []Pt, fillets []Fillet, sagitta float64) []Pt {
 	// ---- main loop ----
 
 	// build radius map for O(1) lookup
-	rmap := make(map[string]float64, len(fillets))
+	rmap := make(map[Key]float64, len(fillets))
 	for _, f := range fillets {
 		rmap[keyOf(Pt{f.X, f.Y})] = f.R
 	}
