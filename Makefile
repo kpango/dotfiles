@@ -1,16 +1,20 @@
 .PHONY: all link zsh bash build prod_build profile run push pull
 
 ROOTDIR = $(eval ROOTDIR := $(shell git rev-parse --show-toplevel))$(ROOTDIR)
-USER = $(eval USER := $(shell whoami))$(USER)
-USER_ID = $(eval USER_ID := $(shell id -u $(USER)))$(USER_ID)
-GROUP_ID = $(eval GROUP_ID := $(shell id -g $(USER)))$(GROUP_ID)
-GROUP_IDS = $(eval GROUP_IDS := $(shell id -G $(USER)))$(GROUP_IDS)
+SYS_USER = $(shell whoami)
+USER ?= $(SYS_USER)
+USER_ID = $(shell id -u $(SYS_USER))
+GROUP_ID = $(shell id -g $(SYS_USER))
+GROUP_IDS = $(shell id -G $(SYS_USER))
 GITHUB_ACCESS_TOKEN = $(eval GITHUB_ACCESS_TOKEN := $(shell pass github.api.ro.token))$(GITHUB_ACCESS_TOKEN)
 GITHUB_SHA = $(eval GITHUB_SHA := $(shell git rev-parse HEAD))$(GITHUB_SHA)
 GITHUB_URL = https://github.com/kpango/dotfiles
 EMAIL = kpango@vdaas.org
 
 DOCKER_EXTRA_OPTS ?=
+DOCKER_ARCH_SUFFIX ?=
+GHCR_USER ?= $(USER)
+DOCKER_PUSH ?= true
 DOCKER_BUILDER_NAME = "kpango-builder"
 DOCKER_BUILDER_DRIVER = "docker-container"
 DOCKER_BUILDER_PLATFORM = "linux/amd64,linux/arm64/v8"
@@ -18,7 +22,13 @@ DOCKER_CACHE_REPO := $(USER)/$(NAME):buildcache
 DOCKER_BUILD_CACHE_DIR:= $(HOME)/.docker/buildcache
 DOCKER_MEMORY_LIMIT = 32G
 
-VERSION = latest
+VERSION ?= latest
+
+ifneq ($(DOCKER_ARCH_SUFFIX),)
+	DOCKER_TAG_VERSION = $(VERSION)-$(DOCKER_ARCH_SUFFIX)
+else
+	DOCKER_TAG_VERSION = $(VERSION)
+endif
 
 echo:
 	@echo $(ROOTDIR)
@@ -122,7 +132,7 @@ arch_link: \
 	ln -sfv $(ROOTDIR)/arch/workstyle.toml $(HOME)/.config/workstyle/config.toml
 	ln -sfv $(ROOTDIR)/arch/Xmodmap $(HOME)/.Xmodmap
 	sudo cp $(ROOTDIR)/arch/chrony.conf /etc/chrony.conf
-	sudo cp $(ROOTDIR)/arch/suduers /etc/sudoers.d/$(USER)
+	sudo cp $(ROOTDIR)/arch/suduers /etc/sudoers.d/$(SYS_USER)
 	sudo cp $(ROOTDIR)/arch/environment /etc/environment
 	sudo cp $(ROOTDIR)/network/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
 	sudo cp $(ROOTDIR)/network/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
@@ -154,8 +164,8 @@ arch_link: \
 	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
 	sudo chown -R 0:0 /etc/sudoers.d
 	sudo chmod -R 0440 /etc/sudoers.d
-	sudo chown -R 0:0 /etc/sudoers.d/$(USER)
-	sudo chmod -R 0440 /etc/sudoers.d/$(USER)
+	sudo chown -R 0:0 /etc/sudoers.d/$(SYS_USER)
+	sudo chmod -R 0440 /etc/sudoers.d/$(SYS_USER)
 	sudo sysctl -e -p /etc/sysctl.d/99-sysctl.conf
 	sudo systemctl daemon-reload
 
@@ -350,7 +360,7 @@ clean: perm
 		/etc/pulse/default.pa \
 		/etc/resolv.dnsmasq.conf \
 		/etc/resolv.pre-tailscale-backup.conf \
-		/etc/sudoers.d/$(USER) \
+		/etc/sudoers.d/$(SYS_USER) \
 		/etc/sysctl.conf \
 		/etc/sysctl.d/99-sysctl.conf \
 		/etc/systemd/system/NetworkManager-dispatcher.service \
@@ -398,6 +408,7 @@ docker_build:
 	$(eval TMP_DIR := $(shell mktemp -d))
 	@echo $(GITHUB_ACCESS_TOKEN) > $(TMP_DIR)/gat
 	@chmod 600 $(TMP_DIR)/gat
+	@mkdir -p $(DOCKER_BUILD_CACHE_DIR)
 	DOCKER_BUILDKIT=1 docker buildx build \
 		$(DOCKER_EXTRA_OPTS) \
 		--builder "$(DOCKER_BUILDER_NAME)" \
@@ -412,10 +423,15 @@ docker_build:
 		--build-arg HOME="$(HOME)" \
 		--build-arg USER="$(USER)" \
 		--build-arg USER_ID="$(USER_ID)" \
-		--build-arg WHOAMI="$(USER)" \
+		--build-arg WHOAMI="$(SYS_USER)" \
 		--cache-from type=local,src=$(DOCKER_BUILD_CACHE_DIR) \
+		--cache-from "ghcr.io/$(GHCR_USER)/$(NAME):$(DOCKER_TAG_VERSION)" \
+		--cache-from type=gha \
 		--cache-from type=registry,ref=$(DOCKER_CACHE_REPO) \
 		--cache-to type=local,dest=$(DOCKER_BUILD_CACHE_DIR),mode=max \
+		--cache-to type=registry,ref=$(DOCKER_CACHE_REPO),mode=max,inline=true \
+		--cache-to type=gha,mode=max \
+		--cache-to type=inline,mode=max \
 		--label org.opencontainers.image.revision="$(GITHUB_SHA)" \
 		--label org.opencontainers.image.source="$(GITHUB_URL)" \
 		--label org.opencontainers.image.title="$(USER)/$(NAME)" \
@@ -424,12 +440,12 @@ docker_build:
 		--memory $(DOCKER_MEMORY_LIMIT) \
 		--memory-swap $(DOCKER_MEMORY_LIMIT) \
 		--network=host \
-		--output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=true \
+		--output type=registry,oci-mediatypes=true,compression=zstd,compression-level=5,force-compression=true,push=$(DOCKER_PUSH) \
 		--provenance=mode=max \
 		--secret id=gat,src="$(TMP_DIR)/gat" \
-		-t "$(USER)/$(NAME):$(VERSION)" \
+		-t "$(USER)/$(NAME):$(DOCKER_TAG_VERSION)" \
+		-t "ghcr.io/$(GHCR_USER)/$(NAME):$(DOCKER_TAG_VERSION)" \
 		-f $(DOCKERFILE) .
-		# --cache-to type=registry,ref=$(DOCKER_CACHE_REPO),mode=max,inline=true \
 	docker buildx rm --force "$(DOCKER_BUILDER_NAME)"
 	@rm -rf $(TMP_DIR)
 
@@ -453,7 +469,7 @@ create_buildx:
 	# make add_nodes
 	docker buildx ls
 	docker buildx inspect --bootstrap $(DOCKER_BUILDER_NAME)
-	sudo chown -R $(USER):$(GROUP_ID) "$(HOME)/.docker"
+	sudo chown -R $(SYS_USER):$(GROUP_ID) "$(HOME)/.docker"
 
 add_nodes:
 	@echo $(DOCKER_BUILDER_PLATFORM) | tr ',' '\n' | while read platform; do \
@@ -508,6 +524,52 @@ build_gcloud:
 build_k8s:
 	@make NAME="kube" do_build
 
+
+
+merge_dev:
+	@make NAME="dev" do_merge
+
+merge_mkl:
+	@make NAME="mkl" do_merge
+
+merge_go:
+	@make NAME="go" do_merge
+
+merge_rust:
+	@make NAME="rust" do_merge
+
+merge_nim:
+	@make NAME="nim" do_merge
+
+merge_dart:
+	@make NAME="dart" do_merge
+
+merge_docker:
+	@make NAME="docker" do_merge
+
+merge_base:
+	@make NAME="base" do_merge
+
+merge_env:
+	@make NAME="env" do_merge
+
+merge_gcloud:
+	@make NAME="gcloud" do_merge
+
+merge_k8s:
+	@make NAME="kube" do_merge
+
+docker_merge:
+	docker buildx imagetools create -t "$(USER)/$(NAME):$(VERSION)" \
+		"$(USER)/$(NAME):$(VERSION)-amd64" \
+		"$(USER)/$(NAME):$(VERSION)-arm64"
+		docker buildx imagetools create -t "ghcr.io/$(GHCR_USER)/$(NAME):$(VERSION)" \
+		"ghcr.io/$(GHCR_USER)/$(NAME):$(VERSION)-amd64" \
+		"ghcr.io/$(GHCR_USER)/$(NAME):$(VERSION)-arm64"
+
+do_merge:
+	@make NAME="$(NAME)" docker_merge
+
 profile:
 	rm -f analyze.txt
 	type dlayer >/dev/null 2>&1 && docker save kpango/dev:latest | dlayer >> analyze.txt
@@ -526,8 +588,8 @@ pull:
 perm:
 	sudo chmod -R 755 $(ROOTDIR)/*
 	sudo chmod -R 755 $(ROOTDIR)/.*
-	sudo chown -R $(USER):$(GROUP_ID) $(ROOTDIR)/*
-	sudo chown -R $(USER):$(GROUP_ID) $(ROOTDIR)/.*
+	sudo chown -R $(SYS_USER):$(GROUP_ID) $(ROOTDIR)/*
+	sudo chown -R $(SYS_USER):$(GROUP_ID) $(ROOTDIR)/.*
 	sudo chmod -R 644 $(ROOTDIR)/gpg-agent.conf
 	sudo chmod -R 644 $(ROOTDIR)/arch/waybar.json
 	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f -not -name 'tmux.conf' -exec nkf -Lu -w --overwrite {} \;
