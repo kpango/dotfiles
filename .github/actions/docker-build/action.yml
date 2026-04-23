@@ -1,0 +1,79 @@
+name: "Build and Push Docker Image"
+description: "Sets up QEMU, Buildx, and builds/pushes a Docker image using the repository's Makefile."
+inputs:
+  target:
+    description: "The Makefile target to run (e.g., build_base)"
+    required: true
+  docker_user:
+    description: "DockerHub username"
+    required: true
+    default: "kpango"
+  docker_pass:
+    description: "DockerHub password"
+    required: true
+  github_token:
+    description: "GitHub Token for registry/cache"
+    required: true
+  docker_push:
+    description: "Whether this is a push build"
+    required: false
+    default: "false"
+  platform:
+    description: "The platform to build (e.g., linux/amd64)"
+    required: false
+  suffix:
+    description: "The suffix for the docker tag (e.g., amd64)"
+    required: false
+  ghcr_user:
+    description: "GHCR username"
+    required: false
+    default: ${{ github.repository_owner }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to DockerHub
+      if: inputs.docker_push == 'true'
+      uses: docker/login-action@v4
+      with:
+        username: ${{ inputs.docker_user }}
+        password: ${{ inputs.docker_pass }}
+
+    - name: Login to GitHub Container Registry
+      if: inputs.docker_push == 'true'
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github_token }}
+
+    - name: Run Makefile Target
+      shell: bash
+      env:
+        TARGET: ${{ inputs.target }}
+        USER_DEFAULT: ${{ inputs.docker_user }}
+        GHCR_USER: ${{ inputs.ghcr_user }}
+        DOCKER_PUSH: ${{ inputs.docker_push }}
+        GITHUB_ACCESS_TOKEN: ${{ inputs.github_token }}
+        DOCKER_BUILDER_PLATFORM: ${{ inputs.platform }}
+        DOCKER_ARCH_SUFFIX: ${{ inputs.suffix }}
+        EVENT_NAME: ${{ github.event_name }}
+        EVENT_PATH: ${{ github.event_path }}
+        GITHUB_REF_VAR: ${{ github.ref }}
+      run: |
+        VERSION="nightly"
+
+        if [ "$EVENT_NAME" == "pull_request" ]; then
+          PR_NUM=$(jq -r ".number" "$EVENT_PATH")
+          VERSION="pr-$PR_NUM"
+        elif [[ "$GITHUB_REF_VAR" == refs/tags/* ]]; then
+          VERSION="${GITHUB_REF_VAR#refs/tags/}"
+        fi
+
+        make "$TARGET" DOCKER_PUSH="$DOCKER_PUSH" USER="$USER_DEFAULT" GHCR_USER="$GHCR_USER" VERSION="$VERSION" GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" DOCKER_BUILDER_PLATFORM="$DOCKER_BUILDER_PLATFORM" DOCKER_ARCH_SUFFIX="$DOCKER_ARCH_SUFFIX"

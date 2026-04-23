@@ -1,0 +1,157 @@
+name: "Build docker images"
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*.*.*"
+      - "v*.*.*"
+      - "*.*.*-*"
+      - "v*.*.*-*"
+    paths:
+      - "dockers/**"
+      - "Makefile"
+  pull_request:
+    paths:
+      - "dockers/**"
+      - "Makefile"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            suffix: amd64
+          - platform: linux/arm64/v8
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+        image_target:
+          - image: base
+            target: build_base
+          - image: dart
+            target: build_dart
+          - image: docker
+            target: build_docker
+          - image: env
+            target: build_env
+          - image: gcloud
+            target: build_gcloud
+          - image: go
+            target: build_go
+          - image: kube
+            target: build_k8s
+          - image: nim
+            target: build_nim
+          - image: rust
+            target: build_rust
+    runs-on: ${{ matrix.arch.runner }}
+    environment: copilot
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Build and Push Docker Image
+        uses: ./.github/actions/docker-build
+        with:
+          target: ${{ matrix.image_target.target }}
+          docker_user: ${{ secrets.DOCKERHUB_USER || 'kpango' }}
+          docker_pass: ${{ secrets.DOCKERHUB_PASS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          docker_push: true
+          platform: ${{ matrix.arch.platform }}
+          suffix: ${{ matrix.arch.suffix }}
+
+  merge:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: copilot
+    strategy:
+      fail-fast: false
+      matrix:
+        image_target:
+          - image: base
+            target: merge_base
+          - image: dart
+            target: merge_dart
+          - image: docker
+            target: merge_docker
+          - image: env
+            target: merge_env
+          - image: gcloud
+            target: merge_gcloud
+          - image: go
+            target: merge_go
+          - image: kube
+            target: merge_k8s
+          - image: nim
+            target: merge_nim
+          - image: rust
+            target: merge_rust
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Merge and Push Manifest
+        uses: ./.github/actions/docker-build
+        with:
+          target: ${{ matrix.image_target.target }}
+          docker_user: ${{ secrets.DOCKERHUB_USER || 'kpango' }}
+          docker_pass: ${{ secrets.DOCKERHUB_PASS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          docker_push: true
+
+  build_dev:
+    needs: merge
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            suffix: amd64
+          - platform: linux/arm64/v8
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+    runs-on: ${{ matrix.arch.runner }}
+    environment: copilot
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Build and Push Docker Image
+        uses: ./.github/actions/docker-build
+        with:
+          target: prod_build
+          docker_user: ${{ secrets.DOCKERHUB_USER || 'kpango' }}
+          docker_pass: ${{ secrets.DOCKERHUB_PASS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          docker_push: true
+          platform: ${{ matrix.arch.platform }}
+          suffix: ${{ matrix.arch.suffix }}
+
+  merge_dev:
+    needs: build_dev
+    runs-on: ubuntu-latest
+    environment: copilot
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Merge and Push Manifest
+        uses: ./.github/actions/docker-build
+        with:
+          target: merge_dev
+          docker_user: ${{ secrets.DOCKERHUB_USER || 'kpango' }}
+          docker_pass: ${{ secrets.DOCKERHUB_PASS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          docker_push: true
