@@ -1,0 +1,175 @@
+[core]
+    attributesfile = ~/.gitattributes
+    autocrlf = false
+    editor = "hx"
+    excludesfile = ~/.gitignore  # globalな.gitignoreの指定
+    fileMode = false
+    pager = delta
+    precomposeunicode = true
+    quotepath = false
+
+[color]
+    ui = auto
+    branch = auto
+    diff = auto
+    grep = auto
+    interactive = auto
+    status = auto
+
+[push]
+    default = tracking
+    autoSetupRemote = true
+
+[pull]
+    rebase = true
+    ff = only
+
+[diff]
+    mnemonicprefix = yes
+    patience = true
+    indentHeuristic = true
+    colorMoved = default
+
+[http]
+    postBuffer = 524288000
+    cookiefile = ~/.gitcookies
+
+[help]
+    autocorrect = 0
+
+[alias]
+    ad = add
+    cam = commit -a --amend  # 直前のcommitを修正
+    ci = commit -a           # modifiedなファイルを全てstageへ
+    cm = commit
+    co = checkout
+    ft = fetch
+    rbm = rebase main      # masterへのrebaseはよく使うのでalias
+    sh = show
+    so = remote show origin
+    st = status
+    stt = status -uno -u
+    up = pull --rebase       # pull rebase
+    # branch関連
+    ba = branch -a           # originも含めた全てのbranchを表示
+    bm = branch --merged     # merge済みのbranchを表示
+    bn = branch --no-merged  # mergeしてないbranchを表示
+    br = branch
+    # log関連
+    la = log --pretty=\"format:%ad %h (%an): %s\" --date=short  # ざっくりログ出す
+    lp = log -p              # diffも一緒に出す
+    lr = log origin          # originのlog
+    ls = log --stat          # logに変更されたファイルも一緒に出す
+    lg = log --graph --date=short --decorate=short --pretty=format:'%Cgreen%h %Creset%cd %Cblue%cn %Cred%d %Creset%s'
+    lag = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
+    oneline = log --pretty=oneline
+    ranking = shortlog -s -n --no-merges
+    wc = whatchanged         # logに変更されたファイルも一緒に出す
+    # logをtree表示
+    # diff関連
+    d = diff -C --stat -p
+    d1 = diff HEAD~            # HEADから1つ前とdiff
+    d2 = diff HEAD~~           # HEADから2つ前とdiff
+    d3 = diff HEAD~~~          # HEADから3つ前とdiff
+    d4 = diff HEAD~~~~         # HEADから4つ前とdiff
+    d5 = diff HEAD~~~~~        # HEADから5つ前とdiff
+    d10 = diff HEAD~~~~~~~~~~  # HEADから10前とdiff
+    dc = diff --cached         # addされているものとのdiff
+    dm = diff origin/main           # masterとのdiff
+    ds = diff --staged         # 同上(1.6.1移行)
+    dw = diff --color-words    # 単語単位でいろつけてdiff
+    di = diff --word-diff
+    dn = diff --name-only
+    # mergeの際にconflictが起きたファイルを編集
+    edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+    # mergeの際にconflictが起きたファイルをadd
+    add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+    # grep関連
+    gr = grep
+    gn = grep -n
+
+    cp = cherry-pick
+
+    sp = stash pop
+    ss = stash save
+
+    tree = log --graph --pretty='format:%C(yellow)%h%Creset %s %Cgreen(%an)%Creset %Cred%d%Creset'
+    push-f = push --force-with-lease
+    undo = reset --soft HEAD^
+
+[gpg]
+    program = gpg
+
+[user]
+    name = kpango
+    email = kpango@vdaas.org
+    signingkey = 89013853239E4E9A
+
+[ghq]
+    root = ~/go/src
+
+[commit]
+    gpgsign = true
+
+[tag]
+    gpgsign = true
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    features = side-by-side unobtrusive-line-numbers decorations
+    whitespace-error-style = 22 reverse
+    syntax-theme = Monokai Extended
+    side-by-side = true
+    line-numbers-left-format = ""
+    line-numbers-right-format = "│ "
+    inspect-raw-lines = true
+    navigate = false
+
+[delta "decorations"]
+    commit-decoration-style = bold yellow box ul
+    file-style = bold yellow ul
+    file-decoration-style = none
+    hunk-header-decoration-style = cyan box ul
+
+[delta "unobtrusive-line-numbers"]
+    line-numbers = true
+    line-numbers-minus-style = "#444444"
+    line-numbers-zero-style = "#444444"
+    line-numbers-plus-style = "#444444"
+    line-numbers-left-format = "{nm:>4}┊"
+    line-numbers-right-format = "{np:>4}│"
+    line-numbers-left-style = blue
+    line-numbers-right-style = blue
+
+[safe]
+    directory = /home/kpango/go/src/github.com/vdaas/vald
+    directory = /home/kpango/go/src/github.com/vdaas/vald-client-go
+    directory = /home/kpango/go/src/github.com/vdaas/vald-client-ci
+    directory = /home/kpango/go/src/github.com/kpango/glg
+    directory = /home/kpango/go/src/github.com/kpango/gache
+    directory = /home/kpango/go/src/github.com/kpango/dotfiles
+
+[init]
+    defaultBranch = main
+
+[url "https://github.com/"]
+    insteadOf = git@github.com
+    insteadOf = ssh://git@github.com/
+
+[url "https://"]
+    insteadOf = git://
+    insteadOf = ssh://
+
+[credential]
+    username    = kpango
+    useHttpPath = true
+
+[credential "https://github.com"]
+    helper =
+    helper = !gh auth git-credential
+
+[credential "https://gist.github.com"]
+    helper =
+    helper = !gh auth git-credential

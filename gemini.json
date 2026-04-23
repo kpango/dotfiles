@@ -1,0 +1,430 @@
+{
+  "general": {
+    "checkpointing": {
+      "enabled": true
+    },
+    "defaultApprovalMode": "auto_edit"
+  },
+  "security": {
+    "auth": {
+      "selectedType": "gemini-api-key"
+    }
+  },
+  "ui": {
+    "theme": "GitHub",
+    "showStatusInTitle": true,
+    "dynamicWindowTitle": true
+  },
+  "model": {
+    "name": "gemini-3.0-pro",
+    "summarizeToolOutput": {
+      "run_shell_command": {
+        "tokenBudget": 2000
+      }
+    }
+  },
+  "mcpServers": {
+    "serena": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$PWD:/workspace:ro",
+        "-v",
+        "$HOME/.serena:/home/user/.serena:rw",
+        "-p",
+        "9121:9121",
+        "-p",
+        "24282:24282",
+        "-e",
+        "SERENA_DOCKER=1",
+        "ghcr.io/oraios/serena:latest",
+        "serena start-mcp-server",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "k8s-native": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$HOME/.kube:/home/user/.kube:ro",
+        "-e",
+        "KUBECONFIG=/home/user/.kube/config",
+        "quay.io/manusa/kubernetes_mcp_server:latest"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "k8s-cli": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$HOME/.kube:/home/user/.kube:ro",
+        "-e",
+        "KUBECONFIG=/home/user/.kube/config",
+        "-e",
+        "MASK_SECRETS=true",
+        "mcp/kubernetes:latest"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "cipher": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "512",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$PWD:/workspace:ro",
+        "-v",
+        "$HOME/.local/share/cipher:/data:rw",
+        "-e",
+        "GEMINI_API_KEY",
+        "-e",
+        "OPENAI_API_KEY",
+        "-e",
+        "ANTHROPIC_API_KEY",
+        "ghcr.io/campfirein/cipher:latest",
+        "cipher",
+        "--mode",
+        "mcp",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD",
+        "GEMINI_API_KEY": "$GEMINI_API_KEY",
+        "OPENAI_API_KEY": "$OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY": "$ANTHROPIC_API_KEY"
+      },
+      "timeout": 90000
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "128",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server:latest"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD",
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "$GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timeout": 60000
+    },
+    "slack": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "128",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-e",
+        "SLACK_BOT_TOKEN",
+        "-e",
+        "SLACK_TEAM_ID",
+        "-e",
+        "SLACK_CHANNEL_IDS",
+        "mcp/slack:latest"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD",
+        "SLACK_BOT_TOKEN": "$SLACK_BOT_TOKEN",
+        "SLACK_TEAM_ID": "$SLACK_TEAM_ID",
+        "SLACK_CHANNEL_IDS": "$SLACK_CHANNEL_IDS"
+      },
+      "timeout": 60000
+    },
+    "lsp-go": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "gopls"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "lsp-rust": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "rust-analyzer"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "lsp-ts": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "typescript-language-server",
+        "--",
+        "--stdio"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "lsp-python": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "pyright-langserver",
+        "--",
+        "--stdio"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "lsp-cpp": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "clangd",
+        "--",
+        "--compile-commands-dir=$PWD/build"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "lsp-zig": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "zls"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "lsp-nim": {
+      "command": "mcp-language-server",
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "nimlangserver"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    }
+  },
+  "tools": {
+    "allowed": [
+      "run_shell_command(ls)",
+      "run_shell_command(cat)",
+      "run_shell_command(curl)",
+      "run_shell_command(go)",
+      "run_shell_command(make)",
+      "run_shell_command(git checkout)",
+      "run_shell_command(git branch)",
+      "run_shell_command(git log)",
+      "run_shell_command(git worktree)"
+    ],
+    "exclude": [
+      "run_shell_command(git add)",
+      "run_shell_command(git commit)",
+      "run_shell_command(git push)",
+      "run_shell_command(git rebase)",
+      "run_shell_command(git reset)",
+      "run_shell_command(git clean)",
+      "run_shell_command(git merge)",
+      "run_shell_command(git fetch)",
+      "run_shell_command(git pull)"
+    ],
+    "shell": {
+      "backgroundCompletionBehavior": "inject"
+    }
+    "truncateToolOutputThreshold": -1
+  },
+  "telemetry": {
+    "enabled": true
+  },
+  "advanced": {
+    "autoConfigureMemory": true
+  },
+  "context": {
+    "fileFiltering": {
+      "respectGitIgnore": true,
+      "respectGeminiIgnore": true,
+      "enableFuzzySearch": true,
+      "customIgnoreFilePaths": [
+        "~/.geminiignore"
+      ]
+    }
+  },
+  "experimental": {
+    "adk": {
+      "agentSessionNoninteractiveEnabled": true,
+      "agentSessionInteractiveEnabled": true
+    },
+    "enableAgents": true,
+    "worktrees": true,
+    "extensionManagement": true,
+    "extensionConfig": true,
+    "extensionRegistry": true,
+    "extensionReloading": true,
+    "jitContext": true,
+    "useOSC52Paste": true,
+    "useOSC52Copy": true,
+    "skills": true,
+    "taskTracker": true,
+    "modelSteering": true,
+    "directWebFetch": true,
+    "dynamicModelConfiguration": true,
+    "memoryManager": true,
+    "autoMemory": true,
+    "generalistProfile": true,
+    "contextManagement": true
+  },
+  "skills": {
+    "enabled": true
+  },
+  "admin": {
+    "skills": {
+      "enabled": true
+    }
+  },
+  "contextManagement": {
+    "tools": {
+      "distillation": {
+        "maxOutputTokens": 8000
+      }
+    }
+  }
+}

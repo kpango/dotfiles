@@ -1,0 +1,40 @@
+{
+        "interfaces": {
+                "ethernet": {
+                        "eth0": {
+                                "mtu": "9000"
+                        },
+                        "eth1": {
+                                "mtu": "9000"
+                        },
+                        "eth2": {
+                                "mtu": "9000"
+                        },
+                        "eth3": {
+                                "mtu": "9000"
+                        }
+                }
+        },
+        "system": {
+                "ntp": {
+                        "server": {
+                                "0.jp.pool.ntp.org": "''",
+                                "1.jp.pool.ntp.org": "''",
+                                "2.jp.pool.ntp.org": "''",
+                                "3.jp.pool.ntp.org": "''",
+                                "ntp.dnsbalance.ring.gr.jp": "''",
+                                "ntp.jst.mfeed.ad.jp": "''",
+                                "ntp.nict.jp": "''",
+                                "ntp.ring.gr.jp": "''",
+                                "ntp1.jst.mfeed.ad.jp": "''",
+                                "ntp1.v6.mfeed.ad.jp": "''",
+                                "ntp2.jst.mfeed.ad.jp": "''",
+                                "ntp2.v6.mfeed.ad.jp": "''",
+                                "ntp3.jst.mfeed.ad.jp": "''",
+                                "ntp3.v6.mfeed.ad.jp": "''",
+                                "s2csntp.miz.nao.ac.jp": "''",
+                                "time.google.com": "''"
+                        }
+                }
+        }
+}

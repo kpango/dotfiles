@@ -1,0 +1,222 @@
+#!/usr/bin/zsh
+rcpath="$HOME/go/src/github.com/kpango/dotfiles"
+
+dockerrm(){
+    docker container stop $(docker container ls -aq)
+    docker ps -aq | xargs docker rm -f
+    docker container prune -f
+    docker images -aq | xargs docker rmi -f;
+    docker image prune -a -f
+    docker volume prune -f
+    docker network prune -f
+    docker system prune -a -f
+}
+
+alias dockerrm="dockerrm"
+
+zsh_path="/usr/bin/zsh"
+user_name="kpango"
+container_name="dev"
+container_version="nightly"
+image_name="$user_name/$container_name:$container_version"
+
+alias kpmove="cd $rcpath"
+
+alias kpbuild="kpmove&&docker build --pull=true --file=$rcpath/Dockerfile -t $image_name $rcpath"
+
+devrun(){
+    port_range="8000-9300"
+    privileged=true
+    tz_path="/usr/share/zoneinfo/Japan"
+    font_dir="/System/Library/Fonts"
+    docker_daemon="$HOME/Library/Containers/com.docker.helper/Data/.docker/daemon.json"
+    docker_config="$HOME/Library/Containers/com.docker.helper/Data/.docker/config.json"
+    docker_sock="/var/run/docker.sock"
+    container_home="/home/kpango"
+    container_root="/root"
+    container_goroot="$container_home/go"
+    goroot="/usr/local/go"
+    case "$(uname -s)" in
+        Darwin)
+            echo 'Docker on macOS start'
+            # -e DISPLAY \
+            # -v /tmp/.X11-unix:/tmp/.X11-unix \
+            container run \
+                --name $container_name \
+                --workdir $container_home \
+                -v $docker_config:/etc/docker/config.json \
+                -v $docker_daemon:/etc/docker/daemon.json \
+                -v $docker_sock:$docker_sock \
+                -v $font_dir:/usr/share/fonts:ro \
+                -v $HOME/.docker/daemon.json:$container_home/.docker/daemon.json \
+                -v $HOME/Documents:$container_home/Documents \
+                -v $HOME/Downloads:$container_home/Downloads \
+                -v $HOME/.gemini:$container_home/.gemini \
+                -v $HOME/.gitconfig:$container_home/.gitconfig \
+                -v $HOME/.gnupg:$container_home/.gnupg \
+                -v $HOME/go/src:$container_goroot/src:cached \
+                -v $HOME/.kube:$container_home/.kube \
+                -v $HOME/.netrc:$container_home/.netrc \
+                -v $HOME/.ssh:$container_home/.ssh \
+                -v $HOME/.talos:$container_home/.talos \
+                -v $HOME/.tmux:$container_home/.tmux \
+                -v $HOME/.zsh_history:$container_home/.zsh_history \
+                -v $rcpath/arch/limits.conf:/etc/security/limits.conf \
+                -v $rcpath/editorconfig:$container_home/.editorconfig \
+                -v $rcpath/gitattributes:$container_home/.gitattributes \
+                -v $rcpath/gitignore:$container_home/.gitignore \
+                -v $rcpath/helix/config.toml:$container_home/.config/helix/config.toml \
+                -v $rcpath/helix/languages.toml:$container_home/.config/helix/languages.toml \
+                -v $rcpath/helix/themes/zed_kpango.toml:$container_home/.config/helix/themes/zed_kpango.toml \
+                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf \
+                -v $rcpath/sheldon.toml:$container_home/.config/sheldon/plugins.toml \
+                -v $rcpath/starship.toml:$container_home/.config/starship.toml \
+                -v $rcpath/tmux.conf:$container_home/.tmux.conf \
+                -v $rcpath/tmux-kube:$container_home/.tmux-kube \
+                -v $rcpath/zshrc:$container_home/.zshrc \
+                -v $tz_path:/etc/localtime:ro \
+                -dit $image_name
+            ;;
+
+        Linux)
+            echo 'Docker on Linux start'
+            # privileged=false
+            # privileged=false
+            font_dir="/usr/share/fonts"
+            tz_path="/etc/localtime"
+            docker_daemon="/etc/docker/daemon.json"
+            docker_config="/etc/docker/config.json"
+            resolve_config="/etc/resolv.conf"
+            resolve_dnsmasq_config="/etc/resolv.dnsmasq.conf"
+            # -e DISPLAY \
+            # -v /tmp/.X11-unix:/tmp/.X11-unix \
+	    if type nvidia-smi >/dev/null 2>&1; then
+	        gpu_option="--gpus=all"
+	    fi
+            docker run \
+                --cap-add=ALL \
+                --name $container_name \
+                --privileged=$privileged \
+                --restart always \
+                --workdir $container_home \
+                --network=host \
+                --mount type=bind,source=$resolve_dnsmasq_config,destination=$resolve_config \
+                --add-host=host.docker.internal:host-gateway \
+		--memory=200G \
+                -u "$(id -u $USER):$(id -g $USER)" \
+                -v $docker_config:$docker_config:ro,cached \
+                -v $docker_daemon:$docker_daemon:ro,cached \
+                -v $docker_sock:$docker_sock \
+                -v $font_dir:$font_dir \
+                -v $HOME/.aws:$container_home/.aws \
+                -v $HOME/.config/gcloud:$container_home/.config/gcloud \
+                -v $HOME/.docker:$container_home/.docker \
+                -v $HOME/.docker:$container_root/.docker \
+                -v $HOME/Documents:$container_home/Documents \
+                -v $HOME/Downloads:$container_home/Downloads \
+                -v $HOME/.gemini:$container_home/.gemini \
+                -v $HOME/.gnupg:$container_home/.gnupg \
+                -v $HOME/.gnupg:$container_root/.gnupg \
+                -v $HOME/go/src:$container_goroot/src \
+                -v $HOME/.kube:$container_home/.kube \
+                -v $HOME/.netrc:$container_home/.netrc:ro \
+                -v $HOME/.password-store:$container_home/.password-store \
+                -v $HOME/.password-store:$container_root/.password-store \
+                -v $HOME/.ssh:$container_home/.ssh:ro \
+                -v $HOME/.talos:$container_home/.talos \
+                -v $HOME/.tig_history:$container_home/.tig_history \
+                -v $HOME/.tmux:$container_home/.tmux \
+                -v $HOME/.zsh_history:$container_home/.zsh_history:cached \
+                -v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
+                -v $rcpath/editorconfig:$container_home/.editorconfig \
+                -v $rcpath/gitattributes:$container_home/.gitattributes \
+                -v $rcpath/gitconfig:$container_home/.gitconfig \
+                -v $rcpath/gitignore:$container_home/.gitignore \
+                -v $rcpath/go.env:$container_goroot/go.env:ro \
+                -v $rcpath/go.env:$goroot/go.env:ro \
+                -v $rcpath/helix/config.toml:$container_home/.config/helix/config.toml \
+                -v $rcpath/helix/languages.toml:$container_home/.config/helix/languages.toml \
+                -v $rcpath/helix/themes/zed_kpango.toml:$container_home/.config/helix/themes/zed_kpango.toml \
+                -v $rcpath/network/sysctl.conf:/etc/sysctl.conf:ro,cached \
+                -v $rcpath/sheldon.toml:$container_home/.config/sheldon/plugins.toml \
+                -v $rcpath/starship.toml:$container_home/.config/starship.toml \
+                -v $rcpath/tmux.conf:$container_home/.tmux.conf \
+                -v $rcpath/tmux-kube:$container_home/.tmux-kube \
+                -v $rcpath/zshrc:$container_home/.zshrc:ro,cached \
+                -v $tz_path:/etc/localtime:ro,cached \
+                -v /etc/group:/etc/group:ro \
+                -v /etc/passwd:/etc/passwd:ro \
+                -v /etc/shadow:/etc/shadow:ro \
+                -v /mnt:/mnt \
+                -v /usr/lib/modules:/lib/modules:ro \
+                -dt $image_name
+                # -v /etc/sudoers.d:/etc/sudoers.d:ro \
+                # -v /etc/sudoers:/etc/sudoers:ro \
+                # -v $HOME/.config/TabNine/tabnine_config.json:$container_home/.config/TabNine/tabnine_config.json \
+            ;;
+
+        CYGWIN*|MINGW32*|MSYS*)
+            echo 'MS Windows is not ready for this environment'
+            ;;
+
+        *)
+            echo 'other OS'
+            ;;
+    esac
+}
+
+alias devrun="devrun"
+
+# alias devin="docker exec -it $container_name $zsh_path -c \"tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n$USER -s$USER@$HOST\""
+
+devin(){
+    case "$(uname -s)" in
+        Darwin)
+            tailscale down
+            tailscale up --reset --accept-routes
+            ssh tr -v
+            ;;
+        Linux)
+            docker exec -it $container_name $zsh_path
+            ;;
+        CYGWIN*|MINGW32*|MSYS*)
+            echo 'MS Windows Dev Environment is not ready for this environment'
+            ;;
+        *)
+            echo 'other OS'
+            ;;
+    esac
+}
+
+alias devin=devin
+
+udmin(){
+    tailscale down
+    tailscale up --reset --accept-routes
+    ssh udmpro -v
+}
+
+alias udmin=udmin
+
+udrin(){
+    tailscale down
+    tailscale up --reset --accept-routes
+    ssh udr -v
+}
+
+alias udr=udr
+
+devkill(){
+    docker update --restart=no $container_name \
+        && docker container stop $(docker container ls -aq) \
+        && docker container stop $(docker ps -a -q) \
+        && docker ps -aq | xargs docker rm -f \
+        && docker container prune -f
+    sudo systemctl restart docker
+}
+
+alias devkill="devkill"
+
+alias devres="devkill && devrun"
+
+alias devref="devkill && dockerrm && sudo systemctl restart docker;devrun"
