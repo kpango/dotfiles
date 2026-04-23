@@ -58,7 +58,7 @@ jobs:
     environment: copilot
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -101,7 +101,7 @@ jobs:
           - image: rust
             target: merge_rust
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -129,7 +129,7 @@ jobs:
     runs-on: ${{ matrix.arch.runner }}
     environment: copilot
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -149,7 +149,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: copilot
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
