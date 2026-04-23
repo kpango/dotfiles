@@ -148,8 +148,15 @@ RUN git clone --depth 1 https://github.com/helix-editor/helix \
     && cp -r ./runtime ${HELIX_DEFAULT_RUNTIME}
 
 FROM rust-base AS herdr
-RUN cargo install --force --no-default-features \
-    --git https://github.com/ogulcancelik/herdr
+RUN case "$(uname -m)" in \
+    aarch64) ARCH=aarch64 ;; \
+    x86_64) ARCH=x86_64 ;; \
+    *) echo "Unsupported architecture: $(uname -m)" && exit 1 ;; \
+  esac && \
+  HERDR_VERSION=$(curl -s https://api.github.com/repos/ogulcancelik/herdr/releases/latest | grep -o '"tag_name": *"[^"]*' | cut -d'"' -f4) && \
+  curl -L -o herdr "https://github.com/ogulcancelik/herdr/releases/download/${HERDR_VERSION}/herdr-linux-${ARCH}" && \
+  chmod +x herdr && \
+  mv herdr ${BIN_PATH}/herdr
 
 FROM rust-base AS hyperfine
 RUN cargo +nightly install --force --no-default-features \
