@@ -45,7 +45,7 @@ copy:
 	mkdir -p $(HOME)/.config/ghostty
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
-	mkdir -p $(HOME)/.gemini
+	mkdir -p $(HOME)/.gemini/policies
 	mkdir -p $(HOME)/.gnupg
 	sudo mkdir -p /etc/docker
 	cp $(ROOTDIR)/alias $(HOME)/.aliases
@@ -53,7 +53,8 @@ copy:
 	cp $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	cp $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
-	cp $(ROOTDIR)/gemini.json $(HOME)/.gemini/settings.json
+	cp $(ROOTDIR)/gemini/settings.json $(HOME)/.gemini/settings.json
+	cp $(ROOTDIR)/gemini/policies/policy.toml $(HOME)/.gemini/policies/policy.toml
 	cp $(ROOTDIR)/ghostty.conf $(HOME)/.config/ghostty/config
 	cp $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
 	cp $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
@@ -78,14 +79,15 @@ link:
 	mkdir -p $(HOME)/.config/ghostty
 	mkdir -p $(HOME)/.config/TabNine
 	mkdir -p $(HOME)/.docker
-	mkdir -p $(HOME)/.gemini
+	mkdir -p $(HOME)/.gemini/policies
 	mkdir -p $(HOME)/.gnupg
 	ln -sfv $(ROOTDIR)/alias $(HOME)/.aliases
 	ln -sfv $(ROOTDIR)/arch/ghostty.conf $(HOME)/.config/ghostty/config
 	ln -sfv $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	ln -sfv $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
 	ln -sfv $(ROOTDIR)/editorconfig $(HOME)/.editorconfig
-	ln -sfv $(ROOTDIR)/gemini.json $(HOME)/.gemini/settings.json
+	ln -sfv $(ROOTDIR)/gemini/settings.json $(HOME)/.gemini/settings.json
+	ln -sfv $(ROOTDIR)/gemini/policies/policy.toml $(HOME)/.gemini/policies/policy.toml
 	ln -sfv $(ROOTDIR)/ghostty.conf $(HOME)/.config/ghostty/config
 	ln -sfv $(ROOTDIR)/gitattributes $(HOME)/.gitattributes
 	ln -sfv $(ROOTDIR)/gitconfig $(HOME)/.gitconfig
@@ -324,6 +326,7 @@ clean: perm
 		$(HOME)/.docker/daemon.json \
 		$(HOME)/.editorconfig \
 		$(HOME)/.gemini/settings.json \
+		$(HOME)/.gemini/policies/policy.toml \
 		$(HOME)/.gitattributes \
 		$(HOME)/.gitconfig \
 		$(HOME)/.gitignore \

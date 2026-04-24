@@ -120,7 +120,8 @@ in
     ".editorconfig".source = ../editorconfig;
 
     # Gemini Config
-    ".gemini/settings.json".source = ../gemini.json;
+    ".gemini/settings.json".source = ../gemini/settings.json;
+    ".gemini/policies/policy.toml".source = ../gemini/policies/policy.toml;
 
     # Git Attributes
     ".gitattributes".source = ../gitattributes;
