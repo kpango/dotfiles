@@ -1,0 +1,59 @@
+name: "Reusable Docker Build & Merge"
+on:
+  workflow_call:
+    inputs:
+      build_target:
+        required: true
+        type: string
+      merge_target:
+        required: true
+        type: string
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            suffix: amd64
+          - platform: linux/arm64/v8
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+    runs-on: ${{ matrix.arch.runner }}
+    environment: copilot
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Build and Push Docker Image
+        uses: ./.github/actions/docker
+        with:
+          operation: build
+          target: ${{ inputs.build_target }}
+          docker_user: ${{ secrets.DOCKERHUB_USER || 'kpango' }}
+          docker_pass: ${{ secrets.DOCKERHUB_PASS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          docker_push: true
+          platform: ${{ matrix.arch.platform }}
+          suffix: ${{ matrix.arch.suffix }}
+
+  merge:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: copilot
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Merge and Push Manifest
+        uses: ./.github/actions/docker
+        with:
+          operation: merge
+          target: ${{ inputs.merge_target }}
+          docker_user: ${{ secrets.DOCKERHUB_USER || 'kpango' }}
+          docker_pass: ${{ secrets.DOCKERHUB_PASS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

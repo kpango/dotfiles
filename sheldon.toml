@@ -1,0 +1,50 @@
+shell = "zsh"
+
+apply = ["defer"]
+
+[plugins]
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
+[plugins.compinit]
+inline = 'autoload -Uz compinit && if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.m-1) ]]; then zsh-defer compinit -C; else zsh-defer compinit; fi'
+[plugins.colors]
+inline = 'autoload -Uz colors && zsh-defer colors'
+# [plugins.enhancd]
+# github = 'b4b4r07/enhancd'
+# apply = ['defer']
+[plugins.fzf]
+github = 'junegunn/fzf'
+apply = ['fzf-install', 'fzf-source', 'defer']
+[plugins.kubectl-fzf]
+remote = "https://raw.githubusercontent.com/bonnefoa/kubectl-fzf/main/shell/kubectl_fzf.plugin.zsh"
+[plugins.bun-completions-zsh]
+remote = "https://raw.githubusercontent.com/oven-sh/bun/refs/heads/main/completions/bun.zsh"
+[plugins.rust-zsh-completions]
+github = "ryutok/rust-zsh-completions"
+apply = ['defer']
+[plugins.starship]
+inline = 'if [[ ! -f ~/.zsh_starship_cache ]]; then starship init zsh > ~/.zsh_starship_cache; fi; source ~/.zsh_starship_cache'
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ['defer']
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ['defer']
+[plugins.zsh-syntax-highlighting]
+github = 'zsh-users/zsh-syntax-highlighting'
+apply = ['defer']
+[plugins.fast-syntax-highlighting]
+github = "auscompgeek/fast-syntax-highlighting"
+apply = ['defer']
+[plugins.tmux-xpanes]
+github = "greymd/tmux-xpanes"
+apply = ['defer']
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"
+apply = ['defer']
+
+[templates]
+defer = "{% for file in files %}zsh-defer source \"{{ file }}\"\n{% endfor %}"
+fzf-install = "[[ ! -x {{ dir }}/bin/fzf ]] && {{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\"\n"
+fzf-source = "{% for file in files %}source \"{{ file }}\"\n{% endfor %}"

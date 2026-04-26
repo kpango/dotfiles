@@ -1,0 +1,93 @@
+theme = "zed_kpango"
+
+[editor]
+true-color = true
+cursorline = true
+color-modes = true
+auto-completion = true
+auto-save = true
+auto-pairs = true
+end-of-line-diagnostics = "hint"
+insecure = true
+line-number = "relative"
+idle-timeout = 500
+# trim-final-newlines = true
+# trim-trailing-whitespace = true
+
+[editor.inline-diagnostics]
+cursor-line = "error"
+other-lines = "disable"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+
+[editor.statusline]
+left = ["mode", "spinner", "version-control"]
+center = ["file-name"]
+right = ["diagnostics", "selections", "position", "file-encoding", "file-line-ending", "file-type"]
+separator = "│"
+
+mode.normal = "NOR"
+mode.insert = "INS"
+mode.select = "SEL"
+
+[editor.file-picker]
+max-depth = 6
+hidden = false
+
+[editor.whitespace.render]
+space = "all"
+tab = "all"
+newline = "all"
+
+[editor.whitespace.characters]
+space = "·"
+nbsp = "⍽"
+tab = "→"
+newline = "↲"
+
+
+[editor.indent-guides]
+render = false
+
+
+[editor.soft-wrap]
+enable = true
+
+max-wrap = 20
+max-indent-retain = 20
+wrap-indicator = ""
+
+[editor.lsp]
+display-inlay-hints = true
+
+auto-signature-help = true
+
+display-messages = true
+
+[keys.insert]
+j = { j = "normal_mode" }
+C-space = "completion"
+
+[keys.normal]
+ret = ["open_below", "normal_mode"]
+backspace = "delete_char_backward"
+tab = ":bn"
+S-tab = ":bp"
+p = "paste_clipboard_after"
+P = "paste_clipboard_before"
+y = "yank_to_clipboard"
+Y = "yank_joined_to_clipboard"
+R = "replace_selections_with_clipboard"
+d = ["yank_to_clipboard", "delete_selection_noyank"]
+
+[keys.select]
+p = "paste_clipboard_after"
+P = "paste_clipboard_before"
+y = "yank_to_clipboard"
+Y = "yank_joined_to_clipboard"
+R = "replace_selections_with_clipboard"
+d = ["yank_to_clipboard", "delete_selection_noyank"]

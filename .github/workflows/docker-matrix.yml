@@ -1,0 +1,58 @@
+name: "Build docker images"
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*.*.*"
+      - "v*.*.*"
+      - "*.*.*-*"
+      - "v*.*.*-*"
+    paths:
+      - "dockers/**"
+      - "Makefile"
+      - ".github/workflows/**"
+  pull_request:
+    paths:
+      - "dockers/**"
+      - "Makefile"
+      - ".github/workflows/**"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 23 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  base:
+    uses: ./.github/workflows/docker-reusable.yml
+    with:
+      build_target: build_base
+      merge_target: merge_base
+    secrets: inherit
+
+  images:
+    needs: base
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [dart, docker, env, gcloud, go, k8s, nim, rust]
+    uses: ./.github/workflows/docker-reusable.yml
+    with:
+      build_target: build_${{ matrix.image }}
+      merge_target: merge_${{ matrix.image }}
+    secrets: inherit
+
+  dev:
+    needs: [base, images]
+    if: |
+      always() &&
+      needs.base.result == 'success' &&
+      !cancelled()
+    uses: ./.github/workflows/docker-reusable.yml
+    with:
+      build_target: prod_build
+      merge_target: merge_dev
+    secrets: inherit
