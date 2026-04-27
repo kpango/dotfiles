@@ -69,12 +69,12 @@ nix/setup:
 	fi
 	@echo "=> Running initial nix build for host: $(NIX_HOST_NAME)..."
 	@if [ "$$(uname -s)" = "Darwin" ]; then \
-		echo "=> Note: Running nix-darwin switch as a regular user to avoid Home Manager conflicts."; \
-		echo "=> (sudo permissions will be automatically requested during the build process if needed)"; \
+		echo "=> Note: Running nix-darwin switch as root."; \
+		echo "=> (nix-darwin now requires root for system activation)"; \
 		if [ -n "$$SUDO_USER" ]; then \
-			if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; sudo -u $$SUDO_USER sh -c "cd '$$PWD' && nix run nix-darwin -- switch --flake ./nix#$(NIX_HOST_NAME)"; \
+			if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; sudo -u $$SUDO_USER sh -c "cd '$$PWD' && sudo nix run nix-darwin -- switch --flake ./nix#$(NIX_HOST_NAME)"; \
 		else \
-			if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; nix run nix-darwin -- switch --flake ./nix#$(NIX_HOST_NAME); \
+			if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; sudo nix run nix-darwin -- switch --flake ./nix#$(NIX_HOST_NAME); \
 		fi; \
 	elif grep -q "NixOS" /etc/os-release >/dev/null 2>&1 || [ -f /etc/NIXOS ]; then \
 		$(NIX_BUILD_NIXOS); \
