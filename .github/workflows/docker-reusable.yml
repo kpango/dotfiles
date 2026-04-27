@@ -1,0 +1,70 @@
+name: "Reusable Docker Build & Merge"
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        required: true
+        type: string
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - platform: linux/amd64
+            runner: ubuntu-latest
+            suffix: amd64
+          - platform: linux/arm64/v8
+            runner: ubuntu-24.04-arm
+            suffix: arm64
+    runs-on: ${{ matrix.arch.runner }}
+    environment: copilot
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        if: ${{ inputs.image_name == 'go' || inputs.image_name == 'rust' || inputs.image_name == 'env' }}
+        uses: endersonmenezes/free-disk-space@main
+        with:
+          remove_android: true
+          remove_dotnet: true
+          remove_haskell: true
+          remove_tool_cache: true
+          remove_swap: true
+          remove_packages: "azure-cli google-cloud-cli microsoft-edge-stable google-chrome-stable firefox postgresql* temurin-* *llvm* mysql* dotnet-sdk-*"
+          remove_packages_one_command: true
+          remove_folders: "/usr/share/swift /usr/share/miniconda /usr/share/az* /usr/local/lib/node_modules /usr/local/share/chromium /usr/local/share/powershell /usr/local/julia /usr/local/aws-cli /usr/local/aws-sam-cli /usr/share/gradle"
+          rm_cmd: "rmz"
+
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Build and Push Docker Image
+        uses: ./.github/actions/docker
+        with:
+          operation: build
+          image_name: ${{ inputs.image_name }}
+          docker_user: ${{ secrets.DOCKERHUB_USER || 'kpango' }}
+          docker_pass: ${{ secrets.DOCKERHUB_PASS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          docker_push: true
+          platform: ${{ matrix.arch.platform }}
+          suffix: ${{ matrix.arch.suffix }}
+
+  merge:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: copilot
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+
+      - name: Merge and Push Manifest
+        uses: ./.github/actions/docker
+        with:
+          operation: merge
+          image_name: ${{ inputs.image_name }}
+          docker_user: ${{ secrets.DOCKERHUB_USER || 'kpango' }}
+          docker_pass: ${{ secrets.DOCKERHUB_PASS }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

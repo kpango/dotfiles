@@ -1,0 +1,9 @@
+include Makefile.d/variables.mk
+include Makefile.d/dotfiles.mk
+include Makefile.d/docker.mk
+include Makefile.d/arch.mk
+include Makefile.d/macos.mk
+include Makefile.d/nix.mk
+include Makefile.d/git.mk
+include Makefile.d/devbox.mk
+include Makefile.d/format.mk

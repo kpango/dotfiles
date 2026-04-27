@@ -1,0 +1,129 @@
+name: "Docker Action"
+description: "Build or Merge Docker images using the repository's Makefile."
+inputs:
+  operation:
+    description: "The operation to perform (build or merge)"
+    required: true
+  image_name:
+    description: "The image name to build or merge"
+    required: true
+  docker_user:
+    description: "DockerHub username"
+    required: true
+    default: "kpango"
+  docker_pass:
+    description: "DockerHub password"
+    required: true
+  github_token:
+    description: "GitHub Token"
+    required: true
+  docker_push:
+    description: "Whether this is a push build"
+    required: false
+    default: "false"
+  platform:
+    description: "The platform to build"
+    required: false
+  suffix:
+    description: "The suffix for the docker tag"
+    required: false
+  ghcr_user:
+    description: "GHCR username"
+    required: false
+    default: ${{ github.repository_owner }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Login to DockerHub
+      if: inputs.operation == 'merge' || inputs.docker_push == 'true'
+      uses: docker/login-action@v4
+      with:
+        username: ${{ inputs.docker_user }}
+        password: ${{ inputs.docker_pass }}
+
+    - name: Login to GitHub Container Registry
+      if: inputs.operation == 'merge' || inputs.docker_push == 'true'
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.github_token }}
+
+    - name: Clean up Docker Data
+      if: inputs.operation == 'build'
+      shell: bash
+      run: |
+        docker system prune -a -f --volumes
+        docker buildx prune -a -f
+
+    - name: Create Buildx
+      if: inputs.operation == 'build'
+      shell: bash
+      env:
+        GITHUB_ACCESS_TOKEN: ${{ inputs.github_token }}
+        DOCKER_BUILDER_PLATFORM: ${{ inputs.platform }}
+        IMAGE_NAME: ${{ inputs.image_name }}
+      run: |
+        GC_FLAG="false"
+        if [[ "$IMAGE_NAME" == "go" || "$IMAGE_NAME" == "rust" || "$IMAGE_NAME" == "env" ]]; then
+          GC_FLAG="true"
+        fi
+        make \
+          DOCKER_BUILDER_PLATFORM="$DOCKER_BUILDER_PLATFORM" \
+          GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
+          DOCKER_BUILDX_GC="$GC_FLAG" \
+          create_buildx
+
+    - name: Run Makefile target
+      shell: bash
+      env:
+        OPERATION: ${{ inputs.operation }}
+        IMAGE_NAME: ${{ inputs.image_name }}
+        USER_DEFAULT: ${{ inputs.docker_user }}
+        GHCR_USER: ${{ inputs.ghcr_user }}
+        DOCKER_PUSH: ${{ inputs.docker_push }}
+        GITHUB_ACCESS_TOKEN: ${{ inputs.github_token }}
+        DOCKER_BUILDER_PLATFORM: ${{ inputs.platform }}
+        DOCKER_ARCH_SUFFIX: ${{ inputs.suffix }}
+        EVENT_NAME: ${{ github.event_name }}
+        EVENT_PATH: ${{ github.event_path }}
+        GITHUB_REF_VAR: ${{ github.ref }}
+      run: |
+        VERSION="nightly"
+        EXTRA_OPTS=""
+        TARGET="${OPERATION}_${IMAGE_NAME}"
+
+        if [ "$EVENT_NAME" == "pull_request" ]; then
+          PR_NUM=$(jq -r ".number" "$EVENT_PATH")
+          VERSION="pr-$PR_NUM"
+        elif [[ "$GITHUB_REF_VAR" == refs/tags/* ]]; then
+          VERSION="${GITHUB_REF_VAR#refs/tags/}"
+        fi
+
+        if [ "$EVENT_NAME" == "schedule" ]; then
+          EXTRA_OPTS="--no-cache"
+        fi
+
+        if [ "$OPERATION" == "build" ]; then
+          make \
+            DOCKER_PUSH="$DOCKER_PUSH" \
+            USER="$USER_DEFAULT" \
+            SYS_USER="$USER_DEFAULT" \
+            USER_ID="1000" \
+            GROUP_ID="1000" \
+            GROUP_IDS="1000 98 972 987 994 996 998 1001 1002 1003 1004 1005" \
+            GHCR_USER="$GHCR_USER" \
+            VERSION="$VERSION" \
+            GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
+            DOCKER_BUILDER_PLATFORM="$DOCKER_BUILDER_PLATFORM" \
+            DOCKER_ARCH_SUFFIX="$DOCKER_ARCH_SUFFIX" \
+            DOCKER_EXTRA_OPTS="$EXTRA_OPTS" \
+            "$TARGET"
+        else
+          make \
+            USER="$USER_DEFAULT" \
+            GHCR_USER="$GHCR_USER" \
+            VERSION="$VERSION" \
+            "$TARGET"
+        fi
