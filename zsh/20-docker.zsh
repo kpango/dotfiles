@@ -62,7 +62,6 @@ devrun() {
 		"-v $HOME/.local/share/atuin:$container_home/.local/share/atuin:cached"
 		"-v $HOME/.talos:$container_home/.talos"
 		"-v $HOME/.tmux:$container_home/.tmux"
-		"-v $HOME/.zcache:$container_home/.zcache:cached"
 		"-v $rcpath/atuin/config.toml:$container_atuin/config.toml"
 		"-v $rcpath/atuin/themes/zed_kpango.toml:$container_atuin/themes/zed_kpango.toml"
 		"-v $rcpath/editorconfig:$container_home/.editorconfig"
@@ -75,7 +74,7 @@ devrun() {
 		"-v $rcpath/starship.toml:$container_config/starship.toml"
 		"-v $rcpath/tmux.conf:$container_home/.tmux.conf"
 		"-v $rcpath/tmux-kube:$container_home/.tmux-kube"
-		"-v $rcpath/zfunc:$container_home/.zfunc:cached"
+		"-v ${XDG_RUNTIME_DIR:-$HOME/.local/run}:$container_home/.local/run"
 	)
 
 	case "$OSTYPE" in
@@ -137,7 +136,7 @@ devrun() {
 			-v $docker_daemon:$docker_daemon:ro,cached \
 			-v $font_dir:$font_dir \
 			-v $HOME/.aws:$container_home/.aws \
-			-v $HOME/.config/gcloud:$container_config/gcloud \
+			-v $XDG_CONFIG_HOME/gcloud:$container_config/gcloud \
 			-v $HOME/.docker:$container_home/.docker \
 			-v $HOME/.docker:$container_root/.docker \
 			-v $HOME/.gnupg:$container_root/.gnupg \
@@ -147,8 +146,6 @@ devrun() {
 			-v $HOME/.ssh:$container_home/.ssh:ro \
 			-v $HOME/.tig_history:$container_home/.tig_history \
 			-v $HOME/.zsh_history:$container_home/.zsh_history:cached \
-			-v $HOME/.zshrc.zwc:$container_home/.zshrc.zwc:cached \
-			-v $HOME/.local/share/sheldon:$container_home/.local/share/sheldon:cached \
 			-v $rcpath/arch/limits.conf:/etc/security/limits.conf:ro,cached \
 			-v $rcpath/gitconfig:$container_home/.gitconfig \
 			-v $rcpath/go.env:$container_goroot/go.env:ro \
@@ -192,6 +189,9 @@ devin() {
 		_ts_ssh tr
 		;;
 	linux*)
+		if (($+commands[zsh-patina])); then
+			zsh-patina restart
+		fi
 		docker exec -it $container_name $zsh_path
 		;;
 	CYGWIN* | MINGW32* | MSYS*)

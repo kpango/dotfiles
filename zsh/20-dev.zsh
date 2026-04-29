@@ -36,7 +36,7 @@ if (($+commands[clang])); then
 		if (($+commands[llvm-config])); then
 			export LLVM_CONFIG_PATH=${commands[llvm-config]}
 			if [[ -f "$ZCACHE_DIR/llvm_libdir.zsh" ]]; then
-				zsh-defer -p -r source "$ZCACHE_DIR/llvm_libdir.zsh"
+				if (($+functions[zsh-defer])); then zsh-defer -p -r source "$ZCACHE_DIR/llvm_libdir.zsh"; else source "$ZCACHE_DIR/llvm_libdir.zsh"; fi
 			else
 				_zcache_eval llvm_libdir 1 'echo "export LD_LIBRARY_PATH=\"$(llvm-config --libdir):\$LD_LIBRARY_PATH\""' "$LLVM_CONFIG_PATH"
 			fi

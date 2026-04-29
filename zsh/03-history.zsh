@@ -7,17 +7,6 @@ setopt APPEND_HISTORY SHARE_HISTORY hist_ignore_all_dups hist_ignore_space hist_
 	nonomatch notify print_eight_bit prompt_subst pushd_ignore_dups
 
 export KEYTIMEOUT=1
-select-history() {
-	BUFFER=$(history -n -r 1 |
-		awk 'length($0) > 6 && $0 != "exit"' |
-		uniq -u |
-		fzf-tmux --no-sort +m --query "$LBUFFER" --prompt="History > ")
-	CURSOR=$#BUFFER
-}
-zle -N select-history
-if [[ ! -f "$ZCACHE_DIR/atuin.zsh" ]]; then
-	bindkey '^r' select-history
-fi
 
 fzf-z-search() {
 	local res=$(history -n 1 | tail -f | fzf)

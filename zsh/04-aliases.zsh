@@ -94,17 +94,9 @@ else
 	esac
 fi
 
-if (($+commands[fzf])); then
-	if (($+commands[fzf-tmux])); then
-		if (($+commands[fd])); then
-			alias s='mkcd $(fd -a -H -t d . | fzf-tmux +m)'
-			alias vf='hx $(fd -a -H -t f . | fzf-tmux +m)'
-		fi
-		if (($+commands[ghq])); then
-			alias g='mkcd $(ghq root)/$(ghq list | fzf-tmux +m)'
-		fi
-	fi
-fi
+alias s='mkcd $(fd -a -H -t d . | fzf-tmux +m)'
+alias vf='hx $(fd -a -H -t f . | fzf-tmux +m)'
+alias g='mkcd $(ghq root)/$(ghq list | fzf-tmux +m)'
 
 if (($+commands[tar])); then
 	alias tarzip="\tar Jcvf"
@@ -114,19 +106,6 @@ fi
 if (($+commands[duf])); then alias df='\duf'; fi
 if (($+commands[xdg-open])); then alias open=xdg-open; fi
 
-if (($+functions[zsh-defer])); then
-	if (($+commands[fastfetch])); then
-		zsh-defer -p -r fastfetch
-	elif (($+commands[neofetch])); then
-		zsh-defer -p -r neofetch
-	fi
-else
-	if (($+commands[fastfetch])); then
-		fastfetch
-	elif (($+commands[neofetch])); then
-		neofetch
-	fi
-fi
 mkcd() {
 	if [[ -d $1 ]]; then
 		\cd $1

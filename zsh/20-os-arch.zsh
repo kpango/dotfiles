@@ -50,11 +50,11 @@ if (($+commands[pacman])); then
 		return 1
 	}
 	kacclean() {
-		sudo chmod -R 777 $HOME/.config/gcloud
-		sudo chown -R $USER $HOME/.config/gcloud
+		sudo chmod -R 777 $XDG_CONFIG_HOME/gcloud
+		sudo chown -R $USER $XDG_CONFIG_HOME/gcloud
 		sudo rm -rf $HOME/.cache/* \
-			$HOME/.config/gcloud/config_sentinel \
-			$HOME/.config/gcloud/logs/* \
+			$XDG_CONFIG_HOME/gcloud/config_sentinel \
+			$XDG_CONFIG_HOME/gcloud/logs/* \
 			/tmp/makepkg/* \
 			/var/lib/pacman/db.l* \
 			/usr/share/man/man5/gemfile* \

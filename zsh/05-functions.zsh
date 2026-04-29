@@ -1,10 +1,15 @@
 zclean() {
-	rm -rf $HOME/.zcompdump* \
-		$HOME/.zsh*.zwc \
-		$HOME/.zsh_*_cache* \
-		$HOME/.*_cache.zsh* \
-		$ZCACHE_DIR/*.zwc \
-		$DOTFILES_DIR/zsh/*.zwc
+	rm -rf $HOME/.zcompdump*(N) \
+		$HOME/.zsh*.zwc(N) \
+		$HOME/.zsh_*_cache*(N) \
+		$HOME/.*_cache.zsh*(N) \
+		$HOME/.zfunc/*.zwc(N) \
+		$ZCACHE_DIR \
+		$DOTFILES_DIR/zsh/*.zwc(N) \
+		$DOTFILES_DIR/zfunc/*.zwc(N) \
+		${SHELDON_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/sheldon}/**/*.zwc(N) \
+		${SHELDON_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/sheldon}/**/*.zwc(N) \
+		${XDG_CACHE_HOME:-$HOME/.cache}/sheldon
 }
 
 jvgrule='(^|\/)\.zsh_history$|(^|\/)\.z$|(^|\/)\.cache|\.emlx$|\.mbox$|\.tar*|(^|\/)\.glide|(^|\/)\.stack|(^|\/)\.anyenv|(^|\/)\.gradle|(^|\/)vendor|(^|\/)Application\ Support|(^|\/)\.cargo|(^|\/)\.config|(^|\/)com\.apple\.|(^|\/)\.idea|(^|\/)\.zplug|(^|\/)\.nimble|(^|\/)build|(^|\/)node_modules|(^|\/)\.git$|(^|\/)\.svn$|(^|\/)\.hg$|\.o$|\.obj$|\.a$|\.exe~?$|\.schema.json&|\.svg$|(^|\/)tags$'

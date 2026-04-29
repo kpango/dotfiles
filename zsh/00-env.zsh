@@ -9,16 +9,27 @@ if [[ ${OSTYPE} == "darwin"* && -x /usr/libexec/path_helper ]]; then
 	}
 fi
 
-export CHARSET=${CHARSET:-UTF-8} LESSCHARSET=${LESSCHARSET:-${CHARSET}} \
-	XLANGCCUS=${XLANGCCUS:-en_US} XLANGCCJP=${XLANGCCJP:-ja_JP} \
-	LANG=${LANG:-${XLANGCCUS}.${CHARSET}} LANGUAGE=${LANGUAGE:-${XLANGCCUS}:${XLANGCCJP}} \
-	LC_ADDRESS=${LC_ADDRESS:-"${XLANGCCUS}.${CHARSET}"} LC_ALL=${LC_ALL:-${XLANGCCUS}.${CHARSET}} \
-	LC_COLLATE=${LC_COLLATE:-"${XLANGCCUS}.${CHARSET}"} LC_CTYPE=${LC_CTYPE:-${CHARSET}} \
-	LC_IDENTIFICATION=${LC_IDENTIFICATION:-"${XLANGCCUS}.${CHARSET}"} LC_MEASUREMENT=${LC_MEASUREMENT:-"${XLANGCCUS}.${CHARSET}"} \
-	LC_MESSAGES=${LC_MESSAGES:-"${XLANGCCUS}.${CHARSET}"} LC_MONETARY=${LC_MONETARY:-"${XLANGCCUS}.${CHARSET}"} \
-	LC_NAME=${LC_NAME:-"${XLANGCCUS}.${CHARSET}"} LC_NUMERIC=${LC_NUMERIC:-"${XLANGCCUS}.${CHARSET}"} \
-	LC_PAPER=${LC_PAPER:-"${XLANGCCUS}.${CHARSET}"} LC_TELEPHONE=${LC_TELEPHONE:-"${XLANGCCUS}.${CHARSET}"} \
-	LC_TIME=${LC_TIME:-${XLANGCCJP}.${CHARSET}} MANLANG=${MANLANG:-${XLANGCCJP}.${CHARSET}}
+export CHARSET=${CHARSET:-UTF-8}
+export LESSCHARSET=${LESSCHARSET:-${CHARSET}}
+export XLANGCCUS=${XLANGCCUS:-en_US}
+export XLANGCCJP=${XLANGCCJP:-ja_JP}
+
+locale_us_default="${XLANGCCUS}.${CHARSET}"
+locale_jp_default="${XLANGCCJP}.${CHARSET}"
+
+for var in LANG LC_ALL LC_CTYPE; do
+	[[ -z "${(P)var}" || "${(P)var}" == (.|${CHARSET}|C|POSIX|US-ASCII|ANSI_X3.4-1968) ]] && export ${var}="$locale_us_default"
+done
+
+for var in LC_ADDRESS LC_COLLATE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE; do
+	[[ -z "${(P)var}" || "${(P)var}" == (.|${CHARSET}) ]] && export ${var}="$locale_us_default"
+done
+
+for var in LC_TIME MANLANG; do
+	[[ -z "${(P)var}" || "${(P)var}" == (.|${CHARSET}) ]] && export ${var}="$locale_jp_default"
+done
+
+[[ -z "$LANGUAGE" ]] && export LANGUAGE="${XLANGCCUS}:${XLANGCCJP}"
 
 if [[ -z "$_ZSH_PATH_LOADED" || ${OSTYPE} == "darwin"* ]]; then
 	export _ZSH_PATH_LOADED=1
@@ -28,7 +39,7 @@ if [[ -z "$_ZSH_PATH_LOADED" || ${OSTYPE} == "darwin"* ]]; then
 	if [[ ${OSTYPE} == "darwin"* ]] && [[ ${CPUTYPE} == "arm"* || ${CPUTYPE} == "aarch64"* ]]; then
 		export PATH="/opt/homebrew/bin:$PATH"
 	fi
-	export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/bun/bin:/usr/local/go/bin:/opt/local/bin:$GOBIN:$HOME/.local/bin:$CARGO_HOME/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
+	export PATH="/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/bun/bin:/usr/local/go/bin:/opt/local/bin:${GOBIN:-$HOME/go/bin}:$HOME/.local/bin:${CARGO_HOME:-$HOME/.cargo}/bin:$GCLOUD_PATH/bin:/usr/lib/docker/cli-plugins/:$PATH"
 
 	if (($+commands[deno])); then
 		export PATH="${commands[deno]:h}:$PATH"
@@ -44,6 +55,12 @@ export USER=${USER:-$USERNAME}
 
 export XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 export XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.data}
+export XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-$HOME/.local/run}
+
+if [[ ! -d "$XDG_RUNTIME_DIR" ]]; then
+	mkdir -p "$XDG_RUNTIME_DIR"
+	chmod 700 "$XDG_RUNTIME_DIR"
+fi
 
 if [ -z "$TMUX" ]; then
 	export TERM=${TERM:-"xterm-256color"}

@@ -57,7 +57,7 @@ fi
 
 local combined_cache="$ZCACHE_DIR/combined.zsh"
 if [[ -f "$combined_cache" ]]; then
-	source "$combined_cache"
+	if [[ -z "$ZSH_EXECUTION_STRING" ]]; then source "$combined_cache"; fi
 else
 	local zsh_deps=("$DOTFILES_DIR/zsh"/*.zsh(N))
 	_zcache_eval combined 0 'cat "$DOTFILES_DIR/zsh"/*.zsh(N)' "${zsh_deps[@]}"

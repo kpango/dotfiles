@@ -23,6 +23,7 @@ tmux.conf .tmux.conf
 tmux-kube .tmux-kube
 tmux.new-session .tmux.new-session
 zshrc .zshrc
+zfunc .zfunc
 zshenv .zshenv
 endef
 export DOTFILES_MAP

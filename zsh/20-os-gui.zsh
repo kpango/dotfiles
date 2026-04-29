@@ -1,7 +1,7 @@
 if (($+commands[compton])); then
 	comprestart() {
 		sudo pkill compton
-		compton --config $HOME/.config/compton/compton.conf --xrender-sync-fence -cb
+		compton --config $XDG_CONFIG_HOME/compton/compton.conf --xrender-sync-fence -cb
 	}
 fi
 if (($+commands[bumblebeed])); then

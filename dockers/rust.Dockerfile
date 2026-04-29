@@ -399,7 +399,8 @@ FROM rust-base AS rtk
 RUN --mount=type=cache,target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
-    GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y rtk \
+    GITHUB_TOKEN=$(cat /run/secrets/gat) cargo install \
+    --git ${GITHUB}/rtk-ai/rtk \
     && upx -9 ${BIN_PATH}/rtk || true
 
 FROM rust-base AS sad
