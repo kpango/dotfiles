@@ -102,6 +102,9 @@ systemctl enable tlp
 systemctl enable tlp-sleep
 systemctl enable NetworkManager
 systemctl enable fstrim.timer
+systemctl mask lvm2-monitor.service
+systemctl disable man-db.timer
+systemctl enable cpu-performance.service
 
 sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
@@ -146,3 +149,17 @@ chmod -R 755 /go
 chown -R $LOGIN_USER:wheel /go
 chown -R $LOGIN_USER:wheel /tmp
 chmod -R 777 /tmp
+
+DOTFILES=/go/src/github.com/kpango/dotfiles
+
+# Network: sysctl
+install -Dm644 ${DOTFILES}/network/sysctl/tr-sysctl.conf /etc/sysctl.d/99-sysctl.conf
+
+# Network: NetworkManager connection files
+mkdir -p /etc/NetworkManager/system-connections
+for f in ${DOTFILES}/network/nm/*.nmconnection; do
+    install -Dm600 "$f" /etc/NetworkManager/system-connections/
+done
+
+# Network: dispatcher script
+install -Dm755 ${DOTFILES}/network/scripts/99-coalesce-x710 /etc/NetworkManager/dispatcher.d/99-coalesce-x710

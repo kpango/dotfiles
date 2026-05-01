@@ -11,10 +11,14 @@
   boot.kernelParams = [
     "amd_iommu=on"
     "iommu=pt"
-    "amd_pstate=active"
+    # TR 3990X: amd_pstate driver lacks support; use legacy acpi-cpufreq.
+    # CPU governor is set to 'performance' by the cpu-performance systemd service.
+    "amd_pstate=disable"
     "idle=nomwait"
     "nvidia_drm.fbdev=1"
     "zswap.max_pool_percent=10"
+    # Desktop uses zsmalloc (higher throughput than z3fold, suitable for ample RAM)
+    "zswap.zpool=zsmalloc"
     "rd.driver.blacklist=nouveau"
     "transparent_hugepage=always"
     "rcu_nocbs=1-127"

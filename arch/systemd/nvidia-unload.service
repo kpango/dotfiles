@@ -1,12 +1,13 @@
 [Unit]
 Description=Unload NVIDIA modules before reboot
 DefaultDependencies=no
-Before=reboot.target
-After=multi-user.target
+Before=reboot.target halt.target poweroff.target
+After=graphical.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/modprobe -r nvidia_drm nvidia_modeset nvidia_uvm nvidia
+RemainAfterExit=yes
+ExecStop=/bin/sh -c 'modprobe -r nvidia_drm nvidia_modeset nvidia_uvm nvidia 2>/dev/null; exit 0'
 
 [Install]
-WantedBy=reboot.target
+WantedBy=multi-user.target

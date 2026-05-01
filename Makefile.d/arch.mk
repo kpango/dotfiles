@@ -24,6 +24,7 @@ arch/default.pa /etc/pulse/default.pa
 arch/limits.conf /etc/security/limits.conf
 arch/makepkg.conf /etc/makepkg.conf
 arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+arch/modules-load.d/nf_conntrack.conf /etc/modules-load.d/nf_conntrack.conf
 arch/pacman.conf /etc/pacman.conf
 arch/sway.sh /etc/profile.d/sway.sh
 arch/thinkfan.conf /etc/thinkfan.conf
@@ -40,6 +41,7 @@ arch/ghostty.desktop /usr/share/applications/com.mitchellh.ghostty.desktop
 arch/mkinitcpio.conf /etc/mkinitcpio.conf
 arch/mkinitcpio/linux.preset /etc/mkinitcpio.d/linux.preset
 arch/mkinitcpio/linux-zen.preset /etc/mkinitcpio.d/linux-zen.preset
+arch/systemd/NetworkManager.service.d/capabilities.conf /etc/systemd/system/NetworkManager.service.d/capabilities.conf
 endef
 export ARCH_SUDO_LINK_MAP
 
@@ -63,6 +65,7 @@ endef
 export ARCH_DESK_SUDO_LINK_MAP
 
 define ARCH_PREP
+	sudo mkdir -p /etc/systemd/system/NetworkManager.service.d
 	mkdir -p $(HOME)/.config/fcitx5/conf
 	mkdir -p $(HOME)/.config/kanshi
 	mkdir -p $(HOME)/.config/psd
@@ -77,7 +80,6 @@ define ARCH_PREP
 endef
 
 define ARCH_POST
-	sudo echo "options thinkpad_acpi fan_control=1" | sudo tee /etc/modprobe.d/thinkfan.conf
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh

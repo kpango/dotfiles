@@ -1,4 +1,4 @@
-{ username, settings, ... }:
+{ pkgs, username, settings, ... }:
 
 {
   # Security Hardening
@@ -20,8 +20,13 @@
   users.mutableUsers = false;
   users.users.${username} = {
     isNormalUser = true;
-    uid = settings.system.uid;
-    createHome = true;
-    extraGroups = settings.userGroups;
+    uid          = settings.system.uid;
+    home         = "/home/${username}";
+    createHome   = true;
+    shell        = pkgs.zsh;
+    extraGroups  = settings.userGroups;
+    # Set your SSH public key(s) here or via a keyFile:
+    #   openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAA... ${username}@..." ];
+    openssh.authorizedKeys.keys = [];
   };
 }

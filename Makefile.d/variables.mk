@@ -51,4 +51,10 @@ else
 	DOCKER_TAG_VERSION = $(VERSION)
 endif
 
-NIX_HOST_NAME ?= macbook
+# NixOS configuration name to build/test.
+# During Arch→NixOS transition the Arch hostname may differ from the NixOS config
+# name, so we pick a sensible per-OS default and let the user override.
+#   - Linux  → "tr"   (ThreadRipper desktop, the primary migration target)
+#   - Darwin → "macbook-pro-m3"  (adjust if needed)
+# Override per-invocation: make nix/test NIX_HOST_NAME=thinkpad-p1-gen5
+NIX_HOST_NAME ?= $(if $(filter Darwin,$(shell uname -s)),macbook-pro-m3,tr)

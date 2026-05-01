@@ -56,6 +56,7 @@ devrun() {
 		"-v $HOME/Documents:$container_home/Documents"
 		"-v $HOME/Downloads:$container_home/Downloads"
 		"-v $HOME/.claude:$container_home/.claude"
+		"-v $HOME/.claude.json:$container_home/.claude.json"
 		"-v $HOME/.gemini:$container_home/.gemini"
 		"-v $HOME/.gnupg:$container_home/.gnupg"
 		"-v $HOME/go/src:$container_goroot/src:cached"

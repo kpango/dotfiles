@@ -60,7 +60,7 @@ groupadd ${LOGIN_USER}
 groupadd sshd
 groupadd autologin
 groupadd input
-groupadd uinput
+groupadd -g 957 uinput
 groupadd pulse
 groupadd pulse-access
 
@@ -78,7 +78,7 @@ echo "tmpfs /var/tmp tmpfs nodiratime,noatime,nosuid,nodev,size=64m 0 0" | tee -
 
 
 cat <<EOF >/etc/udev/rules.d/input.rules
-KERNEL=="event*", NAME="input/%k", MODE="660", GROUP="input"
+KERNEL=="event*", MODE="660", GROUP="input"
 EOF
 cat <<EOF >/etc/udev/rules.d/uinput.rules
 KERNEL=="uinput", GROUP="uinput"

@@ -1,10 +1,10 @@
 {
   # Darwin state version
-  darwin = 4;
+  darwin = 5;
 
   # NixOS state version
-  nixos = "23.11";
+  nixos = "24.11";
 
   # Home Manager state version
-  homeManager = "23.11";
+  homeManager = "24.11";
 }

@@ -39,7 +39,8 @@
     dosfstools
     efibootmgr
     fakeroot
-    flameGraph
+    # flamegraph — package name varies by nixpkgs version; install via cargo if needed
+    # flamegraph
     fwupd
     git-crypt
     hub

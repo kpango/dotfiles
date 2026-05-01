@@ -21,35 +21,42 @@
       
       inherit (settings) username;
 
-      # Shared Home Manager setup block to avoid duplication
-      mkHomeManagerBlock = hostname: dotfilesPath: {
-        home-manager = {
-          useGlobalPkgs = true;
-          useUserPackages = true;
-          extraSpecialArgs = {
-            inherit inputs username hostname versions settings dotfilesPath;
-            isDarwin = dotfilesPath == settings.dotfilesDir.darwin;
-            isLinux = dotfilesPath == settings.dotfilesDir.linux;
-            homeDirectory = if (dotfilesPath == settings.dotfilesDir.darwin) then "${settings.homeDirectories.darwin}/${username}" else "${settings.homeDirectories.linux}/${username}";
+      # Shared Home Manager setup block.
+      # isDarwinHost is passed explicitly rather than inferred from dotfilesPath,
+      # because make nix/setup sets both dotfilesDir.linux and dotfilesDir.darwin
+      # to the same absolute path, making path-comparison-based detection unreliable.
+      mkHomeManagerBlock = hostname: dotfilesPath: isDarwinHost:
+        let
+          homeDirectory = if isDarwinHost
+            then "${settings.homeDirectories.darwin}/${username}"
+            else "${settings.homeDirectories.linux}/${username}";
+        in {
+          home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
+            extraSpecialArgs = {
+              inherit inputs username hostname versions settings dotfilesPath homeDirectory;
+              isDarwin = isDarwinHost;
+              isLinux  = !isDarwinHost;
+            };
+            users.${username} = import ./modules/home;
           };
-          users.${username} = import ./modules/home;
         };
-      };
 
       mkNixosSystem = hostname: extraModules: nixpkgs.lib.nixosSystem {
         system = settings.system.linux;
         specialArgs = {
           inherit inputs username hostname versions settings;
           isDarwin = false;
-          isLinux = true;
-          dotfilesPath = settings.dotfilesDir.linux;
+          isLinux  = true;
+          dotfilesPath  = settings.dotfilesDir.linux;
           homeDirectory = "${settings.homeDirectories.linux}/${username}";
         };
         modules = [
           { nixpkgs.pkgs = mkPkgs settings.system.linux; }
           ./modules/nixos
           home-manager.nixosModules.home-manager
-          (mkHomeManagerBlock hostname settings.dotfilesDir.linux)
+          (mkHomeManagerBlock hostname settings.dotfilesDir.linux false)
         ] ++ extraModules;
       };
 
@@ -58,16 +65,23 @@
         specialArgs = {
           inherit inputs username hostname versions settings;
           isDarwin = true;
-          isLinux = false;
-          dotfilesPath = settings.dotfilesDir.darwin;
+          isLinux  = false;
+          dotfilesPath  = settings.dotfilesDir.darwin;
           homeDirectory = "${settings.homeDirectories.darwin}/${username}";
         };
         modules = [
           { nixpkgs.pkgs = mkPkgs settings.system.darwin; }
           ./modules/darwin
           home-manager.darwinModules.home-manager
-          (mkHomeManagerBlock hostname settings.dotfilesDir.darwin)
+          (mkHomeManagerBlock hostname settings.dotfilesDir.darwin true)
         ] ++ extraModules;
+      };
+
+      # Instantiate nixpkgs with overlays and allowUnfree for a given system
+      mkPkgs = system: import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+        overlays = import ./overlays;
       };
 
     in
@@ -79,14 +93,37 @@
       ] (hostname: mkDarwinSystem hostname []);
 
       # Generic NixOS Configurations based on Arch dotfiles
-      nixosConfigurations = nixpkgs.lib.genAttrs [
+      nixosConfigurations = (nixpkgs.lib.genAttrs [
         "desk-threadripper"
         "thinkpad-p1-gen5"
         "thinkpad-x1-gen9"
         "hp-dragonfly-g2"
       ] (hostname: mkNixosSystem hostname [
         ./hosts/${hostname}
-      ]);
+      ])) // {
+
+        # ── Threadripper workstation (tr) ────────────────────────────────────
+        # AMD Ryzen Threadripper 3990X, 251 GB RAM
+        # Dual Intel X710 10GbE bonded LACP, NVIDIA GPU, NVMe RAID0
+        # Self-contained modules under nix/modules/{hardware,networking,system,...}
+        tr = nixpkgs.lib.nixosSystem {
+          system = settings.system.linux;
+          specialArgs = {
+            inherit inputs username;
+            hostname  = "desk-threadripper";
+            isDarwin  = false;
+            isLinux   = true;
+            dotfilesPath = settings.dotfilesDir.linux;
+            homeDirectory = "${settings.homeDirectories.linux}/${username}";
+          };
+          modules = [
+            { nixpkgs.pkgs = mkPkgs settings.system.linux; }
+            ./hosts/tr
+            home-manager.nixosModules.home-manager
+            (mkHomeManagerBlock "desk-threadripper" settings.dotfilesDir.linux false)
+          ];
+        };
+      };
 
       # Add standard formatter (nixpkgs-fmt)
       formatter = nixpkgs.lib.genAttrs [

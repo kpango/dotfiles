@@ -43,10 +43,10 @@ in
   fullName = "kpango";
   email = "kpango@local.dev";
 
-  # Home directories base paths
+  # Home directories base paths (parent of ~, not the dotfiles repo)
   homeDirectories = {
-    linux = "/home/kpango/go/src/github.com/kpango/dotfiles";
-    darwin = "/home/kpango/go/src/github.com/kpango/dotfiles";
+    linux = "/home";
+    darwin = "/Users";
   };
 
   # Absolute path to the root of this dotfiles repository
@@ -268,13 +268,15 @@ in
     };
     # Kernel & OS Performance Tuning
     kernel = {
+      # Universal params applied to all generic NixOS hosts via modules/nixos/core/boot.nix.
+      # zswap.zpool is intentionally absent here: desktops use zsmalloc, laptops use z3fold —
+      # set in each host/profile's kernelParams.
       params = [
         "quiet"
         "nowatchdog"
         "cgroup_no_v1=all"
         "zswap.enabled=1"
         "zswap.compressor=zstd"
-        "zswap.zpool=z3fold"
       ];
       blacklistedModules = [
         "pcspkr"
@@ -346,11 +348,11 @@ in
         "vm.overcommit_ratio" = 99;
         "vm.panic_on_oom" = 1;
         "vm.swappiness" = 1;
-        "vm.vfs_cache_pressure" = 10000;
+        "vm.vfs_cache_pressure" = 50;
       };
       extraModprobeConfig = ''
         # nvidia-tweaks.conf
-        options nvidia NVreg_UsePageAttributeTable=1 NVreg_InitializeSystemMemoryAllocations=0 NVreg_EnableStreamMemOPs=1 NVreg_RegistryDwords=__REGISTRYDWORDS
+        options nvidia NVreg_UsePageAttributeTable=1 NVreg_InitializeSystemMemoryAllocations=0 NVreg_EnableStreamMemOPs=1
         options nvidia_drm modeset=1
       '';
     };

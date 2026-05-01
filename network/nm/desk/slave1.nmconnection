@@ -17,30 +17,15 @@ duplex=full
 [bond-port]
 
 [ethtool]
-# オフロード機能の設定
-feature-rx=true
-feature-tx=true
-feature-sg=true
-feature-tso=true
-feature-gso=true
-feature-gro=true
-feature-rx-gro-hw=true
+# オフロード機能の設定 (basic offload features are on by default for i40e)
 feature-tx-tcp-segmentation=true
 feature-tx-tcp6-segmentation=true
 feature-rx-gro-list=false
 feature-rx-udp-gro-forwarding=true
 
-# 割り込み結合設定
-coalesce-adaptive-rx=true
-coalesce-adaptive-tx=true
-coalesce-rx-frames=32
-coalesce-rx-usecs=16
-coalesce-tx-frames=32
-coalesce-tx-usecs=16
-
-# リングバッファサイズ
-ring-rx=8192
-ring-tx=8192
+# リングバッファサイズ (max 8160 for i40e)
+ring-rx=8160
+ring-tx=8160
 
 # フロー制御
 pause-rx=true

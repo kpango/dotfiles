@@ -12,7 +12,7 @@
 
   # Kernel configuration (shared)
   boot.kernelPackages = pkgs.linuxPackages_zen;
-  boot.kernelModules = [ "tcp_bbr" "acpi_call" ];
+  boot.kernelModules = [ "tcp_bbr" "nf_conntrack" "acpi_call" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.acpi_call ];
   boot.kernelParams = settings.system.kernel.params;
   boot.blacklistedKernelModules = settings.system.kernel.blacklistedModules;

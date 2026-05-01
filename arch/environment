@@ -1,3 +1,4 @@
+GLIBC_TUNABLES=glibc.cpu.hwcaps=-AVX2,-AVX512F
 LIBSEAT_BACKEND=logind
 GDK_BACKEND=wayland
 CLUTTER_BACKEND=wayland

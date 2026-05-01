@@ -1,0 +1,90 @@
+name: "Test Nix configurations"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nix/**"
+      - "arch/**"
+      - "Makefile"
+      - "Makefile.d/nix.mk"
+      - ".github/workflows/nix.yml"
+  pull_request:
+    paths:
+      - "nix/**"
+      - "arch/**"
+      - "Makefile"
+      - "Makefile.d/nix.mk"
+      - ".github/workflows/nix.yml"
+  workflow_dispatch:
+  schedule:
+    # Weekly on Monday 02:00 UTC — catches nixpkgs-unstable breakage
+    - cron: "0 2 * * 1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Fast gate: evaluate every host config (no builds) ──────────────────
+  eval:
+    name: "Evaluate all host configs"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Evaluate all hosts
+        run: make nix/test/eval
+
+  # ── Type-check all flake outputs ───────────────────────────────────────
+  check:
+    name: "Flake check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: nix flake check --no-build
+        run: make nix/test/check
+
+  # ── Dry-run: resolve derivation graph per host (no compilation) ────────
+  dry-run:
+    name: "Dry-run (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    needs: [eval, check]
+    strategy:
+      fail-fast: false
+      matrix:
+        host:
+          - tr
+          - thinkpad-p1-gen5
+          - thinkpad-x1-gen9
+          - hp-dragonfly-g2
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Dry-run build for ${{ matrix.host }}
+        run: make nix/test/dry-run NIX_HOST_NAME=${{ matrix.host }}

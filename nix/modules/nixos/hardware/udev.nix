@@ -1,8 +1,5 @@
-{ config, lib, settings, ... }:
+{ lib, settings, ... }:
 
-let
-  hasNvidia = builtins.elem "nvidia" config.services.xserver.videoDrivers;
-in
 {
   environment.etc = {
     "libinput/local-overrides.quirks".text = ''
@@ -20,21 +17,25 @@ in
   '';
 
   services.udev.extraRules = ''
-    # 60-ioschedulers.rules
-    ACTION=="add|change", KERNEL=="sd[a-z]|mmcblk[0-9]*|nvme*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="kyber"
-    ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
-${lib.optionalString hasNvidia ''
+    # ── I/O Scheduler rules (matches arch/udev/60-ioscheduler.rules) ──────
+    # NVMe: use 'none' — NVMe hardware manages its own deep queue (NCQ/NVMe CQ).
+    # Any host-side scheduler adds latency without benefit.
+    ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="none"
+    ACTION=="add|change", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/read_ahead_kb}="0"
 
-    # 60-nvidia.rules
-    ACTION=="add", DEVPATH=="/bus/pci/drivers/nvidia", RUN+="/usr/bin/nvidia-modprobe -c0 -m"
-''}
-    # 70-persistent-network.rules
+    # SATA / eMMC SSD: mq-deadline gives bounded latency with good throughput.
+    ACTION=="add|change", KERNEL=="sd[a-z]|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="mq-deadline"
+
+    # Rotational HDD: bfq provides fair bandwidth and low latency for mixed workloads.
+    ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="bfq"
+
+    # ── Persistent interface names (MACs from settings.nix) ───────────────
     SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="${settings.network.interfaces.eth0}", NAME="eth0"
     SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="${settings.network.interfaces.sfp0}", NAME="sfp0"
     SUBSYSTEM=="net", ACTION=="add", ATTR{address}=="${settings.network.interfaces.sfp1}", NAME="sfp1"
 
-    # Input rules
+    # ── Input devices ─────────────────────────────────────────────────────
     KERNEL=="event*", NAME="input/%k", MODE="0660", GROUP="input"
-    KERNEL=="uinput", GROUP="uinput", MODE="0660"
+    KERNEL=="uinput",                  GROUP="uinput", MODE="0660"
   '';
 }

@@ -7,22 +7,20 @@ lib.mkIf hasNvidia {
   boot.kernelModules = [ "nvidia_uvm" ];
   boot.extraModprobeConfig = settings.system.kernel.extraModprobeConfig;
 
-  systemd.services.nvidia-disable-resume = {
-    description = "Disable NVIDIA card at system resume";
-    after = [ "sleep.target" "suspend.target" "suspend-then-hibernate.target" "hibernate.target" ];
-    wantedBy = [ "sleep.target" "suspend.target" "suspend-then-hibernate.target" "hibernate.target" ];
+  # Unload NVIDIA kernel modules cleanly before reboot/halt/poweroff.
+  # Prevents GPU memory corruption and stale DRM state across reboots.
+  systemd.services.nvidia-unload = {
+    description = "Unload NVIDIA kernel modules before shutdown";
+    defaultDependencies = false;
+    before = [ "reboot.target" "halt.target" "poweroff.target" ];
+    after  = [ "graphical.target" ];
+    wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/sh -c 'cat ${settings.hardware.gpuStatePath} > /proc/acpi/bbswitch || echo OFF > /proc/acpi/bbswitch'";
-    };
-  };
-
-  systemd.services.nvidia-enable-power-off = {
-    description = "Enable NVIDIA card at shutdown";
-    wantedBy = [ "shutdown.target" "reboot.target" "hibernate.target" "suspend-then-hibernate.target" "sleep.target" "suspend.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/sh -c \"awk '{print \\$2}' /proc/acpi/bbswitch > ${settings.hardware.gpuStatePath} && echo ON > /proc/acpi/bbswitch\"";
+      Type            = "oneshot";
+      RemainAfterExit = true;
+      ExecStop = pkgs.writeShellScript "nvidia-unload" ''
+        modprobe -r nvidia_drm nvidia_modeset nvidia_uvm nvidia 2>/dev/null || true
+      '';
     };
   };
 }

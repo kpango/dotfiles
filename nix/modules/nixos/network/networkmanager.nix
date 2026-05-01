@@ -1,4 +1,4 @@
-{ pkgs, hostname, settings, ... }:
+{ pkgs, lib, hostname, settings, ... }:
 
 {
   networking = {
@@ -62,5 +62,8 @@ ${settings.network.extraHosts}
       }
     ];
   };
+
+  # iwd backend daemon — required when wifi.backend = "iwd"
+  services.iwd.enable = lib.mkIf (settings.network.networkManager.wifiBackend == "iwd") true;
 }
 }

@@ -11,6 +11,9 @@ in
 
   environment.variables = lib.mkMerge [
     {
+      # Disable AVX2/AVX512 glibc optimisations that cause illegal-instruction
+      # crashes in some third-party binaries (Steam, NVIDIA tools, etc.)
+      GLIBC_TUNABLES = "glibc.cpu.hwcaps=-AVX2,-AVX512F";
       GIT_EDITOR = lib.mkForce settings.desktop.editor;
       EDITOR = lib.mkForce settings.desktop.editor;
       LIBSEAT_BACKEND = "logind";

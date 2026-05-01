@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/kpango/.claude/**)",
+      "Read(//home/kpango/.config/**)",
+      "Read(//home/kpango/.local/share/**)",
+      "Read(//home/kpango/**)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\({k: '***' if 'token' in k.lower\\(\\) or 'key' in k.lower\\(\\) or 'secret' in k.lower\\(\\) else v for k,v in d.items\\(\\)}\\)\")",
+      "Bash(nix search *)"
+    ]
+  }
+}

@@ -92,6 +92,7 @@ CLEAN_FILES = \
 	/etc/modprobe.d/nvidia-tweaks.conf \
 	/etc/modprobe.d/thinkfan.conf \
 	/etc/modules-load.d/bbr.conf \
+	/etc/modules-load.d/nf_conntrack.conf \
 	/etc/modules-load.d/nvidia-uvm.conf \
 	/etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
 	/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
@@ -133,6 +134,7 @@ perm:
 	sudo chmod -R 755 $(ROOTDIR)/.*
 	sudo chown -R $(SYS_USER):$(GROUP_ID) $(ROOTDIR)/*
 	sudo chown -R $(SYS_USER):$(GROUP_ID) $(ROOTDIR)/.*
+	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f \( -name '*.conf' -o -name '*.service' -o -name '*.rules' -o -name '*.toml' -o -name '*.json' -o -name '*.yaml' -o -name '*.yml' \) -exec sudo chmod 644 {} \;
 	sudo chmod -R 644 $(ROOTDIR)/gpg-agent.conf
 	sudo chmod -R 644 $(ROOTDIR)/arch/waybar.json
 	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f -not -name 'tmux.conf' -exec nkf -Lu -w --overwrite {} \;
