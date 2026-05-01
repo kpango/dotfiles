@@ -65,4 +65,3 @@ chword() {
 		echo "Not enough arguments"
 	fi
 }
-

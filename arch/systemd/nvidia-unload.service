@@ -1,0 +1,12 @@
+[Unit]
+Description=Unload NVIDIA modules before reboot
+DefaultDependencies=no
+Before=reboot.target
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/modprobe -r nvidia_drm nvidia_modeset nvidia_uvm nvidia
+
+[Install]
+WantedBy=reboot.target

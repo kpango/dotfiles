@@ -87,6 +87,8 @@ CLEAN_FILES = \
 	/etc/lightdm \
 	/etc/makepkg.conf \
 	/etc/modprobe.d/bbswitch.conf \
+	/etc/modprobe.d/blacklist-nouveau.conf \
+	/etc/modprobe.d/nowatchdog.conf \
 	/etc/modprobe.d/nvidia-tweaks.conf \
 	/etc/modprobe.d/thinkfan.conf \
 	/etc/modules-load.d/bbr.conf \
@@ -108,7 +110,9 @@ CLEAN_FILES = \
 	/etc/mkinitcpio.d/linux-zen.preset \
 	/etc/sysctl.d/99-sysctl.conf \
 	/etc/systemd/system/nvidia-disable-resume.service \
+	/etc/tmpfiles.d/thp.conf \
 	/etc/systemd/system/nvidia-enable-power-off.service \
+	/etc/systemd/system/nvidia-unload.service \
 	/etc/systemd/system/pulseaudio.service \
 	/etc/tlp.conf \
 	/etc/udev/rules.d/60-ioschedulers.rules \

@@ -69,5 +69,3 @@ else
 fi
 
 export SCOUT_DISABLE=${SCOUT_DISABLE:-1}
-
-

@@ -27,7 +27,9 @@ ENV GROUP=sudo,root,users,docker,wheel \
     TZ=Asia/Tokyo \
     HOME="/home/${WHOAMI}" \
     USR_LOCAL=/usr/local \
-    USR_LIB=/usr/lib
+    USR_LIB=/usr/lib \
+    TERM=xterm-256color \
+    COLORTERM=truecolor
 
 ENV USR_LOCAL_LIB=${USR_LOCAL}/lib \
     BIN_PATH=${USR_LOCAL}/bin \

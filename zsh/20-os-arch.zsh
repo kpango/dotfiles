@@ -5,11 +5,13 @@ if (($+commands[pacman])); then
 	run_command() {
 		local desc="$1"
 		shift
-
+		local rc
 		echo "==> $desc"
-		if ! "$@"; then
-			echo "ERROR: $desc failed (exit code $?)"
-			return 1
+		"$@"
+		rc=$?
+		if [[ $rc -ne 0 ]]; then
+			echo "ERROR: $desc failed (exit code $rc)"
+			return $rc
 		fi
 		return 0
 	}
@@ -50,21 +52,24 @@ if (($+commands[pacman])); then
 		return 1
 	}
 	kacclean() {
-		sudo chmod -R 777 $XDG_CONFIG_HOME/gcloud
-		sudo chown -R $USER $XDG_CONFIG_HOME/gcloud
-		sudo rm -rf $HOME/.cache/* \
-			$XDG_CONFIG_HOME/gcloud/config_sentinel \
-			$XDG_CONFIG_HOME/gcloud/logs/* \
+		[[ -n "${XDG_CONFIG_HOME:-}" ]] && sudo chmod -R 777 "$XDG_CONFIG_HOME/gcloud" 2>/dev/null || true
+		[[ -n "${XDG_CONFIG_HOME:-}" ]] && sudo chown -R "$USER" "$XDG_CONFIG_HOME/gcloud" 2>/dev/null || true
+		[[ -n "${HOME:-}" ]] && sudo rm -rf "$HOME/.cache"/* 2>/dev/null || true
+		[[ -n "${XDG_CONFIG_HOME:-}" ]] && sudo rm -rf \
+			"$XDG_CONFIG_HOME/gcloud/config_sentinel" \
+			"$XDG_CONFIG_HOME/gcloud/logs"/* 2>/dev/null || true
+		sudo rm -rf \
 			/tmp/makepkg/* \
-			/var/lib/pacman/db.l* \
 			/usr/share/man/man5/gemfile* \
 			/var/cache/pacman/pkg \
 			/var/lib/pacman/sync/*
+		sudo rm -f /var/lib/pacman/db.lck
 		sudo mkdir -p /var/cache/pacman/pkg
 		kacman -Scc --noconfirm
-		sudo pacman -Qtdq | xargs -r kacman -Rsucnd --noconfirm
-		sudo rm -rf /var/lib/pacman/db.lck
-		sudo paccache -ruk0
+		local _orphans
+		_orphans=$(sudo pacman -Qtdq 2>/dev/null)
+		[[ -n "$_orphans" ]] && echo "$_orphans" | xargs -r kacman -Rsucnd --noconfirm || true
+		(($+commands[paccache])) && sudo paccache -ruk0 || true
 	}
 	_backup_packages() {
 		local suffix=$1
@@ -77,8 +82,9 @@ if (($+commands[pacman])); then
 	}
 
 	archback() {
-		family_name=$(cat /sys/devices/virtual/dmi/id/product_family)
-		echo $family_name
+		local family_name
+		family_name=$(cat /sys/devices/virtual/dmi/id/product_family 2>/dev/null || echo "unknown")
+		echo "$family_name"
 		kacman -Sy
 
 		local list_suffix
@@ -105,21 +111,27 @@ if (($+commands[pacman])); then
 		trap '[[ -n "$log_file" && -e "$log_file" ]] && rm -f "$log_file"' RETURN
 
 		if (($+commands[milcheck])); then
-			run_command "milcheck" sudo milcheck || true
+			sudo milcheck 2>/dev/null || true
 		fi
 
 		if kacman -Syy >"$log_file" 2>&1; then
 			return 0
 		fi
 
-		# DNS-related errors: attempt one quick retry
-		if grep -qE "Temporary failure in name resolution|could not resolve host|Name or service not known" "$log_file"; then
-			echo "DNS resolution error detected; retrying once after a short delay..."
-			sleep 3
-			if kacman -Syy; then
-				return 0
+		# Retry up to 3 times for transient DNS/network failures
+		local _attempt _delay=3
+		for _attempt in 1 2 3; do
+			if grep -qE "Temporary failure in name resolution|could not resolve host|Name or service not known" "$log_file"; then
+				echo "DNS error detected; retry $_attempt/3 after ${_delay}s..."
+				sleep $_delay
+				_delay=$((_delay * 2))
+				if kacman -Syy >"$log_file" 2>&1; then
+					return 0
+				fi
+			else
+				break
 			fi
-		fi
+		done
 
 		echo "pacman -Syy failed; see log:"
 		cat "$log_file"
@@ -132,7 +144,7 @@ if (($+commands[pacman])); then
 		local tmpfile
 
 		tmpfile="$(mktemp)" || return 1
-		trap '[[ -n "$tmpfile" && -e "$tmpfile" ]] && rm -f "$tmpfile"'
+		trap '[[ -n "$tmpfile" && -e "$tmpfile" ]] && rm -f "$tmpfile"' RETURN
 
 		# if there is no mirrorlist yet, handle gracefully
 		if [[ -f "$mirror" ]]; then
@@ -150,7 +162,7 @@ if (($+commands[pacman])); then
 			--isos \
 			--ipv6 \
 			--delay 0.2 \
-			--completion-percent 100 \
+			--completion-percent 90 \
 			--save "$tmpfile"; then
 			echo "Reflector failed; keeping existing mirrorlist"
 			return 1
@@ -195,8 +207,8 @@ if (($+commands[pacman])); then
 		local fixed=0
 		while IFS= read -r line; do
 			local pkg1 pkg2 filepath
-			pkg1=$(printf '%s' "$line"   | sed "s/.*file owned by '\([^']*\)' and '\([^']*\)': '\([^']*\)'/\1/")
-			pkg2=$(printf '%s' "$line"   | sed "s/.*file owned by '\([^']*\)' and '\([^']*\)': '\([^']*\)'/\2/")
+			pkg1=$(printf '%s' "$line" | sed "s/.*file owned by '\([^']*\)' and '\([^']*\)': '\([^']*\)'/\1/")
+			pkg2=$(printf '%s' "$line" | sed "s/.*file owned by '\([^']*\)' and '\([^']*\)': '\([^']*\)'/\2/")
 			filepath=$(printf '%s' "$line" | sed "s/.*file owned by '\([^']*\)' and '\([^']*\)': '\([^']*\)'/\3/")
 
 			[[ "$pkg1" == "$line" || -z "$filepath" ]] && continue
@@ -206,9 +218,11 @@ if (($+commands[pacman])); then
 			# Prefer official repo package; AUR packages won't be found by pacman -Si
 			local winner loser
 			if sudo pacman -Si "$pkg2" &>/dev/null; then
-				winner=$pkg2; loser=$pkg1
+				winner=$pkg2
+				loser=$pkg1
 			else
-				winner=$pkg1; loser=$pkg2
+				winner=$pkg1
+				loser=$pkg2
 			fi
 
 			echo "  Reinstalling '$winner' with --overwrite to claim '$filepath'..."
@@ -221,7 +235,7 @@ if (($+commands[pacman])); then
 				echo "  Removing '$filepath' from '$loser' local DB..."
 				sudo sed -i "\|^${filepath}$|d" "$db_dir/$loser_entry/files"
 			fi
-			(( fixed++ ))
+			((fixed++))
 		done < <(sudo pacman -Dk 2>&1 | grep "file owned by")
 
 		if sudo pacman -Dk &>/dev/null; then
@@ -235,30 +249,33 @@ if (($+commands[pacman])); then
 
 	arch_fix_missing_files() {
 		local missing
-		missing=$(sudo pacman -Qqk 2>&1 | grep -v "^$" | awk '{print $1}' | sort -u)
+		# stderr carries per-file warnings; stdout carries only package names
+		missing=$(sudo pacman -Qqk 2>/dev/null | sort -u)
 
 		[[ -z "$missing" ]] && return 0
 
 		echo "==> Reinstalling packages with missing files: $(echo "$missing" | tr '\n' ' ')"
 		while IFS= read -r pkg; do
 			[[ -z "$pkg" ]] && continue
-			sudo pacman -S --noconfirm "$pkg" &>/dev/null || \
-				kacman -S --noconfirm "$pkg" &>/dev/null || \
+			sudo pacman -S --noconfirm "$pkg" &>/dev/null ||
+				kacman -S --noconfirm "$pkg" &>/dev/null ||
 				echo "  WARNING: could not reinstall '$pkg'"
-		done <<< "$missing"
+		done <<<"$missing"
 	}
 
 	arch_update_packages() {
 		# Pre-update maintenance (moved from start of old archup)
-		sudo chown 0 /etc/sudoers.d/$USER
-		sudo chmod -R 700 $HOME/.gnupg
-		sudo chmod -R 600 $HOME/.gnupg/*
+		sudo chown 0 "/etc/sudoers.d/$USER"
+		# Set directory perms to 700 and file perms to 600 — chmod -R 600 would
+		# break directory execute bits, so use find to target each type separately.
+		sudo find "$HOME/.gnupg" -type d -exec chmod 700 {} \;
+		sudo find "$HOME/.gnupg" -type f -exec chmod 600 {} \;
 
 		run_command "sync and clear cache" sh -c "sync && sudo sysctl -w vm.drop_caches=3 && sudo swapoff -a && sudo swapon -a" &&
 			printf '\n%s\n' 'RAM-cache and Swap were cleared.' &&
 			free
 
-		sudo su -c "chown 0 /etc/sudoers.d/$USER"
+		sudo su -c "chown 0 /etc/sudoers.d/$USER" 2>/dev/null || true
 
 		run_command "cleaning package cache (pre-update)" kacclean
 
@@ -266,21 +283,41 @@ if (($+commands[pacman])); then
 			sudo gpgconf --kill all
 		fi
 
-		# Handling keys
-		if [ $# -eq 1 ]; then
-			sudo chown -R $USER $HOME/.gnupg
-			touch $HOME/.gnupg/dirmngr_ldapservers.conf
-			sudo chmod 700 $HOME/.gnupg/crls.d/
-			if (($+commands[dirmgr])); then
-				sudo dirmngr </dev/null
-			fi
-			if (($+commands[pacman-key])); then
+		if (($+commands[pacman-key])); then
+			# Always re-populate from the installed archlinux-keyring (fast, local) to
+			# pick up any newly added or rotated keys before upgrading.
+			run_command "populate archlinux keys" sudo pacman-key --populate archlinux
+
+			if [ $# -ge 1 ]; then
+				# Full key-refresh mode: archup keyref
+				sudo chown -R "$USER" "$HOME/.gnupg"
+				touch "$HOME/.gnupg/dirmngr_ldapservers.conf"
+				sudo chmod 700 "$HOME/.gnupg/crls.d/" 2>/dev/null || true
+				if (($+commands[dirmngr])); then
+					sudo dirmngr </dev/null
+				fi
+
 				run_command "init pacman keys" sudo pacman-key --init
 				run_command "populate archlinux keys" sudo pacman-key --populate archlinux
-				run_command "refresh keys" sudo pacman-key --refresh-keys
+
+				# Retry --refresh-keys across multiple keyservers; warn but do not abort
+				# if all fail — stale keys may still allow the upgrade to proceed.
+				local -a _gpg_keyservers=(
+					"hkps://keyserver.ubuntu.com"
+					"hkps://keys.openpgp.org"
+					"hkp://pool.sks-keyservers.net"
+				)
+				local _refreshed=false
+				for _ks in "${_gpg_keyservers[@]}"; do
+					echo "==> Refreshing pacman keys via $_ks ..."
+					if sudo pacman-key --refresh-keys --keyserver "$_ks"; then
+						_refreshed=true
+						break
+					fi
+					echo "  $_ks failed, trying next keyserver..."
+				done
+				[[ "$_refreshed" == true ]] || echo "WARNING: Key refresh failed on all keyservers; continuing with existing keys"
 			fi
-		elif (($+commands[pacman-key])); then
-			run_command "populate archlinux keys" sudo pacman-key --populate archlinux
 		fi
 
 		run_command "cleaning package cache (pre-update 2)" kacclean
@@ -297,16 +334,30 @@ if (($+commands[pacman])); then
 		run_command "cleaning package cache (post-update)" kacclean
 
 		run_command "update bootloader" sudo bootctl update || return $?
-		run_command "regenerate initramfs" sudo mkinitcpio -p linux-zen || return $?
+
+		# Regenerate initramfs for every installed kernel preset instead of
+		# hardcoding linux-zen — works correctly on any machine configuration.
+		local _preset _preset_name
+		for _preset in /etc/mkinitcpio.d/*.preset; do
+			[[ -f "$_preset" ]] || continue
+			_preset_name="${_preset##*/}"
+			_preset_name="${_preset_name%.preset}"
+			run_command "regenerate initramfs ($_preset_name)" sudo mkinitcpio -p "$_preset_name" || return $?
+		done
+
 		run_command "vacuum journal" sudo journalctl --vacuum-time=2weeks
 
-		run_command "final sync and maintenance" sh -c "sync && sudo sysctl -w vm.drop_caches=3 && sudo swapoff -a && sudo swapon -a" &&
-			printf '\n%s\n' 'RAM-cache and Swap were cleared.' &&
-			sudo fsck -AR -a &&
-			sudo journalctl --vacuum-time=2weeks &&
-			systemd-analyze &&
-			sensors &&
-			free
+		run_command "sync and clear cache" sh -c "sync && sudo sysctl -w vm.drop_caches=3" &&
+			printf '\n%s\n' 'Page cache cleared.'
+		# Swap reset can fail under memory pressure; warn but don't abort.
+		sudo swapoff -a && sudo swapon -a && printf '\n%s\n' 'Swap cleared.' ||
+			echo "WARNING: swap reset failed (possibly low memory)"
+		# fsck on live filesystems is a no-op for most fs types; -p is safer than -a.
+		sudo fsck -AR -p 2>/dev/null || true
+		sudo journalctl --vacuum-time=2weeks
+		systemd-analyze 2>/dev/null || true
+		(($+commands[sensors])) && sensors 2>/dev/null || true
+		free
 	}
 
 	alias archmain=arch_maintenance

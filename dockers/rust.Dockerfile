@@ -9,7 +9,6 @@ ENV CARGO_HOME=${RUST_HOME}/cargo
 ENV RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin
 ENV PATH=${BIN_PATH}:${PATH}
-ENV CARGO_BUILD_JOBS=2
 ENV CARGO_NET_GIT_FETCH_WITH_CLI=true
 
 RUN curl --retry ${CURL_RETRY} --retry-all-errors --retry-delay ${CURL_RETRY_DELAY} -fsSL --proto '=https' --tlsv1.2 https://sh.rustup.rs \

@@ -52,6 +52,16 @@ network/nm/nmcli-bond-auto-connect.sh /etc/NetworkManager/dispatcher.d/nmcli-bon
 endef
 export ARCH_SUDO_CP_MAP
 
+define ARCH_DESK_SUDO_LINK_MAP
+arch/loader/entries/arch.conf /boot/loader/entries/arch.conf
+arch/modprobe.d/blacklist-nouveau.conf /etc/modprobe.d/blacklist-nouveau.conf
+arch/modprobe.d/nowatchdog.conf /etc/modprobe.d/nowatchdog.conf
+arch/modprobe.d/thinkfan-desk.conf /etc/modprobe.d/thinkfan.conf
+arch/systemd/nvidia-unload.service /etc/systemd/system/nvidia-unload.service
+arch/tmpfiles.d/thp.conf /etc/tmpfiles.d/thp.conf
+endef
+export ARCH_DESK_SUDO_LINK_MAP
+
 define ARCH_PREP
 	mkdir -p $(HOME)/.config/fcitx5/conf
 	mkdir -p $(HOME)/.config/kanshi
@@ -102,7 +112,9 @@ define ARCH_DESK_POST
 	sudo udevadm trigger
 	sudo nmcli connection reload
 	sudo systemctl daemon-reload
+	sudo systemctl enable nvidia-unload.service
 	sudo systemctl restart NetworkManager
+	sudo systemd-tmpfiles --create /etc/tmpfiles.d/thp.conf
 endef
 
 arch_link: \
@@ -165,6 +177,10 @@ arch_desk_link: \
 	sudo ln -sfv $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo ln -sfv $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
 	sudo ln -sfv $(ROOTDIR)/network/nm/desk/70-persistent-network.rules /etc/udev/rules.d/70-persistent-network.rules
+	@echo "$$ARCH_DESK_SUDO_LINK_MAP" | while read -r src dest; do \
+		[ -z "$$src" ] && continue; \
+		sudo ln -sfv "$(ROOTDIR)/$$src" "$$dest"; \
+	done
 	$(ARCH_DESK_POST)
 
 arch_desk_copy: \
@@ -173,4 +189,8 @@ arch_desk_copy: \
 	sudo cp $(ROOTDIR)/nvidia/nvidia-uvm.conf /etc/modules-load.d/nvidia-uvm.conf
 	sudo cp $(ROOTDIR)/nvidia/60-nvidia.rules /etc/udev/rules.d/60-nvidia.rules
 	sudo cp $(ROOTDIR)/network/nm/desk/70-persistent-network.rules /etc/udev/rules.d/70-persistent-network.rules
+	@echo "$$ARCH_DESK_SUDO_LINK_MAP" | while read -r src dest; do \
+		[ -z "$$src" ] && continue; \
+		sudo cp "$(ROOTDIR)/$$src" "$$dest"; \
+	done
 	$(ARCH_DESK_POST)

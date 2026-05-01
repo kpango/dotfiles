@@ -57,7 +57,6 @@ RUN --mount=type=bind,source=go.env,target=go.env,ro \
     && cp go.env "${GOROOT}/go.env"
 
 FROM go-base AS go-core
-RUN find ${GOROOT}/bin -type f -executable | xargs -P $(nproc) -n 1 upx -9
 
 FROM go-base AS go-tools
 RUN --mount=type=bind,source=dockers/go.tools,target=go.tools,ro \
@@ -123,8 +122,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-pkg-${TARGETARCH}" \
     && echo ${URL} \
     && curl --retry ${CURL_RETRY} --retry-all-errors --retry-delay ${CURL_RETRY_DELAY} -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
-    && mv ${BIN_NAME} ${GOBIN}/${BIN_NAME} \
-    && upx -9 ${GOBIN}/${BIN_NAME}
+    && mv ${BIN_NAME} ${GOBIN}/${BIN_NAME}
 
 #Special
 FROM go-base AS gh
@@ -153,7 +151,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-pkg-${TARGETARCH}" \
     && curl --retry ${CURL_RETRY} --retry-all-errors --retry-delay ${CURL_RETRY_DELAY} -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv "${TAR_NAME}/bin/${BIN_NAME}" "${GOBIN}/${BIN_NAME}" \
-    && upx -9 "${GOBIN}/${BIN_NAME}"
+    && upx -1 "${GOBIN}/${BIN_NAME}"
 
 # Special
 FROM go-base AS golangci-lint
@@ -182,7 +180,7 @@ RUN --mount=type=cache,target="${GOPATH}/pkg",id="go-pkg-${TARGETARCH}" \
     && curl --retry ${CURL_RETRY} --retry-all-errors --retry-delay ${CURL_RETRY_DELAY} -fsSLO "${URL}" \
     && tar -zxvf "${TAR_NAME}.tar.gz" \
     && mv ${TAR_NAME}/${BIN_NAME} ${GOBIN}/${BIN_NAME} \
-    && upx -9 ${GOBIN}/${BIN_NAME}
+    && upx -1 ${GOBIN}/${BIN_NAME}
 
 FROM go-base AS pulumi
 RUN set -x && cd "$(mktemp -d)" \

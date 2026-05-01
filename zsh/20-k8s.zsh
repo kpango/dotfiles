@@ -25,17 +25,17 @@ if (($+commands[kubectl])); then
 		fi
 	done
 
-	if (( ${#cmds[@]} > 0 )); then
+	if ((${#cmds[@]} > 0)); then
 		local cache_file="$ZCACHE_DIR/combined_completion.zsh"
 		local need_eval=0
 		if [[ ! -f "$cache_file" ]]; then need_eval=1; fi
 		for cmd in ${deps[@]}; do if [[ "$cmd" -nt "$cache_file" ]]; then need_eval=1; fi; done
-		
-		if (( need_eval )); then
-			(for cmd in ${cmds[*]}; do "$cmd" completion zsh 2>/dev/null; done) > "$cache_file"
+
+		if ((need_eval)); then
+			(for cmd in ${cmds[*]}; do "$cmd" completion zsh 2>/dev/null; done) >"$cache_file"
 			zcompile "$cache_file" 2>/dev/null &|
 		fi
-		
+
 		if [[ -z "$ZSH_EXECUTION_STRING" ]] && (($+functions[zsh-defer])); then
 			zsh-defer -p -r -c "autoload -Uz compinit && compinit -C && source \"$cache_file\""
 		fi

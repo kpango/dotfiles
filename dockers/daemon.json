@@ -16,15 +16,14 @@
     }
   },
   "debug": false,
-  "log-driver": "json-file",
+  "init": true,
+  "log-driver": "local",
   "log-opts": {
-    "cache-disabled": "false",
-    "cache-max-file": "5",
-    "cache-max-size": "20m",
-    "cache-compress": "true",
     "max-size": "10m",
-    "max-file": "3"
+    "max-file": "3",
+    "compress": "true"
   },
+  "default-shm-size": "2g",
   "live-restore": true,
   "experimental": true,
   "features": {
@@ -40,8 +39,8 @@
   "default-ulimits": {
     "nofile": {
       "name": "nofile",
-      "hard": 6048576,
-      "soft": 6048576
+      "hard": 1048576,
+      "soft": 1048576
     },
     "memlock": {
       "name": "memlock",
