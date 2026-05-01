@@ -70,6 +70,7 @@ CLEAN_FILES = \
 	$(HOME)/.config/sheldon \
 	$(HOME)/.config/sway \
 	$(HOME)/.config/waybar \
+	$(HOME)/.config/xdg-desktop-portal \
 	$(HOME)/.config/wofi \
 	$(HOME)/.config/workstyle \
 	$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
@@ -102,8 +103,10 @@ CLEAN_FILES = \
 	/etc/resolv.pre-tailscale-backup.conf \
 	/etc/sudoers.d/$(SYS_USER) \
 	/etc/sysctl.conf \
+	/etc/mkinitcpio.conf \
+	/etc/mkinitcpio.d/linux.preset \
+	/etc/mkinitcpio.d/linux-zen.preset \
 	/etc/sysctl.d/99-sysctl.conf \
-	/etc/systemd/system/NetworkManager-dispatcher.service \
 	/etc/systemd/system/nvidia-disable-resume.service \
 	/etc/systemd/system/nvidia-enable-power-off.service \
 	/etc/systemd/system/pulseaudio.service \

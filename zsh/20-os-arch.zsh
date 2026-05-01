@@ -185,6 +185,69 @@ if (($+commands[pacman])); then
 		return 0
 	}
 
+	arch_fix_db_conflicts() {
+		local db_dir="/var/lib/pacman/local"
+
+		sudo pacman -Dk &>/dev/null && return 0
+
+		echo "==> Fixing pacman database file-ownership conflicts..."
+
+		local fixed=0
+		while IFS= read -r line; do
+			local pkg1 pkg2 filepath
+			pkg1=$(printf '%s' "$line"   | sed "s/.*file owned by '\([^']*\)' and '\([^']*\)': '\([^']*\)'/\1/")
+			pkg2=$(printf '%s' "$line"   | sed "s/.*file owned by '\([^']*\)' and '\([^']*\)': '\([^']*\)'/\2/")
+			filepath=$(printf '%s' "$line" | sed "s/.*file owned by '\([^']*\)' and '\([^']*\)': '\([^']*\)'/\3/")
+
+			[[ "$pkg1" == "$line" || -z "$filepath" ]] && continue
+
+			echo "  Conflict: '$pkg1' vs '$pkg2' → '$filepath'"
+
+			# Prefer official repo package; AUR packages won't be found by pacman -Si
+			local winner loser
+			if sudo pacman -Si "$pkg2" &>/dev/null; then
+				winner=$pkg2; loser=$pkg1
+			else
+				winner=$pkg1; loser=$pkg2
+			fi
+
+			echo "  Reinstalling '$winner' with --overwrite to claim '$filepath'..."
+			sudo pacman -S --overwrite "$filepath" --noconfirm "$winner" &>/dev/null || true
+
+			# Remove the stale ownership entry from the losing package's DB record
+			local loser_entry
+			loser_entry=$(ls "$db_dir" 2>/dev/null | grep "^${loser}-" | head -1)
+			if [[ -n "$loser_entry" && -f "$db_dir/$loser_entry/files" ]]; then
+				echo "  Removing '$filepath' from '$loser' local DB..."
+				sudo sed -i "\|^${filepath}$|d" "$db_dir/$loser_entry/files"
+			fi
+			(( fixed++ ))
+		done < <(sudo pacman -Dk 2>&1 | grep "file owned by")
+
+		if sudo pacman -Dk &>/dev/null; then
+			echo "==> Resolved $fixed conflict(s)."
+			return 0
+		fi
+		echo "WARNING: Remaining conflicts after fix attempt:"
+		sudo pacman -Dk 2>&1
+		return 1
+	}
+
+	arch_fix_missing_files() {
+		local missing
+		missing=$(sudo pacman -Qqk 2>&1 | grep -v "^$" | awk '{print $1}' | sort -u)
+
+		[[ -z "$missing" ]] && return 0
+
+		echo "==> Reinstalling packages with missing files: $(echo "$missing" | tr '\n' ' ')"
+		while IFS= read -r pkg; do
+			[[ -z "$pkg" ]] && continue
+			sudo pacman -S --noconfirm "$pkg" &>/dev/null || \
+				kacman -S --noconfirm "$pkg" &>/dev/null || \
+				echo "  WARNING: could not reinstall '$pkg'"
+		done <<< "$missing"
+	}
+
 	arch_update_packages() {
 		# Pre-update maintenance (moved from start of old archup)
 		sudo chown 0 /etc/sudoers.d/$USER
@@ -253,8 +316,12 @@ if (($+commands[pacman])); then
 
 		# arch_update_mirrors || return $?
 		arch_update_mirrors
+		arch_fix_db_conflicts
+		arch_fix_missing_files
 		arch_update_packages "$@" || return $?
 		arch_maintenance || return $?
+		arch_fix_db_conflicts
+		arch_fix_missing_files
 	}
 	alias up=archup
 

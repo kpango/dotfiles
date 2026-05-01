@@ -55,6 +55,7 @@ devrun() {
 		"-v $docker_sock:$docker_sock"
 		"-v $HOME/Documents:$container_home/Documents"
 		"-v $HOME/Downloads:$container_home/Downloads"
+		"-v $HOME/.claude:$container_home/.claude"
 		"-v $HOME/.gemini:$container_home/.gemini"
 		"-v $HOME/.gnupg:$container_home/.gnupg"
 		"-v $HOME/go/src:$container_goroot/src:cached"
@@ -115,7 +116,7 @@ devrun() {
 		local resolve_dnsmasq_config="/etc/resolv.dnsmasq.conf"
 		local gpu_option=""
 
-		if (($+commands[nvidia-smi])); then
+		if (($+commands[nvidia-smi])) && nvidia-smi &>/dev/null; then
 			gpu_option="--gpus=all"
 		fi
 

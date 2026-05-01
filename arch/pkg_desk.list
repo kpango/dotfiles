@@ -52,7 +52,7 @@ helvum
 htop
 imagemagick
 inetutils
-iptables-nft
+iptables
 kanshi
 kubectl
 kubectx
@@ -125,4 +125,5 @@ wofi
 xfsprogs
 xorg-xwayland
 yt-dlp
+zoxide
 zsh

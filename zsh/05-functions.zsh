@@ -1,5 +1,5 @@
 zclean() {
-	rm -rf $HOME/.zcompdump*(N) \
+	sudo rm -rf $HOME/.zcompdump*(N) \
 		$HOME/.zsh*.zwc(N) \
 		$HOME/.zsh_*_cache*(N) \
 		$HOME/.*_cache.zsh*(N) \

@@ -8,6 +8,7 @@ arch/kanshi.conf .config/kanshi/config
 arch/psd.conf .config/psd/psd.conf
 arch/ranger .config/ranger
 arch/sway.conf .config/sway/config
+arch/xdg-desktop-portal.conf .config/xdg-desktop-portal/portals.conf
 arch/waybar.css .config/waybar/style.css
 arch/waybar.json .config/waybar/config
 arch/wofi/style.css .config/wofi/style.css
@@ -36,6 +37,9 @@ network/dns/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
 network/dns/resolv.dnsmasq.conf /etc/resolv.pre-tailscale-backup.conf
 network/sysctl/sysctl.conf /etc/sysctl.d/99-sysctl.conf
 arch/ghostty.desktop /usr/share/applications/com.mitchellh.ghostty.desktop
+arch/mkinitcpio.conf /etc/mkinitcpio.conf
+arch/mkinitcpio/linux.preset /etc/mkinitcpio.d/linux.preset
+arch/mkinitcpio/linux-zen.preset /etc/mkinitcpio.d/linux-zen.preset
 endef
 export ARCH_SUDO_LINK_MAP
 
@@ -43,7 +47,6 @@ define ARCH_SUDO_CP_MAP
 arch/chrony.conf /etc/chrony.conf
 arch/suduers /etc/sudoers.d/$(SYS_USER)
 arch/environment /etc/environment
-network/nm/NetworkManager-dispatcher.service /etc/systemd/system/NetworkManager-dispatcher.service
 network/nm/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
 network/nm/nmcli-bond-auto-connect.sh /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
 endef
@@ -54,6 +57,7 @@ define ARCH_PREP
 	mkdir -p $(HOME)/.config/kanshi
 	mkdir -p $(HOME)/.config/psd
 	mkdir -p $(HOME)/.config/sway
+	mkdir -p $(HOME)/.config/xdg-desktop-portal
 	mkdir -p $(HOME)/.config/waybar
 	mkdir -p $(HOME)/.config/wofi
 	mkdir -p $(HOME)/.config/workstyle
