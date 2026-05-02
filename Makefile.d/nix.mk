@@ -1,5 +1,8 @@
 .PHONY: nix/setup \
-	nix/test nix/test/eval nix/test/check nix/test/dry-run nix/test/build nix/test/vm \
+	nix/test nix/test/eval nix/test/check nix/test/dry-run \
+	nix/test/build nix/test/build/darwin \
+	nix/test/vm nix/test/vm/build \
+	nix/test/docker \
 	nix/fmt nix/fmt/check \
 	nix/update nix/pull
 
@@ -212,6 +215,60 @@ nix/test/build:
 		".#nixosConfigurations.$(NIX_HOST_NAME).config.system.build.toplevel" \
 		-j auto $(NIX_FLAGS)
 	@echo "  build complete: ./result"
+
+## Build nix-darwin system closure (macOS only).
+## Override host: make nix/test/build/darwin NIX_HOST_NAME=macbook-air-m1
+nix/test/build/darwin:
+	@echo "==================================================="
+	@echo " nix/test/build/darwin — $(NIX_HOST_NAME)"
+	@echo "==================================================="
+	@. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || true; \
+	cd "$(ROOTDIR)/nix" && \
+	nix build \
+		".#darwinConfigurations.$(NIX_HOST_NAME).system" \
+		$(NIX_FLAGS) && \
+	echo "  Darwin build complete: ./result"
+
+## Evaluate a NixOS config inside the NixOS Docker container (no native nix required).
+## Mirrors the nix-run.sh Docker fallback path used on non-NixOS hosts.
+nix/test/docker:
+	@echo "==================================================="
+	@echo " nix/test/docker — $(NIX_HOST_NAME) via $(NIX_DOCKER_IMAGE)"
+	@echo "==================================================="
+	@docker volume inspect nix-store-dotfiles >/dev/null 2>&1 \
+		|| docker volume create nix-store-dotfiles >/dev/null
+	@docker run --rm \
+		--workdir /dotfiles/nix \
+		--volume "$(ROOTDIR):/dotfiles:ro" \
+		--volume "nix-store-dotfiles:/nix" \
+		--env 'NIX_CONFIG=extra-experimental-features = nix-command flakes \
+trusted-users = root \
+substituters = https://cache.nixos.org/ \
+trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=' \
+		"$(NIX_DOCKER_IMAGE)" \
+		nix eval \
+			".#nixosConfigurations.$(NIX_HOST_NAME).config.system.stateVersion" \
+			--no-write-lock-file \
+			--extra-experimental-features 'nix-command flakes'
+	@echo "  Docker eval passed."
+
+## Build a QEMU VM image for NIX_HOST_NAME without launching it.
+## Suitable for CI: the image is at ./result/bin/run-$(NIX_HOST_NAME)-vm.
+## Override host: make nix/test/vm/build NIX_HOST_NAME=thinkpad-x1-gen9
+nix/test/vm/build:
+	@echo "==================================================="
+	@echo " nix/test/vm/build — $(NIX_HOST_NAME)"
+	@echo "==================================================="
+	@. /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || true; \
+	if ! command -v nix >/dev/null 2>&1; then \
+		echo "Error: 'nix' must be installed natively to build VM images."; \
+		exit 1; \
+	fi; \
+	cd "$(ROOTDIR)/nix" && \
+	nix build \
+		".#nixosConfigurations.$(NIX_HOST_NAME).config.system.build.vm" \
+		$(NIX_FLAGS) && \
+	echo "  VM image ready: ./result/bin/run-$(NIX_HOST_NAME)-vm"
 
 ## Build a QEMU VM image for NIX_HOST_NAME and launch it interactively.
 ##

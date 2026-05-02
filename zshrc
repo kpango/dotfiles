@@ -55,10 +55,40 @@ if [[ -z "$functions[_zcache_eval]" ]]; then
 	autoload -Uz _zcache_eval
 fi
 
+# OS detection — file-stat+$OSTYPE only, no subprocess
+if [[ -f /etc/NIXOS || -f /etc/nixos/configuration.nix ]]; then
+	export _ZSH_OS=nixos
+elif [[ -f /etc/arch-release ]]; then
+	export _ZSH_OS=arch
+elif [[ -f /etc/debian_version ]]; then
+	export _ZSH_OS=debian
+elif [[ $OSTYPE = darwin* ]]; then
+	export _ZSH_OS=brew
+else
+	export _ZSH_OS=generic
+fi
+
+# Combined cache: all zsh/*.zsh except OS-specific files (20-os-*.zsh)
 local combined_cache="$ZCACHE_DIR/combined.zsh"
 if [[ -f "$combined_cache" ]]; then
 	if [[ -z "$ZSH_EXECUTION_STRING" ]]; then source "$combined_cache"; fi
 else
-	local zsh_deps=("$DOTFILES_DIR/zsh"/*.zsh(N))
-	_zcache_eval combined 0 'cat "$DOTFILES_DIR/zsh"/*.zsh(N)' "${zsh_deps[@]}"
+	local _zsh_deps=()
+	for _f in "$DOTFILES_DIR/zsh"/*.zsh(N); do
+		[[ "${_f:t}" = 20-os-*.zsh ]] || _zsh_deps+=("$_f")
+	done
+	_zcache_eval combined 0 \
+		'for _f in "$DOTFILES_DIR/zsh"/*.zsh; do [[ "${_f:t}" = 20-os-*.zsh ]] || cat "$_f"; done' \
+		"${_zsh_deps[@]}"
+fi
+
+# OS-specific cache: only the file matching the detected OS
+local _os_src="$DOTFILES_DIR/zsh/20-os-${_ZSH_OS}.zsh"
+if [[ -f "$_os_src" ]]; then
+	local _os_cache="$ZCACHE_DIR/os-${_ZSH_OS}.zsh"
+	if [[ -f "$_os_cache" ]]; then
+		if [[ -z "$ZSH_EXECUTION_STRING" ]]; then source "$_os_cache"; fi
+	else
+		_zcache_eval "os-${_ZSH_OS}" 0 "cat '$_os_src'" "$_os_src"
+	fi
 fi

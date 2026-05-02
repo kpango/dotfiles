@@ -7,7 +7,7 @@
 
   # Threadripper 3990X (64C/128T) & 256GB RAM optimizations
   boot.kernelModules = [ "nvme" "xhci_pci" "ahci" "usbhid" "kvm-amd" ];
-  
+
   boot.kernelParams = [
     "amd_iommu=on"
     "iommu=pt"

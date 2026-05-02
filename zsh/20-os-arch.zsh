@@ -33,7 +33,7 @@ if (($+commands[pacman])); then
 				return 0
 			fi
 			echo "$manager with gcc/g++ environment variables failed, trying to ignore unnecessary packages with gcc/g++ environment."
-			if CC=$GCC CXX=$GXX CPP=$GCPP run_command "executing $manager (with gcc env + ignore mozc)" $manager "$@" --ignore mozc-ut-full-common --ignore fcitx5-mozc-ut-full; then
+			if CC=$GCC CXX=$GXX CPP=$GCPP run_command "executing $manager (with gcc env+ignore mozc)" $manager "$@" --ignore mozc-ut-full-common --ignore fcitx5-mozc-ut-full; then
 				return 0
 			fi
 			echo "$manager failed."

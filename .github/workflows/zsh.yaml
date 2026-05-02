@@ -58,9 +58,10 @@ jobs:
           done
           [ "$failed" -eq 0 ] || exit 1
 
-      - name: Format check (shfmt -d)
+      - name: Format check (make format/zsh)
         run: |
-          shfmt -ln zsh -d zshrc zsh/*.zsh
+          make format/zsh
+          git diff --exit-code
 
   # ── Startup time benchmark ──────────────────────────────────────────────────
   #

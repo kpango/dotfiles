@@ -1,0 +1,220 @@
+name: "Test Nix configurations"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nix/**"
+      - "Makefile"
+      - "Makefile.d/nix.mk"
+      - ".github/workflows/nix.yml"
+  pull_request:
+    paths:
+      - "nix/**"
+      - "Makefile"
+      - "Makefile.d/nix.mk"
+      - ".github/workflows/nix.yml"
+  workflow_dispatch:
+  schedule:
+    # Weekly on Monday 02:00 UTC — catches nixpkgs-unstable breakage
+    - cron: "0 2 * * 1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Stage 1: Fast static gates (run in parallel) ───────────────────────────
+  eval:
+    name: "Evaluate all host configs"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Evaluate all hosts
+        run: make nix/test/eval
+
+  check:
+    name: "Flake check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: nix flake check --no-build
+        run: make nix/test/check
+
+  # ── Stage 2: Resolve full derivation graph per NixOS host ─────────────────
+  dry-run:
+    name: "Dry-run (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    needs: [eval, check]
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [tr, thinkpad-p1-gen5, thinkpad-x1-gen9, hp-dragonfly-g2]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Dry-run build for ${{ matrix.host }}
+        run: make nix/test/dry-run NIX_HOST_NAME=${{ matrix.host }}
+
+  # ── Stage 3a: Full NixOS system build (native nix + binary cache) ──────────
+  nixos-build:
+    name: "NixOS build (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    needs: [dry-run]
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [tr, thinkpad-p1-gen5, thinkpad-x1-gen9, hp-dragonfly-g2]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Build system closure for ${{ matrix.host }}
+        run: make nix/test/build NIX_HOST_NAME=${{ matrix.host }}
+
+  # ── Stage 3b: NixOS Docker — evaluate inside ghcr.io/nixos/nix container ──
+  #
+  # Validates that the configuration is reproducible without native nix,
+  # mirroring the nix-run.sh Docker fallback path used on non-NixOS hosts.
+  nixos-docker:
+    name: "NixOS Docker (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    needs: [dry-run]
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [tr, thinkpad-p1-gen5, thinkpad-x1-gen9, hp-dragonfly-g2]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Pull NixOS container image
+        run: docker pull ghcr.io/nixos/nix:latest
+
+      - name: Evaluate config inside NixOS Docker
+        run: make nix/test/docker NIX_HOST_NAME=${{ matrix.host }}
+
+  # ── Stage 3c: nix-darwin build on Apple Silicon macOS ─────────────────────
+  #
+  # Builds the Darwin system closure on a real macOS runner to catch
+  # darwin-module and aarch64-darwin package issues early.
+  darwin-build:
+    name: "Darwin build (${{ matrix.host }})"
+    runs-on: macos-14
+    needs: [eval, check]
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        host: [macbook-pro-m3, macbook-air-m1]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Build Darwin system for ${{ matrix.host }}
+        run: make nix/test/build/darwin NIX_HOST_NAME=${{ matrix.host }}
+
+  # ── Stage 4: QEMU VM smoke test (KVM-accelerated) ─────────────────────────
+  #
+  # Builds a QEMU VM image from the NixOS config and boots it headlessly.
+  # Verifies the system reaches the login prompt — confirming that systemd,
+  # networking, and all enabled services start without fatal errors.
+  nixos-vm:
+    name: "QEMU VM (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    needs: [nixos-build]
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        # Use hosts with minimal hardware configs to maximise VM boot success.
+        # tr has RAID/bond/NVIDIA dependencies that may not resolve inside QEMU.
+        host: [thinkpad-x1-gen9, hp-dragonfly-g2]
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: DeterminateSystems/nix-installer-action@v14
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - uses: DeterminateSystems/magic-nix-cache-action@v8
+
+      - name: Enable KVM access
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Build VM image for ${{ matrix.host }}
+        run: make nix/test/vm/build NIX_HOST_NAME=${{ matrix.host }}
+
+      - name: Boot VM and wait for login prompt
+        run: |
+          QEMU_NET_OPTS="hostfwd=tcp::2222-:22" \
+          QEMU_OPTS="-m 2048 -smp 2 -enable-kvm -display none -no-reboot" \
+          ./result/bin/run-${{ matrix.host }}-vm >/tmp/vm.log 2>&1 &
+          VM_PID=$!
+
+          echo "Waiting for NixOS login prompt (up to 3 min)..."
+          for i in $(seq 1 60); do
+            if grep -qE "login:|<<< NixOS" /tmp/vm.log 2>/dev/null; then
+              echo "VM booted successfully"
+              kill "$VM_PID" 2>/dev/null || true
+              exit 0
+            fi
+            if ! kill -0 "$VM_PID" 2>/dev/null; then
+              echo "VM process exited unexpectedly"
+              cat /tmp/vm.log || true
+              exit 1
+            fi
+            sleep 3
+          done
+
+          echo "Timed out waiting for VM boot"
+          echo "=== serial output ==="
+          cat /tmp/vm.log || true
+          kill "$VM_PID" 2>/dev/null || true
+          exit 1

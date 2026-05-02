@@ -10,14 +10,14 @@
 # ──────────────────────────────────────────────────────────────────────────────
 {
   imports = [
-    ../../modules/hardware/default.nix    # boot, kernel, udev, microcode
-    ../../modules/hardware/nvidia.nix     # NVIDIA proprietary driver
-    ../../modules/networking/default.nix  # bond0, sysctl, firewall
-    ../../modules/networking/x710-tuning.nix  # X710 post-up tuning services
-    ../../modules/system/performance.nix  # CPU governor, KSM, THP, journald
-    ../../modules/system/storage.nix      # mdadm, filesystems, swap
-    ../../modules/virtualization/docker.nix  # Docker daemon + NVIDIA runtime
-    ../../modules/programs/default.nix    # shell, editor, packages
+    ../../modules/hardware/default.nix # boot, kernel, udev, microcode
+    ../../modules/hardware/nvidia.nix # NVIDIA proprietary driver
+    ../../modules/networking/default.nix # bond0, sysctl, firewall
+    ../../modules/networking/x710-tuning.nix # X710 post-up tuning services
+    ../../modules/system/performance.nix # CPU governor, KSM, THP, journald
+    ../../modules/system/storage.nix # mdadm, filesystems, swap
+    ../../modules/virtualization/docker.nix # Docker daemon + NVIDIA runtime
+    ../../modules/programs/default.nix # shell, editor, packages
   ];
 
   # ────────────────────────────────────────────────
@@ -32,7 +32,7 @@
   time.hardwareClockInLocalTime = true;
 
   i18n = {
-    defaultLocale    = "en_US.UTF-8";
+    defaultLocale = "en_US.UTF-8";
     supportedLocales = [ "en_US.UTF-8/UTF-8" "ja_JP.UTF-8/UTF-8" ];
   };
 
@@ -40,8 +40,8 @@
   # Nixpkgs
   # ────────────────────────────────────────────────
   nixpkgs.config = {
-    allowUnfree   = true;   # NVIDIA, CUDA, etc.
-    allowBroken   = false;
+    allowUnfree = true; # NVIDIA, CUDA, etc.
+    allowBroken = false;
   };
 
   # ────────────────────────────────────────────────
@@ -50,16 +50,16 @@
   nix = {
     settings = {
       # Use all 128 threads for builds
-      cores             = 128;
-      max-jobs          = lib.mkDefault 64;
+      cores = 128;
+      max-jobs = lib.mkDefault 64;
       experimental-features = [ "nix-command" "flakes" ];
-      trusted-users     = [ "root" "kpango" ];
+      trusted-users = [ "root" "kpango" ];
       auto-optimise-store = true;
     };
     gc = {
       automatic = true;
-      dates     = "weekly";
-      options   = "--delete-older-than 14d";
+      dates = "weekly";
+      options = "--delete-older-than 14d";
     };
   };
 
@@ -70,11 +70,11 @@
 
   users.users.kpango = {
     isNormalUser = true;
-    uid          = 1000;
-    home         = "/home/kpango";
-    createHome   = true;
-    shell        = pkgs.zsh;
-    extraGroups  = [
+    uid = 1000;
+    home = "/home/kpango";
+    createHome = true;
+    shell = pkgs.zsh;
+    extraGroups = [
       "audio"
       "disk"
       "docker"
@@ -90,20 +90,20 @@
     ];
     # Set via nixos-install --option with hashedPassword; placeholder below.
     # Generate with: mkpasswd -m sha-512
-    hashedPassword = "!";  # Locked — use SSH keys or set at install time.
+    hashedPassword = "!"; # Locked — use SSH keys or set at install time.
     # Place your SSH public key(s) in a file and reference it here, e.g.:
     #   openssh.authorizedKeys.keyFiles = [ "/etc/nixos/authorized_keys" ];
     # Or list keys directly:
     #   openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAA... kpango@..." ];
-    openssh.authorizedKeys.keys = [];
+    openssh.authorizedKeys.keys = [ ];
   };
 
   # ────────────────────────────────────────────────
   # Desktop environment (Wayland/Sway)
   # ────────────────────────────────────────────────
   services.xserver = {
-    enable  = true;
-    xkb.layout  = "us";
+    enable = true;
+    xkb.layout = "us";
     xkb.options = "ctrl:nocaps";
     displayManager.defaultSession = "sway";
   };
@@ -113,7 +113,7 @@
     settings = {
       default_session = {
         command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd sway";
-        user    = "greeter";
+        user = "greeter";
       };
     };
   };
@@ -130,7 +130,7 @@
     ];
     fontconfig.defaultFonts = {
       monospace = [ "HackGen Console NF" "Noto Color Emoji" ];
-      emoji     = [ "Noto Color Emoji" ];
+      emoji = [ "Noto Color Emoji" ];
     };
   };
 

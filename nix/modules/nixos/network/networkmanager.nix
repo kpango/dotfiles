@@ -1,4 +1,4 @@
-{ pkgs, lib, hostname, settings, ... }:
+{ pkgs, hostname, settings, ... }:
 
 {
   networking = {
@@ -50,9 +50,9 @@
     nameservers = settings.network.nameservers;
     usePredictableInterfaceNames = false;
     extraHosts = ''
-      ${settings.network.localHosts.ipv4} ${hostname} ${hostname}.local localhost
-      ${settings.network.localHosts.ipv6} ${hostname} ${hostname}.local localhost
-${settings.network.extraHosts}
+            ${settings.network.localHosts.ipv4} ${hostname} ${hostname}.local localhost
+            ${settings.network.localHosts.ipv6} ${hostname} ${hostname}.local localhost
+      ${settings.network.extraHosts}
     '';
     bridges.${settings.network.bridge.name}.interfaces = [ ];
     interfaces.${settings.network.bridge.name}.ipv4.addresses = [
@@ -63,7 +63,4 @@ ${settings.network.extraHosts}
     ];
   };
 
-  # iwd backend daemon — required when wifi.backend = "iwd"
-  services.iwd.enable = lib.mkIf (settings.network.networkManager.wifiBackend == "iwd") true;
-}
 }

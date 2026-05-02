@@ -15,7 +15,7 @@ ENV GOBIN=${GOPATH}/bin
 ENV GOARCH=${ARCH}
 ENV GOOS=${OS}
 ENV GOPROXY="https://proxy.golang.org,direct"
-ENV GOFLAGS="-ldflags=-w -ldflags=-s"
+ENV GOFLAGS="-ldflags=-s"
 ENV GOORG="golang.org"
 ENV GODEV="https://go.dev"
 ENV PATH=${PATH}:${GOROOT}/bin:${GOBIN}
@@ -67,7 +67,7 @@ RUN --mount=type=bind,source=dockers/go.tools,target=go.tools,ro \
     set -ex \
     && cat go.tools | \
         CGO_ENABLED=0 \
-        GOTOOLCHAIN=${GO_VERSION} \
+        GOTOOLCHAIN=auto \
         xargs -P $(nproc) -I {} \
         sh -c 'errfile=$(mktemp); if ! go install {} >/dev/null 2>"${errfile}"; then echo "--- Failed to install {} ---" >&2; cat "${errfile}" >&2; rm "${errfile}"; exit 255; fi; rm "${errfile}"' \
     && find ${GOPATH}/bin -type f -executable | xargs -P $(nproc) -n 1 upx -9

@@ -41,7 +41,9 @@ format/zsh:
 	@if [ -n "$(FORMAT_ZSH_FILES)" ]; then \
 		echo "Formatting zsh files..."; \
 		if command -v shfmt >/dev/null 2>&1; then \
-			shfmt -ln zsh -w $(FORMAT_ZSH_FILES); \
+			shfmt -ln bash -w $(FORMAT_ZSH_FILES); \
+			for _f in $(FORMAT_ZSH_FILES); do sed -i 's/ - /-/g' "$$_f"; done; \
+			for _f in $(FORMAT_ZSH_FILES); do sed -i 's/ + /+/g' "$$_f"; done; \
 		elif command -v beautysh >/dev/null 2>&1; then \
 			beautysh $(FORMAT_ZSH_FILES); \
 		else \
@@ -150,13 +152,13 @@ format/convert-to-zsh:
 					-e '1s|#!/usr/bin/env bash|#!/usr/bin/env zsh|' \
 					"$$f"; \
 				if command -v shfmt >/dev/null 2>&1; then \
-					shfmt -ln zsh -w "$$f"; \
+					shfmt -ln bash -w "$$f"; \
 				fi ;; \
 		esac; \
 	done; \
 	echo "  Done. Review changes before committing."
 
-# conf files: apply shfmt -ln zsh to shell-sourced confs (any #!/*sh or #!/hint/* shebang),
+# conf files: apply shfmt -ln bash to shell-sourced confs (any #!/*sh or #!/hint/* shebang),
 # strip trailing whitespace from all others (INI, custom formats, etc.).
 format/conf:
 	@if [ -n "$(FORMAT_CONF_FILES)" ]; then \
@@ -168,7 +170,7 @@ format/conf:
 				'#!/bin/bash'*|'#!/usr/bin/bash'*|'#!/usr/bin/env bash'*|'#!/hint/bash'*|\
 				'#!/bin/sh'*|'#!/usr/bin/env sh'*|'#!/hint/sh'*) \
 					if command -v shfmt >/dev/null 2>&1; then \
-						shfmt -ln zsh -w "$$f"; \
+						shfmt -ln bash -w "$$f"; \
 					else \
 						sed -i 's/[[:space:]]*$$//' "$$f"; \
 					fi ;; \

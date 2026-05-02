@@ -10,7 +10,7 @@
     # sheldon plugin manager at the user level; keep system config minimal.
     enableCompletion = true;
     syntaxHighlighting.enable = true;
-    autosuggestions.enable    = true;
+    autosuggestions.enable = true;
     histSize = 1000000;
     # Global env vars expected by the dotfiles zshrc
     shellInit = ''
@@ -23,40 +23,15 @@
   users.defaultShell = pkgs.zsh;
 
   # ────────────────────────────────────────────────
-  # Helix editor
-  # ────────────────────────────────────────────────
-  programs.helix = {
-    enable = true;
-    defaultEditor = true;
-    # Language servers installed system-wide so hx can pick them up
-    extraPackages = with pkgs; [
-      # Go
-      gopls
-      delve
-      # Rust
-      rust-analyzer
-      # Web / JS / TS
-      nodePackages.typescript-language-server
-      nodePackages.bash-language-server
-      # Nix
-      nil
-      nixpkgs-fmt
-      # Generic
-      marksman
-      taplo
-    ];
-  };
-
-  # ────────────────────────────────────────────────
   # tmux
   # ────────────────────────────────────────────────
   programs.tmux = {
-    enable        = true;
-    clock24       = true;
-    historyLimit  = 1000000;
-    mouse         = true;
-    terminal      = "tmux-256color";
-    keyMode       = "vi";
+    enable = true;
+    clock24 = true;
+    historyLimit = 1000000;
+    mouse = true;
+    terminal = "tmux-256color";
+    keyMode = "vi";
     aggressiveResize = true;
     # Additional config sourced from dotfiles
     extraConfig = ''
@@ -94,8 +69,8 @@
     config = {
       core = {
         autocrlf = false;
-        editor   = "hx";
-        pager    = "delta";
+        editor = "hx";
+        pager = "delta";
         fileMode = false;
         quotepath = false;
         precomposeunicode = true;
@@ -107,35 +82,35 @@
       };
       pull = {
         rebase = true;
-        ff     = "only";
+        ff = "only";
       };
       diff = {
-        mnemonicprefix  = true;
-        patience        = true;
+        mnemonicprefix = true;
+        patience = true;
         indentHeuristic = true;
-        colorMoved      = "default";
+        colorMoved = "default";
       };
       http.postBuffer = 524288000;
       help.autocorrect = 0;
       alias = {
-        ad  = "add";
+        ad = "add";
         cam = "commit -a --amend";
-        ci  = "commit -a";
-        cm  = "commit";
-        co  = "checkout";
-        ft  = "fetch";
+        ci = "commit -a";
+        cm = "commit";
+        co = "checkout";
+        ft = "fetch";
         rbm = "rebase main";
-        sh  = "show";
-        so  = "remote show origin";
-        st  = "status";
+        sh = "show";
+        so = "remote show origin";
+        st = "status";
         stt = "status -uno -u";
-        up  = "pull --rebase";
-        ba  = "branch -a";
-        bm  = "branch --merged";
-        bn  = "branch --no-merged";
-        br  = "branch";
-        la  = "log --pretty=format:'%ad %h (%an): %s' --date=short";
-        lp  = "log -p";
+        up = "pull --rebase";
+        ba = "branch -a";
+        bm = "branch --merged";
+        bn = "branch --no-merged";
+        br = "branch";
+        la = "log --pretty=format:'%ad %h (%an): %s' --date=short";
+        lp = "log -p";
       };
     };
   };
@@ -154,14 +129,14 @@
     clang
     cmake
     curl
-    delta            # git-delta
+    delta # git-delta
     dmidecode
     duf
     ethtool
     fd
     file
     fzf
-    ghostty          # terminal (if available in nixpkgs, else skip)
+    ghostty # terminal (if available in nixpkgs, else skip)
     git
     git-delta
     graphviz
@@ -249,7 +224,7 @@
     wakeonlan
 
     # ── Editors / LSP ──
-    nil                              # Nix LSP
+    nil # Nix LSP
     nixpkgs-fmt
     bash-language-server
     marksman
@@ -279,7 +254,7 @@
     enable = true;
     settings = {
       PasswordAuthentication = false;
-      PermitRootLogin        = "no";
+      PermitRootLogin = "no";
     };
     extraConfig = "StreamLocalBindUnlink yes";
   };
@@ -343,7 +318,7 @@
   # ────────────────────────────────────────────────
   i18n.inputMethod = {
     enable = true;
-    type   = "fcitx5";
+    type = "fcitx5";
     fcitx5.addons = with pkgs; [
       fcitx5-mozc
       fcitx5-gtk
@@ -356,7 +331,7 @@
   services.pipewire = {
     enable = true;
     alsa = {
-      enable      = true;
+      enable = true;
       support32Bit = true;
     };
     pulse.enable = true;
@@ -367,7 +342,7 @@
   # sudo: passwordless for wheel group
   # ────────────────────────────────────────────────
   security.sudo = {
-    enable             = true;
+    enable = true;
     wheelNeedsPassword = false;
     extraConfig = ''
       Defaults !always_set_home

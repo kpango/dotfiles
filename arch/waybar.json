@@ -1,21 +1,9 @@
 {
   "layer": "top",
-  "output": [
-    "eDP-1",
-    "DP-1",
-    "DP-2",
-    "DP-3",
-    "DP-4",
-    "HDMI-A-1"
-  ],
+  "output": ["eDP-1", "DP-1", "DP-2", "DP-3", "DP-4", "HDMI-A-1"],
   "position": "top",
-  "modules-left": [
-    "sway/workspaces",
-    "sway/mode"
-  ],
-  "modules-center": [
-    "sway/window"
-  ],
+  "modules-left": ["sway/workspaces", "sway/mode"],
+  "modules-center": ["sway/window"],
   "modules-right": [
     "pulseaudio",
     "network",
@@ -86,19 +74,12 @@
     "interval": 5,
     "critical-threshold": 80,
     "format": "{temperatureC}°C {icon}",
-    "format-icons": [
-      "",
-      "",
-      ""
-    ]
+    "format-icons": ["", "", ""]
   },
   "backlight": {
     "interval": 30,
     "format": "{percent}% {icon}",
-    "format-icons": [
-      "",
-      ""
-    ],
+    "format-icons": ["", ""],
     "on-scroll-down": "brightnessctl -c backlight set 5%-",
     "on-scroll-up": "brightnessctl -c backlight set +5%"
   },
@@ -114,13 +95,7 @@
     "format-charging": "{capacity}% ",
     "format-plugged": "{capacity}% ",
     "format-alt": "{time} {icon}",
-    "format-icons": [
-      "",
-      "",
-      "",
-      "",
-      ""
-    ]
+    "format-icons": ["", "", "", "", ""]
   },
   "custom/powerbar": {
     "return-type": "json",
@@ -155,11 +130,7 @@
       "phone": "",
       "portable": "📱",
       "car": "",
-      "default": [
-        "",
-        "",
-        ""
-      ]
+      "default": ["", "", ""]
     },
     "on-click": "pavucontrol"
   },

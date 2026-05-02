@@ -13,7 +13,7 @@
       NSGlassDiffusionSetting = false;
       NSSpellCheckerDictionaryContainerTransitionComplete = true;
       NSTableViewDefaultSizeMode = true;
-      NSUserDictionaryReplacementItems = [];
+      NSUserDictionaryReplacementItems = [ ];
       NSUserQuotesArray = [
         "\U201c"
         "\U201d"
@@ -182,8 +182,6 @@
   # Global macOS preferences
   system.defaults.NSGlobalDomain = {
     AppleInterfaceStyle = settings.darwin.preferences.AppleInterfaceStyle;
-    "com.apple.sound.beep.flash" = false;
-    "com.apple.sound.uiaudio.enabled" = false;
     "com.apple.springing.delay" = 0.5;
     "com.apple.springing.enabled" = true;
     "com.apple.trackpad.forceClick" = true;

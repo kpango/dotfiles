@@ -13,10 +13,10 @@ lib.mkIf hasNvidia {
     description = "Unload NVIDIA kernel modules before shutdown";
     defaultDependencies = false;
     before = [ "reboot.target" "halt.target" "poweroff.target" ];
-    after  = [ "graphical.target" ];
+    after = [ "graphical.target" ];
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
-      Type            = "oneshot";
+      Type = "oneshot";
       RemainAfterExit = true;
       ExecStop = pkgs.writeShellScript "nvidia-unload" ''
         modprobe -r nvidia_drm nvidia_modeset nvidia_uvm nvidia 2>/dev/null || true

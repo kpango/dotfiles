@@ -27,12 +27,12 @@ let
   portDev8080 = 8080;
   portDev8443 = 8443;
   portDev9999 = 9999;
-  
+
   portSteamRemotePlayTCP1 = 27036;
   portSteamRemotePlayTCP2 = 27037;
   portSteamRemotePlayUDP1 = 27031;
   portSteamRemotePlayUDP2 = 27037;
-  
+
   portMoshStart = 60000;
   portMoshEnd = 61000;
 
@@ -131,13 +131,20 @@ in
     '';
     # Firewall Configuration
     firewall = {
-      allowedTCPPorts = [ 
-        portSSH portHTTP portHTTPS 
-        portDev3000 portDev8000 portDev8080 portDev8443 portDev9999 
-        portSteamRemotePlayTCP1 portSteamRemotePlayTCP2 
+      allowedTCPPorts = [
+        portSSH
+        portHTTP
+        portHTTPS
+        portDev3000
+        portDev8000
+        portDev8080
+        portDev8443
+        portDev9999
+        portSteamRemotePlayTCP1
+        portSteamRemotePlayTCP2
       ];
       allowedUDPPorts = [ portSteamRemotePlayUDP1 portSteamRemotePlayUDP2 ];
-      allowedUDPPortRanges = [ { from = portMoshStart; to = portMoshEnd; } ];
+      allowedUDPPortRanges = [{ from = portMoshStart; to = portMoshEnd; }];
       externalInterface = "wlp4s0";
       extraCommands = "iptables -I INPUT -p udp -m udp --dport 32768:60999 -j ACCEPT";
     };
@@ -381,21 +388,40 @@ in
         { type = "hwmon"; query = "/sys/devices/platform/coretemp.0/hwmon/hwmon1/temp1_input"; }
       ];
       levels = [
-        [0 0 47]
-        [1 45 49]
-        [2 47 52]
-        [3 50 57]
-        [4 55 62]
-        [5 60 77]
-        [7 73 93]
-        [127 85 32767]
+        [ 0 0 47 ]
+        [ 1 45 49 ]
+        [ 2 47 52 ]
+        [ 3 50 57 ]
+        [ 4 55 62 ]
+        [ 5 60 77 ]
+        [ 7 73 93 ]
+        [ 127 85 32767 ]
       ];
     };
   };
 
   # User groups configuration
   userGroups = [
-    "audio" "autologin" "disk" "docker" "input" "libvirtd" "lxd" "mysql" "networkmanager" "power" "pulse" "pulse-access" "sshd" "storage" "systemd-journal" "uinput" "vboxusers" "video" "wheel" "wireshark"
+    "audio"
+    "autologin"
+    "disk"
+    "docker"
+    "input"
+    "libvirtd"
+    "lxd"
+    "mysql"
+    "networkmanager"
+    "power"
+    "pulse"
+    "pulse-access"
+    "sshd"
+    "storage"
+    "systemd-journal"
+    "uinput"
+    "vboxusers"
+    "video"
+    "wheel"
+    "wireshark"
   ];
 
   # Nix and Nixpkgs Settings

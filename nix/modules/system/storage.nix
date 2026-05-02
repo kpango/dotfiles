@@ -20,11 +20,11 @@
   systemd.services.mdmonitor = {
     description = "MD RAID monitoring";
     wantedBy = [ "multi-user.target" ];
-    after    = [ "multi-user.target" ];
+    after = [ "multi-user.target" ];
     serviceConfig = {
-      Type      = "forking";
+      Type = "forking";
       ExecStart = "/run/current-system/sw/bin/mdadm --monitor --scan --daemonise --delay=60";
-      PIDFile   = "/run/mdadm/monitor.pid";
+      PIDFile = "/run/mdadm/monitor.pid";
     };
   };
 
@@ -32,8 +32,8 @@
   # Root filesystem (XFS on md0)
   # ────────────────────────────────────────────────
   fileSystems."/" = {
-    device  = "/dev/md0";
-    fsType  = "xfs";
+    device = "/dev/md0";
+    fsType = "xfs";
     options = [
       "rw"
       "relatime"
@@ -52,8 +52,8 @@
   # EFI system partition
   # ────────────────────────────────────────────────
   fileSystems."/boot" = {
-    device  = "PARTUUID=713a6825-7f30-4dc1-9515-aa15b9057fc0";
-    fsType  = "vfat";
+    device = "PARTUUID=713a6825-7f30-4dc1-9515-aa15b9057fc0";
+    fsType = "vfat";
     options = [
       "rw"
       "relatime"

@@ -18,7 +18,7 @@
       # Import centrally managed settings and versions
       settings = import ./core/settings.nix;
       versions = import ./core/versions.nix;
-      
+
       inherit (settings) username;
 
       # Shared Home Manager setup block.
@@ -27,17 +27,19 @@
       # to the same absolute path, making path-comparison-based detection unreliable.
       mkHomeManagerBlock = hostname: dotfilesPath: isDarwinHost:
         let
-          homeDirectory = if isDarwinHost
+          homeDirectory =
+            if isDarwinHost
             then "${settings.homeDirectories.darwin}/${username}"
             else "${settings.homeDirectories.linux}/${username}";
-        in {
+        in
+        {
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
             extraSpecialArgs = {
               inherit inputs username hostname versions settings dotfilesPath homeDirectory;
               isDarwin = isDarwinHost;
-              isLinux  = !isDarwinHost;
+              isLinux = !isDarwinHost;
             };
             users.${username} = import ./modules/home;
           };
@@ -48,8 +50,8 @@
         specialArgs = {
           inherit inputs username hostname versions settings;
           isDarwin = false;
-          isLinux  = true;
-          dotfilesPath  = settings.dotfilesDir.linux;
+          isLinux = true;
+          dotfilesPath = settings.dotfilesDir.linux;
           homeDirectory = "${settings.homeDirectories.linux}/${username}";
         };
         modules = [
@@ -65,8 +67,8 @@
         specialArgs = {
           inherit inputs username hostname versions settings;
           isDarwin = true;
-          isLinux  = false;
-          dotfilesPath  = settings.dotfilesDir.darwin;
+          isLinux = false;
+          dotfilesPath = settings.dotfilesDir.darwin;
           homeDirectory = "${settings.homeDirectories.darwin}/${username}";
         };
         modules = [
@@ -90,7 +92,8 @@
       darwinConfigurations = nixpkgs.lib.genAttrs [
         "macbook-air-m1"
         "macbook-pro-m3"
-      ] (hostname: mkDarwinSystem hostname []);
+      ]
+        (hostname: mkDarwinSystem hostname [ ]);
 
       # Generic NixOS Configurations based on Arch dotfiles
       nixosConfigurations = (nixpkgs.lib.genAttrs [
@@ -98,9 +101,10 @@
         "thinkpad-p1-gen5"
         "thinkpad-x1-gen9"
         "hp-dragonfly-g2"
-      ] (hostname: mkNixosSystem hostname [
-        ./hosts/${hostname}
-      ])) // {
+      ]
+        (hostname: mkNixosSystem hostname [
+          ./hosts/${hostname}
+        ])) // {
 
         # ── Threadripper workstation (tr) ────────────────────────────────────
         # AMD Ryzen Threadripper 3990X, 251 GB RAM
@@ -110,9 +114,9 @@
           system = settings.system.linux;
           specialArgs = {
             inherit inputs username;
-            hostname  = "desk-threadripper";
-            isDarwin  = false;
-            isLinux   = true;
+            hostname = "desk-threadripper";
+            isDarwin = false;
+            isLinux = true;
             dotfilesPath = settings.dotfilesDir.linux;
             homeDirectory = "${settings.homeDirectories.linux}/${username}";
           };
@@ -129,10 +133,11 @@
       formatter = nixpkgs.lib.genAttrs [
         "x86_64-linux"
         "aarch64-darwin"
-      ] (system: nixpkgs.legacyPackages.${system}.nixpkgs-fmt);
+      ]
+        (system: nixpkgs.legacyPackages.${system}.nixpkgs-fmt);
 
       # Custom packages
-      packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system: 
+      packages = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
         import ./pkgs { pkgs = mkPkgs system; }
       );
 

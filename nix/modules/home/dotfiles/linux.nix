@@ -11,7 +11,7 @@
     ".config/waybar/config".source = ../../../../arch/waybar.json;
     ".config/waybar/style.css".source = if hostname == "thinkpad-p1-gen5" then ../../../../arch/waybar_p1.css else ../../../../arch/waybar.css;
     # arch/sway/config is the top-level entry point; it includes config.d/* and sway.conf
-    ".config/sway/config".source   = ../../../../arch/sway/config;
+    ".config/sway/config".source = ../../../../arch/sway/config;
     ".config/sway/sway.conf".source = ../../../../arch/sway.conf;
     ".config/sway/config.d".source = ../../../../arch/sway/config.d;
     ".config/sway/scripts".source = ../../../../arch/sway/scripts;

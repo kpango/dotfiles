@@ -3,8 +3,8 @@
 {
   home.file = lib.mkIf isDarwin {
     ".gnupg/gpg-agent.conf".text = builtins.replaceStrings
-      ["/usr/bin/pinentry-tty"]
-      ["/opt/homebrew/bin/pinentry-mac"]
+      [ "/usr/bin/pinentry-tty" ]
+      [ "/opt/homebrew/bin/pinentry-mac" ]
       (builtins.readFile ../../../../gpg-agent.conf);
     ".docker/config.json".source = ../../../../macos/docker_config.json;
 

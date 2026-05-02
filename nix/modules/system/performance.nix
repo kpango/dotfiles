@@ -11,9 +11,9 @@
     description = "Set CPU frequency governor to performance";
     documentation = [ "https://www.kernel.org/doc/html/latest/admin-guide/pm/cpufreq.html" ];
     wantedBy = [ "multi-user.target" ];
-    after    = [ "multi-user.target" ];
+    after = [ "multi-user.target" ];
     serviceConfig = {
-      Type            = "oneshot";
+      Type = "oneshot";
       RemainAfterExit = true;
       ExecStart = pkgs.writeShellScript "set-cpu-perf" ''
         for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
@@ -63,12 +63,12 @@
   # Security / PAM limits
   # ────────────────────────────────────────────────
   security.pam.loginLimits = [
-    { domain = "*"; type = "soft"; item = "nofile";  value = "524288"; }
-    { domain = "*"; type = "hard"; item = "nofile";  value = "524288"; }
+    { domain = "*"; type = "soft"; item = "nofile"; value = "524288"; }
+    { domain = "*"; type = "hard"; item = "nofile"; value = "524288"; }
     { domain = "*"; type = "soft"; item = "memlock"; value = "unlimited"; }
     { domain = "*"; type = "hard"; item = "memlock"; value = "unlimited"; }
-    { domain = "*"; type = "soft"; item = "nproc";   value = "unlimited"; }
-    { domain = "*"; type = "hard"; item = "nproc";   value = "unlimited"; }
+    { domain = "*"; type = "soft"; item = "nproc"; value = "unlimited"; }
+    { domain = "*"; type = "hard"; item = "nproc"; value = "unlimited"; }
   ];
 
   # ────────────────────────────────────────────────

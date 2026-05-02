@@ -204,7 +204,7 @@ RUN --mount=type=secret,id=gat set -x && cd "$(mktemp -d)" \
         "${BIN_PATH}/${BIN_NAME}-shim-runc-v2" \
         "${BIN_PATH}/${BIN_NAME}-stress" \
         "${BIN_PATH}/ctr" \
-        | xargs -P $(nproc) -n 1 upx -9
+        | xargs -P $(nproc) -n 1 sh -c 'upx -9 "$1" 2>/dev/null || upx -t "$1" 2>/dev/null || true' --
 
 FROM docker:rc-dind AS common-base
 
@@ -225,7 +225,7 @@ RUN printf "%s\\n" \
     "${BIN_PATH}/docker-init" \
     "${BIN_PATH}/dockerd" \
     "${BIN_PATH}/runc" \
-    | xargs -P $(nproc) -n 1 upx -9 \
+    | xargs -P $(nproc) -n 1 sh -c 'upx -9 "$1" 2>/dev/null || upx -t "$1" 2>/dev/null || true' -- \
     && chmod a+x ${BIN_PATH}/docker-entrypoint.sh \
     && chmod a+x ${BIN_PATH}/dockerd-entrypoint.sh
 

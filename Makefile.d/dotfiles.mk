@@ -1,7 +1,6 @@
 .PHONY: echo all run copy link clean perm
 
 define DOTFILES_MAP
-arch/ghostty.conf .config/ghostty/config
 atuin/config.toml .config/atuin/config.toml
 atuin/themes/zed_kpango.toml .config/atuin/themes/zed_kpango.toml
 dockers/config.json .docker/config.json
@@ -57,14 +56,11 @@ link:
 	sudo ln -sfv $(ROOTDIR)/dockers/daemon.json /etc/docker/daemon.json
 
 CLEAN_FILES = \
-	$(HOME)/.config/compton \
 	$(HOME)/.config/fcitx5/conf/classicui.conf \
 	$(HOME)/.config/fcitx5/config \
 	$(HOME)/.config/fcitx5/profile \
 	$(HOME)/.config/ghostty \
 	$(HOME)/.config/helix \
-	$(HOME)/.config/i3 \
-	$(HOME)/.config/i3status \
 	$(HOME)/.config/nvim \
 	$(HOME)/.config/ranger \
 	$(HOME)/.config/sheldon \
@@ -75,18 +71,13 @@ CLEAN_FILES = \
 	$(HOME)/.config/workstyle \
 	$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
 	$(HOME)/Library/LaunchAgents/ulimit.plist \
-	$(HOME)/.Xdefaults \
-	$(HOME)/.xinitrc \
 	$(HOME)/.Xmodmap \
 	/etc/chrony.conf \
-	/etc/dbus-1/system.d/pulseaudio-bluetooth.conf \
 	/etc/default/tlp \
 	/etc/docker/config.json \
 	/etc/docker/daemon.json \
 	/etc/environment \
-	/etc/lightdm \
 	/etc/makepkg.conf \
-	/etc/modprobe.d/bbswitch.conf \
 	/etc/modprobe.d/blacklist-nouveau.conf \
 	/etc/modprobe.d/nowatchdog.conf \
 	/etc/modprobe.d/nvidia-tweaks.conf \
@@ -105,7 +96,6 @@ CLEAN_FILES = \
 	/etc/resolv.dnsmasq.conf \
 	/etc/resolv.pre-tailscale-backup.conf \
 	/etc/sudoers.d/$(SYS_USER) \
-	/etc/sysctl.conf \
 	/etc/mkinitcpio.conf \
 	/etc/mkinitcpio.d/linux.preset \
 	/etc/mkinitcpio.d/linux-zen.preset \
@@ -137,4 +127,15 @@ perm:
 	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f \( -name '*.conf' -o -name '*.service' -o -name '*.rules' -o -name '*.toml' -o -name '*.json' -o -name '*.yaml' -o -name '*.yml' \) -exec sudo chmod 644 {} \;
 	sudo chmod -R 644 $(ROOTDIR)/gpg-agent.conf
 	sudo chmod -R 644 $(ROOTDIR)/arch/waybar.json
-	\find $(ROOTDIR) -type d -name '.git' -prune -o -type f -not -name 'tmux.conf' -exec nkf -Lu -w --overwrite {} \;
+	\find $(ROOTDIR) \
+		-type d \( -name '.git' -o -name '.worktrees' \) -prune \
+		-o -type f \( \
+		  -name '*.zsh' -o -name '*.sh'   -o -name '*.conf' -o \
+		  -name '*.txt' -o -name '*.md'   -o -name '*.mk'   -o \
+		  -name '*.py'  -o -name '*.nix'  -o -name '*.toml' -o \
+		  -name '*.yaml' -o -name '*.yml' -o -name '*.json' -o \
+		  -name '*.service' -o -name '*.rules' -o -name '*.desktop' -o \
+		  -name 'zshrc' -o -name 'zshenv' -o \
+		  -name 'gitconfig' -o -name 'gitattributes' -o \
+		  -name 'sshconfig' -o -name 'editorconfig' -o -name 'Makefile' \
+		\) -not -name 'tmux.conf' -exec nkf -Lu -w --overwrite {} \;

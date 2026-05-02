@@ -6,8 +6,6 @@
       "Bash(journalctl -b --no-pager)",
       "Bash(journalctl -b -u systemd-modules-load --no-pager)"
     ],
-    "additionalDirectories": [
-      "/"
-    ]
+    "additionalDirectories": ["/"]
   }
 }

@@ -73,17 +73,17 @@ in
     documentation = [ "https://www.kernel.org/doc/html/latest/networking/scaling.html" ];
 
     # Trigger when the sfp0 network device appears in sysfs
-    bindsTo    = [ "sys-subsystem-net-devices-sfp0.device" ];
-    after      = [ "sys-subsystem-net-devices-sfp0.device" "network-pre.target" ];
-    wantedBy   = [ "network-online.target" ];
+    bindsTo = [ "sys-subsystem-net-devices-sfp0.device" ];
+    after = [ "sys-subsystem-net-devices-sfp0.device" "network-pre.target" ];
+    wantedBy = [ "network-online.target" ];
 
     serviceConfig = {
-      Type            = "oneshot";
+      Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart       = "${tuneIface} sfp0";
+      ExecStart = "${tuneIface} sfp0";
       # Retry once on failure (driver may not be fully initialised)
-      Restart         = "on-failure";
-      RestartSec      = "2s";
+      Restart = "on-failure";
+      RestartSec = "2s";
     };
   };
 
@@ -94,16 +94,16 @@ in
     description = "X710 NIC tuning for sfp1 (Intel i40e)";
     documentation = [ "https://www.kernel.org/doc/html/latest/networking/scaling.html" ];
 
-    bindsTo    = [ "sys-subsystem-net-devices-sfp1.device" ];
-    after      = [ "sys-subsystem-net-devices-sfp1.device" "network-pre.target" ];
-    wantedBy   = [ "network-online.target" ];
+    bindsTo = [ "sys-subsystem-net-devices-sfp1.device" ];
+    after = [ "sys-subsystem-net-devices-sfp1.device" "network-pre.target" ];
+    wantedBy = [ "network-online.target" ];
 
     serviceConfig = {
-      Type            = "oneshot";
+      Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart       = "${tuneIface} sfp1";
-      Restart         = "on-failure";
-      RestartSec      = "2s";
+      ExecStart = "${tuneIface} sfp1";
+      Restart = "on-failure";
+      RestartSec = "2s";
     };
   };
 

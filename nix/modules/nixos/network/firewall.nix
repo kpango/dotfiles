@@ -10,7 +10,7 @@
     checkReversePath = false;
     extraCommands = settings.network.firewall.extraCommands;
   };
-  
+
   networking.nat = {
     enable = true;
     internalInterfaces = [ "ve-+" ];

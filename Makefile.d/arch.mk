@@ -6,7 +6,7 @@ arch/fcitx.conf .config/fcitx5/config
 arch/fcitx.profile .config/fcitx5/profile
 arch/kanshi.conf .config/kanshi/config
 arch/psd.conf .config/psd/psd.conf
-arch/ranger .config/ranger
+ranger .config/ranger
 arch/sway.conf .config/sway/config
 arch/xdg-desktop-portal.conf .config/xdg-desktop-portal/portals.conf
 arch/waybar.css .config/waybar/style.css

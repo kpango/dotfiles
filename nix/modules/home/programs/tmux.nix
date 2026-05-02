@@ -11,8 +11,8 @@
       in
       if isDarwin then
         builtins.replaceStrings
-          ["# set-environment -g PATH"]
-          ["set-environment -g PATH"]
+          [ "# set-environment -g PATH" ]
+          [ "set-environment -g PATH" ]
           baseConfig
       else
         baseConfig;
