@@ -37,7 +37,7 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
 
-      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Evaluate all hosts
         run: make nix/test/eval
@@ -54,7 +54,7 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
 
-      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: nix flake check --no-build
         run: make nix/test/check
@@ -77,7 +77,7 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
 
-      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Dry-run build for ${{ matrix.host }}
         run: make nix/test/dry-run NIX_HOST_NAME=${{ matrix.host }}
@@ -101,7 +101,7 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
 
-      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Build system closure for ${{ matrix.host }}
         run: make nix/test/build NIX_HOST_NAME=${{ matrix.host }}
@@ -149,7 +149,7 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
 
-      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Build Darwin system for ${{ matrix.host }}
         run: make nix/test/build/darwin NIX_HOST_NAME=${{ matrix.host }}
@@ -179,7 +179,7 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
 
-      - uses: DeterminateSystems/magic-nix-cache-action@v8
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
 
       - name: Enable KVM access
         run: |
