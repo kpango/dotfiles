@@ -1,0 +1,248 @@
+name: "Test Nix configurations"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "nix/**"
+      - "Makefile"
+      - "Makefile.d/nix.mk"
+      - ".github/workflows/nix.yaml"
+  pull_request:
+    paths:
+      - "nix/**"
+      - "Makefile"
+      - "Makefile.d/nix.mk"
+      - ".github/workflows/nix.yaml"
+  workflow_dispatch:
+  schedule:
+    # Weekly on Monday 02:00 UTC — catches nixpkgs-unstable breakage
+    - cron: "0 2 * * 1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Stage 1: Fast static gates (all events, run in parallel) ───────────────
+
+  fmt-check:
+    name: "Nix format check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+      - name: Check nixpkgs-fmt formatting
+        run: make nix/fmt/check
+
+  eval:
+    name: "Evaluate all NixOS host configs"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+      - name: Evaluate all hosts
+        run: make nix/test/eval
+
+  check:
+    name: "Flake check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+      - name: nix flake check --no-build
+        run: make nix/test/check
+
+  # ── Stage 2: Derivation graph resolution per host (all events) ────────────
+
+  dry-run:
+    name: "Dry-run (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    needs: [fmt-check, eval, check]
+    strategy:
+      fail-fast: false
+      matrix:
+        host:
+          - tr
+          - p1
+          - x1
+          - g2
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+      - name: Dry-run build for ${{ matrix.host }}
+        run: make nix/test/dry-run NIX_HOST_NAME=${{ matrix.host }}
+
+  # ── Stage 2b: Darwin build on Apple Silicon macOS (all events) ────────────
+  #
+  # Runs parallel to dry-run so macOS-specific failures surface quickly.
+
+  darwin-build:
+    name: "Darwin build (${{ matrix.host }})"
+    runs-on: macos-14
+    needs: [fmt-check, eval, check]
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        host:
+          - macbook-pro-m3
+          - macbook-air-m1
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      # magic-nix-cache-action@v13 crashes on macos-14 (ARM64) due to a libc++
+      # ABI mismatch; skip it here and rely on Nix's own binary cache instead.
+      - name: Build Darwin system for ${{ matrix.host }}
+        run: make nix/test/build/darwin NIX_HOST_NAME=${{ matrix.host }}
+
+  # ── Stage 3a: Full NixOS system build (push / schedule / manual only) ──────
+  #
+  # Downloads the complete system closure from binary cache.
+  # Skipped on pull_request to keep PR feedback fast.
+
+  nixos-build:
+    name: "NixOS build (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    needs: [dry-run]
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        host:
+          - tr
+          - p1
+          - x1
+          - g2
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+      - name: Build system closure for ${{ matrix.host }}
+        run: make nix/test/build NIX_HOST_NAME=${{ matrix.host }}
+
+  # ── Stage 3b: NixOS Docker eval (push / schedule / manual only) ────────────
+  #
+  # Evaluates each config inside ghcr.io/nixos/nix, validating the Docker
+  # fallback path used by nix-run.sh on non-NixOS hosts (no native nix).
+
+  nixos-docker:
+    name: "NixOS Docker (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    needs: [dry-run]
+    strategy:
+      fail-fast: false
+      matrix:
+        host:
+          - tr
+          - p1
+          - x1
+          - g2
+    steps:
+      - uses: actions/checkout@v6
+      - name: Pull NixOS container image
+        run: docker pull ghcr.io/nixos/nix:latest
+      - name: Evaluate config inside NixOS Docker
+        run: make nix/test/docker NIX_HOST_NAME=${{ matrix.host }}
+
+  # ── Stage 4: QEMU VM smoke test (push / schedule / manual only) ────────────
+  #
+  # Builds a KVM-accelerated VM and boots it headlessly; passes when the
+  # login prompt appears, confirming systemd and all services started cleanly.
+  # tr excluded: its RAID/bond/NVIDIA modules don't resolve cleanly in QEMU.
+  # nixos-build being skipped on pull_request automatically skips this job too.
+
+  nixos-vm:
+    name: "QEMU VM (${{ matrix.host }})"
+    runs-on: ubuntu-latest
+    needs: [nixos-build]
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        host:
+          - p1
+          - x1
+          - g2
+    steps:
+      - uses: actions/checkout@v6
+      - uses: DeterminateSystems/nix-installer-action@v22
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+      - uses: DeterminateSystems/magic-nix-cache-action@v13
+      - name: Enable KVM access
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Build VM image for ${{ matrix.host }}
+        run: make nix/test/vm/build NIX_HOST_NAME=${{ matrix.host }}
+
+      - name: Boot VM and wait for login prompt
+        run: |
+          QEMU_NET_OPTS="hostfwd=tcp::2222-:22" \
+          QEMU_OPTS="-m 2048 -smp 2 -enable-kvm -display none -no-reboot" \
+          ./nix/result/bin/run-${{ matrix.host }}-vm >/tmp/vm.log 2>&1 &
+          VM_PID=$!
+
+          echo "Waiting for NixOS login prompt (up to 3 min)..."
+          for i in $(seq 1 60); do
+            if grep -qE "login:|<<< NixOS" /tmp/vm.log 2>/dev/null; then
+              echo "VM booted successfully"
+              kill "$VM_PID" 2>/dev/null || true
+              exit 0
+            fi
+            if ! kill -0 "$VM_PID" 2>/dev/null; then
+              echo "VM process exited unexpectedly"
+              cat /tmp/vm.log || true
+              exit 1
+            fi
+            sleep 3
+          done
+
+          echo "Timed out waiting for VM boot"
+          echo "=== serial output ==="
+          cat /tmp/vm.log || true
+          kill "$VM_PID" 2>/dev/null || true
+          exit 1

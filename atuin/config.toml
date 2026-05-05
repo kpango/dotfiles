@@ -1,0 +1,51 @@
+[theme]
+name = "zed_kpango"
+
+# ---------------------------------------------------------
+# Search and UI Optimization
+# ---------------------------------------------------------
+# Set search mode to Fuzzy
+search_mode = "fuzzy"
+
+# Use compact UI to avoid covering the entire screen
+style = "compact"
+inline_height = 20
+
+# ---------------------------------------------------------
+# Interaction Settings
+# ---------------------------------------------------------
+# Do not execute immediately on enter; insert into command line instead
+enter_accept = false
+
+# ---------------------------------------------------------
+# Context-aware History Filtering
+# ---------------------------------------------------------
+# Enable filtering history by Git repository
+workspaces = true
+
+# Default search scope
+filter_mode = "global"
+
+# ---------------------------------------------------------
+# Security and Noise Reduction
+# ---------------------------------------------------------
+# Automatically exclude commands containing sensitive information from history
+secrets_filter = true
+
+# Regular expressions for commands you don't want to save in history
+history_filter = [
+   "^secret-cmd",
+   "^jq ",
+   "^ls",
+   "^cd"
+]
+
+# ---------------------------------------------------------
+# Other Features
+# ---------------------------------------------------------
+# Show a preview when a long command is truncated
+show_preview = true
+
+# Use Sync v2
+[sync]
+records = true

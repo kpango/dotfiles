@@ -1,0 +1,39 @@
+#!/bin/bash
+IFACE=$1
+ACTION=$2
+[[ "$ACTION" != "up" ]] && exit 0
+[[ "$IFACE" != "sfp0" && "$IFACE" != "sfp1" ]] && exit 0
+
+# 1. Threaded NAPI
+echo 1 > /sys/class/net/$IFACE/threaded
+
+# 2. Coalescing — must disable adaptive before setting usecs, then re-enable
+ethtool -C "$IFACE" adaptive-rx off adaptive-tx off rx-usecs 100 tx-usecs 100
+ethtool -C "$IFACE" adaptive-rx on adaptive-tx on
+
+# 3. Recreate root mq so fq leaves inherit correct quantum for MTU 9000
+tc qdisc replace dev "$IFACE" root mq
+
+# 4. RFS + RPS
+FLOW_CNT=512
+ALL_CPUS="ffffffff,ffffffff,ffffffff,ffffffff"
+for queue_dir in /sys/class/net/$IFACE/queues/rx-*; do
+    echo "$ALL_CPUS" > "$queue_dir/rps_cpus"
+    echo "$FLOW_CNT"  > "$queue_dir/rps_flow_cnt"
+done
+
+# 5. XPS: map TX queue N → CPU N
+python3 - "$IFACE" << 'PYEOF'
+import os, sys
+iface = sys.argv[1]
+base  = f"/sys/class/net/{iface}/queues"
+tx_queues = sorted([q for q in os.listdir(base) if q.startswith("tx-")],
+                   key=lambda x: int(x.split("-")[1]))
+for i, q in enumerate(tx_queues):
+    cpu = i % 128
+    words = [0, 0, 0, 0]
+    words[cpu // 32] = 1 << (cpu % 32)
+    mask = ",".join(f"{words[3-j]:08x}" for j in range(4))
+    with open(f"{base}/{q}/xps_cpus", "w") as f:
+        f.write(mask)
+PYEOF

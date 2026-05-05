@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(journalctl -b -p err --no-pager)",
+      "Bash(systemctl --failed --no-pager)",
+      "Bash(journalctl -b --no-pager)",
+      "Bash(journalctl -b -u systemd-modules-load --no-pager)"
+    ],
+    "additionalDirectories": ["/"]
+  }
+}

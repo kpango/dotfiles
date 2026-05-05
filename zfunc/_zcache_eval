@@ -1,0 +1,47 @@
+local name="$1"
+local defer=$2
+local cmd="$3"
+local cache_file="$ZCACHE_DIR/${name}.zsh"
+shift 3
+
+local need_eval=0
+if [[ ! -f "$cache_file" ]]; then
+	need_eval=1
+else
+	for d in "$@"; do
+		if [[ -n "$d" && "$d" -nt "$cache_file" ]]; then
+			need_eval=1
+			break
+		fi
+	done
+fi
+
+if (( need_eval )); then
+	local stale=(${cache_file}.lock(Nms+30))
+	if (( ${#stale} > 0 )); then
+		command rmdir "${cache_file}.lock" 2>/dev/null
+	fi
+
+	if command mkdir "${cache_file}.lock" 2>/dev/null; then
+		eval "$cmd" > "${cache_file}.tmp"
+		command mv -f "${cache_file}.tmp" "$cache_file"
+		command rmdir "${cache_file}.lock" 2>/dev/null
+		zcompile "$cache_file" 2>/dev/null &|
+	else
+		local i=0
+		while [[ -d "${cache_file}.lock" ]] && (( i < 1200 )); do
+			builtin read -t 0.05 2>/dev/null || sleep 0.05 2>/dev/null
+			(( i++ ))
+		done
+		if [[ ! -f "$cache_file" ]]; then
+			eval "$cmd" > "${cache_file}.tmp.$$"
+			command mv -f "${cache_file}.tmp.$$" "$cache_file"
+		fi
+	fi
+fi
+
+if (( defer )) && (($+functions[zsh-defer])); then
+	zsh-defer source "$cache_file"
+else
+	source "$cache_file"
+fi

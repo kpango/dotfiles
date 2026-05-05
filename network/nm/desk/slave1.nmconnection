@@ -1,0 +1,32 @@
+[connection]
+id=slave1
+uuid=2780dc6e-e321-40e6-9e26-6988aa71525a
+type=ethernet
+controller=bond0
+interface-name=sfp1
+port-type=bond
+timestamp=1738635599
+
+[ethernet]
+auto-negotiate=true
+
+[802-3-ethernet]
+mac-address=64:9D:99:B1:03:45
+duplex=full
+
+[bond-port]
+
+[ethtool]
+# オフロード機能の設定 (basic offload features are on by default for i40e)
+feature-tx-tcp-segmentation=true
+feature-tx-tcp6-segmentation=true
+feature-rx-gro-list=false
+feature-rx-udp-gro-forwarding=true
+
+# リングバッファサイズ (max 8160 for i40e)
+ring-rx=8160
+ring-tx=8160
+
+# フロー制御
+pause-rx=true
+pause-tx=true

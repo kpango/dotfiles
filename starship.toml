@@ -1,0 +1,235 @@
+"$schema" = "https://starship.rs/config-schema.json"
+
+add_newline = false
+
+command_timeout = 200
+
+format = """
+$time\
+$username\
+$hostname\
+$battery \
+$shlvl\
+$directory\
+$vcsh\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$git_metrics\
+$hg_branch\
+$docker_context\
+$package\
+$cmake\
+$dart\
+$dotnet\
+$elixir\
+$elm\
+$erlang\
+$golang\
+$helm\
+$java\
+$julia\
+$kotlin\
+$nim\
+$nodejs\
+$ocaml\
+$perl\
+$php\
+$purescript\
+$python\
+$ruby\
+$rust\
+$swift\
+$terraform\
+$vagrant\
+$zig\
+$nix_shell\
+$conda\
+$memory_usage\
+$aws\
+$gcloud\
+$kubernetes\
+$openstack\
+$env_var\
+$crystal\
+$custom\
+$cmd_duration\
+$line_break\
+$lua\
+$jobs\
+$status\
+$character"""
+
+# Second param
+[hostname]
+disabled = false
+format = "[$hostname]($style) in "
+ssh_only = false
+# style = "bold dimmed red"
+trim_at = "-"
+
+[directory]
+# style = "purple"
+truncate_to_repo = false
+truncation_length = 30
+truncation_symbol = "repo: "
+
+# Fourth param
+[sudo]
+disabled = false
+
+# Last param in the first line/row
+[cmd_duration]
+disabled = false
+format = "took [$duration]($style)"
+min_time = 1
+
+## SECOND LINE/ROW: Prompt
+# Somethere at the beginning
+# [battery]
+# charging_symbol = ""
+# disabled = true
+# discharging_symbol = ""
+# full_symbol = ""
+#
+# [[battery.display]]  # "bold red" style when capacity is between 0% and 10%
+# disabled = false
+# style = "bold red"
+# threshold = 15
+#
+# [[battery.display]]  # "bold yellow" style when capacity is between 10% and 30%
+# disabled = true
+# style = "bold yellow"
+# threshold = 50
+#
+# [[battery.display]]  # "bold green" style when capacity is between 10% and 30%
+# disabled = true
+# style = "bold green"
+# threshold = 80
+
+[username]
+style_user = "green bold"
+style_root = "red bold"
+format = " [╭─$user]($style)@"
+disabled = false
+show_always = true
+
+[time]
+disabled = false
+format = " 🕙 [$time](cyan)\n"
+time_format = "%Y-%m-%d %H:%M:%S"
+utc_time_offset = "+9"
+
+# Prompt: param 2
+[character]
+error_symbol = " [×](bold red)"
+success_symbol = " [╰─λ](bold green)"
+
+# SYMBOLS
+[status]
+disabled = false
+format = '[\[$symbol$status_common_meaning$status_signal_name$status_maybe_int\]]($style)'
+map_symbol = true
+pipestatus = true
+symbol = "🔴"
+
+[aws]
+#symbol = " "
+symbol = " "
+
+[conda]
+symbol = " "
+
+[dart]
+symbol = " "
+
+[docker_context]
+symbol = " "
+disabled = false
+
+# [shlvl]
+# disabled = false
+# format = "$shlvl level(s) down"
+# threshold = 3
+
+[elixir]
+symbol = " "
+
+[elm]
+symbol = " "
+
+[git_branch]
+symbol = " "
+
+[golang]
+symbol = " "
+
+# [haskell]
+# symbol = " "
+
+[hg_branch]
+symbol = " "
+
+[java]
+symbol = " "
+
+[julia]
+symbol = " "
+
+[memory_usage]
+symbol = " "
+
+[nim]
+symbol = " "
+
+[nix_shell]
+symbol = " "
+
+[nodejs]
+symbol = " "
+
+[package]
+symbol = " "
+
+[perl]
+symbol = " "
+
+[php]
+symbol = " "
+
+[python]
+symbol = " "
+
+[ruby]
+symbol = " "
+
+[rust]
+symbol = " "
+
+[swift]
+symbol = "ﯣ "
+
+[gcloud]
+symbol = "️"
+format = 'on [$symbol $active(\($project\))]($style) '
+
+[git_metrics]
+disabled = false
+
+[git_status]
+conflicted = "🏳 "
+ahead = "⇡${count}🏎💨"
+behind = "⇣${count}😰"
+untracked = "🤷‍"
+stashed = "📦"
+modified = "📝"
+staged = '[++\($count\)](green)'
+renamed = "👅"
+deleted = "🗑"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}😵"
+style = "white"
+
+[kubernetes]
+format = 'on [$symbol $context\($namespace\)]($style) '
+disabled = false

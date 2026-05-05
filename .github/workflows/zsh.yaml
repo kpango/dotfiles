@@ -1,0 +1,163 @@
+name: "Test and benchmark zsh"
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "zsh/**"
+      - "zshrc"
+      - "zshenv"
+      - "zfunc/**"
+      - "sheldon.toml"
+      - ".github/workflows/zsh.yml"
+  pull_request:
+    paths:
+      - "zsh/**"
+      - "zshrc"
+      - "zshenv"
+      - "zfunc/**"
+      - "sheldon.toml"
+      - ".github/workflows/zsh.yml"
+  workflow_dispatch:
+  schedule:
+    # Weekly on Monday 03:00 UTC
+    - cron: "0 3 * * 1"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Syntax and format gate ──────────────────────────────────────────────────
+  lint:
+    name: "Syntax check"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install zsh and shfmt
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zsh
+          SHFMT_VER=v3.13.1
+          curl -fsSL \
+            "https://github.com/mvdan/sh/releases/download/${SHFMT_VER}/shfmt_${SHFMT_VER}_linux_amd64" \
+            -o /usr/local/bin/shfmt
+          chmod +x /usr/local/bin/shfmt
+
+      - name: Syntax check (zsh -n)
+        run: |
+          failed=0
+          for f in zshrc zshenv $(find zsh zfunc -type f | sort); do
+            if zsh -n "$f" 2>&1; then
+              printf "  OK   %s\n" "$f"
+            else
+              printf "  FAIL %s\n" "$f"
+              failed=$((failed + 1))
+            fi
+          done
+          [ "$failed" -eq 0 ] || exit 1
+
+      - name: Format check (make format/zsh)
+        run: |
+          make format/zsh
+          git diff --exit-code
+
+  # ── Startup time benchmark ──────────────────────────────────────────────────
+  #
+  # Measures zsh framework startup, not plugin download.  To keep the job
+  # deterministic and fast, tmux and sheldon are intentionally not installed:
+  #   • 01-tmux.zsh: entire block skipped via `(($+commands[tmux]))` guard
+  #   • 02-plugin.zsh: sheldon block skipped via `(($+commands[sheldon]))` guard
+  #
+  # A fake $HOME is created with symlinks to the repo's zshrc/zshenv so that
+  # ZDOTDIR does not need to be set.  DOTFILES_DIR and ZCACHE_DIR are injected
+  # as environment variables; zshrc/zshenv both honour pre-set values via `:-`.
+  benchmark:
+    name: "Startup benchmark"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install zsh
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y zsh
+
+      - name: Set up benchmark environment
+        run: |
+          BENCH_HOME=$(mktemp -d)
+          ZCACHE_DIR=/tmp/zcache
+          mkdir -p "$ZCACHE_DIR"
+          ln -sf "$GITHUB_WORKSPACE/zshrc"  "$BENCH_HOME/.zshrc"
+          ln -sf "$GITHUB_WORKSPACE/zshenv" "$BENCH_HOME/.zshenv"
+          echo "BENCH_HOME=$BENCH_HOME"   >> "$GITHUB_ENV"
+          echo "ZCACHE_DIR=$ZCACHE_DIR"   >> "$GITHUB_ENV"
+
+      - name: Cold start (cache generation)
+        run: |
+          printf "Cold start (generating cache): "
+          COLD_MS=$(
+            { time HOME="$BENCH_HOME" \
+                   ZCACHE_DIR="$ZCACHE_DIR" \
+                   DOTFILES_DIR="$GITHUB_WORKSPACE" \
+                   zsh -i -c exit 2>/dev/null; } 2>&1 \
+            | awk '/^real/ {
+                split($2, a, "m")
+                gsub("s", "", a[2])
+                printf "%.0f", a[1]*60000 + a[2]*1000
+              }'
+          )
+          echo "${COLD_MS} ms"
+          echo "COLD_MS=$COLD_MS" >> "$GITHUB_ENV"
+          echo "Cache files generated:"
+          ls -lh "$ZCACHE_DIR/" 2>/dev/null || true
+
+      - name: Warm startup benchmark (10 runs)
+        run: |
+          RUNS=10
+          total_ms=0
+          min_ms=999999
+          max_ms=0
+
+          for i in $(seq 1 $RUNS); do
+            ms=$(
+              { time HOME="$BENCH_HOME" \
+                     ZCACHE_DIR="$ZCACHE_DIR" \
+                     DOTFILES_DIR="$GITHUB_WORKSPACE" \
+                     zsh -i -c exit 2>/dev/null; } 2>&1 \
+              | awk '/^real/ {
+                  split($2, a, "m")
+                  gsub("s", "", a[2])
+                  printf "%.0f", a[1]*60000 + a[2]*1000
+                }'
+            )
+            printf "  run %-2d: %s ms\n" "$i" "$ms"
+            total_ms=$((total_ms + ms))
+            [ "$ms" -lt "$min_ms" ] && min_ms=$ms
+            [ "$ms" -gt "$max_ms" ] && max_ms=$ms
+          done
+
+          avg_ms=$(( total_ms / RUNS ))
+          echo ""
+          echo "  min=${min_ms} ms  max=${max_ms} ms  avg=${avg_ms} ms"
+
+          echo "WARM_MIN=$min_ms" >> "$GITHUB_ENV"
+          echo "WARM_MAX=$max_ms" >> "$GITHUB_ENV"
+          echo "WARM_AVG=$avg_ms" >> "$GITHUB_ENV"
+
+      - name: Publish benchmark summary
+        run: |
+          {
+            echo "## Zsh Startup Benchmark"
+            echo ""
+            echo "| Phase        | Time           |"
+            echo "| ------------ | -------------- |"
+            echo "| Cold start   | ${COLD_MS} ms  |"
+            echo "| Warm min     | ${WARM_MIN} ms |"
+            echo "| Warm avg     | ${WARM_AVG} ms |"
+            echo "| Warm max     | ${WARM_MAX} ms |"
+            echo ""
+            echo "_10 warm runs after cache pre-generation._"
+            echo "_sheldon and tmux not installed — plugin/session blocks skipped gracefully._"
+          } >> "$GITHUB_STEP_SUMMARY"

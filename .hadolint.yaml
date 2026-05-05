@@ -1,0 +1,15 @@
+ignored:
+  - DL3002 # Last USER should not be root
+  - DL3003 # Use WORKDIR to switch to a directory
+  - DL3006 # Always tag the version of an image explicitly
+  - DL3007 # Using latest is prone to errors
+  - DL3008 # Pin versions in apt get install
+  - DL3013 # Pin versions in pip
+  - DL3022 # COPY --from should reference a previously defined FROM alias
+  - DL4006 # Set the SHELL option -o pipefail
+  - SC2028 # echo may not expand escape sequences. Use printf
+  - SC2046 # Quote this to prevent word splitting
+  - SC2086 # Double quote to prevent globbing and word splitting
+  - SC2098 # This expansion will not see the mentioned assignment
+  - SC2153 # Possible misspelling: AARCH may not be assigned
+  - SC2016 # Expressions don't expand in single quotes

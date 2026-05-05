@@ -1,0 +1,105 @@
+shell = "zsh"
+
+apply = ["defer"]
+
+[plugins]
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
+
+[plugins.compinit]
+inline = 'zsh-defer -p -r -c "autoload -Uz compinit && if [[ -f ${ZDOTDIR:-$HOME}/.zcompdump ]]; then compinit -C; else compinit; fi"'
+
+[plugins.colors]
+inline = 'autoload -Uz colors && zsh-defer -p -r colors'
+
+[plugins.fzf]
+github = 'junegunn/fzf'
+apply = ['fzf-install', 'fzf-source']
+
+[plugins.kubectl-fzf]
+remote = "https://raw.githubusercontent.com/bonnefoa/kubectl-fzf/main/shell/kubectl_fzf.plugin.zsh"
+
+[plugins.bun-completions-zsh]
+remote = "https://raw.githubusercontent.com/oven-sh/bun/refs/heads/main/completions/bun.zsh"
+
+[plugins.starship]
+inline = '''
+if (($+commands[starship])); then
+  if [[ -f "$ZCACHE_DIR/starship.zsh" ]]; then
+    source "$ZCACHE_DIR/starship.zsh"
+  else
+    _starship_init() {
+      starship init zsh | sed -E -e "s/autoload -Uz add-zsh-hook//g" -e "s/add-zsh-hook precmd ([a-z_]*)/precmd_functions+=(\1)/g" -e "s/add-zsh-hook preexec ([a-z_]*)/preexec_functions+=(\1)/g" -e "s/PROMPT2=\"\\\$\((.*)\)\"/PROMPT2=\x27\$\(\1\)\x27/g"
+    }
+    zsh-defer -p -r _zcache_eval starship 0 "_starship_init" "$commands[starship]"
+  fi
+fi
+'''
+
+[plugins.zoxide]
+inline = 'if (($+commands[zoxide])); then if [[ -f "$ZCACHE_DIR/zoxide.zsh" ]]; then source "$ZCACHE_DIR/zoxide.zsh"; else zsh-defer -p -r _zcache_eval zoxide 0 "zoxide init zsh" "$commands[zoxide]"; fi; fi'
+
+[plugins.atuin]
+inline = '''
+if (($+commands[atuin])); then
+  if [[ -f "$ZCACHE_DIR/atuin.zsh" ]]; then
+    source "$ZCACHE_DIR/atuin.zsh"
+  else
+    _atuin_init() {
+      atuin init zsh | awk '/export ATUIN_SESSION=\$\(atuin uuid\)/ { print "    if [[ -r /proc/sys/kernel/random/uuid ]]; then\n        read -r ATUIN_SESSION < /proc/sys/kernel/random/uuid\n    else\n        ATUIN_SESSION=$(uuidgen)\n    fi\n    export ATUIN_SESSION=\"${ATUIN_SESSION//-/}\""; next } { print }' | sed -E -e "s/autoload -U add-zsh-hook//g" -e "s/add-zsh-hook preexec ([a-z_]*)/preexec_functions+=(\1)/g" -e "s/add-zsh-hook precmd ([a-z_]*)/precmd_functions+=(\1)/g"
+    }
+    zsh-defer -p -r _zcache_eval atuin 0 "_atuin_init" "$commands[atuin]"
+  fi
+fi
+'''
+
+[plugins.pay-respects]
+inline = 'if (($+commands[pay-respects])); then if [[ -f "$ZCACHE_DIR/pay-respects.zsh" ]]; then source "$ZCACHE_DIR/pay-respects.zsh"; else zsh-defer -p -r _zcache_eval pay-respects 0 "pay-respects zsh" "$commands[pay-respects]"; fi; fi'
+
+[plugins.zsh-patina]
+inline = 'if (($+commands[zsh-patina])); then if [[ -f "$ZCACHE_DIR/zsh-patina.zsh" ]]; then source "$ZCACHE_DIR/zsh-patina.zsh"; else zsh-defer -p -r _zcache_eval zsh-patina 0 "zsh-patina activate" "$commands[zsh-patina]"; fi; fi'
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ['defer']
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ['defer']
+
+[plugins.tmux-xpanes]
+github = "greymd/tmux-xpanes"
+apply = ['defer']
+
+[plugins.zsh-history-substring-search]
+github = "zsh-users/zsh-history-substring-search"
+apply = ['defer']
+
+[plugins.async-compile]
+inline = '''zsh-defer -p -r -c "(
+  [[ ! -f ~/.zshrc.zwc || ~/.zshrc -nt ~/.zshrc.zwc ]] && zcompile ~/.zshrc 2>/dev/null
+  [[ ! -f ~/.zcompdump.zwc || ~/.zcompdump -nt ~/.zcompdump.zwc ]] && zcompile ~/.zcompdump 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_zcache_eval.zwc || \$DOTFILES_DIR/zfunc/_zcache_eval -nt \$DOTFILES_DIR/zfunc/_zcache_eval.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_zcache_eval 2>/dev/null
+  for f in $XDG_DATA_HOME/sheldon/repos/**/*.zsh(N); do
+      [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
+  done
+  _zcache_eval combined 0 'cat \"\$DOTFILES_DIR/zsh\"/*.zsh(N)' \"\$DOTFILES_DIR/zsh\"/*.zsh(N)
+  if [[ \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\" -nt \"\$ZCACHE_DIR/sheldon.zsh\" ]]; then
+      _zcache_eval sheldon 0 \"sheldon source\" \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\"
+  fi
+  if (($+commands[direnv])) && [[ \"\$commands[direnv]\" -nt \"\$ZCACHE_DIR/direnv.zsh\" ]]; then
+      _zcache_eval direnv 1 \"direnv hook zsh\" \"\$commands[direnv]\"
+  fi
+  if [[ ${OSTYPE} == "darwin"* && -x /usr/libexec/path_helper ]] && [[ /etc/paths -nt \"\$ZCACHE_DIR/path_helper.zsh\" || /etc/paths.d -nt \"\$ZCACHE_DIR/path_helper.zsh\" ]]; then
+      _zcache_eval path_helper 0 \"/usr/libexec/path_helper -s\" /etc/paths /etc/paths.d
+  fi
+  for f in \$ZCACHE_DIR/*.zsh(N); do
+      [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
+  done
+) &|"'''
+
+[templates]
+defer = "zsh-defer -p -r -c \"{% for file in files %}source '{{ file }}'\n{% endfor %}\""
+fzf-install = "[[ ! -x {{ dir }}/bin/fzf ]] && {{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\" && rehash\n"
+fzf-source = "zsh-defer -p -r -c \"{% for file in files %}source <(sed -e '/bindkey.*fzf-history-widget/d' '{{ file }}')\n{% endfor %}\""
