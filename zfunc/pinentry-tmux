@@ -1,0 +1,124 @@
+#!/usr/bin/zsh
+# pinentry-tmux: GPG pinentry via tmux popup; falls back to pinentry-tty.
+# Implements the Assuan protocol subset used by gpg-agent.
+
+emulate zsh
+
+typeset _fallback="${PINENTRY_TMUX_FALLBACK:-/usr/bin/pinentry-tty}"
+# Prefer XDG_RUNTIME_DIR (tmpfs — passphrase never hits disk)
+typeset _tmpdir="${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}"
+typeset _sock="" _tmp="" _st=""
+
+# ── Cleanup: zero passphrase file, remove all temp files ──────────────────
+_cleanup() {
+	[[ -f "$_tmp" ]] && { print -rn -- >| "$_tmp" 2>/dev/null; rm -f "$_tmp" }
+	[[ -f "$_st"  ]] && rm -f "$_st"
+}
+trap _cleanup EXIT INT TERM HUP
+
+# ── Resolve tmux socket ────────────────────────────────────────────────────
+_try_sock() {
+	local s="${1%%,*}"
+	[[ -n "$s" && -S "$s" ]] && _sock="$s"
+}
+_try_sock "${TMUX:-}"
+[[ -z "$_sock" && -n "${PINENTRY_USER_DATA:-}" ]] &&
+	_try_sock "${${PINENTRY_USER_DATA##*TMUX=}%% *}"
+[[ -n "$_sock" ]] || exec "$_fallback" "$@"
+
+# ── Require tmux >= 3.2 for popup ─────────────────────────────────────────
+() {
+	local ver="${$(tmux -S "$_sock" -V 2>/dev/null)##* }"
+	integer maj="${ver%%.*}" min="${${ver##*.}%%[^0-9]*}"
+	(( maj > 3 || ( maj == 3 && min >= 2 ) ))
+} || exec "$_fallback" "$@"
+
+# ── URL-decode Assuan %XX sequences; result in $_decoded (no subshell) ────
+_decode() { typeset -g _decoded="${(g::)${1//%/\\x}}" }
+
+# ── Protocol state ─────────────────────────────────────────────────────────
+typeset _desc="" _prompt="Passphrase" _error="" _title="GPG"
+typeset _cmd="" _arg="" _line=""
+
+print -r -- 'OK Pleased to meet you'
+
+while IFS= read -r _line; do
+	_line="${_line%$'\r'}"
+	_cmd="${_line%%[[:space:]]*}"
+	_arg="${_line#*[[:space:]]}"
+	[[ "$_cmd" == "$_arg" ]] && _arg=""
+
+	case "$_cmd" in
+		SETDESC)   _decode "$_arg"; _desc="$_decoded";   print -r -- 'OK' ;;
+		SETPROMPT) _decode "$_arg"; _prompt="$_decoded"; print -r -- 'OK' ;;
+		SETERROR)  _decode "$_arg"; _error="$_decoded";  print -r -- 'OK' ;;
+		SETTITLE)  _decode "$_arg"; _title="$_decoded";  print -r -- 'OK' ;;
+		RESET)
+			_desc="" _prompt="Passphrase" _error="" _title="GPG"
+			print -r -- 'OK'
+			;;
+		GETPIN)
+			# Create temp files with restrictive permissions atomically
+			_tmp=$(umask 077; mktemp "${_tmpdir}/.pin-XXXXXX") || {
+				print -r -- 'ERR 83886208 System error'; continue
+			}
+			_st=$(umask 077; mktemp "${_tmpdir}/.pin-st-XXXXXX") || {
+				rm -f "$_tmp"; _tmp=""
+				print -r -- 'ERR 83886208 System error'; continue
+			}
+			# Inline popup script: no _ask temp file, args passed via $1-$5
+			tmux -S "$_sock" popup -E -w 72 -h 10 -- \
+				zsh -c '
+					emulate zsh
+					[[ -n "$3" ]] && print -r -- "\nError: $3"
+					print -r -- "${1:+\n$1}"
+					print
+					read -rs "?$2: " _p
+					print
+					print -n "$_p" > "$4"
+					printf OK > "$5"
+				' -- "$_title" "$_prompt" "$_error" "$_tmp" "$_st"
+			typeset _pin=$(<"$_tmp")
+			typeset _result=$(<"$_st" 2>/dev/null)
+			# Zero passphrase file immediately after reading
+			print -rn -- >| "$_tmp" 2>/dev/null
+			rm -f "$_tmp" "$_st"; _tmp="" _st=""
+			if [[ "$_result" == OK ]]; then
+				print -r -- "D $_pin"
+				print -r -- 'OK'
+			else
+				print -r -- 'ERR 83886179 Operation cancelled'
+			fi
+			# Best-effort in-process passphrase zeroing
+			_pin="${(l:${#_pin}::x:)_pin}"
+			;;
+		CONFIRM|MESSAGE)
+			_st=$(umask 077; mktemp "${_tmpdir}/.pin-st-XXXXXX") || {
+				print -r -- 'OK'; continue
+			}
+			tmux -S "$_sock" popup -E -w 72 -h 8 -- \
+				zsh -c '
+					emulate zsh
+					print -r -- "\n$1\n"
+					read -r "?[Enter] confirm  [q] cancel: " _a
+					[[ "$_a" == q* ]] && printf CANCEL > "$2" || printf OK > "$2"
+				' -- "$_desc" "$_st"
+			typeset _result=$(<"$_st" 2>/dev/null)
+			rm -f "$_st"; _st=""
+			[[ "$_result" == OK ]] \
+				&& print -r -- 'OK' \
+				|| print -r -- 'ERR 277 Operation cancelled'
+			;;
+		BYE)
+			print -r -- 'OK closing connection'
+			exit 0
+			;;
+		SETOK|SETCANCEL|SETNOTOK|SETQUALITYBAR|SETQUALITYBAR_TT|\
+		OPTION|NOP|CLEARPASSPHRASE|PINENTRY_LAUNCHED)
+			print -r -- 'OK'
+			;;
+		*)
+			print -r -- 'OK'
+			;;
+	esac
+done

@@ -1,0 +1,534 @@
+.PHONY: dotfiles/install dotfiles/compile dotfiles/clean dotfiles/perm precompile/zsh \
+        arch/install arch/p1/install arch/desk/install \
+        mac/install \
+        claude/install claude/docker/install \
+        echo run \
+        link copy clean perm \
+        arch_link arch_copy arch_p1_link arch_p1_copy arch_desk_link arch_desk_copy \
+        mac_link mac_copy \
+        tmux/go/install \
+        tmux/go/update
+
+MODE ?= link
+
+# ── Dotfiles map ──────────────────────────────────────────────────────────────
+
+define DOTFILES_MAP
+atuin/config.toml .config/atuin/config.toml
+atuin/themes/zed_kpango.toml .config/atuin/themes/zed_kpango.toml
+claude/settings.json .claude/settings.json
+claude/settings.local.json .claude/settings.local.json
+claude/CLAUDE.md .claude/CLAUDE.md
+dockers/config.json .docker/config.json
+dockers/daemon.json .docker/daemon.json
+editorconfig .editorconfig
+gemini/settings.json .gemini/settings.json
+gemini/policies/policy.toml .gemini/policies/rules.toml
+chrome-beta-flags.conf .config/chrome-beta-flags.conf
+desktop/discord.desktop .local/share/applications/discord.desktop
+desktop/slack.desktop .local/share/applications/slack.desktop
+ghostty.conf .config/ghostty/config
+gitattributes .gitattributes
+gitconfig .gitconfig
+.gitignore .gitignore
+gpg-agent.conf .gnupg/gpg-agent.conf
+gitui/key_bindings.ron .config/gitui/key_bindings.ron
+gitui/theme.ron .config/gitui/theme.ron
+helix/config.toml .config/helix/config.toml
+helix/languages.toml .config/helix/languages.toml
+helix/themes/zed_kpango.toml .config/helix/themes/zed_kpango.toml
+herdr/config.toml .config/herdr/config.toml
+hunk.toml .config/hunk/config.toml
+sheldon.toml .config/sheldon/plugins.toml
+systemd/environment.d/xdg.conf .config/environment.d/xdg.conf
+systemd/user/atuin.service .config/systemd/user/atuin.service
+systemd/user/herdr.service .config/systemd/user/herdr.service
+systemd/user/kanshi.service .config/systemd/user/kanshi.service
+systemd/user/tmux.service .config/systemd/user/tmux.service
+systemd/user/zsh-patina.service .config/systemd/user/zsh-patina.service
+tmux.conf .tmux.conf
+tmux.conf.d .tmux.conf.d
+tmux.new-session .tmux.new-session
+zshrc .zshrc
+zfunc .zfunc
+zshenv .zshenv
+endef
+export DOTFILES_MAP
+
+CLEAN_FILES = \
+	$(HOME)/.config/fcitx5/conf/classicui.conf \
+	$(HOME)/.config/fcitx5/config \
+	$(HOME)/.config/fcitx5/profile \
+	$(HOME)/.config/ghostty \
+	$(HOME)/.config/helix \
+	$(HOME)/.config/nvim \
+	$(HOME)/.config/ranger \
+	$(HOME)/.config/sheldon \
+	$(HOME)/.config/sway \
+	$(HOME)/.config/waybar \
+	$(HOME)/.config/xdg-desktop-portal \
+	$(HOME)/.config/wofi \
+	$(HOME)/.config/workstyle \
+	$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
+	$(HOME)/Library/LaunchAgents/ulimit.plist \
+	$(HOME)/.Xmodmap \
+	/etc/chrony.conf \
+	/etc/default/tlp \
+	/etc/docker/config.json \
+	/etc/docker/daemon.json \
+	/etc/environment \
+	/etc/makepkg.conf \
+	/etc/modprobe.d/blacklist-nouveau.conf \
+	/etc/modprobe.d/nowatchdog.conf \
+	/etc/modprobe.d/nvidia-tweaks.conf \
+	/etc/modprobe.d/thinkfan.conf \
+	/etc/modules-load.d/bbr.conf \
+	/etc/modules-load.d/nf_conntrack.conf \
+	/etc/modules-load.d/nvidia-uvm.conf \
+	/etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
+	/etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
+	/etc/NetworkManager/dnsmasq.d/dnsmasq.conf \
+	/etc/NetworkManager/NetworkManager.conf \
+	/etc/pacman.conf \
+	/etc/profile.d/fcitx.sh \
+	/etc/profile.d/sway.sh \
+	/etc/pulse/default.pa \
+	/etc/resolv.dnsmasq.conf \
+	/etc/resolv.pre-tailscale-backup.conf \
+	/etc/sudoers.d/$(SYS_USER) \
+	/etc/mkinitcpio.conf \
+	/etc/mkinitcpio.d/linux.preset \
+	/etc/mkinitcpio.d/linux-zen.preset \
+	/etc/sysctl.d/99-sysctl.conf \
+	/etc/systemd/system/nvidia-disable-resume.service \
+	/etc/tmpfiles.d/thp.conf \
+	/etc/systemd/system/nvidia-enable-power-off.service \
+	/etc/systemd/system/nvidia-unload.service \
+	/etc/systemd/system/pulseaudio.service \
+	/etc/tlp.conf \
+	/etc/udev/rules.d/60-ioschedulers.rules \
+	/etc/udev/rules.d/60-nvidia.rules \
+	/usr/share/applications/com.mitchellh.ghostty.desktop
+
+# ── Arch maps ─────────────────────────────────────────────────────────────────
+
+define ARCH_LINK_MAP
+arch/fcitx.classicui.conf .config/fcitx5/conf/classicui.conf
+arch/fcitx.conf .config/fcitx5/config
+arch/fcitx.profile .config/fcitx5/profile
+arch/kanshi.conf .config/kanshi/config
+arch/psd.conf .config/psd/psd.conf
+ranger .config/ranger
+arch/sway.conf .config/sway/config
+sway/scripts .config/sway/scripts
+arch/xdg-desktop-portal.conf .config/xdg-desktop-portal/portals.conf
+arch/waybar.css .config/waybar/style.css
+arch/waybar.json .config/waybar/config
+arch/wofi/style.css .config/wofi/style.css
+arch/wofi/wofi.conf .config/wofi/config
+arch/workstyle.toml .config/workstyle/config.toml
+arch/Xmodmap .Xmodmap
+endef
+export ARCH_LINK_MAP
+
+define ARCH_SUDO_LINK_MAP
+arch/60-ioschedulers.rules /etc/udev/rules.d/60-ioschedulers.rules
+arch/default.pa /etc/pulse/default.pa
+arch/limits.conf /etc/security/limits.conf
+arch/makepkg.conf /etc/makepkg.conf
+arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
+arch/modules-load.d/nf_conntrack.conf /etc/modules-load.d/nf_conntrack.conf
+arch/pacman.conf /etc/pacman.conf
+arch/sway.sh /etc/profile.d/sway.sh
+arch/thinkfan.conf /etc/thinkfan.conf
+arch/tlp /etc/default/tlp
+arch/tlp /etc/tlp.conf
+dockers/config.json /root/.docker/config.json
+dockers/daemon.json /root/.docker/daemon.json
+network/dns/dnsmasq.conf /etc/NetworkManager/dnsmasq.d/dnsmasq.conf
+network/nm/NetworkManager.conf /etc/NetworkManager/NetworkManager.conf
+network/dns/resolv.dnsmasq.conf /etc/resolv.dnsmasq.conf
+network/dns/resolv.dnsmasq.conf /etc/resolv.pre-tailscale-backup.conf
+network/sysctl/sysctl.conf /etc/sysctl.d/99-sysctl.conf
+arch/ghostty.desktop /usr/share/applications/com.mitchellh.ghostty.desktop
+arch/hooks/rebuild-aur-helpers.hook /etc/pacman.d/hooks/rebuild-aur-helpers.hook
+arch/hooks.d/rebuild-aur-helpers.sh /usr/local/bin/rebuild-aur-helpers.sh
+zfunc/pinentry-tmux /usr/local/bin/pinentry-tmux
+arch/mkinitcpio.conf /etc/mkinitcpio.conf
+arch/mkinitcpio/linux.preset /etc/mkinitcpio.d/linux.preset
+arch/mkinitcpio/linux-zen.preset /etc/mkinitcpio.d/linux-zen.preset
+arch/systemd/NetworkManager.service.d/capabilities.conf /etc/systemd/system/NetworkManager.service.d/capabilities.conf
+endef
+export ARCH_SUDO_LINK_MAP
+
+define ARCH_SUDO_CP_MAP
+arch/chrony.conf /etc/chrony.conf
+arch/sudoers /etc/sudoers.d/$(SYS_USER)
+arch/environment /etc/environment
+network/nm/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+network/nm/nmcli-bond-auto-connect.sh /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
+endef
+export ARCH_SUDO_CP_MAP
+
+define ARCH_DESK_SUDO_LINK_MAP
+arch/loader/entries/arch.conf /boot/loader/entries/arch.conf
+arch/modprobe.d/blacklist-nouveau.conf /etc/modprobe.d/blacklist-nouveau.conf
+arch/modprobe.d/nowatchdog.conf /etc/modprobe.d/nowatchdog.conf
+arch/modprobe.d/thinkfan-desk.conf /etc/modprobe.d/thinkfan.conf
+arch/systemd/nvidia-unload.service /etc/systemd/system/nvidia-unload.service
+arch/tmpfiles.d/thp.conf /etc/tmpfiles.d/thp.conf
+endef
+export ARCH_DESK_SUDO_LINK_MAP
+
+define ARCH_PREP
+	sudo mkdir -p /etc/systemd/system/NetworkManager.service.d
+	sudo mkdir -p /etc/pacman.d/hooks
+	sudo mkdir -p /var/cache/aur-src
+	mkdir -p $(HOME)/.config/fcitx5/conf
+	mkdir -p $(HOME)/.config/kanshi
+	mkdir -p $(HOME)/.config/psd
+	mkdir -p $(HOME)/.config/sway
+	mkdir -p $(HOME)/.config/xdg-desktop-portal
+	mkdir -p $(HOME)/.config/waybar
+	mkdir -p $(HOME)/.config/wofi
+	mkdir -p $(HOME)/.config/workstyle
+	sudo mkdir -p /etc/modules-load.d/
+	sudo mkdir -p /etc/udev/rules.d
+	sudo mkdir -p /root/.docker
+endef
+
+define ARCH_POST
+	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
+	sudo chown root:root /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
+	sudo chown -R 0:0 /etc/sudoers.d
+	sudo chmod -R 0440 /etc/sudoers.d
+	sudo chown -R 0:0 /etc/sudoers.d/$(SYS_USER)
+	sudo chmod -R 0440 /etc/sudoers.d/$(SYS_USER)
+	sudo chmod +x /usr/local/bin/rebuild-aur-helpers.sh
+	sudo chown root:root /usr/local/bin/rebuild-aur-helpers.sh
+	sudo sysctl -e -p /etc/sysctl.d/99-sysctl.conf
+	sudo systemctl daemon-reload
+	loginctl enable-linger $(SYS_USER)
+	systemctl --user daemon-reload
+	systemctl --user enable --now atuin.service
+	systemctl --user enable --now kanshi.service
+	systemctl --user enable --now tmux.service
+	systemctl --user enable --now zsh-patina.service
+endef
+
+define ARCH_P1_POST
+	rm -rf $(HOME)/.config/psd
+	mkdir $(HOME)/.config/psd
+	sudo systemctl daemon-reload
+endef
+
+define ARCH_DESK_POST
+	sudo mkdir -p /etc/systemd/system/irqbalance.service.d
+	sudo rm -rf /etc/systemd/system/irqbalance.service.d/override.conf
+	sudo cp $(ROOTDIR)/arch/service/irqbalance.service /etc/systemd/system/irqbalance.service.d/override.conf
+	sudo rm -rf /etc/NetworkManager/system-connections
+	sudo mkdir -p /etc/NetworkManager/system-connections
+	sudo cp $(ROOTDIR)/network/nm/desk/bond0.nmconnection /etc/NetworkManager/system-connections/bond0.nmconnection
+	sudo cp $(ROOTDIR)/network/nm/desk/eth0.nmconnection /etc/NetworkManager/system-connections/eth0.nmconnection
+	sudo cp $(ROOTDIR)/network/nm/desk/slave0.nmconnection /etc/NetworkManager/system-connections/slave0.nmconnection
+	sudo cp $(ROOTDIR)/network/nm/desk/slave1.nmconnection /etc/NetworkManager/system-connections/slave1.nmconnection
+	sudo chmod -R 600 /etc/NetworkManager/system-connections
+	sudo chown -R root:root /etc/NetworkManager/system-connections
+	sudo udevadm control --reload-rules
+	sudo udevadm trigger
+	sudo nmcli connection reload
+	sudo systemctl daemon-reload
+	sudo systemctl enable nvidia-unload.service
+	sudo systemctl restart NetworkManager
+	sudo systemd-tmpfiles --create /etc/tmpfiles.d/thp.conf
+endef
+
+# ── macOS ──────────────────────────────────────────────────────────────────────
+
+MACOS_LAUNCH_AGENTS = localhost.homebrew-autoupdate.plist ulimit.plist
+
+define MAC_PREP
+	sudo rm -rf \
+		/etc/docker/config.json \
+		/etc/docker/daemon.json \
+		$(HOME)/.docker/config.json \
+		$(HOME)/.docker/daemon.json \
+		$(HOME)/.gnupg/gpg-agent.conf \
+		$(HOME)/.tmux.conf \
+		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
+		$(HOME)/Library/LaunchAgents/ulimit.plist
+	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
+	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
+	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
+	sed -i.bak 's|/usr/bin/pinentry-tty|/opt/homebrew/bin/pinentry-mac|g' $(HOME)/.gnupg/gpg-agent.conf
+endef
+
+# ── Shared Nvidia block (used by arch/p1/install and arch/desk/install) ────────
+
+define NVIDIA_INSTALL
+	$(if $(filter copy,$(MODE)),sudo cp "$(ROOTDIR)/nvidia/nvidia-tweaks.conf" "/etc/modprobe.d/nvidia-tweaks.conf",sudo ln -sfvn "$(ROOTDIR)/nvidia/nvidia-tweaks.conf" "/etc/modprobe.d/nvidia-tweaks.conf")
+	$(if $(filter copy,$(MODE)),sudo cp "$(ROOTDIR)/nvidia/nvidia-uvm.conf" "/etc/modules-load.d/nvidia-uvm.conf",sudo ln -sfvn "$(ROOTDIR)/nvidia/nvidia-uvm.conf" "/etc/modules-load.d/nvidia-uvm.conf")
+	$(if $(filter copy,$(MODE)),sudo cp "$(ROOTDIR)/nvidia/60-nvidia.rules" "/etc/udev/rules.d/60-nvidia.rules",sudo ln -sfvn "$(ROOTDIR)/nvidia/60-nvidia.rules" "/etc/udev/rules.d/60-nvidia.rules")
+endef
+
+# ── Targets ───────────────────────────────────────────────────────────────────
+
+echo:
+	@echo $(ROOTDIR)
+
+run:
+	source $(ROOTDIR)/zsh/20-docker.zsh && devrun
+
+## build and install tmux-pane-info to ~/.zcache/ (host OS)
+## Invoked as: tmux-pane-info path|branch|kube [args]  (called from tmux status.conf)
+## Detects Go across Arch (/usr/lib/go), macOS Homebrew (/opt/homebrew), and PATH.
+## Falls back to zsh + zcompile when Go is unavailable.
+tmux/go/install:
+	mkdir -p $(HOME)/.zcache
+	@_go=''; _root=''; \
+	for _c in \
+	    /usr/lib/go/bin/go \
+	    /usr/local/go/bin/go \
+	    /opt/homebrew/bin/go \
+	    /opt/homebrew/opt/go/libexec/bin/go; \
+	do \
+	    [ -x "$$_c" ] || continue; \
+	    _r="$$(dirname "$$(dirname "$$_c")")"; \
+	    GOROOT="$$_r" "$$_c" version >/dev/null 2>&1 && { _go="$$_c"; _root="$$_r"; break; }; \
+	done; \
+	if [ -z "$$_go" ] && _c="$$(command -v go 2>/dev/null)" && [ -x "$$_c" ]; then \
+	    _r="$$(env -u GOROOT "$$_c" env GOROOT 2>/dev/null)"; \
+	    [ -n "$$_r" ] && GOROOT="$$_r" "$$_c" version >/dev/null 2>&1 \
+	        && { _go="$$_c"; _root="$$_r"; }; \
+	fi; \
+	if [ -n "$$_go" ]; then \
+	    cd $(ROOTDIR)/tmux.conf.d/tmux-pane-info \
+	    && GOROOT="$$_root" GOBIN=$(HOME)/.zcache "$$_go" install -trimpath -ldflags="-s -w" -buildvcs=false . \
+	    && echo "tmux-pane-info: installed $(HOME)/.zcache/tmux-pane-info"; \
+	else \
+	    echo "tmux-pane-info: Go not found — installing zsh fallback scripts"; \
+	    cp $(ROOTDIR)/tmux.conf.d/kube          $(HOME)/.zcache/tmux-kube; \
+	    cp $(ROOTDIR)/tmux.conf.d/status-left   $(HOME)/.zcache/tmux-status-left; \
+	    cp $(ROOTDIR)/tmux.conf.d/status-branch $(HOME)/.zcache/tmux-status-branch; \
+	    cp $(ROOTDIR)/tmux.conf.d/short-path    $(HOME)/.zcache/tmux-short-path; \
+	    zsh -c 'zcompile $(HOME)/.zcache/tmux-kube; zcompile $(HOME)/.zcache/tmux-status-left; zcompile $(HOME)/.zcache/tmux-status-branch; zcompile $(HOME)/.zcache/tmux-short-path' || true; \
+	fi
+
+## install or update tmux-pane-info from the published module (no local clone required)
+## Equivalent to: GOBIN=~/.zcache go install github.com/kpango/dotfiles/tmux.conf.d/tmux-pane-info@latest
+## Use this target on a fresh host or to upgrade to the latest published version.
+tmux/go/update:
+	mkdir -p $(HOME)/.zcache
+	@_go=''; _root=''; \
+	for _c in \
+	    /usr/lib/go/bin/go \
+	    /usr/local/go/bin/go \
+	    /opt/homebrew/bin/go \
+	    /opt/homebrew/opt/go/libexec/bin/go; \
+	do \
+	    [ -x "$$_c" ] || continue; \
+	    _r="$$(dirname "$$(dirname "$$_c")")"; \
+	    GOROOT="$$_r" "$$_c" version >/dev/null 2>&1 && { _go="$$_c"; _root="$$_r"; break; }; \
+	done; \
+	if [ -z "$$_go" ] && _c="$$(command -v go 2>/dev/null)" && [ -x "$$_c" ]; then \
+	    _r="$$(env -u GOROOT "$$_c" env GOROOT 2>/dev/null)"; \
+	    [ -n "$$_r" ] && GOROOT="$$_r" "$$_c" version >/dev/null 2>&1 \
+	        && { _go="$$_c"; _root="$$_r"; }; \
+	fi; \
+	if [ -n "$$_go" ]; then \
+	    GOROOT="$$_root" GOBIN=$(HOME)/.zcache "$$_go" install \
+	        -trimpath -ldflags="-s -w" \
+	        github.com/kpango/dotfiles/tmux.conf.d/tmux-pane-info@latest \
+	    && echo "tmux-pane-info: updated to latest at $(HOME)/.zcache/tmux-pane-info"; \
+	else \
+	    echo "tmux-pane-info: Go not found — cannot update"; \
+	    exit 1; \
+	fi
+
+## install tmux powerline glyph scripts and Go-compiled status helpers to ~/.zcache
+dotfiles/compile: tmux/go/install
+	mkdir -p $(HOME)/.zcache
+	cp $(ROOTDIR)/tmux.conf.d/pl-right $(HOME)/.zcache/tmux-pl-right
+	cp $(ROOTDIR)/tmux.conf.d/pl-left  $(HOME)/.zcache/tmux-pl-left
+	chmod +x $(HOME)/.zcache/tmux-pl-right $(HOME)/.zcache/tmux-pl-left
+
+## create symlinks (or copies) of all dotfiles into $HOME (MODE=link|copy)
+dotfiles/install:
+	@echo "$$DOTFILES_MAP" | while read -r src dest; do \
+		[ -z "$$src" ] && continue; \
+		mkdir -p "$$(dirname "$(HOME)/$$dest")"; \
+		$(if $(filter copy,$(MODE)),rm -rf "$(HOME)/$$dest" && cp -r "$(ROOTDIR)/$$src" "$(HOME)/$$dest",ln -sfvn "$(ROOTDIR)/$$src" "$(HOME)/$$dest"); \
+	done
+	sudo mkdir -p /etc/docker
+	$(if $(filter copy,$(MODE)),sudo rm -f "/etc/docker/config.json" && sudo cp "$(ROOTDIR)/dockers/config.json" "/etc/docker/config.json",sudo ln -sfvn "$(ROOTDIR)/dockers/config.json" "/etc/docker/config.json")
+	$(if $(filter copy,$(MODE)),sudo rm -f "/etc/docker/daemon.json" && sudo cp "$(ROOTDIR)/dockers/daemon.json" "/etc/docker/daemon.json",sudo ln -sfvn "$(ROOTDIR)/dockers/daemon.json" "/etc/docker/daemon.json")
+	sudo mkdir -p /etc/containerd
+	$(if $(filter copy,$(MODE)),sudo rm -f "/etc/containerd/config.toml" && sudo cp "$(ROOTDIR)/arch/containerd.toml" "/etc/containerd/config.toml",sudo ln -sfvn "$(ROOTDIR)/arch/containerd.toml" "/etc/containerd/config.toml")
+	@$(MAKE) dotfiles/compile ROOTDIR='$(ROOTDIR)'
+	@$(MAKE) precompile/zsh ROOTDIR='$(ROOTDIR)'
+
+## pre-generate and zcompile all zsh caches (safe to run after dotfiles/install)
+precompile/zsh:
+	@zsh -i -c 'source "$(ROOTDIR)/zsh/05-functions.zsh" && zprecompile' 2>/dev/null || \
+		printf "Note: some zsh caches skipped (tools not installed)\n" >&2
+
+## Deploy Claude Code config inside a Docker build layer (no sudo, copies not symlinks)
+claude/docker/install:
+	install -d -m 700 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(HOME)/.claude" \
+		"$(HOME)/.claude/hooks" \
+		"$(HOME)/.claude/agents" \
+		"$(HOME)/.claude/plugins" \
+		"$(HOME)/.claude/memory" \
+		"$(HOME)/.claude/projects" \
+		"$(HOME)/.claude/session-data"
+	install -m 600 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/claude/settings.json" "$(HOME)/.claude/settings.json"
+	install -m 600 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/claude/settings.local.json" "$(HOME)/.claude/settings.local.json"
+	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/claude/CLAUDE.md" "$(HOME)/.claude/CLAUDE.md"
+	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/claude/RTK.md" "$(HOME)/.claude/RTK.md"
+	HOME="$(HOME)" envsubst < "$(ROOTDIR)/claude/installed_plugins.json" \
+		> "$(HOME)/.claude/plugins/installed_plugins.json"
+	chown "$(USER_ID):$(GROUP_ID)" "$(HOME)/.claude/plugins/installed_plugins.json"
+	find "$(ROOTDIR)/claude/hooks" -maxdepth 1 -name "*.sh" \
+		-exec install -m 755 -o "$(USER_ID)" -g "$(GROUP_ID)" {} "$(HOME)/.claude/hooks/" \;
+	find "$(ROOTDIR)/claude/agents" -maxdepth 1 -name "*.md" \
+		-exec install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" {} "$(HOME)/.claude/agents/" \;
+	@for skill_dir in "$(ROOTDIR)/claude/skills"/*/; do \
+		skill_name=$$(basename "$$skill_dir"); \
+		install -d -m 755 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+			"$(HOME)/.claude/skills/$${skill_name}"; \
+		find "$${skill_dir}" -name "*.md" \
+			-exec install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+				{} "$(HOME)/.claude/skills/$${skill_name}/" \; ; \
+	done
+
+## symlink ~/.claude/settings.json + settings.local.json + CLAUDE.md and share session with root
+## Credentials (~/.claude/.credentials.json) are NOT managed here — SSO login handles them
+claude/install: dotfiles/install
+	@echo "Sharing Claude session: /root/.claude -> $(HOME)/.claude"
+	sudo rm -rf /root/.claude
+	sudo ln -sfvn "$(HOME)/.claude" /root/.claude
+	sudo ln -sfvn "$(ROOTDIR)/gitconfig"                        /root/.gitconfig
+	sudo mkdir -p /root/.gemini/policies
+	sudo ln -sfvn "$(ROOTDIR)/gemini/settings.json"             /root/.gemini/settings.json
+	sudo ln -sfvn "$(ROOTDIR)/gemini/policies/policy.toml"      /root/.gemini/policies/rules.toml
+	mkdir -p "$(HOME)/.claude/plugins" "$(HOME)/.claude/memory" "$(HOME)/.claude/session-data"
+	envsubst < "$(ROOTDIR)/claude/installed_plugins.json" > "$(HOME)/.claude/plugins/installed_plugins.json"
+	ln -sfvn "$(ROOTDIR)/claude/agents" "$(HOME)/.claude/agents"
+	ln -sfvn "$(ROOTDIR)/claude/hooks"  "$(HOME)/.claude/hooks"
+	ln -sfvn "$(ROOTDIR)/claude/skills" "$(HOME)/.claude/skills"
+	ln -sfvn "$(ROOTDIR)/claude/RTK.md" "$(HOME)/.claude/RTK.md"
+	@pass_claude="$(HOME)/go/src/github.com/kpango/pass/claude"; \
+	mkdir -p "$${pass_claude}/projects"; \
+	test -f "$${pass_claude}/history.jsonl" || touch "$${pass_claude}/history.jsonl"; \
+	ln -sfvn "$${pass_claude}/projects"      "$(HOME)/.claude/projects"; \
+	ln -sfvn "$${pass_claude}/history.jsonl" "$(HOME)/.claude/history.jsonl"; \
+	echo "linked: ~/.claude/projects -> $${pass_claude}/projects"; \
+	echo "linked: ~/.claude/history.jsonl -> $${pass_claude}/history.jsonl"
+
+## remove all dotfile symlinks/copies from $HOME and clean generated config files
+dotfiles/clean: dotfiles/perm
+	$(eval TMP_DIR := $(shell mktemp -d))
+	jq . $(ROOTDIR)/arch/waybar.json > $(TMP_DIR)/waybar.json.tmp && mv $(TMP_DIR)/waybar.json.tmp $(ROOTDIR)/arch/waybar.json
+	@echo "$$DOTFILES_MAP" | while read -r src dest; do \
+		[ -z "$$src" ] && continue; \
+		sudo rm -rf "$(HOME)/$$dest"; \
+	done
+	sudo rm -rf $(CLEAN_FILES)
+
+## fix file/dir permissions and normalise line endings across the repo
+dotfiles/perm:
+	sudo chmod -R 755 $(ROOTDIR)/*
+	find $(ROOTDIR) -maxdepth 1 -mindepth 1 -name '.*' -print0 | xargs -0 sudo chmod -R 755
+	sudo chown -R $(SYS_USER):$(GROUP_ID) $(ROOTDIR)/*
+	find $(ROOTDIR) -maxdepth 1 -mindepth 1 -name '.*' -print0 | xargs -0 sudo chown -R $(SYS_USER):$(GROUP_ID)
+	\find $(ROOTDIR) -type d \( -name '.git' -o -name '.worktrees' -o -name '.claude' \) -prune -o -type f \( -name '*.conf' -o -name '*.service' -o -name '*.rules' -o -name '*.toml' -o -name '*.json' -o -name '*.yaml' -o -name '*.yml' \) -exec sudo chmod 644 {} \;
+	\find $(ROOTDIR) \
+		-type d \( -name '.git' -o -name '.worktrees' -o -name '.claude' \) -prune \
+		-o -type f \( \
+		  -name '*.zsh' -o -name '*.sh'   -o -name '*.conf' -o \
+		  -name '*.txt' -o -name '*.md'   -o -name '*.mk'   -o \
+		  -name '*.py'  -o -name '*.nix'  -o -name '*.toml' -o \
+		  -name '*.yaml' -o -name '*.yml' -o -name '*.json' -o \
+		  -name '*.service' -o -name '*.rules' -o -name '*.desktop' -o \
+		  -name 'zshrc' -o -name 'zshenv' -o \
+		  -name 'gitconfig' -o -name 'gitattributes' -o \
+		  -name 'sshconfig' -o -name 'editorconfig' -o -name 'Makefile' \
+		\) -not -name 'tmux.conf' -exec nkf -Lu -w --overwrite {} \;
+
+## build and install the Go pinentry-tmux binary to /usr/local/bin
+pinentry/install:
+	cd $(ROOTDIR)/pinentry/tmux && GOROOT=$(shell dirname $$(dirname $$(realpath $$(command -v go)))) go build -trimpath -ldflags="-s -w" -o /tmp/pinentry-tmux .
+	sudo install -m 755 /tmp/pinentry-tmux /usr/local/bin/pinentry-tmux
+	rm -f /tmp/pinentry-tmux
+
+## install Arch Linux packages and apply dotfiles (runs dotfiles/install)
+arch/install: dotfiles/install
+	$(ARCH_PREP)
+	@echo "$$ARCH_LINK_MAP" | while read -r src dest; do \
+		[ -z "$$src" ] && continue; \
+		$(if $(filter copy,$(MODE)),cp -r "$(ROOTDIR)/$$src" "$(HOME)/$$dest",ln -sfvn "$(ROOTDIR)/$$src" "$(HOME)/$$dest"); \
+	done
+	@echo "$$ARCH_SUDO_CP_MAP" | while read -r src dest; do \
+		[ -z "$$src" ] && continue; \
+		sudo cp "$(ROOTDIR)/$$src" "$$dest"; \
+	done
+	@echo "$$ARCH_SUDO_LINK_MAP" | while read -r src dest; do \
+		[ -z "$$src" ] && continue; \
+		$(if $(filter copy,$(MODE)),sudo cp "$(ROOTDIR)/$$src" "$$dest",sudo ln -sfvn "$(ROOTDIR)/$$src" "$$dest"); \
+	done
+	$(ARCH_POST)
+
+## arch/install variant for ThinkPad P1 (adds P1 waybar CSS + NVIDIA drivers)
+arch/p1/install: arch/install
+	rm -rf $(HOME)/.config/waybar/style.css
+	$(if $(filter copy,$(MODE)),cp "$(ROOTDIR)/arch/waybar_p1.css" "$(HOME)/.config/waybar/style.css",ln -sfvn "$(ROOTDIR)/arch/waybar_p1.css" "$(HOME)/.config/waybar/style.css")
+	$(NVIDIA_INSTALL)
+	$(ARCH_P1_POST)
+
+## arch/install variant for the desktop workstation (NVIDIA + network udev rules)
+arch/desk/install: arch/install
+	$(NVIDIA_INSTALL)
+	$(if $(filter copy,$(MODE)),sudo cp "$(ROOTDIR)/network/nm/desk/70-persistent-network.rules" "/etc/udev/rules.d/70-persistent-network.rules",sudo ln -sfvn "$(ROOTDIR)/network/nm/desk/70-persistent-network.rules" "/etc/udev/rules.d/70-persistent-network.rules")
+	@echo "$$ARCH_DESK_SUDO_LINK_MAP" | while read -r src dest; do \
+		[ -z "$$src" ] && continue; \
+		$(if $(filter copy,$(MODE)),sudo cp "$(ROOTDIR)/$$src" "$$dest",sudo ln -sfvn "$(ROOTDIR)/$$src" "$$dest"); \
+	done
+	$(ARCH_DESK_POST)
+
+## install macOS Homebrew packages and apply dotfiles (runs dotfiles/install)
+mac/install: dotfiles/install
+	$(MAC_PREP)
+	$(if $(filter copy,$(MODE)),cp "$(ROOTDIR)/macos/docker_config.json" "$(HOME)/.docker/config.json",ln -sfvn "$(ROOTDIR)/macos/docker_config.json" "$(HOME)/.docker/config.json")
+	cp $(ROOTDIR)/dockers/daemon.json $(HOME)/.docker/daemon.json
+	$(if $(filter copy,$(MODE)),sudo cp "$(ROOTDIR)/macos/docker_config.json" "/etc/docker/config.json",sudo ln -sfvn "$(ROOTDIR)/macos/docker_config.json" "/etc/docker/config.json")
+	sudo cp $(ROOTDIR)/dockers/daemon.json /etc/docker/daemon.json
+	for agent in $(MACOS_LAUNCH_AGENTS); do \
+		sudo ln -sfvn "$(ROOTDIR)/macos/$$agent" "$(HOME)/Library/LaunchAgents/$$agent"; \
+		sudo chmod 600 "$(HOME)/Library/LaunchAgents/$$agent"; \
+		sudo chown root:wheel "$(HOME)/Library/LaunchAgents/$$agent"; \
+		sudo plutil -lint "$(HOME)/Library/LaunchAgents/$$agent"; \
+		sudo launchctl load -w "$(HOME)/Library/LaunchAgents/$$agent"; \
+	done
+	sudo rm -rf $(ROOTDIR)/nvim/lua/lua
+
+# ── Backward-compat aliases ───────────────────────────────────────────────────
+
+link:           ; @$(MAKE) dotfiles/install
+copy:           ; @$(MAKE) dotfiles/install MODE=copy
+clean:          ; @$(MAKE) dotfiles/clean
+perm:           ; @$(MAKE) dotfiles/perm
+arch_link:      ; @$(MAKE) arch/install
+arch_copy:      ; @$(MAKE) arch/install MODE=copy
+arch_p1_link:   ; @$(MAKE) arch/p1/install
+arch_p1_copy:   ; @$(MAKE) arch/p1/install MODE=copy
+arch_desk_link: ; @$(MAKE) arch/desk/install
+arch_desk_copy: ; @$(MAKE) arch/desk/install MODE=copy
+mac_link:       ; @$(MAKE) mac/install
+mac_copy:       ; @$(MAKE) mac/install MODE=copy
