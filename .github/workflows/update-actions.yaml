@@ -75,7 +75,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH="update/actions-$(date +%Y%m%d)"
+          BRANCH="update/actions-${{ github.run_id }}-${{ github.run_attempt }}"
           git checkout -b "$BRANCH"
           git add .github/
           git commit -s -m "Update GitHub Actions version pins"
