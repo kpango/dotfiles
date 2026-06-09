@@ -1395,15 +1395,22 @@ class scout(Command):
         self.fm.thistab.last_search = regex
         self.fm.set_search_method(order="search")
 
-        if (self.MARK in flags or self.UNMARK in flags) and thisdir.files:
-            value = flags.find(self.MARK) > flags.find(self.UNMARK)
-            if self.FILTER in flags:
-                for fobj in thisdir.files:
-                    thisdir.mark_item(fobj, value)
+        if thisdir.files:
+            if self.MARK in flags:
+                value = flags.find(self.MARK) > flags.find(self.UNMARK)
+            elif self.UNMARK in flags:
+                value = False
             else:
-                for fobj in thisdir.files:
-                    if regex.search(fobj.relative_path):
+                value = None
+
+            if value is not None:
+                if self.FILTER in flags:
+                    for fobj in thisdir.files:
                         thisdir.mark_item(fobj, value)
+                else:
+                    for fobj in thisdir.files:
+                        if regex.search(fobj.relative_path):
+                            thisdir.mark_item(fobj, value)
 
         if self.PERM_FILTER in flags:
             thisdir.filter = regex if pattern else None
