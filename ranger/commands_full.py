@@ -1397,7 +1397,8 @@ class scout(Command):
 
         if thisdir.files:
             if self.MARK in flags:
-                value = flags.find(self.MARK) > flags.find(self.UNMARK)
+                unmark_idx = flags.find(self.UNMARK)
+                value = True if unmark_idx == -1 else flags.find(self.MARK) > unmark_idx
             elif self.UNMARK in flags:
                 value = False
             else:
