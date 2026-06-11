@@ -1,0 +1,15 @@
+[Unit]
+Description=Atuin Shell History Daemon
+Documentation=https://atuin.sh
+After=default.target
+
+[Service]
+Type=simple
+Environment=XDG_DATA_HOME=%h/.data
+ExecStart=/usr/bin/atuin daemon start
+ExecStop=/usr/bin/atuin daemon stop
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target

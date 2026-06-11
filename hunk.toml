@@ -1,0 +1,4 @@
+theme = "graphite"
+mode = "auto"
+line_numbers = true
+wrap_lines = false

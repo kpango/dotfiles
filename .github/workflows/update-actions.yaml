@@ -1,0 +1,89 @@
+name: Update GitHub Actions version pins
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 18 * * *" # Daily at 03:00 JST
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-actions
+  cancel-in-progress: true
+
+jobs:
+  update:
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      workflows: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
+        with:
+          go-version: stable
+          cache: false
+
+      - name: Install tools
+        run: |
+          go install github.com/suzuki-shunsuke/pinact/cmd/pinact@latest
+          go install github.com/suzuki-shunsuke/ghatm/cmd/ghatm@latest
+
+      - name: Configure git
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+
+      - name: Update action version tags
+        run: make update/versions/actions update/versions/tools
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pin actions to SHA
+        run: pinact run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set timeout-minutes
+        run: ghatm set
+
+      - name: Check for changes
+        id: check_diff
+        run: |
+          if git diff --quiet --exit-code; then
+            echo "Nothing updated"
+          else
+            git diff
+            echo "HAS_GIT_DIFF=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create pull request
+        if: steps.check_diff.outputs.HAS_GIT_DIFF == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="update/actions-${{ github.run_id }}-${{ github.run_attempt }}"
+          git checkout -b "$BRANCH"
+          git add .github/
+          git commit -s -m "Update GitHub Actions version pins"
+          git push origin "$BRANCH"
+          gh pr create \
+            --repo "${{ github.repository }}" \
+            --title "Update GitHub Actions version pins" \
+            --body "Automated pull request to update GitHub Actions version pins." \
+            --base main \
+            --head "$BRANCH"

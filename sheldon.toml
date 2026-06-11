@@ -1,0 +1,165 @@
+shell = "zsh"
+
+apply = ["defer"]
+
+[plugins]
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
+
+[plugins.compinit]
+inline = 'zsh-defer -r -c "autoload -Uz compinit && if [[ -f ${ZDOTDIR:-$HOME}/.zcompdump ]]; then compinit -C; else compinit; fi"'
+
+[plugins.colors]
+inline = 'autoload -Uz colors && zsh-defer -r colors'
+
+[plugins.fzf]
+github = 'junegunn/fzf'
+apply = ['fzf-install', 'fzf-source']
+
+[plugins.kubectl-fzf]
+remote = "https://raw.githubusercontent.com/bonnefoa/kubectl-fzf/main/shell/kubectl_fzf.plugin.zsh"
+
+[plugins.bun-completions-zsh]
+remote = "https://raw.githubusercontent.com/oven-sh/bun/refs/heads/main/completions/bun.zsh"
+
+[plugins.prmt]
+inline = '''
+if (($+commands[prmt])) && [[ -t 0 ]]; then
+  zmodload zsh/datetime
+  # PRMT_HOSTNAME: stripped hostname (prmt has no native hostname stripping)
+  # PRMT_DURATION: command duration (prmt has no native duration module)
+  local _prmt_h=${HOSTNAME%%-*}
+  export PRMT_HOSTNAME=${_prmt_h:0:12} PRMT_DURATION=''
+  typeset -g _prmt_fd=0
+  # {time}       — native 24h time with seconds
+  # {path:r}     — native relative path (~ substituted for home)
+  # {git:full}   — native branch + status indicators (dirty/staged/untracked)
+  # {go}/{rust}/{node} — auto-detected versions, shown only in relevant project dirs
+  # {ok}/{fail}  — native exit-code indicators; two {fail} tokens = symbol + code number
+  # {env}        — native env var interpolation for USER, hostname, duration
+  typeset -g _prmt_fmt="🕙 {time:cyan:24hs}\n{env:green.bold:USER:╭─:@}{env::PRMT_HOSTNAME::: in }{path:cyan:r}{git:purple:: }{go:cyan:: 🐹}{rust:red:: 🦀}{node:green:: ⬢}{env:yellow:PRMT_DURATION:  took }\n{ok:green.bold:╰─λ}{fail:red.bold:╰─✗}{fail:red.dim:code: } "
+
+  _prmt_preexec() { _prmt_cmd_start=$EPOCHREALTIME }
+
+  _prmt_async_callback() {
+    local fd=$1
+    {
+      local line buf=''
+      while IFS= read -r -u $fd line || [[ -n $line ]]; do
+        [[ -n $buf ]] && buf+=$'\n'
+        buf+=$line
+      done
+      [[ -n $buf ]] && PROMPT=$buf && zle reset-prompt 2>/dev/null
+    } always {
+      zle -F $fd 2>/dev/null
+      [[ $_prmt_fd -eq $fd ]] && _prmt_fd=0
+    }
+  }
+
+  _prmt_precmd() {
+    local _exit=$?
+    [[ -t 0 ]] || return
+    if [[ -n $_prmt_cmd_start ]]; then
+      local -F elapsed=$(( EPOCHREALTIME - _prmt_cmd_start ))
+      (( elapsed >= 1.0 )) && printf -v PRMT_DURATION '%.1fs' $elapsed || PRMT_DURATION=''
+      unset _prmt_cmd_start
+    else
+      PRMT_DURATION=''
+    fi
+
+    (( _prmt_fd )) && {
+      zle -F $_prmt_fd 2>/dev/null
+      _prmt_fd=0
+    }
+
+    # Show placeholder immediately so no stale prompt data is visible while prmt renders
+    PROMPT='%F{blue}…%f '
+    exec {_prmt_fd}< <(prmt --shell zsh --code $_exit "$_prmt_fmt" 2>/dev/null)
+    # Register async callback (succeeds once ZLE is active; first call may fail — _prmt_zle_init handles that)
+    zle -F $_prmt_fd _prmt_async_callback 2>/dev/null
+  }
+
+  # Idempotent zle-line-init hook: when ZLE first becomes active, register the fd callback that
+  # precmd opened but could not register (ZLE was not yet active at precmd time).
+  typeset -g _prmt_init_done=''
+  _prmt_zle_init() {
+    [[ -n $_prmt_init_done ]] && return
+    _prmt_init_done=1
+    (( _prmt_fd )) && zle -F $_prmt_fd _prmt_async_callback 2>/dev/null
+  }
+  autoload -Uz add-zle-hook-widget
+  { add-zle-hook-widget zle-line-init _prmt_zle_init } 2>/dev/null || \
+    zle -N zle-line-init _prmt_zle_init
+
+  (( ${preexec_functions[(Ie)_prmt_preexec]} )) || preexec_functions=(_prmt_preexec "${preexec_functions[@]}")
+  (( ${precmd_functions[(Ie)_prmt_precmd]}   )) || precmd_functions=(_prmt_precmd   "${precmd_functions[@]}")
+  # _prmt_precmd skips for non-TTY (no point rendering a prompt to a pipe/file)
+fi
+'''
+
+[plugins.zoxide]
+inline = 'if (($+commands[zoxide])); then _zcache_eval zoxide 1 "zoxide init zsh" "$commands[zoxide]"; fi'
+
+[plugins.atuin]
+inline = '''
+if (($+commands[atuin])); then
+  autoload -Uz _atuin_init
+  if [[ -f "$ZCACHE_DIR/atuin.zsh" && ! "$commands[atuin]" -nt "$ZCACHE_DIR/atuin.zsh" ]]; then
+    zsh-defer -r source "$ZCACHE_DIR/atuin.zsh"
+  else
+    zsh-defer -r _zcache_eval atuin 0 "_atuin_init" "$commands[atuin]"
+  fi
+fi
+'''
+
+[plugins.pay-respects]
+inline = 'if (($+commands[pay-respects])); then _zcache_eval pay-respects 1 "pay-respects zsh" "$commands[pay-respects]"; fi'
+
+[plugins.zsh-patina]
+inline = 'if (($+commands[zsh-patina])); then _zcache_eval zsh-patina 1 "zsh-patina activate" "$commands[zsh-patina]"; fi'
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ['defer']
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ['defer']
+
+[plugins.tmux-xpanes]
+github = "greymd/tmux-xpanes"
+apply = ['defer']
+
+[plugins.async-compile]
+inline = '''zsh-defer -r -c "(
+  [[ ! -f ~/.zshrc.zwc || ~/.zshrc -nt ~/.zshrc.zwc ]] && zcompile ~/.zshrc 2>/dev/null
+  [[ ! -f ~/.zshenv.zwc || ~/.zshenv -nt ~/.zshenv.zwc ]] && zcompile ~/.zshenv 2>/dev/null
+  [[ ! -f ~/.zcompdump.zwc || ~/.zcompdump -nt ~/.zcompdump.zwc ]] && zcompile ~/.zcompdump 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zsh/01-tmux.zsh.zwc || \$DOTFILES_DIR/zsh/01-tmux.zsh -nt \$DOTFILES_DIR/zsh/01-tmux.zsh.zwc ]] && zcompile \$DOTFILES_DIR/zsh/01-tmux.zsh 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_zcache_eval.zwc || \$DOTFILES_DIR/zfunc/_zcache_eval -nt \$DOTFILES_DIR/zfunc/_zcache_eval.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_zcache_eval 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_atuin_init.zwc || \$DOTFILES_DIR/zfunc/_atuin_init -nt \$DOTFILES_DIR/zfunc/_atuin_init.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_atuin_init 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_gen_env.zwc || \$DOTFILES_DIR/zfunc/_gen_env -nt \$DOTFILES_DIR/zfunc/_gen_env.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_gen_env 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/pinentry-tmux.zwc || \$DOTFILES_DIR/zfunc/pinentry-tmux -nt \$DOTFILES_DIR/zfunc/pinentry-tmux.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/pinentry-tmux 2>/dev/null
+  for f in $XDG_DATA_HOME/sheldon/repos/**/*.zsh(N); do
+      [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
+  done
+  _zcache_eval combined 0 'for _f in \"\$DOTFILES_DIR/zsh\"/*.zsh(N); do [[ \"\${_f:t}\" = 20-os-*.zsh || \"\${_f:t}\" = 01-tmux.zsh ]] || cat \"\$_f\"; done' \"\$DOTFILES_DIR/zsh\"/*.zsh(N)
+  if [[ \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\" -nt \"\$ZCACHE_DIR/sheldon.zsh\" ]]; then
+      _zcache_eval sheldon 0 \"sheldon source\" \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\"
+  fi
+  if (($+commands[direnv])) && [[ \"\$commands[direnv]\" -nt \"\$ZCACHE_DIR/direnv.zsh\" ]]; then
+      _zcache_eval direnv 1 \"direnv hook zsh\" \"\$commands[direnv]\"
+  fi
+  if [[ ${OSTYPE} == "darwin"* && -x /usr/libexec/path_helper ]] && [[ /etc/paths -nt \"\$ZCACHE_DIR/path_helper.zsh\" || /etc/paths.d -nt \"\$ZCACHE_DIR/path_helper.zsh\" ]]; then
+      _zcache_eval path_helper 0 \"/usr/libexec/path_helper -s\" /etc/paths /etc/paths.d
+  fi
+  for f in \$ZCACHE_DIR/*.zsh(N); do
+      [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
+  done
+) &|"'''
+
+[templates]
+defer = "zsh-defer -r -c \"{% for file in files %}source '{{ file }}'\n{% endfor %}\""
+fzf-install = "[[ ! -x {{ dir }}/bin/fzf ]] && {{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\" && rehash\n"
+fzf-source = "zsh-defer -r -c \"{% for file in files %}source <(sed -e '/bindkey.*fzf-history-widget/d' '{{ file }}')\n{% endfor %}\""
