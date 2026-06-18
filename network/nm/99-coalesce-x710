@@ -1,0 +1,68 @@
+#!/bin/bash
+# NetworkManager dispatcher: Intel X710 (i40e) NIC tuning
+# Runs on sfp0/sfp1 up; mirrors NixOS x710-tuning.nix
+
+IFACE=$1
+ACTION=$2
+
+[[ "$ACTION" != "up" ]] && exit 0
+[[ "$IFACE" != "sfp0" && "$IFACE" != "sfp1" ]] && exit 0
+
+# 1. Threaded NAPI — reduces interrupt latency under heavy RX load
+echo 1 > /sys/class/net/$IFACE/threaded
+
+# 2. Coalescing: i40e rejects usecs changes while adaptive is on; disable first
+ethtool -C "$IFACE" adaptive-rx off adaptive-tx off rx-usecs 100 tx-usecs 100
+ethtool -C "$IFACE" adaptive-rx on adaptive-tx on
+
+# 3. hw-tc-offload for hardware flow classification
+ethtool -K "$IFACE" hw-tc-offload on || true
+
+# 4. GRO list — coalesce out-of-order segments more aggressively
+ethtool -K "$IFACE" rx-gro-list on || true
+
+# 5. Recreate root mq so fq leaves get the correct quantum for current MTU.
+#    quantum = 2 × (MTU + Ethernet header): 3028 for 1500-MTU, 18028 for 9000-MTU.
+MTU=$(cat /sys/class/net/"$IFACE"/mtu 2>/dev/null || echo 1500)
+QUANTUM=$(( (MTU + 14) * 2 ))
+tc qdisc replace dev "$IFACE" root mq
+tc qdisc show dev "$IFACE" | awk '/fq / {print $5}' | while read -r parent; do
+    tc qdisc replace dev "$IFACE" parent "$parent" fq quantum "$QUANTUM" 2>/dev/null || true
+done
+
+# 6. RPS + RFS: steer flows to the CPU running the receiving socket
+#    FLOW_CNT = net.core.rps_sock_flow_entries / number_of_rx_queues ≈ 131072 / 128 = 1024
+FLOW_CNT=1024
+ALL_CPUS="ffffffff,ffffffff,ffffffff,ffffffff"
+for queue_dir in /sys/class/net/$IFACE/queues/rx-*; do
+    echo "$ALL_CPUS" > "$queue_dir/rps_cpus"
+    echo "$FLOW_CNT"  > "$queue_dir/rps_flow_cnt"
+done
+
+# 7. XPS: map TX queue N → CPU N mod 128 for cache-local transmit
+python3 - "$IFACE" << 'PYEOF'
+import os, sys
+iface = sys.argv[1]
+base  = f"/sys/class/net/{iface}/queues"
+tx_queues = sorted([q for q in os.listdir(base) if q.startswith("tx-")],
+                   key=lambda x: int(x.split("-")[1]))
+for i, q in enumerate(tx_queues):
+    cpu = i % 128
+    words = [0, 0, 0, 0]
+    words[cpu // 32] = 1 << (cpu % 32)
+    mask = ",".join(f"{words[3-j]:08x}" for j in range(4))
+    try:
+        with open(f"{base}/{q}/xps_cpus", "w") as f:
+            f.write(mask)
+    except OSError as e:
+        print(f"xps: {q}: {e}", file=sys.stderr)
+PYEOF
+
+# 8. IRQ affinity: pin TxRx queue N → CPU N for cache-local RX processing
+#    irqbalance --banmod=i40e prevents rebalancing these IRQs back
+grep "i40e-${IFACE}-TxRx" /proc/interrupts | while read -r line; do
+    irq=$(echo "$line" | awk '{print $1}' | tr -d ':')
+    queue=$(echo "$line" | awk '{print $NF}' | grep -oE '[0-9]+$')
+    [ -n "$irq" ] && [ -n "$queue" ] || continue
+    echo "$queue" > /proc/irq/"$irq"/smp_affinity_list 2>/dev/null || true
+done

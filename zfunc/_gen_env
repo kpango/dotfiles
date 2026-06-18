@@ -1,0 +1,44 @@
+print "export CPUCORES=\"$CPUCORES\"
+export GIT_USER=\"$GIT_USER\"
+export DOTFILES_DIR=\"$DOTFILES_DIR\""
+
+(($+commands[tmux])) && print 'export HAS_TMUX=1'
+
+if (($+commands[ghostty])); then
+	print "export TERMCMD=\"ghostty -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+elif (($+commands[alacritty])); then
+	print "export TERMCMD=\"alacritty -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+elif (($+commands[urxvtc])); then
+	print "export TERMCMD=\"urxvtc -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+fi
+
+# fpath + autoload: cached here so zshrc skips the check on every startup
+print 'fpath=("$DOTFILES_DIR/zfunc" $fpath)
+autoload -Uz _zcache_eval _gen_env'
+
+# OS type: stable between sessions — cache to avoid 5x file-stat per startup
+if [[ -f /etc/NIXOS || -f /etc/nixos/configuration.nix ]]; then
+	print 'export _ZSH_OS=nixos'
+elif [[ -f /etc/arch-release ]]; then
+	print 'export _ZSH_OS=arch'
+elif [[ -f /etc/debian_version ]]; then
+	print 'export _ZSH_OS=debian'
+elif [[ $OSTYPE = darwin* ]]; then
+	print 'export _ZSH_OS=brew'
+else
+	print 'export _ZSH_OS=generic'
+fi
+
+# PATH + guard: bake resolved paths at generation time so zshrc skips reconstruction.
+# \${PATH} is intentionally not expanded here — it expands at source time to append the
+# current system PATH, ensuring OS-level path helpers (e.g. nix, homebrew) are included.
+local _gobin="${GOBIN:-$HOME/go/bin}"
+local _cargo="${CARGO_HOME:-$HOME/.cargo}/bin"
+print 'export _ZSH_PATH_LOADED=1'
+print 'typeset -U path PATH'
+# ~/.local/bin is first so user-installed binaries (e.g. optimised zsh) take precedence
+if [[ ${OSTYPE} == darwin* ]] && [[ ${HOSTTYPE} == arm* || ${HOSTTYPE} == aarch64* ]]; then
+	print "export PATH=\"${HOME}/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/bun/bin:/usr/local/go/bin:/opt/local/bin:${_gobin}:${_cargo}:/usr/lib/docker/cli-plugins/:\${PATH}\""
+else
+	print "export PATH=\"${HOME}/.local/bin:$HOME/.bun-shims:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/bun/bin:/usr/local/go/bin:/opt/local/bin:${_gobin}:${_cargo}:/usr/lib/docker/cli-plugins/:\${PATH}\""
+fi

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(~/**)",
+      "Read(/etc/**)",
+      "Read(/usr/lib/systemd/**)",
+      "Bash(sudo *)",
+      "WebFetch(domain:herdr.dev)"
+    ],
+    "additionalDirectories": ["/home/kpango/go/src/github.com/vdaas/vald"]
+  }
+}
