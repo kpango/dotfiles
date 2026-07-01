@@ -1,0 +1,61 @@
+# Explicitly deny dangerous git operations
+[[rules]]
+toolName = "run_shell_command"
+commandPrefix = [
+  "git add",
+  "git commit",
+  "git push",
+  "git rebase",
+  "git reset",
+  "git clean",
+  "git merge",
+  "git fetch",
+  "git pull"
+]
+decision = "deny"
+priority = 200
+denyMessage = "Direct write/sync Git operations are restricted by local policy."
+
+# Allow approved commands
+[[rules]]
+toolName = "run_shell_command"
+commandPrefix = [
+  "awk",
+  "cargo",
+  "cat",
+  "cmake",
+  "cp",
+  "curl",
+  "fd",
+  "file",
+  "find",
+  "git branch",
+  "git checkout",
+  "git log",
+  "git worktree",
+  "go",
+  "grep",
+  "head",
+  "hx",
+  "less",
+  "ls",
+  "make",
+  "md5sum",
+  "mkdir",
+  "mv",
+  "pip",
+  "pip3",
+  "python",
+  "python3",
+  "rg",
+  "rtk",
+  "rustc",
+  "rustup",
+  "sed",
+  "tail",
+  "tee",
+  "touch",
+  "wget"
+]
+decision = "allow"
+priority = 100
