@@ -23,8 +23,8 @@ user-invocable: false
 
 1. CodeGraph MCP が利用可能なら status を1回確認する。
 2. Graphify は `graphify-out/graph.json` が非空か確認し、CLI があれば `graphify check-update .` で freshness を確認する。
-3. 既存 Graphify graph が stale で、依頼が code-only、かつ incremental update が安全なら `graphify update .` だけを許可する。docs/media の semantic rebuild は行わない。
-4. 新規 install、`codegraph init`、full/deep Graphify build、外部 URL 追加を行わない。
+3. Graphify graph が stale なら更新せず `stale` を返す。read-only Explore agent 内では incremental update、docs/media の semantic rebuild、cache 修復を行わない。
+4. 新規 install、`codegraph init`、`graphify update`、full/deep Graphify build、外部 URL 追加を行わない。
 5. 両方 unavailable なら次を返して停止する。
 
 ```json
@@ -38,7 +38,7 @@ user-invocable: false
 | symbol 定義、callers、callees | CodeGraph search/context/callers/callees | 曖昧な名前だけ file/line で絞る |
 | 変更影響、blast radius、test 候補 | CodeGraph impact | 高リスク edge を source で確認 |
 | entry point から複数段の flow | `codegraph_explore` | 欠落した complete method だけ追加取得 |
-| architecture、community、概念関係 | `graphify query` with budget | `EXTRACTED` と `INFERRED` を分離 |
+| architecture、community、概念関係 | `graphify query "<goal>" --budget <n>` | `EXTRACTED` と `INFERRED` を分離 |
 | 2点間の関係 | `graphify path` | 各 hop の source を確認 |
 | 1概念の近傍 | `graphify explain` | 必要な edge だけ確認 |
 | broad navigation | Graphify report の該当節 | scoped query が失敗した場合だけ |
@@ -63,6 +63,7 @@ JSON 1個だけを返す。
 {
   "status": "ready | partial | stale | unavailable",
   "goal": "normalized goal",
+  "model": {"requested": "haiku", "effective": "haiku | unknown", "fallback_reason": null},
   "budget": {"limit_tokens": 1200, "truncated": false},
   "routes": ["codegraph_explore", "graphify query"],
   "index": [{"name": "CodeGraph", "freshness": "ready | stale | unknown", "evidence": "..."}],
@@ -77,4 +78,4 @@ JSON 1個だけを返す。
 }
 ```
 
-`partial` または `stale` では unknown と fallback reason を明示する。Graph cache 以外へ書き込まず、自分自身や `/dig` を変更しない。
+`partial` または `stale` では unknown と fallback reason を明示する。いかなるファイルにも書き込まず、自分自身や `/dig` を変更しない。

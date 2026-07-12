@@ -61,6 +61,7 @@ JSON 1個だけを返す。
 {
   "eligible": true,
   "apply": false,
+  "model": {"requested": "claude-sonnet-5", "effective": "claude-sonnet-5 | unknown", "effort": "high", "fallback_reason": null},
   "trigger": {"type": "spec-mismatch | repeated-friction", "evidence": []},
   "root_cause": "",
   "regression_eval": {"prompt": "", "expectations": []},

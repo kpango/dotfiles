@@ -35,7 +35,8 @@
       "expectations": [
         "status unavailableを返す",
         "新規installまたはindex初期化を行わない",
-        "rg/LSP/language toolsへのfallbackを明示する"
+        "rg/LSP/language toolsへのfallbackを明示する",
+        "effective modelを確認できなければunknownと記録する"
       ]
     },
     {
@@ -43,6 +44,7 @@
       "prompt": "Graphify indexがstale。docsとPDFを含むrepositoryのarchitectureを調べる。",
       "expectations": [
         "docs/media semantic rebuildを自動実行しない",
+        "read-only Explore agent内でgraphify updateを実行しない",
         "status staleまたはpartialとunknownを返す",
         "stale relationをverified factとして扱わない"
       ]
