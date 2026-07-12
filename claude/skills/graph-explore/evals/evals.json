@@ -1,0 +1,51 @@
+{
+  "skill_name": "graph-explore",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "認証requestがrouterからsession保存へ到達するpathをbudget=900で調べる。CodeGraphとGraphifyはready。",
+      "expectations": [
+        "entry-to-flowにはcodegraph_exploreをprimary routeとして1回使う",
+        "900 token上限のJSON contractだけを返す",
+        "同じ質問をGraphifyへ重複queryしない",
+        "変更判断に必要なdirect readだけを列挙する"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "UpdateTimestampの変更影響と関連テストを特定する。",
+      "expectations": [
+        "CodeGraph impactをprimary routeにする",
+        "callers、blast radius、test候補をsource location付きで返す",
+        "高リスクまたは曖昧なedgeをdirect read候補にする"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "indexing subsystemのcommunityと主要概念を調べる。",
+      "expectations": [
+        "Graphify scoped queryをprimary routeにする",
+        "EXTRACTEDとINFERRED edgeを区別する",
+        "GRAPH_REPORT.md全文を返さない"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "コードフローを調べるがCodeGraph MCPはなくgraphify-out/graph.jsonも存在しない。",
+      "expectations": [
+        "status unavailableを返す",
+        "新規installまたはindex初期化を行わない",
+        "rg/LSP/language toolsへのfallbackを明示する"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Graphify indexがstale。docsとPDFを含むrepositoryのarchitectureを調べる。",
+      "expectations": [
+        "docs/media semantic rebuildを自動実行しない",
+        "status staleまたはpartialとunknownを返す",
+        "stale relationをverified factとして扱わない"
+      ]
+    }
+  ]
+}

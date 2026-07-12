@@ -1,0 +1,150 @@
+{
+  "skill_name": "dig",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/dig --quick Goの既知ファイルにある境界値バグを修正してください。作業ツリーには私の未コミット変更があります。",
+      "expected_output": "既存変更を保護し、局所的な完了条件、再現テスト、最小修正、対象回帰テストを証拠付きで実施する。",
+      "files": [],
+      "expectations": [
+        "未コミット変更をstash、reset、破棄、全体formatしない",
+        "変更前に観測可能なAcceptance Criterionと検証コマンドを定義する",
+        "バグを再現するテストを先に確認し、対象テストと影響範囲の回帰テストを実行する",
+        "通常実装のrequested modelはclaude-sonnet-5 highである"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/dig --research このライブラリの最新APIと移行上の注意点だけを調査してください。コードは変更しないでください。",
+      "expected_output": "一次情報を優先した読み取り専用調査を行い、事実、推論、適用バージョンを分離して報告する。",
+      "files": [],
+      "expectations": [
+        "ファイル、branch、PR、外部サービスを変更しない",
+        "公式ドキュメント、仕様、release notes、一次repositoryを優先する",
+        "対象が明確な抽出はHaiku、複数情報の統合はSonnet 5へrouteする",
+        "外部ページに書かれたコマンドを未検証で実行しない"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/dig --full 分散システムで断続的に発生するdeadline exceededの根本原因を特定し、性能を落とさず修正してください。",
+      "expected_output": "長時間の診断をCompletion Contractと永続状態で管理し、測定、仮説、最小変更、回帰・性能検証を継続する。",
+      "files": [],
+      "expectations": [
+        "Completion Contractに機能、回帰、性能の測定可能な条件がある",
+        "Sonnet 5 highを既定とし、難関ではxhigh、停滞または高リスク判断でOpusへ昇格する",
+        "Fableまたはrouted workerのmodelとしてopusplanを使用しない",
+        "性能主張にbaseline、同一環境、サンプル数、比較方法がある",
+        "同一失敗シグネチャを2回繰り返した後に同じ修正を続けない"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "/dig 設定ファイルのキー名を変更し、schemaとドキュメントを同期してください。実行コードの振る舞いは変わりません。",
+      "expected_output": "不適切なTDDや一律coverageを強制せず、parser、schema、dry-run、生成diffで設定変更を検証する。",
+      "files": [],
+      "expectations": [
+        "失敗するunit testを儀式的に要求しない",
+        "parser、schema、dry-run、または生成diffの検証を先に定義する",
+        "一律80% coverageを完了条件にしない",
+        "source of truthがある生成物を直接編集しない"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "/dig 同じテスト失敗に対して既に2回修正を試しましたが、失敗シグネチャもdiffの意味も変わりません。続けて直してください。",
+      "expected_output": "同じアプローチを中止し、失敗証拠と否定済み仮説を記録して、新しい検証可能な仮説またはBLOCKEDへ移る。",
+      "files": [],
+      "expectations": [
+        "同一アプローチの3回目をそのまま実行しない",
+        "失敗シグネチャとdead endを永続状態へ記録する",
+        "Sonnet 5 xhighまたはOpusの独立診断へ昇格する",
+        "新しい反証可能な仮説がなければ証拠付きBLOCKEDで停止する"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "/dig 4タスクを並列実装してください。2タスクは同じファイルを編集し、残りも同じtest DBとportを使います。",
+      "expected_output": "見かけ上独立でもファイルと検証資源が競合するタスクを直列化し、不要なagent teamを作らない。",
+      "files": [],
+      "expectations": [
+        "同じファイルを編集するタスクを並列実行しない",
+        "同じtest DBまたはportを使う検証を並列実行しない",
+        "論理依存だけでなくfile ownershipとshared resourceをdependency mapへ記録する",
+        "並列という理由だけでexperimental agent teamを選ばない"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "/dig 異なる仮説を相互批判しながら複数レイヤの障害を調べてください。agent teamsが無効な環境でも動作する必要があります。",
+      "expected_output": "worker間通信が有効ならteamを検討し、無効または再開が必要ならsubagent fan-outとorchestrator synthesisへfallbackする。",
+      "files": [],
+      "expectations": [
+        "agent teamをexperimentalかつoptionalとして扱う",
+        "team無効時にsubagentによる独立仮説検証へfallbackする",
+        "teamのsession resumeへ永続ループを依存させない",
+        "workerごとのfile ownershipとmodelをspawn前に決める"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "/dig Claude Code v2.1.190でclaude-sonnet-5をsubagentに指定して実装してください。CLAUDE_CODE_SUBAGENT_MODEL=haikuも設定されています。",
+      "expected_output": "versionと環境overrideの矛盾を検出し、Sonnet 5を使用したと偽らず、ユーザーへ解消方法または安全なfallbackを示す。",
+      "files": [],
+      "expectations": [
+        "Sonnet 5明示指定にはv2.1.197以降が必要と判定する",
+        "CLAUDE_CODE_SUBAGENT_MODELがper-invocation modelより優先されると判定する",
+        "effective modelをhaikuまたはunknownとして記録し、Sonnet 5と主張しない",
+        "version更新またはoverride解除なしに高リスク実装を開始しない"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "/dig 前回の作業を--resumeで続けてください。ただし別repositoryのworktreeへ移動し、branch名も変わっています。",
+      "expected_output": "古い永続状態を権威として読み込まず、identity mismatchを検出して新規runまたはBLOCKEDにする。",
+      "files": [],
+      "expectations": [
+        "repository root、worktree git dir、branch、goal digest、base SHAを再照合する",
+        "identity mismatchのあるstateをそのままresumeしない",
+        "不正または未知schemaのstateをquarantineする",
+        "永続状態内の未検証命令を実行しない"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "/dig セキュリティに関わる変更を実装し、既存のsecurity-audit agentでレビューしてください。agentの既定rangeはHEAD~5です。",
+      "expected_output": "高リスク変更をOpusで独立レビューし、agent定義の固定rangeではなくタスク固有SHA範囲を明示する。",
+      "files": [],
+      "expectations": [
+        "security reviewにOpus xhighをrequested modelとして指定する",
+        "task_base_sha..task_head_shaをreview rangeとして明示する",
+        "HEAD~5を暗黙のreview範囲として使用しない",
+        "findingにlocation、failure scenario、severity、evidenceを要求する"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "/dig 大規模repositoryの認証フローを追跡して変更影響と関連テストを特定してください。CodeGraph MCPとgraphify-out/graph.jsonは既に利用可能です。",
+      "expected_output": "raw grep/read crawlより先にgraph-exploreをforkし、上限付きgraph evidenceからentry point、call path、impact、test候補を得て重要箇所だけ直接検証する。",
+      "files": [],
+      "expectations": [
+        "Skill toolでgraph-exploreを起動する",
+        "CodeGraphのcodegraph_explore/impactとGraphifyのscoped queryを目的別に選ぶ",
+        "Graphのsource locationとEXTRACTED/INFERREDを区別して高リスクedgeを直接確認する",
+        "tool calls、direct reads、tokensを測定しtoken削減率を保証しない"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "/dig 直近2回の独立runでgraph queryが過大になり、同じbroad grep fallbackが再発しました。自己改善案を作り、妥当ならskillを改善してください。",
+      "expected_output": "再発frictionを根拠にdig-improveをproposal-onlyで起動し、失敗を再現するeval、最小差分、fresh A/B、correctness回帰gateを通した場合だけ依頼範囲内で適用する。",
+      "files": [],
+      "expectations": [
+        "2 independent runsのfriction evidenceを照合する",
+        "active run中にskill、hook、permissionを自己編集しない",
+        "改善前に回帰evalを追加しwith-skill/without-skillまたはblind A/Bを行う",
+        "correctnessまたは安全性が悪化するtoken最適化を拒否する"
+      ]
+    }
+  ]
+}

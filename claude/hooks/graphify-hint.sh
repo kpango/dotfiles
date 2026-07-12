@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PreToolUse:Bash hook — suggest graphify when grep/find commands are detected
+# PreToolUse:Bash hook — route broad searches through graph-explore when a graph exists
 set -euo pipefail
 
 if ! command -v jq &>/dev/null; then
@@ -10,11 +10,11 @@ CMD=$(cat | jq -r '.tool_input.command // ""' 2>/dev/null || true)
 
 case "$CMD" in
   *grep*|*rg\ *|*ripgrep*|*find\ *|*fd\ *|*ack\ *|*ag\ *)
-    [[ -f graphify-out/graph.json ]] || exit 0
+    [[ -s graphify-out/graph.json ]] || exit 0
     jq -n '{
       hookSpecificOutput: {
         hookEventName: "PreToolUse",
-        additionalContext: "graphify: knowledge graph at graphify-out/. For focused questions, run `graphify query \"<question>\"` (scoped subgraph, usually much smaller than GRAPH_REPORT.md) instead of grepping raw files. Read GRAPH_REPORT.md only for broad architecture context."
+        additionalContext: "graph-explore: graphify-out/graph.json is available. When /dig is active, invoke the Skill tool with `graph-explore <current investigation goal>` before broad grep/find. It chooses CodeGraph or Graphify, caps returned context, and lists only direct reads needed for verification. Read GRAPH_REPORT.md only if scoped graph queries fail."
       }
     }'
     ;;

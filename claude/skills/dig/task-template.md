@@ -24,9 +24,28 @@ Use this template for implementation tasks. Remove optional sections that do not
 
 ### Model routing
 
-- Model: `haiku | claude-sonnet-5 | opus`
-- Effort: `inherit | medium | high | xhigh`
+- Requested model: `haiku | claude-sonnet-5 | opus`
+- Effective model: `<resolved model | unknown>`
+- Effort: `inherit for haiku | medium/high/xhigh for Sonnet 5 | high/xhigh for Opus`
+- Resolution evidence: `<version, env override, allowlist/fallback notice>`
 - Reason: `<capability/risk justification, not task size alone>`
+
+### Execution form
+
+- Form: `main session | subagent | agent team`
+- Isolation: `none | worktree`
+- File owner:
+- State writer: `orchestrator only`
+- Reason: `<why coordination/context isolation justifies overhead>`
+
+### Graph context
+
+- Available index: `CodeGraph | Graphify | both | none`
+- Freshness evidence: `<status/check-update output or unavailable reason>`
+- Query budget: `<response token/character cap>`
+- Routes used: `<explore/query/path/explain/impact>`
+- Direct reads after graph: `<only locations needed to verify decisions>`
+- Fallback reason: `<none or unsupported/stale/ambiguous evidence>`
 
 ### Observe
 
@@ -92,7 +111,10 @@ Expected evidence:
   "task_id": "N",
   "criterion": "AC-N",
   "status": "PASS | PROGRESS | BLOCKED",
-  "model": "claude-sonnet-5",
+  "requested_model": "claude-sonnet-5",
+  "effective_model": "claude-sonnet-5",
+  "effort": "high",
+  "fallback_reason": null,
   "base_sha": "<sha>",
   "head_sha": "<sha-or-working-tree>",
   "files_changed": [],
@@ -106,6 +128,13 @@ Expected evidence:
 ```
 
 For `BLOCKED`, add the missing decision or capability, attempted hypotheses, and the evidence that further retries would repeat a dead end.
+
+### Post-task improvement signal
+
+- Normalized friction: `<none or stable signature>`
+- Independent run count: `<n>`
+- Deterministic spec mismatch: `<none or evidence>`
+- `dig-improve` action: `not eligible | proposal requested | user decision required`
 
 ---
 
