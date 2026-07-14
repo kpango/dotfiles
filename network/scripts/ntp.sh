@@ -1,0 +1,21 @@
+delete system ntp server 0.ubnt.pool.ntp.org
+delete system ntp server 1.ubnt.pool.ntp.org
+delete system ntp server 2.ubnt.pool.ntp.org
+delete system ntp server 3.ubnt.pool.ntp.org
+set system ntp server 0.jp.pool.ntp.org
+set system ntp server 1.jp.pool.ntp.org
+set system ntp server 2.jp.pool.ntp.org
+set system ntp server 3.jp.pool.ntp.org
+set system ntp server ntp.dnsbalance.ring.gr.jp
+set system ntp server ntp.jst.mfeed.ad.jp
+set system ntp server ntp.nict.jp
+set system ntp server ntp.ring.gr.jp
+set system ntp server ntp1.jst.mfeed.ad.jp
+set system ntp server ntp1.v6.mfeed.ad.jp
+set system ntp server ntp2.jst.mfeed.ad.jp
+set system ntp server ntp2.v6.mfeed.ad.jp
+set system ntp server ntp3.jst.mfeed.ad.jp
+set system ntp server ntp3.v6.mfeed.ad.jp
+set system ntp server s2csntp.miz.nao.ac.jp
+set system ntp server time.google.com
+commit && save

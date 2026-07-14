@@ -1,0 +1,375 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "respectGitignore": true,
+  "cleanupPeriodDays": 14,
+  "skillListingBudgetFraction": 0.03,
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "0",
+    "CLAUDE_CODE_FORK_SUBAGENT": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "80",
+    "RTK_TELEMETRY_DISABLED": "1",
+    "BUN_INSTALL": "/home/kpango/.bun",
+    "PATH": "/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/go/bin:/usr/local/bun/bin:/home/kpango/go/bin:/home/kpango/.local/bin:/home/kpango/.cargo/bin:/home/kpango/.bun-shims"
+  },
+  "attribution": {
+    "commit": "Co-Authored-By: Claude <noreply@anthropic.com>",
+    "pr": "Generated with [Claude Code](https://claude.ai/claude-code)"
+  },
+  "includeGitInstructions": true,
+  "permissions": {
+    "allow": [
+      "Bash(cmake *)",
+      "Bash(make *)",
+      "Bash(gmake *)",
+      "Bash(ninja *)",
+      "Bash(/home/kpango/go/src/github.com/vdaas/ArcFlare/build/tests/build_index *)",
+      "Bash(/home/kpango/go/src/github.com/vdaas/ArcFlare/build/tests/ann_bench *)",
+      "Bash(echo *)",
+      "Bash(printf *)",
+      "Bash(date *)",
+      "Bash(df *)",
+      "Bash(du *)",
+      "Bash(jq *)",
+      "Bash(python3 *)",
+      "Bash(/bin/bash *)",
+      "Bash(/bin/sh *)",
+      "mcp__codegraph__codegraph_search",
+      "mcp__codegraph__codegraph_context",
+      "mcp__codegraph__codegraph_callers",
+      "mcp__codegraph__codegraph_callees",
+      "mcp__codegraph__codegraph_impact",
+      "mcp__codegraph__codegraph_node",
+      "mcp__codegraph__codegraph_status",
+      "mcp__codegraph__codegraph_files",
+      "mcp__codegraph__codegraph_trace",
+      "mcp__codegraph__codegraph_explore",
+      "mcp__filesystem__read_file",
+      "mcp__filesystem__read_multiple_files",
+      "mcp__filesystem__list_directory",
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__search_files",
+      "mcp__filesystem__get_file_info",
+      "mcp__filesystem__list_allowed_directories",
+      "mcp__memory__read_graph",
+      "mcp__memory__search_nodes",
+      "mcp__memory__open_nodes",
+      "mcp__memory__create_entities",
+      "mcp__memory__create_relations",
+      "mcp__memory__add_observations",
+      "mcp__memory__delete_entities",
+      "mcp__memory__delete_observations",
+      "mcp__memory__delete_relations",
+      "mcp__lsp-rust__definition",
+      "mcp__lsp-rust__references",
+      "mcp__lsp-rust__hover",
+      "mcp__lsp-rust__completion",
+      "mcp__lsp-rust__diagnostics",
+      "mcp__lsp-rust__document_symbols",
+      "mcp__lsp-rust__workspace_symbols",
+      "mcp__k8s__get_pods",
+      "mcp__k8s__get_deployments",
+      "mcp__k8s__get_services",
+      "mcp__k8s__get_namespaces",
+      "mcp__k8s__get_configmaps",
+      "mcp__k8s__describe_resource",
+      "mcp__k8s__get_logs",
+      "mcp__k8s__list_resources",
+      "mcp__slack__list_channels",
+      "mcp__slack__get_channel_history",
+      "mcp__slack__get_thread_replies",
+      "mcp__slack__search_messages",
+      "mcp__slack__get_users"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "sonnet",
+  "enableAllProjectMcpServers": true,
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/session-start.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/rtk-rewrite.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/security-gate.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/write-security-gate.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/post-write.sh",
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/permission-request.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/user-prompt-submit.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/post-tool-failure.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/session-end.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/pre-compact.sh",
+            "timeout": 60,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/stop-failure.sh",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "worktree": {
+    "symlinkDirectories": [
+      "node_modules",
+      ".cache",
+      "vendor",
+      "target",
+      ".cargo",
+      "go/pkg/mod",
+      "rust/target",
+      ".bin",
+      ".venv",
+      "__pycache__",
+      ".pytest_cache",
+      ".mypy_cache",
+      "graphify-out",
+      ".zig-cache",
+      "dist"
+    ],
+    "baseRef": "head",
+    "bgIsolation": "worktree"
+  },
+  "enableWorkflows": true,
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "claude-mem@thedotmack": true,
+    "clangd-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "thedotmack": {
+      "source": {
+        "source": "github",
+        "repo": "thedotmack/claude-mem"
+      }
+    }
+  },
+  "viewMode": "verbose",
+  "language": "ja",
+  "spinnerTipsEnabled": true,
+  "alwaysThinkingEnabled": true,
+  "autoUpdatesChannel": "latest",
+  "tui": "fullscreen",
+  "prefersReducedMotion": false,
+  "doneMeansMerged": true,
+  "autoMemoryEnabled": true,
+  "autoMemoryDirectory": "~/.claude/memory",
+  "showThinkingSummaries": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "editorMode": "vim",
+  "preferredNotifChannel": "ghostty",
+  "autoScrollEnabled": true,
+  "fileCheckpointingEnabled": true,
+  "showTurnDuration": true,
+  "showMessageTimestamps": true,
+  "terminalProgressBarEnabled": true,
+  "teammateMode": "auto",
+  "remoteControlAtStartup": true,
+  "skipAutoPermissionPrompt": true,
+  "maxSkillDescriptionChars": 512,
+  "mcpServers": {
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": ["serve", "--mcp"]
+    },
+    "filesystem": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": [
+        "@modelcontextprotocol/server-filesystem",
+        "/home/kpango",
+        "/home/kpango/go/src/github.com/kpango",
+        "/home/kpango/go/src/github.com/vdaas/vald"
+      ]
+    },
+    "memory": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["@modelcontextprotocol/server-memory"]
+    },
+    "lsp-rust": {
+      "type": "stdio",
+      "command": "mcp-language-server",
+      "args": [
+        "-workspace",
+        "/home/kpango/go/src/github.com/vdaas/vald",
+        "-lsp",
+        "rust-analyzer"
+      ]
+    },
+    "k8s": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "/home/kpango/.kube:/home/user/.kube:ro",
+        "-e",
+        "KUBECONFIG=/home/user/.kube/config",
+        "quay.io/manusa/kubernetes_mcp_server:latest"
+      ]
+    },
+    "slack": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "128",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-e",
+        "SLACK_BOT_TOKEN",
+        "-e",
+        "SLACK_TEAM_ID",
+        "-e",
+        "SLACK_CHANNEL_IDS",
+        "mcp/slack:latest"
+      ]
+    }
+  },
+  "effortLevel": "xhigh"
+}

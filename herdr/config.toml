@@ -1,0 +1,87 @@
+onboarding = false
+# ── Shell ──────────────────────────────────────────────────────────────────────
+# All herdr panes run inside the dev Docker container via herdr/shell.
+# Falls back to plain zsh if the container is not running.
+[terminal]
+default_shell = "/home/kpango/go/src/github.com/kpango/dotfiles/herdr/shell"
+
+# ── Keybindings ────────────────────────────────────────────────────────────────
+# Prefix: ctrl+space — avoids both tmux prefixes (ctrl+b Linux, ctrl+g macOS,
+# ctrl+w Docker) and readline beginning-of-line (ctrl+a). ctrl+space is set-mark
+# in emacs readline but is effectively unused in practice.
+[keys]
+prefix           = "ctrl+space"
+
+# Workspace management
+workspace_picker = ""              # disabled — prefix+w taken by new_workspace
+new_workspace    = "prefix+w"
+rename_workspace = "prefix+shift+w"
+close_workspace  = "prefix+shift+d"
+resize_mode      = "prefix+shift+r"
+
+# Tab (window) — mirrors tmux prefix+c/n/p/,/shift+x
+new_tab          = "prefix+f9"      # fallback; prefix+c overridden below for CWD-aware create
+next_tab         = "prefix+n"
+previous_tab     = "prefix+p"
+rename_tab       = "prefix+,"
+close_tab        = "prefix+shift+x"
+
+# Pane — mirrors tmux prefix+h/j/k/l/x/z
+focus_pane_left  = "prefix+h"
+focus_pane_right = "prefix+l"
+focus_pane_up    = "prefix+k"
+focus_pane_down  = "prefix+j"
+close_pane       = "prefix+x"
+zoom             = "prefix+z"
+
+# Reassign built-in splits to function keys, freeing v and - for CWD-aware commands below
+split_vertical   = "prefix+f7"
+split_horizontal = "prefix+f8"
+
+# Config / session
+reload_config    = "prefix+r"
+detach           = "prefix+d"
+toggle_sidebar   = "prefix+b"
+
+# Indexed shortcuts — all disabled so modifier+1..9 passes through to zsh
+[keys.indexed]
+tabs       = ""
+workspaces = ""
+agents     = ""
+
+# CWD-aware tab/pane commands (mirrors tmux -c '#{pane_current_path}'):
+#   c → new tab in CWD     (tmux: bind c new-window -c '#{pane_current_path}')
+#   v → pane to the right  (tmux: bind v split-window -h -c '#{pane_current_path}')
+#   - → pane below         (herdr's default mnemonic; tmux's prefix+s is hardcoded
+#                           to herdr's own settings menu and cannot be rebound)
+[[keys.command]]
+key     = "prefix+c"
+type    = "shell"
+command = "herdr tab create --cwd $HERDR_ACTIVE_PANE_CWD --focus"
+
+[[keys.command]]
+key     = "prefix+v"
+type    = "shell"
+command = "herdr pane split --direction right --cwd $HERDR_ACTIVE_PANE_CWD"
+
+[[keys.command]]
+key     = "prefix+-"
+type    = "shell"
+command = "herdr pane split --direction down  --cwd $HERDR_ACTIVE_PANE_CWD"
+
+# ── UI ─────────────────────────────────────────────────────────────────────────
+[ui]
+mouse_capture       = true
+confirm_close       = true
+prompt_new_tab_name = false
+
+# ── Theme: Catppuccin Mocha (matches tmux theme) ─────────────────────────────
+[theme]
+name = "one-dark"
+
+[theme.custom]
+accent = "#89b4fa"   # matches tmux pane-active-border-style
+
+# ── Performance ────────────────────────────────────────────────────────────────
+[advanced]
+scrollback_limit_bytes = 10485760

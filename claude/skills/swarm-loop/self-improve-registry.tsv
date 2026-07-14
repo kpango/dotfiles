@@ -1,0 +1,5 @@
+# slug	date	targets(comma-separated, fixed vocabulary)
+swarm-skill-general-review	2026-07-13	skills-content
+skill-effectiveness-audit	2026-07-13	CLAUDE.md,settings.json,hooks,agents-content,skills-content
+settings-modernization	2026-07-14	settings.json,multi-agent-mechanism
+skill-agent-quality-uplift	2026-07-14	skills-content,agents-content
