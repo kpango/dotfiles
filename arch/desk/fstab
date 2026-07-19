@@ -1,0 +1,14 @@
+# Static information about the filesystems.
+# See fstab(5) for details.
+
+# <file system>                              <dir>    <type>  <options>                                                                          <dump> <pass>
+# /dev/md0p1
+UUID=b6089bce-f495-4ff6-b9a3-16dba13aec79	/	xfs	rw,noatime,logbufs=8,logbsize=32k,sunit=1024,swidth=2048,noquota	0 1
+
+# /dev/nvme0n1p1 (EFI)
+UUID=C088-2652	/boot	vfat	rw,relatime,fmask=0137,dmask=0027,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
+
+# /dev/nvme1n1p1 (swap)
+UUID=f9d5f646-0f05-4922-a666-19bcbe9c9269	none	swap	defaults,noatime	0 0
+
+tmpfs	/var/tmp	tmpfs	nodiratime,noatime,nosuid,nodev,size=64m	0 0

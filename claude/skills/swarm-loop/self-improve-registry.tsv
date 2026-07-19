@@ -1,0 +1,12 @@
+# slug	date	targets(comma-separated, fixed vocabulary)
+swarm-skill-general-review	2026-07-13	skills-content
+skill-effectiveness-audit	2026-07-13	CLAUDE.md,settings.json,hooks,agents-content,skills-content
+settings-modernization	2026-07-14	settings.json,multi-agent-mechanism
+skill-agent-quality-uplift	2026-07-14	skills-content,agents-content
+swarm-mas-research	2026-07-17	skills-content,multi-agent-mechanism
+all-skills-phrasing-audit	2026-07-17	skills-content
+swarm-explore-effort-routing	2026-07-18	skills-content
+swarm-memory-bridge	2026-07-18	CLAUDE.md,agents-content,skills-content,multi-agent-mechanism
+memory-driven-agent-skill-dev	2026-07-18	agents-content,skills-content
+agent-self-evolution-maintenance	2026-07-18	agents-content,skills-content,multi-agent-mechanism
+agent-skill-refinement-pass	2026-07-18	agents-content,skills-content
