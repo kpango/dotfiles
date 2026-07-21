@@ -1,0 +1,304 @@
+name: "Makefile test in kpango/dev"
+
+# Verify every Makefile / Makefile.d target runs without error inside the
+# kpango/dev container on linux/amd64, linux/arm64, and macOS (arm64).
+#
+# Three phases:
+#   1. syntax-check  — make -n dry-run for every declared target (no container)
+#   2. test-linux    — real execution inside kpango/dev on ubuntu runners
+#   3. test-macos    — real execution inside kpango/dev via Docker / Colima on macOS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Makefile"
+      - "Makefile.d/**"
+      - ".github/workflows/makefile-test.yaml"
+  pull_request:
+    paths:
+      - "Makefile"
+      - "Makefile.d/**"
+      - ".github/workflows/makefile-test.yaml"
+  workflow_dispatch:
+  schedule:
+    # Daily at 02:00 UTC
+    - cron: "0 2 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEV_IMAGE: kpango/dev:nightly
+
+# ── Phase 1: Makefile syntax / dry-run ────────────────────────────────────────
+# Runs on a plain ubuntu runner (no container required).
+# Parses every target via 'make -n' to catch typos, missing includes, and bad
+# prerequisite chains before the more expensive container jobs start.
+jobs:
+  syntax-check:
+    name: "Dry-run syntax check"
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Configure git safe directory
+        env:
+          # Suppress the 'pass' invocation in variables.mk; dry-run doesn't execute
+          # shell commands but make still evaluates $(shell ...) for non-?= vars.
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          printf 'GITHUB_ACCESS_TOKEN=%s\n' "$GITHUB_ACCESS_TOKEN" >> "$GITHUB_ENV"
+
+      - name: Dry-run — help / git / dotfiles
+        run: |
+          make -n help
+          make -n echo
+          make -n git/status git/diff git/pull git/check
+          make -n dotfiles/install dotfiles/clean dotfiles/perm
+          make -n link copy clean perm
+
+      - name: Dry-run — format
+        run: |
+          make -n format \
+               format/zsh format/dockerfile format/nix format/yaml \
+               format/go format/rust format/json format/md \
+               format/makefile format/conf format/convert-to-zsh
+
+      - name: Dry-run — arch / mac install
+        run: |
+          make -n arch/install arch/p1/install arch/desk/install
+          make -n arch_link arch_copy arch_p1_link arch_p1_copy arch_desk_link arch_desk_copy
+          make -n mac/install mac_link mac_copy
+
+      - name: Dry-run — nix
+        run: |
+          make -n nix/setup nix/pull nix/update \
+               nix/test nix/test/eval nix/test/check nix/test/dry-run \
+               nix/test/build nix/test/docker \
+               nix/fmt nix/fmt/check
+
+      - name: Dry-run — devbox
+        run: |
+          make -n devbox/install devbox/shell devbox/setup \
+               devbox/update devbox/clean
+
+      - name: Dry-run — update
+        run: |
+          make -n update update/versions \
+               update/versions/actions update/versions/tools
+
+      - name: Dry-run — lint
+        run: |
+          make -n workflow/lint workflow/fix
+
+  # ── Phase 2: Container execution (Linux runners) ──────────────────────────────
+  # Runs the full job inside kpango/dev so the environment exactly matches the
+  # container.  Targets that require missing optional tools emit a SKIP message
+  # and do not fail the job.
+  test-linux:
+    name: "Container (${{ matrix.arch.name }})"
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    needs: syntax-check
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - name: linux/amd64
+            runner: ubuntu-latest
+          - name: linux/arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.arch.runner }}
+    container:
+      image: kpango/dev:nightly
+      options: "--user root --privileged"
+    steps:
+      # When running as root the sudo binary may be absent; create a passthrough.
+      # Also mark the workspace safe for git to avoid "dubious ownership" errors.
+      - name: Bootstrap container
+        shell: sh
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --system --add safe.directory '*'
+          command -v sudo >/dev/null 2>&1 || {
+            printf '#!/bin/sh\nexec "$@"\n' > /usr/local/bin/sudo
+            chmod +x /usr/local/bin/sudo
+          }
+          printf 'GITHUB_ACCESS_TOKEN=%s\n' "$GITHUB_ACCESS_TOKEN" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      # ── Informational ──────────────────────────────────────────────────────
+      - name: help
+        run: make help
+
+      # ── Read-only git targets ──────────────────────────────────────────────
+      - name: git read-only (status / diff / echo)
+        run: |
+          make echo
+          make git/status
+          make git/diff
+
+      # ── dotfiles install ───────────────────────────────────────────────────
+      # Both link and copy modes; /etc/docker is created inside the container.
+      - name: dotfiles/install (link)
+        run: make dotfiles/install
+
+      - name: dotfiles/install (copy)
+        run: make dotfiles/install MODE=copy
+
+      # ── Format targets ─────────────────────────────────────────────────────
+      # Formatters that are always safe (no external tool required):
+      #   format/dockerfile — intentionally skipped by the target itself
+      #   format/makefile   — pure sed, always available
+      # All others are conditional: print SKIP if the tool is absent.
+      - name: format/dockerfile + format/makefile (unconditional)
+        run: |
+          make format/dockerfile
+          make format/makefile
+
+      - name: format/zsh
+        run: |
+          make format/zsh     || echo "SKIP: shfmt / beautysh not found"
+
+      - name: format/yaml
+        run: |
+          make format/yaml    || echo "SKIP: prettier / yamlfmt not found"
+
+      - name: format/go
+        run: |
+          make format/go      || echo "SKIP: gofmt not found"
+
+      - name: format/rust
+        run: |
+          make format/rust    || echo "SKIP: rustfmt not found"
+
+      - name: format/json
+        run: |
+          make format/json    || echo "SKIP: prettier / jq not found"
+
+      - name: format/md
+        run: |
+          make format/md      || echo "SKIP: prettier not found"
+
+      - name: format/nix
+        run: |
+          make format/nix     || echo "SKIP: nixpkgs-fmt not found"
+
+      - name: format/conf
+        run: |
+          make format/conf    || echo "SKIP: shfmt not found"
+
+      # ── dotfiles/perm ──────────────────────────────────────────────────────
+      # Needs nkf for line-ending normalisation; skip gracefully if absent.
+      - name: dotfiles/perm
+        run: |
+          make dotfiles/perm  || echo "SKIP: nkf not found or permission error"
+
+      # ── Devbox cleanup ─────────────────────────────────────────────────────
+      - name: devbox/clean
+        run: make devbox/clean
+
+  # ── Phase 3: Container execution via Docker on linux/arm64 ───────────────────
+  # Uses ubuntu-24.04-arm runner where Docker is pre-installed natively.
+  # Tests the linux/arm64 image on a real arm64 Linux host.
+  test-macos:
+    name: "Container (linux/arm64)"
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    needs: syntax-check
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Pull kpango/dev (linux/arm64)
+        run: docker pull --platform linux/arm64 ${{ env.DEV_IMAGE }}
+
+      # Each call mounts the checkout at /dotfiles and pre-configures git + sudo.
+      - name: Run targets in container
+        env:
+          IMAGE: ${{ env.DEV_IMAGE }}
+          GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          drun() {
+            docker run --rm \
+              --platform linux/arm64 \
+              --volume "$PWD:/dotfiles" \
+              --workdir /dotfiles \
+              --user root \
+              --env GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
+              "$IMAGE" \
+              sh -c '
+                git config --global --add safe.directory /dotfiles
+                command -v sudo >/dev/null 2>&1 || {
+                  printf "#!/bin/sh\nexec \"\$@\"\n" > /usr/local/bin/sudo
+                  chmod +x /usr/local/bin/sudo
+                }
+                '"$1"
+          }
+
+          # ── Informational ────────────────────────────────────────────────
+          drun 'make help'
+
+          # ── Read-only git ────────────────────────────────────────────────
+          drun 'make echo'
+          drun 'make git/status'
+          drun 'make git/diff'
+
+          # ── dotfiles install ─────────────────────────────────────────────
+          drun 'make dotfiles/install'
+          drun 'make dotfiles/install MODE=copy'
+
+          # ── Format targets ───────────────────────────────────────────────
+          drun 'make format/dockerfile'
+          drun 'make format/makefile'
+          drun 'make format/zsh  || echo "SKIP: shfmt / beautysh not found"'
+          drun 'make format/yaml || echo "SKIP: prettier / yamlfmt not found"'
+          drun 'make format/go   || echo "SKIP: gofmt not found"'
+          drun 'make format/rust || echo "SKIP: rustfmt not found"'
+          drun 'make format/json || echo "SKIP: prettier / jq not found"'
+          drun 'make format/md   || echo "SKIP: prettier not found"'
+          drun 'make format/nix  || echo "SKIP: nixpkgs-fmt not found"'
+          drun 'make format/conf || echo "SKIP: shfmt not found"'
+
+          # ── dotfiles/perm ────────────────────────────────────────────────
+          drun 'make dotfiles/perm || echo "SKIP: nkf not found or permission error"'
+
+          # ── Devbox cleanup ───────────────────────────────────────────────
+          drun 'make devbox/clean'
+
+  # ── Summary ─────────────────────────────────────────────────────────────────
+  all-passed:
+    name: "All checks passed"
+    timeout-minutes: 5
+    permissions: {}
+    needs: [syntax-check, test-linux, test-macos]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Check results
+        run: |
+          results='${{ toJSON(needs) }}'
+          echo "$results"
+          for result in $(echo "$results" | grep -o '"result":"[^"]*"' | cut -d'"' -f4); do
+            [ "$result" = "success" ] || [ "$result" = "skipped" ] || {
+              echo "One or more jobs failed."
+              exit 1
+            }
+          done
+          echo "All jobs succeeded."

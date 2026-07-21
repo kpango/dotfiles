@@ -1,0 +1,22 @@
+# Generate the atuin zsh init script with two performance patches applied:
+#   1. Replace $(atuin uuid) session generation with a /proc read (avoids a subprocess)
+#   2. Replace add-zsh-hook calls with direct array appends (avoids autoloading add-zsh-hook)
+# Behavioural fixes (ATUIN_TMUX_POPUP, sync precmd) live in zsh/30-atuin.zsh so they
+# survive .zcache clearing without depending on this patch running correctly.
+# Single awk pass — no sed subprocess.
+atuin init zsh | awk '
+/^export ATUIN_TMUX_POPUP=false/ { next }
+/export ATUIN_SESSION=\$\(atuin uuid\)/ {
+	print "    if [[ -r /proc/sys/kernel/random/uuid ]]; then"
+	print "        read -r ATUIN_SESSION < /proc/sys/kernel/random/uuid"
+	print "    else"
+	print "        ATUIN_SESSION=$(uuidgen)"
+	print "    fi"
+	print "    export ATUIN_SESSION=\"${ATUIN_SESSION//-/}\""
+	next
+}
+/autoload -U add-zsh-hook/  { next }
+/add-zsh-hook preexec /     { print "preexec_functions+=(" $NF ")"; next }
+/add-zsh-hook precmd /      { print "precmd_functions+=(" $NF ")";  next }
+{ print }
+'

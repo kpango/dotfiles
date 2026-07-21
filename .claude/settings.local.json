@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(~/**)",
+      "Read(/etc/**)",
+      "Read(/usr/lib/systemd/**)",
+      "Bash(sudo *)",
+      "WebFetch(domain:herdr.dev)",
+      "WebSearch",
+      "Bash(zsh -n /home/kpango/go/src/github.com/kpango/dotfiles/zsh/05-functions.zsh)"
+    ],
+    "additionalDirectories": [
+      "/home/kpango/go/src/github.com/vdaas/vald"
+    ]
+  }
+}

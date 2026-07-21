@@ -1,0 +1,32 @@
+// Tailscale ACL policy template — structure only, no IPs.
+// Actual policy with host IPs lives in the private pass repo (tailscale-acl.hujson).
+// Apply via: https://login.tailscale.com/admin/acls
+{
+  // "hosts": { ... }  → defined in pass repo with actual Tailscale IPs
+
+  "nodeAttrs": [
+    {
+      // Disable key expiry for all member devices
+      "target": ["autogroup:member"],
+      "attr":   ["noexpiry"]
+    }
+  ],
+
+  "acls": [
+    {
+      "action": "accept",
+      "src":    ["autogroup:member"],
+      "dst":    ["autogroup:member:*"]
+    }
+  ],
+
+  "ssh": [
+    {
+      // accept (not "check") — no interactive approval required
+      "action": "accept",
+      "src":    ["autogroup:member"],
+      "dst":    ["autogroup:self"],
+      "users":  ["autogroup:nonroot"]
+    }
+  ]
+}
