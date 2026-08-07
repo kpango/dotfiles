@@ -1,0 +1,9 @@
+version = 3
+
+# Force filesystem Unix sockets (unix://) for shim TTRPC communication.
+# containerd 2.3.x defaults to abstract sockets (yunix://) which is incompatible
+# with docker 29.4.x compiled against containerd/containerd v2.2.3.
+# Setting socket_dir to a real path causes shims to use unix:// instead of yunix://,
+# restoring docker compatibility without downgrading containerd.
+[plugins.'io.containerd.shim.v1.manager']
+  socket_dir = '/run/containerd/s'

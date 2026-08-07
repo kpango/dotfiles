@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# herdr default_shell wrapper — runs new panes inside the dev Docker container.
+# Falls back to a plain shell if the container is not running.
+set -euo pipefail
+
+CONTAINER="${HERDR_DOCKER_CONTAINER:-dev}"
+INNER_SHELL="${HERDR_DOCKER_SHELL:-/usr/bin/zsh}"
+
+# Inherit the CWD that herdr set via chdir(2) before exec'ing this wrapper.
+# Passed to docker exec -w so the new pane lands in the same directory.
+CWD="$(pwd)"
+
+if /usr/bin/docker inspect --format '{{.State.Status}}' "$CONTAINER" 2>/dev/null \
+        | grep -q '^running$'; then
+    exec /usr/bin/docker exec -it -w "$CWD" "$CONTAINER" "$INNER_SHELL"
+fi
+
+# Container not running — open a plain host shell so herdr stays usable.
+exec "$INNER_SHELL"

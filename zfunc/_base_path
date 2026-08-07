@@ -1,0 +1,24 @@
+# _base_path — canonical PATH prefix: OS-common dirs, plus macOS-only additions
+# gated by OS detection. Single source for _gen_env (baked into the env.zsh
+# cache)/00-env.zsh (deferred combined.zsh fallback)/zshrc (early-load
+# fallback needed before sheldon puts tools on PATH), which used to carry
+# three independently hand-maintained copies of this string that had already
+# drifted out of sync with each other.
+#
+# Non-darwin output is byte-for-byte what _gen_env's cache previously baked
+# (the practically-active PATH on Linux), so Linux behaviour is unchanged.
+local -a _bp=("$HOME/.local/bin")
+
+if [[ ${OSTYPE} == darwin* ]] && [[ ${CPUTYPE:-$HOSTTYPE} == arm* || ${CPUTYPE:-$HOSTTYPE} == aarch64* ]]; then
+	_bp+=(/opt/homebrew/bin)
+fi
+
+_bp+=(
+	"$HOME/.bun-shims"
+	/usr/local/bin /usr/local/sbin /usr/bin /usr/sbin /bin /sbin
+	/usr/local/bun/bin /usr/local/go/bin /opt/local/bin
+	"${GOBIN:-$HOME/go/bin}" "${CARGO_HOME:-$HOME/.cargo}/bin"
+	/usr/lib/docker/cli-plugins/
+)
+
+print -r -- "${(j.:.)_bp}"
