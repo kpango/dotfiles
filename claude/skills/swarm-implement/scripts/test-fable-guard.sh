@@ -12,12 +12,8 @@
 #       衝突しミッション予算が混線する (code-reviewer/Checker が独立に再現した実バグの回帰テスト)
 #     - 通常モード (試行カウンタ) とは独立
 #
-# TDAD Red 追加分 (Case 22-23): budget-guard.sh の各 flock -x <fd> 呼び出し箇所には存在ガードが
-# 無く、util-linux flock 未導入環境 (例: Homebrew 未導入の macOS) では exit 127 でクラッシュする。
-#   22 通常モード (flock -x 203, Case 9b の直後に配置) が flock 未導入環境で fail-closed
-#   23 --fable モード (flock -x 201) が flock 未導入環境で fail-closed
-# ガード実装後は「exit 1 + actionable stderr + カウンタファイル無変更」で fail-closed するはず。
-# 現状 (ガード未実装) はこれらが FAIL する — TDAD の Red 確認。
+# Regression (Case 22-23): budget-guard.sh が flock (util-linux) 未導入環境でもクラッシュせず、
+# actionable な FLOCK_MISSING で fail-closed (exit 1) し、部分状態(カウンタ/grant)を残さないこと。
 set -u
 
 SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/budget-guard.sh"

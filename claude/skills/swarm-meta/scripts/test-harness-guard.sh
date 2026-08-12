@@ -31,7 +31,7 @@
 #   21-24 (impl-meta) harness-status.sh: 空registry/複数行集計/不正行skip+warning/primary反復判定
 #   25 (impl-meta rev2) select: 正常blocked>done過半3行+不正UTF-8行1行 → (C)降格は行単位skipで引き続き
 #      発火 (all-or-nothingで安全弁を沈黙無効化しない)・rationaleにlines skipped言及
-#   26 (TDAD Red) record: flock (util-linux) 未導入環境で fail-closed (exit 1・registry無変更)。
+#   26 (regression) record: flock (util-linux) 未導入環境で fail-closed (exit 1・registry無変更)。
 #      既存 1-25 の番号は不変のため 25 の後ろへ割り当てるが、内容的関連は Case 15 (flock 使用箇所)
 #      側にあるためファイル本文では Case 15 の直後に配置する
 set -u

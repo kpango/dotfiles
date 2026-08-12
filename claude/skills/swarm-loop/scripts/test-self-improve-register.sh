@@ -8,10 +8,8 @@
 #      (util-linux 未導入環境の決定的シミュレーション)
 #   2  (回帰防止) flock が到達可能な通常 PATH → 既存動作 (新規登録・冪等スキップ) は不変。
 #      この実行環境に flock が全く存在しない場合は skip する
-#   3  (TDAD Red) flock (util-linux) 未導入環境で fail-closed する回帰テスト
-#      (self-improve-register.sh line 30 `flock -x 200` に存在ガードが無い現状は exit 127 で
-#      クラッシュする)。ガード実装後は「exit 1 + actionable stderr + registry 無変更」で
-#      fail-closed するはず。現状 (ガード未実装) はこの Case 3 が FAIL する — TDAD の Red 確認。
+#   3  (regression) flock (util-linux) 未導入環境で fail-closed する回帰テスト。
+#      exit 1 + actionable stderr (FLOCK_MISSING) + registry 無変更。
 set -u
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
