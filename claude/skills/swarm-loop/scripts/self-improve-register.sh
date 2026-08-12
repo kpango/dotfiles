@@ -26,6 +26,16 @@ fi
 # ロック無しだと並行呼び出し(同一 slug の重複起動)が両方 "not found" を読んで二重登録し、
 # 冪等性(重複行を作らない)が破れる。
 lockfile="$registry.lock"
+
+# flock (util-linux) が PATH に無い環境 (例: Homebrew 未導入の macOS) では `flock -x 200` が
+# exit 127 でクラッシュしうる。書き込み (registry への追記) の前に fail-closed で検出する
+# (flock 存在時の挙動はここでは変更しない)。ガード本体は budget-guard.sh / harness-record.sh
+# と共有する (write-scope-lib.sh と同じソースパターン)。
+flock_guard_lib="$(dirname "${BASH_SOURCE[0]}")/../../swarm-implement/scripts/flock-guard-lib.sh"
+# shellcheck disable=SC1090
+. "$flock_guard_lib"
+require_flock "registry writes"
+
 {
   flock -x 200
   if awk -F'\t' -v s="$slug" '$1 == s { found=1 } END { exit !found }' "$registry"; then

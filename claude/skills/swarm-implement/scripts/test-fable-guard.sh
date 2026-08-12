@@ -11,6 +11,13 @@
 #       mission-total-<slug> だと共有カウンタ _fable-mission-total-<slug> と同一ファイルに
 #       衝突しミッション予算が混線する (code-reviewer/Checker が独立に再現した実バグの回帰テスト)
 #     - 通常モード (試行カウンタ) とは独立
+#
+# TDAD Red 追加分 (Case 22-23): budget-guard.sh の各 flock -x <fd> 呼び出し箇所には存在ガードが
+# 無く、util-linux flock 未導入環境 (例: Homebrew 未導入の macOS) では exit 127 でクラッシュする。
+#   22 通常モード (flock -x 203, Case 9b の直後に配置) が flock 未導入環境で fail-closed
+#   23 --fable モード (flock -x 201) が flock 未導入環境で fail-closed
+# ガード実装後は「exit 1 + actionable stderr + カウンタファイル無変更」で fail-closed するはず。
+# 現状 (ガード未実装) はこれらが FAIL する — TDAD の Red 確認。
 set -u
 
 SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/budget-guard.sh"
@@ -70,6 +77,55 @@ nums_n=$(grep -oE 'attempt [0-9]+/100' "$conc_out_n" | sed -E 's#attempt ([0-9]+
 n_unique=$(echo "$nums_n" | grep -c . || true)
 [ "$n_unique" = "12" ]
 check "normal mode concurrent attempt numbers unique (unique=$n_unique expect=12)" 0 $? "" ""
+
+# 22 (TDAD Red): 通常モード (試行カウンタ, flock -x 203) が flock 未導入環境で fail-closed する
+# 回帰テスト。Case 9b (通常モードの並行性検証) の直後に配置 — 同じ flock 使用箇所の話題のため。
+BASHBIN="$(command -v bash)"
+
+# flock を含まない最小 PATH を構築し、util-linux 未導入環境を決定的にシミュレートする。
+# 対象スクリプトが使う外部コマンドのみ symlink し、flock は意図的に含めない。
+# ビルドは clean な bash -c 内で行う (対話シェルの alias 定義に汚染されないため)。
+make_noflock_bin() {
+  local dir="$1"
+  mkdir -p "$dir"
+  "$BASHBIN" -c '
+    dir="$1"; shift
+    for name in "$@"; do
+      real="$(command -v "$name" 2>/dev/null)"
+      case "$real" in
+        /*) ln -sf "$real" "$dir/$name" ;;
+      esac
+    done
+  ' _ "$dir" cat mv date awk cut mkdir rm sleep tail wc grep dirname find sed tr touch
+}
+
+NOFLOCK_BIN="$HOME/noflock-bin"
+make_noflock_bin "$NOFLOCK_BIN"
+
+# sanity: この PATH 制限下で command -v flock が確実に失敗すること
+# (このホストに元々 flock が無いことに依存しない)。
+PATH="$NOFLOCK_BIN" "$BASHBIN" -c 'command -v flock' >/dev/null 2>&1
+check "case22: sanity - flock hidden from restricted PATH" 1 $? "" ""
+
+counterfile_normal="$HOME/.claude/session-data/swarm/budget/noflockguard-normal"
+[ ! -f "$counterfile_normal" ]
+check "case22: sanity - counter file absent before test" 0 $? "" ""
+
+out22=$(PATH="$NOFLOCK_BIN" "$BASHBIN" "$SCRIPT" noflockguard-normal 5 2>&1); rc22=$?
+check "case22a: normal-mode budget-guard.sh fails closed (exit 1) when flock is unavailable" 1 "$rc22" "FLOCK_MISSING" "$out22"
+
+[ ! -f "$counterfile_normal" ]
+check "case22a: task counter file NOT created when the flock guard fires (fail-closed, no partial write)" 0 $? "" ""
+
+# 22b (回帰防止): flock が到達可能な通常 PATH では既存動作 (attempt 1/5 が成功) が不変であること。
+# この実行環境に flock が全く存在しない場合は spurious failure を避け skip する。
+if command -v flock >/dev/null 2>&1; then
+  out22b=$(bash "$SCRIPT" noflockguard-normal-ambient 5 2>&1); rc22b=$?
+  check "case22b (regression): with flock reachable on ambient PATH, normal mode still succeeds unchanged" 0 "$rc22b" "attempt 1/5" "$out22b"
+else
+  echo "SKIP: case22b - this host has no flock anywhere on PATH; cannot exercise the happy-path mirror"
+fi
+
 # 10. 同一 task-id への並行 --fable は正確に 1 回だけ許可される (task カウンタ flock の回帰テスト。
 #     並列 worktree からの再試行等で同一 task-id が同時に到達しても「1 タスク 1 回」が破れないこと。
 #     レース検査は本質的に確率的だが、test-nesting-guards.sh Group 3 と同型の実効的な回帰網)
@@ -175,6 +231,35 @@ printf 'FABLE_TASK_MAX=2\n' >"$cconf"
 FABLE_BUDGET_CONF="$cconf" bash "$SCRIPT" --fable tcfg >/dev/null 2>&1
 out=$(FABLE_BUDGET_CONF="$cconf" bash "$SCRIPT" --fable tcfg 2>&1)
 check "conf override allows 2nd task spot" 0 $? "fable spot 2/2" "$out"
+
+# 23 (TDAD Red): --fable モード (タスクカウンタ, flock -x 201) が flock 未導入環境で fail-closed
+# する回帰テスト。ガード実装後は「exit 1 + actionable stderr + カウンタファイル/grant 無変更」で
+# fail-closed するはず。現状 (ガード未実装) はこれが FAIL する — TDAD の Red 確認。
+# (NOFLOCK_BIN / make_noflock_bin / BASHBIN は Case 22 で定義済みのものを再利用する)
+fable_counter_23="$HOME/.claude/session-data/swarm/budget/_fable-noflockguard-fable"
+[ ! -f "$fable_counter_23" ]
+check "case23: sanity - fable counter file absent before test" 0 $? "" ""
+
+grants_before_23=$(ls -1 "$gdir" 2>/dev/null | wc -l)
+
+out23=$(PATH="$NOFLOCK_BIN" "$BASHBIN" "$SCRIPT" --fable noflockguard-fable 2>&1); rc23=$?
+check "case23a: --fable mode budget-guard.sh fails closed (exit 1) when flock is unavailable" 1 "$rc23" "FLOCK_MISSING" "$out23"
+
+[ ! -f "$fable_counter_23" ]
+check "case23a: fable task counter file NOT created when the flock guard fires" 0 $? "" ""
+
+grants_after_23=$(ls -1 "$gdir" 2>/dev/null | wc -l)
+[ "$grants_before_23" = "$grants_after_23" ]
+check "case23a: no grant token issued when the flock guard fires (no partial state)" 0 $? "" ""
+
+# 23b (回帰防止): flock が到達可能な通常 PATH では既存動作 (fable spot 発行成功) が不変であること。
+# この実行環境に flock が全く存在しない場合は spurious failure を避け skip する。
+if command -v flock >/dev/null 2>&1; then
+  out23b=$(bash "$SCRIPT" --fable noflockguard-fable-ambient 2>&1); rc23b=$?
+  check "case23b (regression): with flock reachable on ambient PATH, --fable mode still succeeds unchanged" 0 "$rc23b" "fable" "$out23b"
+else
+  echo "SKIP: case23b - this host has no flock anywhere on PATH; cannot exercise the happy-path mirror"
+fi
 
 echo "----"
 echo "pass=$pass fail=$fail"

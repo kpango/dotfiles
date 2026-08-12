@@ -64,13 +64,14 @@ case "$root" in
     echo "== zsh syntax: done"
 
     # swarm スクリプトの回帰テスト (fable budget/gate・nesting guard・graph compile・
-    # harness guard、計 160 件規模)。
+    # harness guard・self-improve register、計 251 件規模)。
     # 各テストは HOME/registry/fixture を mktemp へ隔離するため実カウンタ・grant・ログを汚さない。
     for t in \
       "$root/claude/skills/swarm-implement/scripts/test-fable-guard.sh" \
       "$root/claude/skills/swarm-implement/scripts/test-fable-gate.sh" \
       "$root/claude/skills/swarm-loop/scripts/test-nesting-guards.sh" \
       "$root/claude/skills/swarm-loop/scripts/test-loop-status.sh" \
+      "$root/claude/skills/swarm-loop/scripts/test-self-improve-register.sh" \
       "$root/claude/skills/swarm-graph/scripts/test-graph-compile.sh" \
       "$root/claude/skills/swarm-meta/scripts/test-harness-guard.sh" \
       "$root/claude/skills/swarm-implement/scripts/test-parallel-gate.sh"; do

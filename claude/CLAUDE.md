@@ -40,10 +40,15 @@ fail-open（該当機能のみスキップ、致命的にはならない）す�
 | `buf`           | protobuf lint/breaking change 検出               | `go install github.com/bufbuild/buf/cmd/buf@latest`                                                   |
 | `dlv`           | Go デバッガ                                      | `go install github.com/go-delve/delve/cmd/dlv@latest`                                                 |
 | `jq`            | JSON 処理(多数の hook が使用)                    | `pacman -S jq`                                                                                        |
-| `flock`         | 予算カウンタのファイルロック(util-linux)         | 通常プリインストール                                                                                  |
+| `flock`         | 予算カウンタのファイルロック(util-linux)         | Linux/NixOS では通常プリインストール。macOS では欠落する場合がある(下記注記参照)                      |
 
 `graphify`/`pass` はこの個人環境固有の秘密情報管理に依存する。同等の設定を別環境で再現する場合は
 `pass show ai/gemini` を自身の API キー取得手段に置き換えること。
+
+macOS で `flock` が欠落する場合は `brew install flock` で導入する(util-linux は keg-only/shadowed
+のため `brew link` では導入できない。導入済みの単独 formula を使う)。`budget-guard.sh` /
+`self-improve-register.sh` / `harness-record.sh` の3スクリプトは未導入時にクラッシュせず、
+actionable な `FLOCK_MISSING` メッセージで fail-closed する。
 
 ## Code Style Preferences
 

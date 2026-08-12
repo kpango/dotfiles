@@ -40,6 +40,15 @@ outcome="$(normalize "$outcome")"
 date_str="$(date +%Y-%m-%d)"
 new_row="$date_str	$mission	$harness	$profile	$model_version	$outcome"
 
+# flock (util-linux) が PATH に無い環境 (例: Homebrew 未導入の macOS) では `flock -x 200` が
+# exit 127 でクラッシュしうる。書き込み (mv による registry 置換) の前に fail-closed で検出する
+# (flock 存在時の挙動はここでは変更しない)。ガード本体は budget-guard.sh / self-improve-register.sh
+# と共有する (write-scope-lib.sh と同じソースパターン)。
+flock_guard_lib="$(dirname "${BASH_SOURCE[0]}")/../../swarm-implement/scripts/flock-guard-lib.sh"
+# shellcheck disable=SC1090
+. "$flock_guard_lib"
+require_flock "registry writes"
+
 {
   flock -x 200
 

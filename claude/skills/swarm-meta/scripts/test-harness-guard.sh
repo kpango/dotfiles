@@ -31,6 +31,9 @@
 #   21-24 (impl-meta) harness-status.sh: 空registry/複数行集計/不正行skip+warning/primary反復判定
 #   25 (impl-meta rev2) select: 正常blocked>done過半3行+不正UTF-8行1行 → (C)降格は行単位skipで引き続き
 #      発火 (all-or-nothingで安全弁を沈黙無効化しない)・rationaleにlines skipped言及
+#   26 (TDAD Red) record: flock (util-linux) 未導入環境で fail-closed (exit 1・registry無変更)。
+#      既存 1-25 の番号は不変のため 25 の後ろへ割り当てるが、内容的関連は Case 15 (flock 使用箇所)
+#      側にあるためファイル本文では Case 15 の直後に配置する
 set -u
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -601,6 +604,69 @@ check "case15: 8 concurrent distinct-slug appends, none lost (datalines=$datalin
 badrows15=$(awk -F'\t' 'NR>1 && NF!=6' "$REC15" 2>/dev/null | wc -l)
 [ "$badrows15" -eq 0 ]
 check "case15: all concurrently-written rows are well-formed 6-field TSV (badrows=$badrows15)" 0 $? "" ""
+
+# ============================================================
+# Case 26 (TDAD Red, 番号は末尾だが Case 15 と同じ flock 使用箇所の話題のためここに配置):
+# harness-record.sh line 44 `flock -x 200` には存在ガードが無く、util-linux flock 未導入環境
+# (例: Homebrew 未導入の macOS) では exit 127 でクラッシュする。ガード実装後は
+# 「exit 1 + actionable stderr + registry 無変更」で fail-closed するはずの回帰テスト。
+# 現状 (ガード未実装) はこの Case 26 が FAIL する — TDAD の Red 確認。
+# ============================================================
+BASHBIN="$(command -v bash)"
+
+# flock を含まない最小 PATH を構築し、util-linux 未導入環境を決定的にシミュレートする。
+# 対象スクリプトが使う外部コマンドのみ symlink し、flock は意図的に含めない。
+# ビルドは clean な bash -c 内で行う (対話シェルの alias 定義に汚染されないため)。
+make_noflock_bin() {
+  local dir="$1"
+  mkdir -p "$dir"
+  "$BASHBIN" -c '
+    dir="$1"; shift
+    for name in "$@"; do
+      real="$(command -v "$name" 2>/dev/null)"
+      case "$real" in
+        /*) ln -sf "$real" "$dir/$name" ;;
+      esac
+    done
+  ' _ "$dir" cat mv date awk cut mkdir rm sleep tail wc grep dirname find sed tr touch
+}
+
+NOFLOCK_BIN="$WORK/noflock-bin"
+make_noflock_bin "$NOFLOCK_BIN"
+
+# sanity: この PATH 制限下で command -v flock が確実に失敗すること
+# (このホストに元々 flock が無いことに依存しない — flock がある環境でも同じ手法で
+# 決定的に隠せることを保証する)。
+PATH="$NOFLOCK_BIN" "$BASHBIN" -c 'command -v flock' >/dev/null 2>&1
+check "case26: sanity - flock hidden from restricted PATH" 1 $? "" ""
+PATH="$NOFLOCK_BIN" "$BASHBIN" -c 'echo x | cat >/dev/null && date >/dev/null && echo ok' >/dev/null 2>&1
+check "case26: sanity - restricted PATH still resolves other needed commands" 0 $? "" ""
+
+REC26="$WORK/rec26.tsv"
+printf '# date\tmission\tharness\tprofile\tmodel-version\toutcome\n' >"$REC26"
+before26="$(cat "$REC26")"
+
+out26=$(PATH="$NOFLOCK_BIN" HARNESS_REGISTRY="$REC26" "$BASHBIN" "$RECORD" mission26 swarm-loop parallel claude-sonnet-5 "done=1 blocked=0 attempts=1 replans=0" 2>&1)
+rc26=$?
+check "case26a: harness-record.sh fails closed (exit 1) when flock is unavailable" 1 "$rc26" "FLOCK_MISSING" "$out26"
+
+after26="$(cat "$REC26")"
+[ "$before26" = "$after26" ]
+check "case26a: registry is NOT modified when the flock guard fires (fail-closed, no partial write)" 0 $? "" ""
+
+# 26b (回帰防止): flock が到達可能な通常 PATH では既存動作 (成功して1行追記) が不変であること。
+# この実行環境に flock が全く存在しない場合は spurious failure を避け skip する。
+if command -v flock >/dev/null 2>&1; then
+  REC26B="$WORK/rec26b.tsv"
+  printf '# date\tmission\tharness\tprofile\tmodel-version\toutcome\n' >"$REC26B"
+  out26b=$(HARNESS_REGISTRY="$REC26B" bash "$RECORD" mission26b swarm-loop parallel claude-sonnet-5 "done=1 blocked=0 attempts=1 replans=0" 2>&1)
+  rc26b=$?
+  lines26b=$(wc -l <"$REC26B")
+  [ "$rc26b" -eq 0 ] && [ "$lines26b" -eq 2 ]
+  check "case26b (regression): with flock reachable on ambient PATH, record still succeeds unchanged" 0 $? "recorded: mission=mission26b" "$out26b"
+else
+  echo "SKIP: case26b - this host has no flock anywhere on PATH; cannot exercise the happy-path mirror"
+fi
 
 # ============================================================
 # Case 16 (rev3): 存在ガード両欠落 — swarm-graph も swarm-loop も HARNESS_SKILLS_DIR に無い状態で

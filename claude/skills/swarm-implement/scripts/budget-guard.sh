@@ -23,6 +23,8 @@
 set -euo pipefail
 
 dir="$HOME/.claude/session-data/swarm/budget"
+# require_flock (下記) より前に mkdir する: --reset / --write-scope-grant は flock を使わず
+# ここで作られた dir だけを必要とするため、ガードをこれより前に移動すると両モードを壊す。
 mkdir -p "$dir"
 
 # 定数の単一ソース (fable-budget.conf)。欠落時は同値のフォールバック既定値。
@@ -70,6 +72,16 @@ json_escape() {
   s="${s//$'\t'/\\t}"
   printf '%s' "$s"
 }
+
+# flock (util-linux) が PATH に無い環境 (例: Homebrew 未導入の macOS) では `flock -x <fd>` が
+# exit 127 でクラッシュしうる。--reset / --write-scope-grant は flock を使わないため対象外。
+# fable モード・通常モードのそれぞれ最初の flock 呼び出し (カウンタ書き込み) の直前で
+# require_flock を呼び、書き込み前に fail-closed で検出する (flock 存在時の挙動はここでは
+# 変更しない)。ガード本体は self-improve-register.sh / harness-record.sh と共有する
+# (write-scope-lib.sh と同じソースパターン)。
+flock_guard_lib="$(dirname "${BASH_SOURCE[0]}")/flock-guard-lib.sh"
+# shellcheck disable=SC1090
+. "$flock_guard_lib"
 
 reset_mode=false
 fable_mode=false
@@ -203,6 +215,11 @@ if $fable_mode; then
     fi
   fi
 
+  # 上記の検証 (reserved prefix/suffix) はいずれも flock 不要でここまで到達する前に exit する。
+  # ここから先は実際に flock -x 201/202 を使うため、書き込み (カウンタ/grant/ログ) の前に
+  # ガードする (flock 存在時の挙動はここでは変更しない)。
+  require_flock "budget-counter writes"
+
   grants_dir="$dir/.fable-grants"
   spot_log="$HOME/.claude/session-data/swarm/fable-spot-log.jsonl"
   spot_log_max=$FABLE_SPOT_LOG_MAX_LINES
@@ -291,6 +308,8 @@ sanitized_task="${task//\//_}"
 check_reserved_prefix "$task" "$sanitized_task"
 f="$dir/$sanitized_task"
 task_lockfile="$dir/.lock-$sanitized_task"
+
+require_flock "budget-counter writes"
 
 # 共有ミッションカウンタは task 自身の予算超過判定より先に、かつ独立にインクリメントする:
 # 1 回の呼び出し = 1 回の実際の消費(トークン・時間)であり、task 側が自身の上限を超えていても
