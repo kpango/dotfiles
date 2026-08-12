@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# ミッション軌跡ログ(旧: プロジェクトルート AGENTS.md)の書き込み先を返す単一ソース。
+# 背景: 一部のコーディングエージェントは "AGENTS.md" をプロジェクトルートで自動検出し
+# CLAUDE.md と同格の指示ファイルとして読み込む。プロジェクトルートの AGENTS.md を巨大な
+# 追記専用ログに転用すると、そうしたツールに壊れた/無関係な指示として渡ってしまうため、
+# 軌跡ログはリポジトリ外の kpango/pass リポジトリへ退避する(個人環境固有の前提。他環境では
+# 下記 PASS_REPO_ROOT を上書きすること)。
+set -euo pipefail
+
+: "${PASS_REPO_ROOT:=$HOME/go/src/github.com/kpango/pass}"
+
+agents_log_path() { # -> 現在のリポジトリ用ミッション軌跡ログの絶対パス
+  local root slug dir
+  root=$(git rev-parse --show-toplevel 2>/dev/null) || return 1
+  slug="${root//\//-}"   # Claude Code の claude/projects/<slug> 命名規則に揃える
+  slug="${slug//./-}"    # (例: github.com -> github-com)
+  dir="$PASS_REPO_ROOT/claude/swarm-history"
+  mkdir -p "$dir" 2>/dev/null || true
+  printf '%s/%s.md\n' "$dir" "$slug"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+  agents_log_path
+fi

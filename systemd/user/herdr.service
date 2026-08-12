@@ -1,0 +1,21 @@
+[Unit]
+Description=Herdr persistent terminal workspace server
+Documentation=https://herdr.dev
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/local/lib/rust/cargo/bin/herdr server stop
+ExecStart=/usr/local/lib/rust/cargo/bin/herdr server
+Restart=on-failure
+RestartSec=2s
+Environment="PATH=/usr/bin:/bin:/usr/local/bin:/usr/local/lib/rust/cargo/bin"
+Environment="HERDR_SESSION=%u-%H"
+Environment="HERDR_CONFIG_PATH=%h/go/src/github.com/kpango/dotfiles/herdr/config.toml"
+Environment="HERDR_DOCKER_CONTAINER=dev"
+Environment="HERDR_DOCKER_SHELL=/usr/bin/zsh"
+Environment="HERDR_LOG=herdr=debug"
+Environment="RUST_BACKTRACE=1"
+
+[Install]
+WantedBy=graphical-session.target

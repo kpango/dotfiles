@@ -1,0 +1,14 @@
+[Unit]
+Description=tmux persistent server
+Documentation=man:tmux(1)
+After=default.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/tmux -S /run/user/%U/tmux-main.sock new-session -A -d -s %u@%H
+ExecStop=/usr/bin/tmux -S /run/user/%U/tmux-main.sock kill-server
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,91 @@
+name: "Build docker images"
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*.*.*"
+      - "v*.*.*"
+      - "*.*.*-*"
+      - "v*.*.*-*"
+    paths:
+      - "dockers/**"
+      - "Makefile"
+      - "Makefile.d/**"
+      - ".github/workflows/**"
+      - ".github/actions/**"
+  pull_request:
+    paths:
+      - "dockers/**"
+      - "Makefile"
+      - "Makefile.d/**"
+      - ".github/workflows/**"
+      - ".github/actions/**"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 23 * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  base:
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker-reusable.yaml
+    with:
+      image_name: base
+    secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+
+  images:
+    permissions:
+      contents: read
+      packages: write
+    needs: base
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [dart, docker, env, gcloud, go, k8s, nim, nix, rust, vald, zig]
+    uses: ./.github/workflows/docker-reusable.yaml
+    with:
+      image_name: ${{ matrix.image }}
+    secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+
+  tools:
+    permissions:
+      contents: read
+      packages: write
+    needs: [base, images]
+    if: |
+      always() &&
+      needs.base.result == 'success' &&
+      !cancelled()
+    uses: ./.github/workflows/docker-reusable.yaml
+    with:
+      image_name: tools
+    secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+
+  dev:
+    permissions:
+      contents: read
+      packages: write
+    needs: [base, images, tools]
+    if: |
+      always() &&
+      needs.base.result == 'success' &&
+      needs.tools.result == 'success' &&
+      !cancelled()
+    uses: ./.github/workflows/docker-reusable.yaml
+    with:
+      image_name: dev
+    secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
