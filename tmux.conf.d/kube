@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+# Kubernetes context/namespace for tmux status bar.
+# Caches output until any kubeconfig file changes (avoids kubectl startup cost).
+# Usage: kube [ctx_fg] [ns_fg]  (defaults: green  brightcyan)
+
+_cache="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-kube-out"
+
+_cache_valid() {
+    [[ -f "$_cache" ]] || return 1
+    for _cf in ${(s.:.)${KUBECONFIG:-${HOME}/.kube/config}}; do
+        [[ -f "$_cf" && "$_cf" -nt "$_cache" ]] && return 1
+    done
+    return 0
+}
+
+if _cache_valid; then
+    print -r -- "$(<$_cache)"
+    exit 0
+fi
+
+(( $+commands[kubectl] )) || exit 0
+
+# timeout guards against hung kubeconfig / proxy interception (2 s is generous for a local read)
+_ctx=$(timeout 2 kubectl config current-context 2>/dev/null) || exit 0
+[[ -z "$_ctx" ]] && exit 0
+
+_ns=$(timeout 2 kubectl config view --minify --output 'jsonpath={..namespace}' 2>/dev/null)
+_ns="${_ns:-default}"
+
+_out="#[fg=blue]⎈ #[fg=${1:-green}]${_ctx}#[fg=colour250]:#[fg=${2:-brightcyan}]${_ns}"
+
+mkdir -p "${_cache%/*}" 2>/dev/null
+printf '%s\n' "$_out" > "$_cache" 2>/dev/null || true
+print -r -- "$_out"

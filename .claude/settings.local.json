@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(~/**)",
+      "Read(/etc/**)",
+      "Read(/usr/lib/systemd/**)",
+      "Bash(sudo *)",
+      "WebFetch(domain:herdr.dev)",
+      "WebSearch",
+      "Bash(zsh -n /home/kpango/go/src/github.com/kpango/dotfiles/zsh/05-functions.zsh)",
+      "Bash(scutil --get LocalHostName)",
+      "Bash(osascript -e 'do shell script \"/private/tmp/claude-501/-Users-yusukekato-go-src-github-com-kpango-dotfiles/54ea86a4-be86-4e75-8336-1da2d472df82/scratchpad/add-fstab-entry.sh\" with administrator privileges')",
+      "Bash(chmod +x /private/tmp/claude-501/-Users-yusukekato-go-src-github-com-kpango-dotfiles/54ea86a4-be86-4e75-8336-1da2d472df82/scratchpad/diagnose-fstab.sh)",
+      "Bash(osascript -e 'do shell script \"/private/tmp/claude-501/-Users-yusukekato-go-src-github-com-kpango-dotfiles/54ea86a4-be86-4e75-8336-1da2d472df82/scratchpad/diagnose-fstab.sh\" with administrator privileges')",
+      "Bash(osascript -e 'do shell script \"/private/tmp/claude-501/-Users-yusukekato-go-src-github-com-kpango-dotfiles/54ea86a4-be86-4e75-8336-1da2d472df82/scratchpad/run-nix-install.sh\" with administrator privileges')",
+      "Bash(mount)",
+      "Bash(/nix/var/nix/profiles/default/bin/nix --version)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(~/.claude/skills/swarm-implement/scripts/budget-guard.sh *)"
+    ],
+    "additionalDirectories": [
+      "/home/kpango/go/src/github.com/vdaas/vald"
+    ]
+  }
+}

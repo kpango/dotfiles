@@ -1,0 +1,20 @@
+[Unit]
+Description=Disable NVIDIA card at system resume
+DefaultDependencies=no
+After=sleep.target
+After=suspend.target
+After=suspend-then-hibernate.target
+After=hibernate.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'cat /tmp/gpu_state > /proc/acpi/bbswitch || echo OFF > /proc/acpi/bbswitch'
+#ExecStart=/usr/bin/rmmod nvidia
+
+[Install]
+#WantedBy=shutdown.target
+#WantedBy=reboot.target
+WantedBy=sleep.target
+WantedBy=suspend.target
+WantedBy=suspend-then-hibernate.target
+WantedBy=hibernate.target

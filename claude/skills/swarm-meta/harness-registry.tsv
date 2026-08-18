@@ -1,0 +1,23 @@
+# date	mission	harness	profile	model-version	outcome
+2026-07-30	swarm-cross-pollination	swarm-graph	parallel	claude-fable-5	done=8 blocked=0 attempts=11 replans=0
+2026-07-30	swarm-unified-entry	swarm-loop	parallel	claude-fable-5	done=5 blocked=0 attempts=0 replans=0
+2026-07-30	stacked-pr-conflict	swarm-loop	neutral	claude-fable-5	quick=1
+2026-07-31	swarm-dr-optimize	swarm-graph	parallel	claude-fable-5	done=5 blocked=0 attempts=6 replans=0
+2026-08-01	arcflare-cleanup-20260801	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-01	swarm-skills-trim-harden	swarm-graph	parallel	claude-sonnet-5	done=16 blocked=0 attempts=4 replans=0
+2026-08-03	devrun-fix	swarm-loop	neutral	claude-sonnet-4-6	done=1 blocked=0 attempts=1 replans=0
+2026-08-03	dkms-autofix	swarm-loop	neutral	claude-sonnet-4-6	done=1 blocked=0 attempts=1 replans=0
+2026-08-03	dkms-pkg-fix	swarm-loop	neutral	claude-sonnet-4-6	done=8 blocked=0 attempts=15 replans=0
+2026-08-05	tmux-pane-info-darwin-arm	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-05	zsh-host-verify	swarm-loop	neutral	claude-sonnet-4-6	done=5 blocked=0 attempts=1 replans=0
+2026-08-05	tmux-pane-title-bar-space	swarm-loop	neutral	claude-sonnet-5	quick=1
+2026-08-07	ci-fix-nix-parity-recheck	swarm-loop	neutral	claude-sonnet-5	done=6 blocked=1 attempts=1 replans=0
+2026-08-10	make-format-targets	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-12	swarm-relay	swarm-graph	parallel	claude-sonnet-5	done=5 blocked=0 attempts=6 replans=0
+2026-08-12	ctrl-l-clear-suppress-question	swarm-loop	neutral	claude-sonnet-5	quick=1
+2026-08-13	dto-consolidation-followup	swarm-graph	parallel	claude-sonnet-5	done=10 blocked=0 attempts=10 replans=0
+2026-08-13	dto-consolidation-deepaudit	swarm-loop	parallel	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0 unfit-fallback=swarm-graph->swarm-loop
+2026-08-13	tenancy-dto-exists-projection	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-13	rdb-pkg-removal	swarm-loop	neutral	claude-sonnet-5	done=4 blocked=0 attempts=4 replans=0
+2026-08-14	sql-dao-consolidation	swarm-loop	neutral	claude-sonnet-5	done=24 blocked=0 attempts>=24 replans=0 adversarial_review=8agent(1fail-fixed) merged_to_main=yes
+2026-08-14	tenancy-dao-flatten	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=2 replans=0
