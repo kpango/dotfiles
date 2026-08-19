@@ -32,11 +32,11 @@ fail-open（該当機能のみスキップ、致命的にはならない）す�
 
 | Tool            | 用途                                             | 入手方法                                                                                              |
 | --------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| `rtk`           | Bash コマンドのトークン最適化(詳細は [[RTK.md]]) | `paru -S rtk-ai-bin`                                                                                  |
-| `codegraph`     | コードナビゲーション MCP server                  | npm グローバルパッケージ `@colbymchenry/codegraph`                                                    |
+| `rtk`           | Bash コマンドのトークン最適化(詳細は [[RTK.md]]) | `paru -S rtk-ai-bin`(Arch専用。macOS向け配布物は無し — 未導入のままfail-openを許容する)               |
+| `codegraph`     | コードナビゲーション MCP server                  | npm グローバルパッケージ `@colbymchenry/codegraph`(macOS+nix環境ではnpmのglobal prefixがnix store配下の読み取り専用パスを指し実質使用不可 — 代わりに `bun install -g @colbymchenry/codegraph` を使う。`~/.bun/bin` は `_base_path` で既にPATH済み) |
 | `graphify`      | ナレッジグラフ CLI                               | zsh 関数ラッパー経由（`pass show ai/gemini` から API キー取得、`pass` に `ai/gemini` エントリが必要） |
 | `golangci-lint` | Go lint(`swarm-post-edit-lint.sh` 等)            | 公式インストールスクリプト                                                                            |
-| `hadolint`      | Dockerfile lint                                  | `paru -S hadolint-bin`                                                                                |
+| `hadolint`      | Dockerfile lint                                  | `paru -S hadolint-bin`(macOS: `nix profile install nixpkgs#hadolint`)                                 |
 | `buf`           | protobuf lint/breaking change 検出               | `go install github.com/bufbuild/buf/cmd/buf@latest`                                                   |
 | `dlv`           | Go デバッガ                                      | `go install github.com/go-delve/delve/cmd/dlv@latest`                                                 |
 | `jq`            | JSON 処理(多数の hook が使用)                    | `pacman -S jq`                                                                                        |
