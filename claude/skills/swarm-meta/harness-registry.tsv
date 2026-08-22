@@ -1,0 +1,38 @@
+# date	mission	harness	profile	model-version	outcome
+2026-07-30	swarm-cross-pollination	swarm-graph	parallel	claude-fable-5	done=8 blocked=0 attempts=11 replans=0
+2026-07-30	swarm-unified-entry	swarm-loop	parallel	claude-fable-5	done=5 blocked=0 attempts=0 replans=0
+2026-07-30	stacked-pr-conflict	swarm-loop	neutral	claude-fable-5	quick=1
+2026-07-31	swarm-dr-optimize	swarm-graph	parallel	claude-fable-5	done=5 blocked=0 attempts=6 replans=0
+2026-08-01	arcflare-cleanup-20260801	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-01	swarm-skills-trim-harden	swarm-graph	parallel	claude-sonnet-5	done=16 blocked=0 attempts=4 replans=0
+2026-08-03	devrun-fix	swarm-loop	neutral	claude-sonnet-4-6	done=1 blocked=0 attempts=1 replans=0
+2026-08-03	dkms-autofix	swarm-loop	neutral	claude-sonnet-4-6	done=1 blocked=0 attempts=1 replans=0
+2026-08-03	dkms-pkg-fix	swarm-loop	neutral	claude-sonnet-4-6	done=8 blocked=0 attempts=15 replans=0
+2026-08-04	nixpkgs-macos-verify	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-05	tmux-pane-info-darwin-arm	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-05	zsh-host-verify	swarm-loop	neutral	claude-sonnet-4-6	done=5 blocked=0 attempts=1 replans=0
+2026-08-05	tmux-pane-title-bar-space	swarm-loop	neutral	claude-sonnet-5	quick=1
+2026-08-06	async-producer-wiring	swarm-loop	sequential	claude-sonnet-5	done=8 blocked=0 attempts=8 replans=0 checkpoint_cycles=2 (checker_verdicts: FAIL then PASS) gate=keep-as-is
+2026-08-07	ci-fix-nix-parity-recheck	swarm-loop	neutral	claude-sonnet-5	done=6 blocked=1 attempts=1 replans=0
+2026-08-07	document-delete-async	swarm-loop	neutral	claude-sonnet-5	done=6 blocked=0 attempts=6 replans=0 checkpoint_cycles=2 (checker_verdicts: FAIL-session-limit-error then FAIL-high then PASS) gate=keep-as-is
+2026-08-10	make-format-targets	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-12	swarm-relay	swarm-graph	parallel	claude-sonnet-5	done=5 blocked=0 attempts=6 replans=0
+2026-08-12	ctrl-l-clear-suppress-question	swarm-loop	neutral	claude-sonnet-5	quick=1
+2026-08-12	sqs-client-completeness	swarm-loop	neutral	claude-sonnet-5	done=3 blocked=0 attempts=3 replans=0
+2026-08-13	dto-consolidation-followup	swarm-graph	parallel	claude-sonnet-5	done=10 blocked=0 attempts=10 replans=0
+2026-08-13	dto-consolidation-deepaudit	swarm-loop	parallel	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0 unfit-fallback=swarm-graph->swarm-loop
+2026-08-13	tenancy-dto-exists-projection	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0
+2026-08-13	rdb-pkg-removal	swarm-loop	neutral	claude-sonnet-5	done=4 blocked=0 attempts=4 replans=0
+2026-08-14	sql-dao-consolidation	swarm-loop	neutral	claude-sonnet-5	done=24 blocked=0 attempts>=24 replans=0 adversarial_review=8agent(1fail-fixed) merged_to_main=yes
+2026-08-14	tenancy-dao-flatten	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=2 replans=0
+2026-08-19	macos-path-m1-install	swarm-loop	neutral	claude-sonnet-5	done=3 blocked=0 attempts=4 replans=0
+2026-08-19	c38-7-async-producer	swarm-loop	sequential	claude-sonnet-5	done=16 blocked=1 attempts=n/a(direct-implementation-not-via-EXECUTE-loop) replans=0
+2026-08-19	apple-container-migration	swarm-loop	neutral	claude-sonnet-5	done=6 blocked=0 attempts=6 replans=0
+2026-08-19	struct-alias-cmd-consolidation	swarm-loop	neutral	claude-sonnet-5	done=3 blocked=0 attempts=3 replans=0
+2026-08-19	macos-path-integration	swarm-loop	neutral	claude-sonnet-5	done=4 blocked=0 attempts=6 replans=0 checker=opus_unavailable_529x4_orchestrator_substituted
+2026-08-19	macos-path-check	swarm-loop	neutral	claude-sonnet-5	quick=1 (diagnostic-only, no code change; .local/bin confirmed already fixed by prior same-day mission, found npm-global-prefix/codegraph gap instead)
+2026-08-19	zsh-startup-perf	swarm-loop	parallel	claude-sonnet-5	done=13 blocked=0 attempts=15 replans=0
+2026-08-20	swarm-architect-delegation	swarm-loop	parallel	claude-sonnet-5	done=5 blocked=0 attempts=7 replans=0
+2026-08-20	swarm-skills-research-optimize	swarm-graph	parallel	claude-sonnet-5	done=10 blocked=1 attempts=3 replans=0
+2026-08-20	checker-schema-and-phase45-dedup	swarm-loop	parallel	claude-sonnet-5	done=4 blocked=0 attempts=9 replans=0
+2026-08-21	network-opt-dotfiles	swarm-loop	neutral	claude-sonnet-4-6	done=4 blocked=1(udmpro-deploy-security-gate) attempts=1 replans=0

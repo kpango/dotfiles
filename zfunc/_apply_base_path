@@ -1,0 +1,26 @@
+# _apply_base_path — rebuild $PATH from _base_path (the canonical dir list) and
+# tie it to $path with -U (dedup). Single source for the 3 call sites that each
+# need PATH rebuilt at a different point in shell startup — zshrc's `-c` fast
+# path, zshrc's synchronous pre-sheldon setup, and 00-env.zsh's zsh-defer-
+# deferred darwin PATH="" recovery — see each call site for why it has to run
+# 3 times rather than once.
+#
+# -g: without it, `typeset -U path PATH` declares a function-local path/PATH
+# tie instead of touching the global one. This isn't specific to any one call
+# site's surrounding context — autoload turns this file itself into a
+# function, so *every* call already opens a fresh scope, including zshrc's
+# two "top level" calls. It matters most visibly at 00-env.zsh's call site,
+# where zsh-defer's task runner (_zsh-defer-apply) executes deferred `source`
+# calls inside an additional anonymous function `() { ... }`: a scope-less
+# typeset there breaks PATH doubly, and the export below would vanish the
+# moment that anonymous function returns. Confirmed empirically 2026-08-19 by
+# sourcing combined.zsh inside `() { ... }` and watching $HOME/.local/bin
+# disappear from PATH.
+typeset -g -U path PATH
+
+autoload -Uz _base_path
+export PATH="$(_base_path):$PATH"
+
+if (($+commands[deno])); then
+	export PATH="${commands[deno]:h}:$PATH"
+fi

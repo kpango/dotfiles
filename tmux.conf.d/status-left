@@ -1,0 +1,55 @@
+#!/usr/bin/env zsh
+# Abbreviated path for tmux status bar.
+# Outputs plain text (no style sequences); caller applies color via #[fg=...].
+# Cache: line 1 = key (path:HEAD_mtime), line 2 = output.
+# Usage: status-left [pane_current_path]
+
+[[ -z "$1" ]] && { print -r -- "."; exit 0 }
+[[ "$1" == "/" ]] && { print -r -- "/"; exit 0 }
+
+_cache="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-status-path"
+
+_git_head=""
+_d="$1"
+while [[ -n "$_d" && "$_d" != "/" ]]; do
+    if [[ -d "$_d/.git" && -f "$_d/.git/HEAD" ]]; then
+        _git_head="$_d/.git/HEAD"
+        break
+    elif [[ -f "$_d/.git" ]]; then
+        IFS= read -r _gl < "$_d/.git"
+        _gd="${_gl#gitdir: }"
+        [[ "${_gd[1]}" != "/" ]] && _gd="$_d/$_gd"
+        [[ -f "$_gd/HEAD" ]] && _git_head="$_gd/HEAD"
+        break
+    fi
+    _d="${_d%/*}"
+done
+
+_mtime=${_git_head:+$(stat -c %Y "$_git_head" 2>/dev/null)}
+_key="${1}:${_mtime}"
+
+if [[ -f "$_cache" ]]; then
+    _cached=("${(f)$(<$_cache)}")
+    if [[ "${_cached[1]}" == "$_key" ]]; then
+        print -r -- "${_cached[2]}"
+        exit 0
+    fi
+fi
+
+case "$1" in
+    "$HOME"/*) _path="~/${1#$HOME/}" ;;
+    "$HOME")   _path="~" ;;
+    *)         _path="$1" ;;
+esac
+_parts=("${(@s:/:)_path}")
+_last=${#_parts}
+_result=""
+for ((_i=1; _i<=_last; _i++)); do
+    _p="${_parts[_i]}"
+    [[ -z "$_p" || $_i -eq $_last ]] && _result+="$_p" || _result+="${_p[1]}"
+    [[ $_i -lt $_last ]] && _result+="/"
+done
+
+mkdir -p "${_cache%/*}" 2>/dev/null
+printf '%s\n%s\n' "$_key" "$_result" > "${_cache}.tmp.$$" && mv -f "${_cache}.tmp.$$" "$_cache"
+print -r -- "$_result"
