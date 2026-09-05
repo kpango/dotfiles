@@ -1,0 +1,96 @@
+{
+  "$schema": "../../models/schema.json",
+  "harness": "codex",
+  "default_tier": "High",
+  "tiers": {
+    "Low": {
+      "model": "gpt-5.4-mini",
+      "effort": "low",
+      "description": "Fast survey, lightweight grep, and cost-effective triage",
+      "fallbacks": [
+        {
+          "model": "o3-mini",
+          "effort": "low",
+          "trigger": "cost_saver",
+          "description": "o3-mini low-latency triage fallback"
+        }
+      ]
+    },
+    "Medium": {
+      "model": "gpt-5.4",
+      "effort": "medium",
+      "description": "General synthesis and everyday development",
+      "fallbacks": [
+        {
+          "model": "gpt-5.4-mini",
+          "effort": "low",
+          "trigger": "token_exhaustion",
+          "description": "Degrade to GPT-5.4 Mini when context or session tokens approach limits"
+        },
+        {
+          "model": "o3-mini",
+          "effort": "medium",
+          "trigger": "cost_saver",
+          "description": "Cost-effective reasoning triage fallback"
+        }
+      ]
+    },
+    "High": {
+      "model": "gpt-5.3-codex",
+      "effort": "high",
+      "description": "Dedicated agentic coding model for Maker implementation",
+      "fallbacks": [
+        {
+          "model": "gpt-5.4",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Generalist GPT-5.4 fallback during Codex API rate limits"
+        },
+        {
+          "model": "gpt-5.4-mini",
+          "effort": "medium",
+          "trigger": "token_exhaustion",
+          "description": "Session lifetime extension fallback when tokens are exhausted"
+        }
+      ]
+    },
+    "XHigh": {
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "description": "GPT-6 Astra generational reasoning model for rigorous verification and checks",
+      "fallbacks": [
+        {
+          "model": "gpt-5.6",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "GPT-5.6 reasoning fallback when GPT-6 capacity is constrained"
+        },
+        {
+          "model": "gpt-5.3-codex",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "Dedicated coding model verification fallback"
+        }
+      ]
+    },
+    "Max": {
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "description": "GPT-6 Astra frontier model for spot architectural breakthroughs",
+      "fallbacks": [
+        {
+          "model": "gpt-5.6",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "GPT-5.6 reasoning fallback for complex spot decisions"
+        },
+        {
+          "model": "gpt-5.3-codex",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "High-capability coding fallback when Astra quota is hit"
+        }
+      ]
+    }
+  }
+}

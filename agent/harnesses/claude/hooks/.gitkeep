@@ -1,0 +1,18 @@
+# このディレクトリは意図的に空(2026-09-04、claude-hooks-full-agent-consolidationミッションで
+# 全ファイルをagent/hooks/claude/へ実体移動済み)。
+#
+# git は空ディレクトリを追跡しないため、本ファイルが無いと `claude/hooks/` はfresh checkout /
+# fresh worktree上に一切存在しないディレクトリになる。その状態で Makefile.d/install.mk の
+# `find "$(ROOTDIR)/claude/hooks" ...`(claude/install・claude/docker/installターゲット双方)が
+# 存在しないパスへ`find`を実行しexit 1で`make`全体を中断させ、nix/modules/home/dotfiles/
+# agent-tools.nixの`mergedDirFiles`ヘルパーも`builtins.readDir`が存在しないパスで評価エラーに
+# なる(Phase 4.5敵対的レビューのarchitecture-adversarial-reviewerが実機検証で発見・報告した
+# CRITICAL回帰、fresh worktreeを実際に作成しfindのexit codeを実測して確認済み)。
+#
+# 本ファイルにより `claude/hooks/` はgit管理下の実ディレクトリとして常に存在し、上記の`find`は
+# (該当するファイルが無くても)正常にexit 0で完了する。将来claude固有の新規hookファイルが
+# 追加された場合、本ファイルは削除せず残したままでよい(Makefile.d/install.mkの`find`は
+# `claude/install`ターゲット・`claude/docker/install`ターゲットいずれも`-name "*.sh"`でフィルタ
+# するため.gitkeep自体はinstall/symlink対象に含まれない。Phase 4.5 Round 2敵対的レビューで
+# `claude/install`側のfindに元々`-name`フィルタが無く.gitkeepが誤ってsymlinkされてしまう指摘を
+# 受け、Makefile.d/install.mk側にも`-name "*.sh"`を追加して整合させた)。

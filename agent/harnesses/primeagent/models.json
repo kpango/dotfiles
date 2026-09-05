@@ -1,0 +1,172 @@
+{
+  "providers": {
+    "local-ollama": {
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "apiKey": "OLLAMA_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "qwen2.5-coder:32b",
+          "name": "Qwen 2.5 Coder 32B (Local Ollama)",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": false
+        },
+        {
+          "id": "deepseek-r1:32b",
+          "name": "DeepSeek R1 32B (Local Ollama)",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": true
+        }
+      ]
+    },
+    "local-vllm": {
+      "baseUrl": "http://127.0.0.1:8000/v1",
+      "apiKey": "VLLM_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "default",
+          "name": "Local vLLM Server",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": false
+        }
+      ]
+    },
+    "opencode-go": {
+      "baseUrl": "https://opencode.ai/zen/v1",
+      "apiKey": "OPENCODE_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "qwen3.8-flash",
+          "name": "Qwen 3.8 Flash (OpenCode Go)",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": false
+        },
+        {
+          "id": "kimi-k2.7-code",
+          "name": "Kimi K2.7 Code (OpenCode Go)",
+          "contextWindow": 200000,
+          "maxTokens": 16384,
+          "reasoning": false
+        },
+        {
+          "id": "deepseek-v4-pro",
+          "name": "DeepSeek V4 Pro (OpenCode Go)",
+          "contextWindow": 131072,
+          "maxTokens": 32768,
+          "reasoning": true
+        },
+        {
+          "id": "kimi-k3",
+          "name": "Kimi K3 (OpenCode Go)",
+          "contextWindow": 200000,
+          "maxTokens": 32768,
+          "reasoning": true
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna (OpenCode Go)",
+          "contextWindow": 200000,
+          "maxTokens": 32768,
+          "reasoning": true
+        },
+        {
+          "id": "deepseek-v4-flash",
+          "name": "DeepSeek V4 Flash (OpenCode Go)",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": false
+        },
+        {
+          "id": "qwen-3.8-max",
+          "name": "Qwen 3.8 Max (OpenCode Go)",
+          "contextWindow": 131072,
+          "maxTokens": 32768,
+          "reasoning": true
+        },
+        {
+          "id": "glm-5.3",
+          "name": "GLM 5.3 (OpenCode Go)",
+          "contextWindow": 200000,
+          "maxTokens": 32768,
+          "reasoning": true
+        }
+      ]
+    },
+    "antigravity": {
+      "baseUrl": "http://127.0.0.1:4788/agy/v1",
+      "apiKey": "ANTIGRAVITY_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "gemini-3.8-flash-low",
+          "name": "Gemini 3.8 Flash Low (Antigravity)",
+          "contextWindow": 1048576,
+          "maxTokens": 65536,
+          "reasoning": false
+        },
+        {
+          "id": "gemini-3.8-flash-medium",
+          "name": "Gemini 3.8 Flash Medium (Antigravity)",
+          "contextWindow": 1048576,
+          "maxTokens": 65536,
+          "reasoning": true
+        },
+        {
+          "id": "gemini-3.8-flash-high",
+          "name": "Gemini 3.8 Flash High (Antigravity)",
+          "contextWindow": 1048576,
+          "maxTokens": 65536,
+          "reasoning": true
+        },
+        {
+          "id": "gemini-3.1-pro-high",
+          "name": "Gemini 3.1 Pro High (Antigravity)",
+          "contextWindow": 2097152,
+          "maxTokens": 65536,
+          "reasoning": true
+        }
+      ]
+    },
+    "codex": {
+      "baseUrl": "http://127.0.0.1:4788/codex/v1",
+      "apiKey": "CODEX_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "gpt-6-astra",
+          "name": "GPT-6 Astra (OpenAI Codex)",
+          "contextWindow": 200000,
+          "maxTokens": 65536,
+          "reasoning": true
+        },
+        {
+          "id": "gpt-5.3-codex",
+          "name": "GPT-5.3 Codex (OpenAI Codex)",
+          "contextWindow": 131072,
+          "maxTokens": 32768,
+          "reasoning": true
+        },
+        {
+          "id": "gpt-5.4",
+          "name": "GPT-5.4 (OpenAI Codex)",
+          "contextWindow": 131072,
+          "maxTokens": 32768,
+          "reasoning": true
+        },
+        {
+          "id": "gpt-5.4-mini",
+          "name": "GPT-5.4 Mini (OpenAI Codex)",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": false
+        }
+      ]
+    }
+  }
+}

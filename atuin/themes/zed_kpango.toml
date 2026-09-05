@@ -1,0 +1,13 @@
+[theme]
+name = "zed_kpango"
+
+[colors]
+AlertInfo = "#73ade9"    # blue
+AlertWarn = "#dfc184"    # yellow
+AlertError = "#d07277"   # red
+Annotation = "#5a6f89"   # blue-gray
+Base = "#c8ccd4"         # white / ui-text
+Guidance = "#a1c181"     # green
+Important = "#b477cf"    # purple
+Title = "#6eb4bf"        # cyan
+Muted = "#5d636f"        # light-gray

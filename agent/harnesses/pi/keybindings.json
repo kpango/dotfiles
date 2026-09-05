@@ -1,0 +1,13 @@
+{
+  "tui.editor.historyPrevious": ["ctrl+p", "up"],
+  "tui.editor.historyNext": ["ctrl+n", "down"],
+  "tui.editor.deleteWordBackward": ["ctrl+w", "alt+backspace"],
+  "tui.editor.deleteToLineStart": "ctrl+u",
+  "tui.editor.deleteToLineEnd": "ctrl+k",
+  "app.editor.external": "ctrl+g",
+  "app.model.select": "ctrl+l",
+  "app.thinking.cycle": "shift+tab",
+  "app.thinking.toggle": "ctrl+t",
+  "app.tools.expand": "ctrl+o",
+  "app.session.tree": "ctrl+s"
+}

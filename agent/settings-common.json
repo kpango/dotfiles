@@ -1,0 +1,74 @@
+{
+  "$comment": "claude/pi/agy の settings.json は全体としては完全に別スキーマ(claude=['$schema','alwaysThinkingEnabled',...,'worktree']全40キー、pi=['$schema','branchSummary',...,'theme']全17キー、agy=['admin','advanced',...,'worktree']全19キー、トップレベルキー集合がほぼ非交差)であり、agent/README.mdの既存判断どおりファイル全体のテンプレート化・生成は対象外とする。本ファイルは、その中で値まで完全一致していた少数のキー(worktree.symlinkDirectories・subagentPromptCacheTtl)と、意図的にscript参照を共有しているstatusLine、そして各ツールが別vocabularyで持つモデル選択を「named profileで束ねる」抽象化のみを対象にした軽量な補助データである。claude/pi/agy側のsettings.jsonそのものは引き続き各ツールの実ファイル(hand-authored)が正典であり、本ファイルはそれらとの整合性を`agent/scripts/test-settings-common.sh`で検証し、`agent/scripts/apply-settings-common.sh`で明示的に(自動ではなく)反映するための参照データに過ぎない。",
+
+  "shared_values": {
+    "worktree.symlinkDirectories": {
+      "description": "claude/settings.json と agy/settings.json で値まで完全一致していた配列(pi/settings.jsonにはworktreeキー自体が存在しない、pi固有機能のため対象外)。git worktree作成時にコピーでなくsymlinkするディレクトリの一覧。",
+      "targets": ["claude", "agy"],
+      "json_pointer": "/worktree/symlinkDirectories",
+      "value": [
+        "node_modules",
+        ".cache",
+        "vendor",
+        "target",
+        ".cargo",
+        "go/pkg/mod",
+        "rust/target",
+        ".bin",
+        ".venv",
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".claude/graph",
+        ".zig-cache",
+        "dist"
+      ]
+    },
+    "subagentPromptCacheTtl": {
+      "description": "claude/settings.json と agy/settings.json で値まで完全一致(pi/settings.jsonには存在しない、pi固有のcompaction/retry設定を使うため対象外)。",
+      "targets": ["claude", "agy"],
+      "json_pointer": "/subagentPromptCacheTtl",
+      "value": "1h"
+    },
+    "autoMemoryEnabled": {
+      "description": "claude/settings.json と agy/settings.json で値まで完全一致(pi/settings.jsonには存在しない)。autoMemoryDirectory(有効化した場合の書き込み先パス、claude=~/.claude/memory・agy=~/.gemini/memory)はツールごとに異なるため対象外、有効/無効フラグのみが共通値。",
+      "targets": ["claude", "agy"],
+      "json_pointer": "/autoMemoryEnabled",
+      "value": true
+    }
+  },
+
+  "status_line": {
+    "description": "agy/settings.json の statusLine.command は claude/statusline-command.sh をそのまま参照している(コピーではなく意図的な共有)。実機検証(2026-09-03、agy -p でstatusLineのstdin JSONを実際に捕捉)により、Antigravityが送信するJSONはcwd/model.display_name/context_window.remaining_percentageを含めClaude Codeと同一のフィールド構造であることを確認済み — バグではなく正しく機能する共有である。pi/extensions/status-line.tsは別物(外部コマンド+stdin JSONプロトコルではなくpi-coding-agent拡張APIのctx.ui.setStatus()を使うTUI内蔵実装)であり、この方式では共有できないため独立実装のまま維持する(pi側の設計として妥当、変更不要)。",
+    "shared_script": "claude/statusline-command.sh",
+    "verified_compatible_fields": [
+      "cwd",
+      "model.display_name",
+      "context_window.remaining_percentage"
+    ],
+    "verification_method": "agy settings.json の statusLine.command を一時的にデバッグロガーへ差し替え、`agy -p \"...\"` を実行してstdinのJSONを実際に捕捉して確認した(2026-09-03)。"
+  },
+
+  "model_profiles": {
+    "$comment": "claude/pi/agyは各社別ベンダーのモデルを使うため『同じモデル名を共有する』ことはできない(claudeはAnthropic専用、agyはGoogle Gemini専用、piは複数provider対応)。ここでの抽象化は『named profile(用途の呼び名)ごとに、各ツールが自分のvocabularyで対応するモデルを登録する』というマッピングであり、1箇所(current)を書き換えてagent/scripts/apply-settings-common.shを実行すれば3ツールへ伝播できる。",
+    "current": "baseline",
+    "profiles": {
+      "baseline": {
+        "description": "2026-09-03時点で各ツールに実際に設定されていた値をそのまま登録したbaseline profile(新規に選定した値ではない、既存設定の追認)。pi の defaultModel(claude-3-7-sonnet-20250219)は明らかに古いモデルIDであり、claude/agyがいずれも現行モデルを使っているのとは対照的 — abstraction機構を構築するにとどめ、どの現行モデルへ更新するかはユーザー判断が必要なため未変更としてある。",
+        "claude": {
+          "json_pointer": "/model",
+          "value": "opusplan"
+        },
+        "pi": {
+          "json_pointer": "/defaultModel",
+          "value": "claude-3-7-sonnet-20250219",
+          "note": "旧モデルID。/defaultProvider(anthropic)・/defaultThinkingLevel(high)・/modelThinkingLevels(旧モデルID群)も連動して更新が必要 — apply-settings-common.shはmodel_pointerで指定した単一キーのみを扱う設計のため、これらは手動更新が必要。"
+        },
+        "agy": {
+          "json_pointer": "/model/name",
+          "value": "gemini-3-pro-preview"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+# OpenAI Codex CLI Configuration
+# Deployed to ~/.codex/config.toml
+
+model = "gpt-6-astra"
+model_provider = "openai"
+
+[features]
+skills = true
+
+[approval]
+ask_for_approval = "on-request"
+
+[sandbox]
+mode = "workspace-write"
