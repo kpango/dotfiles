@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "golang-patterns",
+  "version": "1.0.0",
+  "description": "Metrics and lifecycle statistics for golang-patterns",
+  "category": "domain-specialist",
+  "metrics": {
+    "execution_count": 0,
+    "success_count": 0,
+    "failure_count": 0,
+    "success_rate": 1.0,
+    "retry_count": 0,
+    "total_duration_ms": 0,
+    "avg_duration_ms": 0.0,
+    "min_duration_ms": 0,
+    "max_duration_ms": 0,
+    "total_tokens_in": 0,
+    "total_tokens_out": 0,
+    "avg_tokens_per_call": 0.0,
+    "cache_read_tokens": 0,
+    "cache_hit_rate": 0.0
+  },
+  "lifecycle": {
+    "created_at": "2026-09-02T00:00:00Z",
+    "first_executed": null,
+    "last_executed": null,
+    "last_status": "initial"
+  },
+  "failure_signatures": [],
+  "prompt_revision_history": [
+    {
+      "revision": 1,
+      "timestamp": "2026-09-02T00:00:00Z",
+      "author": "initial",
+      "commit_hash": null,
+      "change_summary": "Initial baseline schema definition",
+      "diff_type": "docs-only",
+      "trigger": "initial",
+      "baseline_success_rate_before": null,
+      "baseline_success_rate_after": 1.0,
+      "target_metric": null
+    }
+  ]
+}

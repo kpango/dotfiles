@@ -1,0 +1,108 @@
+{
+  "$schema": "../../models/schema.json",
+  "harness": "agy",
+  "default_tier": "High",
+  "tiers": {
+    "Low": {
+      "model": "gemini-3.8-flash-low",
+      "effort": "low",
+      "description": "Gemini 3.8 Flash (Low) for rapid exploration and bulk survey",
+      "fallbacks": [
+        {
+          "model": "gemini-3.7-flash-low",
+          "effort": "low",
+          "trigger": "rate_limit",
+          "description": "Gemini 3.7 Flash Low fallback during high cluster load"
+        },
+        {
+          "model": "gemini-3.6-flash-low",
+          "effort": "low",
+          "trigger": "cost_saver",
+          "description": "Gemini 3.6 Flash Low budget survival fallback"
+        }
+      ]
+    },
+    "Medium": {
+      "model": "gemini-3.8-flash-medium",
+      "effort": "medium",
+      "description": "Gemini 3.8 Flash (Medium) for fast structured synthesis and triage",
+      "fallbacks": [
+        {
+          "model": "gemini-3.8-flash-low",
+          "effort": "low",
+          "trigger": "token_exhaustion",
+          "description": "Degrade reasoning effort to Low to extend session lifetime"
+        },
+        {
+          "model": "gemini-3.7-flash-medium",
+          "effort": "medium",
+          "trigger": "rate_limit",
+          "description": "Gemini 3.7 Flash Medium fallback"
+        }
+      ]
+    },
+    "High": {
+      "model": "gemini-3.8-flash-high",
+      "effort": "high",
+      "description": "Gemini 3.8 Flash (High effort) for robust, high-performance Maker implementation",
+      "fallbacks": [
+        {
+          "model": "gemini-3.8-flash-medium",
+          "effort": "medium",
+          "trigger": "token_exhaustion",
+          "description": "Degrade to Medium effort to preserve remaining session token quota"
+        },
+        {
+          "model": "claude-sonnet-4-6",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Cross-provider fallback to Claude Sonnet 4.6 (Thinking) in AGY"
+        },
+        {
+          "model": "gemini-3.7-flash-high",
+          "effort": "high",
+          "trigger": "cost_saver",
+          "description": "Gemini 3.7 Flash High cost-saving fallback"
+        }
+      ]
+    },
+    "XHigh": {
+      "model": "gemini-3.8-flash-high",
+      "effort": "high",
+      "description": "Gemini 3.8 Flash (High effort) for cutting-edge invariant verification and auditing",
+      "fallbacks": [
+        {
+          "model": "claude-opus-4-6-thinking",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Cross-model independent verification fallback to Claude Opus 4.6"
+        },
+        {
+          "model": "gemini-3.1-pro-high",
+          "effort": "high",
+          "trigger": "context_overflow",
+          "description": "Gemini 3.1 Pro High fallback offering massive 2M token context"
+        }
+      ]
+    },
+    "Max": {
+      "model": "gemini-3.8-flash-high",
+      "effort": "max",
+      "description": "Gemini 3.8 Flash (Max effort) for spot architectural diagnosis and deadlock breakthroughs",
+      "fallbacks": [
+        {
+          "model": "claude-opus-4-6-thinking",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Claude Opus 4.6 Thinking fallback for deep architectural breakthroughs"
+        },
+        {
+          "model": "gemini-3.1-pro-high",
+          "effort": "high",
+          "trigger": "context_overflow",
+          "description": "Gemini 3.1 Pro High 2M context architectural diagnosis fallback"
+        }
+      ]
+    }
+  }
+}

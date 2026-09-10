@@ -1,0 +1,72 @@
+{
+  "security-gate": {
+    "PreToolUse": [
+      {
+        "matcher": "run_shell_command|run_command|write_to_file|replace_file_content|edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.gemini/hooks/security-gate.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "vald-law-enforcer": {
+    "PreToolUse": [
+      {
+        "matcher": "run_shell_command|run_command|write_to_file|replace_file_content|edit_file",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.gemini/hooks/vald-law-gate.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "rtk-optimizer": {
+    "PreToolUse": [
+      {
+        "matcher": "run_shell_command|run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.gemini/hooks/rtk-rewrite.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "graphify-assistant": {
+    "PreToolUse": [
+      {
+        "matcher": "run_shell_command|run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.gemini/hooks/graphify-hint.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "post-edit-verifier": {
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.gemini/hooks/post-edit-lint.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

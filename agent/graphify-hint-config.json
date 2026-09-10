@@ -1,0 +1,9 @@
+{
+  "$comment": "claude/agy/pi の graphify-hint実装(agent/hooks/claude/graphify-hint.sh・agent/hooks/agy/graphify-hint.sh・agent/hooks/pi/graphify-hint.ts)が共有する検出パターン・グラフパス候補・ヒント文言。3実装を突き合わせた結果判明した差異(検出対象コマンドの網羅性・グラフ探索先のワークスペース数)は、最も広い版を正典として採用した。agyは判定ロジックはあったがヒント出力自体を実装しておらず(コメントで意図だけ残っていた死んだコード)、本ファイル導入時に修正した。",
+  "command_pattern": "\\b(?:grep|rg|ripgrep|find|fd|ack|ag)\\b",
+  "graph_relative_paths": [
+    ".claude/graph/graphify/graph.json",
+    ".gemini/graph/graphify/graph.json"
+  ],
+  "hint_message": "graphify: knowledge graph at .claude/graph/graphify/. For focused questions, run `graphify query \"<question>\"` (scoped subgraph, usually much smaller than GRAPH_REPORT.md) instead of grepping raw files. Read GRAPH_REPORT.md only for broad architecture context."
+}

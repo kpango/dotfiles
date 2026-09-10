@@ -1,0 +1,12 @@
+# Bun test configuration for Pi extension unit tests.
+#
+# `preload` registers virtual-module stubs for pi runtime-only packages
+# (`typebox`, `@earendil-works/pi-tui`) so that `lib/*.test.ts` files which
+# import an extension entrypoint (`../<name>.ts`) can load and actually run
+# their assertions under `bun test`. Without this, ~12 test files errored at
+# module-load and silently never executed. See `lib/test-preload.ts`.
+#
+# This file is read ONLY by bun; the `pi` runtime does not consult it, so the
+# stubs never affect production extension behavior.
+[test]
+preload = ["./lib/test-preload.ts"]

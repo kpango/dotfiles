@@ -1,0 +1,140 @@
+name: "Verify agent/ config sync & security rules"
+
+# agent/README.md の既知の残課題「sync-verify.sh・test-security-rules.sh の CI/pre-commit hook 配線は
+# 未実施」に対するフォローアップ(test-security-rules.sh 分をここでCI配線する。sync-verify.sh は
+# 実際にデプロイ済みの $HOME 側 symlink を検証するため `make *_install` 前提で意味のある結果を返さず、
+# 引き続き未着手のまま残す)。ここで扱うのは generator freshness の --check 系、および
+# agent/scripts/test-*.sh の統合テストで、大半はリポジトリ相対パスのみで完結する。ただし
+# test-memory-context.sh は agent/hooks/agy/session-start.sh を実ファイル経由で起動し、同スクリプトが
+# 無条件に `$HOME/.gemini/session-data` へ書き込む(CI runner の空 $HOME へ書くだけで判定自体は
+# allow固定のため実害はない) — 「完全に$HOME非依存」ではなく「$HOME依存箇所はallow固定の副作用のみ」
+# という限定つきの主張である点に注意。claude|pi|agy/validate-harness.sh は実際にデプロイ済みの
+# $HOME 側 symlink を検証するため、`make *_install` を先に実行しないと意味のある結果を返さない
+# (false-FAIL多発) — フルインストールのCI実行は別途の設計判断が必要なため、本ワークフローでは
+# 意図的にスコープ外とする。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "agent/**"
+      - "claude/**"
+      - "pi/**"
+      - "agy/**"
+      - ".github/workflows/agent-sync-verify.yaml"
+  pull_request:
+    paths:
+      - "agent/**"
+      - "claude/**"
+      - "pi/**"
+      - "agy/**"
+      - ".github/workflows/agent-sync-verify.yaml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Generator freshness ──────────────────────────────────────────────────
+  # agent/AGENTS.md 等 → pi|agy/AGENTS.md・SYSTEM.md の生成物が正典(agent/)から再生成した場合と
+  # 一致しているか(コミットし忘れがないか)を確認する。純粋な bash + python3(標準ライブラリのみ、
+  # yaml/tomllib不要)で完結し、$HOME非依存。pi/agents/*.mdは2026-09-03以降 pi/extensions/subagents.ts
+  # の実行時変換(mapToolNames)へ移行し生成物ではなくなったため、対応する --check ステップは無い
+  # (agent-hooks-and-pi-agents-unificationミッション)。
+  generator-freshness:
+    name: "Generator freshness (--check)"
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Ensure python3 is available
+        run: |
+          if ! command -v python3 >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y python3
+          fi
+          python3 --version
+
+      - name: gen-agents-md-for-pi.sh --check (-> pi/AGENTS.md)
+        run: bash agent/scripts/gen-agents-md-for-pi.sh --check
+
+      - name: gen-system-md-for-pi.sh --check (-> pi/SYSTEM.md)
+        run: bash agent/scripts/gen-system-md-for-pi.sh --check
+
+      - name: gen-agents-md-for-agy.sh --check (-> agy/AGENTS.md)
+        run: bash agent/scripts/gen-agents-md-for-agy.sh --check
+
+      - name: gen-system-md-for-agy.sh --check (-> agy/SYSTEM.md)
+        run: bash agent/scripts/gen-system-md-for-agy.sh --check
+
+  # ── agent/scripts/test-*.sh integration suite ────────────────────────────
+  # 一部スクリプト(test-security-rules.sh等)は $HOME を検証対象パスの文字列構築に使う
+  # (例: "$HOME/.ssh/id_rsa")が、これはパターンマッチ対象の文字列を作るためだけで実際に
+  # そのパスにファイルが存在するかは問わない — CI runner の $HOME がどんな値でも支障ない。
+  # 例外: test-memory-context.sh は agent/hooks/agy/session-start.sh を実ファイル経由で起動し、同スクリプト
+  # が無条件に `$HOME/.gemini/session-data` へ mkdir -p + 追記する(パターンマッチではなく実書き込み)。
+  # 判定自体はallow固定のためテスト結果には影響しないが、CI runner の空 $HOME に副産物が残る点は
+  # 上記の他スクリプトと性質が異なる。
+  # 依存は bash + jq + python3(標準ライブラリのみ)のみ。pi/extensions/*.ts 側のサブテストは
+  # bun が無い場合は各スクリプトが自律的に [SKIP] しており、bun未導入でも本ジョブは失敗しない。
+  #
+  # 既知の注意点: test-security-rules.sh の "git reset --hard on main cwd" 系サブテストは、
+  # 実行時のカレントディレクトリが実際に git ブランチ "main"/"master" 上にあるかを
+  # `git rev-parse --abbrev-ref HEAD` で判定する security-gate 側ロジックをそのまま検証している
+  # (フィクスチャリポジトリを都度 mktemp -d で構築する他のサブテストとは異なり、周囲の実リポジトリの
+  # チェックアウト状態に依存する設計)。actions/checkout は push イベントでは `checkout -B <branch>
+  # <startPoint>` を実行し実ブランチ名 "main" を復元するため push トリガーでは成立するが、
+  # pull_request イベントでは detached HEAD でチェックアウトされる("checks out in detached HEAD
+  # mode" — actions/checkout公式ドキュメント)ため、この判定は "main" と一致せず該当サブテストが
+  # 落ちる。これはテスト自身のフィクスチャ分離ギャップ(pre-existing)であり本ワークフローの記述では
+  # 解消できない — pull_request 実行でこのジョブが該当サブテストのみで失敗した場合はこれが原因。
+  test-suite:
+    name: "agent/scripts/test-*.sh"
+    # pull_request イベントは detached HEAD でチェックアウトされる(actions/checkout公式ドキュメント
+    # "checks out in detached HEAD mode")ため、上記コメントの通り test-security-rules.sh の
+    # "git reset --hard on main cwd" 系サブテスト(claude/agy/pi 3実装分、周囲リポジトリの実ブランチ名
+    # "main"/"master" 依存)が必ず失敗する。push トリガーでは actions/checkout が実ブランチを
+    # 復元するため問題ない。フィクスチャ分離ギャップの根本修正は別タスクとし、ここでは
+    # pull_request 実行時のみ本ジョブをスキップして誤検知の赤を避ける。
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Ensure jq and python3 are available
+        run: |
+          if ! command -v jq >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y jq python3
+          fi
+          jq --version
+          python3 --version
+
+      - name: test-security-rules.sh
+        run: bash agent/scripts/test-security-rules.sh
+
+      - name: test-graphify-hint.sh
+        run: bash agent/scripts/test-graphify-hint.sh
+
+      - name: test-vald-law-rules.sh
+        run: bash agent/scripts/test-vald-law-rules.sh
+
+      - name: test-memory-context.sh
+        run: bash agent/scripts/test-memory-context.sh
+
+      - name: test-merged-dir-root-resolution.sh
+        run: bash agent/scripts/test-merged-dir-root-resolution.sh
+
+      - name: test-settings-common.sh
+        run: bash agent/scripts/test-settings-common.sh

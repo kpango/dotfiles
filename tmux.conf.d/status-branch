@@ -1,0 +1,50 @@
+#!/usr/bin/env zsh
+# Git branch for tmux status bar.
+# Outputs " branch" (with leading space) or empty string for non-git dirs.
+# Outputs plain text (no style sequences); caller applies color via #[fg=...].
+# Cache: line 1 = key (path:HEAD_mtime), line 2 = output.
+# Usage: status-branch [pane_current_path]
+
+[[ -z "$1" ]] && exit 0
+
+_cache="${XDG_CACHE_HOME:-$HOME/.cache}/tmux-status-branch"
+
+_git_head=""
+_d="$1"
+while [[ -n "$_d" && "$_d" != "/" ]]; do
+    if [[ -d "$_d/.git" && -f "$_d/.git/HEAD" ]]; then
+        _git_head="$_d/.git/HEAD"
+        break
+    elif [[ -f "$_d/.git" ]]; then
+        IFS= read -r _gl < "$_d/.git"
+        _gd="${_gl#gitdir: }"
+        [[ "${_gd[1]}" != "/" ]] && _gd="$_d/$_gd"
+        [[ -f "$_gd/HEAD" ]] && _git_head="$_gd/HEAD"
+        break
+    fi
+    _d="${_d%/*}"
+done
+
+_mtime=${_git_head:+$(stat -c %Y "$_git_head" 2>/dev/null)}
+_key="${1}:${_mtime}"
+
+if [[ -f "$_cache" ]]; then
+    _cached=("${(f)$(<$_cache)}")
+    if [[ "${_cached[1]}" == "$_key" ]]; then
+        print -r -- "${_cached[2]}"
+        exit 0
+    fi
+fi
+
+_branch=""
+if [[ -n "$_git_head" ]]; then
+    IFS= read -r _head < "$_git_head"
+    [[ "$_head" == ref:* ]] && _branch="${_head#ref: refs/heads/}" || _branch="${_head[1,7]}"
+fi
+
+_out=""
+[[ -n "$_branch" ]] && _out=" ${_branch}"
+
+mkdir -p "${_cache%/*}" 2>/dev/null
+printf '%s\n%s\n' "$_key" "$_out" > "${_cache}.tmp.$$" && mv -f "${_cache}.tmp.$$" "$_cache"
+print -r -- "$_out"

@@ -1,0 +1,80 @@
+emulate -L zsh
+print "export CPUCORES=\"$CPUCORES\"
+export GIT_USER=\"$GIT_USER\"
+export DOTFILES_DIR=\"$DOTFILES_DIR\""
+
+# Default committer identity: pins the fallback so a tool relying on `git config
+# user.*` (rather than explicitly re-exporting GIT_COMMITTER_* itself, which
+# would still win) can't leave a stale/wrong name in the committer field.
+# GIT_AUTHOR_* is deliberately left alone so `--author` overrides on individual
+# commits still work; this only backstops committer (see zsh/20-git.zsh's git()
+# wrapper, the other half of that split). Read via `git config --global` (not
+# plain `git config`, which would pick up whatever repo $PWD happens to be at
+# cache-generation time) so this stays a single source of truth with
+# ~/.gitconfig instead of a second hardcoded copy; falls back to a literal
+# default only if global user.name/email are themselves unset, so a totally
+# unconfigured git install still gets a committer field. This forks `git`
+# once per cache regeneration (not once per shell startup, since
+# $ZCACHE_DIR/env.zsh is only rebuilt when ~/.gitconfig's mtime moves -- see
+# the env cache's dependency list in zshrc) -- this is a machine-wide default
+# across every repo, not scoped to any one identity.
+local _git_committer_name _git_committer_email
+_git_committer_name="$(command git config --global user.name 2>/dev/null)"
+_git_committer_email="$(command git config --global user.email 2>/dev/null)"
+print "export GIT_COMMITTER_NAME=\"${_git_committer_name:-kpango}\"
+export GIT_COMMITTER_EMAIL=\"${_git_committer_email:-kpango@vdaas.org}\""
+
+(($+commands[tmux])) && print 'export HAS_TMUX=1'
+
+if (($+commands[ghostty])); then
+	print "export TERMCMD=\"ghostty -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+elif (($+commands[alacritty])); then
+	print "export TERMCMD=\"alacritty -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+elif (($+commands[urxvtc])); then
+	print "export TERMCMD=\"urxvtc -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+fi
+
+# fpath + autoload: cached here so zshrc skips the check on every startup
+print 'fpath=("$DOTFILES_DIR/zfunc" $fpath)
+autoload -Uz _zcache_eval _gen_env'
+
+# OS type: stable between sessions — cache to avoid 5x file-stat per startup
+local _ZSH_OS
+if [[ -f /etc/NIXOS || -f /etc/nixos/configuration.nix ]]; then
+	_ZSH_OS=nixos
+elif [[ -f /etc/arch-release ]]; then
+	_ZSH_OS=arch
+elif [[ -f /etc/debian_version ]]; then
+	_ZSH_OS=debian
+elif [[ $OSTYPE = darwin* ]]; then
+	_ZSH_OS=brew
+else
+	_ZSH_OS=generic
+fi
+print "export _ZSH_OS=${_ZSH_OS}"
+
+# PATH + guard: bake resolved paths at generation time so zshrc skips reconstruction.
+# \${PATH} is intentionally not expanded here — it expands at source time to append the
+# current system PATH via the trailing ${PATH}. Note that on darwin this does NOT
+# preserve nix: zsh/00-env.zsh runs after this cache is sourced and resets PATH
+# through /usr/libexec/path_helper, so the nix profiles are re-added explicitly
+# there instead. Do not "fix" it by adding them here — they would be discarded.
+#
+# OS-common dirs vs macOS-only additions (Homebrew) live in _base_path, the
+# single source shared with zsh/00-env.zsh and zshrc so the three no longer
+# drift independently.
+#
+# On darwin (_ZSH_OS=brew), zsh/00-env.zsh's darwin branch always resets PATH via
+# `PATH=""` before rebuilding it itself (path_helper + nix profiles + _base_path,
+# guarded there by _ZSH_DARWIN_BASE_PATH_DONE), so anything baked into this cache
+# is discarded unread. Skip the _base_path fork/exec and both export lines below
+# on darwin entirely — computing and printing a value nothing will ever consume
+# is wasted work, not a harmless no-op. Non-darwin (nixos/arch/debian/generic)
+# keeps the original baked-PATH behavior unchanged.
+if [[ "$_ZSH_OS" != brew ]]; then
+	autoload -Uz _base_path
+	local _base="$(_base_path)"
+	print 'export _ZSH_PATH_LOADED=1'
+	print 'typeset -U path PATH'
+	print "export PATH=\"${_base}:\${PATH}\""
+fi

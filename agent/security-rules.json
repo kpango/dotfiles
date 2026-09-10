@@ -1,0 +1,230 @@
+{
+  "$comment": "claude/agy/pi の security-gate 実装(agent/hooks/claude/security-gate.sh・agent/hooks/claude/write-security-gate.sh・agent/hooks/agy/security-gate.sh・agent/hooks/pi/security-gate.ts)が共有する破壊的コマンド・機微パスのルールデータ。パターンはPCRE互換構文(非捕捉group・lookahead可、possessive/atomic/named-group不可)で記述し、grep -P(bash)・re(python3)・RegExp(node/TS)いずれでも同一に解釈されることをテスト済み(agent/scripts/test-security-rules.sh参照)。3実装を突き合わせた結果判明した保護範囲の差異(fork bomb検知パターン数・dd対象デバイスクラス・chmod対象パス・force-push検知の精度・git reset --hardのcd/-C解決有無)は、原則もっとも保護範囲が広い版を正典として採用した(安全側統合)。ロジック自体(cd/-C解決の手続き等、正規表現1本で表現できないもの)は各エンジンのコード側に残し、本ファイルは判定に使う「データ」のみを持つ。",
+  "shell_command_rules": [
+    {
+      "id": "rm_rf_root_home",
+      "description": "rm -r(f) を / , ~ , $HOME に対して実行(順序・組み合わせ違いのフラグも検出)",
+      "tier": "block",
+      "all_of": [
+        "\\brm\\b",
+        "(?:-[a-zA-Z]*[rR][a-zA-Z]*|--recursive)",
+        "(?:^|[\\s'\"`(])(?:/(?:\\*|(?=[\\s;|&)'\"`$\\\\]|$))|~(?:/|/\\*|\\*)?(?=[\\s;|&)'\"`$\\\\]|$)|(?:\\$HOME|\\$\\{HOME\\})(?:/|/\\*|\\*)?(?=[\\s;|&)'\"`$\\\\]|$))"
+      ]
+    },
+    {
+      "id": "fork_bomb",
+      "description": "fork bomb (シェル関数を再帰的にバックグラウンド実行するパターン)",
+      "tier": "block",
+      "any_of": [
+        ":\\(\\)\\s*\\{\\s*:\\s*\\|\\s*:\\s*&\\s*\\}\\s*;\\s*:",
+        ":\\(\\)\\s*\\{\\s*:\\s*\\|\\s*:\\s*\\}\\s*;\\s*:"
+      ]
+    },
+    {
+      "id": "dd_raw_disk_write",
+      "description": "dd によるブロックデバイスへの直接書き込み",
+      "tier": "block",
+      "any_of": [
+        "(?i)\\bdd\\s+if=.*of=/dev/(?:sd[a-z]|nvme[0-9]+(?:n[0-9]+)?|hd[a-z]|vd[a-z]|loop[0-9]|mapper/)"
+      ]
+    },
+    {
+      "id": "redirect_to_block_device",
+      "description": "shell redirect (>) によるブロックデバイスへの直接書き込み",
+      "tier": "block",
+      "any_of": [
+        "(?i)>\\s*/dev/(?:sd[a-z]|nvme[0-9]+(?:n[0-9]+)?|hd[a-z]|vd[a-z]|mapper/)"
+      ]
+    },
+    {
+      "id": "shred_block_device",
+      "description": "shred によるブロックデバイスの破壊",
+      "tier": "block",
+      "any_of": ["(?i)\\bshred\\b.*/dev/"]
+    },
+    {
+      "id": "mkfs_block_device",
+      "description": "mkfs(拡張子付き/裸のいずれも)によるブロックデバイスへのファイルシステム作成",
+      "tier": "block",
+      "any_of": ["(?i)\\bmkfs(?:\\.[a-z0-9]+)?\\b.*/dev/"]
+    },
+    {
+      "id": "git_add_mass_staging",
+      "description": "git add -A / --all / . / ./ / * / ./* (specific path指定のみを許可する規約違反)",
+      "tier": "block",
+      "any_of": [
+        "(?:^|[;&|`(]|\\s)git\\s+add(?:\\s+[^;&|]*)?(?:\\s(?:-[a-zA-Z]*A|--all)(?:\\s|$)|\\s\\.\\/?(?:\\s|$)|\\s(?:\\.\\/)?\\*)"
+      ]
+    },
+    {
+      "id": "chmod_777_system_path",
+      "description": "システムパスへの再帰的 chmod 777",
+      "tier": "block",
+      "any_of": [
+        "(?i)\\bchmod\\s+(?:-[a-zA-Z]*R[a-zA-Z]*\\s+)?0?777\\s+(?:/|~|/home|/etc|/usr|/var)(?:/\\S*)?(?:\\s|$)"
+      ]
+    },
+    {
+      "id": "git_clean_full_nuke",
+      "description": "git clean -f と -d または -x を同時指定(untracked+gitignoredファイルを一括削除、dry-run指定時は除外)",
+      "tier": "block",
+      "all_of": [
+        "\\bgit\\s+clean\\b",
+        "-[a-zA-Z]*f[a-zA-Z]*[dx]|-[a-zA-Z]*[dx][a-zA-Z]*f"
+      ],
+      "not_any_of": ["-[a-zA-Z]*n[a-zA-Z]*(?:\\s|$)|--dry-run"]
+    },
+    {
+      "id": "git_clean_force_only",
+      "description": "git clean -f 単体(-d/-xを伴わない、未commit変更破棄の確認)。git_clean_full_nuke に一致した場合はそちらが優先(block)",
+      "tier": "ask",
+      "all_of": ["\\bgit\\s+clean\\b", "-[a-zA-Z]*f"],
+      "not_any_of": [
+        "-[a-zA-Z]*n[a-zA-Z]*(?:\\s|$)|--dry-run",
+        "-[a-zA-Z]*f[a-zA-Z]*[dx]|-[a-zA-Z]*[dx][a-zA-Z]*f"
+      ]
+    },
+    {
+      "id": "git_checkout_discard",
+      "description": "git checkout . (未commit変更の破棄)",
+      "tier": "ask",
+      "any_of": [
+        "(?:^|[;&|`(]|\\s)git\\s+checkout\\s+(?:\\.|--\\s+\\.)(?:\\s|$)"
+      ]
+    },
+    {
+      "id": "force_push_protected_branch",
+      "description": "保護ブランチ(main/master/release/production)へのforce push・削除",
+      "tier": "block",
+      "all_of": ["\\bgit\\s+push\\b"],
+      "protected_branches": ["main", "master", "release", "production"],
+      "any_of_with_branches": [
+        "(?i)(?:-[a-zA-Z]*f\\b|--force\\b|--force-with-lease\\b|--force-if-includes\\b|\\+[^\\s:]*:|\\+refs/|\\+HEAD|\\+(?:{branches}))",
+        "(?i)(?:\\s:\\b(?:{branches})\\b|--delete\\s+(?:{branches})\\b)"
+      ],
+      "target_branch_pattern": "(?i)(?:^|[\\s/:+]|\\brefs/heads/)(?:origin/|upstream/)?(?:{branches})(?:\\s|:|$)"
+    },
+    {
+      "id": "kubectl_delete_prod",
+      "description": "本番namespaceへの kubectl delete",
+      "tier": "block",
+      "any_of": [
+        "(?i)\\bkubectl\\s+delete\\b.*(?:-n|--namespace)[=\\s]+(?:prod|production|vald-prod|vald-production)\\b",
+        "(?i)\\bkubectl\\s+delete\\s+(?:ns|namespace|namespaces)\\s+(?:prod|production|vald-prod|vald-production)\\b"
+      ]
+    },
+    {
+      "id": "helm_uninstall_prod",
+      "description": "本番namespaceへの helm uninstall/delete",
+      "tier": "block",
+      "any_of": [
+        "(?i)\\bhelm\\s+(?:uninstall|delete)\\b.*(?:-n|--namespace)[=\\s]+(?:prod|production|vald-prod|vald-production)"
+      ]
+    },
+    {
+      "id": "pipe_to_shell",
+      "description": "curl/wget や base64デコード/echo で取得した内容をそのままシェルへ実行",
+      "tier": "block",
+      "any_of": [
+        "(?i)\\b(?:curl|wget)\\s+.*\\|\\s*(?:sudo\\s+)?(?:sh|bash|zsh|fish|dash)\\b",
+        "(?i)\\b(?:base64\\s+(?:-d|--decode)|echo\\b).*\\|\\s*(?:sudo\\s+)?(?:sh|bash|zsh|dash)\\b"
+      ]
+    },
+    {
+      "id": "git_reset_hard_protected_branch",
+      "description": "保護ブランチ(main/master)上での git reset --hard。cd/-C で対象ディレクトリを切り替えた場合はそちらのブランチで判定する(hookプロセス自身のcwdで判定するとバイパスされる既知の抜け穴 — claude実装で対策済み、agy/piは本統合で追随)",
+      "tier": "block",
+      "all_of": ["\\bgit\\s+reset\\s+--hard\\b"],
+      "not_any_of": ["worktree"],
+      "protected_branches": ["main", "master"],
+      "cd_target_pattern": "cd\\s+([^;&|]+)\\s*&&",
+      "dash_c_target_pattern": "git\\s+-C\\s+(\\S+)"
+    }
+  ],
+  "sensitive_write_path_rules": [
+    {
+      "id": "ssh_keys",
+      "label": "SSH keys / credentials",
+      "pattern": "(?:^|/)\\.ssh(?:/.*)?$"
+    },
+    {
+      "id": "ssh_id_files",
+      "label": "SSH private key files",
+      "pattern": "/id_(?:rsa|ed25519|ecdsa)(?:\\.[a-z0-9]+)?$"
+    },
+    {
+      "id": "gnupg",
+      "label": "GPG keys / configuration",
+      "pattern": "(?:^|/)\\.gnupg(?:/.*)?$"
+    },
+    {
+      "id": "aws_credentials",
+      "label": "AWS credentials / config",
+      "pattern": "(?:^|/)\\.aws(?:/.*)?$"
+    },
+    {
+      "id": "kube_config",
+      "label": "Kubeconfig",
+      "pattern": "(?:^|/)\\.kube(?:/config)?$|\\.kubeconfig$"
+    },
+    {
+      "id": "netrc",
+      "label": "Netrc credentials",
+      "pattern": "(?:^|/)\\.netrc$"
+    },
+    {
+      "id": "cargo_credentials",
+      "label": "Cargo credentials",
+      "pattern": "(?:^|/)\\.cargo/credentials(?:\\.toml)?$"
+    },
+    {
+      "id": "npmrc",
+      "label": "NPM credentials",
+      "pattern": "(?:^|/)\\.npmrc$"
+    },
+    {
+      "id": "claude_credentials",
+      "label": "Claude credentials",
+      "pattern": "(?:^|/)\\.claude/\\.credentials\\.json$"
+    },
+    {
+      "id": "generic_credentials_json",
+      "label": "Credentials file",
+      "pattern": "\\.credentials\\.json$"
+    },
+    {
+      "id": "private_key_cert",
+      "label": "Private key / certificate file",
+      "pattern": "\\.(?:pem|key|p12|pfx)$"
+    },
+    {
+      "id": "env_secrets",
+      "label": "Environment secrets (.env)",
+      "pattern": "(?:^|/)\\.env(?:\\.local|\\.production|\\.prod|\\.[a-zA-Z0-9_-]+)?$"
+    },
+    {
+      "id": "terraform_state",
+      "label": "Terraform state file",
+      "pattern": "\\.tfstate(?:\\.backup)?$"
+    },
+    {
+      "id": "terraform_vars",
+      "label": "Terraform variables file",
+      "pattern": "(?:^|/)terraform\\.tfvars(?:\\.json)?$"
+    },
+    {
+      "id": "etc_auth",
+      "label": "System authentication file (/etc)",
+      "pattern": "^/etc/(?:passwd|shadow|sudoers|sudoers\\.d|pam\\.d)"
+    },
+    { "id": "boot", "label": "Boot partition (/boot)", "pattern": "^/boot/" },
+    { "id": "sys", "label": "Sysfs (/sys)", "pattern": "^/sys/" },
+    { "id": "proc", "label": "Procfs (/proc)", "pattern": "^/proc/" },
+    { "id": "dev", "label": "Device node (/dev)", "pattern": "^/dev/" },
+    {
+      "id": "systemd_system_units",
+      "label": "Systemd system unit directory",
+      "pattern": "^/usr/lib/systemd/system/"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+[Unit]
+Description=supermemory local memory server (self-hosted, offline embeddings)
+Documentation=https://git.new/memory
+After=default.target opencode-proxy.service
+Wants=opencode-proxy.service
+
+[Service]
+Type=simple
+Environment="PATH=/usr/local/bin:/usr/bin:/bin:%h/.bun/bin:%h/.local/bin:%h/.cargo/bin"
+ExecStart=%h/.local/bin/supermemory-server
+Restart=on-failure
+RestartSec=5s
+# Sandboxing: this process only ever talks to opencode-proxy.service over loopback
+# (extraction) plus local embeddings -- no external network needed. Needs write
+# access only to its own data dir.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=%h/.supermemory
+IPAddressDeny=any
+IPAddressAllow=localhost
+
+[Install]
+WantedBy=default.target
