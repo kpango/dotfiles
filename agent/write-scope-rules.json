@@ -1,0 +1,37 @@
+{
+  "$comment": "Tier B 書込保護ゲートの判定データ。正典は agent/skills/swarm-implement/scripts/write-scope-lib.sh の write_scope_is_protected() (bash case文) — 本ファイルはそのcase文の全パターンを1行も取りこぼさず抽出したものであり、write-scope-lib.sh自体は変更しない(このJSONが後追いで同期する側)。write-scope-lib.shのコメントが説明する2種類のパターンにそのまま対応する2つの配列を持つ: (a) suffix_patterns = realpath解決後の絶対パスの末尾構造に対するglob(先頭に`*/`を置きfnmatchで判定、symlink解決後のdotfiles/agent構造に一致させる)。(b) fixed_absolute_path_patterns = dotfiles/vald の project-level settings.json/settings.local.json(symlinkでないため(a)に一致しない)。`${HOME}` はプレースホルダであり、判定時に実際のHOMEへ置換してから(a)と同じfnmatch(worktree名の`*`を含む4件はglob一致、残り4件は結果的な完全一致)で照合する。両配列とも大文字小文字を区別する(bash case文のデフォルト、nocasematch未設定と同じ挙動)。write-scope-lib.shが更新されたら本ファイルも同期して更新すること(自動同期の保証は無い、agent/security-rules.jsonのcross-impl parity設計を踏襲)。",
+  "suffix_patterns": [
+    "*/claude/hooks/*",
+    "*/agent/harnesses/claude/hooks/*",
+    "*/agent/hooks/claude/*",
+    "*/agent/hooks/agy/*",
+    "*/agent/hooks/pi/*",
+    "*/agent/harnesses/agy/hooks/*",
+    "*/agent/harnesses/pi/extensions/*",
+    "*/agent/harnesses/*/model-routing.json",
+    "*/agent/skills/*/SKILL.md",
+    "*/agent/skills/*/scripts/*",
+    "*/agent/skills/*/*.md",
+    "*/agent/SWARM.md",
+    "*/agent/SWARM_REFERENCES.md",
+    "*/claude/CLAUDE.md",
+    "*/agent/harnesses/claude/CLAUDE.md",
+    "*/claude/settings.json",
+    "*/agent/harnesses/claude/settings.json",
+    "*/claude/settings.local.json",
+    "*/agent/harnesses/claude/settings.local.json",
+    "*/agent/agents/*",
+    "*/agent/write-scope-rules.json",
+    "*/agent/scripts/hooks/*.py"
+  ],
+  "fixed_absolute_path_patterns": [
+    "${HOME}/go/src/github.com/kpango/dotfiles/.claude/settings.json",
+    "${HOME}/go/src/github.com/kpango/dotfiles/.claude/worktrees/*/.claude/settings.json",
+    "${HOME}/go/src/github.com/kpango/dotfiles/.claude/settings.local.json",
+    "${HOME}/go/src/github.com/kpango/dotfiles/.claude/worktrees/*/.claude/settings.local.json",
+    "${HOME}/go/src/github.com/vdaas/vald/.claude/settings.json",
+    "${HOME}/go/src/github.com/vdaas/vald/.claude/worktrees/*/.claude/settings.json",
+    "${HOME}/go/src/github.com/vdaas/vald/.claude/settings.local.json",
+    "${HOME}/go/src/github.com/vdaas/vald/.claude/worktrees/*/.claude/settings.local.json"
+  ]
+}

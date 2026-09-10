@@ -1,0 +1,23 @@
+[Unit]
+Description=OpenCode Zen (Go) header-injecting proxy for supermemory
+Documentation=https://opencode.ai/docs/go/
+After=default.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment="PATH=/usr/local/bin:/usr/bin:/bin:%h/.bun/bin:%h/.local/bin:%h/.cargo/bin"
+Environment="OPENCODE_PROXY_PORT=8788"
+ExecStart=/usr/bin/env bun %h/.supermemory/opencode-proxy.mjs
+Restart=on-failure
+RestartSec=5s
+# Sandboxing: read-only proxy process, no local writable state. No IP address
+# restriction here (unlike supermemory.service) -- this process must reach the
+# external opencode.ai upstream, not just loopback.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Slack
+StartupWMClass=Slack
+Comment=Slack Desktop
+GenericName=Slack Client for Linux
+Exec=/usr/bin/slack --ozone-platform=wayland --enable-wayland-ime --gtk-version=4 -s %U
+Icon=slack
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;Network;InstantMessaging;
+MimeType=x-scheme-handler/slack;

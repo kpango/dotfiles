@@ -1,0 +1,14 @@
+[Unit]
+Description=Sway compositor (user) using /etc/environment and sway-start
+Documentation=man:sway(5)
+Wants=sway-session.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/environment
+ExecStart=/usr/local/bin/sway-start
+Restart=on-failure
+RestartSec=1s
+
+[Install]
+WantedBy=default.target

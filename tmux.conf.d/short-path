@@ -1,0 +1,23 @@
+#!/usr/bin/env zsh
+# Abbreviates all path components except the last to their first character.
+# Replaces $HOME with ~.
+# Usage: short-path /some/deep/path
+
+[[ -z "$1" ]] && { print -r -- "."; exit 0 }
+[[ "$1" == "/" ]] && { print -r -- "/"; exit 0 }
+
+case "$1" in
+    "$HOME"/*) _path="~/${1#"$HOME"/}" ;;
+    "$HOME")   _path="~" ;;
+    *)         _path="$1" ;;
+esac
+
+_parts=("${(@s:/:)_path}")
+_last=${#_parts}
+_result=""
+for ((_i=1; _i<=_last; _i++)); do
+    _p="${_parts[_i]}"
+    [[ -z "$_p" || $_i -eq $_last ]] && _result+="$_p" || _result+="${_p[1]}"
+    [[ $_i -lt $_last ]] && _result+="/"
+done
+print -r -- "$_result"

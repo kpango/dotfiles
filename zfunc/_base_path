@@ -1,0 +1,33 @@
+emulate -L zsh
+# _base_path — canonical PATH prefix: OS-common dirs, plus macOS-only additions
+# gated by OS detection. Single source for _gen_env (baked into the env.zsh
+# cache)/00-env.zsh (deferred combined.zsh fallback)/zshrc (early-load
+# fallback needed before sheldon puts tools on PATH), which used to carry
+# three independently hand-maintained copies of this string that had already
+# drifted out of sync with each other.
+#
+# Non-darwin output was byte-for-byte what _gen_env's cache previously baked, except
+# for the $HOME/.bun-shims -> $HOME/.bun/bin fix below (confirmed dead on both an
+# arm64 Mac and an Arch Linux host on 2026-08-19; bun's actual global-install bin
+# dir is $HOME/.bun/bin, set via BUN_INSTALL="$HOME/.bun" in 00-env.zsh).
+emulate -L zsh
+local -a _bp=("$HOME/.local/bin")
+
+if [[ ${OSTYPE} == darwin* ]]; then
+	# CPUTYPE/HOSTTYPE only say the CPU is arm64, not that Homebrew is
+	# installed — an arm64 Mac without Homebrew exists. Check for the actual
+	# install directory instead.
+	if [[ -d /opt/homebrew/bin ]]; then
+		_bp+=(/opt/homebrew/bin)
+	fi
+fi
+
+_bp+=(
+	"$HOME/.bun/bin"
+	/usr/local/bin /usr/local/sbin /usr/bin /usr/sbin /bin /sbin
+	/usr/local/bun/bin /usr/local/go/bin /opt/local/bin
+	"${GOBIN:-$HOME/go/bin}" "${CARGO_HOME:-$HOME/.cargo}/bin"
+	/usr/lib/docker/cli-plugins/
+)
+
+print -r -- "${(j.:.)_bp}"

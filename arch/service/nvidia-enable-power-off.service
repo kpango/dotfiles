@@ -1,0 +1,16 @@
+[Unit]
+Description=Enable NVIDIA card at shutdown
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "awk '{print $2}' /proc/acpi/bbswitch > /tmp/gpu_state && echo ON > /proc/acpi/bbswitch"
+#ExecStart=/usr/bin/modprobe nvidia
+
+[Install]
+WantedBy=shutdown.target
+WantedBy=reboot.target
+WantedBy=hibernate.target
+WantedBy=suspend-then-hibernate.target
+WantedBy=sleep.target
+WantedBy=suspend.target

@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HarnessModelRouting",
+  "description": "Abstract model tier mapping configuration for AI coding harnesses",
+  "type": "object",
+  "required": ["harness", "default_tier", "tiers"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "harness": {
+      "type": "string",
+      "enum": ["claude", "agy", "codex", "pi", "primeagent"]
+    },
+    "default_tier": {
+      "type": "string",
+      "enum": ["Low", "Medium", "High", "XHigh", "Max", "Inherit"]
+    },
+    "tiers": {
+      "type": "object",
+      "required": ["Low", "Medium", "High", "XHigh", "Max"],
+      "properties": {
+        "Low": { "$ref": "#/definitions/TierConfig" },
+        "Medium": { "$ref": "#/definitions/TierConfig" },
+        "High": { "$ref": "#/definitions/TierConfig" },
+        "XHigh": { "$ref": "#/definitions/TierConfig" },
+        "Max": { "$ref": "#/definitions/TierConfig" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "TierConfig": {
+      "type": "object",
+      "required": ["model"],
+      "properties": {
+        "model": { "type": "string" },
+        "provider": { "type": "string" },
+        "effort": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "xhigh", "max"]
+        },
+        "description": { "type": "string" },
+        "fallbacks": {
+          "type": "array",
+          "description": "Ordered cascade of fallback models when primary hits rate-limits or token-limits",
+          "items": {
+            "type": "object",
+            "required": ["model"],
+            "properties": {
+              "model": { "type": "string" },
+              "provider": { "type": "string" },
+              "effort": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "xhigh", "max"]
+              },
+              "trigger": {
+                "type": "string",
+                "enum": [
+                  "rate_limit",
+                  "token_exhaustion",
+                  "context_overflow",
+                  "cost_saver",
+                  "unavailability"
+                ]
+              },
+              "description": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "description": "Multi-candidate evaluation pool for intelligent model routing",
+          "items": {
+            "type": "object",
+            "required": ["model"],
+            "properties": {
+              "model": { "type": "string" },
+              "provider": { "type": "string" },
+              "effort": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "xhigh", "max"]
+              },
+              "priority": { "type": "integer" },
+              "strategy": { "type": "string" },
+              "description": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "sub_routes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["model"],
+            "properties": {
+              "model": { "type": "string" },
+              "provider": { "type": "string" },
+              "effort": {
+                "type": "string",
+                "enum": ["low", "medium", "high", "xhigh", "max"]
+              },
+              "description": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,164 @@
+{
+  "$comment": "claude/pi/agy 共通設定の SSoT 同期マニフェスト。agent/scripts/sync-verify.sh がこれを読み、各entryのmodeに応じた検証を行う。新しい共通化対象を追加する際はまずここに宣言する(agent/README.md 運用規範参照)。2026-09-03: リポジトリ内のclaude/pi/agy側symlink(claude/rules・claude/agents・claude/RTK.md・pi/rules・pi/RTK.md・agy/rules・agy/agents・agy/RTK.md・skills配下のfile-level symlink群)を全廃し、Makefile.d/install.mkがagent/から直接$HOME側へsymlinkする設計に一本化した(ユーザー指示:「dotfiles内部にsymbolic linkは不要、Makefile/nixだけが配置先を知っていればいい」)。これに伴い旧`symlink`/`symlink-per-entry`/`live-copy-or-symlink`の3modeは廃止し、`live-symlink`(常に$HOME側のみを検証)と`generate`(リポジトリ側の生成物の鮮度)の2modeへ統合した(当日中の後続ミッションagent-hooks-and-pi-agents-unificationで、当初例外だったpi/agentsもgenerate方式からlive-symlink方式へ移行済み、下記agents entry参照)。",
+  "entries": [
+    {
+      "name": "rules",
+      "canonical": "agent/rules",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/rules", "mode": "live-symlink" },
+        "pi": { "path": "$HOME/.pi/agent/rules", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/rules", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/rules", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "agents",
+      "canonical": "agent/agents",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/agents", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/agents", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/agents", "mode": "live-symlink" },
+        "pi": { "path": "$HOME/.pi/agent/agents", "mode": "live-symlink" }
+      },
+      "note": "2026-09-03(agent-hooks-and-pi-agents-unificationミッション)以前はpi分のみagent/agents直結ではなくpi/agents(gen-pi-agents.shによる生成物、tools: frontmatterがpi-coding-agent形式に変換済みの実ファイル)を経由するgenerate modeだったが、この変換をpi/extensions/subagents.tsの実行時変換(mapToolNames)へ移植したため、claude/agyと同型のlive-symlink modeへ統一した。"
+    },
+    {
+      "name": "skills",
+      "canonical": "agent/skills",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/skills", "mode": "live-symlink" },
+        "pi": { "path": "$HOME/.pi/agent/skills", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/skills", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/skills", "mode": "live-symlink" }
+      },
+      "note": "claude/skills・pi/skills・agy/skills はリポジトリ内に実ディレクトリとして存在するが、これはcanonicalのミラーではなくエコシステム固有の動的テレメトリ(SKILL.stats.json、scripts/skill-stats.sh が読み書きする実データ、git管理下)を保持する別物であり、本entryの検証対象外(sync-verify.shはこのディレクトリを一切参照しない)。2026-09-03: SKILL.stats.jsonはこれと異なりagent/skills/<name>/SKILL.stats.jsonへ統合済み(scripts/merge-skill-stats.pyによる一回限りの移行、claude/pi/agy個別のSKILL.stats.jsonは削除済み)。agent/skillsは本entryが既にディレクトリ丸ごとclaude/pi/agy/geminiへlive-symlinkしているため、SKILL.stats.jsonの配線に追加entryは不要 — scripts/skill-stats.shが書き込む先も同じagent/skills/<name>/SKILL.stats.jsonに変更済み(find_skill_stats_path参照)。2026-09-04: self-improve-registry.tsv(agent/skills/swarm-loop/)・harness-registry.tsv(agent/skills/swarm-meta/)も同様に単一正典化済み(claude/pi/agy側の実体は削除済み、agent/README.md「registry.tsvの単一正典化」節参照)。"
+    },
+    {
+      "name": "RTK.md",
+      "canonical": "agent/RTK.md",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/RTK.md", "mode": "live-symlink" },
+        "pi": { "path": "$HOME/.pi/agent/RTK.md", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/RTK.md", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/RTK.md", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "SWARM.md",
+      "canonical": "agent/SWARM.md",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/SWARM.md", "mode": "live-symlink" },
+        "pi": { "path": "$HOME/.pi/agent/SWARM.md", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/SWARM.md", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/SWARM.md", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "AGENTS.md",
+      "canonical": "agent/AGENTS.md",
+      "note": "2026-09-03: claude/CLAUDE.md・pi/AGENTS.md・agy/AGENTS.mdをagent/AGENTS.md(汎用コア、公開AGENTS.md仕様準拠)+ agent/AGENTS-<tool>-supplement.md(ツール固有補完)へ統一。claudeのみCLAUDE.mdの`@path`インポート構文で動的合成可能なためlive-symlink(claude/CLAUDE.mdが`@AGENTS.md`を1行目に持つ、claude分の補完はAGENTS-supplement.mdエントリ側で配線)。pi/agyには同等のインポート構文が無い(pi.dev公式クイックスタート・agy公式ドキュメント実査で確認済み)ため、AGENTS.md/SYSTEM.md向け生成スクリプト群と同じ生成パターンを踏襲する: 実装本体は agent/scripts/gen-tool-agents.sh(pi/agy両方を扱える)だが、sync-verify.shの呼び出し契約(`$script --check`を追加引数無しで呼ぶ、1 target = 1 script)に合わせ、pi向けは agent/scripts/gen-agents-md-for-pi.sh、agy/gemini向けは agent/scripts/gen-agents-md-for-agy.sh という薄いラッパー経由で呼ぶ。生成物であるpi/AGENTS.md・agy/AGENTS.mdをlive-symlinkの参照元とする(SYSTEM.mdエントリのgenerate modeと同型)。codexはツール固有の追加コンテンツが無いためsupplement無し、agent/AGENTS.mdを直接live-symlink。",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/AGENTS.md", "mode": "live-symlink" },
+        "codex": { "path": "$HOME/.codex/AGENTS.md", "mode": "live-symlink" },
+        "pi": {
+          "path": "agent/harnesses/pi/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-agents-md-for-pi.sh",
+          "live_path": "$HOME/.pi/agent/AGENTS.md"
+        },
+        "agy": {
+          "path": "agent/harnesses/agy/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-agents-md-for-agy.sh",
+          "live_path": "$HOME/.agy/AGENTS.md"
+        },
+        "gemini": {
+          "path": "agent/harnesses/agy/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-agents-md-for-agy.sh",
+          "live_path": "$HOME/.gemini/AGENTS.md"
+        }
+      }
+    },
+    {
+      "name": "AGENTS-supplement.md",
+      "canonical": "agent/AGENTS-claude-supplement.md",
+      "note": "claude/CLAUDE.mdの2行目`@AGENTS-supplement.md`が指すclaude固有補完。pi/agyの補完(agent/AGENTS-pi-supplement.md・agent/AGENTS-agy-supplement.md)は上記AGENTS.mdエントリのgenerateモードがgen-tool-agents.sh経由で暗黙に消費するため、本エントリと同型の別entryは不要(生成スクリプトの入力ファイルであり、生成物を鏡映するtargetではないため)。",
+      "targets": {
+        "claude": {
+          "path": "$HOME/.claude/AGENTS-supplement.md",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "SYSTEM.md",
+      "canonical": "agent/SYSTEM.md",
+      "note": "2026-09-03: pi/SYSTEM.md・agy/SYSTEM.mdをagent/SYSTEM.md(汎用コア: 全ツール共通のSecurity/Teamwork-Preview/Deterministic Tool Supremacy)+ agent/SYSTEM-<tool>-supplement.md(ツール固有: アイデンティティ宣言+冒頭のBehavioral/Operational Directives)へ統一。AGENTS.mdの生成パターン(agent/scripts/gen-tool-agents.sh)と同型だが連結順が逆(agent/scripts/gen-tool-system.shはsupplementが先・coreが後 — システムプロンプトは「あなたは<ツール名>である」という自己同一化の宣言が常に先頭に来る必要があるため、ツール名を持たない汎用コアを先頭には置けない)。claudeには対応するSYSTEM.md相当ファイルが無い(Claude Codeのsystem promptはユーザーが永続ファイルで上書きする仕組みを持たず、`--append-system-prompt`という都度指定のCLIフラグのみ — code.claude.com/docs/en/memory実査で確認: 「CLAUDE.md content is delivered as a user message after the system prompt, not as part of the system prompt itself」)。codexにも同種のファイルはこのリポジトリで確認できる範囲では無い。pi/agyのみが対象。sync-verify.shの呼び出し契約(1 target = 1 script)に合わせ、agent/scripts/gen-system-md-for-pi.sh・agent/scripts/gen-system-md-for-agy.shという薄いラッパー経由で呼ぶ(AGENTS.mdエントリと同じパターン)。",
+      "targets": {
+        "pi": {
+          "path": "agent/harnesses/pi/SYSTEM.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-system-md-for-pi.sh",
+          "live_path": "$HOME/.pi/agent/SYSTEM.md"
+        },
+        "agy": {
+          "path": "agent/harnesses/agy/SYSTEM.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-system-md-for-agy.sh",
+          "live_path": "$HOME/.agy/SYSTEM.md"
+        },
+        "gemini": {
+          "path": "agent/harnesses/agy/SYSTEM.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-system-md-for-agy.sh",
+          "live_path": "$HOME/.gemini/SYSTEM.md"
+        }
+      }
+    },
+    {
+      "name": "SWARM_REFERENCES.md",
+      "canonical": "agent/SWARM_REFERENCES.md",
+      "targets": {
+        "claude": {
+          "path": "$HOME/.claude/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
+        },
+        "pi": {
+          "path": "$HOME/.pi/agent/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
+        },
+        "agy": {
+          "path": "$HOME/.agy/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
+        },
+        "gemini": {
+          "path": "$HOME/.gemini/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
+        }
+      }
+    }
+  ],
+  "not_shareable": [
+    {
+      "pattern": "settings.json",
+      "reason": "キー体系がツールごとに根本的に別物(claude/pi/agyでtop-level keysが完全に不一致)であり、ファイル全体のテンプレート化・生成は引き続き対象外。ただし値まで完全一致していた少数のキー(worktree.symlinkDirectories・subagentPromptCacheTtl)とmodel選択のnamed profile抽象化のみを agent/settings-common.json へ切り出し済み(検証は agent/scripts/test-settings-common.sh、反映は agent/scripts/apply-settings-common.sh、いずれも各ツールの実settings.jsonを正典としたdrift検出/明示適用であり自動生成ではない)。sync-manifest の entries に載せていないのは、settings.jsonがcanonicalを鏡映するtargetではなく各ツール独自にhand-authoredされた実ファイルであり、settings-common.jsonはその中の一部キーを横断検証する補助データに過ぎないため(hooks/*.shの3系統JSONと同じ理由)。"
+    },
+    {
+      "pattern": "hooks/*.sh",
+      "reason": "hook I/Oプロトコルがツールごとに別物(claude: stdin JSON+bash、agy: 別スキーマ、pi はTypeScript extension)であるため、I/O層のスクリプト自体は引き続き対象外。ただし判定データは3系統を agent/*.json へ分離済み: (1) 破壊的コマンド・機微パス判定 = agent/security-rules.json(agent/hooks/claude/security-gate.sh・agent/hooks/claude/write-security-gate.sh・agent/hooks/claude/permission-request.sh(sensitive_write_path_rulesのみ、2026-09-03追加、2026-09-04にclaude/hooks/から実体移動)・agent/hooks/agy/security-gate.sh・agent/hooks/pi/security-gate.ts の5実装が共通で読む、検証は agent/scripts/test-security-rules.sh)。(2) graphify利用ヒント = agent/graphify-hint-config.json(agent/hooks/claude/graphify-hint.sh・agent/hooks/agy/graphify-hint.sh・agent/hooks/pi/graphify-hint.ts の3実装、検証は agent/scripts/test-graphify-hint.sh)。(3) Vald Law判定 = agent/vald-law-rules.json(agent/hooks/claude/vald-law-gate.sh・agent/hooks/claude/vald-law2-gate.sh・agent/hooks/claude/vald-law345-check.sh・agent/hooks/agy/vald-law-gate.sh・agent/hooks/pi/security-gate.ts、検証は agent/scripts/test-vald-law-rules.sh)。sync-manifest の entries に載せていないのは、これらの実装群が『canonicalを鏡映するtarget』ではなく『共通データを実行時にparseする別々の実装』であり、本ファイルの live-symlink/generate のいずれのmodeとも構造が一致しないため。claude/settings.local.jsonのpermissions.allow(Bash(cmd *)形式の広範信頼リスト)とagy/policies/policy.tomlのpriority-100 allowlist(TOMLのcommandPrefix形式)も概念的に同種(『このマシンで確認なしに信頼するコマンド』)だが、突き合わせの結果ツールごとに信頼対象・粒度が大きく異なる(claudeはsudo/nix/tmux等を含む60件超の広範trust、agyはgit write系を別途priority 200でdenyしつつcat/grep/sed等の読み取り系utilityを多く含む70件弱)ことを2026-09-03に確認済み。両者は独立に手作業でチューニングされたリスク受容リストであり、機械的マージは一方を意図せず狭める/広げるリスクが高いため対象外と判断した(調査済み・意図的に非統合)。"
+    },
+    {
+      "pattern": "validate-harness.sh",
+      "reason": "検証先settings.jsonのスキーマがツールごとに違うため各ファイルの検証項目自体は大きく分岐しており、ファイル全体の統合(1本化)は対象外。ただし各ファイル冒頭でsourceする共通ライブラリ agent/scripts/harness-check-lib.sh(check()・harness_run_shared_test()・harness_summary())へ、3ファイルで byte-identical だったformat/集計ロジックを切り出し済み。加えてsecurity-rules.json/vald-law-rules.json/graphify-hint-config.jsonの検証は3ファイルとも harness_run_shared_test 経由で agent/scripts/test-*.sh へ委譲し、各ファイル内に古い正規表現パターンの個別コピーを持たない形に統一済み(claude/pi/agyのMCPサーバ名がExecutor gatewayへの移行で古いままだった箇所も本作業で修正)。"
+    },
+    {
+      "pattern": "keybindings.json",
+      "reason": "claude/piで存在するがスキーマ自体が別物(claude: bindings配列形式、pi: フラットなkey-actionマップ)。agyには存在しない。"
+    },
+    {
+      "pattern": "models.json|mcp.json(pi)|mcp_config.json(agy)",
+      "reason": "MCPサーバー個別定義はExecutor gateway経由へ移行済み(agent/README.md「MCPサーバー定義の統合」参照)。mcp.json/mcp_config.json自体は各ツールがexecutorへの単一エントリを持つのみで、ファイルとしての集約対象ではない。"
+    }
+  ]
+}

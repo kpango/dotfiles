@@ -1,0 +1,360 @@
+{
+  "general": {
+    "checkpointing": {
+      "enabled": true
+    },
+    "defaultApprovalMode": "auto"
+  },
+  "autoExecutionPolicy": "always-proceed",
+  "artifactReviewMode": "always-proceed",
+  "allowNonWorkspaceAccess": true,
+  "security": {
+    "dangerouslySkipPermissions": true,
+    "auth": {
+      "selectedType": "agy-api-key"
+    },
+    "allowedEnvironmentVariables": ["AGY_HOME", "AGY_SURFACE"],
+    "blockedEnvironmentVariables": [
+      "CLIENT_ID",
+      "DB_URI",
+      "DATABASE_URL",
+      "CONNECTION_STRING"
+    ]
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  },
+  "ui": {
+    "theme": "GitHub",
+    "showStatusInTitle": true,
+    "dynamicWindowTitle": true
+  },
+  "model": "gemini-3.8-flash-high",
+  "subagentPromptCacheTtl": "1h",
+  "autoMemoryEnabled": true,
+  "autoMemoryDirectory": "~/.gemini/memory",
+  "statusLine": {
+    "type": "command",
+    "command": "bash $HOME/.claude/statusline-command.sh"
+  },
+  "worktree": {
+    "symlinkDirectories": [
+      "node_modules",
+      ".cache",
+      "vendor",
+      "target",
+      ".cargo",
+      "go/pkg/mod",
+      "rust/target",
+      ".bin",
+      ".venv",
+      "__pycache__",
+      ".pytest_cache",
+      ".mypy_cache",
+      ".claude/graph",
+      ".zig-cache",
+      "dist"
+    ]
+  },
+  "mcpServers": {
+    "lsp-go": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", "$PWD", "--lsp", "gopls"],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "lsp-rust": {
+      "command": "mcp-language-server",
+      "args": ["--workspace", "$PWD", "--lsp", "rust-analyzer"],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "k8s-native": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$HOME/.kube:/home/user/.kube:ro",
+        "-e",
+        "KUBECONFIG=/home/user/.kube/config",
+        "quay.io/manusa/kubernetes_mcp_server:latest"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "k8s-cli": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$HOME/.kube:/home/user/.kube:ro",
+        "-e",
+        "KUBECONFIG=/home/user/.kube/config",
+        "-e",
+        "MASK_SECRETS=true",
+        "mcp/kubernetes:latest"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "serena": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "256",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$PWD:/workspace:ro",
+        "-v",
+        "$HOME/.serena:/home/user/.serena:rw",
+        "-p",
+        "9121:9121",
+        "-p",
+        "24282:24282",
+        "-e",
+        "SERENA_DOCKER=1",
+        "ghcr.io/oraios/serena:latest",
+        "serena start-mcp-server",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD"
+      },
+      "timeout": 60000
+    },
+    "cipher": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "512",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-v",
+        "$PWD:/workspace:ro",
+        "-v",
+        "$HOME/.local/share/cipher:/data:rw",
+        "-e",
+        "AGY_API_KEY",
+        "-e",
+        "OPENAI_API_KEY",
+        "-e",
+        "ANTHROPIC_API_KEY",
+        "ghcr.io/campfirein/cipher:latest",
+        "cipher",
+        "--mode",
+        "mcp",
+        "--transport",
+        "stdio"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD",
+        "AGY_API_KEY": "$AGY_API_KEY",
+        "OPENAI_API_KEY": "$OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY": "$ANTHROPIC_API_KEY"
+      },
+      "timeout": 90000
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "128",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server:latest"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD",
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "$GITHUB_PERSONAL_ACCESS_TOKEN"
+      },
+      "timeout": 60000
+    },
+    "slack": {
+      "command": "docker",
+      "args": [
+        "run",
+        "--rm",
+        "-i",
+        "--pull=missing",
+        "--cap-drop=ALL",
+        "--security-opt",
+        "no-new-privileges",
+        "--pids-limit",
+        "128",
+        "--read-only",
+        "--network",
+        "host",
+        "--user",
+        "1000:1000",
+        "--tmpfs",
+        "/tmp:rw,noexec,nosuid,nodev",
+        "-e",
+        "SLACK_BOT_TOKEN",
+        "-e",
+        "SLACK_TEAM_ID",
+        "-e",
+        "SLACK_CHANNEL_IDS",
+        "mcp/slack:latest"
+      ],
+      "env": {
+        "HOME": "$HOME",
+        "PWD": "$PWD",
+        "SLACK_BOT_TOKEN": "$SLACK_BOT_TOKEN",
+        "SLACK_TEAM_ID": "$SLACK_TEAM_ID",
+        "SLACK_CHANNEL_IDS": "$SLACK_CHANNEL_IDS"
+      },
+      "timeout": 60000
+    },
+    "executor": {
+      "serverUrl": "http://127.0.0.1:4788/mcp"
+    }
+  },
+  "tools": {
+    "executionPolicy": "always-proceed",
+    "shell": {
+      "backgroundCompletionBehavior": "inject"
+    },
+    "truncateToolOutputThreshold": 8000
+  },
+  "telemetry": {
+    "enabled": false
+  },
+  "advanced": {
+    "autoConfigureMemory": true,
+    "memoryDirectory": "~/.gemini/memory",
+    "excludedEnvVars": ["DEBUG", "DEBUG_MODE", "NODE_ENV"]
+  },
+  "context": {
+    "fileName": ["AGENTS.md", "AGY.md", "CONTEXT.md"],
+    "loadFromIncludeDirectories": false,
+    "fileFiltering": {
+      "respectGitIgnore": true,
+      "respectAgyIgnore": true,
+      "enableFuzzySearch": true,
+      "customIgnoreFilePaths": ["~/.agyignore"]
+    }
+  },
+  "experimental": {
+    "adk": {
+      "agentSessionNoninteractiveEnabled": false,
+      "agentSessionInteractiveEnabled": false
+    },
+    "enableAgents": true,
+    "worktrees": true,
+    "extensionManagement": true,
+    "extensionConfig": true,
+    "extensionRegistry": true,
+    "extensionReloading": true,
+    "jitContext": true,
+    "useOSC52Paste": true,
+    "useOSC52Copy": true,
+    "taskTracker": false,
+    "modelSteering": true,
+    "directWebFetch": true,
+    "dynamicModelConfiguration": true,
+    "autoMemory": true,
+    "promptCaching": true,
+    "generalistProfile": true,
+    "contextManagement": true
+  },
+  "skills": {
+    "enabled": true
+  },
+  "admin": {
+    "skills": {
+      "enabled": true
+    }
+  },
+  "contextManagement": {
+    "tools": {
+      "distillation": {
+        "maxOutputTokens": 8000
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+[Unit]
+Description=Atuin Shell History Daemon
+Documentation=https://atuin.sh
+After=default.target
+
+[Service]
+Type=simple
+Environment=XDG_DATA_HOME=%h/.data
+Environment="PATH=/usr/local/lib/rust/cargo/bin:/usr/local/bin:/usr/bin:/bin:%h/.cargo/bin"
+ExecStart=/usr/bin/env atuin daemon start
+ExecStop=/usr/bin/env atuin daemon stop
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target

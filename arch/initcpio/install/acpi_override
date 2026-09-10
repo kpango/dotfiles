@@ -1,0 +1,16 @@
+#!/bin/bash
+
+build() {
+    local f
+    for f in /etc/acpi_override/*.aml; do
+        [[ -f "$f" ]] || continue
+        add_file "$f" "/kernel/firmware/acpi/$(basename "$f")"
+    done
+}
+
+help() {
+    cat <<HELPEOF
+Loads patched ACPI tables from /etc/acpi_override/ into the initramfs.
+The kernel overlays these onto firmware-provided tables at early boot.
+HELPEOF
+}
