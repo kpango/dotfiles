@@ -13,15 +13,15 @@ stdinで正規化済みJSONを受け取り、stdoutへ正規化済みの決定JS
   vald_law2:        {family, command, cwd, vald_rules_file, scope_mode, workspaces?}
   vald_law345:      {family, file_path, content, vald_rules_file, scope_mode, cwd?, workspaces?}
   graphify_hint:    {family, command, config_file, search_bases}
-  memory_context:   {family, memory_dirs, local_files, cwd, index_head?, topic_head?,
-                      local_head?, multi_dir_labels?, local_all_matches?}
 
 出力(stdoutのJSON、1行):
   {"decision": "allow"|"ask"|"block", "reason": "...", "matches": [...]}
   security_shell はtier別に "block_matches"/"ask_matches" のIDリストも含める(シム側が
   claudeの「block全件→ask全件」評価順序を再現できるようにするため)。
-  memory_contextは decision/reason を持たず {"context": "...", "file_count": N, "byte_count": N,
-  "matched_local": bool} を返す(判定ではなくデータ合成のため、他familyと出力shapeが異なる)。
+
+旧 memory_context family(claude/agy の SessionStart フックが読む markdown ダンプ合成)は
+supermemory-migration ミッション(2026-09-08〜09-10)で撤去済み。両フックは現在
+`agent/scripts/hooks/supermemory.sh` の `sm_inject` を直接呼ぶ(decide.py 経由ではない)。
 """
 from __future__ import annotations
 
@@ -31,7 +31,6 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import rule_engine as re_  # noqa: E402
-import memory_context as mc_  # noqa: E402
 
 
 def _load_json(path: str):
@@ -184,21 +183,6 @@ def handle_vald_law345(req: dict):
     _out("allow")
 
 
-def handle_memory_context(req: dict):
-    result = mc_.compose_memory_context(
-        req.get("memory_dirs", []),
-        req.get("local_files", []),
-        req.get("cwd", "."),
-        index_head=req.get("index_head", 200),
-        topic_head=req.get("topic_head", 150),
-        local_head=req.get("local_head"),
-        multi_dir_labels=req.get("multi_dir_labels", False),
-        local_all_matches=req.get("local_all_matches", False),
-    )
-    print(json.dumps(result))
-    sys.exit(0)
-
-
 def handle_graphify_hint(req: dict):
     config = _load_json(req["config_file"])
     if not config:
@@ -217,7 +201,6 @@ HANDLERS = {
     "vald_law2": handle_vald_law2,
     "vald_law345": handle_vald_law345,
     "graphify_hint": handle_graphify_hint,
-    "memory_context": handle_memory_context,
 }
 
 

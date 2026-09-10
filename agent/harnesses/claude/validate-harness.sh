@@ -67,7 +67,7 @@ harness_run_shared_test "security-rules.json driven hooks (claude/agy/pi)" "$ROO
 harness_run_shared_test "write-scope-rules.json bash⇔Python parity (claude/agy/pi)" "$ROOT/agent/scripts/test-write-scope-parity.sh"
 harness_run_shared_test "vald-law-rules.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-vald-law-rules.sh"
 harness_run_shared_test "graphify-hint-config.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-graphify-hint.sh"
-harness_run_shared_test "memory-context composition (claude/agy/pi)" "$ROOT/agent/scripts/test-memory-context.sh"
+harness_run_shared_test "supermemory shared client (claude/agy/pi)" "$ROOT/agent/scripts/test-supermemory-client.sh"
 harness_run_shared_test "merged directory root解決の回帰テスト (claude/agy/pi)" "$ROOT/agent/scripts/test-merged-dir-root-resolution.sh"
 
 echo

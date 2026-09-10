@@ -882,6 +882,11 @@ security-gate.tsの周辺コード変更がVald Law部分に影響していな�
   ヘッダ有無・ローカルoverride選択方式の違いを検証し、claude/agy双方の実hookファイル経由でも
   動作することを確認。3つの`validate-harness.sh`へ共有テスト委譲を配線。
 
+> **[2026-09-10 追記] この Phase 4 の仕組み(`memory_context.py`・`decide.py`の`memory_context`
+> family・`test-memory-context.sh`)は supermemory-migration ミッションで全面撤去された。
+> claude/agy の session-start.sh は `agent/scripts/hooks/supermemory.sh`(`sm_inject`)経由の
+> supermemory RAG検索へ移行済み。上記は当時の実装記録としてそのまま残す。
+
 ## Post-Write lintフックの対象拡張子superset化（`agent/hooks/claude/post-write.sh`(2026-09-04実体移動、
 
 発見当時は`claude/hooks/post-write.sh`) / `agy/hooks/post-edit-lint.sh`）
@@ -1120,9 +1125,11 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   多発する。現状は手動実行のみ。`make` ターゲットやpre-commit hookから自動的に呼び出す配線は次の
   フォローアップとする（`.github/workflows/agent-sync-verify.yaml` でも意図的にスコープ外にしている）。
   一方 `test-security-rules.sh`（および `test-graphify-hint.sh`・`test-vald-law-rules.sh`・
-  `test-memory-context.sh`・`test-settings-common.sh`）は同ワークフローの `test-suite` ジョブへ
+  `test-settings-common.sh`・`test-supermemory-client.sh`)は同ワークフローの `test-suite` ジョブへ
   CI配線済み（push/workflow_dispatchで実行、pull_requestは detached HEAD による
   `test-security-rules.sh` の一部サブテストのフィクスチャ分離ギャップのためジョブ全体をスキップ）。
+  `test-memory-context.sh` は decide.py の memory_context family 撤去（2026-09-10、
+  supermemory-migration ミッション）に伴い削除され、`test-supermemory-client.sh` がその後継。
 - **`agent/security-rules.json` データ共有化後の`security-audit` agentレビュー**: 実施済み
   （2026-09-02）。Medium 1件（`chmod_777_system_path` がサブディレクトリを捕捉しなくなっていた —
   旧claude実装は非アンカーgrepでサブディレクトリも捕捉していたが、安全側統合の過程で誤って

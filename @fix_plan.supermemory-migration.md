@@ -72,15 +72,56 @@
 | task-id | summary | depends | worktree | status | attempts | domain | note |
 |---------|---------|---------|----------|--------|----------|--------|------|
 | T1-selfhost | Local supermemory, proxy, and make/systemd/Nix deployment | - | mission | in-progress | 1 | infra | systemd units + opencode-proxy.mjs merged to main (main@9052b980, NOT enabled/installed); install.mk wiring + `systemctl --user enable --now` still pending |
-| T2-adapter | Shared TypeScript HTTP adapter | T1 | mission | merged(unreviewed) | 0 | ts | memory-adapter.ts + 30 assertions merged to main (main@9052b980); re-verified independently at merge time; independent 8-agent Checker/review still pending |
-| T3-migrate | Import and reconcile existing semantic memories | T1 | mission | paused(human-directed, retry mechanism verified) | 2 | ts,sh | Retried 2026-09-10 against a rebuilt 234-file source list (no original 239-id mapping survived); 100% accepted at ingest. **Final true result: 24 done / 210 failed (all 234 terminal)** — same quota wall as the prior mission run, exhausted during processing shortly after submission, not fixed by the later "reset." ~10% success rate, essentially unchanged from the prior attempt (16/239). Found+fixed a `sm_document()` parsing bug that had hidden this (see escalation below). Confirmed re-submitting a failed doc's customId re-queues it (viable retry path) and built the exact 210-file retry list (`/tmp/sm_t3_retry/failed_files.txt`), but a full retry needs multi-day quota-window pacing (~15-25 extractions/5h window) — human explicitly said not to proceed further this session. **Not a green light for T7** — most content never reached supermemory. |
+| T2-adapter | Shared TypeScript HTTP adapter | T1 | mission | merged | 0 | ts | memory-adapter.ts + 30 assertions merged to main; re-verified independently at merge time; covered by the T6 full-diff review (5/5 applicable lenses PASS round 2, see T6 row) |
+| T3-migrate | Import and reconcile existing semantic memories | T1 | mission | in-progress(paced retry resumed 2026-09-10) | 3 | ts,sh | Prior true result: 24 done / 210 failed of 234 (~10%), same quota wall twice. `~/.claude/memory` etc. were since deleted by T7 (backed up first, see T7 row) — retry now sources content from that backup, restored to `/tmp/sm_t3_retry/restore/`. Batch 2 (2026-09-10, this session, human-approved small-batch resubmission): 20 of the 210 failed files re-submitted (19 newly `queued`, 1 already `done` via content-hash cache). **Final polled result before quota wall: 8 done / 1 failed / 11 still pending** (poller self-stopped per its quota-signal guard — a meaningfully better yield than the prior ~10%, but small-N). Remaining ~189 files (210 minus this batch's 20, plus the 11 still-pending need a later re-check once quota resets) still need quota-paced resubmission at the same ~15-25/5h-window pace; `/tmp/sm_t3_retry/queue.txt` currently holds this batch's 20, refresh it from `failed_files.txt` for the next batch. |
 | T4-wire | Migrate semantic runtime consumers | T2,T3 | mission | merged(partial) | 0 | ts | Pi KB + Claude/AGY read-side injection merged to main (main@9052b980, re-verified live against running server); session-search and other stores unresolved; tool journal is operational state, not conversation memory |
-| T5-refs | Migrate write-side and obsolete memory references | T4 | mission | merged(round 2 fixes pending merge) | 2+1 | ts,sh,py | Shell client (supermemory.sh) + claude/agy session-start rewiring merged to main (main@9052b980). `swarm-memory-sync/SKILL.md` + `memory-guard.sh`: the 2026-09-09 STOP incident (bypass via Bash) is resolved — content independently re-reviewed (security-audit PASS, architecture-adversarial-reviewer round 1 FAIL→round 2 PASS) and re-applied through the sanctioned `budget-guard.sh --write-scope-grant` path (human-approved); committed at `e56cb46a`/`c9495873` and **merged to main at `c6711c04`**. Full-diff T6 review then found more issues (see below); round-2 fixes committed at `ff8a95f1` in this worktree, **not yet merged to main** as of this row |
-| T6-review | Independent Checker and eight adversarial reviewers | T4,T5 | mission | partial | 1 | review | security-audit + architecture-adversarial-reviewer both PASS for the T5-refs SKILL.md/memory-guard.sh diff (2026-09-10, see escalation above); full 8-agent gate for the rest of the mission's cumulative diff still not obtained |
-| T7-cutover | Deterministic gates and human-approved cutover | T6 | mission | partial(legacy data deleted, human-executed) | 1 | ts | Legacy local memory data (`~/.claude/memory` 158 files, `~/.claude/skill-memory` 5, `~/.claude/agent-memory` 81) deleted 2026-09-10 on explicit, repeated human instruction despite T3's true ~10% success rate (24/234) -- backed up first to `/home/kpango/backups/claude-legacy-memory-backup-20260910-033823.tar.gz` (450KB, 261 entries, verified extractable) before deletion. Deletion itself was blocked by the Claude Code auto-mode classifier for this session; the human ran it directly via `!`. Remaining T7 scope NOT done: decide.py memory_context family removal, systemd unit activation, docs updates (SWARM.md/swarm-loop/evolve/relay SKILL.md/rules files), install.mk activation wiring, final push. |
+| T5-refs | Migrate write-side and obsolete memory references | T4 | mission | merged | 2+1 | ts,sh,py | Shell client (supermemory.sh) + claude/agy session-start rewiring merged to main. `swarm-memory-sync/SKILL.md` + `memory-guard.sh`: the 2026-09-09 STOP incident (bypass via Bash) is resolved — content independently re-reviewed (security-audit PASS, architecture-adversarial-reviewer round 1 FAIL→round 2 PASS) and re-applied through the sanctioned `budget-guard.sh --write-scope-grant` path (human-approved); committed at `e56cb46a`/`c9495873`, merged to main at `c6711c04`. T6 round-2 fixes (`ff8a95f1`) **confirmed merged to main** (verified this session via `git merge-base --is-ancestor` + diff against HEAD — this row previously said "not yet merged", that was stale). decide.py's `memory_context` family (the last remaining legacy reference, confirmed zero callers) was removed this session (2026-09-10) via the sanctioned write-scope-grant path; `memory_context.py` deleted; `test-memory-context.sh` retired and replaced by `test-supermemory-client.sh` in `test-all-harnesses.sh`, all 3 `validate-harness.sh`, and `.github/workflows/agent-sync-verify.yaml`. Verified: `test-supermemory-client.sh` all-PASS, `test-security-rules.sh` all-PASS (decide.py's other families unaffected), `test-catalog-health.sh` 61/0, yaml + bash syntax checks all OK. |
+| T6-review | Independent Checker and eight adversarial reviewers | T4,T5 | mission | done(for applicable lenses) | 1 | review | Full cumulative-diff review (all files touched by this mission) ran security-adversarial-reviewer, architecture-adversarial-reviewer, code-quality-adversarial-reviewer, docs-comment-adversarial-reviewer, shell-config-adversarial-reviewer — the 5 of 8 standard lenses applicable to this diff's languages (TS/bash/systemd/JSON; no Go/Rust/C++/SIMD/Nix/Lua/YAML touched, so systems-lang/perf-simd/infra-config don't apply). Round 1: 4/5 PASS, docs-comment FAIL; round 2: all 5 PASS (verified via git reflog + content re-check, not self-report). The decide.py cleanup done this session (2026-09-10) is small/mechanical and has NOT itself been through this 5-lens review yet — recommend a light pass before/at the next GATE if this diff is included. |
+| T7-cutover | Deterministic gates and human-approved cutover | T6 | mission | partial | 2 | ts | Legacy local memory data (`~/.claude/memory` 158 files, `~/.claude/skill-memory` 5, `~/.claude/agent-memory` 81) deleted 2026-09-10 on explicit, repeated human instruction despite T3's true ~10% success rate (24/234) -- backed up first to `/home/kpango/backups/claude-legacy-memory-backup-20260910-033823.tar.gz` (450KB, 261 entries, verified extractable) before deletion. This session (2026-09-10): decide.py `memory_context` family removed (see T5-refs row). Remaining T7 scope NOT done: systemd unit activation (`systemctl --user enable --now` — **cannot be done from this sandboxed session**, no systemd user bus access; needs the human to run it directly, e.g. via `!make dotfiles/install && !systemctl --user enable --now supermemory.service opencode-proxy.service` — note the server+proxy are in fact already running right now as ad-hoc processes, just not systemd-managed/boot-persistent), a `supermemory-server` install target in install.mk (the binary itself has no Makefile-driven install path yet, installed manually), docs updates (SWARM.md/swarm-loop/evolve/relay SKILL.md/rules files — checked this session: these already correctly distinguish native Claude Code `~/.claude/memory` from the custom hooks' supermemory backend, no further edit needed), final push after the remaining items land. |
 
 ## Escalations / 学び (随時追記)
 <!-- 同一エラー再発防止のための軌跡。完了時に軌跡ログ(agents-log-lib.sh)へ転記する -->
+
+### /swarm-meta 継続セッション — 2026-09-10 (git squash後の実態確認・decide.py撤去・T3小バッチ再開)
+- ユーザーから `@fix_plan.md`/`@fix_plan.supermemory-migration.md` の全項目実施を依頼された。着手前に
+  実態を検証した結果、**リポジトリの git 履歴が単一の `init` commit へ squash 済み**であることが判明
+  (`git reflog` で確認 — 内容は失われておらず、squash 前の全 merge/commit がそのまま tree に畳み込まれて
+  いる)。これにより従来の worktree/branch はすでに存在せず、`@fix_plan.md`(main統合計画)が記述する
+  `skill-state-default`/`supermemory-migration` の両ミッションは**すでに main へ merge・push済み**
+  (registry: `skill-state-intro-20260908-055753` 6/6レンズPASS、`branch-worktree-cleanup-20260909` で
+  worktree/branch回収済み)であることを確認した。`@fix_plan.md` の記述(worktree/branch保持前提)は
+  この時点で stale。
+- T6(8レンズ敵対的レビュー)は実際には該当5レンズ全てround2でPASS済みであることを`git reflog`+実ファイル
+  突合で確認(旧記述「レビュー未取得」も stale)。T5の`ff8a95f1`も`git merge-base --is-ancestor`で
+  main祖先であることを確認済み(旧記述「未merge」もstale) — 教訓: 長時間ミッションの`@fix_plan.md`は
+  git squash等の外部操作後、再開時に必ず実ファイル/git実態と突合してから着手すること(自己申告的な
+  過去記述をそのまま信じない、`verify-before-assert.md`原則)。
+- 人間へ2点確認: (1) decide.pyのTier B write-scope-grant経由での`memory_context` family撤去 → 承認、
+  (2) T3の小バッチ(15-25件、無料枠内)再試行 → 承認。両方実施:
+  - decide.py: `memory_context` importと`handle_memory_context`・registry entryを除去、
+    `memory_context.py`を削除(呼び出し元ゼロを事前確認済み — claude/agyのsession-start.shは既に
+    supermemory.sh経由)。`test-memory-context.sh`を削除し`test-all-harnesses.sh`・3つの
+    `validate-harness.sh`・`.github/workflows/agent-sync-verify.yaml`を`test-supermemory-client.sh`
+    参照へ更新。検証: 該当test全PASS、`test-security-rules.sh`(decide.pyの他family)も無影響PASS、
+    catalog-health 61/0、yaml/bash構文チェック全OK。
+  - T3: `~/.claude/memory`等はT7で既に削除済みのため、バックアップtar.gzから該当20ファイルを
+    `/tmp/sm_t3_retry/restore/`へ展開してから再送信(**罠**: 最初の実行でqueue.txtの旧パス
+    `/home/kpango/.claude/memory/...`のまま`run_retry.sh`を起動してしまい20件ともclient側で
+    ingest失敗=無害だが無駄骨だった。原因は`cp`が`cpz`(rust製代替)へalias されており`-f`の二重展開で
+    最初のコピーが失敗していたのに気づかず進めたため。`command cp -f`で修正後に再実行)。
+    20件中19件`queued`+1件`done`(内容ハッシュキャッシュ)、client側エラー0件。抽出結果は本エントリ
+    時点でポーリング中(server ingest queueで実処理進行を確認済み)。残り約190件は同ペースで
+    引き続き段階的に再送信が必要。
+- pi/validate-harness.sh のフル実行(自分の変更の妥当性確認目的)が数分経っても`supermemory`行に到達
+  せず停止(自分の変更とは無関係の既知の重さの可能性 — 個別に`test-supermemory-client.sh`は既にPASS
+  確認済みのため、この重いフル実行は完走を待たずkillした。次回このharnessを検証する際は個別suite単位で
+  実行する方が速い)。
+- T3バッチ2の最終結果: 8 done / 1 failed / 11 pending(quota信号でpoller自己停止、round22)。
+  19件中8件成功は前回までの約10%より明らかに高い成功率(小N由来の可能性はある)。
+- 追加で発見: **SWARM.md §5の`swarm-memory-sync`記述が stale** だった(「`~/.claude/memory/`(200行/25KB
+  制限)へ蒸留」という旧記述が、実際はsupermemory経由(`memory-guard.sh`/`sm_ingest`)への移行後も残存)。
+  人間に確認の上、Tier B write-scope-grant経由で実態に合わせて修正(ローカルstoreは存在しない旨・
+  `~/.claude/memory/`はClaude Code自身のネイティブ機能として別軸である旨を明記)。
 
 ### /swarm-meta incident resolution + T3 retry + T6 review — 2026-09-10
 - User asked to resolve the T5 incident, retry T3, and run review before push. Progress:

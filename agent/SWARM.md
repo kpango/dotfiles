@@ -369,17 +369,21 @@ Multi-Agent System Failure Taxonomy（MAST、150 件超の専門家注釈トレ�
   （承認フェーズは loop によってスキップされない）。
 - **ドメイン知識の蒸留（`/swarm-memory-sync` として実装済み）**: `swarm-evolve` が「Skill 自体の行動規範」を
   進化させるのに対し、`swarm-memory-sync` は軸が異なる — ミッション実行・人間対話で得た一般化可能な
-  ドメイン知識を `~/.claude/memory/`（auto-memory）へ蒸留する。軌跡ログの学びは per-repo・非構造化の
-  ミッション軌跡ログであり、`swarm-loop` Phase 0 INIT でしか読まれないため、swarm-loop 以外の通常セッションや
-  他プロジェクトでは再利用されない。auto-memory は逆にセッション開始時に自動注入されるが、swarm-loop から
-  そこへ書き込む機械的な経路が無ければ「気づいたら書く」という非機械的運用に留まる。`swarm-memory-sync` は
-  `swarm-loop` Phase 5 GATE（および Phase 2 PLAN の設計インタビュー終了時）から内部的に呼ばれ、軌跡ログ /
-  `@fix_plan.md` の学びのうち一般化可能なものだけを既存の user/feedback/project/reference 4 分類へ振り分けて
-  書く。SKILL.md / hooks / SWARM.md 自体には一切触れないため、**行動規範の変更ではなく知識の記録**であり、
-  `swarm-evolve` と異なり人間の明示承認は不要（memory はいつでも Edit・削除できる可逆な操作）。ただし
-  一般化可能性の判定基準・既存メモリとの重複チェックは厳格に適用し、単発事象やこのミッション限りの詳細は
-  書かない（memory 肥大化の防止。auto-memory の `MEMORY.md` は先頭 200 行 / 25KB のみが自動ロードされる
-  という制約があるため、無闇な追記はむしろ想起されるべき知見を締め出す）。
+  ドメイン知識を supermemory（semantic memory、containerTag `claude-memory`）へ蒸留する
+  （2026-09-10、supermemory-migration ミッションで `~/.claude/memory/` の markdown ダンプ方式から移行
+  済み — ローカル store/index は無く、`swarm-memory-sync/scripts/memory-guard.sh` 経由の `sm_ingest`
+  が唯一の書き込み経路。`~/.claude/memory/` 自体は Claude Code 自身のネイティブ機能として別途存在し、
+  この蒸留先とは無関係）。軌跡ログの学びは per-repo・非構造化のミッション軌跡ログであり、`swarm-loop`
+  Phase 0 INIT でしか読まれないため、swarm-loop 以外の通常セッションや他プロジェクトでは再利用されない。
+  supermemory は逆にセッション開始時に自動注入されるが（`agent/scripts/hooks/supermemory.sh` の
+  `sm_inject`）、swarm-loop からそこへ書き込む機械的な経路が無ければ「気づいたら書く」という非機械的
+  運用に留まる。`swarm-memory-sync` は `swarm-loop` Phase 5 GATE（および Phase 2 PLAN の設計インタビュー
+  終了時）から内部的に呼ばれ、軌跡ログ / `@fix_plan.md` の学びのうち一般化可能なものだけを既存の
+  user/feedback/project/reference 4 分類へ振り分けて書く。SKILL.md / hooks / SWARM.md 自体には一切
+  触れないため、**行動規範の変更ではなく知識の記録**であり、`swarm-evolve` と異なり人間の明示承認は
+  不要（supermemory 上のエントリはいつでも訂正・削除を追記できる可逆な操作）。ただし一般化可能性の
+  判定基準・既存メモリとの重複チェック（`memory-guard.sh` の decision-first 検索）は厳格に適用し、
+  単発事象やこのミッション限りの詳細は書かない（肥大化・想起品質低下の防止）。
 - **ADR および `CONTEXT.md` の自律合成**: `swarm-memory-sync` による auto-memory への知識蒸留に加え、設計面談（`grill-interview`）を通じて合意されたアーキテクチャ上の決定事項・トレードオフは `docs/adr/ADR-xxxx-slug.md` に、ドメインモデル・システム不変条件は `CONTEXT.md` に永続化する。これにより、エージェント間の前提ズレ（MAST カテゴリ ii）や認知ドリフトを構造的に防止し、リポジトリローカルな生きた不変条件（Living Invariants）として維持する。
 
 ## 6. クローズドループ — 自己申告終了の禁止

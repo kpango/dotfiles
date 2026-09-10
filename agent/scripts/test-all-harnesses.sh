@@ -62,19 +62,17 @@ run_suite "Vald Law Rules Engine" "bash '$ROOT/agent/scripts/test-vald-law-rules
 # 7. Graphify Hint Engine
 run_suite "Graphify Hint Engine" "bash '$ROOT/agent/scripts/test-graphify-hint.sh'"
 
-# 8. Memory Context Composition
-run_suite "Memory Context Composition" "bash '$ROOT/agent/scripts/test-memory-context.sh'"
-
-# 9. Merged Directory Root Resolution
+# 8. Merged Directory Root Resolution
 run_suite "Merged Directory Root Resolution" "bash '$ROOT/agent/scripts/test-merged-dir-root-resolution.sh'"
 
-# 10. Pi Extensions Unit Tests
+# 9. Pi Extensions Unit Tests
 if command -v bun &>/dev/null; then
     run_suite "Pi & Extension Unit Tests" "for f in '$ROOT'/agent/harnesses/pi/extensions/lib/*.test.ts '$ROOT'/agent/hooks/pi/lib/*.test.ts; do bun run \"\$f\" || exit 1; done"
 fi
 
-# 11. Supermemory Shared Client (bash consumer contract: session-start hooks +
-# swarm-memory-sync's memory-guard.sh)
+# 10. Supermemory Shared Client (bash consumer contract: session-start hooks +
+# swarm-memory-sync's memory-guard.sh). Replaced decide.py's memory_context family
+# (removed 2026-09-10, supermemory-migration mission) — this suite is its successor.
 run_suite "Supermemory Shared Client" "bash '$ROOT/agent/scripts/test-supermemory-client.sh'"
 
 if [[ "$QUICK" -eq 0 ]]; then
