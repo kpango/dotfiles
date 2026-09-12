@@ -155,3 +155,85 @@ Rules:
 - If .claude/graph/graphify/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read .claude/graph/graphify/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost). Commit the resulting changes to the 5 shared files above so other contributors get the update.
+
+<!-- graft:start -->
+## Graft — repo context graph
+
+This repo is indexed in `graft/`: small linked markdown nodes that explain each
+system and carry exact file:line spans, kept in sync with the code through git.
+
+For ANY task here — understanding how something works, finding where code lives,
+or scoping a change — get context from the graph before grepping or opening
+source files. Re-ask freely (it's cheap) and reuse literal identifiers you
+already have (symbol, error string, file name) as the query. New to this repo?
+Run `graft map` first — a token-budgeted orientation (dir clusters, hubs,
+hotspots), no LLM, no key.
+
+- Run `graft ask "<your question>" --source` → ranked nodes with the relevant
+  code spans inlined (each hit's ≤8-line crux by default; `--full` for whole
+  definitions when the crux isn't enough). Match the tool to the task shape:
+  for understanding or editing, the top node IS the answer — cite its
+  `covers:` file:line spans and edit straight from `--source`. For
+  exhaustive tasks ("every occurrence / every caller of this pattern"), ranked
+  results are top-N, not complete — run `graft grep "<literal>"` instead
+  (exhaustive over indexed files, grouped by enclosing symbol), falling back
+  to raw `grep -rn` only for unindexed files.
+- `graft skeleton <file>` → every definition's signature + span, ~10× cheaper
+  than reading the file; use it to skim an API surface.
+- `graft callers <symbol>` gives precomputed, exact edges — who calls this.
+  Add `--direction out` for what it calls, or `--depth N` to walk
+  transitively for the full blast radius. For structural questions, skip
+  ranking and use this directly.
+- Or browse: `graft/INDEX.md` lists every node; follow the links.
+- Monorepos and folders of multiple repos rank fairly across sub-projects —
+  hits carry `[scope/]` labels naming which one they're from. Narrow with
+  `graft ask "<task>" --in <scope>/` once you know where you're working.
+
+If a returned span is truncated ("+N more lines"), open the file at that exact
+range before finalizing. Only open source files when a node genuinely lacks a
+needed detail, and then at the exact file:line the node points to — never
+re-read whole files.
+
+After big code changes, refresh the graph with `graft build` (deterministic,
+no API key, $0).
+<!-- graft:end -->
+
+**One-time setup**: `bun add -g @nanonets/graft` (or `npm install -g @nanonets/graft`; not
+Nix-managed like graphify above — no nixpkgs derivation exists for it as of this writing). Run
+`graft telemetry disable` (machine-wide setting, not repo-scoped; anonymous aggregate-only stats
+to `events.nanonets.com` per its own [TELEMETRY.md](https://github.com/NanoNets/context-graph-engine/blob/main/TELEMETRY.md) — disabled here for consistency with this
+repo's no-unnecessary-egress stance elsewhere). Then `graft build` once to populate `graft/`
+(git-ignored local cache, unlike graphify's committed graph — see `.gitignore`). `graft init` (already run for this repo; see `.claude/settings.json`'s
+graft hook block and `.mcp.json`) wired the Claude Code MCP server + PostToolUse/Stop/
+UserPromptSubmit/SessionStart hooks and statusline **for this repo only** (`--no-global`,
+deliberate — see graphify's Nix-wide install above for a wired-everywhere alternative). Wiring
+graft globally (`~/.claude/settings.json`, `~/.codex/config.toml`, `~/.gemini/`, etc. — what
+`graft init` writes without `--no-global`) is a separate decision affecting every other repo you
+open with these agents, and is intentionally out of scope here.
+
+**Coexistence with graphify**: no mechanism conflict, on a narrower claim than earlier drafts of
+this paragraph tried to make. This is **not** a claim that every place graphify gets invoked in
+this repo is listed below — graphify also has a git merge driver (`.gitattributes` +
+`.git/config`'s `merge.graphify.driver`, see the "One-time setup" note above) and a
+`graphify hook status` check in `agent/harnesses/claude/validate-harness.sh`, neither of which is
+a Claude Code hook event at all, so they're outside the scope of this comparison rather than
+enumerated here. The claim is narrower and load-bearing only for what actually matters — whether
+graft's Claude Code hooks and graphify's Claude Code hooks can fire on the same event: graphify's
+two known Claude-Code-lifecycle hooks are `PreToolUse:Bash` (`.claude/settings.json`'s
+pre-existing `graphify-hint.sh` entry) and `PreCompact` (`agent/hooks/claude/pre-compact.sh`,
+wired via the user's **global** `~/.claude/settings.json`, running `graphify update .`). graft,
+wired only in this repo's project-level `.claude/settings.json` (this change), fires on
+`PostToolUse`, `Stop`, `UserPromptSubmit`, and `SessionStart` — none of which is `PreToolUse` or
+`PreCompact`, so the two tools' Claude Code hooks don't double-fire on the same event. graphify's
+git-level mechanisms (post-commit, post-checkout, the merge driver) have no graft counterpart at
+all — graft installs no git hooks and no merge driver — so there's no git-level conflict either,
+independent of the Claude Code hook comparison above. Both index this same repo independently (graphify:
+community/god-node graph via AST+optional LLM labeling, committed; graft: linked-card graph via
+tree-sitter, git-ignored) — treat them as complementary, not a migration: `graphify query`/`path`/
+`explain` for broad architecture and community structure, `graft ask`/`callers`/`skeleton` for
+fast per-symbol lookups with inlined code spans. Prefer whichever answers the question more
+directly; there is no house rule yet on which to try first.
+
+**Note on the auto-generated section above**: the `<!-- graft:start -->`/`<!-- graft:end -->`
+block is written and may be overwritten by `graft init`/`graft build` — the two paragraphs above
+(setup, coexistence) are deliberately placed outside it so a future regeneration doesn't drop them.
