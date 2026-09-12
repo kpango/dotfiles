@@ -158,8 +158,8 @@ swarm-meta}/`へ単一正典化済みのため、この2ファイルに関して
   `executor` バイナリが実際には存在しなかったことが判明した。本ミッションであらためて
   `bun add -g executor` を実行し `executor@1.6.8` のグローバルインストールを完了・
   `command -v executor`/`which executor` で `/home/kpango/.bun/bin/executor` として
-  PATH解決できることを確認した。経緯・検証コマンドの詳細は本ファイル後半「既知のギャップ・
-  未解決事項」節の「Executor の常駐サービス化」項目に付けた追記を参照）。
+  PATH解決できることを確認した。経緯・検証コマンドの詳細は本ファイル後半「既知の残課題
+  （未着手）」節の「Executor の常駐サービス化」項目に付けた追記を参照）。
   `executor install`（OS常駐サービス化）は行っていない —
   `executor call` がオンデマンドで daemon を自動起動する挙動（`localhost:4788`）で運用している
   （永続サービス化は auto mode クラシファイアにブロックされたため未実施、今後常駐させたい場合は
@@ -1103,7 +1103,8 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   両方を実行し、どちらも `/home/kpango/.bun/bin/executor` としてPATH解決できることを確認した。
   なお、本README自体には2026-09-03時点で `executor tools describe`/`executor call executor mcp
   addServer` 等のexecutor CLIコマンドが実際に実行された記録が残っている（下記「`claude`/`agy` の
-  `mcpServers.executor` 呼び出し許可」項目、および本節末尾の「サーバー登録は `executor call
+  `mcpServers.executor` 呼び出し許可」項目、および本ファイル冒頭の「## MCP サーバー定義の統合
+  （Executor gateway 経由）」節（本ファイル167行目付近）の「サーバー登録は `executor call
   executor mcp addServer` 」の記述）。これは当時の作業環境（別セッション、あるいは別のサンドボックス
   /実マシン環境の可能性がある）に `executor` バイナリが存在していたことを示唆するが、その環境が
   本ミッションの隔離worktreeと同一の `$HOME`/bunグローバルストアを共有していたかどうかは本ミッションでは
