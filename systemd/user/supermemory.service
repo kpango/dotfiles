@@ -1,8 +1,16 @@
 [Unit]
-Description=supermemory local memory server (self-hosted, offline embeddings)
+Description=supermemory local memory server (self-hosted, offline embeddings + local Ollama extraction)
 Documentation=https://git.new/memory
-After=default.target opencode-proxy.service
-Wants=opencode-proxy.service
+# extraction LLM provider is a local Ollama (system-level ollama.service on Arch, installed via
+# pacman -- not a dotfiles-managed user unit). This unit does not declare a hard dependency on it
+# because a user unit cannot depend on a system unit across that boundary; if Ollama isn't up yet,
+# supermemory-server just degrades to failed/retried extraction until it is (Restart=on-failure
+# covers transient startup ordering). Point ~/.supermemory/env's OPENAI_BASE_URL at Ollama's
+# OpenAI-compatible endpoint (default http://127.0.0.1:11434/v1, OPENAI_API_KEY=ollama). This
+# replaces the prior opencode.ai + header-injection-proxy setup (removed 2026-09-12,
+# agent-memory-solution-reevaluation mission): that path hit a 5-hour cloud quota wall that
+# capped real-world migration success around 10-40%, whereas local Ollama has no such quota.
+After=default.target
 
 [Service]
 Type=simple
@@ -10,9 +18,8 @@ Environment="PATH=/usr/local/bin:/usr/bin:/bin:%h/.bun/bin:%h/.local/bin:%h/.car
 ExecStart=%h/.local/bin/supermemory-server
 Restart=on-failure
 RestartSec=5s
-# Sandboxing: this process only ever talks to opencode-proxy.service over loopback
-# (extraction) plus local embeddings -- no external network needed. Needs write
-# access only to its own data dir.
+# Sandboxing: this process only ever talks to a local Ollama over loopback (extraction) plus
+# local embeddings -- no external network needed. Needs write access only to its own data dir.
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict

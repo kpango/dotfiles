@@ -11,8 +11,11 @@
  * corpus is now migrated into supermemory (containerTag `claude-memory`) and injected
  * as a small, query-relevant subset instead of the full dump — see
  * `lib/memory-adapter.ts`. supermemory runs at http://localhost:6767 with embeddings
- * local (Xenova/bge, offline); LLM extraction is routed through the OpenCode Go
- * (opencode.ai/zen) provider via a local header-injecting proxy.
+ * local (Xenova/bge, offline); LLM extraction is routed through a local Ollama
+ * instance (http://127.0.0.1:11434/v1, switched from the earlier OpenCode Go
+ * (opencode.ai/zen) + header-injecting-proxy setup on 2026-09-12,
+ * agent-memory-solution-reevaluation mission — that cloud path hit a 5-hour quota
+ * wall capping real-world extraction success around 10-40%; local Ollama has none).
  *
  * `~/.pi/agent/memory/` (global-memory.md + per-project `/memory`) remains a separate,
  * user-edited store and is unchanged.

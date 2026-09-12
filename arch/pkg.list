@@ -57,6 +57,7 @@ mtr
 helix
 networkmanager
 nmap
+ollama
 openssh
 openssl-1.1
 pacman-contrib
