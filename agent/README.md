@@ -152,7 +152,15 @@ swarm-meta}/`へ単一正典化済みのため、この2ファイルに関して
 エントリ（`http://127.0.0.1:4788/mcp`）だけを持ち、実際のサーバー定義は Executor 側のカタログで
 一元管理される（`executor tools integrations` で確認可能）。
 
-- `bun add -g executor` でインストール。`executor install`（OS常駐サービス化）は行っていない —
+- `bun add -g executor` でインストール
+  （**注記・2026-09-13、codegraph-tooling-refinementミッション T1**: 本ミッション開始時点で
+  `bun pm ls -g` を実行したところグローバルパッケージ0件で、このサンドボックス環境には
+  `executor` バイナリが実際には存在しなかったことが判明した。本ミッションであらためて
+  `bun add -g executor` を実行し `executor@1.6.8` のグローバルインストールを完了・
+  `command -v executor`/`which executor` で `/home/kpango/.bun/bin/executor` として
+  PATH解決できることを確認した。経緯・検証コマンドの詳細は本ファイル後半「既知のギャップ・
+  未解決事項」節の「Executor の常駐サービス化」項目に付けた追記を参照）。
+  `executor install`（OS常駐サービス化）は行っていない —
   `executor call` がオンデマンドで daemon を自動起動する挙動（`localhost:4788`）で運用している
   （永続サービス化は auto mode クラシファイアにブロックされたため未実施、今後常駐させたい場合は
   ユーザーが `executor install` を実行する）。
@@ -1086,18 +1094,34 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   未実施。現状はオンデマンド daemon（`executor call` 実行時に自動起動）で運用している。マシン再起動後は
   最初の MCP 呼び出し時に起動し直しになる（数秒の遅延）。永続化したい場合はユーザーが手動で
   `executor install` を実行する。
-  **追記（2026-09-13、codegraph-tooling-refinementミッション T1）**: 上記の「`bun add -g executor`
-  でインストール」は本ミッション開始時点では実際には未実施だった（`bun pm ls -g` でグローバル
-  パッケージ0件と確認済み）。本ミッションで `bun add -g executor` を実行し `executor@1.6.8` の
-  グローバルインストールを完了、`command -v executor`/`which executor` で
-  `/home/kpango/.bun/bin/executor` としてPATH解決できることを確認した。オンデマンド daemon の
-  挙動も一部実地確認した — `executor tools integrations` はdaemon未起動時に自動起動して
-  built-inカタログ（`toolCount: 36`）をJSONで返す。ただし本タスクの隔離実行環境（isolated
+  **追記（2026-09-13、codegraph-tooling-refinementミッション T1）**: 本ファイル冒頭の
+  「## MCP サーバー定義の統合（Executor gateway 経由）」節（本ファイル155行目付近）に記載の
+  「`bun add -g executor` でインストール」という記述は、本ミッション開始時点では実際にはこの
+  サンドボックス環境で未実施だった（`bun pm ls -g` を実行しグローバルパッケージ0件と確認済み。
+  同節には今回このミッションの注記を追加済み）。本ミッションで `bun add -g executor` を実行し
+  `executor@1.6.8` のグローバルインストールを完了、`command -v executor`/`which executor` の
+  両方を実行し、どちらも `/home/kpango/.bun/bin/executor` としてPATH解決できることを確認した。
+  なお、本README自体には2026-09-03時点で `executor tools describe`/`executor call executor mcp
+  addServer` 等のexecutor CLIコマンドが実際に実行された記録が残っている（下記「`claude`/`agy` の
+  `mcpServers.executor` 呼び出し許可」項目、および本節末尾の「サーバー登録は `executor call
+  executor mcp addServer` 」の記述）。これは当時の作業環境（別セッション、あるいは別のサンドボックス
+  /実マシン環境の可能性がある）に `executor` バイナリが存在していたことを示唆するが、その環境が
+  本ミッションの隔離worktreeと同一の `$HOME`/bunグローバルストアを共有していたかどうかは本ミッションでは
+  未確認である。よって断定できるのは「本ミッション開始時点でこのサンドボックス環境の `bun pm ls -g`
+  を実行した結果はグローバルパッケージ0件であり、`executor` は未インストールだった」という事実のみで
+  あり、「2026-09-03時点も含め executor が一度も導入されたことがなかった」という趣旨には一般化しない。
+  オンデマンド daemon の挙動も一部実地確認した — `executor tools integrations` はdaemon未起動時に
+  自動起動して built-inカタログ（`toolCount: 36`）をJSONで返す。ただし本タスクの隔離実行環境（isolated
   worktree、独立したBash呼び出しごとにプロセス/ポート状態が引き継がれないサンドボックス）では、
   そのCLI呼び出し直後に同一エンドポイント（`http://127.0.0.1:4788/mcp`、`executor daemon status`
   も「running」と報告する状態）へ直接 `curl` でPOSTしても接続拒否（`curl` exit 7、
-  `HTTP_STATUS=000`）になった。`~/.executor` 配下のpidfileベースの状態と実プロセスの生死が
-  この環境では一致しないためと見られ、Executor自体の不具合と断定はできない — 実マシン
+  `HTTP_STATUS=000`）になった。`ls -la ~/.executor`・`ls -la ~/.executor/server-control` で実際に
+  確認したところ、この daemon には pidfile が存在せず、liveness は SQLite ベースの owner-lock で
+  管理されている（`data.db`・`data.db-shm`・`data.db-wal` の SQLite 本体一式に対し、
+  `data.db.owner-lock`・`data.db.owner-lock-journal` というロックファイルが対になっている構成。
+  他に `analytics-id`・`cache/integrations.json`・`server-control/auth.json` が同ディレクトリに
+  存在する）。接続拒否はこの SQLite owner-lock 上の状態と、隔離サンドボックス内での実プロセスの
+  生死が一致しないために起きたと見られるが、Executor自体の不具合と断定はできない — 実マシン
   （非サンドボックス環境）での再現性は未確認のまま残る。
 - **`agy/settings.json` の `mcpServers` がExecutor移行時に未更新だった問題**: 解消済み（2026-09-03）。
   `agy/mcp_config.json`（Antigravity CLI が読む）は `b06a8e86` で `codegraph`/`filesystem`/`memory` を
