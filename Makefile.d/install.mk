@@ -143,9 +143,7 @@ systemd/environment.d/xdg.conf .config/environment.d/xdg.conf
 systemd/user/atuin.service .config/systemd/user/atuin.service
 systemd/user/herdr.service .config/systemd/user/herdr.service
 systemd/user/kanshi.service .config/systemd/user/kanshi.service
-systemd/user/opencode-proxy.service .config/systemd/user/opencode-proxy.service
 systemd/user/supermemory.service .config/systemd/user/supermemory.service
-agent/scripts/supermemory/opencode-proxy.mjs .supermemory/opencode-proxy.mjs
 systemd/user/tmux.service .config/systemd/user/tmux.service
 systemd/user/zsh-patina.service .config/systemd/user/zsh-patina.service
 tmux.conf.d .tmux.conf.d
