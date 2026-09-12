@@ -1117,13 +1117,18 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   そのCLI呼び出し直後に同一エンドポイント（`http://127.0.0.1:4788/mcp`、`executor daemon status`
   も「running」と報告する状態）へ直接 `curl` でPOSTしても接続拒否（`curl` exit 7、
   `HTTP_STATUS=000`）になった。`ls -la ~/.executor`・`ls -la ~/.executor/server-control` で実際に
-  確認したところ、この daemon には pidfile が存在せず、liveness は SQLite ベースの owner-lock で
-  管理されている（`data.db`・`data.db-shm`・`data.db-wal` の SQLite 本体一式に対し、
-  `data.db.owner-lock`・`data.db.owner-lock-journal` というロックファイルが対になっている構成。
-  他に `analytics-id`・`cache/integrations.json`・`server-control/auth.json` が同ディレクトリに
-  存在する）。接続拒否はこの SQLite owner-lock 上の状態と、隔離サンドボックス内での実プロセスの
-  生死が一致しないために起きたと見られるが、Executor自体の不具合と断定はできない — 実マシン
-  （非サンドボックス環境）での再現性は未確認のまま残る。
+  確認したところ、`~/.executor` 直下には `analytics-id`・`cache/`・`data.db`・`data.db-shm`・
+  `data.db-wal`・`data.db.owner-lock`（0B）・`data.db.owner-lock-journal` に加えて、pid を含む
+  `daemon-localhost-4788.json`（`{"port":4788,"pid":2371615,"startedAt":"2026-09-12T19:06:51.983Z",...}`）と
+  同じ pid・トークンを含む `daemon-active-localhost-647d1a125396b420372e4f95.json` が存在し、
+  `~/.executor/server-control/` 直下には `auth.json` と、これも同じ pid を含む
+  `server.json`（`{"kind":"cli-daemon","pid":2371615,...}`）が存在する。`executor daemon status`
+  はこの pid を伴う「running」を報告する一方、同じエンドポイントへの直接 `curl` POST は接続拒否になる、
+  という症状が観測された。この不一致の原因（liveness が何をどう判定しているか、上記の
+  pid を含むJSONファイル群と実プロセスとの整合性チェックの有無、隔離サンドボックス特有の問題か
+  どうか等）は本調査では特定できていない。Executor自体のソースコードは読んでおらず、ファイル名
+  （`data.db.owner-lock` 等）から機構を推測することもしない — 根本原因は未確定のまま残る。実マシン
+  （非サンドボックス環境）での再現性も未確認である。
 - **`agy/settings.json` の `mcpServers` がExecutor移行時に未更新だった問題**: 解消済み（2026-09-03）。
   `agy/mcp_config.json`（Antigravity CLI が読む）は `b06a8e86` で `codegraph`/`filesystem`/`memory` を
   `executor` へ集約済みだったが、`agy/settings.json`（Google公式 Gemini CLI が
