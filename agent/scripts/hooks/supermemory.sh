@@ -5,7 +5,11 @@
 # knowledge-base write side.
 #
 # supermemory runs locally (default http://localhost:6767, embeddings local/offline;
-# LLM extraction via the OpenCode Go proxy). Config (endpoint + local API key) is read
+# LLM extraction via a local Ollama instance, http://127.0.0.1:11434/v1 -- switched
+# from the earlier OpenCode Go + header-injecting-proxy setup on 2026-09-12,
+# agent-memory-solution-reevaluation mission, after that cloud path's 5-hour quota
+# wall capped real-world extraction success around 10-40%). Config (endpoint + local
+# API key) is read
 # from ~/.supermemory/env (parsed with sed, never sourced). Only the loopback endpoint
 # is trusted: this client refuses any non-local endpoint outright rather than silently
 # falling back to the default, and never follows redirects or leaks partial response
