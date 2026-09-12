@@ -152,7 +152,15 @@ swarm-meta}/`へ単一正典化済みのため、この2ファイルに関して
 エントリ（`http://127.0.0.1:4788/mcp`）だけを持ち、実際のサーバー定義は Executor 側のカタログで
 一元管理される（`executor tools integrations` で確認可能）。
 
-- `bun add -g executor` でインストール。`executor install`（OS常駐サービス化）は行っていない —
+- `bun add -g executor` でインストール
+  （**注記・2026-09-13、codegraph-tooling-refinementミッション T1**: 本ミッション開始時点で
+  `bun pm ls -g` を実行したところグローバルパッケージ0件で、このサンドボックス環境には
+  `executor` バイナリが実際には存在しなかったことが判明した。本ミッションであらためて
+  `bun add -g executor` を実行し `executor@1.6.8` のグローバルインストールを完了・
+  `command -v executor`/`which executor` で `/home/kpango/.bun/bin/executor` として
+  PATH解決できることを確認した。経緯・検証コマンドの詳細は本ファイル後半「既知の残課題
+  （未着手）」節の「Executor の常駐サービス化」項目に付けた追記を参照）。
+  `executor install`（OS常駐サービス化）は行っていない —
   `executor call` がオンデマンドで daemon を自動起動する挙動（`localhost:4788`）で運用している
   （永続サービス化は auto mode クラシファイアにブロックされたため未実施、今後常駐させたい場合は
   ユーザーが `executor install` を実行する）。
@@ -1086,6 +1094,46 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   未実施。現状はオンデマンド daemon（`executor call` 実行時に自動起動）で運用している。マシン再起動後は
   最初の MCP 呼び出し時に起動し直しになる（数秒の遅延）。永続化したい場合はユーザーが手動で
   `executor install` を実行する。
+  **追記（2026-09-13、codegraph-tooling-refinementミッション T1）**: 本ファイル冒頭の
+  「## MCP サーバー定義の統合（Executor gateway 経由）」節（本ファイル155行目付近）に記載の
+  「`bun add -g executor` でインストール」という記述は、本ミッション開始時点では実際にはこの
+  サンドボックス環境で未実施だった（`bun pm ls -g` を実行しグローバルパッケージ0件と確認済み。
+  同節には今回このミッションの注記を追加済み）。本ミッションで `bun add -g executor` を実行し
+  `executor@1.6.8` のグローバルインストールを完了、`command -v executor`/`which executor` の
+  両方を実行し、どちらも `/home/kpango/.bun/bin/executor` としてPATH解決できることを確認した。
+  なお、本README自体には2026-09-03時点で `executor tools describe`/`executor call executor mcp
+  addServer` 等のexecutor CLIコマンドが実際に実行された記録が残っている（下記「`claude`/`agy` の
+  `mcpServers.executor` 呼び出し許可」項目、および本ファイル冒頭の「## MCP サーバー定義の統合
+  （Executor gateway 経由）」節（本ファイル167行目付近）の「サーバー登録は `executor call
+  executor mcp addServer` 」の記述）。これは当時の作業環境（別セッション、あるいは別のサンドボックス
+  /実マシン環境の可能性がある）に `executor` バイナリが存在していたことを示唆するが、その環境が
+  本ミッションの隔離worktreeと同一の `$HOME`/bunグローバルストアを共有していたかどうかは本ミッションでは
+  未確認である。よって断定できるのは「本ミッション開始時点でこのサンドボックス環境の `bun pm ls -g`
+  を実行した結果はグローバルパッケージ0件であり、`executor` は未インストールだった」という事実のみで
+  あり、「2026-09-03時点も含め executor が一度も導入されたことがなかった」という趣旨には一般化しない。
+  オンデマンド daemon の挙動も一部実地確認した — `executor tools integrations` はdaemon未起動時に
+  自動起動して built-inカタログ（`toolCount: 36`）をJSONで返す。このdaemonの実プロセス（`ps -p <pid>`・
+  `/proc/<pid>/cmdline` で確認、コマンドラインは `executor daemon run --port 4788 --hostname
+  localhost --foreground`）は起動後も生存し続けていた。`ls -la ~/.executor`・
+  `ls -la ~/.executor/server-control` で実際に確認したところ、`~/.executor` 直下には
+  `analytics-id`・`cache/`・`data.db`・`data.db-shm`・`data.db-wal`・`data.db.owner-lock`（0B）・
+  `data.db.owner-lock-journal` に加えて、pid を含む `daemon-localhost-4788.json`
+  （`{"port":4788,"pid":<pid>,"startedAt":"...","hostname":"localhost"}`）と同じ pid・トークンを
+  含む `daemon-active-localhost-*.json` が存在し、`~/.executor/server-control/` 直下には
+  `auth.json` と、これも同じ pid を含む `server.json`（`{"kind":"cli-daemon","pid":<pid>}`）が
+  存在する。設定済みエンドポイント `http://127.0.0.1:4788/mcp`（IPv4表記）へ直接 `curl` でPOSTすると
+  接続拒否（`curl` exit 7、"Could not connect to server"）になる一方、`http://localhost:4788/mcp`・
+  `http://[::1]:4788/mcp`（いずれも本環境でIPv6ループバックに解決）へのPOSTは `HTTP/1.1 401
+  Unauthorized`（`www-authenticate: Bearer realm="executor"`）を返し、daemonが実際に応答している
+  ことを確認した。これは daemon の生死・liveness判定機構の問題ではなく、起動オプション
+  `--hostname localhost` がこの環境で `localhost` をIPv6（`::1`）へ解決するために daemon がIPv6
+  ループバックのみへbindしており、IPv4の `127.0.0.1` では待ち受けていないという、実測に基づく
+  アドレスファミリの不一致である（Executor自体のソースコードは読んでおらず、この bind 挙動が
+  全環境で再現するかは未確認 — あくまでこのマシン・このバージョンでの実測）。**運用上の注意**:
+  claude/pi/agy 全ハーネスに設定された `mcpServers.executor` のエンドポイントは
+  `http://127.0.0.1:4788/mcp`（IPv4表記、下記「`claude`/`agy` の `mcpServers.executor` 呼び出し
+  許可」項目・本ファイル冒頭の「## MCP サーバー定義の統合」節参照）であり、上記の実測が一般化する
+  なら、この設定はdaemonの実際のbind先（IPv6ループバック）と一致しない可能性がある。
 - **`agy/settings.json` の `mcpServers` がExecutor移行時に未更新だった問題**: 解消済み（2026-09-03）。
   `agy/mcp_config.json`（Antigravity CLI が読む）は `b06a8e86` で `codegraph`/`filesystem`/`memory` を
   `executor` へ集約済みだったが、`agy/settings.json`（Google公式 Gemini CLI が
@@ -1120,6 +1168,21 @@ FAILし続けていた。テストが機能していなかったため、hooks�
 - **claude/pi/agy 実機での動作確認は未実施**: 設定ファイルの書き換えとExecutor側のカタログ登録までは
   完了しているが、各ツールを実際に起動してExecutor経由でmemory/codegraph/filesystemツールが呼び出せる
   ことの実地検証はしていない。次回起動時に確認すること。
+  **追記（2026-09-13、codegraph-tooling-refinementミッション T1）**: `bun add -g executor` による
+  グローバルインストール自体は本ミッションで完了・確認済み（上記「Executor の常駐サービス化」参照）。
+  ただし claude 経由の実機動作確認は依然として未実施のまま — 本タスクを実行したセッション自身の
+  ツール一覧を `ToolSearch`（"executor mcp codegraph filesystem memory"）で調べたが
+  `mcp__executor__*` 系ツールは1件も見つからなかった。MCPサーバー接続はセッション開始時に確立される
+  ため、今回インストールしても同一セッション内では反映されない可能性が高く、この不在だけを根拠に
+  「Executor gatewayが機能していない」とは断定できない。実際に `mcp__executor__*` ツールが
+  Claude Codeのツール一覧に現れ、codegraph/filesystem/memory相当の呼び出しが成功するかの検証は、
+  今回のグローバルインストールを反映した**次回のセッション起動時**に持ち越しとなる。
+  なお、Executor CLI単体では `executor tools integrations` がdaemonを自動起動しbuilt-inカタログを
+  返すところまでは確認できたが、設定済みエンドポイント（`http://127.0.0.1:4788/mcp`、IPv4表記）への
+  直接HTTPプローブは接続拒否となった一方、`http://localhost:4788/mcp`・`http://[::1]:4788/mcp`への
+  同種のプローブは `401 Unauthorized`（daemonが実際に応答）を返した — 詳細・原因（IPv4/IPv6アドレス
+  ファミリの不一致の実測）は上記「Executor の常駐サービス化」の追記を参照。この不一致がある状態では、
+  CLIレベルでもMCPプロトコル経由の完全な往復確認はできていない。
 - **`sync-verify.sh` の CI/pre-commit hook 配線は未実施**: 実際にデプロイ済みの `$HOME` 側 symlink
   を検証するため `make *_install` 前提で意味のある結果を返さず、CI runner 上では false-FAIL が
   多発する。現状は手動実行のみ。`make` ターゲットやpre-commit hookから自動的に呼び出す配線は次の
