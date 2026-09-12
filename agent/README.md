@@ -168,6 +168,17 @@ swarm-meta}/`へ単一正典化済みのため、この2ファイルに関して
   `agy`: `{"serverUrl":...}`、`add-mcp` の client 自動検出により agy 分は自動生成）。
   `lsp-rust`/`k8s`/`slack`（claude）、`lsp-go`/`lsp-rust`/`k8s-native`/`k8s-cli`/`serena`/`cipher`/
   `github`/`slack`（agy）等、共通でないサーバーは今回の統合対象外（各ツールに個別で残っている）。
+  - **`serena`（agy）の `agy/mcp_config.json` と `agy/settings.json` 間の重複について（2026-09-13）**:
+    両ファイルとも同一の docker run 定義（`ghcr.io/oraios/serena:latest`、stdio transport、ポート
+    9121/24282）を持つ。codegraph/filesystem/memory と異なり Executor gateway（`mcpServers.executor`）
+    への移行は行っていない — stdio transport のローカル container であり、共有 httpUrl/serverUrl
+    参照方式には載せられないため。代わりに `agy/mcp_config.json` を正典と定め、`agy/settings.json`
+    側は手動ミラー（自動同期の保証なし）であることを両ファイルの**ファイルルート直下**の `$comment`
+    キー（`mcpServers` オブジェクトの外、その兄弟キー）に明記した（`agent/write-scope-rules.json` の
+    正典/ミラー方式および `$comment` の置き場所を踏襲）。`mcpServers` は MCP クライアントがサーバー名を
+    キーとして列挙する map であり、そこに `$comment` を混入させると値が文字列の偽サーバーエントリとして
+    誤解釈されうる（実際に Antigravity CLI で JSON decode エラーとして検証済み）ため、`mcpServers` の
+    内側には置かない。
 - `add-mcp`（`bun add -g add-mcp`）は Claude Code・Antigravity（globalのみ）を自動検出して接続する。
   **Pi Coding Agent は `add-mcp list-agents` の対応リストに存在しない**ため、`pi/mcp.json` は手動編集した。
 

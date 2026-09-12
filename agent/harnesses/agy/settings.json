@@ -1,4 +1,5 @@
 {
+  "$comment": "mcpServers.serena エントリはagy/mcp_config.jsonの同名エントリのミラー(正典はagy/mcp_config.json側)。変更時はagy/mcp_config.jsonを先に更新し、本ファイルへ手動反映すること — 自動同期の保証はない。stdio transportのローカルdocker containerのため、codegraph/filesystem/memoryのようなExecutor gateway(mcpServers.executor)へのhttpUrl/serverUrl参照方式には統合できない(agent/README.md「MCPサーバー定義の統合」節・「共通化しないもの」節参照)。この$commentキーをファイルルートに置くのは、mcpServersがMCPクライアントによりサーバー名をキーとして列挙されるmapであり、そこへ混ぜると文字列値を持つ偽サーバーエントリとして誤解釈されるため。",
   "general": {
     "checkpointing": {
       "enabled": true
