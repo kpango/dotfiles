@@ -1112,23 +1112,28 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   を実行した結果はグローバルパッケージ0件であり、`executor` は未インストールだった」という事実のみで
   あり、「2026-09-03時点も含め executor が一度も導入されたことがなかった」という趣旨には一般化しない。
   オンデマンド daemon の挙動も一部実地確認した — `executor tools integrations` はdaemon未起動時に
-  自動起動して built-inカタログ（`toolCount: 36`）をJSONで返す。ただし本タスクの隔離実行環境（isolated
-  worktree、独立したBash呼び出しごとにプロセス/ポート状態が引き継がれないサンドボックス）では、
-  そのCLI呼び出し直後に同一エンドポイント（`http://127.0.0.1:4788/mcp`、`executor daemon status`
-  も「running」と報告する状態）へ直接 `curl` でPOSTしても接続拒否（`curl` exit 7、
-  `HTTP_STATUS=000`）になった。`ls -la ~/.executor`・`ls -la ~/.executor/server-control` で実際に
-  確認したところ、`~/.executor` 直下には `analytics-id`・`cache/`・`data.db`・`data.db-shm`・
-  `data.db-wal`・`data.db.owner-lock`（0B）・`data.db.owner-lock-journal` に加えて、pid を含む
-  `daemon-localhost-4788.json`（`{"port":4788,"pid":2371615,"startedAt":"2026-09-12T19:06:51.983Z",...}`）と
-  同じ pid・トークンを含む `daemon-active-localhost-647d1a125396b420372e4f95.json` が存在し、
-  `~/.executor/server-control/` 直下には `auth.json` と、これも同じ pid を含む
-  `server.json`（`{"kind":"cli-daemon","pid":2371615,...}`）が存在する。`executor daemon status`
-  はこの pid を伴う「running」を報告する一方、同じエンドポイントへの直接 `curl` POST は接続拒否になる、
-  という症状が観測された。この不一致の原因（liveness が何をどう判定しているか、上記の
-  pid を含むJSONファイル群と実プロセスとの整合性チェックの有無、隔離サンドボックス特有の問題か
-  どうか等）は本調査では特定できていない。Executor自体のソースコードは読んでおらず、ファイル名
-  （`data.db.owner-lock` 等）から機構を推測することもしない — 根本原因は未確定のまま残る。実マシン
-  （非サンドボックス環境）での再現性も未確認である。
+  自動起動して built-inカタログ（`toolCount: 36`）をJSONで返す。このdaemonの実プロセス（`ps -p <pid>`・
+  `/proc/<pid>/cmdline` で確認、コマンドラインは `executor daemon run --port 4788 --hostname
+  localhost --foreground`）は起動後も生存し続けていた。`ls -la ~/.executor`・
+  `ls -la ~/.executor/server-control` で実際に確認したところ、`~/.executor` 直下には
+  `analytics-id`・`cache/`・`data.db`・`data.db-shm`・`data.db-wal`・`data.db.owner-lock`（0B）・
+  `data.db.owner-lock-journal` に加えて、pid を含む `daemon-localhost-4788.json`
+  （`{"port":4788,"pid":<pid>,"startedAt":"...","hostname":"localhost"}`）と同じ pid・トークンを
+  含む `daemon-active-localhost-*.json` が存在し、`~/.executor/server-control/` 直下には
+  `auth.json` と、これも同じ pid を含む `server.json`（`{"kind":"cli-daemon","pid":<pid>}`）が
+  存在する。設定済みエンドポイント `http://127.0.0.1:4788/mcp`（IPv4表記）へ直接 `curl` でPOSTすると
+  接続拒否（`curl` exit 7、"Could not connect to server"）になる一方、`http://localhost:4788/mcp`・
+  `http://[::1]:4788/mcp`（いずれも本環境でIPv6ループバックに解決）へのPOSTは `HTTP/1.1 401
+  Unauthorized`（`www-authenticate: Bearer realm="executor"`）を返し、daemonが実際に応答している
+  ことを確認した。これは daemon の生死・liveness判定機構の問題ではなく、起動オプション
+  `--hostname localhost` がこの環境で `localhost` をIPv6（`::1`）へ解決するために daemon がIPv6
+  ループバックのみへbindしており、IPv4の `127.0.0.1` では待ち受けていないという、実測に基づく
+  アドレスファミリの不一致である（Executor自体のソースコードは読んでおらず、この bind 挙動が
+  全環境で再現するかは未確認 — あくまでこのマシン・このバージョンでの実測）。**運用上の注意**:
+  claude/pi/agy 全ハーネスに設定された `mcpServers.executor` のエンドポイントは
+  `http://127.0.0.1:4788/mcp`（IPv4表記、下記「`claude`/`agy` の `mcpServers.executor` 呼び出し
+  許可」項目・本ファイル冒頭の「## MCP サーバー定義の統合」節参照）であり、上記の実測が一般化する
+  なら、この設定はdaemonの実際のbind先（IPv6ループバック）と一致しない可能性がある。
 - **`agy/settings.json` の `mcpServers` がExecutor移行時に未更新だった問題**: 解消済み（2026-09-03）。
   `agy/mcp_config.json`（Antigravity CLI が読む）は `b06a8e86` で `codegraph`/`filesystem`/`memory` を
   `executor` へ集約済みだったが、`agy/settings.json`（Google公式 Gemini CLI が
@@ -1173,9 +1178,11 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   Claude Codeのツール一覧に現れ、codegraph/filesystem/memory相当の呼び出しが成功するかの検証は、
   今回のグローバルインストールを反映した**次回のセッション起動時**に持ち越しとなる。
   なお、Executor CLI単体では `executor tools integrations` がdaemonを自動起動しbuilt-inカタログを
-  返すところまでは確認できたが、設定済みエンドポイント（`http://127.0.0.1:4788/mcp`）への直接HTTP
-  プローブは本タスクの隔離実行環境の制約により接続拒否となり、CLIレベルでもMCPプロトコル経由の
-  完全な往復確認はできていない（詳細は上記「Executor の常駐サービス化」の追記を参照）。
+  返すところまでは確認できたが、設定済みエンドポイント（`http://127.0.0.1:4788/mcp`、IPv4表記）への
+  直接HTTPプローブは接続拒否となった一方、`http://localhost:4788/mcp`・`http://[::1]:4788/mcp`への
+  同種のプローブは `401 Unauthorized`（daemonが実際に応答）を返した — 詳細・原因（IPv4/IPv6アドレス
+  ファミリの不一致の実測）は上記「Executor の常駐サービス化」の追記を参照。この不一致がある状態では、
+  CLIレベルでもMCPプロトコル経由の完全な往復確認はできていない。
 - **`sync-verify.sh` の CI/pre-commit hook 配線は未実施**: 実際にデプロイ済みの `$HOME` 側 symlink
   を検証するため `make *_install` 前提で意味のある結果を返さず、CI runner 上では false-FAIL が
   多発する。現状は手動実行のみ。`make` ターゲットやpre-commit hookから自動的に呼び出す配線は次の
