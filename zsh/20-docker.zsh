@@ -43,6 +43,18 @@ container_name="dev"
 container_version="nightly"
 image_name="$user_name/$container_name:$container_version"
 
+# Standalone Ollama server (model baked in, dockers/ollama.Dockerfile) — runs alongside
+# $container_name, not layered into it, so it can be recreated independently. devrun()
+# starts both; devkill() stops both. On Linux both containers use --network=host, so
+# it's always reachable at 127.0.0.1:11434 from the dev container (and the real host)
+# with no extra network setup. On macOS (apple/container) there's no host-network
+# equivalent — it lands on apple/container's `default` network instead, reachable from
+# other containers on that same network via `ollama.test:11434` (embedded DNS,
+# apple/container/docs/networking.md — requires macOS 26+ for container-to-container
+# DNS; on macOS 15 use `container inspect ollama` for its IP instead).
+ollama_container_name="ollama"
+ollama_image_name="$user_name/$ollama_container_name:$container_version"
+
 alias kpmove="cd $rcpath"
 
 # `container build` reads Dockerfile/Containerfile syntax the same way `docker build` does
@@ -88,6 +100,24 @@ devrun() {
 		# incidentally equals this) without inheriting the macOS host's unrelated numeric ids.
 		local container_uid=1000
 		local container_gid=1000
+
+		# Start (or confirm) the ollama sidecar before the dev container itself, so it's
+		# already reachable by the time devin's shell comes up. Same stale/running check
+		# idiom as the dev container below (`container list` running-only, `inspect` any).
+		if container list --format json 2>/dev/null | grep -q "\"id\"[[:space:]]*:[[:space:]]*\"$ollama_container_name\""; then
+			echo "Container '$ollama_container_name' is already running."
+		else
+			if container inspect "$ollama_container_name" >/dev/null 2>&1; then
+				echo "Removing stale container '$ollama_container_name'"
+				container delete -f "$ollama_container_name" &>/dev/null || true
+			fi
+			echo "Pulling image: $ollama_image_name"
+			container image pull "$ollama_image_name"
+			echo "Starting $ollama_container_name (default network — reachable from '$container_name' at ollama.test:11434)"
+			if ! container run -d --name "$ollama_container_name" "$ollama_image_name"; then
+				echo "WARNING: failed to start '$ollama_container_name' — continuing without it" >&2
+			fi
+		fi
 
 		# Mirrors the Linux branch's stale-container handling below: `container list`
 		# (no --all) only shows running containers, `inspect` succeeds for any state.
@@ -272,6 +302,33 @@ devrun() {
 
 		if [[ ${#_no_gpu} -eq 0 ]] && (($+commands[nvidia-smi])) && nvidia-smi &>/dev/null; then
 			gpu_option="--gpus=all"
+		fi
+
+		# Start (or confirm) the ollama sidecar before the dev container's own stale-check/
+		# early-return below, so it comes up (or is reconfirmed) every devrun call regardless
+		# of whether the dev container itself was already running. --network=host (same as
+		# the dev container's run_cmd further down) means no extra network wiring is needed —
+		# it's reachable at 127.0.0.1:11434 from inside the dev container and the real host.
+		local _ollama_status
+		_ollama_status=$(docker inspect --format '{{.State.Status}}' "$ollama_container_name" 2>/dev/null)
+		if [[ "$_ollama_status" == "running" ]]; then
+			echo "Container '$ollama_container_name' is already running."
+		else
+			if [[ -n "$_ollama_status" ]]; then
+				echo "Removing stale container '$ollama_container_name' (status: $_ollama_status)"
+				docker container rm -f "$ollama_container_name" &>/dev/null || true
+			fi
+			echo "Pulling image: $ollama_image_name"
+			docker pull "$ollama_image_name"
+			echo "Starting $ollama_container_name (network=host)"
+			if ! docker run -d \
+				$gpu_option \
+				--name "$ollama_container_name" \
+				--restart always \
+				--network=host \
+				"$ollama_image_name"; then
+				echo "WARNING: failed to start '$ollama_container_name' — continuing without it" >&2
+			fi
 		fi
 
 		# Remove any stale container (created/exited/dead) to avoid "name already in use" on retry.
@@ -523,6 +580,8 @@ devkill() {
 		if (($+commands[container])); then
 			container stop "$container_name" 2>/dev/null || true
 			container delete -f "$container_name" 2>/dev/null || true
+			container stop "$ollama_container_name" 2>/dev/null || true
+			container delete -f "$ollama_container_name" 2>/dev/null || true
 		fi
 		;;
 	*)

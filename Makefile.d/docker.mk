@@ -5,9 +5,9 @@
 
 define DOCKER_BUILD_PARALLEL
 	@if command -v xpanes >/dev/null 2>&1; then \
-		xpanes -s -c "$(MAKE) DOCKER_EXTRA_OPTS=\"$(1)\" -f $(ROOTDIR)/Makefile docker/build/{}" go docker rust dart k8s nim gcloud zig nix env vald; \
+		xpanes -s -c "$(MAKE) DOCKER_EXTRA_OPTS=\"$(1)\" -f $(ROOTDIR)/Makefile docker/build/{}" go docker rust dart k8s nim gcloud zig nix env vald ollama; \
 	else \
-		for img in go docker rust dart k8s nim gcloud zig nix env vald; do \
+		for img in go docker rust dart k8s nim gcloud zig nix env vald ollama; do \
 			$(MAKE) DOCKER_EXTRA_OPTS=\"$(1)\" -f $(ROOTDIR)/Makefile docker/build/$$img & \
 		done; wait; \
 	fi
