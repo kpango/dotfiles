@@ -1,90 +1,129 @@
 #!/usr/bin/env node
-// Detects whether `graft-resolve.cjs`/`.claude/settings.json` have been silently reverted to
-// @nanonets/graft's vendor template by an (accidental or intentional) `graft init`/`graft build`
-// re-run against this actual worktree, reintroducing the two vulnerabilities fixed here:
+// Detects AND ACTIVELY REPAIRS `.claude/helpers/graft-{resolve,hooks,statusline}.cjs` and
+// `.claude/settings.json` whenever @nanonets/graft's own `session-start`-hook upkeep mechanism
+// silently reverts them to its vendor template, reintroducing the vulnerabilities fixed here:
 //
 //   1. `entry()` treating the project tree (CLAUDE_PROJECT_DIR/cwd) as a "verified" search
 //      candidate for the module it's about to `import()`.
 //   2. `.claude/settings.json` carrying an unanchored `Bash(node dist/cli.js:*)` permission, or
 //      an unscoped `Bash(npx graft:*)` (vs. the scoped `Bash(npx @nanonets/graft:*)`).
 //
-// Written after this exact reversion happened live during Phase 4.5 round 3
-// (architecture-adversarial-reviewer, 2026-09-13): a comment alone ("diff these files after any
-// future `graft init` re-run") proved to have zero enforcement power when the re-run itself went
-// unnoticed. This script is a substitute for that manual diff, not a replacement for keeping
-// `graft-resolve.cjs`'s actual logic correct -- it only checks for the presence/absence of a few
-// literal markers, so a sufficiently different rewrite of either file could still evade it. It is
-// deliberately non-blocking (prints to stderr, always exits 0) rather than blocking Stop -- see
-// the Stop hook entry in .claude/settings.json that invokes it.
+// HISTORY / WHY THIS IS ACTIVE-REPAIR, NOT JUST A WARNING (2026-09-13):
+// - Round 3 (Phase 4.5, architecture-adversarial-reviewer) added this file as a WARN-ONLY,
+//   Stop-only check, written after the reversion was observed live once with no known mechanism.
+// - It then recurred in a freshly created task worktree (t5-pi-graft-parity) with nobody having
+//   run `graft init`/`graft build` by hand, which led to actually reading @nanonets/graft's own
+//   installed source (dist/upkeep.js, dist/claude/hooks.js) rather than continuing to guess:
+//   graft's `session-start` hook unconditionally calls `runUpkeep()` -> `reconcileWiring()`,
+//   which reads a version "stamp" at `graft/.cache/wiring-stamp.json` and -- per that function's
+//   own doc-comment -- treats a MISSING stamp as license to silently re-run its own `init` and
+//   overwrite the very files this script protects. That stamp lives under `graft/`, which this
+//   repo's own .gitignore (added in this same mission, T4) excludes from git -- so it is
+//   necessarily ABSENT in every freshly created `git worktree add` checkout (mission and task
+//   worktrees alike, i.e. this repo's normal swarm-loop workflow), making the revert-on-first-
+//   session-start not a rare accident but a structural certainty for any new worktree.
+// - A warning alone has no enforcement power against a mechanism that fires automatically at
+//   SessionStart, before a human ever sees the Stop-time message, and that repeats on every
+//   fresh worktree. Hence this version restores automatically, wired into BOTH SessionStart
+//   (closes the window as early as possible in a given session) and Stop (a second backstop).
+//
+// Still deliberately non-blocking (prints to stderr, always exits 0) -- repairing silently and
+// promptly is the goal, not halting the session. And still only a literal-marker check, not a
+// full behavioral verification -- a sufficiently different rewrite of any of these files could
+// still evade detection; this narrows the specific, already-seen recurrence, it does not replace
+// keeping the underlying logic correct.
 //
 // This file itself is NOT part of @nanonets/graft's own template (grep dist/claude/init.js's
-// PATCH_TARGETS-equivalent list against this filename to confirm), so a `graft init` re-run has
-// no reason to touch it -- unlike graft-hooks.cjs/graft-statusline.cjs/graft-resolve.cjs, which
-// graft's own installer does write.
+// write list against this filename to confirm), so graft's own upkeep has no reason to touch it
+// -- unlike graft-hooks.cjs/graft-statusline.cjs/graft-resolve.cjs/.claude/settings.json, which
+// graft's installer (and its upkeep re-run of that same installer) does write.
 'use strict';
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 const root = path.join(__dirname, '..', '..');
-const problems = [];
+const actions = []; // human-readable log of repairs actually made, printed at the end
 
 function readOrNull(p) {
   try { return fs.readFileSync(p, 'utf8'); } catch { return null; }
 }
 
-const resolvePath = path.join(root, '.claude', 'helpers', 'graft-resolve.cjs');
+// Restore `relPath` (repo-root-relative) to its content at git HEAD. Returns true on success.
+// Fails soft (returns false) on any error -- a failed repair attempt must never throw and block
+// the hook; the next SessionStart/Stop will simply try again.
+function restoreFromGitHead(relPath) {
+  try {
+    const content = execFileSync('git', ['show', `HEAD:${relPath}`], { cwd: root, encoding: 'utf8' });
+    fs.writeFileSync(path.join(root, relPath), content);
+    return true;
+  } catch (err) {
+    actions.push(`FAILED to restore ${relPath} from git HEAD: ${err && err.message || err}`);
+    return false;
+  }
+}
+
+// --- graft-resolve.cjs: full restore from git HEAD if it looks reverted ---
+const resolveRel = path.join('.claude', 'helpers', 'graft-resolve.cjs');
+const resolvePath = path.join(root, resolveRel);
 const resolveSrc = readOrNull(resolvePath);
 if (resolveSrc === null) {
-  problems.push(`${resolvePath}: file missing entirely (expected the fixed graft-resolve.cjs)`);
+  if (restoreFromGitHead(resolveRel)) actions.push(`restored missing ${resolveRel} from git HEAD`);
 } else {
-  // Strip full-line `//` comments before matching code patterns below -- this file's own
-  // SECURITY comment quotes the vulnerable snippets it replaced (`fromPkg(dir)`,
-  // `CLAUDE_PROJECT_DIR`) as prose, which would otherwise false-positive against the checks
-  // that follow.
-  const codeOnly = resolveSrc
-    .split('\n')
-    .filter((line) => !line.trim().startsWith('//'))
-    .join('\n');
-  // Vulnerable vendor template's `entry()` builds its candidate list with `fromPkg(dir)` where
-  // `dir` is the project tree -- the fixed version never references `dir` at all.
-  if (/\bfromPkg\(dir\)/.test(codeOnly) || /^const dir = process\.env\.CLAUDE_PROJECT_DIR/m.test(codeOnly)) {
-    problems.push(`${resolvePath}: contains the vulnerable project-tree candidate pattern (fromPkg(dir)/CLAUDE_PROJECT_DIR fallback) -- looks reverted to the vendor template`);
-  }
-  if (!codeOnly.includes("!== '@nanonets/graft'")) {
-    problems.push(`${resolvePath}: missing the package.json \`name\` verification (best()/pkgInfoOf()) -- looks reverted to the vendor template`);
+  // Strip full-line `//` comments before matching -- this file's own SECURITY comment quotes the
+  // vulnerable snippets it replaced (`fromPkg(dir)`, `CLAUDE_PROJECT_DIR`) as prose, which would
+  // otherwise false-positive against the checks that follow.
+  const codeOnly = resolveSrc.split('\n').filter((l) => !l.trim().startsWith('//')).join('\n');
+  const looksReverted =
+    /\bfromPkg\(dir\)/.test(codeOnly) ||
+    /^const dir = process\.env\.CLAUDE_PROJECT_DIR/m.test(codeOnly) ||
+    !codeOnly.includes("!== '@nanonets/graft'");
+  if (looksReverted && restoreFromGitHead(resolveRel)) {
+    actions.push(`restored ${resolveRel} from git HEAD (looked reverted to vendor template)`);
   }
 }
 
+// --- graft-hooks.cjs / graft-statusline.cjs: full restore from git HEAD if reverted ---
 for (const consumer of ['graft-hooks.cjs', 'graft-statusline.cjs']) {
-  const p = path.join(root, '.claude', 'helpers', consumer);
+  const rel = path.join('.claude', 'helpers', consumer);
+  const p = path.join(root, rel);
   const src = readOrNull(p);
-  if (src === null) {
-    problems.push(`${p}: file missing entirely`);
-  } else if (!src.includes("require('./graft-resolve.cjs')")) {
-    problems.push(`${p}: no longer delegates to graft-resolve.cjs -- looks reverted to the vendor template (which duplicates resolution logic inline instead)`);
+  const looksReverted = src === null || !src.includes("require('./graft-resolve.cjs')");
+  if (looksReverted && restoreFromGitHead(rel)) {
+    actions.push(`restored ${rel} from git HEAD (${src === null ? 'was missing' : 'looked reverted to vendor template'})`);
   }
 }
 
-const settingsPath = path.join(root, '.claude', 'settings.json');
+// --- .claude/settings.json: surgical repair of permissions.allow only ---
+// A full-file restore-from-HEAD would also discard any *legitimate* unrelated local edit a human
+// made to this shared, general-purpose file (other plugins/permissions) -- narrower than the two
+// helper files above, which have no legitimate reason to diverge from this repo's own fix.
+const settingsRel = path.join('.claude', 'settings.json');
+const settingsPath = path.join(root, settingsRel);
 const settingsSrc = readOrNull(settingsPath);
-if (settingsSrc === null) {
-  problems.push(`${settingsPath}: file missing entirely`);
-} else {
-  let settings;
-  try { settings = JSON.parse(settingsSrc); } catch { settings = null; }
-  const allow = settings && settings.permissions && Array.isArray(settings.permissions.allow)
-    ? settings.permissions.allow : [];
-  if (allow.includes('Bash(node dist/cli.js:*)')) {
-    problems.push(`${settingsPath}: permissions.allow contains the unanchored "Bash(node dist/cli.js:*)" entry removed in the round-1 security fix`);
-  }
-  if (allow.includes('Bash(npx graft:*)')) {
-    problems.push(`${settingsPath}: permissions.allow contains the unscoped "Bash(npx graft:*)" entry (should be narrowed to "Bash(npx @nanonets/graft:*)")`);
+if (settingsSrc !== null) {
+  let settings = null;
+  try { settings = JSON.parse(settingsSrc); } catch { /* leave settings null -- can't safely edit unparseable JSON */ }
+  if (settings && settings.permissions && Array.isArray(settings.permissions.allow)) {
+    const before = settings.permissions.allow;
+    let after = before.filter((entry) => entry !== 'Bash(node dist/cli.js:*)' && entry !== 'Bash(npx graft:*)');
+    if (!after.includes('Bash(npx @nanonets/graft:*)')) after = [...after, 'Bash(npx @nanonets/graft:*)'];
+    const changed = after.length !== before.length || after.some((v, i) => v !== before[i]);
+    if (changed) {
+      settings.permissions.allow = after;
+      try {
+        fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n');
+        actions.push(`repaired ${settingsRel}'s permissions.allow in place (removed reverted entries, kept the rest of the file as-is)`);
+      } catch (err) {
+        actions.push(`FAILED to repair ${settingsRel}: ${err && err.message || err}`);
+      }
+    }
   }
 }
 
-if (problems.length > 0) {
-  console.error('[graft-integrity-check] WARNING: graft integration files look reverted to an unpatched state:');
-  for (const p of problems) console.error(`  - ${p}`);
-  console.error('[graft-integrity-check] If this followed a `graft init`/`graft build` re-run, restore via `git checkout -- <file>` and re-apply the security fix (see git log for graft-resolve.cjs).');
+if (actions.length > 0) {
+  console.error('[graft-integrity-check] graft integration files looked reverted to an unpatched state -- repaired:');
+  for (const a of actions) console.error(`  - ${a}`);
+  console.error('[graft-integrity-check] Likely cause: @nanonets/graft\'s own session-start upkeep (see this file\'s header comment). Repair is automatic; no action needed unless a FAILED line appears above.');
 }
 process.exit(0); // always non-blocking -- see file header

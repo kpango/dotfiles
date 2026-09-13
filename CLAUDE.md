@@ -260,13 +260,29 @@ directly; there is no house rule yet on which to try first.
 block is written and may be overwritten by `graft init`/`graft build` — the two paragraphs above
 (setup, coexistence) are deliberately placed outside it so a future regeneration doesn't drop them.
 
-**Reverted-file detection**: a `graft init`/`graft build` re-run against this actual worktree
-overwrites `.claude/helpers/graft-hooks.cjs`, `graft-statusline.cjs`, and the graft entries in
-`.claude/settings.json` back to `@nanonets/graft`'s own bundled template, silently discarding the
-security fix in `graft-resolve.cjs` (project-tree exclusion + package.json `name` verification —
-see that file's SECURITY comment) and the narrowed `permissions.allow` entries. This is not
-hypothetical: it happened once already, live, during this repo's Phase 4.5 adversarial review
-(2026-09-13). `.claude/helpers/graft-integrity-check.cjs`, wired as an additional `Stop` hook in
-`.claude/settings.json`, checks for this on every Stop event and prints a warning to stderr (it
-does not block) if any of the three files look reverted — see that file's own header for exactly
-what it checks and its known limitation (literal-marker matching, not a full behavioral check).
+**Reverted-file detection and auto-repair**: `.claude/helpers/graft-hooks.cjs`,
+`graft-statusline.cjs`, `graft-resolve.cjs`, and the graft entries in `.claude/settings.json` can
+get silently overwritten back to `@nanonets/graft`'s own bundled template, discarding the security
+fix in `graft-resolve.cjs` (project-tree exclusion + package.json `name` verification — see that
+file's SECURITY comment) and the narrowed `permissions.allow` entries. This is not a rare accident
+from someone manually re-running `graft init` — reading graft's own installed source
+(`dist/upkeep.js`, `dist/claude/hooks.js`) confirms its `session-start` hook unconditionally calls
+`runUpkeep()` → `reconcileWiring()`, which reads a version stamp at `graft/.cache/wiring-stamp.json`
+and treats a **missing** stamp as license to silently re-run its own init and overwrite these
+files. That stamp lives under `graft/`, which this repo's own `.gitignore` excludes from git (see
+above) — so it is necessarily absent in every freshly created `git worktree add` checkout (this
+repo's normal mission/task-worktree workflow), making the revert-on-first-session-start a
+structural certainty for any new worktree, not a one-off: it happened once during this repo's
+Phase 4.5 adversarial review (2026-09-13), then again — with nobody running `graft init` by
+hand — in a freshly created, unrelated task worktree the same day, which is what led to reading
+graft's source directly instead of continuing to guess at a cause.
+
+`.claude/helpers/graft-integrity-check.cjs` is wired into **both** `SessionStart` (right after
+graft's own `session-start` hook entry, to close the window as early as possible in a given
+session) and `Stop` (a second backstop) in `.claude/settings.json`. On detecting a reversion it
+now **actively restores** `graft-resolve.cjs`/`graft-hooks.cjs`/`graft-statusline.cjs` from git
+HEAD and surgically repairs just the two known-bad `permissions.allow` entries in
+`.claude/settings.json` (not a full-file restore there, since that file can legitimately carry
+other, unrelated local edits) — still non-blocking (stderr only, never halts the hook chain). See
+that file's own header for exactly what it checks and its known limitation (literal-marker
+matching, not a full behavioral check, so a sufficiently different rewrite could still evade it).
