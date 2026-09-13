@@ -206,7 +206,7 @@ repo's no-unnecessary-egress stance elsewhere). Then `graft build` once to popul
 (git-ignored local cache, unlike graphify's committed graph — see `.gitignore`). `graft init` (already run for this repo; see `.claude/settings.json`'s
 graft hook block and `.mcp.json` for Claude Code) wired the Claude Code MCP server +
 PostToolUse/Stop/UserPromptSubmit/SessionStart hooks and statusline, plus equivalent MCP
-registrations for the other agents this repo already integrates with: Antigravity/Gemini
+registrations for the other agents this repo already integrates with: Gemini CLI
 (`.gemini/settings.json` for MCP wiring, plus the identical fenced graft section written to two
 separate places — `AGENTS.md`, a pre-existing, git-tracked symlink at this repo's root pointing to
 this very file [`readlink AGENTS.md` → `CLAUDE.md`, so that fenced section actually landed in this
@@ -217,6 +217,21 @@ deliberate — see graphify's Nix-wide install above for a wired-everywhere alte
 graft globally (`~/.claude/settings.json`, `~/.codex/config.toml`, `~/.gemini/`, etc. — what
 `graft init` writes without `--no-global`) is a separate decision affecting every other repo you
 open with these agents, and is intentionally out of scope here.
+
+**Antigravity CLI is not covered by the above**, despite being one of this repo's five wired
+harnesses (`agent/harnesses/agy/`) — confirmed by reading `@nanonets/graft`'s own installed
+source (`dist/hosts/mcp-config.js`): graft treats `gemini` (writes the repo-local
+`.gemini/settings.json` above) and `antigravity` as two distinct targets, and the `antigravity`
+target is hardcoded to a *global* path (`~/.gemini/config/mcp_config.json`, marked
+`scope: 'global'` in graft's own target list, and captioned there as graft's own known gap
+`#62`), which its `mcpTargets(...).filter(t => opts.global !== false || t.scope !== 'global')`
+unconditionally drops whenever `--no-global` is passed — exactly the flag this repo's `graft init`
+run used. So this mission neither wrote nor was capable of writing a graft MCP entry for
+Antigravity specifically; `infra-config-adversarial-reviewer`'s Phase 4.5 pass (2026-09-13) caught
+an earlier draft of this section wrongly claiming otherwise. Wiring Antigravity for real would mean
+writing to that global, out-of-repo path — the same globally-scoped decision already declined
+above for the other agents, so it's declined here for the same reason, not merely left as an
+oversight.
 
 **Coexistence with graphify**: the two tools' Claude Code hooks don't fire on the same event (see
 below). This is **not** a claim that every place graphify gets invoked in
