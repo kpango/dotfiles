@@ -244,3 +244,14 @@ directly; there is no house rule yet on which to try first.
 **Note on the auto-generated section above**: the `<!-- graft:start -->`/`<!-- graft:end -->`
 block is written and may be overwritten by `graft init`/`graft build` — the two paragraphs above
 (setup, coexistence) are deliberately placed outside it so a future regeneration doesn't drop them.
+
+**Reverted-file detection**: a `graft init`/`graft build` re-run against this actual worktree
+overwrites `.claude/helpers/graft-hooks.cjs`, `graft-statusline.cjs`, and the graft entries in
+`.claude/settings.json` back to `@nanonets/graft`'s own bundled template, silently discarding the
+security fix in `graft-resolve.cjs` (project-tree exclusion + package.json `name` verification —
+see that file's SECURITY comment) and the narrowed `permissions.allow` entries. This is not
+hypothetical: it happened once already, live, during this repo's Phase 4.5 adversarial review
+(2026-09-13). `.claude/helpers/graft-integrity-check.cjs`, wired as an additional `Stop` hook in
+`.claude/settings.json`, checks for this on every Stop event and prints a warning to stderr (it
+does not block) if any of the three files look reverted — see that file's own header for exactly
+what it checks and its known limitation (literal-marker matching, not a full behavioral check).
