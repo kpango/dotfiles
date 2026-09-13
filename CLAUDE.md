@@ -200,8 +200,13 @@ Nix-managed like graphify above — no nixpkgs derivation exists for it as of th
 to `events.nanonets.com` per its own [TELEMETRY.md](https://github.com/NanoNets/context-graph-engine/blob/main/TELEMETRY.md) — disabled here for consistency with this
 repo's no-unnecessary-egress stance elsewhere). Then `graft build` once to populate `graft/`
 (git-ignored local cache, unlike graphify's committed graph — see `.gitignore`). `graft init` (already run for this repo; see `.claude/settings.json`'s
-graft hook block and `.mcp.json`) wired the Claude Code MCP server + PostToolUse/Stop/
-UserPromptSubmit/SessionStart hooks and statusline **for this repo only** (`--no-global`,
+graft hook block and `.mcp.json` for Claude Code) wired the Claude Code MCP server +
+PostToolUse/Stop/UserPromptSubmit/SessionStart hooks and statusline, plus equivalent MCP
+registrations for the other agents this repo already integrates with: Antigravity/Gemini
+(`.gemini/settings.json`, and the fenced graft section appended to `AGENTS.md` — a pre-existing,
+git-tracked symlink at this repo's root pointing to this very file, `readlink AGENTS.md` →
+`CLAUDE.md`, so that fenced section actually landed in this file, not a separate one) and OpenCode
+(`opencode.json`) — **for this repo only** in every case (`--no-global`,
 deliberate — see graphify's Nix-wide install above for a wired-everywhere alternative). Wiring
 graft globally (`~/.claude/settings.json`, `~/.codex/config.toml`, `~/.gemini/`, etc. — what
 `graft init` writes without `--no-global`) is a separate decision affecting every other repo you
