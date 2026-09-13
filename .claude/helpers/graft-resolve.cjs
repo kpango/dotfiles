@@ -1,6 +1,14 @@
 // Shared @nanonets/graft dist/claude resolution logic for graft-hooks.cjs and
 // graft-statusline.cjs (previously duplicated verbatim in both -- factored out here per
 // architecture-adversarial-reviewer's Phase 4.5 finding, 2026-09-13).
+//
+// NOTE: this file, its two callers, and the hook block in .claude/settings.json were written
+// by `graft init` and are NOT re-emitted verbatim by a later `graft init`/`graft build` run --
+// but a future re-run of `graft init` (e.g. after a graft version bump) can still silently
+// overwrite these files back to its own template, dropping the security fix and dedup above
+// without warning (architecture-adversarial-reviewer, Phase 4.5 round 2, 2026-09-13, MEDIUM).
+// If you re-run `graft init` in this repo, diff these three files against this commit
+// afterwards before trusting them again.
 'use strict';
 const path = require('path');
 const fs = require('fs');
