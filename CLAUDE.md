@@ -207,22 +207,24 @@ repo's no-unnecessary-egress stance elsewhere). Then `graft build` once to popul
 graft hook block and `.mcp.json` for Claude Code) wired the Claude Code MCP server +
 PostToolUse/Stop/UserPromptSubmit/SessionStart hooks and statusline, plus equivalent MCP
 registrations for the other agents this repo already integrates with: Antigravity/Gemini
-(`.gemini/settings.json`, and the fenced graft section appended to `AGENTS.md` — a pre-existing,
-git-tracked symlink at this repo's root pointing to this very file, `readlink AGENTS.md` →
-`CLAUDE.md`, so that fenced section actually landed in this file, not a separate one) and OpenCode
+(`.gemini/settings.json` for MCP wiring, plus the identical fenced graft section written to two
+separate places — `AGENTS.md`, a pre-existing, git-tracked symlink at this repo's root pointing to
+this very file [`readlink AGENTS.md` → `CLAUDE.md`, so that fenced section actually landed in this
+file, not a separate one], and `GEMINI.md`, a genuinely separate regular file `graft init` also
+wrote, not a symlink to anything — confirmed via `ls -la GEMINI.md`) and OpenCode
 (`opencode.json`) — **for this repo only** in every case (`--no-global`,
 deliberate — see graphify's Nix-wide install above for a wired-everywhere alternative). Wiring
 graft globally (`~/.claude/settings.json`, `~/.codex/config.toml`, `~/.gemini/`, etc. — what
 `graft init` writes without `--no-global`) is a separate decision affecting every other repo you
 open with these agents, and is intentionally out of scope here.
 
-**Coexistence with graphify**: no mechanism conflict, on a narrower claim than earlier drafts of
-this paragraph tried to make. This is **not** a claim that every place graphify gets invoked in
+**Coexistence with graphify**: the two tools' Claude Code hooks don't fire on the same event (see
+below). This is **not** a claim that every place graphify gets invoked in
 this repo is listed below — graphify also has a git merge driver (`.gitattributes` +
 `.git/config`'s `merge.graphify.driver`, see the "One-time setup" note above) and a
 `graphify hook status` check in `agent/harnesses/claude/validate-harness.sh`, neither of which is
 a Claude Code hook event at all, so they're outside the scope of this comparison rather than
-enumerated here. The claim is narrower and load-bearing only for what actually matters — whether
+enumerated here. What actually matters — and what this comparison is scoped to — is whether
 graft's Claude Code hooks and graphify's Claude Code hooks can fire on the same event: graphify's
 two known Claude-Code-lifecycle hooks are `PreToolUse:Bash` (`.claude/settings.json`'s
 pre-existing `graphify-hint.sh` entry) and `PreCompact` (`agent/hooks/claude/pre-compact.sh`,
