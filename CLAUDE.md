@@ -224,7 +224,7 @@ source (`dist/hosts/mcp-config.js`): graft treats `gemini` (writes the repo-loca
 `.gemini/settings.json` above) and `antigravity` as two distinct targets, and the `antigravity`
 target is hardcoded to a *global* path (`~/.gemini/config/mcp_config.json`, marked
 `scope: 'global'` in graft's own target list, and captioned there as graft's own known gap
-`#62`), which its `mcpTargets(...).filter(t => opts.global !== false || t.scope !== 'global')`
+`#62`), which its `mcpTargets(...).filter((t) => opts.global !== false || t.scope !== 'global')`
 unconditionally drops whenever `--no-global` is passed — exactly the flag this repo's `graft init`
 run used. So this mission neither wrote nor was capable of writing a graft MCP entry for
 Antigravity specifically; `infra-config-adversarial-reviewer`'s Phase 4.5 pass (2026-09-13) caught
