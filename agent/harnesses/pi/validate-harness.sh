@@ -90,6 +90,7 @@ EXTENSIONS=(
     ast-grep-bridge.ts
     consensus-verifier.ts
     graphify-bridge.ts
+    graft-bridge.ts
     handoff.ts
     helix-bridge.ts
     lsp-bridge.ts

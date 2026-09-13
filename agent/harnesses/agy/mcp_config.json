@@ -1,4 +1,5 @@
 {
+  "$comment": "mcpServers.serena エントリ(docker run ghcr.io/oraios/serena、stdio transport)はこのファイルを正典とする。codegraph/filesystem/memoryのようにExecutor gateway(mcpServers.executor)へは未移行 — stdio transportのローカルcontainerであり、共有httpUrl/serverUrl方式に載せられないため意図的に対象外(agent/README.md「MCPサーバー定義の統合」節・「共通化しないもの」節参照)。agy/settings.json 側の mcpServers.serena にも同一のdocker run定義が手動ミラーとして存在する(2026-09-13時点でbyte-identicalを確認済み)。変更時はこのファイルを先に更新し、settings.json側へ手動反映すること — 自動同期の保証はない(agent/write-scope-rules.jsonの正典/ミラー方式を踏襲。ただし$commentの置き場所自体もそれに倣いmcpServers内ではなくファイルルートに置く — mcpServersはMCPクライアントがサーバー名をキーとして列挙するmapであり、そこに$commentキーを混ぜると文字列値を持つ偽サーバーエントリとして誤解釈されるため)。",
   "mcpServers": {
     "lsp-go": {
       "command": "mcp-language-server",
