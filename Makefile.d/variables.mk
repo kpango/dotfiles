@@ -110,6 +110,7 @@ MAKELISTS := \
     $(ROOTDIR)/Makefile.d/update.mk \
     $(ROOTDIR)/Makefile.d/lint.mk \
     $(ROOTDIR)/Makefile.d/devbox.mk \
+    $(ROOTDIR)/Makefile.d/game.mk \
     $(ROOTDIR)/Makefile.d/bench.mk \
     $(ROOTDIR)/Makefile.d/help.mk \
     $(ROOTDIR)/Makefile.d/variables.mk
