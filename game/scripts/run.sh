@@ -32,8 +32,34 @@ DOCKER_RUN_ARGS=(
     "-v" "${GAME_DIR}/config/dxvk.conf:/home/steam/.config/dxvk.conf:ro"
 )
 
-# 1. GPU Passthrough
+# 1. GPU Passthrough & Sanity Checks
+HAS_NVIDIA=false
 if command -v nvidia-smi >/dev/null 2>&1 || docker info 2>/dev/null | grep -qi "nvidia"; then
+    HAS_NVIDIA=true
+fi
+
+if [[ "${HAS_NVIDIA}" == "true" ]]; then
+    # Check for kernel/userspace driver mismatch (common after pacman upgrade before reboot)
+    if command -v nvidia-smi >/dev/null 2>&1; then
+        if ! nvidia-smi >/dev/null 2>&1; then
+            echo "[ERROR] 'nvidia-smi' failed. Detected NVIDIA driver and kernel module version mismatch." >&2
+            echo "[HINT] You may have recently updated NVIDIA packages. Please reboot the host system and run 'make cdi/update'." >&2
+            exit 1
+        fi
+    fi
+
+    # Check if CDI spec exists and contains missing library references
+    if [[ -f "/etc/cdi/nvidia.yaml" ]]; then
+        MISSING_CDI_FILE=$(awk '/hostPath: \/usr\/lib/ {print $2}' /etc/cdi/nvidia.yaml | while read -r p; do
+            if [[ ! -e "$p" ]]; then echo "$p"; break; fi
+        done)
+        if [[ -n "${MISSING_CDI_FILE}" ]]; then
+            echo "[ERROR] /etc/cdi/nvidia.yaml references missing file: ${MISSING_CDI_FILE}" >&2
+            echo "[HINT] Your NVIDIA driver version changed. Please reboot (if not done yet) and run 'make cdi/update' to regenerate the CDI spec." >&2
+            exit 1
+        fi
+    fi
+
     DOCKER_RUN_ARGS+=(
         "--gpus" "all"
         "-e" "NVIDIA_VISIBLE_DEVICES=all"
