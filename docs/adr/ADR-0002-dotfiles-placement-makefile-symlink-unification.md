@@ -35,7 +35,7 @@ Option 2 を選択した。面談は当初 `agent-tools.nix`（AI ツール設�
 
 home.activation は nix-darwin/home-manager の標準統合により対象ユーザーの文脈で実行される（実測: `make nix/switch` 実行ログで `"Activating home-manager configuration for yusukekato"` を確認済み）。念のため `id -u` が 0 でないことを検証する防御的ガードをスクリプト先頭に追加し、前提が崩れた場合は黙って実行せずエラー停止する。
 
-実機での `make nix/switch` 実行で、home.activation の実行環境が `home.packages`（`gnumake` 含む）を PATH に含まないことが判明した（新しい generation が「有効」になるのは activation 完了後のため）。`make: command not found` で failure したことを受け、`shared.nix` の `compileTmuxScripts` が既に採用している「`${pkgs.<name>}/bin/<name>` の絶対パス参照」パターンに倣い、`make`/`envsubst`(gettext)/`jq` を `lib.makeBinPath` で明示的に PATH へ追加した。BSD coreutils（`ln`/`mkdir`/`find`/`cp`/`chmod`）と `sudo` は元々システムの PATH に存在するため対象外。
+実機での `make nix/switch` 実行で、home.activation の実行環境が想定より遥かに最小限であることが 2 段階で判明した。1 回目は `make: command not found`（`home.packages` の `gnumake` が PATH に無い）、`make`/`envsubst`(gettext)/`jq` を個別に `lib.makeBinPath` で足して再実行したところ、2 回目は `git`/`awk`/`zsh`/`go` も同様に見つからず失敗した（`/usr/bin`/`/bin` すら確実に PATH に乗っていない）。個々のツールを失敗のたびに後追いで足すのではなく、home-manager 自身が `home.packages` の全エントリを束ねる `config.home.path`（`home-manager-path` derivation）をそのまま使い、システム標準ディレクトリ（`sudo` 等 home.packages に無いもの用）を併せて PATH に設定する方式に変更した。
 
 sudo を要する root home 共有処理（`$(ROOT_HOME)/.claude` 等、`claude/install`/`pi/install`/`agy/install` に内包）は、既存の install ターゲットをそのまま呼ぶことで維持する。`nix/switch` 実行時の対話的 sudo 認証（`nix-update.nix` の `Password:` プロンプト）のキャッシュに依存するため、資格情報キャッシュが切れている場合は activation 中に sudo の対話プロンプトが発生し activation がハングしうるという既知のトレードオフを受け入れる。
 

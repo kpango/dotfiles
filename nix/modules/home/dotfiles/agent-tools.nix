@@ -2,7 +2,7 @@
   homeDirectory,
   settings,
   lib,
-  pkgs,
+  config,
   ...
 }:
 
@@ -37,17 +37,19 @@
       exit 1
     fi
 
-    # home-manager's activation environment does not include the profile's
-    # own home.packages on PATH (chicken-and-egg: the new generation isn't
-    # "live" until activation finishes) -- confirmed on-host, where a bare
-    # `make` call here failed with "command not found" even though gnumake is
-    # in shared.nix's home.packages. Resolve every nix-provided tool this
-    # invocation (and everything install.mk shells out to: envsubst, jq) needs
-    # by absolute store path instead, matching the same pattern
-    # shared.nix's compileTmuxScripts already uses for pkgs.zsh. BSD coreutils
-    # (ln/mkdir/find/cp/chmod) and sudo come from the ambient system PATH, same
-    # as an interactive shell running `make claude/install` directly.
-    export PATH=${lib.makeBinPath [ pkgs.gnumake pkgs.gettext pkgs.jq ]}:$PATH
+    # home-manager's activation environment is far more minimal than an
+    # interactive shell -- confirmed on-host in two rounds: neither
+    # home.packages (make, go, git, zsh, gawk, gettext, jq -- everything
+    # install.mk's targets and their prerequisites shell out to) nor even
+    # /usr/bin, /bin were reliably on PATH ("make: command not found", then
+    # "git"/"awk"/"zsh"/"go" all failing the same way one level deeper).
+    # config.home.path is the same derivation home-manager itself builds to
+    # put every home.packages entry on an interactive shell's PATH (see the
+    # home-manager-path.drv this evaluates to); reuse it here instead of
+    # hand-picking individual packages one failure at a time, and append the
+    # standard system directories for anything not in home.packages (sudo,
+    # in particular).
+    export PATH="${config.home.path}/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
 
     echo "==> make -C $rootDir claude/install pi/install agy/install codex/install primeagent/install" >&2
     $DRY_RUN_CMD make -C "$rootDir" \
