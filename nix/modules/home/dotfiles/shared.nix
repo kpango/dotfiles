@@ -5,52 +5,20 @@
   ...
 }:
 
+# atuin/ghostty/sheldon/editorconfig/agy/gitattributes/gitignore/helix and the
+# rest of this module's former home.file entries were plain mirrors of repo
+# files already covered by Makefile.d/install.mk's DOTFILES_MAP. They are now
+# placed by Makefile.d/install.mk's dotfiles/install target instead (pulled in
+# as a prerequisite of the install targets nix/modules/home/dotfiles/
+# agent-tools.nix's home.activation calls) rather than re-declared here as a
+# second, hand-synced copy — see ADR-0002
+# (docs/adr/ADR-0002-dotfiles-placement-makefile-symlink-unification.md) and
+# this directory's CONTEXT.md.
+#
+# ~/.ssh/config remains intentionally NOT managed anywhere: it's a symlink
+# into the separate kpango/pass secrets repo (the real Host/IdentityFile
+# config), not this dotfiles-repo's sshconfig (a placeholder template).
 {
-  home.file = {
-    ".config/atuin/config.toml".source = "${dotfilesPath}/atuin/config.toml";
-    ".config/atuin/themes/zed_kpango.toml".source = "${dotfilesPath}/atuin/themes/zed_kpango.toml";
-    ".config/ghostty/config".source = "${dotfilesPath}/ghostty.conf";
-    # force = true: home.file's checkLinkTargets can't diff a pre-existing
-    # *directory* target for sameness (it shells out to `cmp`, which errors
-    # "Is a directory"), so on a host where Makefile.d/install.mk's
-    # dotfiles/install already symlinked this directory in (mac/install runs
-    # dotfiles/install before nix/setup), activation always refuses with
-    # "would be clobbered" — even though both sides point at the identical
-    # dotfiles-repo source. force sidesteps that dead-end.
-    ".config/ghostty/shaders" = {
-      source = "${dotfilesPath}/ghostty/shaders";
-      force = true;
-    };
-    # ghostty.conf sets `theme = zed_kpango`, which resolves against this
-    # directory. Makefile.d/install.mk's DOTFILES_MAP already maps it; this was
-    # the one dotfile pair (see ghostty-deployment plan) that never got its nix
-    # counterpart, so a nix-only host would have shaders but a missing theme.
-    ".config/ghostty/themes" = {
-      source = "${dotfilesPath}/ghostty/themes";
-      force = true;
-    };
-    ".config/sheldon/plugins.toml".source = "${dotfilesPath}/sheldon.toml";
-    # ~/.ssh/config is intentionally NOT managed here: it's a symlink into the
-    # separate kpango/pass secrets repo (the real Host/IdentityFile config),
-    # not this dotfiles-repo's sshconfig (a placeholder template). Managing it
-    # here would force-overwrite real SSH config with the template (2026-08-22).
-    ".editorconfig".source = "${dotfilesPath}/editorconfig";
-    ".agy/settings.json".source = "${dotfilesPath}/agy/settings.json";
-    ".agy/policies/rules.toml".source = "${dotfilesPath}/agy/policies/policy.toml";
-    ".gitattributes".source = "${dotfilesPath}/gitattributes";
-    ".gitignore".source = "${dotfilesPath}/.gitignore";
-    ".tmux.new-session".source = "${dotfilesPath}/tmux.new-session";
-    "go/go.env".source = "${dotfilesPath}/go.env";
-    ".config/helix/config.toml".source = "${dotfilesPath}/helix/config.toml";
-    ".config/helix/languages.toml".source = "${dotfilesPath}/helix/languages.toml";
-    # force = true: same pre-existing-directory conflict as ghostty/shaders
-    # and ghostty/themes above — see that comment.
-    ".config/helix/themes" = {
-      source = "${dotfilesPath}/helix/themes";
-      force = true;
-    };
-  };
-
   # Tmux scripts live in tmux.conf.d/ and must be real copies in ~/.zcache so
   # zcompile can write .zwc alongside them (nix-store paths are read-only).
   # Mirrors the `make dotfiles/compile` step.
