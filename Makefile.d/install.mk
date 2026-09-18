@@ -430,8 +430,22 @@ dotfiles/compile: tmux/go/install pinentry/install
 	chmod +x $(HOME)/.zcache/tmux-pl-right $(HOME)/.zcache/tmux-pl-left
 
 ## create symlinks (or copies) of all dotfiles into $HOME (MODE=link|copy)
+## symlink or copy all dotfiles to $HOME (see DEPLOY_FUNC for MODE=link|copy).
+## NIX_MANAGED=1 skips destinations a home-manager module generates more
+## richly than a plain symlink (programs.zsh's .zshrc/.zshenv, everywhere;
+## darwin.nix's Nix-built .gnupg/gpg-agent.conf, Darwin only) -- set
+## automatically by nix/modules/home/dotfiles/agent-tools.nix's
+## home.activation call, so a fresh non-nix bootstrap (arch/install,
+## mac/install's first run, before nix/setup) still gets every DOTFILES_MAP
+## entry untouched.
 dotfiles/install:
 	@echo "$$DOTFILES_MAP" | while read -r src dest; do \
+		if [ -n "$(NIX_MANAGED)" ]; then \
+			case "$$dest" in \
+				.zshrc|.zshenv) continue ;; \
+				.gnupg/gpg-agent.conf) [ "$(UNAME_S)" = Darwin ] && continue ;; \
+			esac; \
+		fi; \
 		$(call DEPLOY_FUNC,$(ROOTDIR)/$$src,$(HOME)/$$dest,); \
 	done
 ifneq ($(UNAME_S),Darwin)
