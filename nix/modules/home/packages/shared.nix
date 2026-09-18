@@ -32,6 +32,16 @@
     # toolchain) while gcc/g++ stay fully available under their own specific
     # names.
     (lib.setPrio 20 gcc)
+    # home-manager's own generated activate script resolves "orphan link
+    # cleanup" via a bare `xargs -0 bash /nix/store/.../cleanup` (no absolute
+    # path to bash) -- confirmed on-host: without a nix-provided bash on
+    # PATH, this falls through to macOS's ancient system /bin/bash (3.2,
+    # pre-dates the -v test operator home-manager.sh's setupColors uses),
+    # breaking every `nix/switch` with "conditional binary operator
+    # expected" the moment there's anything to clean up. dotfilesAgentTools
+    # Install's PATH export (agent-tools.nix) carries forward into this same
+    # activation shell, so having a real bash here is enough to fix it.
+    bash
     gnumake
     lld
     llvm
