@@ -1,31 +1,16 @@
 {
-  "runtimes": {
-    "runsc": {
-      "path": "/usr/local/bin/runsc"
-    },
-    "runu": {
-      "path": "/usr/local/bin/runu"
-    }
-  },
+  "debug": false,
   "init": true,
   "features": {
-    "containerd-snapshotter": true
+    "containerd-snapshotter": true,
+    "buildkit": true
   },
   "builder": {
     "gc": {
       "enabled": true,
-      "defaultKeepStorage": "20GB",
-      "policy": [
-        {
-          "keepStorage": "10GB",
-          "filter": ["unused-for=336h"]
-        },
-        {
-          "keepStorage": "20GB",
-          "all": true
-        }
-      ]
-    }
+      "defaultKeepStorage": "50GB"
+    },
+    "driver": "docker-container"
   },
   "log-driver": "local",
   "log-opts": {
@@ -38,26 +23,30 @@
   "userland-proxy": false,
   "no-new-privileges": true,
   "mtu": 9000,
-  "max-concurrent-downloads": 10,
-  "max-concurrent-uploads": 10,
-  "max-download-attempts": 5,
-  "shutdown-timeout": 30,
+  "max-concurrent-downloads": 24,
+  "max-concurrent-uploads": 24,
+  "max-download-attempts": 24,
+  "shutdown-timeout": 10,
+  "storage-driver": "overlay2",
+  "experimental": true,
+  "selinux-enabled": false,
   "default-ulimits": {
     "nofile": {
-      "name": "nofile",
-      "hard": 1048576,
-      "soft": 1048576
+      "Name": "nofile",
+      "Hard": 1048576,
+      "Soft": 1048576
     },
     "memlock": {
-      "name": "memlock",
-      "hard": -1,
-      "soft": -1
+      "Name": "memlock",
+      "Hard": -1,
+      "Soft": -1
     }
   },
   "ipv6": true,
   "bip": "192.168.249.1/24",
   "fixed-cidr": "192.168.249.0/25",
   "fixed-cidr-v6": "fd00:d:1::/64",
+  "default-gateway": "192.168.249.254",
   "default-address-pools": [
     {
       "base": "10.201.0.0/16",

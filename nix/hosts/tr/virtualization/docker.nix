@@ -3,107 +3,35 @@
   lib,
   hostname,
   settings,
+  dotfilesPath,
   ...
 }:
 
+let
+  # dockers/daemon.json is the single source of truth for Docker daemon
+  # settings shared across genuine Arch Linux hosts (Makefile.d/install.mk's
+  # dotfiles/install, which skips this file on NixOS) and NixOS hosts (read
+  # here and in nix/modules/nixos/virtualization/docker.nix). See
+  # docs/adr/ADR-0003-*.md. `dns` is overridden below rather than trusted from
+  # the JSON's baked-in literals: settings.network.dockerDns resolves the same
+  # IPs from the named constants in nix/core/settings.nix, so a future DNS
+  # provider change stays in sync automatically. `runtimes.runsc/runu`
+  # (gVisor, /usr/local/bin/*) is intentionally not in the shared JSON or
+  # here: tr doesn't package gVisor, and NixOS wouldn't resolve those
+  # /usr/local/bin paths anyway.
+  baseDaemonSettings = builtins.fromJSON (builtins.readFile "${dotfilesPath}/dockers/daemon.json");
+in
 {
   # ────────────────────────────────────────────────
   # Docker daemon
-  # Settings translated from /etc/docker/daemon.json
   # ────────────────────────────────────────────────
   virtualisation.docker = {
     enable = settings.virtualisation.docker.enable;
     enableOnBoot = settings.virtualisation.docker.enableOnBoot;
     autoPrune.enable = settings.virtualisation.docker.autoPrune;
 
-    daemon.settings = {
-      # Logging
-      debug = false;
-      init = true;
-      "log-driver" = "local";
-      "log-opts" = {
-        "max-size" = "10m";
-        "max-file" = "3";
-        "compress" = "true";
-      };
-
-      # Networking
-      mtu = 9000;
-      ipv6 = true;
-      bip = "192.168.249.1/24";
-      "fixed-cidr" = "192.168.249.0/25";
-      "fixed-cidr-v6" = "fd00:d:1::/64";
-      "default-gateway" = "192.168.249.254";
-      "default-address-pools" = [
-        {
-          base = "10.201.0.0/16";
-          size = 24;
-        }
-        {
-          base = "10.202.0.0/16";
-          size = 24;
-        }
-        {
-          base = "10.203.0.0/16";
-          size = 24;
-        }
-        {
-          base = "10.27.16.0/22";
-          size = 24;
-        }
-      ];
-
-      dns = settings.network.dnsmasqServers;
-      "dns-opts" = [
-        "timeout:5"
-        "ndots:1"
-      ];
-
-      # Storage
-      "storage-driver" = "overlay2";
-      "live-restore" = true;
-      experimental = true;
-      features = {
-        buildkit = true;
-      };
-      "default-shm-size" = "2g";
-
-      # Concurrency
-      "max-concurrent-downloads" = 24;
-      "max-concurrent-uploads" = 24;
-      "max-download-attempts" = 24;
-
-      # GC / builder
-      builder = {
-        gc = {
-          enabled = true;
-          defaultKeepStorage = "50GB";
-        };
-        driver = "docker-container";
-      };
-
-      # Ulimits
-      "default-ulimits" = {
-        nofile = {
-          Name = "nofile";
-          Hard = 1048576;
-          Soft = 1048576;
-        };
-        memlock = {
-          Name = "memlock";
-          Hard = -1;
-          Soft = -1;
-        };
-      };
-
-      # Security / isolation
-      "selinux-enabled" = false;
-      "userland-proxy" = false;
-      "no-new-privileges" = true;
-      "shutdown-timeout" = 10;
-
-      # Registry mirrors
-      "registry-mirrors" = [ "https://mirror.gcr.io" ];
+    daemon.settings = baseDaemonSettings // {
+      dns = settings.network.dockerDns;
     };
 
     # Expose the local hostname registry (self-signed) without TLS

@@ -435,11 +435,20 @@ dotfiles/install:
 		$(call DEPLOY_FUNC,$(ROOTDIR)/$$src,$(HOME)/$$dest,); \
 	done
 ifneq ($(UNAME_S),Darwin)
-	# Linux only: macOS uses apple/container (see nix/modules/darwin/containerization.nix),
-	# which replaces Docker/containerd and doesn't read these files — see mac/install below.
-	@$(call DEPLOY_FUNC,$(ROOTDIR)/dockers/config.json,/etc/docker/config.json,sudo)
-	@$(call DEPLOY_FUNC,$(ROOTDIR)/dockers/daemon.json,/etc/docker/daemon.json,sudo)
-	@$(call DEPLOY_FUNC,$(ROOTDIR)/arch/containerd.toml,/etc/containerd/config.toml,sudo)
+	# Linux, non-NixOS only: NixOS manages /etc/docker declaratively
+	# (nix/modules/nixos/virtualization/docker.nix, nix/hosts/tr/virtualization/
+	# docker.nix), reading this same dockers/daemon.json as its base — writing it
+	# here too would fight Nix's own /etc management and get reverted on the next
+	# nixos-rebuild switch anyway. macOS uses apple/container (see
+	# nix/modules/darwin/containerization.nix), which doesn't read these files at
+	# all — see mac/install below.
+	@[ -f /etc/NIXOS ] || $(call DEPLOY_FUNC,$(ROOTDIR)/dockers/config.json,/etc/docker/config.json,sudo)
+	@[ -f /etc/NIXOS ] || { \
+		sudo mkdir -p /etc/docker && \
+		jq '. + {"runtimes": {"runsc": {"path": "/usr/local/bin/runsc"}, "runu": {"path": "/usr/local/bin/runu"}}}' \
+			"$(ROOTDIR)/dockers/daemon.json" | sudo tee /etc/docker/daemon.json > /dev/null; \
+	}
+	@[ -f /etc/NIXOS ] || $(call DEPLOY_FUNC,$(ROOTDIR)/arch/containerd.toml,/etc/containerd/config.toml,sudo)
 endif
 	@$(MAKE) dotfiles/compile ROOTDIR='$(ROOTDIR)'
 	@$(MAKE) precompile/zsh ROOTDIR='$(ROOTDIR)'

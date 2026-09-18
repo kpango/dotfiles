@@ -1,59 +1,34 @@
-{ hostname, settings, ... }:
+{
+  hostname,
+  settings,
+  dotfilesPath,
+  ...
+}:
 
+let
+  # dockers/daemon.json is the single source of truth for Docker daemon
+  # settings shared across genuine Arch Linux hosts (deployed via
+  # Makefile.d/install.mk's dotfiles/install, which skips this file entirely
+  # on NixOS) and NixOS hosts (read here). See docs/adr/ADR-0003-*.md.
+  # `dns` is overridden below rather than trusted from the JSON's baked-in
+  # literals: settings.network.dockerDns resolves the same IPs from the named
+  # constants in nix/core/settings.nix, so a future DNS provider change stays
+  # in sync automatically for every Nix-side consumer without needing a
+  # parallel edit to dockers/daemon.json.
+  # `runtimes.runsc/runu` (gVisor, /usr/local/bin/*) is intentionally NOT in
+  # the shared JSON: NixOS doesn't use /usr/local/bin-style paths, and no
+  # NixOS host here currently packages gVisor — Makefile.d/install.mk adds it
+  # back for genuine Arch hosts only, via a jq merge at deploy time.
+  baseDaemonSettings = builtins.fromJSON (builtins.readFile "${dotfilesPath}/dockers/daemon.json");
+in
 {
   virtualisation = {
     docker = {
       enable = settings.virtualisation.docker.enable;
       enableOnBoot = settings.virtualisation.docker.enableOnBoot;
       autoPrune.enable = settings.virtualisation.docker.autoPrune;
-      daemon.settings = {
-        debug = false;
-        init = true;
-        "log-driver" = "local";
-        "log-opts" = {
-          "max-size" = "10m";
-          "max-file" = "3";
-          "compress" = "true";
-        };
+      daemon.settings = baseDaemonSettings // {
         dns = settings.network.dockerDns;
-        "dns-opts" = [
-          "timeout:5"
-          "ndots:1"
-        ];
-        "storage-driver" = "overlay2";
-        "live-restore" = true;
-        experimental = true;
-        features = {
-          buildkit = true;
-        };
-        "default-shm-size" = "2g";
-        "max-concurrent-downloads" = 24;
-        "max-concurrent-uploads" = 24;
-        "max-download-attempts" = 24;
-        "shutdown-timeout" = 10;
-        "selinux-enabled" = false;
-        "userland-proxy" = false;
-        "no-new-privileges" = true;
-        builder = {
-          gc = {
-            enabled = true;
-            defaultKeepStorage = "50GB";
-          };
-          driver = "docker-container";
-        };
-        "default-ulimits" = {
-          nofile = {
-            Name = "nofile";
-            Hard = 1048576;
-            Soft = 1048576;
-          };
-          memlock = {
-            Name = "memlock";
-            Hard = -1;
-            Soft = -1;
-          };
-        };
-        "registry-mirrors" = [ "https://mirror.gcr.io" ];
       };
       extraOptions = "--insecure-registry ${hostname}.local:${toString settings.virtualisation.docker.insecureRegistryPort}";
     };
