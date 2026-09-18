@@ -82,33 +82,118 @@
 #     generically below via mapAttrs rather than enumerated by name so any
 #     future addition to tree-sitter-grammars inherits the fix too.
 #
+#   go — `final.go_1_27` (not the default top-level `go`, which still
+#     resolves to `go_1_26` at this pinned nixpkgs revision) so that
+#     `modules/home/packages/shared.nix`'s plain `go` package satisfies
+#     go.mod files declaring `go 1.27.0`. `go_1_27` is a real GA release
+#     (verified via `nix eval …pkgs.go_1_27.version` — no `rc`/`beta` suffix),
+#     not the pre-release that existed at earlier nixpkgs revisions. See
+#     ADR-0001 §6 for the verification command.
+#
+#   golangci-lint — see docs/adr/ADR-0001-golangci-lint-nixpkgs-version-tracking.md
+#     for the full rationale. Two independent overrides are layered here:
+#
+#       1. `override { buildGo127Module = prev.buildGoModule.override { go = final.go; }; }`
+#          swaps the builder nixpkgs' package.nix pins for one that resolves
+#          to `final.go` (the same derivation `modules/home/packages/shared.nix`
+#          installs and the `go` override above sets). `prev.buildGoModule`
+#          alone is NOT the go-agnostic generic builder it looks like —
+#          nixpkgs' `all-packages.nix` defines `buildGoModule = buildGo126Module;`
+#          (a fixed alias, "the unversioned attributes should always point to
+#          the same go version"), so passing it through unmodified would
+#          silently re-pin golangci-lint to go 1.26 regardless of what `go`
+#          this overlay sets — the explicit `.override { go = final.go; }` is
+#          required to actually make a `go` version bump here force a
+#          golangci-lint rebuild (verified via `nix eval
+#          …pkgs.golangci-lint.go.version == pkgs.go.version`, ADR-0001 §6).
+#          The `buildGoNNNModule` parameter name itself tracks nixpkgs'
+#          package.nix and has already changed once (`buildGo126Module` →
+#          `buildGo127Module`, when nixpkgs bumped its own pinned default
+#          builder from go 1.26 to go 1.27) — a `nix build` failure of the
+#          form "called with unexpected argument 'buildGoNNNModule' … Did you
+#          mean buildGoMMMModule?" after a nixpkgs bump means this literal
+#          needs updating to match again.
+#       2. `.overrideAttrs` bumps `version`/`src`/`vendorHash` to track
+#          golangci-lint's own latest upstream release instead of waiting on
+#          nixpkgs' package.nix to catch up. Currently a no-op in practice —
+#          nixpkgs' own package.nix already carries the identical
+#          version/src hash/vendorHash (both are `v2.13.2`, verified
+#          2026-09-18) — but kept so this overlay stays the single source of
+#          truth per ADR-0001/CONTEXT.md Invariant-1, and so the next time
+#          nixpkgs lags behind a new upstream golangci-lint tag, only this
+#          block needs a version/hash bump (see CONTEXT.md's
+#          "バージョン更新の運用" for the fakeHash procedure).
+#          `ldflags` and `meta.changelog` are re-specified because they embed
+#          `finalAttrs.version`, which does not re-resolve across
+#          `overrideAttrs` — leaving them as `old.*` would keep baking in the
+#          previous version string.
+#
+#     Trade-off accepted: this is a go × golangci-lint combination nixpkgs
+#     has not itself validated. If a future `go` bump breaks golangci-lint's
+#     build or type-checker API compatibility, fix it here (patch, or a
+#     temporary pin back to a specific `buildGoNNNModule`) rather than
+#     reverting silently — see ADR-0001 §5.
+#
 # prmt is overridden below to skip its checkPhase; lumen needs no override,
 # it substitutes cleanly from cache.nixos.org at the pinned revision (see above).
 [
-  (_final: prev: {
-    neovim = prev.neovim.override {
-      withPython3 = true;
-      withRuby = true;
-      vimAlias = true;
-    };
-    prmt = prev.prmt.overrideAttrs (_old: {
-      doCheck = false;
-    });
-    pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
-      (pyFinal: pyPrev: {
-        datamodel-code-generator = pyPrev.datamodel-code-generator.overridePythonAttrs (_old: {
-          doCheck = false;
-        });
-        tree-sitter-grammars = builtins.mapAttrs (
-          _name: pkg:
-          if pkg ? overridePythonAttrs then
-            pkg.overridePythonAttrs (_old: {
-              dontCheckPythonMetadata = true;
-            })
-          else
-            pkg
-        ) pyPrev.tree-sitter-grammars;
-      })
-    ];
-  })
+  (
+    final: prev:
+    let
+      golangciLintVersion = "2.13.2";
+    in
+    {
+      # See the file-header comment above for why `go_1_27` (not the default
+      # top-level `go`) is selected here.
+      go = final.go_1_27;
+      neovim = prev.neovim.override {
+        withPython3 = true;
+        withRuby = true;
+        vimAlias = true;
+      };
+      golangci-lint =
+        (prev.golangci-lint.override {
+          buildGo127Module = prev.buildGoModule.override { go = final.go; };
+        }).overrideAttrs
+          (old: {
+            version = golangciLintVersion;
+            src = prev.fetchFromGitHub {
+              owner = "golangci";
+              repo = "golangci-lint";
+              tag = "v${golangciLintVersion}";
+              hash = "sha256-RbWKPIG+UK82S9W9tp/CciZ669vudh95VOfHfdQWx3M=";
+            };
+            vendorHash = "sha256-R83GeyfuZ+w30jZqFGYi0yua8E1Ey2q7/OlVmw8zDCg=";
+            ldflags = [
+              "-s"
+              "-w"
+              "-X main.version=${golangciLintVersion}"
+              "-X main.commit=v${golangciLintVersion}"
+              "-X main.date=1970-01-01T00:00:00Z"
+            ];
+            meta = old.meta // {
+              changelog = "https://github.com/golangci/golangci-lint/blob/v${golangciLintVersion}/CHANGELOG.md";
+            };
+          });
+      prmt = prev.prmt.overrideAttrs (_old: {
+        doCheck = false;
+      });
+      pythonPackagesExtensions = prev.pythonPackagesExtensions ++ [
+        (pyFinal: pyPrev: {
+          datamodel-code-generator = pyPrev.datamodel-code-generator.overridePythonAttrs (_old: {
+            doCheck = false;
+          });
+          tree-sitter-grammars = builtins.mapAttrs (
+            _name: pkg:
+            if pkg ? overridePythonAttrs then
+              pkg.overridePythonAttrs (_old: {
+                dontCheckPythonMetadata = true;
+              })
+            else
+              pkg
+          ) pyPrev.tree-sitter-grammars;
+        })
+      ];
+    }
+  )
 ]

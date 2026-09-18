@@ -7,9 +7,9 @@
     dnsovertls = "opportunistic";
     domains = [ "~." ];
     fallbackDns = settings.network.resolved.fallbackDns;
-    extraConfig = ''
-      DNS=${lib.concatStringsSep " " settings.network.resolved.dns}
-      Cache=yes
-    '';
+    settings.Resolve = {
+      DNS = lib.concatStringsSep " " settings.network.resolved.dns;
+      Cache = "yes";
+    };
   };
 }

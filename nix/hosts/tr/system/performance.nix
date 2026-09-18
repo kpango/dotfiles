@@ -40,14 +40,14 @@
   # ────────────────────────────────────────────────
   # journald limits — prevent log floods filling RAM
   # ────────────────────────────────────────────────
-  services.journald.extraConfig = ''
-    SystemMaxUse=512M
-    SystemMaxFileSize=64M
-    RuntimeMaxUse=128M
-    Compress=yes
-    RateLimitInterval=30s
-    RateLimitBurst=10000
-  '';
+  services.journald.settings.Journal = {
+    SystemMaxUse = "512M";
+    SystemMaxFileSize = "64M";
+    RuntimeMaxUse = "128M";
+    Compress = "yes";
+    RateLimitIntervalSec = "30s";
+    RateLimitBurst = 10000;
+  };
 
   # ────────────────────────────────────────────────
   # irqbalance — distribute IRQs across all 128 threads.
