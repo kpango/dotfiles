@@ -5,6 +5,7 @@
   isDarwin,
   hostname,
   homeDirectory,
+  username,
   ...
 }:
 
@@ -47,6 +48,8 @@ let
     text = ''
       flake=${lib.escapeShellArg flakeDir}
       host=${lib.escapeShellArg hostname}
+      user=${lib.escapeShellArg username}
+      home=${lib.escapeShellArg homeDirectory}
 
       echo "==> building darwinConfigurations.$host" >&2
       system=$(${nixBin}/nix build --no-link --print-out-paths \
@@ -57,6 +60,29 @@ let
 
       echo "==> activating $system" >&2
       sudo "$system/sw/bin/darwin-rebuild" activate
+
+      # Only reached once `activate` above has exited 0 (set -o errexit).
+      # home-manager's backupFileExtension = "hm-bak" (flake.nix) leaves a
+      # .hm-bak next to any pre-existing file it had to move aside; a
+      # leftover .hm-bak from a prior activation then blocks the *next*
+      # activation's own backup attempt ("Existing file ... would be
+      # clobbered"). Scoped to exactly the paths home.file manages (read
+      # back from the same evaluation, not a `find $HOME -name '*.hm-bak'`
+      # sweep) so it can never touch a .hm-bak the user created themselves
+      # outside home-manager's control.
+      echo "==> pruning stale home-manager .hm-bak backups" >&2
+      homeFiles=$(${nixBin}/nix eval --raw \
+        "$flake#darwinConfigurations.$host.config.home-manager.users.$user.home.file" \
+        --apply 'x: builtins.concatStringsSep "\n" (builtins.attrNames x)')
+      while IFS= read -r rel; do
+        [ -z "$rel" ] && continue
+        rel=''${rel#./}
+        bak="$home/$rel.hm-bak"
+        if [ -e "$bak" ]; then
+          echo "    removing $bak" >&2
+          rm -rf "$bak"
+        fi
+      done <<< "$homeFiles"
     '';
   };
 in

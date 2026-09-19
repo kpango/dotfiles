@@ -427,17 +427,39 @@ dotfiles/compile: tmux/go/install pinentry/install
 	cp $(ROOTDIR)/tmux.conf.d/pl-left  $(HOME)/.zcache/tmux-pl-left
 	chmod +x $(HOME)/.zcache/tmux-pl-right $(HOME)/.zcache/tmux-pl-left
 
-## create symlinks (or copies) of all dotfiles into $HOME (MODE=link|copy)
+## symlink or copy all dotfiles to $HOME (see DEPLOY_FUNC for MODE=link|copy).
+## NIX_MANAGED=1 skips destinations a home-manager module generates more
+## richly than a plain symlink (programs.zsh's .zshrc/.zshenv, programs.git's
+## .gitconfig, programs.tmux's .tmux.conf -- everywhere; darwin.nix's
+## Nix-built .gnupg/gpg-agent.conf, Darwin only) -- set automatically by
+## nix/modules/home/dotfiles/agent-tools.nix's home.activation call, so a
+## fresh non-nix bootstrap (arch/install, mac/install's first run, before
+## nix/setup) still gets every DOTFILES_MAP entry untouched.
 dotfiles/install:
 	@echo "$$DOTFILES_MAP" | while read -r src dest; do \
+		if [ -n "$(NIX_MANAGED)" ]; then \
+			case "$$dest" in \
+				.zshrc|.zshenv|.gitconfig|.tmux.conf) continue ;; \
+				.gnupg/gpg-agent.conf) [ "$(UNAME_S)" = Darwin ] && continue ;; \
+			esac; \
+		fi; \
 		$(call DEPLOY_FUNC,$(ROOTDIR)/$$src,$(HOME)/$$dest,); \
 	done
 ifneq ($(UNAME_S),Darwin)
-	# Linux only: macOS uses apple/container (see nix/modules/darwin/containerization.nix),
-	# which replaces Docker/containerd and doesn't read these files — see mac/install below.
-	@$(call DEPLOY_FUNC,$(ROOTDIR)/dockers/config.json,/etc/docker/config.json,sudo)
-	@$(call DEPLOY_FUNC,$(ROOTDIR)/dockers/daemon.json,/etc/docker/daemon.json,sudo)
-	@$(call DEPLOY_FUNC,$(ROOTDIR)/arch/containerd.toml,/etc/containerd/config.toml,sudo)
+	# Linux, non-NixOS only: NixOS manages /etc/docker declaratively
+	# (nix/modules/nixos/virtualization/docker.nix, nix/hosts/tr/virtualization/
+	# docker.nix), reading this same dockers/daemon.json as its base — writing it
+	# here too would fight Nix's own /etc management and get reverted on the next
+	# nixos-rebuild switch anyway. macOS uses apple/container (see
+	# nix/modules/darwin/containerization.nix), which doesn't read these files at
+	# all — see mac/install below.
+	@[ -f /etc/NIXOS ] || $(call DEPLOY_FUNC,$(ROOTDIR)/dockers/config.json,/etc/docker/config.json,sudo)
+	@[ -f /etc/NIXOS ] || { \
+		sudo mkdir -p /etc/docker && \
+		jq '. + {"runtimes": {"runsc": {"path": "/usr/local/bin/runsc"}, "runu": {"path": "/usr/local/bin/runu"}}}' \
+			"$(ROOTDIR)/dockers/daemon.json" | sudo tee /etc/docker/daemon.json > /dev/null; \
+	}
+	@[ -f /etc/NIXOS ] || $(call DEPLOY_FUNC,$(ROOTDIR)/arch/containerd.toml,/etc/containerd/config.toml,sudo)
 endif
 	@$(MAKE) dotfiles/compile ROOTDIR='$(ROOTDIR)'
 	@$(MAKE) precompile/zsh ROOTDIR='$(ROOTDIR)'

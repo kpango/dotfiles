@@ -7,10 +7,16 @@
 }:
 
 {
+  # .gnupg/gpg-agent.conf and .docker/config.json were plain mirrors of repo
+  # files already covered by Makefile.d/install.mk's DOTFILES_MAP (unlike
+  # darwin.nix's gpg-agent.conf, which substitutes in a Nix-built pinentry
+  # wrapper path and must stay Nix-managed). Removed here per ADR-0002
+  # (docs/adr/ADR-0002-dotfiles-placement-makefile-symlink-unification.md) —
+  # placed by dotfiles/install instead. The sway/waybar/fcitx5/etc. entries
+  # below stay: they mirror ARCH_LINK_MAP, the genuine-Arch-Linux-host Make
+  # path this NixOS module is a parallel implementation of, not a duplicate
+  # of anything DOTFILES_MAP already covers (CONTEXT.md Invariant-3).
   home.file = lib.mkIf isLinux {
-    ".gnupg/gpg-agent.conf".source = "${dotfilesPath}/gpg-agent.conf";
-    ".docker/config.json".source = "${dotfilesPath}/dockers/config.json";
-
     ".config/mako/config".source = "${dotfilesPath}/arch/mako.conf";
     ".config/kanshi/config".source = "${dotfilesPath}/arch/kanshi.conf";
     ".config/workstyle/config.toml".source = "${dotfilesPath}/arch/workstyle.toml";
