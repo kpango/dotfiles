@@ -20,7 +20,7 @@ Phase 1 昇格チェック（影響ファイル数基準）を補完する精密
 ### 完全判定（実装計画がある場合）
 
 1. 変更予定の file / symbol を列挙する
-2. 各 symbol の参照元を grep する（`codegraph_search` / `graphify query` があれば優先して使う）
+2. 各 symbol の参照元を grep する（`codegraph_search` があれば優先して使う）
 3. 「対象 symbol → 参照元」の対応表とともに3分類する
 
 ### 簡易判定（diff だけがある場合 — レビュー時）

@@ -233,11 +233,6 @@
     git
     git-crypt
     gnupg
-    # dockers/tools.Dockerfile pip-installs a package named `graphifyy`, which
-    # is not itself in nixpkgs, but it ships the same `graphify` binary that
-    # zsh/05-functions.zsh's graphify() wrapper calls, and nixpkgs' own
-    # `graphify` package provides that binary directly.
-    graphify
     graphviz
     gzip
     hadolint

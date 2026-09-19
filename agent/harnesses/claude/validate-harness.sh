@@ -48,7 +48,6 @@ echo "[ Hook Scripts (~/.claude/hooks/) ]"
 for hook in session-start.sh security-gate.sh write-security-gate.sh rtk-rewrite.sh \
             post-write.sh post-tool-failure.sh permission-request.sh \
             user-prompt-submit.sh session-end.sh pre-compact.sh stop-failure.sh \
-            graphify-hint.sh \
             vald-law-gate.sh vald-law2-gate.sh vald-law345-check.sh; do
     [[ -x ~/.claude/hooks/"$hook" ]] \
         && check "hook: $hook" "OK" \
@@ -58,7 +57,7 @@ done
 echo
 echo "[ Shared Rule-Data-Driven Hooks (agent/*.json 経由) ]"
 # security-gate.sh・write-security-gate.sh・vald-law-gate.sh・vald-law2-gate.sh・
-# vald-law345-check.sh・graphify-hint.shの個別テストケースはここに再実装せず、
+# vald-law345-check.shの個別テストケースはここに再実装せず、
 # claude/agy/pi横断で共有される agent/scripts/test-*.sh(単一の実体)へ委譲する。
 # 以前はここに dd/force-push/kubectl等の個別テストケースを直接ハードコードしていたが、
 # agent/security-rules.json側の修正(nvme裸コントローラ・chmodサブディレクトリ・
@@ -66,7 +65,6 @@ echo "[ Shared Rule-Data-Driven Hooks (agent/*.json 経由) ]"
 harness_run_shared_test "security-rules.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-security-rules.sh"
 harness_run_shared_test "write-scope-rules.json bash⇔Python parity (claude/agy/pi)" "$ROOT/agent/scripts/test-write-scope-parity.sh"
 harness_run_shared_test "vald-law-rules.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-vald-law-rules.sh"
-harness_run_shared_test "graphify-hint-config.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-graphify-hint.sh"
 harness_run_shared_test "supermemory shared client (claude/agy/pi)" "$ROOT/agent/scripts/test-supermemory-client.sh"
 harness_run_shared_test "merged directory root解決の回帰テスト (claude/agy/pi)" "$ROOT/agent/scripts/test-merged-dir-root-resolution.sh"
 
@@ -157,35 +155,10 @@ EXECUTOR_BIN=$(command -v executor 2>/dev/null || true)
     || check "executor binary in PATH" "MISSING (bun add -g executor)"
 
 echo
-echo "[ Graphify ]"
-GRAPHIFY_BIN=$(command -v graphify 2>/dev/null || true)
-[[ -n "$GRAPHIFY_BIN" ]] \
-    && check "graphify binary: $GRAPHIFY_BIN" "OK" \
-    || check "graphify binary in PATH" "MISSING (pip install graphify)"
-
-DOTFILES_GRAPH="$HOME/go/src/github.com/kpango/dotfiles/.claude/graph/graphify/graph.json"
-[[ -f "$DOTFILES_GRAPH" ]] \
-    && check "dotfiles .claude/graph/graphify/graph.json exists" "OK" \
-    || check "dotfiles .claude/graph/graphify/graph.json" "WARN:run: graphify ~/go/src/github.com/kpango/dotfiles"
-
 OPENAI_PKG=$(python3 -c "import openai; print('ok')" 2>/dev/null || true)
 [[ "$OPENAI_PKG" == "ok" ]] \
     && check "openai Python package (Antigravity backend)" "OK" \
     || check "openai Python package (Antigravity backend)" "WARN:run: pip install openai"
-
-for repo_label in "dotfiles:$HOME/go/src/github.com/kpango/dotfiles" "vald:$HOME/go/src/github.com/vdaas/vald"; do
-    label="${repo_label%%:*}"
-    repo="${repo_label##*:}"
-    if [[ -d "$repo/.git" ]]; then
-        hook_status=$(cd "$repo" && graphify hook status 2>/dev/null || true)
-        echo "$hook_status" | grep -q "post-commit: installed" \
-            && check "graphify post-commit hook ($label)" "OK" \
-            || check "graphify post-commit hook ($label)" "WARN:run: graphify hook install in $repo"
-        echo "$hook_status" | grep -q "post-checkout: installed" \
-            && check "graphify post-checkout hook ($label)" "OK" \
-            || check "graphify post-checkout hook ($label)" "WARN:run: graphify hook install in $repo"
-    fi
-done
 
 echo
 echo "[ Memory & Logging Infrastructure ]"

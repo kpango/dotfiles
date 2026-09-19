@@ -69,9 +69,8 @@ export async function callGraftTool(
     // args is passed as ["call", toolPath, <one JSON string>] — an argv array, not a shell
     // string — so runCliBridge's underlying node:child_process.spawn (no `shell: true`) delivers
     // the JSON blob to `executor` as a single literal argument regardless of any shell
-    // metacharacters it contains. This is the same safety property graphify-bridge.ts's
-    // tryGraphifyCli documents and regression-tests for spawnSync; see
-    // lib/graft-executor-bridge.test.ts's L1 case for this bridge's own verification.
+    // metacharacters it contains; see lib/graft-executor-bridge.test.ts's L1 case for this
+    // bridge's own regression coverage of that property.
     result = await runCliBridge({
       binary,
       args: ["call", toolPath, JSON.stringify(args)],

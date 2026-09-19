@@ -109,8 +109,6 @@ Pi provides an extensive suite of built-in TypeScript extensions and GrokBot-ins
 | `run_consensus_verification` | `/consensus`           | 3-model unanimous consensus review (Claude Sonnet 5, Gemini 3.8, GPT-6) on candidate git diff            |
 | `run_adversarial_review`     | `/adversarial-review`  | 8-lens multi-perspective adversarial review on current diff before commit/release                         |
 | `ast_grep_search`            | `/ast`                 | AST structural code search via tree-sitter patterns                                                       |
-| `graphify_query`             | `/graphify query`      | Semantic code entity and community search in `.claude/graph/graphify/graph.json`                         |
-| `graphify_explain`           | `/graphify explain`    | Neighborhood relationship and architectural cluster explanation                                          |
 | `open_in_helix`              | `/hx <file> [line]`    | Split-pane file navigation in Helix (`hx`) editor via tmux                                               |
 | `search_sessions`            | `/sessions <query>`    | Search past conversation sessions in `~/.pi/agent/sessions/` for solutions and decisions                 |
 | `harness_refine`             | `/refine`              | Continual harness self-tuning from session error signatures                                              |

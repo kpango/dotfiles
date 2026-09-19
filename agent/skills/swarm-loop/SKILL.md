@@ -171,14 +171,14 @@ DISPATCH）は frontmatter の説明のとおり（詳細は SWARM.md §0）。
 
 - **Quick**: スキップ（Phase 2 も簡略化して直接 EXECUTE へ）。
 - **Interactive**: 単一の Haiku Explore Agent を dispatch し、JSON サマリーのみ受け取る
-  （codegraph_search / graphify query / 変更対象とテストファイルのマッピング）。フルログは受け取らない。
+  （codegraph_search / graft ask / 変更対象とテストファイルのマッピング）。フルログは受け取らない。
 - **Mission**: `swarm-explore` を Skill 起動。Haiku 群（`model: haiku`）→ 秘書（`model: sonnet`）の順は
   skill 側が強制する。成果物 = 秘書レポート（Priority Queue + Root Causes）。`@fix_plan.md` の
   `## Secretary Report` 節に貼り付けて永続化する。1 ミッション原則 1 回、再探索は差分入力で範囲を絞る。
 
 ## Phase 2: PLAN（+ Grilling設計インタビュー）
 
-1. **自動解決**: codegraph/graphify で先に解決できることは解決する（類似実装の有無・テスト戦略・
+1. **自動解決**: codegraph/graft で先に解決できることは解決する（類似実装の有無・テスト戦略・
    後方互換性制約・パフォーマンス要件）。解決済みは人間への質問から除外する。
 2. **ギャップが残る場合の分岐**:
    - **Interactive**（人間がその場にいる想定）: **Grilling 設計面談プロトコル（`Skill(grill-interview)`）**を起動し、

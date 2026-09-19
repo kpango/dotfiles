@@ -44,8 +44,8 @@ whatever it powers, so keep this list current.
 | Tool            | Purpose                                        | Installation                                                                                                                    |
 | --------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `rtk`           | Bash command token optimization                | `paru -S rtk-ai-bin`                                                                                                            |
-| `graphify`      | Knowledge graph CLI                            | zsh wrapper (`pass show ai/agy` for an API key) / `pip install graphify`                                                        |
 | `codegraph`     | Code navigation (via the Executor MCP gateway) | `bun install -g @colbymchenry/codegraph`                                                                                        |
+| `graft`         | Code context graph CLI + MCP server            | `bun add -g @nanonets/graft`                                                                                                     |
 | `golangci-lint` | Go lint                                        | official install script                                                                                                         |
 | `hadolint`      | Dockerfile lint                                | `paru -S hadolint-bin`                                                                                                          |
 | `buf`           | Protobuf lint / breaking-change detection      | `go install github.com/bufbuild/buf/cmd/buf@latest`                                                                             |
@@ -53,8 +53,10 @@ whatever it powers, so keep this list current.
 | `jq`            | JSON processing (used by many hooks)           | `pacman -S jq`                                                                                                                  |
 | `flock`         | File locking for budget counters (util-linux)  | usually preinstalled on Linux; `brew install flock` on macOS (the standalone formula, not the keg-only/shadowed util-linux one) |
 
-`graphify`/`pass` depend on this personal environment's secret management (`pass show ai/agy`);
-substitute your own API-key source to reproduce this setup elsewhere.
+`pass` itself depends on this personal environment's secret management (`pass show ai/agy` was
+previously also graphify's API-key source before graphify's retirement, see
+`docs/adr/ADR-0002-graft-graphify-consolidation.md`); substitute your own API-key source to
+reproduce this setup elsewhere.
 
 ## Code Style Preferences
 

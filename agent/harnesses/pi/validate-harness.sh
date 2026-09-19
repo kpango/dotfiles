@@ -66,7 +66,6 @@ EXTENSIONS=(
     subagents.ts
     security-gate.ts
     rtk-optimizer.ts
-    graphify-hint.ts
     status-line.ts
     swarm-orchestrator.ts
     plan-mode.ts
@@ -89,7 +88,6 @@ EXTENSIONS=(
     adversarial-reviewer.ts
     ast-grep-bridge.ts
     consensus-verifier.ts
-    graphify-bridge.ts
     graft-bridge.ts
     handoff.ts
     helix-bridge.ts
@@ -108,13 +106,13 @@ EXTENSIONS=(
     stop-verify.ts
 )
 
-# security-gate.ts・graphify-hint.ts・auto-memory.ts はdecide.py委譲shim本体として、
+# security-gate.ts・auto-memory.ts はdecide.py委譲shim本体として、
 # rtk-optimizer.tsは(判定ロジック共有はないが物理配置の統一のため)agent/hooks/pi/へ実体移動済み
 # (agent-hooks-and-pi-agents-unificationミッション・後続のrtk統合作業)。リポジトリ内では
-# pi/extensions/配下に実ファイルが無いため、この4件のみ移動先を直接検査する
+# pi/extensions/配下に実ファイルが無いため、この3件のみ移動先を直接検査する
 # (デプロイ後の$HOME側では従来どおり~/.pi/agent/extensions/配下にper-file symlinkとして統合される、
 # Makefile.d/install.mk・nix/agent-tools.nix参照)。
-MOVED_TO_AGENT_HOOKS=(security-gate.ts graphify-hint.ts auto-memory.ts rtk-optimizer.ts)
+MOVED_TO_AGENT_HOOKS=(security-gate.ts auto-memory.ts rtk-optimizer.ts)
 for ext in "${EXTENSIONS[@]}"; do
     ext_path="$SCRIPT_DIR/extensions/$ext"
     for moved in "${MOVED_TO_AGENT_HOOKS[@]}"; do
@@ -224,14 +222,12 @@ done
 
 echo
 echo "[ Shared Rule-Data-Driven Hooks (agent/*.json 経由) ]"
-# claude/agy/piが共通で読む agent/security-rules.json・agent/vald-law-rules.json・
-# agent/graphify-hint-config.json の整合性は、個別テストケースをここに再実装せず
-# agent/scripts/test-*.sh(単一の実体)へ委譲する。pi実装(agent/hooks/pi/security-gate.ts等)を
-# 含めて検証されるため、ここで重複再実装しない。
+# claude/agy/piが共通で読む agent/security-rules.json・agent/vald-law-rules.json
+# の整合性は、個別テストケースをここに再実装せず agent/scripts/test-*.sh(単一の実体)へ委譲する。
+# pi実装(agent/hooks/pi/security-gate.ts等)を含めて検証されるため、ここで重複再実装しない。
 harness_run_shared_test "security-rules.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-security-rules.sh"
 harness_run_shared_test "write-scope-rules.json bash⇔Python parity (claude/agy/pi)" "$ROOT/agent/scripts/test-write-scope-parity.sh"
 harness_run_shared_test "vald-law-rules.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-vald-law-rules.sh"
-harness_run_shared_test "graphify-hint-config.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-graphify-hint.sh"
 harness_run_shared_test "supermemory shared client (claude/agy/pi)" "$ROOT/agent/scripts/test-supermemory-client.sh"
 harness_run_shared_test "merged directory root解決の回帰テスト (claude/agy/pi)" "$ROOT/agent/scripts/test-merged-dir-root-resolution.sh"
 

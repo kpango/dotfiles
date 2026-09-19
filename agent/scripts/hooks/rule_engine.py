@@ -1,6 +1,6 @@
 """claude/hooks・agy/hooks・pi/extensions で3回独立に再実装されていた判定アルゴリズムの
-単一正典実装。ルール**データ**は既に agent/security-rules.json・agent/vald-law-rules.json・
-agent/graphify-hint-config.json へ集約済み(claude/agy/pi 共通)だったが、判定ロジック自体
+単一正典実装。ルール**データ**は既に agent/security-rules.json・agent/vald-law-rules.json
+へ集約済み(claude/agy/pi 共通)だったが、判定ロジック自体
 (all_of/any_of/not_any_of の評価・force_push/git_reset_hard/vald_law2 の cd/-C ターゲット解決・
 sensitive_write_path の複数候補照合)は bash(claude)・bash+埋め込みPython(agy)・
 TypeScript(pi)で3回書かれていた。本モジュールはそれを1箇所へ統合する(2026-09-03)。
@@ -298,21 +298,3 @@ def eval_vald_law345(vald_rules: dict, file_path: str, content: str, is_vald_sco
                 violations.append(rule.get("message", rule.get("id", "")))
                 break
     return violations
-
-
-# ---------------------------------------------------------------------------
-# graphify-hint
-# ---------------------------------------------------------------------------
-
-def eval_graphify_hint(config: dict, command: str, search_bases: list[str]) -> str | None:
-    """一致すればhint_messageを返す、しなければNone。search_basesは呼び出し側が
-    claude=[cwd]・agy=workspacePaths(無ければ[os.getcwd()])・pi=[ctx.cwd] のように用意する。"""
-    pattern = config.get("command_pattern", "")
-    if not pattern or not re.search(pattern, command):
-        return None
-    relative_paths = config.get("graph_relative_paths", []) or []
-    for base in search_bases:
-        for rel in relative_paths:
-            if os.path.exists(os.path.join(base, rel)):
-                return config.get("hint_message")
-    return None

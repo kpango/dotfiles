@@ -59,13 +59,10 @@ run_suite "Security Rules Engine" "bash '$ROOT/agent/scripts/test-security-rules
 # 6. Vald Law Enforcer Engine
 run_suite "Vald Law Rules Engine" "bash '$ROOT/agent/scripts/test-vald-law-rules.sh'"
 
-# 7. Graphify Hint Engine
-run_suite "Graphify Hint Engine" "bash '$ROOT/agent/scripts/test-graphify-hint.sh'"
-
-# 8. Merged Directory Root Resolution
+# 7. Merged Directory Root Resolution
 run_suite "Merged Directory Root Resolution" "bash '$ROOT/agent/scripts/test-merged-dir-root-resolution.sh'"
 
-# 9. Pi Extensions Unit Tests
+# 8. Pi Extensions Unit Tests
 if command -v bun &>/dev/null; then
     run_suite "Pi & Extension Unit Tests" "for f in '$ROOT'/agent/harnesses/pi/extensions/lib/*.test.ts '$ROOT'/agent/hooks/pi/lib/*.test.ts; do bun run \"\$f\" || exit 1; done"
 fi

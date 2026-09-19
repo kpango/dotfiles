@@ -5,7 +5,7 @@ description: >-
   「golangci-lint のエラーを一括解析」「大量のログを解析」「関連論文・文献を調べて」など、
   単一コンテキストに収まらない横断探索・大量ログ解析・広域サーベイが必要なとき。
   境界条件: 単一ファイルの読解、既知箇所のピンポイント調査、数ファイル程度の修正には使わない
-  (通常の Read/Grep/graphify で足りる)。本 skill は読み取り専用フェーズであり、コード編集は一切行わない。
+  (通常の Read/Grep/graft で足りる)。本 skill は読み取り専用フェーズであり、コード編集は一切行わない。
   結果は必ず swarm-secretary で集約してから報告する (探索群の生ログを直接上位へ流さない)。
   対象は主に vdaas/vald と kpango/dotfiles。大規模探索は 1 ミッション原則 1 回。
 allowed-tools: [Read, Write, Grep, Glob, Bash, Agent, Workflow, Skill]

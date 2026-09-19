@@ -19,7 +19,10 @@ case "$tool" in Task | Agent) ;; *) exit 0 ;; esac
 model=$(echo "$INPUT" | jq -r '.tool_input.model // empty' 2>/dev/null || true)
 subagent=$(echo "$INPUT" | jq -r '.tool_input.subagent_type // empty' 2>/dev/null || true)
 
-# 非ブロッキングな情報提示は graphify-hint.sh と同じ additionalContext 慣行に従う
+# 非ブロッキングな情報提示は session-start.sh と同じ additionalContext 慣行に従う
+# (hookSpecificOutputでネストしadditionalContextを載せる形。同じ形を持っていたgraphify-hint.shは
+# ADR-0002でgraphify廃止に伴い削除済み。vald-law345-check.shは2026-09-03以降permissionDecision:"ask"
+# 方式に変わっており、もはや同じ慣行ではない)
 info() {
     jq -nc --arg ctx "$1" '{hookSpecificOutput: {hookEventName: "PreToolUse", additionalContext: $ctx}}' 2>/dev/null || true
 }

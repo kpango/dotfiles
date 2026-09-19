@@ -143,7 +143,7 @@ MAST 失敗分類（SWARM.md §2）では本層は主に「system design issues�
 1. **入力の確認** — 以下が揃っているか確認し、無ければ人間に要求する:
    - 秘書レポート（swarm-explore の出力）または問題の一次情報
    - 難局突破の場合: `@fix_plan.md` の失敗軌跡（5 試行分のエラーと試した対処）
-2. **調査は読み取り専用** — `graphify query` / Read / Grep に加え、上記「召集」節のホワイトリストの
+2. **調査は読み取り専用** — `graft ask` / Read / Grep に加え、上記「召集」節のホワイトリストの
    Agent/Skill を上限なく使ってよい（人間がその場で監督するため）。`Bash` は読み取り系コマンドに限る。
 3. **提案書の出力** — `/tmp/${CLAUDE_CODE_SESSION_ID:-manual}/swarm/proposals/<日付>-<題名>.md` に Write し、
    同じ内容を会話内で人間に直接提示する。リポジトリ内には書かない（採択後に人間が移す）。会話内で提示済みの

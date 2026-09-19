@@ -41,7 +41,6 @@
       "Bash(ghostty *)",
       "Bash(atuin *)",
       "Bash(pass show *)",
-      "Bash(graphify *)",
       "Bash(codegraph *)",
       "Bash(buf *)",
       "Bash(mcp-language-server *)",

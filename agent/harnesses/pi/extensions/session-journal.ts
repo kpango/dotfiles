@@ -29,8 +29,6 @@ export default function (pi: ExtensionAPI) {
     "lsp_diagnostics",
     "lsp_definition",
     "lsp_symbols",
-    "graphify_query",
-    "graphify_explain",
   ]);
 
   function getSessionId(ctx: any): string {

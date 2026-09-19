@@ -41,20 +41,6 @@
       }
     ]
   },
-  "graphify-assistant": {
-    "PreToolUse": [
-      {
-        "matcher": "run_shell_command|run_command",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash $HOME/.gemini/hooks/graphify-hint.sh",
-            "timeout": 5
-          }
-        ]
-      }
-    ]
-  },
   "post-edit-verifier": {
     "PostToolUse": [
       {
