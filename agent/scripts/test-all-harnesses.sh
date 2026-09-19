@@ -67,6 +67,10 @@ if command -v bun &>/dev/null; then
     run_suite "Pi & Extension Unit Tests" "for f in '$ROOT'/agent/harnesses/pi/extensions/lib/*.test.ts '$ROOT'/agent/hooks/pi/lib/*.test.ts; do bun run \"\$f\" || exit 1; done"
 fi
 
+# 9. Swarm Branch/Worktree Audit (swarm-loop Phase 5 完了処理の必須手順、
+# マージ済みworktree/branchの機械的な棚卸し・削除)
+run_suite "Swarm Branch/Worktree Audit" "bash '$ROOT/agent/scripts/test-swarm-branch-worktree-audit.sh'"
+
 # 10. Supermemory Shared Client (bash consumer contract: session-start hooks +
 # swarm-memory-sync's memory-guard.sh). Replaced decide.py's memory_context family
 # (removed 2026-09-10, supermemory-migration mission) — this suite is its successor.
