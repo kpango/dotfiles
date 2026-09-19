@@ -1145,6 +1145,18 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   `http://127.0.0.1:4788/mcp`（IPv4表記、下記「`claude`/`agy` の `mcpServers.executor` 呼び出し
   許可」項目・本ファイル冒頭の「## MCP サーバー定義の統合」節参照）であり、上記の実測が一般化する
   なら、この設定はdaemonの実際のbind先（IPv6ループバック）と一致しない可能性がある。
+  **追記（2026-09-19、executor-sh-effectivenessミッション）**: 上記の不一致を本ミッションで
+  `curl` により再実測し、6日後も同一挙動（`http://127.0.0.1:4788/mcp` は接続拒否 `errno=7`、
+  `http://localhost:4788/mcp`・`http://[::1]:4788/mcp` は `401 Unauthorized` で daemon が応答）が
+  再現することを確認した — 単発の環境依存ではなく安定した挙動と判断し、`agent/harnesses/claude/
+  settings.json`・`agent/harnesses/pi/mcp.json`・`agent/harnesses/agy/mcp_config.json` の
+  `mcpServers.executor` エンドポイントを3件とも `127.0.0.1` から `localhost` へ変更した。ただし
+  この修正がClaude Code等のMCPクライアント経由での実際の接続成立まで解決するかは**未検証のまま**
+  である — MCPサーバー接続はセッション開始時に確立されるため、今回の設定変更を反映した次回
+  セッション起動時に `mcp__executor__*` ツールが実際にツール一覧へ現れるか確認すること。また
+  `401 Unauthorized`（`www-authenticate: Bearer realm="executor"`）が示す認証ハンドシェイクを
+  MCPクライアントが自動で完了できるかも別途確認が必要（`~/.executor/server-control/auth.json`
+  に何らかのトークンが保持されている可能性があるが、本ミッションでは読んでいない）。
 - **`agy/settings.json` の `mcpServers` がExecutor移行時に未更新だった問題**: 解消済み（2026-09-03）。
   `agy/mcp_config.json`（Antigravity CLI が読む）は `b06a8e86` で `codegraph`/`filesystem`/`memory` を
   `executor` へ集約済みだったが、`agy/settings.json`（Google公式 Gemini CLI が
