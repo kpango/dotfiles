@@ -445,7 +445,14 @@ failure`として扱い、次試行の入力にFindingsを反映する（既存�
      集約、`--mission`は自動付与。fable カウンタ・未消費 grant も掃除されるが、`fable-spot-log.jsonl` は
      観測記録のため削除しない。**Option 2/3では本手順のみ実行し、上記のworktree回収手順は実行しない**）→
      `@fix_plan.md` を削除またはアーカイブ →
-     最終レポート（done/blocked 一覧・学び・残課題・auto-memory 反映件数）を提示して終了。
+   **リポジトリ全体の棚卸し・清掃（Option 1/4 のみ、必須手順）**: 本ミッション自身のworktree回収の直後に
+   `bash agent/scripts/swarm-branch-worktree-audit.sh --base <base-branch>` をmain treeルートから
+   実行する。base branchへ完全マージ済みで作業ツリーがクリーンなworktree/branchを機械的に検出・削除する
+   （過去セッションの積み残し分も含め横断的に対象とする — 「マージ済みのものから消していって」という
+   定型依頼の機械化。未マージ・未コミット差分ありのものは自動的にskipされ絶対に削除しない、詳細は同
+   スクリプトの安全性設計を参照）。結果（削除件数・skip件数と理由）を最終レポートに含める。dry-runで
+   確認したい場合は `--dry-run` を付けて先に一度走らせてよい。→
+   最終レポート（done/blocked 一覧・学び・残課題・auto-memory 反映件数）を提示して終了。
 5. **Quick モードの完了処理**: `@fix_plan.md` が無いため、テスト全通過を確認し、変更要約を提示する。
    ミッションworktreeは常に存在するため、上記 3. と同じ完了メニュー（1.ローカルマージ 2.Push+PR 3.保持 4.破棄）を提示し、選択に応じて上記 4. の「ミッションworktree自体の統合・回収」手順のみを
    実行する（タスク単位worktree回収・budget掃除・軌跡ログ追記は対象外 — Quickはそれらの状態を
