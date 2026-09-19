@@ -56,6 +56,18 @@
           }
         ]
       }
+    ],
+    "ConfigChange": [
+      {
+        "matcher": "project_settings",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/helpers/graft-integrity-check.cjs\"",
+            "timeout": 5000
+          }
+        ]
+      }
     ]
   },
   "statusLine": {

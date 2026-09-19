@@ -131,7 +131,10 @@ fail-safe パターン）。
    `disable-model-invocation: true` のため Skill tool から起動不能であり、人間の `/swarm-meta` 明示
    招集そのものが自走ループ起動の承認を構成する。加えて `disable-model-invocation: true` +
    `user-invocable: true` の組み合わせで skill がセッションのスキル一覧から消える既知不具合の報告が
-   ある（GitHub anthropics/claude-code #26251・#43875）— 本手順がファイル実在のみを根拠にし Skill tool
+   ある（GitHub anthropics/claude-code #26251・#43875、いずれも duplicate として close 済み、
+   2026-09-19 に GitHub 直接 fetch で確認 — だが同型バグ自体は解消していない。`#95469`
+   （2026-09-18 作成、2026-09-19 の DeepResearch 実施時点で Open。GitHub 側の状態は以後変わりうる
+   未検証情報）等の後続 issue で再発が継続している）— 本手順がファイル実在のみを根拠にし Skill tool
    の一覧表示に依存しないのは、この不具合を実質的に回避する設計になっている。
 3. harness-plan の要約を `@fix_plan.md` の `## Harness Plan` 節に永続化する（dispatch先の Phase 0/G0 が
    ミッションworktreeを割当て `mission-init.sh` を実行した後 — `@fix_plan.md` はミッションworktree内に

@@ -60,6 +60,17 @@ grep だけでは検出できない点に注意）へ引き継ぐ。SKILL.md/hoo
 > 出典: [MCP 公式 changelog](https://modelcontextprotocol.io/specification/2026-07-28/changelog)
 > 「Major changes」項目7・「Deprecated」項目1を2026-08-26にWebFetchで直接照合。
 
+**2026-09-20 追記（クライアント側の既定値変化、上記サーバー側仕様とは別軸）**: 上記はサーバーが
+2026-07-28 仕様に追従しているかの棚卸しだが、Claude Code 自身の MCP **クライアント**側の既定値も
+Claude Code 2.1.274（CHANGELOG 直接確認）で変化した — Bedrock・Vertex・Foundry・telemetry-disabled
+installも含め、direct HTTP サーバーに対し v2 MCP client + 2026-07-28 negotiation をデフォルトで使うよう
+変更され、legacy negotiation がデフォルトの install type は実質的に無くなった（opt-out:
+`MCP_SDK_GENERATION=v1` または `MCP_PROTOCOL_NEGOTIATION=legacy`）。同時に `"type": "sdk"` の MCP
+エントリは `.mcp.json`・settings・plugins・agent files のいずれでも警告付きで無視されるようになった
+（in-process SDK host application 専用のため）。本棚卸し skill を実行する際は、この変更によりサーバー側の
+追従状況チェック（本節）の相対的な重要性が上がっている点に留意する（クライアント側は既に新仕様を
+前提に動くため、サーバー側が旧仕様のままだとフォールバックの余地がより小さくなる）。
+
 ## 2. 対象インベントリの洗い出し
 
 以下のコマンドで棚卸し対象を機械的に列挙する(推測せず実測する — `verify-before-assert.md` 準拠)。

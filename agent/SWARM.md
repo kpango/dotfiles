@@ -199,6 +199,14 @@ Multi-Agent System Failure Taxonomy（MAST、150 件超の専門家注釈トレ�
   solver と verifier の推論分布が近いほど verifier が誤りを見逃しやすく、self-verification や intra-family
   verification は cross-family verification（系列の異なるモデル・手法）に劣ることが示されている（一次ソースの
   みで adversarial 検証は未完了 — `SWARM_REFERENCES.md` 参照。ただし複数独立研究で一貫した方向性）。
+  - **追加の留保（2026-09-20 DeepResearch）**: 「cross-family であれば十分」という単純化にも注意が要る。
+    9 judge・7 モデル系列のパネルでも実効独立票数は約 2 票に留まるという知見自体は**確定**扱い
+    （Nine Judges Two Effective Votes、`SWARM_REFERENCES.md` 参照）。一方「原因はベンダー系列ではなく
+    判定対象の表層形式（surface form）の共有」という**因果**説明は、agent-swarm の judge パネルとは
+    別設定（GRPO 型 RL 訓練の rollout group）での単一プレプリント・未複製の報告であり確度は低い
+    （`SWARM_REFERENCES.md` 参照。数値の確定度と因果説明の確度を混同しないこと）。本基盤は元々パネル
+    合議ではなく「hook 第一権威・Checker 単独判定」方式のため設計自体への影響は無いが、将来 Checker を
+    複数化する場合はこの限界（確定した数値の部分のみ）を前提に含めること。
   - この限界への対処: **決定論的ツール（golangci-lint / hadolint / gofmt / make test）を第一権威とし、Opus
     Checker の LLM 判定は補助的 heuristic として扱う**。Stop hook・PostToolUse hook の機械的検証結果に反する
     Checker の「合格」判定は無効。両者が食い違う場合は hook 側を優先し、Checker には理由を再提示させる。
