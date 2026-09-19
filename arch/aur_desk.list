@@ -4,6 +4,7 @@ acpi_call-dkms
 alacritty
 alsa-utils
 amd-ucode
+antigravity-cli
 archlinux-keyring
 atuin-git
 autoconf
@@ -128,6 +129,7 @@ profile-sync-daemon
 psensor
 pulseaudio-alsa
 rancher-k3d-beta-bin
+ranger
 rate-mirrors-bin
 rclone
 rebuild-detector

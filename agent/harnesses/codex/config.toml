@@ -15,3 +15,7 @@ mode = "workspace-write"
 
 [projects."/home/kpango/go/src/github.com/kpango/dotfiles"]
 trust_level = "trusted"
+
+[mcp_servers.graft]
+command = "graft"
+args = ["mcp"]
