@@ -190,10 +190,6 @@ chword() {
 	fi
 }
 
-graphify() {
-	AGY_API_KEY="$(pass show ai/agy 2>/dev/null)" GRAPHIFY_OUT=".claude/graph/graphify" command graphify "$@"
-}
-
 # duk [DIR] [K] — ディスク使用量 Top-K ディレクトリを表示 (デフォルト: DIR=/, K=10)
 # -x を使わないことで bind mount 先も正確に集計する
 duk() {

@@ -44,8 +44,8 @@ whatever it powers, so keep this list current.
 | Tool            | Purpose                                        | Installation                                                                                                                    |
 | --------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `rtk`           | Bash command token optimization                | `paru -S rtk-ai-bin`                                                                                                            |
-| `graphify`      | Knowledge graph CLI                            | zsh wrapper (`pass show ai/agy` for an API key) / `pip install graphify`                                                        |
 | `codegraph`     | Code navigation (via the Executor MCP gateway) | `bun install -g @colbymchenry/codegraph`                                                                                        |
+| `graft`         | Code context graph CLI + MCP server            | `bun add -g @nanonets/graft`                                                                                                     |
 | `golangci-lint` | Go lint                                        | official install script                                                                                                         |
 | `hadolint`      | Dockerfile lint                                | `paru -S hadolint-bin`                                                                                                          |
 | `buf`           | Protobuf lint / breaking-change detection      | `go install github.com/bufbuild/buf/cmd/buf@latest`                                                                             |
@@ -53,8 +53,10 @@ whatever it powers, so keep this list current.
 | `jq`            | JSON processing (used by many hooks)           | `pacman -S jq`                                                                                                                  |
 | `flock`         | File locking for budget counters (util-linux)  | usually preinstalled on Linux; `brew install flock` on macOS (the standalone formula, not the keg-only/shadowed util-linux one) |
 
-`graphify`/`pass` depend on this personal environment's secret management (`pass show ai/agy`);
-substitute your own API-key source to reproduce this setup elsewhere.
+`pass` itself depends on this personal environment's secret management (`pass show ai/agy` was
+previously also graphify's API-key source before graphify's retirement, see
+`docs/adr/ADR-0002-graft-graphify-consolidation.md`); substitute your own API-key source to
+reproduce this setup elsewhere.
 
 ## Code Style Preferences
 
@@ -228,8 +230,6 @@ Pi provides an extensive suite of built-in TypeScript extensions and GrokBot-ins
 | `run_consensus_verification` | `/consensus`           | 3-model unanimous consensus review (Claude Sonnet 5, Gemini 3.8, GPT-6) on candidate git diff            |
 | `run_adversarial_review`     | `/adversarial-review`  | 8-lens multi-perspective adversarial review on current diff before commit/release                         |
 | `ast_grep_search`            | `/ast`                 | AST structural code search via tree-sitter patterns                                                       |
-| `graphify_query`             | `/graphify query`      | Semantic code entity and community search in `.claude/graph/graphify/graph.json`                         |
-| `graphify_explain`           | `/graphify explain`    | Neighborhood relationship and architectural cluster explanation                                          |
 | `open_in_helix`              | `/hx <file> [line]`    | Split-pane file navigation in Helix (`hx`) editor via tmux                                               |
 | `search_sessions`            | `/sessions <query>`    | Search past conversation sessions in `~/.pi/agent/sessions/` for solutions and decisions                 |
 | `harness_refine`             | `/refine`              | Continual harness self-tuning from session error signatures                                              |

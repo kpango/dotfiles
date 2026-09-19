@@ -56,7 +56,6 @@ const SAFE_COMMAND_PREFIXES = [
   "which",
   "whereis",
   "rtk",
-  "graphify",
 ];
 
 export function isSafeCommand(cmd: string): boolean {

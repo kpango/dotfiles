@@ -101,15 +101,15 @@ done
 
 echo
 echo "[ Lifecycle Hooks ($SCRIPT_DIR/hooks/ + $ROOT/agent/hooks/agy/) ]"
-# security-gate.sh・graphify-hint.sh・vald-law-gate.sh・session-start.shはdecide.py委譲shim本体として、
+# security-gate.sh・vald-law-gate.sh・session-start.shはdecide.py委譲shim本体として、
 # rtk-rewrite.shは(判定ロジック共有はないが物理配置の統一のため)agent/hooks/agy/へ実体移動済み
 # (agent-hooks-and-pi-agents-unificationミッション・後続のrtk統合作業)。リポジトリ内では
-# agy/hooks/配下に実ファイルが無いため、この5件のみ移動先を直接検査する(デプロイ後の$HOME側では
+# agy/hooks/配下に実ファイルが無いため、この4件のみ移動先を直接検査する(デプロイ後の$HOME側では
 # 従来どおり~/.agy/hooks・~/.gemini/hooks配下にper-file symlinkとして統合される、
 # Makefile.d/install.mk・nix/agent-tools.nix参照)。post-edit-lint.shはagy固有の非shimのまま
 # agy/hooks/に残る。
-MOVED_TO_AGENT_HOOKS=(security-gate.sh graphify-hint.sh vald-law-gate.sh session-start.sh rtk-rewrite.sh)
-for hook in security-gate.sh rtk-rewrite.sh graphify-hint.sh vald-law-gate.sh session-start.sh post-edit-lint.sh; do
+MOVED_TO_AGENT_HOOKS=(security-gate.sh vald-law-gate.sh session-start.sh rtk-rewrite.sh)
+for hook in security-gate.sh rtk-rewrite.sh vald-law-gate.sh session-start.sh post-edit-lint.sh; do
     hook_path="$SCRIPT_DIR/hooks/$hook"
     for moved in "${MOVED_TO_AGENT_HOOKS[@]}"; do
         [[ "$hook" == "$moved" ]] && hook_path="$ROOT/agent/hooks/agy/$hook"
@@ -172,19 +172,18 @@ done
 
 echo
 echo "[ Shared Rule-Data-Driven Hooks (agent/*.json 経由) ]"
-# security-gate.sh・vald-law-gate.sh・graphify-hint.shの個別テストケースはここに再実装せず、
+# security-gate.sh・vald-law-gate.shの個別テストケースはここに再実装せず、
 # claude/agy/pi横断で共有される agent/scripts/test-*.sh(単一の実体)へ委譲する。
 harness_run_shared_test "security-rules.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-security-rules.sh"
 harness_run_shared_test "write-scope-rules.json bash⇔Python parity (claude/agy/pi)" "$ROOT/agent/scripts/test-write-scope-parity.sh"
 harness_run_shared_test "vald-law-rules.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-vald-law-rules.sh"
-harness_run_shared_test "graphify-hint-config.json driven hooks (claude/agy/pi)" "$ROOT/agent/scripts/test-graphify-hint.sh"
 harness_run_shared_test "supermemory shared client (claude/agy/pi)" "$ROOT/agent/scripts/test-supermemory-client.sh"
 harness_run_shared_test "merged directory root解決の回帰テスト (claude/agy/pi)" "$ROOT/agent/scripts/test-merged-dir-root-resolution.sh"
 
 echo
 echo "[ Agy固有hookの複数cwd横断スモークテスト ]"
 # session-start.sh・rtk-rewrite.sh・post-edit-lint.shはagy固有(共有ルールデータを持たない)ため、
-# ここに残す。security-gate/vald-law-gate/graphify-hintは上記の共有テストへ委譲済みのため
+# ここに残す。security-gate/vald-law-gateは上記の共有テストへ委譲済みのため
 # このマトリクスから除外した(重複実装の解消)。
 SCRIPT_DIR_EXP="$SCRIPT_DIR" AGENT_HOOKS_AGY_EXP="$ROOT/agent/hooks/agy" python3 -c '
 import json, os, subprocess, sys

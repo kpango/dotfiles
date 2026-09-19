@@ -12,7 +12,6 @@ stdinで正規化済みJSONを受け取り、stdoutへ正規化済みの決定JS
   vald_law1:        {family, file_path, vald_rules_file}
   vald_law2:        {family, command, cwd, vald_rules_file, scope_mode, workspaces?}
   vald_law345:      {family, file_path, content, vald_rules_file, scope_mode, cwd?, workspaces?}
-  graphify_hint:    {family, command, config_file, search_bases}
 
 出力(stdoutのJSON、1行):
   {"decision": "allow"|"ask"|"block", "reason": "...", "matches": [...]}
@@ -183,16 +182,6 @@ def handle_vald_law345(req: dict):
     _out("allow")
 
 
-def handle_graphify_hint(req: dict):
-    config = _load_json(req["config_file"])
-    if not config:
-        _out("allow", "config file missing/invalid (fail-open)")
-    hint = re_.eval_graphify_hint(config, req.get("command", ""), req.get("search_bases", []))
-    if hint:
-        _out("allow", hint, hint=hint)
-    _out("allow")
-
-
 HANDLERS = {
     "security_shell": handle_security_shell,
     "security_write": handle_security_write,
@@ -200,7 +189,6 @@ HANDLERS = {
     "vald_law1": handle_vald_law1,
     "vald_law2": handle_vald_law2,
     "vald_law345": handle_vald_law345,
-    "graphify_hint": handle_graphify_hint,
 }
 
 

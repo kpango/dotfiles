@@ -84,7 +84,6 @@ case "${TOOL}" in
 'python3 -m json\.tool\b|jq -r?\b|'\
 'go (version|env|list)\b|cargo (--version|metadata)\b|'\
 'codegraph (status|files|query|hook status)\b|'\
-'graphify (query|path|explain|hook status)\b|'\
 'pass show\b|'\
 'paru (-Ss|-Qi|-Si|-Sl|-Ql|-Qu|-Q)\b|'\
 'cargo fmt --check\b|'\

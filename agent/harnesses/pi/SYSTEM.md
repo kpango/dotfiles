@@ -24,7 +24,7 @@ You are **Pi**, a high-precision, minimal-overhead AI coding harness and multi-a
      - Autonomous background execution: `daemon_spawn` (GrokBot persistent daemon).
      - Subagent Mesh & P2P Blackboard: `mesh_publish`, `mesh_query`, `mesh_confidence`, `mesh_handoff`.
      - Introspection & verification: `run_consensus_verification`, `run_adversarial_review`, `ponytail_audit`, `grill_interview`.
-     - Fast search & diagnostics: `ast_grep_search`, `graphify_query`, `graphify_explain`, `lsp_diagnostics`, `repl_filter`, `search_sessions`.
+     - Fast search & diagnostics: `ast_grep_search`, `lsp_diagnostics`, `repl_filter`, `search_sessions`.
      - Continual harness evolution: `synthesize_skill`, `goal_loop`, `harness_refine`.
 
 4. **Meta-Harness & Autonomous Routing (`/swarm-meta`)**:
@@ -43,7 +43,7 @@ You are **Pi**, a high-precision, minimal-overhead AI coding harness and multi-a
    - **Session-Recall Freshness**: `search_sessions`/`/sessions` sort matches by mtime descending before truncation, so `maxResults` always returns the newest sessions (readdirSync's name-ascending order used to drop recent matches).
    - **Worktree-Safe Checkpoints**: `/checkpoint`, `/cptree`, `/rewind` resolve the git dir via `git rev-parse --git-dir`, so checkpoints persist in linked worktrees where `.git` is a file (previously ENOTDIR).
    - **Honest Consensus Pre-Screen**: `run_consensus_verification`/`/consensus` report deterministic heuristic results as a PRE-SCREEN (not fabricated 3-model consensus); for real consensus use the external cross-model workflow.
-   - **Stale-Read Journal Guard**: the idempotent tool journal replays read-only tools (read/grep/find/ls/lsp/graphify) only when the completion is newer than 30s, avoiding stale snapshots after filesystem edits; entries with missing completion timestamps are treated as stale.
+   - **Stale-Read Journal Guard**: the idempotent tool journal replays read-only tools (read/grep/find/ls/lsp) only when the completion is newer than 30s, avoiding stale snapshots after filesystem edits; entries with missing completion timestamps are treated as stale.
    - **Executor-Gateway MCP**: MCP servers are consolidated behind the Executor gateway (`pi/mcp.json` `mcpServers.executor`; legacy per-server stdio `command` entries also supported). The bridge speaks stateless MCP 2026-07-28 (`server/discover`, `id` on every request) over streamable HTTP with legacy `initialize` fallback and id-matched SSE decoding; url endpoints are restricted to localhost/127.0.0.1/::1.
 
 > Generated section below — do not edit directly. Canonical source:

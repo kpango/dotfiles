@@ -825,12 +825,13 @@ pinentry/update:
 	    exit 1; \
 	fi
 
-## initialize .claude/graph/{graphify,codegraph} output dirs and, if a real
+## initialize .claude/graph/codegraph output dir and, if a real
 ## .codegraph/ exists from before this migration, move its data behind a
 ## symlink (CODEGRAPH_DIR only accepts a single path segment, so a multi-level
 ## output path needs this symlink indirection). Idempotent — safe to re-run.
+## (Previously also initialized .claude/graph/graphify — removed with graphify's
+## retirement, see docs/adr/ADR-0002-graft-graphify-consolidation.md.)
 graph/init:
-	mkdir -p $(ROOTDIR)/.claude/graph/graphify
 	@if [ -e "$(ROOTDIR)/.codegraph" ] && [ ! -d "$(ROOTDIR)/.codegraph" ] && [ ! -L "$(ROOTDIR)/.codegraph" ]; then \
 		mv "$(ROOTDIR)/.codegraph" "$(ROOTDIR)/.codegraph.bak-$$(date +%s)"; \
 		echo "warning: .codegraph was neither a directory nor a symlink — moved aside to .codegraph.bak-*"; \

@@ -1,5 +1,5 @@
 /**
- * lib/graft-executor-bridge.ts の実機テスト(graphify-bridge.test.ts と同じ手作り
+ * lib/graft-executor-bridge.ts の実機テスト(graft-bridge.test.ts と同じ手作り
  * check()/pass/fail 集計規約)。
  *
  * `executor` バイナリを直接叩くのではなく、テスト専用のスタブ実行ファイル(bash script)を
@@ -120,7 +120,7 @@ async function main() {
     check("timeout resolves well under the 5s sleep", elapsedMs < 4500, `elapsed=${elapsedMs}ms`);
   }
 
-  // 7. L1 injection regression (mirrors graphify-bridge.test.ts's L1 case): a
+  // 7. L1 injection regression (mirrors graft-bridge.test.ts's L1 case): a
   //    query containing shell metacharacters must reach the spawned process as
   //    ONE literal argv element and never be shell-interpreted anywhere along
   //    this bridge's own call path. The stub captures its raw argv (via

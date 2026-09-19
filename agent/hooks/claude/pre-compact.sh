@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# PreCompact hook — update knowledge graph and record state before context compaction
+# PreCompact hook — record session/git state before context compaction
+# (previously also ran `graphify update .` here; removed with graphify's retirement,
+# see docs/adr/ADR-0002-graft-graphify-consolidation.md)
 set -euo pipefail
 
 INPUT=$(cat || true)
@@ -21,16 +23,6 @@ if git rev-parse --git-dir >/dev/null 2>&1; then
     GIT_INFO=" repo=${REPO}@${BRANCH} dirty=${DIRTY}"
 fi
 
-# Update graphify knowledge graph if available and graph exists
-GRAPH_RESULT="skipped"
-if command -v graphify &>/dev/null && [[ -f ".claude/graph/graphify/graph.json" ]]; then
-    if GRAPHIFY_OUT=".claude/graph/graphify" graphify update . >/dev/null 2>&1; then
-        GRAPH_RESULT="updated"
-    else
-        GRAPH_RESULT="failed"
-    fi
-fi
-
-echo "${TIMESTAMP} pre-compact session=${SESSION_ID:0:8}${GIT_INFO} graph=${GRAPH_RESULT}" >> "${LOG_DIR}/sessions.log"
+echo "${TIMESTAMP} pre-compact session=${SESSION_ID:0:8}${GIT_INFO}" >> "${LOG_DIR}/sessions.log"
 
 python3 -c "import json; print(json.dumps({'continue': True}))"

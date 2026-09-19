@@ -4,7 +4,7 @@
  * No other extension's test file in this directory constructs a fake ExtensionAPI/ctx and
  * exercises registered `pi.on(...)` handlers directly (confirmed by grepping
  * agent/harnesses/pi/extensions/lib/*.test.ts for `pi.on`/`ExtensionAPI`/fake-api patterns before
- * writing this file — no hits); `plan-mode.test.ts`/`graphify-bridge.test.ts`/
+ * writing this file — no hits); `plan-mode.test.ts`/`graft-bridge.test.ts`/
  * `status-line.test.ts` only test pure functions exported alongside each default export. This
  * file designs a minimal harness for that purpose, in the absence of any existing precedent:
  *   - a fake ExtensionAPI (`createFakePi`) that records registered handlers by event name and

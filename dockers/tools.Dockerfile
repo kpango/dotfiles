@@ -47,7 +47,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --break-system-packages \
         mbake \
         beautysh \
-        graphifyy \
         --prefix /usr/local
 
 # --- Antigravity CLI Layer ---

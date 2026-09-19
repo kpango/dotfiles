@@ -1169,10 +1169,11 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   （未着手）**: `agy/settings.json.hooks` は `"BeforeTool"` というイベント名で `rtk hook agy`（rtk
   バイナリ自身の組み込みサブコマンド、dotfiles側の `agent/hooks/agy/rtk-rewrite.sh` とは別物）だけを実行する
   設定を持つ。これは `agy/hooks/hooks.json`（`"PreToolUse"`/`"PostToolUse"` イベント名、
-  security-gate/vald-law-enforcer/graphify-assistant/post-edit-verifier等をフル装備）とは全く別の、
+  security-gate/vald-law-enforcer/post-edit-verifier等をフル装備。`graphify-assistant`は
+  `docs/adr/ADR-0002-graft-graphify-consolidation.md`によるgraphify廃止で削除済み）とは全く別の、
   Gemini CLI固有の独立したhooks設定である可能性が高い（上記のmcpServers同様、Gemini CLIと
   Antigravity CLIが別々の設定ファイルを読む2バイナリ構成だと推測される）。もしユーザーが実際に
-  素の `gemini` CLIバイナリを使う場合、そちらには現状 security-gate/vald-law/graphify-hint の
+  素の `gemini` CLIバイナリを使う場合、そちらには現状 security-gate/vald-law の
   保護が一切効いていないことになる。実機でどちらのバイナリを使っているか・gemini-cli単体の
   hooks機構がPreToolUse相当のblock/ask/allow分岐をサポートするか、次回フォローアップで確認要
   （2026-09-03のAI関連dotfiles横断調査で発見、今回は調査対象4件の合意スコープ外のため未着手）。

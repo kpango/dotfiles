@@ -176,36 +176,17 @@ telepresence.log
 *.zwc
 .zcompdump
 .codegraph
-# .claude/graph/codegraph/ stays fully ignored (local-only codegraph MCP index,
-# not covered by GRAPHIFY_OUT below). .claude/graph/graphify/ is carved out
-# below to share a curated subset with contributors via git.
+# .claude/graph/codegraph/ stays fully ignored (local-only codegraph MCP index).
 # NOTE: kpango's personal ~/.gitignore ALSO blanket-ignores .claude/graph/;
 # the explicit `!.claude/graph/` re-include below is required to override that
 # global rule for THIS repo specifically (repo .gitignore > core.excludesFile
 # precedence, but an ancestor-dir exclude from either source still blocks
 # descent unless something re-includes the directory itself). Verified with
-# `git check-ignore -v` before relying on this pattern.
+# `git check-ignore -v` before relying on this pattern. (graphify, which used
+# to carve out a shared subset of .claude/graph/ here, was retired in favor of
+# graft — see docs/adr/ADR-0002-graft-graphify-consolidation.md.)
 !.claude/graph/
 .claude/graph/*
-!.claude/graph/graphify/
-.claude/graph/graphify/*
-# Shared knowledge-graph index (committed so contributors don't have to
-# rebuild/re-label from scratch; graph.json has a graphify-provided git merge
-# driver — see .gitattributes + `graphify hook install`).
-!.claude/graph/graphify/graph.json
-!.claude/graph/graphify/GRAPH_REPORT.md
-!.claude/graph/graphify/manifest.json
-!.claude/graph/graphify/.graphify_labels.json
-!.claude/graph/graphify/.graphify_labels.json.sig
-# Deliberately still local-only: graph.html (large regenerable viewer, no
-# merge driver), cost.json (personal API spend), .graphify_root (records an
-# absolute path — not portable across contributors' clones), cache/ (churns
-# every build with no merge driver, would conflict across contributor branches).
-
-# graphify's default output dir name (GRAPHIFY_OUT unset, e.g. non-interactive
-# shells that skip the graphify() zsh wrapper). The wrapper redirects real
-# output to .claude/graph/graphify/ above; this only catches the stray fallback.
-graphify-out/
 
 **/.claude/settings.local.json
 
