@@ -47,20 +47,18 @@
 #     bugs in graphify's own transitive Python dependencies (a build-time
 #     datamodel-code-generator test-fixture mismatch, and a tree-sitter-grammars
 #     dist-info naming bug across the 21 grammar languages graphify depended on).
-#     Removed together with the `graphify` package itself — see
-#     docs/adr/ADR-0002-graft-graphify-consolidation.md. No other package in this
-#     flake depends on either attribute (confirmed by grep before removal).
+#     Removed together with the `graphify` package itself. No other package
+#     in this flake depends on either attribute (confirmed by grep before
+#     removal).
 #
 #   go — `final.go_1_27` (not the default top-level `go`, which still
 #     resolves to `go_1_26` at this pinned nixpkgs revision) so that
 #     `modules/home/packages/shared.nix`'s plain `go` package satisfies
 #     go.mod files declaring `go 1.27.0`. `go_1_27` is a real GA release
 #     (verified via `nix eval …pkgs.go_1_27.version` — no `rc`/`beta` suffix),
-#     not the pre-release that existed at earlier nixpkgs revisions. See
-#     ADR-0001 §6 for the verification command.
+#     not the pre-release that existed at earlier nixpkgs revisions.
 #
-#   golangci-lint — see docs/adr/ADR-0001-golangci-lint-nixpkgs-version-tracking.md
-#     for the full rationale. Two independent overrides are layered here:
+#   golangci-lint — Two independent overrides are layered here:
 #
 #       1. `override { buildGo127Module = prev.buildGoModule.override { go = final.go; }; }`
 #          swaps the builder nixpkgs' package.nix pins for one that resolves
@@ -74,7 +72,7 @@
 #          this overlay sets — the explicit `.override { go = final.go; }` is
 #          required to actually make a `go` version bump here force a
 #          golangci-lint rebuild (verified via `nix eval
-#          …pkgs.golangci-lint.go.version == pkgs.go.version`, ADR-0001 §6).
+#          …pkgs.golangci-lint.go.version == pkgs.go.version`).
 #          The `buildGoNNNModule` parameter name itself tracks nixpkgs'
 #          package.nix and has already changed once (`buildGo126Module` →
 #          `buildGo127Module`, when nixpkgs bumped its own pinned default
@@ -88,7 +86,7 @@
 #          nixpkgs' own package.nix already carries the identical
 #          version/src hash/vendorHash (both are `v2.13.2`, verified
 #          2026-09-18) — but kept so this overlay stays the single source of
-#          truth per ADR-0001/CONTEXT.md Invariant-1, and so the next time
+#          truth per CONTEXT.md Invariant-1, and so the next time
 #          nixpkgs lags behind a new upstream golangci-lint tag, only this
 #          block needs a version/hash bump (see CONTEXT.md's
 #          "バージョン更新の運用" for the fakeHash procedure).
@@ -101,7 +99,7 @@
 #     has not itself validated. If a future `go` bump breaks golangci-lint's
 #     build or type-checker API compatibility, fix it here (patch, or a
 #     temporary pin back to a specific `buildGoNNNModule`) rather than
-#     reverting silently — see ADR-0001 §5.
+#     reverting silently.
 #
 # prmt is overridden below to skip its checkPhase; lumen needs no override,
 # it substitutes cleanly from cache.nixos.org at the pinned revision (see above).

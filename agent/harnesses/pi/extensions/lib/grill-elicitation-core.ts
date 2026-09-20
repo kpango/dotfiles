@@ -3,7 +3,7 @@
  *
  * Implements the interactive design-tree interview protocol to prevent
  * cognitive drift, clarify requirements, and autonomously synthesize
- * Architecture Decision Records (ADR) and CONTEXT.md invariants.
+ * CONTEXT.md invariants.
  */
 
 import * as fs from "node:fs";
@@ -28,26 +28,6 @@ export interface DesignTreeNode {
   selectedOption?: string;
   rationale?: string;
   answeredAt?: string;
-}
-
-export interface ADRRecord {
-  number: number;
-  slug: string;
-  title: string;
-  status: "Accepted" | "Proposed" | "Superseded";
-  date: string;
-  component: string;
-  decider: string;
-  context: string;
-  drivers: string[];
-  options: { name: string; description: string; selected: boolean }[];
-  outcome: string;
-  consequences: {
-    positive: string[];
-    negative: string[];
-    invariants: string[];
-  };
-  verification: string[];
 }
 
 export interface InterviewSession {
@@ -311,139 +291,6 @@ export function formatQuestionPrompt(node: DesignTreeNode, index?: number): stri
   }
 
   return lines.join("\n");
-}
-
-/**
- * Synthesizes an Architecture Decision Record (ADR) matching the standard ADR schema.
- */
-export function generateADR(
-  session: InterviewSession,
-  adrNum?: number
-): { filename: string; content: string } {
-  const num = adrNum ?? 1;
-  const numStr = String(num).padStart(4, "0");
-  const slug = session.topic
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "design-decision";
-  const filename = `docs/adr/ADR-${numStr}-${slug}.md`;
-
-  const dateStr = new Date().toISOString().split("T")[0];
-
-  const drivers: string[] = [];
-  const consideredOptions: { name: string; description: string; selected: boolean }[] = [];
-  const positiveConsequences: string[] = [];
-  const negativeConsequences: string[] = [];
-  const systemInvariants: string[] = [];
-  const verificationMethods: string[] = [];
-
-  // Derive findings from answered nodes
-  for (const node of session.nodes) {
-    drivers.push(`${node.category}: Address requirements for ${node.question}`);
-
-    const selectedLabel = node.selectedOption || (node.options[node.recommendedIndex]?.label ?? "Default");
-    const selectedIdx = resolveSelectedOptionIndex(node.options, selectedLabel);
-
-    node.options.forEach((opt, optIdx) => {
-      const isSelected = optIdx === selectedIdx;
-      consideredOptions.push({
-        name: `${opt.label} (${node.category})`,
-        description: opt.description,
-        selected: isSelected,
-      });
-
-      if (isSelected) {
-        positiveConsequences.push(`${node.category}: Adopted "${opt.label}" — ${opt.description}`);
-        if (opt.rationale) {
-          systemInvariants.push(`Constraint (${node.category}): ${opt.rationale}`);
-        }
-      } else {
-        negativeConsequences.push(`Rejected "${opt.label}": Trade-off accepted to prioritize simplicity.`);
-      }
-    });
-
-    if (node.level === 4) {
-      verificationMethods.push(`Run automated test suite for ${session.topic} (bun test / bun run).`);
-      verificationMethods.push(`Verify multi-harness compatibility and SSoT integrity (sync-verify.sh).`);
-    }
-  }
-
-  if (positiveConsequences.length === 0) {
-    positiveConsequences.push(`Clear architectural boundary and zero cognitive drift for ${session.topic}.`);
-  }
-  if (negativeConsequences.length === 0) {
-    negativeConsequences.push(`Accepted intentional constraints to adhere to YAGNI and Ponytail principles.`);
-  }
-  if (systemInvariants.length === 0) {
-    systemInvariants.push(`All implementations must maintain deterministic behavior and pass automated tests.`);
-  }
-  if (verificationMethods.length === 0) {
-    verificationMethods.push(`Run unit test suites and verify exit code 0.`);
-  }
-
-  const lines: string[] = [
-    `# ADR-${numStr}: ${session.topic}`,
-    "",
-    `- **ステータス**: Accepted`,
-    `- **日付**: ${dateStr}`,
-    `- **対象コンポーネント**: ${session.topic}`,
-    `- **決定者**: kpango`,
-    "",
-    `## 1. コンテキストと問題提起 (Context & Problem Statement)`,
-    `Implementation of "${session.topic}" requires explicit architectural agreement to prevent cognitive drift, establish boundaries, and ensure safety invariants across all execution environments.`,
-    "",
-    `## 2. 決定推進要因 (Decision Drivers)`,
-  ];
-
-  if (drivers.length > 0) {
-    for (const d of drivers) {
-      lines.push(`- Driver: ${d}`);
-    }
-  } else {
-    lines.push(`- Driver 1: Prevent cognitive drift before code authoring`);
-    lines.push(`- Driver 2: Adhere to Ponytail 7-step logic ladder and safe minimal code`);
-    lines.push(`- Driver 3: Guarantee multi-harness compatibility and headless safety`);
-  }
-
-  lines.push("");
-  lines.push(`## 3. 検討された選択肢 (Considered Options)`);
-  for (const opt of consideredOptions) {
-    const sel = opt.selected ? " [Selected]" : "";
-    lines.push(`- **${opt.name}${sel}**: ${opt.description}`);
-  }
-
-  lines.push("");
-  lines.push(`## 4. 決定結果と根拠 (Decision Outcome & Rationale)`);
-  lines.push(`Selected the recommended options for "${session.topic}". The chosen path ensures adherence to standard library priority, minimal dependency bloat, deterministic error handling, and robust headless execution.`);
-
-  lines.push("");
-  lines.push(`## 5. 不変条件と影響 (Invariants & Consequences)`);
-  lines.push(`### 正の影響 (Positive Consequences)`);
-  for (const p of positiveConsequences) {
-    lines.push(`- ${p}`);
-  }
-
-  lines.push(`### 負の影響・トレードオフ (Negative Consequences)`);
-  for (const n of negativeConsequences) {
-    lines.push(`- ${n}`);
-  }
-
-  lines.push(`### システム不変条件 (Invariants)`);
-  for (const inv of systemInvariants) {
-    lines.push(`- ${inv}`);
-  }
-
-  lines.push("");
-  lines.push(`## 6. 検証方法 (Verification Method)`);
-  for (const v of verificationMethods) {
-    lines.push(`- ${v}`);
-  }
-  lines.push("");
-
-  return {
-    filename,
-    content: lines.join("\n"),
-  };
 }
 
 /**

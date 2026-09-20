@@ -25,10 +25,9 @@
    Architecture & Boundaries → Behavior & Edge Cases → Consistency & Compatibility → Implementation & Tests の順序で質問を展開する。
 4. **成果物の合成義務**:
    設計面談完了後、Phase 3 EXECUTE（実装）へ入る前に以下を出力・永続化する:
-   - アーキテクチャ決定事項: `docs/adr/ADR-xxxx-slug.md`
-   - ドメイン用語・システム不変条件: `CONTEXT.md`
+   - アーキテクチャ決定事項・ドメイン用語・システム不変条件: `CONTEXT.md`
 
 ## 3. レビューと検証における扱い
 
-- `code-reviewer` および `teamwork_preview_reviewer` (Opus Checker) は、impact-C の変更に対して対応する ADR または CONTEXT.md の存在を確認し、決定事項と実装の乖離がないかを検査する。
+- `code-reviewer` および `teamwork_preview_reviewer` (Opus Checker) は、impact-C の変更に対して対応する CONTEXT.md の記載を確認し、決定事項と実装の乖離がないかを検査する。
 - 乖離が検出された場合は MAST カテゴリ (i) system design issues または (ii) inter-agent misalignment として差し戻す。

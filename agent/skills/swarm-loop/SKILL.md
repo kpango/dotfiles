@@ -186,7 +186,7 @@ DISPATCH）は frontmatter の説明のとおり（詳細は SWARM.md §0）。
      - **1問1答ツリー走査 (1-Question-at-a-Time)**: 質問リストを一括で投げることを禁止する。親ノードの決定後に子ノードを1題ずつ質問する。
      - **推奨付き選択肢の提示**: オープン質問は禁止。必ず2〜4個の排他的な選択肢と明確な根拠とともに `[Recommended]` バッジを明記する。
      - **質問優先度階層の順守**: Level 1 (Architecture & Boundaries) → Level 2 (Behavior & Edge Cases) → Level 3 (Consistency & Compatibility) → Level 4 (Implementation & Tests) の順にツリーを降下する。
-     - **ADR & `CONTEXT.md` 自律合成義務**: 面談完了時に、決定事項を `docs/adr/ADR-xxxx-slug.md`、ドメイン規約・不変条件を `CONTEXT.md` に即時永続化する。
+     - **`CONTEXT.md` 自律合成義務**: 面談完了時に、決定事項・ドメイン規約・不変条件を `CONTEXT.md` に即時永続化する。
      - **ユーザー承認なしに Phase 3 へ進まない。**
      - インタビューで得た回答のうち、今回のミッション限りでなく今後も通用する人間の恒久的な好み・
        制約・運用ポリシーがあれば、Phase 5 GATE を待たずこの場で `Skill(swarm-memory-sync)` を呼ぶ

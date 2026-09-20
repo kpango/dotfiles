@@ -852,7 +852,7 @@ pinentry/update:
 ## symlink (CODEGRAPH_DIR only accepts a single path segment, so a multi-level
 ## output path needs this symlink indirection). Idempotent — safe to re-run.
 ## (Previously also initialized .claude/graph/graphify — removed with graphify's
-## retirement, see docs/adr/ADR-0002-graft-graphify-consolidation.md.)
+## retirement.)
 graph/init:
 	@if [ -e "$(ROOTDIR)/.codegraph" ] && [ ! -d "$(ROOTDIR)/.codegraph" ] && [ ! -L "$(ROOTDIR)/.codegraph" ]; then \
 		mv "$(ROOTDIR)/.codegraph" "$(ROOTDIR)/.codegraph.bak-$$(date +%s)"; \

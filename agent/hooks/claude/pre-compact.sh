@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # PreCompact hook — record session/git state before context compaction
-# (previously also ran `graphify update .` here; removed with graphify's retirement,
-# see docs/adr/ADR-0002-graft-graphify-consolidation.md)
+# (previously also ran `graphify update .` here; removed with graphify's retirement)
 set -euo pipefail
 
 INPUT=$(cat || true)

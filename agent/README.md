@@ -1182,7 +1182,7 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   バイナリ自身の組み込みサブコマンド、dotfiles側の `agent/hooks/agy/rtk-rewrite.sh` とは別物）だけを実行する
   設定を持つ。これは `agy/hooks/hooks.json`（`"PreToolUse"`/`"PostToolUse"` イベント名、
   security-gate/vald-law-enforcer/post-edit-verifier等をフル装備。`graphify-assistant`は
-  `docs/adr/ADR-0002-graft-graphify-consolidation.md`によるgraphify廃止で削除済み）とは全く別の、
+  graphify廃止で削除済み）とは全く別の、
   Gemini CLI固有の独立したhooks設定である可能性が高い（上記のmcpServers同様、Gemini CLIと
   Antigravity CLIが別々の設定ファイルを読む2バイナリ構成だと推測される）。もしユーザーが実際に
   素の `gemini` CLIバイナリを使う場合、そちらには現状 security-gate/vald-law の

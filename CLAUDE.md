@@ -188,8 +188,8 @@ here for consistency with this repo's no-unnecessary-egress stance elsewhere). T
 once to populate `graft/` (git-ignored local cache — see `.gitignore`). `graft init` (already run
 for this repo; see `.claude/settings.json`'s graft hook block and `.mcp.json` for Claude Code)
 originally wired the Claude Code MCP server + PostToolUse/Stop/UserPromptSubmit/SessionStart hooks
-and statusline; **as of `docs/adr/ADR-0002-graft-graphify-consolidation.md` (2026-09-18), only the
-MCP server registration and the `Stop` hook remain wired** — the PostToolUse (`post-edit`,
+and statusline; **as of 2026-09-18, only the MCP server registration and the `Stop` hook remain
+wired** — the PostToolUse (`post-edit`,
 `tool-savings`), `UserPromptSubmit`, and `SessionStart` hook entries were removed after live
 measurement showed they cost 3.0s/edit, 425ms/prompt, and 1.1s/session respectively for
 automatic context injection that graft's MCP tools/CLI provide just as well on request. Also
@@ -222,8 +222,8 @@ oversight.
 **graphify retired**: this repo previously also ran `graphify` (a separate community/god-node graph
 tool via AST+optional LLM labeling, git-committed graph, own git merge driver + post-commit/
 post-checkout hooks) alongside graft, with an unclear house rule on which to prefer for a given
-question. `docs/adr/ADR-0002-graft-graphify-consolidation.md` (2026-09-18) retired graphify
-entirely — its git merge driver, git hooks, `PreToolUse:Bash`/`PreCompact` Claude Code hooks, Pi
+question. Graphify was retired entirely (2026-09-18) — its git merge driver, git hooks,
+`PreToolUse:Bash`/`PreCompact` Claude Code hooks, Pi
 MCP-tool bridge, and committed graph artifacts (`.claude/graph/graphify/`, ~3.3MB) are all removed
 — consolidating on graft as this repo's sole code-graph tool. If you find a stray reference to
 `graphify` anywhere in this repo that this cleanup missed, it's stale; grep for it and remove it
@@ -244,8 +244,8 @@ from someone manually re-running `graft init` — reading graft's own installed 
 init and overwrite these files. That stamp lives under `graft/`, which this repo's own `.gitignore`
 excludes from git — so it is necessarily absent in every freshly created `git worktree add`
 checkout (this repo's normal mission/task-worktree workflow). Originally this was triggered by
-graft's own Claude Code `session-start` hook on every session; **`docs/adr/ADR-0002-graft-graphify-consolidation.md`
-(2026-09-18) removed that hook entry** (it was also a 1.1s-per-session cost), which closes that
+graft's own Claude Code `session-start` hook on every session; **that hook entry was removed on
+2026-09-18** (it was also a 1.1s-per-session cost), which closes that
 specific trigger, but graft's own source separately documents `runUpkeep()` also running from "the
 MCP server's own boot path" — since this repo still registers graft as an MCP server (`.mcp.json`),
 that second trigger is outside this repo's control and may still independently cause the same
@@ -255,7 +255,7 @@ directly.
 
 `.claude/helpers/graft-integrity-check.cjs` remains wired on **both** `SessionStart` and `Stop` in
 `.claude/settings.json` specifically because the MCP-server-boot trigger above isn't closed by
-ADR-0002's hook removal. On detecting a reversion it **actively restores**
+the `session-start` hook removal above. On detecting a reversion it **actively restores**
 `graft-resolve.cjs`/`graft-hooks.cjs`/`graft-statusline.cjs` from git HEAD and surgically repairs
 just the two known-bad `permissions.allow` entries in `.claude/settings.json` (not a full-file
 restore there, since that file can legitimately carry other, unrelated local edits) — still

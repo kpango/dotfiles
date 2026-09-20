@@ -5,7 +5,7 @@
  * `executor` バイナリを直接叩くのではなく、テスト専用のスタブ実行ファイル(bash script)を
  * `opts.binary` として差し込み、callGraftTool() が実際に spawn する経路
  * (runCliBridge → node:child_process.spawn、shell: true を渡さない argv 形式)を実機で検証する。
- * ADR-0001 決定2(executor call をシェルアウトで呼ぶ)の実装が「argvとして安全に渡す」ことを
+ * executor call をシェルアウトで呼ぶ実装が「argvとして安全に渡す」ことを
  * 保証しているかどうかは、この経路を実際に spawn してみない限り確認できない。
  */
 import * as fs from "node:fs";
@@ -38,7 +38,7 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "graft-executor-bridge-test-")
 async function main() {
   // 1. Successful call parsing: a stub "executor" prints the real observed
   //    `executor call` response shape (verified 2026-09-13 against the live
-  //    graft-dotfiles.user.graftDotfiles connection — see ADR-0001) and
+  //    graft-dotfiles.user.graftDotfiles connection) and
   //    callGraftTool must extract data.content[0].text.
   {
     const stub = writeStub(

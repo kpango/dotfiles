@@ -16,8 +16,7 @@
 
 - **Invariant-1**: `nix/modules/home/packages/{shared,darwin,linux}.nix` はパッケージの
   *利用*(`home.packages` への列挙)のみを行い、特定パッケージのバージョン/ハッシュのピン留めは
-  行わない。バージョン管理が必要な override は必ず `nix/overlays/default.nix` に集約する
-  (ADR-0001)。
+  行わない。バージョン管理が必要な override は必ず `nix/overlays/default.nix` に集約する。
 - **Invariant-2**: `nix/overlays/default.nix` は `flake.nix` の `mkPkgs`(NixOS/Darwin 共通)からのみ
   適用される。OS 別の overlay ファイルを新設しない — Linux/macOS で同じパッケージ・同じバージョンを
   保証するための不変条件。
@@ -25,12 +24,12 @@
   同一 derivation)を明示的に束縛した builder を参照する
   (`nix/overlays/default.nix`: `buildGo127Module = prev.buildGoModule.override { go = final.go; };`)。
   `pkgs.go`(= このオーバーレイの `go` override)の bump は golangci-lint の rebuild を自動的に
-  強制する(ADR-0001 Driver 2)。
+  強制する。
   **注意**: `prev.buildGoModule` 単体(`.override { go = final.go; }` を伴わない形)は
   この不変条件を満たさない — nixpkgs の無印 `buildGoModule` は `buildGo126Module` への固定
-  エイリアスであり、`pkgs.go` を自動的に参照する汎用ビルダーではない(ADR-0001 §7.2、
-  2026-09-18 の nixpkgs bump 対応時に判明)。この結合を外す/固定バージョンの builder に戻す
-  変更をする場合、ADR-0001 を Superseded にした上で新しい ADR を起票すること。
+  エイリアスであり、`pkgs.go` を自動的に参照する汎用ビルダーではない(2026-09-18 の nixpkgs bump
+  対応時に判明)。この結合を外す/固定バージョンの builder に戻す変更をする場合、本 Invariant-3 を
+  更新すること。
 
 ## 3. 責務境界と入出力規約 (Boundary & Contracts)
 
@@ -39,13 +38,13 @@
   `modules/home/packages/*.nix` の内容を参照する)は発生しない。
 - **バージョン更新の運用**: golangci-lint 本家の新タグが出た場合、`nix/overlays/default.nix` 内の
   `version`/`src hash`/`vendorHash` を手動で更新する(自動追従の仕組みは持たない — 過剰実装回避のため
-  意図的に手動運用、ADR-0001 参照)。更新時は `nix build` で vendorHash の再取得(fakeHash からの
+  意図的に手動運用)。更新時は `nix build` で vendorHash の再取得(fakeHash からの
   mismatch エラーで正しい hash を得る標準手順)を行う。
 
 ## 4. 既知の制約と非目標 (Constraints & Non-Goals)
 
 - **制約**: golangci-lint の builder を `pkgs.buildGoModule` に差し替えたことで、nixpkgs
   メンテナが検証していない go × golangci-lint の組み合わせになる。`pkgs.go` の bump 後にビルド/実行が
-  壊れた場合は overlay 側で個別対処する(ADR-0001 §5 負の影響を参照)。
+  壊れた場合は overlay 側で個別対処する。
 - **Non-Goals**: golangci-lint 以外の Go 系ツール(`go-tools`, `gopls`, `delve`, `errcheck` 等)の
-  builder 結合方式の変更は本 ADR のスコープ外。必要になった場合は個別に ADR を起票する。
+  builder 結合方式の変更は本節のスコープ外。必要になった場合は個別に検討する。

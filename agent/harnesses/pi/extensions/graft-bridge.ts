@@ -1,5 +1,5 @@
 /**
- * graft parity bridge for Pi Coding Agent (ADR-0001: "Pi Coding Agent parity for graft").
+ * graft parity bridge for Pi Coding Agent ("Pi Coding Agent parity for graft").
  *
  * graft has no official Pi target (see lib/graft-executor-bridge.ts's header for the verified
  * detail), so this extension reaches it indirectly through the `executor` MCP gateway
@@ -27,7 +27,7 @@
  *     single `bun test` process where plain ESM imports happen to share a cache. A prior design
  *     relied on that test-only sharing and had status-line.ts read this file's counters; that
  *     badge was dead code in production (always saw zero) and has been removed — see
- *     status-line.ts's git history and ADR-0001 decision 3 for the reverted addition.
+ *     status-line.ts's git history for the reverted addition.
  *
  * `before_agent_start`'s BeforeAgentStartEvent DOES carry the pending prompt text (`event.prompt:
  * string`, "The raw user prompt text (after expansion)" — confirmed by reading
@@ -91,7 +91,7 @@ export default function (pi: ExtensionAPI) {
     if (!query) return;
 
     const text = await callGraftTool("graft_find_code", { query });
-    if (!text) return; // executor/graft unavailable — silent no-op, per ADR-0001 decision 2
+    if (!text) return; // executor/graft unavailable — silent no-op (intentional)
     graftBridgeCalls++;
 
     return {

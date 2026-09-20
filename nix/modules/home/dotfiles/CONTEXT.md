@@ -10,9 +10,9 @@
 
 ## 2. システム不変条件 (System Invariants)
 
-- **Invariant-1**: repo 内に実体があるファイル配置（単純ミラー）は `Makefile.d/install.mk` が単一の真実源。`home.file` は Nix 派生値エントリにのみ使う（ADR-0002）。
+- **Invariant-1**: repo 内に実体があるファイル配置（単純ミラー）は `Makefile.d/install.mk` が単一の真実源。`home.file` は Nix 派生値エントリにのみ使う。
 - **Invariant-2**: `home.activation` から make を呼ぶスクリプトは、実行前に `id -u` が 0 でないことを検証するガードを持つ。nix-darwin/home-manager の標準統合は home-manager activation を対象ユーザーの文脈で実行するが（実測済み）、このガードは前提が崩れた場合に黙って実行せずエラー停止するための防御。
-- **Invariant-3**: `ARCH_LINK_MAP`/`ARCH_SUDO_*` 系（`linux.nix` の sway/waybar/fcitx5 等）は ADR-0002 の対象外。NixOS ホストの並行実装であり、genuine Arch Linux ホスト向け Make 経路との重複ではない。
+- **Invariant-3**: `ARCH_LINK_MAP`/`ARCH_SUDO_*` 系（`linux.nix` の sway/waybar/fcitx5 等）は Invariant-1 の対象外。NixOS ホストの並行実装であり、genuine Arch Linux ホスト向け Make 経路との重複ではない。
 
 ## 3. 責務境界と入出力規約 (Boundary & Contracts)
 
@@ -21,6 +21,6 @@
 
 ## 4. 既知の制約と非目標 (Constraints & Non-Goals)
 
-- **制約**: `home.activation` からの make 呼び出しは、`nix/switch` 実行時の対話的 sudo 認証のキャッシュに依存する。キャッシュが切れていると activation 中に sudo の対話プロンプトが発生し得る（許容済みトレードオフ、ADR-0002 §5）。
+- **制約**: `home.activation` からの make 呼び出しは、`nix/switch` 実行時の対話的 sudo 認証のキャッシュに依存する。キャッシュが切れていると activation 中に sudo の対話プロンプトが発生し得る（許容済みトレードオフ）。
 - **制約**: NixOS ホスト（p1/x1/g2/tr）は実機で未検証。`make nix/test/eval`（評価のみ）の正しさのみ確認済み。
 - **Non-Goals**: `darwin.nix` の `.gnupg/gpg-agent.conf`（Nix 派生値）を Make 側へ移行することはしない。`ARCH_LINK_MAP`/`ARCH_SUDO_*` 系の Make 経路への統合もしない（Invariant-3）。

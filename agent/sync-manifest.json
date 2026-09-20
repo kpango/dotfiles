@@ -150,7 +150,7 @@
     },
     {
       "pattern": "validate-harness.sh",
-      "reason": "検証先settings.jsonのスキーマがツールごとに違うため各ファイルの検証項目自体は大きく分岐しており、ファイル全体の統合(1本化)は対象外。ただし各ファイル冒頭でsourceする共通ライブラリ agent/scripts/harness-check-lib.sh(check()・harness_run_shared_test()・harness_summary())へ、3ファイルで byte-identical だったformat/集計ロジックを切り出し済み。加えてsecurity-rules.json/vald-law-rules.jsonの検証は3ファイルとも harness_run_shared_test 経由で agent/scripts/test-*.sh へ委譲し、各ファイル内に古い正規表現パターンの個別コピーを持たない形に統一済み(claude/pi/agyのMCPサーバ名がExecutor gatewayへの移行で古いままだった箇所も本作業で修正。graphify-hint-config.jsonの検証委譲も同様の形だったが、graphify自体がdocs/adr/ADR-0002-graft-graphify-consolidation.mdで廃止されたため対象から除外)。"
+      "reason": "検証先settings.jsonのスキーマがツールごとに違うため各ファイルの検証項目自体は大きく分岐しており、ファイル全体の統合(1本化)は対象外。ただし各ファイル冒頭でsourceする共通ライブラリ agent/scripts/harness-check-lib.sh(check()・harness_run_shared_test()・harness_summary())へ、3ファイルで byte-identical だったformat/集計ロジックを切り出し済み。加えてsecurity-rules.json/vald-law-rules.jsonの検証は3ファイルとも harness_run_shared_test 経由で agent/scripts/test-*.sh へ委譲し、各ファイル内に古い正規表現パターンの個別コピーを持たない形に統一済み(claude/pi/agyのMCPサーバ名がExecutor gatewayへの移行で古いままだった箇所も本作業で修正。graphify-hint-config.jsonの検証委譲も同様の形だったが、graphify自体が廃止されたため対象から除外)。"
     },
     {
       "pattern": "keybindings.json",

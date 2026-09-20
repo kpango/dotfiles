@@ -1,13 +1,13 @@
 /**
- * graft (via executor gateway) bridge for Pi Coding Agent — ADR-0001 decision 2.
+ * graft (via executor gateway) bridge for Pi Coding Agent.
  *
  * `graft` has no official Pi Coding Agent target (`graft init --list-agents` does not list
  * pi/primeagent — confirmed by reading graft's installed `dist/hosts/registry.js` /
- * `dist/hosts/mcp-config.js`, see this mission's T4/@fix_plan.md and ADR-0001's Context section).
+ * `dist/hosts/mcp-config.js`, see this mission's T4/@fix_plan.md).
  * Instead, `executor` (already registered as an MCP server for both Pi and Claude Code) has
  * `graft` registered in its own catalog as integration slug `graft-dotfiles`, reachable at
  * `graft-dotfiles.user.graftDotfiles.<toolName>` via `executor call <path> '<json args>'`
- * (verified end-to-end 2026-09-13, ADR-0001 §Decisions/1). This module shells out to that CLI
+ * (verified end-to-end 2026-09-13). This module shells out to that CLI
  * via the shared `runCliBridge` helper (agent/harnesses/pi/extensions/lib/cli-bridge.ts) —
  * reused rather than duplicated, per this same helper's own header comment about
  * bridge-claude.ts/bridge-antigravity.ts/bridge-codex.ts sharing it.
@@ -36,8 +36,8 @@ export interface CallGraftToolOptions {
    *  installed" (ENOENT) without touching PATH; production callers should leave this unset. */
   binary?: string;
   /** Working directory to spawn `executor` from. Note this is NOT the repo graft itself indexes
-   *  — that cwd is fixed at executor.mcp.addServer registration time (ADR-0001's "Known
-   *  limitation, accepted deliberately"). This is only where the `executor` CLI process itself
+   *  — that cwd is fixed at executor.mcp.addServer registration time (a known
+   *  limitation, accepted deliberately). This is only where the `executor` CLI process itself
    *  is spawned from, which does not affect which repo graft queries. Defaults to process.cwd(). */
   cwd?: string;
 }

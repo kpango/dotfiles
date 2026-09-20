@@ -2,7 +2,7 @@
  * Grill Elicitation Extension for Pi Coding Agent
  *
  * Provides interactive design-tree elicitation (/grill command and grill_interview tool)
- * to prevent cognitive drift and automatically synthesize ADRs and CONTEXT.md invariants.
+ * to prevent cognitive drift and automatically synthesize CONTEXT.md invariants.
  */
 
 import * as fs from "node:fs";
@@ -16,7 +16,6 @@ import {
   getNextPendingQuestion,
   generateDefaultInterviewTree,
   formatQuestionPrompt,
-  generateADR,
   synthesizeContext,
   formatStatusReport,
   type InterviewSession,
@@ -29,29 +28,6 @@ export default function (pi: ExtensionAPI) {
 
   const getRepoRoot = (ctx?: any): string => {
     return ctx?.cwd || process.cwd();
-  };
-
-  const getNextAdrNumber = (repoRoot: string): number => {
-    const adrDir = path.join(repoRoot, "docs", "adr");
-    if (!fs.existsSync(adrDir)) {
-      return 1;
-    }
-    try {
-      const files = fs.readdirSync(adrDir);
-      let maxNum = 0;
-      for (const file of files) {
-        const match = file.match(/^ADR-(\d+)/i);
-        if (match) {
-          const num = parseInt(match[1], 10);
-          if (!isNaN(num) && num > maxNum) {
-            maxNum = num;
-          }
-        }
-      }
-      return maxNum + 1;
-    } catch {
-      return 1;
-    }
   };
 
   const handleInterviewAction = async (args: any, ctx: any) => {
@@ -131,7 +107,7 @@ export default function (pi: ExtensionAPI) {
           content: [
             {
               type: "text",
-              text: `All ${activeSession.nodes.length} questions in session "${activeSession.topic}" have already been answered. Ready for ADR/CONTEXT synthesis.`,
+              text: `All ${activeSession.nodes.length} questions in session "${activeSession.topic}" have already been answered. Ready for CONTEXT.md synthesis.`,
             },
           ],
           details: { completed: true },
@@ -202,7 +178,7 @@ export default function (pi: ExtensionAPI) {
         responseText += `Proceeding to next question:\n\n` + formatQuestionPrompt(nextPending);
       } else {
         responseText += `🎉 All design questions have been resolved! Session status: **COMPLETED**.\n` +
-          `Run action: 'generate_adr' or 'synthesize_context' to persist the architectural contract.`;
+          `Run action: 'synthesize_context' to persist the architectural contract.`;
       }
 
       return {
@@ -211,47 +187,6 @@ export default function (pi: ExtensionAPI) {
           answeredNodeId: targetNode.id,
           selected: chosen,
           isCompleted: activeSession.status === "completed",
-        },
-      };
-    }
-
-    if (action === "generate_adr") {
-      const nextNum = getNextAdrNumber(repoRoot);
-      const adr = generateADR(activeSession, nextNum);
-
-      // Persist ADR file to docs/adr/
-      const fullPath = path.join(repoRoot, adr.filename);
-      const adrDir = path.dirname(fullPath);
-      try {
-        if (!fs.existsSync(adrDir)) {
-          fs.mkdirSync(adrDir, { recursive: true });
-        }
-        fs.writeFileSync(fullPath, adr.content, "utf-8");
-      } catch (err: any) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Generated ADR (failed to write to ${fullPath}: ${err?.message || err}):\n\n${adr.content}`,
-            },
-          ],
-          details: { error: String(err), content: adr.content },
-        };
-      }
-
-      return {
-        content: [
-          {
-            type: "text",
-            text: `📝 Successfully synthesized Architecture Decision Record:\n` +
-              `• File: \`${adr.filename}\`\n\n` +
-              adr.content,
-          },
-        ],
-        details: {
-          filename: adr.filename,
-          fullPath,
-          adrNumber: nextNum,
         },
       };
     }
@@ -316,13 +251,12 @@ export default function (pi: ExtensionAPI) {
     name: "grill_interview",
     label: "Interactive Design Elicitation",
     description:
-      "Interactive design-tree interview for clarifying ambiguities, agreeing on architectural decisions, and synthesizing ADR and CONTEXT.md invariants.",
+      "Interactive design-tree interview for clarifying ambiguities, agreeing on architectural decisions, and synthesizing CONTEXT.md invariants.",
     parameters: Type.Object({
       action: Type.Union([
         Type.Literal("start"),
         Type.Literal("ask"),
         Type.Literal("answer"),
-        Type.Literal("generate_adr"),
         Type.Literal("synthesize_context"),
         Type.Literal("status"),
       ]),
@@ -348,7 +282,7 @@ export default function (pi: ExtensionAPI) {
   // Slash Command: /grill
   // --------------------------------------------------------------------------
   pi.registerCommand("grill", {
-    description: "Design-tree interview and ADR/CONTEXT.md synthesis (/grill [topic | adr list | adr generate | synthesize | status])",
+    description: "Design-tree interview and CONTEXT.md synthesis (/grill [topic | synthesize | status])",
     handler: async (args, ctx) => {
       const trimmed = (args || "").trim();
       const parts = trimmed.split(/\s+/);
@@ -357,26 +291,6 @@ export default function (pi: ExtensionAPI) {
       if (subCommand === "status") {
         const res = await handleInterviewAction({ action: "status" }, ctx);
         const text = res.content?.[0]?.text || "No status";
-        if (ctx?.ui?.notify) ctx.ui.notify(text, "info");
-        return;
-      }
-
-      if (subCommand === "adr") {
-        const subAction = parts[1]?.toLowerCase() || "generate";
-        if (subAction === "list") {
-          const adrDir = path.join(getRepoRoot(ctx), "docs", "adr");
-          if (!fs.existsSync(adrDir)) {
-            if (ctx?.ui?.notify) ctx.ui.notify("No ADRs found in docs/adr/", "warning");
-            return;
-          }
-          const files = fs.readdirSync(adrDir).filter((f) => f.endsWith(".md"));
-          const listText = `📋 ADR Records (${files.length} found):\n` + files.map((f) => `• docs/adr/${f}`).join("\n");
-          if (ctx?.ui?.notify) ctx.ui.notify(listText, "info");
-          return;
-        }
-
-        const res = await handleInterviewAction({ action: "generate_adr" }, ctx);
-        const text = res.content?.[0]?.text || "ADR generated";
         if (ctx?.ui?.notify) ctx.ui.notify(text, "info");
         return;
       }

@@ -2,7 +2,7 @@
  * Tests for Grill Elicitation Core Library
  *
  * Verifies design-tree interview sessions, question navigation,
- * answer recording, ADR generation, CONTEXT.md synthesis, and status reporting.
+ * answer recording, CONTEXT.md synthesis, and status reporting.
  */
 
 import {
@@ -12,7 +12,6 @@ import {
   getNextPendingQuestion,
   generateDefaultInterviewTree,
   formatQuestionPrompt,
-  generateADR,
   resolveSelectedOptionIndex,
   synthesizeContext,
   formatStatusReport,
@@ -107,30 +106,7 @@ const invalidAnswer = recordAnswer(session, "non_existent_id", "foo");
 check("recordAnswer returns false for unknown nodeId", invalidAnswer === false);
 
 // --------------------------------------------------------------------------
-// Test 5: Standard ADR Synthesis (`docs/adr/ADR-xxxx-slug.md`)
-// --------------------------------------------------------------------------
-const adr = generateADR(session, 1);
-check("ADR filename follows ADR-0001 pattern", adr.filename === "docs/adr/ADR-0001-pi-grilling-extension.md");
-
-// Verify ADR Schema Sections per SKILL.md
-check("ADR contains header with ADR number", adr.content.includes("# ADR-0001: Pi Grilling Extension"));
-check("ADR contains ステータス: Accepted", adr.content.includes("- **ステータス**: Accepted"));
-check("ADR contains 日付", adr.content.includes("- **日付**:"));
-check("ADR contains 対象コンポーネント", adr.content.includes("- **対象コンポーネント**: Pi Grilling Extension"));
-check("ADR contains 決定者", adr.content.includes("- **決定者**: kpango"));
-check("ADR contains Section 1 Context", adr.content.includes("## 1. コンテキストと問題提起 (Context & Problem Statement)"));
-check("ADR contains Section 2 Decision Drivers", adr.content.includes("## 2. 決定推進要因 (Decision Drivers)"));
-check("ADR contains Section 3 Considered Options", adr.content.includes("## 3. 検討された選択肢 (Considered Options)"));
-check("ADR contains [Selected] tags on chosen options", adr.content.includes("[Selected]"));
-check("ADR contains Section 4 Decision Outcome", adr.content.includes("## 4. 決定結果と根拠 (Decision Outcome & Rationale)"));
-check("ADR contains Section 5 Invariants & Consequences", adr.content.includes("## 5. 不変条件と影響 (Invariants & Consequences)"));
-check("ADR contains 正の影響", adr.content.includes("### 正の影響 (Positive Consequences)"));
-check("ADR contains 負の影響・トレードオフ", adr.content.includes("### 負の影響・トレードオフ (Negative Consequences)"));
-check("ADR contains システム不変条件", adr.content.includes("### システム不変条件 (Invariants)"));
-check("ADR contains Section 6 Verification Method", adr.content.includes("## 6. 検証方法 (Verification Method)"));
-
-// --------------------------------------------------------------------------
-// Test 6: CONTEXT.md Synthesis
+// Test 5: CONTEXT.md Synthesis
 // --------------------------------------------------------------------------
 const contextMd = synthesizeContext(session);
 check("CONTEXT contains header", contextMd.includes("# CONTEXT — Pi Grilling Extension"));
@@ -147,7 +123,7 @@ check("Merged CONTEXT adds new domain choices", mergedCtx.includes("Design Choic
 check("Merged CONTEXT retains existing invariants", mergedCtx.includes("Invariant-0: Existing constraint"));
 
 // --------------------------------------------------------------------------
-// Test 7: Status Report Formatting
+// Test 6: Status Report Formatting
 // --------------------------------------------------------------------------
 const report = formatStatusReport(session);
 check("Status report shows 100% completed", report.includes("100%"));
@@ -162,7 +138,7 @@ check("Partial report shows Next Question section", partialReport.includes("Next
 
 // --------------------------------------------------------------------------
 // L1 regression: substring option labels must not double-select. Selecting "AB"
-// must resolve ONLY "AB" (not the shorter "A") in both the ADR and the rationale.
+// must resolve ONLY "AB" (not the shorter "A") in the recorded rationale.
 {
   const sub = createInterviewSession("Cache Strategy");
   addQuestionNode(sub, {
@@ -176,9 +152,6 @@ check("Partial report shows Next Question section", partialReport.includes("Next
   const subNodeId = sub.nodes[0].id;
   recordAnswer(sub, subNodeId, "AB");
   check("L1: recordAnswer picks the exact option's rationale (not a substring)", sub.nodes[0].rationale === "rationale-AB");
-  const subAdr = generateADR(sub, 1);
-  check("L1: generateADR marks exactly one option Adopted", (subAdr.content.match(/Adopted "/g) || []).length === 1);
-  check("L1: generateADR adopts 'AB' (not the shorter 'A')", subAdr.content.includes('Adopted "AB"') && !subAdr.content.includes('Adopted "A" '));
   // Helper edge cases.
   check("L1: resolveSelectedOptionIndex exact match", resolveSelectedOptionIndex([{ label: "A" }, { label: "AB" }] as any, "AB") === 1);
   check("L1: resolveSelectedOptionIndex longest substring wins", resolveSelectedOptionIndex([{ label: "A" }, { label: "AB" }] as any, "AB extra") === 1);

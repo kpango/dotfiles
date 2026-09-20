@@ -11,10 +11,10 @@ let
   # dockers/daemon.json is the single source of truth for Docker daemon
   # settings shared across genuine Arch Linux hosts (Makefile.d/install.mk's
   # dotfiles/install, which skips this file on NixOS) and NixOS hosts (read
-  # here and in nix/modules/nixos/virtualization/docker.nix). See
-  # docs/adr/ADR-0003-*.md. `dns` is overridden below rather than trusted from
-  # the JSON's baked-in literals: settings.network.dockerDns resolves the same
-  # IPs from the named constants in nix/core/settings.nix, so a future DNS
+  # here and in nix/modules/nixos/virtualization/docker.nix). `dns` is
+  # overridden below rather than trusted from the JSON's baked-in literals:
+  # settings.network.dockerDns resolves the same IPs from the named constants
+  # in nix/core/settings.nix, so a future DNS
   # provider change stays in sync automatically. `runtimes.runsc/runu`
   # (gVisor, /usr/local/bin/*) is intentionally not in the shared JSON or
   # here: tr doesn't package gVisor, and NixOS wouldn't resolve those

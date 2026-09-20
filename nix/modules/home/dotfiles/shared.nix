@@ -11,9 +11,7 @@
 # placed by Makefile.d/install.mk's dotfiles/install target instead (pulled in
 # as a prerequisite of the install targets nix/modules/home/dotfiles/
 # agent-tools.nix's home.activation calls) rather than re-declared here as a
-# second, hand-synced copy — see ADR-0002
-# (docs/adr/ADR-0002-dotfiles-placement-makefile-symlink-unification.md) and
-# this directory's CONTEXT.md.
+# second, hand-synced copy — see this directory's CONTEXT.md.
 #
 # ~/.ssh/config remains intentionally NOT managed anywhere: it's a symlink
 # into the separate kpango/pass secrets repo (the real Host/IdentityFile

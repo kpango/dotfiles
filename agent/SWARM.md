@@ -392,7 +392,7 @@ Multi-Agent System Failure Taxonomy（MAST、150 件超の専門家注釈トレ�
   不要（supermemory 上のエントリはいつでも訂正・削除を追記できる可逆な操作）。ただし一般化可能性の
   判定基準・既存メモリとの重複チェック（`memory-guard.sh` の decision-first 検索）は厳格に適用し、
   単発事象やこのミッション限りの詳細は書かない（肥大化・想起品質低下の防止）。
-- **ADR および `CONTEXT.md` の自律合成**: `swarm-memory-sync` による auto-memory への知識蒸留に加え、設計面談（`grill-interview`）を通じて合意されたアーキテクチャ上の決定事項・トレードオフは `docs/adr/ADR-xxxx-slug.md` に、ドメインモデル・システム不変条件は `CONTEXT.md` に永続化する。これにより、エージェント間の前提ズレ（MAST カテゴリ ii）や認知ドリフトを構造的に防止し、リポジトリローカルな生きた不変条件（Living Invariants）として維持する。
+- **`CONTEXT.md` の自律合成**: `swarm-memory-sync` による auto-memory への知識蒸留に加え、設計面談（`grill-interview`）を通じて合意されたアーキテクチャ上の決定事項・トレードオフ・ドメインモデル・システム不変条件は `CONTEXT.md` に永続化する。これにより、エージェント間の前提ズレ（MAST カテゴリ ii）や認知ドリフトを構造的に防止し、リポジトリローカルな生きた不変条件（Living Invariants）として維持する。
 
 ## 6. クローズドループ — 自己申告終了の禁止
 
@@ -446,7 +446,7 @@ Antigravity の `teamwork-preview` サブエージェントシステムは、Swa
 | **検証層 Checker**     | `opus` (`swarm-implement`)     | `teamwork_preview_reviewer`                         | 読み取り専用検証 (`view_file`, `run_command`)。独立コンテキスト。Ponytail 違反（過剰設計・推測的抽象化・不要差分）を厳格に検査・拒絶。                                                                 | 反証的 PASS/FAIL 判定（Ponytail 適合性監査含む）、MAST 分類、討論禁止 (no multi-turn debate)            |
 | **敵対的検証層**       | 8 `*-adversarial-reviewer`     | `teamwork_preview_challenger`                       | 読み取り専用差分攻撃 (`view_file`, `grep_search`, `run_command`)。Ponytail 規則違反（過剰設計・外部依存肥大化・不要リファクタ）を多角的に攻撃・検出。                                                  | 8 観点 multi-lens 敵対的検証（Ponytail 過剰設計・依存肥大化・安全最小コード監査を含む）                 |
 | **規約・憲法監査**     | Vald Law gates, security-audit | `teamwork_preview_auditor`                          | 監査・適合性検査 (`view_file`, `grep_search`, `run_command`)。                                                                                                                                         | Vald Law 1–5、Dotfiles no-manual-symlinks 規則、安全境界のハード監査                                    |
-| **指揮・スポット判断** | `fable` (`swarm-architect`)    | `teamwork_preview_critic` / `swarm-architect`       | 読み取り専用診断書出力 (`view_file`, `grep_search`, `write_to_file`)。                                                                                                                                 | Grilling 設計ツリー面談 & ADR 合成、提案書、4 発動条件に基づくスポット診断書、ボトルネック解決策        |
+| **指揮・スポット判断** | `fable` (`swarm-architect`)    | `teamwork_preview_critic` / `swarm-architect`       | 読み取り専用診断書出力 (`view_file`, `grep_search`, `write_to_file`)。                                                                                                                                 | Grilling 設計ツリー面談 & `CONTEXT.md` 合成、提案書、4 発動条件に基づくスポット診断書、ボトルネック解決策 |
 | **ミッション制御**     | `swarm-loop` / `swarm-graph`   | `teamwork_preview_orchestrator`                     | オーケストレーション (`invoke_subagent`, `send_message`, `manage_task`, `write_to_file`)。                                                                                                             | `@fix_plan.md` 状態機械、タスク DAG 実行、GATE 判定、人間承認窓口                                       |
 
 ### 9.2 デュアルエンジン実行プロトコル (Dual-Engine Invocation)

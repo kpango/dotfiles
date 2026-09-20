@@ -184,7 +184,7 @@ telepresence.log
 # descent unless something re-includes the directory itself). Verified with
 # `git check-ignore -v` before relying on this pattern. (graphify, which used
 # to carve out a shared subset of .claude/graph/ here, was retired in favor of
-# graft — see docs/adr/ADR-0002-graft-graphify-consolidation.md.)
+# graft.)
 !.claude/graph/
 .claude/graph/*
 
