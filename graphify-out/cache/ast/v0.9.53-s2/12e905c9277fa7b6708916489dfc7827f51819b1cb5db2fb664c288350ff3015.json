@@ -1,1 +1,497 @@
-{"nodes": [{"id": "$graphify-root$_scripts_skill_stats_sh", "label": "skill-stats.sh", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_scripts_skill_stats_sh__entry", "label": "skill-stats.sh script", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_scripts_skill_stats_classify_error", "label": "classify_error()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L25", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_scripts_skill_stats_find_skill_stats_path", "label": "find_skill_stats_path()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L51", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_scripts_skill_stats_init_default_stats", "label": "init_default_stats()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L62", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_scripts_skill_stats_record_start", "label": "record_start()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L126", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_scripts_skill_stats_record_end", "label": "record_end()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L151", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_scripts_skill_stats_get_stats", "label": "get_stats()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L335", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_scripts_skill_stats_check_low_performing", "label": "check_low_performing()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L348", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_scripts_skill_stats_register_revision", "label": "register_revision()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L413", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_scripts_skill_stats_aggregate_all", "label": "aggregate_all()", "file_type": "code", "source_file": "scripts/skill-stats.sh", "source_location": "L473", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_classify_error", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L25", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_find_skill_stats_path", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L51", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_init_default_stats", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L62", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_record_start", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L126", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_record_end", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L151", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_get_stats", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L335", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_check_low_performing", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L348", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_register_revision", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L413", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh", "target": "$graphify-root$_scripts_skill_stats_aggregate_all", "relation": "defines", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L473", "weight": 1.0}, {"source": "$graphify-root$_scripts_skill_stats_sh__entry", "target": "$graphify-root$_scripts_skill_stats_record_start", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L538", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_sh__entry", "target": "$graphify-root$_scripts_skill_stats_record_end", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L539", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_sh__entry", "target": "$graphify-root$_scripts_skill_stats_get_stats", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L540", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_sh__entry", "target": "$graphify-root$_scripts_skill_stats_check_low_performing", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L541", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_sh__entry", "target": "$graphify-root$_scripts_skill_stats_register_revision", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L542", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_sh__entry", "target": "$graphify-root$_scripts_skill_stats_aggregate_all", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L543", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_sh__entry", "target": "$graphify-root$_scripts_skill_stats_classify_error", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L544", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_record_end", "target": "$graphify-root$_scripts_skill_stats_classify_error", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L176", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_record_end", "target": "$graphify-root$_scripts_skill_stats_init_default_stats", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L217", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_scripts_skill_stats_get_stats", "target": "$graphify-root$_scripts_skill_stats_find_skill_stats_path", "relation": "calls", "confidence": "EXTRACTED", "source_file": "scripts/skill-stats.sh", "source_location": "L338", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry", "source_file": "scripts/skill-stats.sh", "source_location": "L6"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry", "source_file": "scripts/skill-stats.sh", "source_location": "L8"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry", "source_file": "scripts/skill-stats.sh", "source_location": "L8"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry", "source_file": "scripts/skill-stats.sh", "source_location": "L8"}, {"language": "bash", "callee": "shift", "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry", "source_file": "scripts/skill-stats.sh", "source_location": "L535"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry", "source_file": "scripts/skill-stats.sh", "source_location": "L535"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry", "source_file": "scripts/skill-stats.sh", "source_location": "L546"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry", "source_file": "scripts/skill-stats.sh", "source_location": "L558"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_scripts_skill_stats_classify_error", "source_file": "scripts/skill-stats.sh", "source_location": "L27"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_scripts_skill_stats_find_skill_stats_path", "source_file": "scripts/skill-stats.sh", "source_location": "L59"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_scripts_skill_stats_init_default_stats", "source_file": "scripts/skill-stats.sh", "source_location": "L66"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_scripts_skill_stats_init_default_stats", "source_file": "scripts/skill-stats.sh", "source_location": "L68"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_scripts_skill_stats_init_default_stats", "source_file": "scripts/skill-stats.sh", "source_location": "L69"}, {"language": "bash", "callee": "shift", "caller_nid": "$graphify-root$_scripts_skill_stats_record_start", "source_file": "scripts/skill-stats.sh", "source_location": "L128"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_scripts_skill_stats_record_start", "source_file": "scripts/skill-stats.sh", "source_location": "L143"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_scripts_skill_stats_record_start", "source_file": "scripts/skill-stats.sh", "source_location": "L146"}, {"language": "bash", "callee": "shift", "caller_nid": "$graphify-root$_scripts_skill_stats_record_end", "source_file": "scripts/skill-stats.sh", "source_location": "L158"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_scripts_skill_stats_record_end", "source_file": "scripts/skill-stats.sh", "source_location": "L158"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_scripts_skill_stats_record_end", "source_file": "scripts/skill-stats.sh", "source_location": "L180"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_scripts_skill_stats_record_end", "source_file": "scripts/skill-stats.sh", "source_location": "L183"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_scripts_skill_stats_record_end", "source_file": "scripts/skill-stats.sh", "source_location": "L186"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_scripts_skill_stats_record_end", "source_file": "scripts/skill-stats.sh", "source_location": "L332"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_scripts_skill_stats_get_stats", "source_file": "scripts/skill-stats.sh", "source_location": "L341"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_scripts_skill_stats_get_stats", "source_file": "scripts/skill-stats.sh", "source_location": "L343"}, {"language": "bash", "callee": "return", "caller_nid": "$graphify-root$_scripts_skill_stats_get_stats", "source_file": "scripts/skill-stats.sh", "source_location": "L344"}, {"language": "bash", "callee": "shift", "caller_nid": "$graphify-root$_scripts_skill_stats_check_low_performing", "source_file": "scripts/skill-stats.sh", "source_location": "L355"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_scripts_skill_stats_check_low_performing", "source_file": "scripts/skill-stats.sh", "source_location": "L362"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_scripts_skill_stats_register_revision", "source_file": "scripts/skill-stats.sh", "source_location": "L419"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_scripts_skill_stats_register_revision", "source_file": "scripts/skill-stats.sh", "source_location": "L427"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_scripts_skill_stats_aggregate_all", "source_file": "scripts/skill-stats.sh", "source_location": "L479"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_scripts_skill_stats_sh",
+      "label": "skill-stats.sh",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "label": "skill-stats.sh script",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_classify_error",
+      "label": "classify_error()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L25",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_find_skill_stats_path",
+      "label": "find_skill_stats_path()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L51",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_init_default_stats",
+      "label": "init_default_stats()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L62",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_record_start",
+      "label": "record_start()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L126",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_record_end",
+      "label": "record_end()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L151",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_get_stats",
+      "label": "get_stats()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L335",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_check_low_performing",
+      "label": "check_low_performing()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L348",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_register_revision",
+      "label": "register_revision()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L413",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_scripts_skill_stats_aggregate_all",
+      "label": "aggregate_all()",
+      "file_type": "code",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L473",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_classify_error",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_find_skill_stats_path",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_init_default_stats",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_record_start",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_record_end",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_get_stats",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L335",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_check_low_performing",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_register_revision",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L413",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh",
+      "target": "$graphify-root$_scripts_skill_stats_aggregate_all",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L473",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "target": "$graphify-root$_scripts_skill_stats_record_start",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L538",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "target": "$graphify-root$_scripts_skill_stats_record_end",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L539",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "target": "$graphify-root$_scripts_skill_stats_get_stats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L540",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "target": "$graphify-root$_scripts_skill_stats_check_low_performing",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L541",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "target": "$graphify-root$_scripts_skill_stats_register_revision",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L542",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "target": "$graphify-root$_scripts_skill_stats_aggregate_all",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L543",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "target": "$graphify-root$_scripts_skill_stats_classify_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L544",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_record_end",
+      "target": "$graphify-root$_scripts_skill_stats_classify_error",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L176",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_record_end",
+      "target": "$graphify-root$_scripts_skill_stats_init_default_stats",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L217",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_scripts_skill_stats_get_stats",
+      "target": "$graphify-root$_scripts_skill_stats_find_skill_stats_path",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L338",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L6"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "shift",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L535"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L535"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L546"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_sh__entry",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L558"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_classify_error",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L27"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_find_skill_stats_path",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L59"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_init_default_stats",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L66"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_init_default_stats",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L68"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_init_default_stats",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L69"
+    },
+    {
+      "language": "bash",
+      "callee": "shift",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_start",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L128"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_start",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L143"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_start",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L146"
+    },
+    {
+      "language": "bash",
+      "callee": "shift",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_end",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L158"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_end",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L158"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_end",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L180"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_end",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L183"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_end",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L186"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_record_end",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L332"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_get_stats",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L341"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_get_stats",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L343"
+    },
+    {
+      "language": "bash",
+      "callee": "return",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_get_stats",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L344"
+    },
+    {
+      "language": "bash",
+      "callee": "shift",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_check_low_performing",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L355"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_check_low_performing",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L362"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_register_revision",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L419"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_register_revision",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L427"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_scripts_skill_stats_aggregate_all",
+      "source_file": "scripts/skill-stats.sh",
+      "source_location": "L479"
+    }
+  ],
+  "bash_sources": []
+}

@@ -138,6 +138,7 @@ The dotfiles root `CLAUDE.md` (this file) applies only when Claude Code is run f
 - Makefile: tabs for recipe lines, spaces for variable assignments
 
 <!-- graft:start -->
+
 ## Graft — repo context graph
 
 This repo is indexed in `graft/`: small linked markdown nodes that explain each
@@ -208,7 +209,7 @@ open with these agents, and is intentionally out of scope here.
 harnesses (`agent/harnesses/agy/`) — confirmed by reading `@nanonets/graft`'s own installed
 source (`dist/hosts/mcp-config.js`): graft treats `gemini` (writes the repo-local
 `.gemini/settings.json` above) and `antigravity` as two distinct targets, and the `antigravity`
-target is hardcoded to a *global* path (`~/.gemini/config/mcp_config.json`, marked
+target is hardcoded to a _global_ path (`~/.gemini/config/mcp_config.json`, marked
 `scope: 'global'` in graft's own target list, and captioned there as graft's own known gap
 `#62`), which its `mcpTargets(...).filter((t) => opts.global !== false || t.scope !== 'global')`
 unconditionally drops whenever `--no-global` is passed — exactly the flag this repo's `graft init`

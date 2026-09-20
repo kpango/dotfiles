@@ -1,1 +1,125 @@
-{"nodes": [{"id": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh", "label": "rtk-rewrite.sh", "file_type": "code", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "label": "rtk-rewrite.sh script", "file_type": "code", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh", "target": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L10"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L11"}, {"language": "bash", "callee": "find", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L22"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L22"}, {"language": "bash", "callee": "timeout", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L24"}, {"language": "bash", "callee": "grep", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L24"}, {"language": "bash", "callee": "head", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L24"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L26"}, {"language": "bash", "callee": "cut", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L26"}, {"language": "bash", "callee": "touch", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L32"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L35"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L36"}, {"language": "bash", "callee": "rtk", "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry", "source_file": "agent/hooks/claude/rtk-rewrite.sh", "source_location": "L44"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh",
+      "label": "rtk-rewrite.sh",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "label": "rtk-rewrite.sh script",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh",
+      "target": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "find",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L22"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L22"
+    },
+    {
+      "language": "bash",
+      "callee": "timeout",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "grep",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "head",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L26"
+    },
+    {
+      "language": "bash",
+      "callee": "cut",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L26"
+    },
+    {
+      "language": "bash",
+      "callee": "touch",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L32"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L35"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L36"
+    },
+    {
+      "language": "bash",
+      "callee": "rtk",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_rtk_rewrite_sh__entry",
+      "source_file": "agent/hooks/claude/rtk-rewrite.sh",
+      "source_location": "L44"
+    }
+  ],
+  "bash_sources": []
+}

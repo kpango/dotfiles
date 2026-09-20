@@ -1,1 +1,1659 @@
-{"nodes": [{"id": "$graphify-root$_agent_models_schema_json", "label": "schema.json", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L1"}, {"id": "$graphify-root$_agent_models_schema_schema", "label": "$schema", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L2"}, {"id": "$graphify-root$_agent_models_schema_title", "label": "title", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L3"}, {"id": "$graphify-root$_agent_models_schema_description", "label": "description", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L4"}, {"id": "$graphify-root$_agent_models_schema_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L5"}, {"id": "$graphify-root$_agent_models_schema_required", "label": "required", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L6"}, {"id": "ref_harness", "label": "harness", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L6"}, {"id": "ref_default_tier", "label": "default_tier", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L6"}, {"id": "ref_tiers", "label": "tiers", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L6"}, {"id": "$graphify-root$_agent_models_schema_properties", "label": "properties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L7"}, {"id": "$graphify-root$_agent_models_schema_properties_schema", "label": "$schema", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L8"}, {"id": "$graphify-root$_agent_models_schema_schema_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L9"}, {"id": "$graphify-root$_agent_models_schema_properties_harness", "label": "harness", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L11"}, {"id": "$graphify-root$_agent_models_schema_harness_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L12"}, {"id": "$graphify-root$_agent_models_schema_harness_enum", "label": "enum", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L13"}, {"id": "ref_claude", "label": "claude", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L13"}, {"id": "ref_agy", "label": "agy", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L13"}, {"id": "ref_codex", "label": "codex", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L13"}, {"id": "ref_pi", "label": "pi", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L13"}, {"id": "ref_primeagent", "label": "primeagent", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L13"}, {"id": "$graphify-root$_agent_models_schema_properties_default_tier", "label": "default_tier", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L15"}, {"id": "$graphify-root$_agent_models_schema_default_tier_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L16"}, {"id": "$graphify-root$_agent_models_schema_default_tier_enum", "label": "enum", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L17"}, {"id": "ref_low", "label": "Low", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L17"}, {"id": "ref_medium", "label": "Medium", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L17"}, {"id": "ref_high", "label": "High", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L17"}, {"id": "ref_xhigh", "label": "XHigh", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L17"}, {"id": "ref_max", "label": "Max", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L17"}, {"id": "ref_inherit", "label": "Inherit", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L17"}, {"id": "$graphify-root$_agent_models_schema_properties_tiers", "label": "tiers", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L19"}, {"id": "$graphify-root$_agent_models_schema_tiers_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L20"}, {"id": "$graphify-root$_agent_models_schema_tiers_required", "label": "required", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L21"}, {"id": "$graphify-root$_agent_models_schema_tiers_properties", "label": "properties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L22"}, {"id": "$graphify-root$_agent_models_schema_properties_low", "label": "Low", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L23"}, {"id": "$graphify-root$_agent_models_schema_low_ref", "label": "$ref", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L23"}, {"id": "$graphify-root$_agent_models_schema_properties_medium", "label": "Medium", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L24"}, {"id": "$graphify-root$_agent_models_schema_medium_ref", "label": "$ref", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L24"}, {"id": "$graphify-root$_agent_models_schema_properties_high", "label": "High", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L25"}, {"id": "$graphify-root$_agent_models_schema_high_ref", "label": "$ref", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L25"}, {"id": "$graphify-root$_agent_models_schema_properties_xhigh", "label": "XHigh", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L26"}, {"id": "$graphify-root$_agent_models_schema_xhigh_ref", "label": "$ref", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L26"}, {"id": "$graphify-root$_agent_models_schema_properties_max", "label": "Max", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L27"}, {"id": "$graphify-root$_agent_models_schema_max_ref", "label": "$ref", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L27"}, {"id": "$graphify-root$_agent_models_schema_tiers_additionalproperties", "label": "additionalProperties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L29"}, {"id": "$graphify-root$_agent_models_schema_definitions", "label": "definitions", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L32"}, {"id": "$graphify-root$_agent_models_schema_definitions_tierconfig", "label": "TierConfig", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L33"}, {"id": "$graphify-root$_agent_models_schema_tierconfig_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L34"}, {"id": "$graphify-root$_agent_models_schema_tierconfig_required", "label": "required", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L35"}, {"id": "ref_model", "label": "model", "file_type": "concept", "source_file": "agent/models/schema.json", "source_location": "L35"}, {"id": "$graphify-root$_agent_models_schema_tierconfig_properties", "label": "properties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L36"}, {"id": "$graphify-root$_agent_models_schema_properties_model", "label": "model", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L37"}, {"id": "$graphify-root$_agent_models_schema_model_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L37"}, {"id": "$graphify-root$_agent_models_schema_properties_provider", "label": "provider", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L38"}, {"id": "$graphify-root$_agent_models_schema_provider_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L38"}, {"id": "$graphify-root$_agent_models_schema_properties_effort", "label": "effort", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L39"}, {"id": "$graphify-root$_agent_models_schema_effort_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L40"}, {"id": "$graphify-root$_agent_models_schema_effort_enum", "label": "enum", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L41"}, {"id": "$graphify-root$_agent_models_schema_properties_description", "label": "description", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L43"}, {"id": "$graphify-root$_agent_models_schema_description_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L43"}, {"id": "$graphify-root$_agent_models_schema_properties_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L44"}, {"id": "$graphify-root$_agent_models_schema_fallbacks_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L45"}, {"id": "$graphify-root$_agent_models_schema_fallbacks_description", "label": "description", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L46"}, {"id": "$graphify-root$_agent_models_schema_fallbacks_items", "label": "items", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L47"}, {"id": "$graphify-root$_agent_models_schema_items_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L48"}, {"id": "$graphify-root$_agent_models_schema_items_required", "label": "required", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L49"}, {"id": "$graphify-root$_agent_models_schema_items_properties", "label": "properties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L50"}, {"id": "$graphify-root$_agent_models_schema_properties_trigger", "label": "trigger", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L57"}, {"id": "$graphify-root$_agent_models_schema_items_additionalproperties", "label": "additionalProperties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L69"}, {"id": "$graphify-root$_agent_models_schema_properties_candidates", "label": "candidates", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L72"}, {"id": "$graphify-root$_agent_models_schema_candidates_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L73"}, {"id": "$graphify-root$_agent_models_schema_candidates_description", "label": "description", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L74"}, {"id": "$graphify-root$_agent_models_schema_candidates_items", "label": "items", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L75"}, {"id": "$graphify-root$_agent_models_schema_properties_priority", "label": "priority", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L85"}, {"id": "$graphify-root$_agent_models_schema_properties_strategy", "label": "strategy", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L86"}, {"id": "$graphify-root$_agent_models_schema_properties_sub_routes", "label": "sub_routes", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L92"}, {"id": "$graphify-root$_agent_models_schema_sub_routes_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L93"}, {"id": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties", "label": "additionalProperties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L94"}, {"id": "$graphify-root$_agent_models_schema_additionalproperties_type", "label": "type", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L95"}, {"id": "$graphify-root$_agent_models_schema_additionalproperties_required", "label": "required", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L96"}, {"id": "$graphify-root$_agent_models_schema_additionalproperties_properties", "label": "properties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L97"}, {"id": "$graphify-root$_agent_models_schema_additionalproperties_additionalproperties", "label": "additionalProperties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L106"}, {"id": "$graphify-root$_agent_models_schema_tierconfig_additionalproperties", "label": "additionalProperties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L110"}, {"id": "$graphify-root$_agent_models_schema_additionalproperties", "label": "additionalProperties", "file_type": "code", "source_file": "agent/models/schema.json", "source_location": "L113"}], "edges": [{"source": "$graphify-root$_agent_models_schema_json", "target": "$graphify-root$_agent_models_schema_schema", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L2", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_json", "target": "$graphify-root$_agent_models_schema_title", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_json", "target": "$graphify-root$_agent_models_schema_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L4", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_json", "target": "$graphify-root$_agent_models_schema_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L5", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_json", "target": "$graphify-root$_agent_models_schema_required", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_required", "target": "ref_harness", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L6", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_required", "target": "ref_default_tier", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L6", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_required", "target": "ref_tiers", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L6", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_json", "target": "$graphify-root$_agent_models_schema_properties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties", "target": "$graphify-root$_agent_models_schema_properties_schema", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L8", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_schema", "target": "$graphify-root$_agent_models_schema_schema_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties", "target": "$graphify-root$_agent_models_schema_properties_harness", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L11", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_harness", "target": "$graphify-root$_agent_models_schema_harness_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L12", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_harness", "target": "$graphify-root$_agent_models_schema_harness_enum", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_harness_enum", "target": "ref_claude", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L13", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_harness_enum", "target": "ref_agy", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L13", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_harness_enum", "target": "ref_codex", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L13", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_harness_enum", "target": "ref_pi", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L13", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_harness_enum", "target": "ref_primeagent", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L13", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_properties", "target": "$graphify-root$_agent_models_schema_properties_default_tier", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L15", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_default_tier", "target": "$graphify-root$_agent_models_schema_default_tier_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_default_tier", "target": "$graphify-root$_agent_models_schema_default_tier_enum", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L17", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_default_tier_enum", "target": "ref_low", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L17", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_default_tier_enum", "target": "ref_medium", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L17", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_default_tier_enum", "target": "ref_high", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L17", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_default_tier_enum", "target": "ref_xhigh", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L17", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_default_tier_enum", "target": "ref_max", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L17", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_default_tier_enum", "target": "ref_inherit", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L17", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_properties", "target": "$graphify-root$_agent_models_schema_properties_tiers", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_tiers", "target": "$graphify-root$_agent_models_schema_tiers_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_tiers", "target": "$graphify-root$_agent_models_schema_tiers_required", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L21", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tiers_required", "target": "ref_low", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L21", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_tiers_required", "target": "ref_medium", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L21", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_tiers_required", "target": "ref_high", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L21", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_tiers_required", "target": "ref_xhigh", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L21", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_tiers_required", "target": "ref_max", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L21", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_properties_tiers", "target": "$graphify-root$_agent_models_schema_tiers_properties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tiers_properties", "target": "$graphify-root$_agent_models_schema_properties_low", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_low", "target": "$graphify-root$_agent_models_schema_low_ref", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_low", "target": "ref_definitions_tierconfig", "relation": "references", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tiers_properties", "target": "$graphify-root$_agent_models_schema_properties_medium", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_medium", "target": "$graphify-root$_agent_models_schema_medium_ref", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_medium", "target": "ref_definitions_tierconfig", "relation": "references", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tiers_properties", "target": "$graphify-root$_agent_models_schema_properties_high", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L25", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_high", "target": "$graphify-root$_agent_models_schema_high_ref", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L25", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_high", "target": "ref_definitions_tierconfig", "relation": "references", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L25", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tiers_properties", "target": "$graphify-root$_agent_models_schema_properties_xhigh", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_xhigh", "target": "$graphify-root$_agent_models_schema_xhigh_ref", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_xhigh", "target": "ref_definitions_tierconfig", "relation": "references", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tiers_properties", "target": "$graphify-root$_agent_models_schema_properties_max", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_max", "target": "$graphify-root$_agent_models_schema_max_ref", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_max", "target": "ref_definitions_tierconfig", "relation": "references", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_tiers", "target": "$graphify-root$_agent_models_schema_tiers_additionalproperties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_json", "target": "$graphify-root$_agent_models_schema_definitions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L32", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_definitions", "target": "$graphify-root$_agent_models_schema_definitions_tierconfig", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L33", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_definitions_tierconfig", "target": "$graphify-root$_agent_models_schema_tierconfig_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L34", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_definitions_tierconfig", "target": "$graphify-root$_agent_models_schema_tierconfig_required", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L35", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tierconfig_required", "target": "ref_model", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L35", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_definitions_tierconfig", "target": "$graphify-root$_agent_models_schema_tierconfig_properties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L36", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tierconfig_properties", "target": "$graphify-root$_agent_models_schema_properties_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L37", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_model", "target": "$graphify-root$_agent_models_schema_model_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L37", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tierconfig_properties", "target": "$graphify-root$_agent_models_schema_properties_provider", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_provider", "target": "$graphify-root$_agent_models_schema_provider_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tierconfig_properties", "target": "$graphify-root$_agent_models_schema_properties_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L39", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_effort", "target": "$graphify-root$_agent_models_schema_effort_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L40", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_effort", "target": "$graphify-root$_agent_models_schema_effort_enum", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L41", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_effort_enum", "target": "ref_low", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L41", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_effort_enum", "target": "ref_medium", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L41", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_effort_enum", "target": "ref_high", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L41", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_effort_enum", "target": "ref_xhigh", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L41", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_effort_enum", "target": "ref_max", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L41", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_tierconfig_properties", "target": "$graphify-root$_agent_models_schema_properties_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L43", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_description", "target": "$graphify-root$_agent_models_schema_description_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L43", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tierconfig_properties", "target": "$graphify-root$_agent_models_schema_properties_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L44", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_fallbacks", "target": "$graphify-root$_agent_models_schema_fallbacks_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L45", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_fallbacks", "target": "$graphify-root$_agent_models_schema_fallbacks_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L46", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_fallbacks", "target": "$graphify-root$_agent_models_schema_fallbacks_items", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L47", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_fallbacks_items", "target": "$graphify-root$_agent_models_schema_items_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L48", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_fallbacks_items", "target": "$graphify-root$_agent_models_schema_items_required", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L49", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_required", "target": "ref_model", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L49", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_fallbacks_items", "target": "$graphify-root$_agent_models_schema_items_properties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L50", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L51", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_provider", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L52", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L53", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_trigger", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L57", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L67", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_fallbacks_items", "target": "$graphify-root$_agent_models_schema_items_additionalproperties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L69", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tierconfig_properties", "target": "$graphify-root$_agent_models_schema_properties_candidates", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L72", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_candidates", "target": "$graphify-root$_agent_models_schema_candidates_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L73", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_candidates", "target": "$graphify-root$_agent_models_schema_candidates_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L74", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_candidates", "target": "$graphify-root$_agent_models_schema_candidates_items", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L75", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_candidates_items", "target": "$graphify-root$_agent_models_schema_items_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L76", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_candidates_items", "target": "$graphify-root$_agent_models_schema_items_required", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L77", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_required", "target": "ref_model", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L77", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_candidates_items", "target": "$graphify-root$_agent_models_schema_items_properties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L78", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L79", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_provider", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L80", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L81", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_priority", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L85", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_strategy", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L86", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_items_properties", "target": "$graphify-root$_agent_models_schema_properties_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L87", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_candidates_items", "target": "$graphify-root$_agent_models_schema_items_additionalproperties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L89", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_tierconfig_properties", "target": "$graphify-root$_agent_models_schema_properties_sub_routes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L92", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_sub_routes", "target": "$graphify-root$_agent_models_schema_sub_routes_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L93", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_properties_sub_routes", "target": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L94", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties", "target": "$graphify-root$_agent_models_schema_additionalproperties_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L95", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties", "target": "$graphify-root$_agent_models_schema_additionalproperties_required", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L96", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_additionalproperties_required", "target": "ref_model", "relation": "extends", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L96", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties", "target": "$graphify-root$_agent_models_schema_additionalproperties_properties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L97", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_additionalproperties_properties", "target": "$graphify-root$_agent_models_schema_properties_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L98", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_additionalproperties_properties", "target": "$graphify-root$_agent_models_schema_properties_provider", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L99", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_additionalproperties_properties", "target": "$graphify-root$_agent_models_schema_properties_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L100", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_additionalproperties_properties", "target": "$graphify-root$_agent_models_schema_properties_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L104", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties", "target": "$graphify-root$_agent_models_schema_additionalproperties_additionalproperties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L106", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_definitions_tierconfig", "target": "$graphify-root$_agent_models_schema_tierconfig_additionalproperties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L110", "weight": 1.0}, {"source": "$graphify-root$_agent_models_schema_json", "target": "$graphify-root$_agent_models_schema_additionalproperties", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/models/schema.json", "source_location": "L113", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_models_schema_json",
+      "label": "schema.json",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_schema",
+      "label": "$schema",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_title",
+      "label": "title",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_required",
+      "label": "required",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "ref_harness",
+      "label": "harness",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "ref_default_tier",
+      "label": "default_tier",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "ref_tiers",
+      "label": "tiers",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties",
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_schema",
+      "label": "$schema",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_schema_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_harness",
+      "label": "harness",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L11"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_harness_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L12"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_harness_enum",
+      "label": "enum",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "ref_claude",
+      "label": "claude",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "ref_agy",
+      "label": "agy",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "ref_codex",
+      "label": "codex",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "ref_pi",
+      "label": "pi",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "ref_primeagent",
+      "label": "primeagent",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_default_tier",
+      "label": "default_tier",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_default_tier_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_default_tier_enum",
+      "label": "enum",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "ref_low",
+      "label": "Low",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "ref_medium",
+      "label": "Medium",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "ref_high",
+      "label": "High",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "ref_xhigh",
+      "label": "XHigh",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "ref_max",
+      "label": "Max",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "ref_inherit",
+      "label": "Inherit",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_tiers",
+      "label": "tiers",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_tiers_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_tiers_required",
+      "label": "required",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_tiers_properties",
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_low",
+      "label": "Low",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_low_ref",
+      "label": "$ref",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_medium",
+      "label": "Medium",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_medium_ref",
+      "label": "$ref",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_high",
+      "label": "High",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_high_ref",
+      "label": "$ref",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_xhigh",
+      "label": "XHigh",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_xhigh_ref",
+      "label": "$ref",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_max",
+      "label": "Max",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_max_ref",
+      "label": "$ref",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_tiers_additionalproperties",
+      "label": "additionalProperties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_definitions",
+      "label": "definitions",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_definitions_tierconfig",
+      "label": "TierConfig",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_tierconfig_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_tierconfig_required",
+      "label": "required",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "ref_model",
+      "label": "model",
+      "file_type": "concept",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L36"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L37"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_model_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L37"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_provider",
+      "label": "provider",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_provider_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L39"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_effort_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L40"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_effort_enum",
+      "label": "enum",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L41"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L43"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_description_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L43"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L44"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_fallbacks_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L45"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_fallbacks_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L46"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_fallbacks_items",
+      "label": "items",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L47"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_items_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L48"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_items_required",
+      "label": "required",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L49"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_items_properties",
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L50"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_trigger",
+      "label": "trigger",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L57"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_items_additionalproperties",
+      "label": "additionalProperties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L69"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_candidates",
+      "label": "candidates",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L72"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_candidates_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L73"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_candidates_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L74"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_candidates_items",
+      "label": "items",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L75"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_priority",
+      "label": "priority",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L85"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_strategy",
+      "label": "strategy",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L86"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_properties_sub_routes",
+      "label": "sub_routes",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L92"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_sub_routes_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L93"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties",
+      "label": "additionalProperties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L94"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_additionalproperties_type",
+      "label": "type",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L95"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_additionalproperties_required",
+      "label": "required",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L96"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_additionalproperties_properties",
+      "label": "properties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L97"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_additionalproperties_additionalproperties",
+      "label": "additionalProperties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L106"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_tierconfig_additionalproperties",
+      "label": "additionalProperties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L110"
+    },
+    {
+      "id": "$graphify-root$_agent_models_schema_additionalproperties",
+      "label": "additionalProperties",
+      "file_type": "code",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L113"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_models_schema_json",
+      "target": "$graphify-root$_agent_models_schema_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_json",
+      "target": "$graphify-root$_agent_models_schema_title",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_json",
+      "target": "$graphify-root$_agent_models_schema_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_json",
+      "target": "$graphify-root$_agent_models_schema_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_json",
+      "target": "$graphify-root$_agent_models_schema_required",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_required",
+      "target": "ref_harness",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_required",
+      "target": "ref_default_tier",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_required",
+      "target": "ref_tiers",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L6",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_json",
+      "target": "$graphify-root$_agent_models_schema_properties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_schema",
+      "target": "$graphify-root$_agent_models_schema_schema_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_harness",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_harness",
+      "target": "$graphify-root$_agent_models_schema_harness_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_harness",
+      "target": "$graphify-root$_agent_models_schema_harness_enum",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_harness_enum",
+      "target": "ref_claude",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_harness_enum",
+      "target": "ref_agy",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_harness_enum",
+      "target": "ref_codex",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_harness_enum",
+      "target": "ref_pi",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_harness_enum",
+      "target": "ref_primeagent",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L13",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_default_tier",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_default_tier",
+      "target": "$graphify-root$_agent_models_schema_default_tier_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_default_tier",
+      "target": "$graphify-root$_agent_models_schema_default_tier_enum",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_default_tier_enum",
+      "target": "ref_low",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_default_tier_enum",
+      "target": "ref_medium",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_default_tier_enum",
+      "target": "ref_high",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_default_tier_enum",
+      "target": "ref_xhigh",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_default_tier_enum",
+      "target": "ref_max",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_default_tier_enum",
+      "target": "ref_inherit",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_tiers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_tiers",
+      "target": "$graphify-root$_agent_models_schema_tiers_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_tiers",
+      "target": "$graphify-root$_agent_models_schema_tiers_required",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_required",
+      "target": "ref_low",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_required",
+      "target": "ref_medium",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_required",
+      "target": "ref_high",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_required",
+      "target": "ref_xhigh",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_required",
+      "target": "ref_max",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_tiers",
+      "target": "$graphify-root$_agent_models_schema_tiers_properties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_low",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_low",
+      "target": "$graphify-root$_agent_models_schema_low_ref",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_low",
+      "target": "ref_definitions_tierconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_medium",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_medium",
+      "target": "$graphify-root$_agent_models_schema_medium_ref",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_medium",
+      "target": "ref_definitions_tierconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_high",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_high",
+      "target": "$graphify-root$_agent_models_schema_high_ref",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_high",
+      "target": "ref_definitions_tierconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_xhigh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_xhigh",
+      "target": "$graphify-root$_agent_models_schema_xhigh_ref",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_xhigh",
+      "target": "ref_definitions_tierconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tiers_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_max",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_max",
+      "target": "$graphify-root$_agent_models_schema_max_ref",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_max",
+      "target": "ref_definitions_tierconfig",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_tiers",
+      "target": "$graphify-root$_agent_models_schema_tiers_additionalproperties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_json",
+      "target": "$graphify-root$_agent_models_schema_definitions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_definitions",
+      "target": "$graphify-root$_agent_models_schema_definitions_tierconfig",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_definitions_tierconfig",
+      "target": "$graphify-root$_agent_models_schema_tierconfig_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_definitions_tierconfig",
+      "target": "$graphify-root$_agent_models_schema_tierconfig_required",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tierconfig_required",
+      "target": "ref_model",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_definitions_tierconfig",
+      "target": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_model",
+      "target": "$graphify-root$_agent_models_schema_model_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_provider",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_provider",
+      "target": "$graphify-root$_agent_models_schema_provider_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_effort",
+      "target": "$graphify-root$_agent_models_schema_effort_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_effort",
+      "target": "$graphify-root$_agent_models_schema_effort_enum",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_effort_enum",
+      "target": "ref_low",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L41",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_effort_enum",
+      "target": "ref_medium",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L41",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_effort_enum",
+      "target": "ref_high",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L41",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_effort_enum",
+      "target": "ref_xhigh",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L41",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_effort_enum",
+      "target": "ref_max",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L41",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_description",
+      "target": "$graphify-root$_agent_models_schema_description_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_fallbacks",
+      "target": "$graphify-root$_agent_models_schema_fallbacks_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_fallbacks",
+      "target": "$graphify-root$_agent_models_schema_fallbacks_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_fallbacks",
+      "target": "$graphify-root$_agent_models_schema_fallbacks_items",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_fallbacks_items",
+      "target": "$graphify-root$_agent_models_schema_items_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_fallbacks_items",
+      "target": "$graphify-root$_agent_models_schema_items_required",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_required",
+      "target": "ref_model",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L49",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_fallbacks_items",
+      "target": "$graphify-root$_agent_models_schema_items_properties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_provider",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_trigger",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_fallbacks_items",
+      "target": "$graphify-root$_agent_models_schema_items_additionalproperties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_candidates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_candidates",
+      "target": "$graphify-root$_agent_models_schema_candidates_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_candidates",
+      "target": "$graphify-root$_agent_models_schema_candidates_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_candidates",
+      "target": "$graphify-root$_agent_models_schema_candidates_items",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_candidates_items",
+      "target": "$graphify-root$_agent_models_schema_items_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_candidates_items",
+      "target": "$graphify-root$_agent_models_schema_items_required",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_required",
+      "target": "ref_model",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L77",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_candidates_items",
+      "target": "$graphify-root$_agent_models_schema_items_properties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_provider",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L81",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_priority",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_strategy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_items_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_candidates_items",
+      "target": "$graphify-root$_agent_models_schema_items_additionalproperties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_tierconfig_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_sub_routes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_sub_routes",
+      "target": "$graphify-root$_agent_models_schema_sub_routes_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_properties_sub_routes",
+      "target": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties",
+      "target": "$graphify-root$_agent_models_schema_additionalproperties_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties",
+      "target": "$graphify-root$_agent_models_schema_additionalproperties_required",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_additionalproperties_required",
+      "target": "ref_model",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L96",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties",
+      "target": "$graphify-root$_agent_models_schema_additionalproperties_properties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L97",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_additionalproperties_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_additionalproperties_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_provider",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L99",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_additionalproperties_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_additionalproperties_properties",
+      "target": "$graphify-root$_agent_models_schema_properties_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_sub_routes_additionalproperties",
+      "target": "$graphify-root$_agent_models_schema_additionalproperties_additionalproperties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L106",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_definitions_tierconfig",
+      "target": "$graphify-root$_agent_models_schema_tierconfig_additionalproperties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_models_schema_json",
+      "target": "$graphify-root$_agent_models_schema_additionalproperties",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/models/schema.json",
+      "source_location": "L113",
+      "weight": 1.0
+    }
+  ]
+}

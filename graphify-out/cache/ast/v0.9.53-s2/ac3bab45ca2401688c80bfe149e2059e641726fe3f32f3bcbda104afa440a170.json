@@ -1,1 +1,160 @@
-{"nodes": [{"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "label": "perf-simd-adversarial-reviewer.md", "file_type": "document", "node_kind": "page", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L1", "frontmatter": {"name": "perf-simd-adversarial-reviewer", "description": "\u5b8c\u6210\u3057\u305f\u5909\u66f4\u5168\u4f53(diff)\u306b\u5bfe\u3059\u308b\u6027\u80fd\u30ea\u30b0\u30ec\u30c3\u30b7\u30e7\u30f3\u30fbSIMD/\u91cf\u5b50\u5316\u30ab\u30fc\u30cd\u30eb\u6b63\u5f53\u6027\u306e\u6575\u5bfe\u7684\u30ec\u30d3\u30e5\u30fc\u5c02\u9580(\u4e8c\u6bb5\u968e\u9632\u5fa1\u306e\u7b2c\u4e8c\u6bb5)\u3002`/swarm-loop` \u306e Phase 5 GATE\u30fb`/swarm-graph` \u306e Phase G5 GATE(\u3044\u305a\u308c\u3082\u4eba\u9593\u6700\u7d42\u627f\u8a8d)\u76f4\u524d\u306b\u306e\u307f\u8d77\u52d5\u3057\u3001perf-analyzer/ann-perf-engineer \u306e\u5224\u5b9a\u3092\u898b\u305a\u306b\u72ec\u7acb\u3057\u305f\u30b3\u30f3\u30c6\u30ad\u30b9\u30c8\u3067\u6575\u5bfe\u7684\u306b\u518d\u691c\u8a3c\u3059\u308b(\u5b9f\u88c5\u4e2d\u306e\u6700\u9069\u5316\u4f5c\u696d\u305d\u306e\u3082\u306e\u306b\u306f\u4f7f\u308f\u306a\u3044)\u3002", "tools": "read, grep, find, ls, bash", "model": "sonnet", "effort": "high", "memory": "project"}}, {"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_position_second_line_of_defense_\u4e8c\u6bb5\u968e\u9632\u5fa1\u306e\u7b2c\u4e8c\u6bb5", "label": "Position: Second Line of Defense (\u4e8c\u6bb5\u968e\u9632\u5fa1\u306e\u7b2c\u4e8c\u6bb5)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L13"}, {"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_scope_discovery_always_run_first", "label": "Scope Discovery (always run first)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L19"}, {"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_axis_a_general_performance_always_applies", "label": "Axis A: General Performance (always applies)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L48"}, {"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_axis_b_simd_quantization_only_if_scope_discovery_flagged_files_else_n_a", "label": "Axis B: SIMD / Quantization (only if Scope Discovery flagged files \u2014 else \"N/A\")", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L75"}, {"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_don_ts", "label": "Don'ts", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L84"}, {"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_severity_classification", "label": "Severity Classification", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L93"}, {"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_output_format", "label": "Output Format", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L100"}, {"id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_memory_protocol", "label": "Memory Protocol", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L123"}], "edges": [{"source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_position_second_line_of_defense_\u4e8c\u6bb5\u968e\u9632\u5fa1\u306e\u7b2c\u4e8c\u6bb5", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_scope_discovery_always_run_first", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_axis_a_general_performance_always_applies", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L48", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_axis_b_simd_quantization_only_if_scope_discovery_flagged_files_else_n_a", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L75", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_don_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L84", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_severity_classification", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L93", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_output_format", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L100", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_memory_protocol", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/perf-simd-adversarial-reviewer.md", "source_location": "L123", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "label": "perf-simd-adversarial-reviewer.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "perf-simd-adversarial-reviewer",
+        "description": "\u5b8c\u6210\u3057\u305f\u5909\u66f4\u5168\u4f53(diff)\u306b\u5bfe\u3059\u308b\u6027\u80fd\u30ea\u30b0\u30ec\u30c3\u30b7\u30e7\u30f3\u30fbSIMD/\u91cf\u5b50\u5316\u30ab\u30fc\u30cd\u30eb\u6b63\u5f53\u6027\u306e\u6575\u5bfe\u7684\u30ec\u30d3\u30e5\u30fc\u5c02\u9580(\u4e8c\u6bb5\u968e\u9632\u5fa1\u306e\u7b2c\u4e8c\u6bb5)\u3002`/swarm-loop` \u306e Phase 5 GATE\u30fb`/swarm-graph` \u306e Phase G5 GATE(\u3044\u305a\u308c\u3082\u4eba\u9593\u6700\u7d42\u627f\u8a8d)\u76f4\u524d\u306b\u306e\u307f\u8d77\u52d5\u3057\u3001perf-analyzer/ann-perf-engineer \u306e\u5224\u5b9a\u3092\u898b\u305a\u306b\u72ec\u7acb\u3057\u305f\u30b3\u30f3\u30c6\u30ad\u30b9\u30c8\u3067\u6575\u5bfe\u7684\u306b\u518d\u691c\u8a3c\u3059\u308b(\u5b9f\u88c5\u4e2d\u306e\u6700\u9069\u5316\u4f5c\u696d\u305d\u306e\u3082\u306e\u306b\u306f\u4f7f\u308f\u306a\u3044)\u3002",
+        "tools": "read, grep, find, ls, bash",
+        "model": "sonnet",
+        "effort": "high",
+        "memory": "project"
+      }
+    },
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_position_second_line_of_defense_\u4e8c\u6bb5\u968e\u9632\u5fa1\u306e\u7b2c\u4e8c\u6bb5",
+      "label": "Position: Second Line of Defense (\u4e8c\u6bb5\u968e\u9632\u5fa1\u306e\u7b2c\u4e8c\u6bb5)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_scope_discovery_always_run_first",
+      "label": "Scope Discovery (always run first)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L19"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_axis_a_general_performance_always_applies",
+      "label": "Axis A: General Performance (always applies)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_axis_b_simd_quantization_only_if_scope_discovery_flagged_files_else_n_a",
+      "label": "Axis B: SIMD / Quantization (only if Scope Discovery flagged files \u2014 else \"N/A\")",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L75"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_don_ts",
+      "label": "Don'ts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_severity_classification",
+      "label": "Severity Classification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L93"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_output_format",
+      "label": "Output Format",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_memory_protocol",
+      "label": "Memory Protocol",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L123"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_position_second_line_of_defense_\u4e8c\u6bb5\u968e\u9632\u5fa1\u306e\u7b2c\u4e8c\u6bb5",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_scope_discovery_always_run_first",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_axis_a_general_performance_always_applies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_axis_b_simd_quantization_only_if_scope_discovery_flagged_files_else_n_a",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_don_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_severity_classification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L93",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_output_format",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_perf_simd_adversarial_reviewer_memory_protocol",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/perf-simd-adversarial-reviewer.md",
+      "source_location": "L123",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

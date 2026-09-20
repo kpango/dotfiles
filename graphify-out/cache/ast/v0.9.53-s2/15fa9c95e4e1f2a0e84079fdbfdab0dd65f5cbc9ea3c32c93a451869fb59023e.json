@@ -1,1 +1,477 @@
-{"nodes": [{"id": "$graphify-root$_agent_harnesses_agy_model_routing_json", "label": "model-routing.json", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L1"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_schema", "label": "$schema", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L2"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_harness", "label": "harness", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L3"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_default_tier", "label": "default_tier", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L4"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers", "label": "tiers", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L5"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low", "label": "Low", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L6"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_low_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L7"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_low_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L8"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_low_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L9"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_low_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L10"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium", "label": "Medium", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L25"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_medium_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L26"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_medium_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L27"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_medium_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L28"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_medium_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L29"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high", "label": "High", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L44"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_high_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L45"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_high_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L46"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_high_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L47"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_high_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L48"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh", "label": "XHigh", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L69"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L70"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L71"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L72"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L73"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max", "label": "Max", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L88"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_max_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L89"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_max_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L90"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_max_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L91"}, {"id": "$graphify-root$_agent_harnesses_agy_model_routing_max_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L92"}], "edges": [{"source": "$graphify-root$_agent_harnesses_agy_model_routing_json", "target": "$graphify-root$_agent_harnesses_agy_model_routing_schema", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L2", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_json", "target": "$graphify-root$_agent_harnesses_agy_model_routing_harness", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_json", "target": "$graphify-root$_agent_harnesses_agy_model_routing_default_tier", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L4", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_json", "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L5", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low", "target": "$graphify-root$_agent_harnesses_agy_model_routing_low_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low", "target": "$graphify-root$_agent_harnesses_agy_model_routing_low_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L8", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low", "target": "$graphify-root$_agent_harnesses_agy_model_routing_low_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low", "target": "$graphify-root$_agent_harnesses_agy_model_routing_low_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L10", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L25", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium", "target": "$graphify-root$_agent_harnesses_agy_model_routing_medium_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium", "target": "$graphify-root$_agent_harnesses_agy_model_routing_medium_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium", "target": "$graphify-root$_agent_harnesses_agy_model_routing_medium_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L28", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium", "target": "$graphify-root$_agent_harnesses_agy_model_routing_medium_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L44", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high", "target": "$graphify-root$_agent_harnesses_agy_model_routing_high_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L45", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high", "target": "$graphify-root$_agent_harnesses_agy_model_routing_high_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L46", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high", "target": "$graphify-root$_agent_harnesses_agy_model_routing_high_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L47", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high", "target": "$graphify-root$_agent_harnesses_agy_model_routing_high_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L48", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L69", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh", "target": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L70", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh", "target": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L71", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh", "target": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L72", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh", "target": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L73", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L88", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max", "target": "$graphify-root$_agent_harnesses_agy_model_routing_max_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L89", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max", "target": "$graphify-root$_agent_harnesses_agy_model_routing_max_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L90", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max", "target": "$graphify-root$_agent_harnesses_agy_model_routing_max_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L91", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max", "target": "$graphify-root$_agent_harnesses_agy_model_routing_max_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/agy/model-routing.json", "source_location": "L92", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_json",
+      "label": "model-routing.json",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_schema",
+      "label": "$schema",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_harness",
+      "label": "harness",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_default_tier",
+      "label": "default_tier",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers",
+      "label": "tiers",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low",
+      "label": "Low",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_low_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_low_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_low_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_low_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium",
+      "label": "Medium",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_medium_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_medium_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_medium_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L28"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_medium_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high",
+      "label": "High",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L44"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_high_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L45"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_high_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L46"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_high_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L47"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_high_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L48"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh",
+      "label": "XHigh",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L69"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L70"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L71"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L72"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L73"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max",
+      "label": "Max",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L88"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_max_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L89"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_max_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L90"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_max_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L91"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_agy_model_routing_max_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L92"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_json",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_json",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_harness",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_json",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_default_tier",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_json",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_low_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_low_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_low_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_low",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_low_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_medium_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_medium_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_medium_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_medium",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_medium_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_high_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_high_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_high_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_high",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_high_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L71",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_xhigh",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_xhigh_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_max_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_max_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_max_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_agy_model_routing_tiers_max",
+      "target": "$graphify-root$_agent_harnesses_agy_model_routing_max_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/agy/model-routing.json",
+      "source_location": "L92",
+      "weight": 1.0
+    }
+  ]
+}

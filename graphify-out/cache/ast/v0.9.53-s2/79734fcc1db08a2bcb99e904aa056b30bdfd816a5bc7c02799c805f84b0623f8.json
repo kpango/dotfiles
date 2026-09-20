@@ -1,1 +1,215 @@
-{"nodes": [{"id": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh", "label": "swarm-write-scope-gate.sh", "file_type": "code", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "label": "swarm-write-scope-gate.sh script", "file_type": "code", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit", "label": "log_audit()", "file_type": "code", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L44", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh", "target": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh", "target": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit", "relation": "defines", "confidence": "EXTRACTED", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L44", "weight": 1.0}, {"source": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "target": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit", "relation": "calls", "confidence": "EXTRACTED", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L66", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L12"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L14"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L14"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L15"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L15"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L17"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L17"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L25"}, {"language": "bash", "callee": "realpath", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L30"}, {"language": "bash", "callee": "write_scope_is_protected", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L31"}, {"language": "bash", "callee": ":", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L36"}, {"language": "bash", "callee": "write_scope_key", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L39"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L42"}, {"language": "bash", "callee": "continue", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L53"}, {"language": "bash", "callee": "stat", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L54"}, {"language": "bash", "callee": "rm", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L55"}, {"language": "bash", "callee": "mv", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L59"}, {"language": "bash", "callee": "basename", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L60"}, {"language": "bash", "callee": "break", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L60"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L45"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L45"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit", "source_file": "claude/hooks/swarm-write-scope-gate.sh", "source_location": "L46"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh",
+      "label": "swarm-write-scope-gate.sh",
+      "file_type": "code",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "label": "swarm-write-scope-gate.sh script",
+      "file_type": "code",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit",
+      "label": "log_audit()",
+      "file_type": "code",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L44",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh",
+      "target": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh",
+      "target": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "target": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L66",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L12"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L14"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L14"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L17"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L17"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L25"
+    },
+    {
+      "language": "bash",
+      "callee": "realpath",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L30"
+    },
+    {
+      "language": "bash",
+      "callee": "write_scope_is_protected",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L31"
+    },
+    {
+      "language": "bash",
+      "callee": ":",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L36"
+    },
+    {
+      "language": "bash",
+      "callee": "write_scope_key",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L39"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L42"
+    },
+    {
+      "language": "bash",
+      "callee": "continue",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L53"
+    },
+    {
+      "language": "bash",
+      "callee": "stat",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L54"
+    },
+    {
+      "language": "bash",
+      "callee": "rm",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L55"
+    },
+    {
+      "language": "bash",
+      "callee": "mv",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L59"
+    },
+    {
+      "language": "bash",
+      "callee": "basename",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L60"
+    },
+    {
+      "language": "bash",
+      "callee": "break",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_sh__entry",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L60"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L45"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L45"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_claude_hooks_swarm_write_scope_gate_log_audit",
+      "source_file": "claude/hooks/swarm-write-scope-gate.sh",
+      "source_location": "L46"
+    }
+  ],
+  "bash_sources": []
+}

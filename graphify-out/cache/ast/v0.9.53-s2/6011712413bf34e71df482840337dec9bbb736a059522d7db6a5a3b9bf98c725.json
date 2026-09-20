@@ -1,1 +1,207 @@
-{"nodes": [{"id": "$graphify-root$_agent_scripts_apply_settings_common_sh", "label": "apply-settings-common.sh", "file_type": "code", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "label": "apply-settings-common.sh script", "file_type": "code", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path", "label": "pointer_to_jq_path()", "file_type": "code", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L32", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "label": "apply_one()", "file_type": "code", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L42", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_scripts_apply_settings_common_sh", "target": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_apply_settings_common_sh", "target": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L32", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_apply_settings_common_sh", "target": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L42", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "target": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L85", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "target": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L45", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L16"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L18"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L18"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L18"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L25"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L25"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L74"}, {"language": "bash", "callee": "mapfile", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L82"}, {"language": "bash", "callee": "read", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L84"}, {"language": "bash", "callee": "read", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L34"}, {"language": "bash", "callee": "continue", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L36"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L39"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L48"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L48"}, {"language": "bash", "callee": "return", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L54"}, {"language": "bash", "callee": "mktemp", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L63"}, {"language": "bash", "callee": "mv", "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one", "source_file": "agent/scripts/apply-settings-common.sh", "source_location": "L65"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_scripts_apply_settings_common_sh",
+      "label": "apply-settings-common.sh",
+      "file_type": "code",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "label": "apply-settings-common.sh script",
+      "file_type": "code",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path",
+      "label": "pointer_to_jq_path()",
+      "file_type": "code",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L32",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "label": "apply_one()",
+      "file_type": "code",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L42",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_scripts_apply_settings_common_sh",
+      "target": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_apply_settings_common_sh",
+      "target": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_apply_settings_common_sh",
+      "target": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "target": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L85",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "target": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L45",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L16"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L18"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L18"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L18"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L25"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L25"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L74"
+    },
+    {
+      "language": "bash",
+      "callee": "mapfile",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L82"
+    },
+    {
+      "language": "bash",
+      "callee": "read",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_sh__entry",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L84"
+    },
+    {
+      "language": "bash",
+      "callee": "read",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L34"
+    },
+    {
+      "language": "bash",
+      "callee": "continue",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L36"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_pointer_to_jq_path",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L39"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L48"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L48"
+    },
+    {
+      "language": "bash",
+      "callee": "return",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L54"
+    },
+    {
+      "language": "bash",
+      "callee": "mktemp",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L63"
+    },
+    {
+      "language": "bash",
+      "callee": "mv",
+      "caller_nid": "$graphify-root$_agent_scripts_apply_settings_common_apply_one",
+      "source_file": "agent/scripts/apply-settings-common.sh",
+      "source_location": "L65"
+    }
+  ],
+  "bash_sources": []
+}

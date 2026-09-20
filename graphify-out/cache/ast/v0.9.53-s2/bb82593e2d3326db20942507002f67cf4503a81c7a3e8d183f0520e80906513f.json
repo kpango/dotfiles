@@ -1,1 +1,110 @@
-{"nodes": [{"id": "$graphify-root$_pi_agents_ann_perf_engineer_md", "label": "ann-perf-engineer.md", "file_type": "document", "node_kind": "page", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L1", "frontmatter": {"name": "ann-perf-engineer", "description": "ANN(\u8fd1\u4f3c\u6700\u8fd1\u508d\u63a2\u7d22)\u30d9\u30af\u30c8\u30eb\u691c\u7d22\u30a8\u30f3\u30b8\u30f3\u306eSIMD/\u30a2\u30eb\u30b4\u30ea\u30ba\u30e0\u6700\u9069\u5316\u3068 ann-benchmarks \u306b\u3088\u308b recall@k/QPS Pareto frontier \u30d9\u30f3\u30c1\u30de\u30fc\u30af\u5c02\u9580\u3002ArcFlare\u30fbNGT/NGTAQ \u7b49\u306e C++ \u30d9\u30af\u30c8\u30eb\u691c\u7d22\u30b3\u30fc\u30c9\u3067\u3001\u91cf\u5b50\u5316(SQ2/SQ4/SQ8/RaBitQ)\u8ddd\u96e2\u30ab\u30fc\u30cd\u30eb\u5b9f\u88c5\u3001AVX2/AVX-512 SIMD \u6700\u9069\u5316\u3001\u30d9\u30f3\u30c1\u30de\u30fc\u30af\u8a2d\u8a08\u30fb\u7d50\u679c\u89e3\u91c8\u3092\u884c\u3046\u3002Use proactively for ArcFlare/NGT/NGTAQ \u6027\u80fd\u4f5c\u696d\u3002", "tools": "read, write, edit, bash, grep, find, ls", "model": "inherit", "effort": "high", "memory": "user", "color": "teal"}}, {"id": "$graphify-root$_pi_agents_ann_perf_engineer_core_discipline_verify_before_trusting_a_number", "label": "Core Discipline: Verify Before Trusting a Number", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L14"}, {"id": "$graphify-root$_pi_agents_ann_perf_engineer_quantization_schemes_distance_kernel_tradeoffs", "label": "Quantization Schemes (distance-kernel tradeoffs)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L24"}, {"id": "$graphify-root$_pi_agents_ann_perf_engineer_ann_benchmarks_conventions", "label": "ann-benchmarks Conventions", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L30"}, {"id": "$graphify-root$_pi_agents_ann_perf_engineer_workflow", "label": "Workflow", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L40"}, {"id": "$graphify-root$_pi_agents_ann_perf_engineer_memory_protocol", "label": "Memory Protocol", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L48"}], "edges": [{"source": "$graphify-root$_pi_agents_ann_perf_engineer_md", "target": "$graphify-root$_pi_agents_ann_perf_engineer_core_discipline_verify_before_trusting_a_number", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L14", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_ann_perf_engineer_md", "target": "$graphify-root$_pi_agents_ann_perf_engineer_quantization_schemes_distance_kernel_tradeoffs", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_ann_perf_engineer_md", "target": "$graphify-root$_pi_agents_ann_perf_engineer_ann_benchmarks_conventions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L30", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_ann_perf_engineer_md", "target": "$graphify-root$_pi_agents_ann_perf_engineer_workflow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L40", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_ann_perf_engineer_md", "target": "$graphify-root$_pi_agents_ann_perf_engineer_memory_protocol", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/ann-perf-engineer.md", "source_location": "L48", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_agents_ann_perf_engineer_md",
+      "label": "ann-perf-engineer.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "ann-perf-engineer",
+        "description": "ANN(\u8fd1\u4f3c\u6700\u8fd1\u508d\u63a2\u7d22)\u30d9\u30af\u30c8\u30eb\u691c\u7d22\u30a8\u30f3\u30b8\u30f3\u306eSIMD/\u30a2\u30eb\u30b4\u30ea\u30ba\u30e0\u6700\u9069\u5316\u3068 ann-benchmarks \u306b\u3088\u308b recall@k/QPS Pareto frontier \u30d9\u30f3\u30c1\u30de\u30fc\u30af\u5c02\u9580\u3002ArcFlare\u30fbNGT/NGTAQ \u7b49\u306e C++ \u30d9\u30af\u30c8\u30eb\u691c\u7d22\u30b3\u30fc\u30c9\u3067\u3001\u91cf\u5b50\u5316(SQ2/SQ4/SQ8/RaBitQ)\u8ddd\u96e2\u30ab\u30fc\u30cd\u30eb\u5b9f\u88c5\u3001AVX2/AVX-512 SIMD \u6700\u9069\u5316\u3001\u30d9\u30f3\u30c1\u30de\u30fc\u30af\u8a2d\u8a08\u30fb\u7d50\u679c\u89e3\u91c8\u3092\u884c\u3046\u3002Use proactively for ArcFlare/NGT/NGTAQ \u6027\u80fd\u4f5c\u696d\u3002",
+        "tools": "read, write, edit, bash, grep, find, ls",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "teal"
+      }
+    },
+    {
+      "id": "$graphify-root$_pi_agents_ann_perf_engineer_core_discipline_verify_before_trusting_a_number",
+      "label": "Core Discipline: Verify Before Trusting a Number",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L14"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_ann_perf_engineer_quantization_schemes_distance_kernel_tradeoffs",
+      "label": "Quantization Schemes (distance-kernel tradeoffs)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_ann_perf_engineer_ann_benchmarks_conventions",
+      "label": "ann-benchmarks Conventions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_ann_perf_engineer_workflow",
+      "label": "Workflow",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L40"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_ann_perf_engineer_memory_protocol",
+      "label": "Memory Protocol",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L48"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_agents_ann_perf_engineer_md",
+      "target": "$graphify-root$_pi_agents_ann_perf_engineer_core_discipline_verify_before_trusting_a_number",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_ann_perf_engineer_md",
+      "target": "$graphify-root$_pi_agents_ann_perf_engineer_quantization_schemes_distance_kernel_tradeoffs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_ann_perf_engineer_md",
+      "target": "$graphify-root$_pi_agents_ann_perf_engineer_ann_benchmarks_conventions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_ann_perf_engineer_md",
+      "target": "$graphify-root$_pi_agents_ann_perf_engineer_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_ann_perf_engineer_md",
+      "target": "$graphify-root$_pi_agents_ann_perf_engineer_memory_protocol",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/ann-perf-engineer.md",
+      "source_location": "L48",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

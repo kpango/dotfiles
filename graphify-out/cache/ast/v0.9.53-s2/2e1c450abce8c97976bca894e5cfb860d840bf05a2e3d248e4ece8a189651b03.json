@@ -1,1 +1,127 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_rust_expert_md", "label": "rust-expert.md", "file_type": "document", "node_kind": "page", "source_file": "agent/agents/rust-expert.md", "source_location": "L1", "frontmatter": {"name": "rust-expert", "description": "Rust specialist. Use for ownership/lifetime analysis, unsafe code review, performance optimization, and cargo operations. Use proactively in Rust projects.", "tools": "Read, Write, Edit, Bash, Grep, Glob", "model": "inherit", "effort": "high", "memory": "user", "color": "orange"}}, {"id": "$graphify-root$_agent_agents_rust_expert_core_principles", "label": "Core Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/rust-expert.md", "source_location": "L13"}, {"id": "$graphify-root$_agent_agents_rust_expert_workflow", "label": "Workflow", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/rust-expert.md", "source_location": "L22"}, {"id": "$graphify-root$_agent_agents_rust_expert_memory_protocol", "label": "Memory Protocol", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/rust-expert.md", "source_location": "L31"}, {"id": "$graphify-root$_agent_agents_rust_expert_safety_review_checklist", "label": "Safety Review Checklist", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/rust-expert.md", "source_location": "L41"}, {"id": "$graphify-root$_agent_agents_rust_expert_quality_gates", "label": "Quality Gates", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/rust-expert.md", "source_location": "L51"}, {"id": "$graphify-root$_agent_agents_rust_expert_ponytail_anti_overengineering_directives", "label": "Ponytail Anti-Overengineering Directives", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/rust-expert.md", "source_location": "L67"}], "edges": [{"source": "$graphify-root$_agent_agents_rust_expert_md", "target": "$graphify-root$_agent_agents_rust_expert_core_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/rust-expert.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_rust_expert_md", "target": "$graphify-root$_agent_agents_rust_expert_workflow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/rust-expert.md", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_rust_expert_md", "target": "$graphify-root$_agent_agents_rust_expert_memory_protocol", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/rust-expert.md", "source_location": "L31", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_rust_expert_md", "target": "$graphify-root$_agent_agents_rust_expert_safety_review_checklist", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/rust-expert.md", "source_location": "L41", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_rust_expert_md", "target": "$graphify-root$_agent_agents_rust_expert_quality_gates", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/rust-expert.md", "source_location": "L51", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_rust_expert_md", "target": "$graphify-root$_agent_agents_rust_expert_ponytail_anti_overengineering_directives", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/rust-expert.md", "source_location": "L67", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_rust_expert_md",
+      "label": "rust-expert.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "rust-expert",
+        "description": "Rust specialist. Use for ownership/lifetime analysis, unsafe code review, performance optimization, and cargo operations. Use proactively in Rust projects.",
+        "tools": "Read, Write, Edit, Bash, Grep, Glob",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "orange"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_agents_rust_expert_core_principles",
+      "label": "Core Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_rust_expert_workflow",
+      "label": "Workflow",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_rust_expert_memory_protocol",
+      "label": "Memory Protocol",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L31"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_rust_expert_safety_review_checklist",
+      "label": "Safety Review Checklist",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L41"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_rust_expert_quality_gates",
+      "label": "Quality Gates",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L51"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_rust_expert_ponytail_anti_overengineering_directives",
+      "label": "Ponytail Anti-Overengineering Directives",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L67"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_rust_expert_md",
+      "target": "$graphify-root$_agent_agents_rust_expert_core_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_rust_expert_md",
+      "target": "$graphify-root$_agent_agents_rust_expert_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_rust_expert_md",
+      "target": "$graphify-root$_agent_agents_rust_expert_memory_protocol",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_rust_expert_md",
+      "target": "$graphify-root$_agent_agents_rust_expert_safety_review_checklist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_rust_expert_md",
+      "target": "$graphify-root$_agent_agents_rust_expert_quality_gates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_rust_expert_md",
+      "target": "$graphify-root$_agent_agents_rust_expert_ponytail_anti_overengineering_directives",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/rust-expert.md",
+      "source_location": "L67",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

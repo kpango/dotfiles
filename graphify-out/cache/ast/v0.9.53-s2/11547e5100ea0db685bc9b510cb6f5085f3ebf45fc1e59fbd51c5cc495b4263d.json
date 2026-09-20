@@ -1,1 +1,125 @@
-{"nodes": [{"id": "$graphify-root$_agent_hooks_claude_pre_compact_sh", "label": "pre-compact.sh", "file_type": "code", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "label": "pre-compact.sh script", "file_type": "code", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agent_hooks_claude_pre_compact_sh", "target": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L3"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L5"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L5"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L6"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L10"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L12"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L14"}, {"language": "bash", "callee": "git", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L17"}, {"language": "bash", "callee": "basename", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L18"}, {"language": "bash", "callee": "wc", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L20"}, {"language": "bash", "callee": "tr", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L20"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L26"}, {"language": "bash", "callee": "graphify", "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry", "source_file": "agent/hooks/claude/pre-compact.sh", "source_location": "L27"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_hooks_claude_pre_compact_sh",
+      "label": "pre-compact.sh",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "label": "pre-compact.sh script",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_hooks_claude_pre_compact_sh",
+      "target": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L3"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L5"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L5"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L6"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L12"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L14"
+    },
+    {
+      "language": "bash",
+      "callee": "git",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L17"
+    },
+    {
+      "language": "bash",
+      "callee": "basename",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L18"
+    },
+    {
+      "language": "bash",
+      "callee": "wc",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L20"
+    },
+    {
+      "language": "bash",
+      "callee": "tr",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L20"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L26"
+    },
+    {
+      "language": "bash",
+      "callee": "graphify",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_pre_compact_sh__entry",
+      "source_file": "agent/hooks/claude/pre-compact.sh",
+      "source_location": "L27"
+    }
+  ],
+  "bash_sources": []
+}

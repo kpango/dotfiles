@@ -4,19 +4,19 @@ This is a compact, non-authoritative fallback, not a source for current availabi
 
 ## GPT-5.6 family
 
-| Model ID | Documented workload to verify against the current model page |
-| --- | --- |
-| `gpt-5.6` | GPT-5.6 family alias; verify its currently documented routing and availability. |
-| `gpt-5.6-sol` | Quality-first flagship, reasoning, and difficult coding work. |
-| `gpt-5.6-terra` | Balanced quality, latency, and cost. |
-| `gpt-5.6-luna` | High-throughput, lower-latency work. |
+| Model ID        | Documented workload to verify against the current model page                    |
+| --------------- | ------------------------------------------------------------------------------- |
+| `gpt-5.6`       | GPT-5.6 family alias; verify its currently documented routing and availability. |
+| `gpt-5.6-sol`   | Quality-first flagship, reasoning, and difficult coding work.                   |
+| `gpt-5.6-terra` | Balanced quality, latency, and cost.                                            |
+| `gpt-5.6-luna`  | High-throughput, lower-latency work.                                            |
 
 Use `https://developers.openai.com/api/docs/guides/upgrading-to-gpt-5p6-sol` for an actual GPT-5.6 migration and `https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6` for requested GPT-5.6 prompting. Open and read the relevant page before recommending a request shape, reasoning setting, endpoint, tool behavior, or migration.
 
 ## Explicitly requested existing models
 
-| Model ID | Boundary |
-| --- | --- |
+| Model ID  | Boundary                                                                                                                                  |
+| --------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | `gpt-4.1` | Preserve only when the user explicitly requests this model or existing migration target; search and fetch its own current official guide. |
 | `gpt-5.4` | Preserve only when the user explicitly requests this model or existing migration target; search and fetch its own current official guide. |
 

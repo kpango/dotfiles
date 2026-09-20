@@ -1,1 +1,97 @@
-{"nodes": [{"id": "$graphify-root$_agy_hooks_vald_law_gate_sh", "label": "vald-law-gate.sh", "file_type": "code", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "label": "vald-law-gate.sh script", "file_type": "code", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agy_hooks_vald_law_gate_sh", "target": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L14"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L16"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L18"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L19"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L20"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L25"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L25"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L25"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry", "source_file": "agy/hooks/vald-law-gate.sh", "source_location": "L35"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agy_hooks_vald_law_gate_sh",
+      "label": "vald-law-gate.sh",
+      "file_type": "code",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "label": "vald-law-gate.sh script",
+      "file_type": "code",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agy_hooks_vald_law_gate_sh",
+      "target": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L14"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L16"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L18"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L19"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L20"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L25"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L25"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L25"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_agy_hooks_vald_law_gate_sh__entry",
+      "source_file": "agy/hooks/vald-law-gate.sh",
+      "source_location": "L35"
+    }
+  ],
+  "bash_sources": []
+}

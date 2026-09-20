@@ -1,1 +1,115 @@
-{"nodes": [{"id": "$graphify-root$_agent_rules_harness_design_md", "label": "harness-design.md", "file_type": "document", "node_kind": "page", "source_file": "agent/rules/harness-design.md", "source_location": "L1", "frontmatter": {"paths": ["**/claude/hooks/**", "**/claude/CLAUDE.md", "**/agent/rules/**", "**/agent/skills/**", "**/agent/agents/**", "**/agent/SWARM.md", "**/agent/SWARM_REFERENCES.md", "**/.claude/skills/**", "**/.claude/agents/**", "**/.claude/hooks/**"]}}, {"id": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247", "label": "agent / skill \u8a2d\u8a08\u306e\u539f\u5247", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/harness-design.md", "source_location": "L15"}, {"id": "$graphify-root$_agent_rules_harness_design_\u4f55\u3092\u3069\u3053\u306b\u7f6e\u304f\u304b", "label": "\u4f55\u3092\u3069\u3053\u306b\u7f6e\u304f\u304b", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/harness-design.md", "source_location": "L19"}, {"id": "$graphify-root$_agent_rules_harness_design_\u66f8\u304f\u6642\u306e\u539f\u5247", "label": "\u66f8\u304f\u6642\u306e\u539f\u5247", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/harness-design.md", "source_location": "L33"}, {"id": "$graphify-root$_agent_rules_harness_design_\u69cb\u6210", "label": "\u69cb\u6210", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/harness-design.md", "source_location": "L42"}, {"id": "$graphify-root$_agent_rules_harness_design_\u6a29\u9650", "label": "\u6a29\u9650", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/harness-design.md", "source_location": "L51"}], "edges": [{"source": "$graphify-root$_agent_rules_harness_design_md", "target": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/harness-design.md", "source_location": "L15", "weight": 1.0}, {"source": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247", "target": "$graphify-root$_agent_rules_harness_design_\u4f55\u3092\u3069\u3053\u306b\u7f6e\u304f\u304b", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/harness-design.md", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247", "target": "$graphify-root$_agent_rules_harness_design_\u66f8\u304f\u6642\u306e\u539f\u5247", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/harness-design.md", "source_location": "L33", "weight": 1.0}, {"source": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247", "target": "$graphify-root$_agent_rules_harness_design_\u69cb\u6210", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/harness-design.md", "source_location": "L42", "weight": 1.0}, {"source": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247", "target": "$graphify-root$_agent_rules_harness_design_\u6a29\u9650", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/harness-design.md", "source_location": "L51", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_rules_harness_design_md",
+      "label": "harness-design.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "paths": [
+          "**/claude/hooks/**",
+          "**/claude/CLAUDE.md",
+          "**/agent/rules/**",
+          "**/agent/skills/**",
+          "**/agent/agents/**",
+          "**/agent/SWARM.md",
+          "**/agent/SWARM_REFERENCES.md",
+          "**/.claude/skills/**",
+          "**/.claude/agents/**",
+          "**/.claude/hooks/**"
+        ]
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247",
+      "label": "agent / skill \u8a2d\u8a08\u306e\u539f\u5247",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "$graphify-root$_agent_rules_harness_design_\u4f55\u3092\u3069\u3053\u306b\u7f6e\u304f\u304b",
+      "label": "\u4f55\u3092\u3069\u3053\u306b\u7f6e\u304f\u304b",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L19"
+    },
+    {
+      "id": "$graphify-root$_agent_rules_harness_design_\u66f8\u304f\u6642\u306e\u539f\u5247",
+      "label": "\u66f8\u304f\u6642\u306e\u539f\u5247",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L33"
+    },
+    {
+      "id": "$graphify-root$_agent_rules_harness_design_\u69cb\u6210",
+      "label": "\u69cb\u6210",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L42"
+    },
+    {
+      "id": "$graphify-root$_agent_rules_harness_design_\u6a29\u9650",
+      "label": "\u6a29\u9650",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L51"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_rules_harness_design_md",
+      "target": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247",
+      "target": "$graphify-root$_agent_rules_harness_design_\u4f55\u3092\u3069\u3053\u306b\u7f6e\u304f\u304b",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247",
+      "target": "$graphify-root$_agent_rules_harness_design_\u66f8\u304f\u6642\u306e\u539f\u5247",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247",
+      "target": "$graphify-root$_agent_rules_harness_design_\u69cb\u6210",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_rules_harness_design_agent_skill_\u8a2d\u8a08\u306e\u539f\u5247",
+      "target": "$graphify-root$_agent_rules_harness_design_\u6a29\u9650",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/harness-design.md",
+      "source_location": "L51",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

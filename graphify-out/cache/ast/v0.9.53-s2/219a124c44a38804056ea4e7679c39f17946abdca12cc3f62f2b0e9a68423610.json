@@ -1,1 +1,215 @@
-{"nodes": [{"id": "$graphify-root$_claude_hooks_permission_request_sh", "label": "permission-request.sh", "file_type": "code", "source_file": "claude/hooks/permission-request.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_claude_hooks_permission_request_sh__entry", "label": "permission-request.sh script", "file_type": "code", "source_file": "claude/hooks/permission-request.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_claude_hooks_permission_request_allow", "label": "allow()", "file_type": "code", "source_file": "claude/hooks/permission-request.sh", "source_location": "L19", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_claude_hooks_permission_request_sh", "target": "$graphify-root$_claude_hooks_permission_request_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "claude/hooks/permission-request.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_claude_hooks_permission_request_sh", "target": "$graphify-root$_claude_hooks_permission_request_allow", "relation": "defines", "confidence": "EXTRACTED", "source_file": "claude/hooks/permission-request.sh", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_claude_hooks_permission_request_sh__entry", "target": "$graphify-root$_claude_hooks_permission_request_allow", "relation": "calls", "confidence": "EXTRACTED", "source_file": "claude/hooks/permission-request.sh", "source_location": "L33", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L3"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L7"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L7"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L7"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L11"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L12"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L12"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L15"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L17"}, {"language": "bash", "callee": "grep", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L27"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L41"}, {"language": "bash", "callee": ":", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L42"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L44"}, {"language": "bash", "callee": "eval", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L139"}, {"language": "bash", "callee": "continue", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L168"}, {"language": "bash", "callee": "realpath", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L171"}, {"language": "bash", "callee": "break", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L175"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry", "source_file": "claude/hooks/permission-request.sh", "source_location": "L192"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_claude_hooks_permission_request_allow", "source_file": "claude/hooks/permission-request.sh", "source_location": "L20"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_claude_hooks_permission_request_allow", "source_file": "claude/hooks/permission-request.sh", "source_location": "L21"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_claude_hooks_permission_request_allow", "source_file": "claude/hooks/permission-request.sh", "source_location": "L21"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_claude_hooks_permission_request_allow", "source_file": "claude/hooks/permission-request.sh", "source_location": "L22"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_claude_hooks_permission_request_sh",
+      "label": "permission-request.sh",
+      "file_type": "code",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "label": "permission-request.sh script",
+      "file_type": "code",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_claude_hooks_permission_request_allow",
+      "label": "allow()",
+      "file_type": "code",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L19",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_claude_hooks_permission_request_sh",
+      "target": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_claude_hooks_permission_request_sh",
+      "target": "$graphify-root$_claude_hooks_permission_request_allow",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "target": "$graphify-root$_claude_hooks_permission_request_allow",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L33",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L3"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L7"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L7"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L7"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L12"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L12"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L17"
+    },
+    {
+      "language": "bash",
+      "callee": "grep",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L27"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L41"
+    },
+    {
+      "language": "bash",
+      "callee": ":",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L42"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L44"
+    },
+    {
+      "language": "bash",
+      "callee": "eval",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L139"
+    },
+    {
+      "language": "bash",
+      "callee": "continue",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L168"
+    },
+    {
+      "language": "bash",
+      "callee": "realpath",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L171"
+    },
+    {
+      "language": "bash",
+      "callee": "break",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L175"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_sh__entry",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L192"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_allow",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L20"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_allow",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L21"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_allow",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L21"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_claude_hooks_permission_request_allow",
+      "source_file": "claude/hooks/permission-request.sh",
+      "source_location": "L22"
+    }
+  ],
+  "bash_sources": []
+}

@@ -1,1 +1,127 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_python_expert_md", "label": "python-expert.md", "file_type": "document", "node_kind": "page", "source_file": "agent/agents/python-expert.md", "source_location": "L1", "frontmatter": {"name": "python-expert", "description": "Python/PyTorch implementation specialist. Use for Python code implementation, packaging, testing, and PyTorch training-pipeline work. Use proactively in Python/PyTorch projects. `code-reviewer` reviews Python under its general checklist (no dedicated Python-Specific section, unlike its Go/Rust/C++/K8s/Zig sections) \u2014 this agent implements, `code-reviewer` still audits after the fact.", "tools": "Read, Write, Edit, Bash, Grep, Glob", "model": "inherit", "effort": "high", "memory": "user", "color": "gold"}}, {"id": "$graphify-root$_agent_agents_python_expert_core_principles", "label": "Core Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/python-expert.md", "source_location": "L15"}, {"id": "$graphify-root$_agent_agents_python_expert_packaging_gotchas", "label": "Packaging Gotchas", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/python-expert.md", "source_location": "L24"}, {"id": "$graphify-root$_agent_agents_python_expert_testing_pytest", "label": "Testing (pytest)", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/python-expert.md", "source_location": "L29"}, {"id": "$graphify-root$_agent_agents_python_expert_pytorch", "label": "PyTorch", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/python-expert.md", "source_location": "L34"}, {"id": "$graphify-root$_agent_agents_python_expert_workflow", "label": "Workflow", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/python-expert.md", "source_location": "L42"}, {"id": "$graphify-root$_agent_agents_python_expert_memory_protocol", "label": "Memory Protocol", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/python-expert.md", "source_location": "L49"}], "edges": [{"source": "$graphify-root$_agent_agents_python_expert_md", "target": "$graphify-root$_agent_agents_python_expert_core_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/python-expert.md", "source_location": "L15", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_python_expert_md", "target": "$graphify-root$_agent_agents_python_expert_packaging_gotchas", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/python-expert.md", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_python_expert_md", "target": "$graphify-root$_agent_agents_python_expert_testing_pytest", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/python-expert.md", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_python_expert_md", "target": "$graphify-root$_agent_agents_python_expert_pytorch", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/python-expert.md", "source_location": "L34", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_python_expert_md", "target": "$graphify-root$_agent_agents_python_expert_workflow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/python-expert.md", "source_location": "L42", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_python_expert_md", "target": "$graphify-root$_agent_agents_python_expert_memory_protocol", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/python-expert.md", "source_location": "L49", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_python_expert_md",
+      "label": "python-expert.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "python-expert",
+        "description": "Python/PyTorch implementation specialist. Use for Python code implementation, packaging, testing, and PyTorch training-pipeline work. Use proactively in Python/PyTorch projects. `code-reviewer` reviews Python under its general checklist (no dedicated Python-Specific section, unlike its Go/Rust/C++/K8s/Zig sections) \u2014 this agent implements, `code-reviewer` still audits after the fact.",
+        "tools": "Read, Write, Edit, Bash, Grep, Glob",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "gold"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_agents_python_expert_core_principles",
+      "label": "Core Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_python_expert_packaging_gotchas",
+      "label": "Packaging Gotchas",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_python_expert_testing_pytest",
+      "label": "Testing (pytest)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_python_expert_pytorch",
+      "label": "PyTorch",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L34"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_python_expert_workflow",
+      "label": "Workflow",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L42"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_python_expert_memory_protocol",
+      "label": "Memory Protocol",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L49"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_python_expert_md",
+      "target": "$graphify-root$_agent_agents_python_expert_core_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_python_expert_md",
+      "target": "$graphify-root$_agent_agents_python_expert_packaging_gotchas",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_python_expert_md",
+      "target": "$graphify-root$_agent_agents_python_expert_testing_pytest",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_python_expert_md",
+      "target": "$graphify-root$_agent_agents_python_expert_pytorch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_python_expert_md",
+      "target": "$graphify-root$_agent_agents_python_expert_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_python_expert_md",
+      "target": "$graphify-root$_agent_agents_python_expert_memory_protocol",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/python-expert.md",
+      "source_location": "L49",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

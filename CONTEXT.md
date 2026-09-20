@@ -43,7 +43,7 @@ this repo's code-understanding tooling.
   it is the only defense against the upkeep-triggered revert via the MCP-server-boot path, which
   removing the `session-start` hook entry does not close.
 - graft's MCP server registration (`.mcp.json`) and CLI remain fully functional after this
-  mission — only the *automatic, every-turn* hook wiring is removed. `graft ask`/`callers`/
+  mission — only the _automatic, every-turn_ hook wiring is removed. `graft ask`/`callers`/
   `skeleton`/the MCP tools are still the correct way to get code context on demand.
 - graphify's removal is full-scope, not just git-mechanism-level: git merge driver +
   post-commit/post-checkout hooks, committed graph artifacts (`.claude/graph/graphify/`), all
@@ -92,4 +92,3 @@ re-run DeepResearch-driven config audits.
   主張は、本ミッション自身のセッションでの実際の`TaskOutput`呼び出し成功と矛盾するため採用しない
   （`agent/rules/verify-before-assert.md`のAI要約単独では断定しない原則）。将来のセッションでこの矛盾を
   再検証する場合は、まずこのセッションの実行環境（Claude Code バージョン）を確認すること。
-

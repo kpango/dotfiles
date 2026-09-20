@@ -1,1 +1,90 @@
-{"nodes": [{"id": "$graphify-root$_agent_hooks_claude_stop_failure_sh", "label": "stop-failure.sh", "file_type": "code", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "label": "stop-failure.sh script", "file_type": "code", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agent_hooks_claude_stop_failure_sh", "target": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L3"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L5"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L5"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L6"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L8"}, {"language": "bash", "callee": "read", "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L10"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L18"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry", "source_file": "agent/hooks/claude/stop-failure.sh", "source_location": "L21"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_hooks_claude_stop_failure_sh",
+      "label": "stop-failure.sh",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "label": "stop-failure.sh script",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_hooks_claude_stop_failure_sh",
+      "target": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L3"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L5"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L5"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L6"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "read",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L18"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_stop_failure_sh__entry",
+      "source_file": "agent/hooks/claude/stop-failure.sh",
+      "source_location": "L21"
+    }
+  ],
+  "bash_sources": []
+}

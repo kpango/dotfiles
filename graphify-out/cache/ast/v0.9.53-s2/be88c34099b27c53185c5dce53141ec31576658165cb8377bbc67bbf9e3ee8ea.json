@@ -1,1 +1,74 @@
-{"nodes": [{"id": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py", "label": "zsh-pty-startup.py", "file_type": "code", "source_file": "Makefile.d/scripts/zsh-pty-startup.py", "source_location": "L1"}], "edges": [{"source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py", "target": "argparse", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "Makefile.d/scripts/zsh-pty-startup.py", "source_location": "L35", "weight": 1.0}, {"source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py", "target": "os", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "Makefile.d/scripts/zsh-pty-startup.py", "source_location": "L36", "weight": 1.0}, {"source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py", "target": "signal", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "Makefile.d/scripts/zsh-pty-startup.py", "source_location": "L37", "weight": 1.0}, {"source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py", "target": "sys", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "Makefile.d/scripts/zsh-pty-startup.py", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py", "target": "time", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "Makefile.d/scripts/zsh-pty-startup.py", "source_location": "L39", "weight": 1.0}, {"source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py", "target": "fcntl", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "Makefile.d/scripts/zsh-pty-startup.py", "source_location": "L99", "weight": 1.0}], "raw_calls": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py",
+      "label": "zsh-pty-startup.py",
+      "file_type": "code",
+      "source_file": "Makefile.d/scripts/zsh-pty-startup.py",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py",
+      "target": "argparse",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "Makefile.d/scripts/zsh-pty-startup.py",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "Makefile.d/scripts/zsh-pty-startup.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py",
+      "target": "signal",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "Makefile.d/scripts/zsh-pty-startup.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "Makefile.d/scripts/zsh-pty-startup.py",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py",
+      "target": "time",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "Makefile.d/scripts/zsh-pty-startup.py",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_makefile_d_scripts_zsh_pty_startup_py",
+      "target": "fcntl",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "Makefile.d/scripts/zsh-pty-startup.py",
+      "source_location": "L99",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": []
+}

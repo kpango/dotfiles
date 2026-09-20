@@ -35,11 +35,11 @@ domain has state, the per-turn Σ surfacing (below) is **on by default**.
 
 ## Tools
 
-| Tool                  | Purpose                                                                                                  |
-| --------------------- | ------------------------------------------------------------------------------------------------------- |
-| `skill_state_declare` | Declare a domain's state schema once (paper §3.1). `fields` = JSON `{name: {type, listMerge?}}`.         |
+| Tool                  | Purpose                                                                                                       |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `skill_state_declare` | Declare a domain's state schema once (paper §3.1). `fields` = JSON `{name: {type, listMerge?}}`.              |
 | `skill_state_update`  | Apply a `ΔΣ` patch (`Σ ⊕ ΔΣ`). `patch` = JSON object; a `null` value deletes a key. `reasoning` is discarded. |
-| `skill_state_get`     | Read the current `Σ` (the sufficient statistic for the next step).                                       |
+| `skill_state_get`     | Read the current `Σ` (the sufficient statistic for the next step).                                            |
 
 Slash command `/state [list|show <domain>|clear [domain]|autocontext [on|off|status]]`
 inspects/manages state and toggles the per-turn auto-context.
@@ -61,12 +61,12 @@ domain). Fields:
 
 ```json
 {
-  "discovered_flags":  { "type": "list",   "listMerge": "union" },
-  "tested_hypotheses": { "type": "list",   "listMerge": "append" },
-  "active_files":      { "type": "list",   "listMerge": "replace" },
-  "working_dir":       { "type": "string" },
-  "cmd_summary":       { "type": "map" },
-  "attempt":           { "type": "number" }
+  "discovered_flags": { "type": "list", "listMerge": "union" },
+  "tested_hypotheses": { "type": "list", "listMerge": "append" },
+  "active_files": { "type": "list", "listMerge": "replace" },
+  "working_dir": { "type": "string" },
+  "cmd_summary": { "type": "map" },
+  "attempt": { "type": "number" }
 }
 ```
 
@@ -145,6 +145,7 @@ or (3) the task objective is the history itself (auditing/provenance). For those
 keep history or widen the schema; do not discard reasoning blindly.
 
 Two operational caveats specific to this Pi implementation:
+
 - **Bounding growing fields**: `append`/`union` list fields are unbounded by
   design; a long horizon can grow `Σ` (and thus the per-turn footprint) without
   limit. The author must prune them (emit `null` to delete, or periodically

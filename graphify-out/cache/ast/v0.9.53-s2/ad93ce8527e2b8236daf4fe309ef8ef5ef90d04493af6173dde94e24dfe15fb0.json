@@ -1,1 +1,67 @@
-{"nodes": [{"id": "$graphify-root$_nix_readme_md", "label": "README.md", "file_type": "document", "node_kind": "page", "source_file": "nix/README.md", "source_location": "L1"}, {"id": "$graphify-root$_nix_readme_nix_configuration", "label": "Nix Configuration", "file_type": "document", "node_kind": "heading", "source_file": "nix/README.md", "source_location": "L1"}, {"id": "$graphify-root$_nix_readme_directory_structure", "label": "Directory Structure", "file_type": "document", "node_kind": "heading", "source_file": "nix/README.md", "source_location": "L5"}, {"id": "$graphify-root$_nix_readme_setup", "label": "Setup", "file_type": "document", "node_kind": "heading", "source_file": "nix/README.md", "source_location": "L13"}], "edges": [{"source": "$graphify-root$_nix_readme_md", "target": "$graphify-root$_nix_readme_nix_configuration", "relation": "contains", "confidence": "EXTRACTED", "source_file": "nix/README.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_nix_readme_nix_configuration", "target": "$graphify-root$_nix_readme_directory_structure", "relation": "contains", "confidence": "EXTRACTED", "source_file": "nix/README.md", "source_location": "L5", "weight": 1.0}, {"source": "$graphify-root$_nix_readme_nix_configuration", "target": "$graphify-root$_nix_readme_setup", "relation": "contains", "confidence": "EXTRACTED", "source_file": "nix/README.md", "source_location": "L13", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_nix_readme_md",
+      "label": "README.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "nix/README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_nix_readme_nix_configuration",
+      "label": "Nix Configuration",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "nix/README.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_nix_readme_directory_structure",
+      "label": "Directory Structure",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "nix/README.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "$graphify-root$_nix_readme_setup",
+      "label": "Setup",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "nix/README.md",
+      "source_location": "L13"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_nix_readme_md",
+      "target": "$graphify-root$_nix_readme_nix_configuration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "nix/README.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_nix_readme_nix_configuration",
+      "target": "$graphify-root$_nix_readme_directory_structure",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "nix/README.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_nix_readme_nix_configuration",
+      "target": "$graphify-root$_nix_readme_setup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "nix/README.md",
+      "source_location": "L13",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,1 +1,138 @@
-{"nodes": [{"id": "$graphify-root$_agent_scripts_verify_cache_alignment_sh", "label": "verify-cache-alignment.sh", "file_type": "code", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "label": "verify-cache-alignment.sh script", "file_type": "code", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target", "label": "check_cache_target()", "file_type": "code", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L16", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_scripts_verify_cache_alignment_sh", "target": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_verify_cache_alignment_sh", "target": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "target": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L51", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L8"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L10"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L10"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L10"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L47"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L62"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L22"}, {"language": "bash", "callee": "return", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L24"}, {"language": "bash", "callee": "wc", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L28"}, {"language": "bash", "callee": "head", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L37"}, {"language": "bash", "callee": "grep", "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target", "source_file": "agent/scripts/verify-cache-alignment.sh", "source_location": "L37"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_scripts_verify_cache_alignment_sh",
+      "label": "verify-cache-alignment.sh",
+      "file_type": "code",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "label": "verify-cache-alignment.sh script",
+      "file_type": "code",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target",
+      "label": "check_cache_target()",
+      "file_type": "code",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L16",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_scripts_verify_cache_alignment_sh",
+      "target": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_verify_cache_alignment_sh",
+      "target": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "target": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L51",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L47"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_sh__entry",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L62"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L22"
+    },
+    {
+      "language": "bash",
+      "callee": "return",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "wc",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L28"
+    },
+    {
+      "language": "bash",
+      "callee": "head",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L37"
+    },
+    {
+      "language": "bash",
+      "callee": "grep",
+      "caller_nid": "$graphify-root$_agent_scripts_verify_cache_alignment_check_cache_target",
+      "source_file": "agent/scripts/verify-cache-alignment.sh",
+      "source_location": "L37"
+    }
+  ],
+  "bash_sources": []
+}

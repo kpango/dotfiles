@@ -1,1 +1,144 @@
-{"nodes": [{"id": "$graphify-root$_pi_agents_debugger_md", "label": "debugger.md", "file_type": "document", "node_kind": "page", "source_file": "pi/agents/debugger.md", "source_location": "L1", "frontmatter": {"name": "debugger", "description": "Debugging specialist for Go, Rust, C++, and K8s. Use proactively when errors, test failures, unexpected behavior, panics, or crashes occur. Identifies and fixes root causes.", "tools": "read, edit, bash, grep, find, ls, write", "model": "inherit", "effort": "high", "memory": "user", "color": "pink"}}, {"id": "$graphify-root$_pi_agents_debugger_debugging_methodology", "label": "Debugging Methodology", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/debugger.md", "source_location": "L14"}, {"id": "$graphify-root$_pi_agents_debugger_go_debugging", "label": "Go Debugging", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/debugger.md", "source_location": "L23"}, {"id": "$graphify-root$_pi_agents_debugger_rust_debugging", "label": "Rust Debugging", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/debugger.md", "source_location": "L42"}, {"id": "$graphify-root$_pi_agents_debugger_c_debugging", "label": "C++ Debugging", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/debugger.md", "source_location": "L58"}, {"id": "$graphify-root$_pi_agents_debugger_k8s_debugging", "label": "K8s Debugging", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/debugger.md", "source_location": "L85"}, {"id": "$graphify-root$_pi_agents_debugger_system_debugging", "label": "System Debugging", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/debugger.md", "source_location": "L116"}, {"id": "$graphify-root$_pi_agents_debugger_structured_diagnosis_output", "label": "Structured Diagnosis Output", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/debugger.md", "source_location": "L134"}], "edges": [{"source": "$graphify-root$_pi_agents_debugger_md", "target": "$graphify-root$_pi_agents_debugger_debugging_methodology", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/debugger.md", "source_location": "L14", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_debugger_md", "target": "$graphify-root$_pi_agents_debugger_go_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/debugger.md", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_debugger_md", "target": "$graphify-root$_pi_agents_debugger_rust_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/debugger.md", "source_location": "L42", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_debugger_md", "target": "$graphify-root$_pi_agents_debugger_c_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/debugger.md", "source_location": "L58", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_debugger_md", "target": "$graphify-root$_pi_agents_debugger_k8s_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/debugger.md", "source_location": "L85", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_debugger_md", "target": "$graphify-root$_pi_agents_debugger_system_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/debugger.md", "source_location": "L116", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_debugger_md", "target": "$graphify-root$_pi_agents_debugger_structured_diagnosis_output", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/debugger.md", "source_location": "L134", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_agents_debugger_md",
+      "label": "debugger.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "debugger",
+        "description": "Debugging specialist for Go, Rust, C++, and K8s. Use proactively when errors, test failures, unexpected behavior, panics, or crashes occur. Identifies and fixes root causes.",
+        "tools": "read, edit, bash, grep, find, ls, write",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "pink"
+      }
+    },
+    {
+      "id": "$graphify-root$_pi_agents_debugger_debugging_methodology",
+      "label": "Debugging Methodology",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L14"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_debugger_go_debugging",
+      "label": "Go Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_debugger_rust_debugging",
+      "label": "Rust Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L42"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_debugger_c_debugging",
+      "label": "C++ Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L58"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_debugger_k8s_debugging",
+      "label": "K8s Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L85"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_debugger_system_debugging",
+      "label": "System Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L116"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_debugger_structured_diagnosis_output",
+      "label": "Structured Diagnosis Output",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L134"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_agents_debugger_md",
+      "target": "$graphify-root$_pi_agents_debugger_debugging_methodology",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_debugger_md",
+      "target": "$graphify-root$_pi_agents_debugger_go_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_debugger_md",
+      "target": "$graphify-root$_pi_agents_debugger_rust_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_debugger_md",
+      "target": "$graphify-root$_pi_agents_debugger_c_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_debugger_md",
+      "target": "$graphify-root$_pi_agents_debugger_k8s_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_debugger_md",
+      "target": "$graphify-root$_pi_agents_debugger_system_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L116",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_debugger_md",
+      "target": "$graphify-root$_pi_agents_debugger_structured_diagnosis_output",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/debugger.md",
+      "source_location": "L134",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

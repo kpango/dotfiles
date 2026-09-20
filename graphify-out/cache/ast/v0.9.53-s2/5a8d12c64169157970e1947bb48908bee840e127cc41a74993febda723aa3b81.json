@@ -1,1 +1,378 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_python_testing_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L1", "frontmatter": {"name": "python-testing", "description": "Python testing strategies using pytest, TDD methodology, fixtures, mocking, parametrization, and coverage requirements. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f python-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002", "origin": "ECC"}}, {"id": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "label": "Python Testing Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_when_to_activate", "label": "When to Activate", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L13"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_core_testing_philosophy", "label": "Core Testing Philosophy", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L20"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_test_driven_development_tdd", "label": "Test-Driven Development (TDD)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L22"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_coverage_requirements", "label": "Coverage Requirements", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L43"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_pytest_fundamentals", "label": "pytest Fundamentals", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L53"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_fixtures", "label": "Fixtures", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L59"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_parametrization", "label": "Parametrization", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L70"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_markers_and_test_selection", "label": "Markers and Test Selection", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L80"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_mocking_and_patching", "label": "Mocking and Patching", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L90"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_testing_async_code", "label": "Testing Async Code", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L101"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_testing_exceptions", "label": "Testing Exceptions", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L110"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_testing_side_effects", "label": "Testing Side Effects", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L119"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_test_organization", "label": "Test Organization", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L127"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_best_practices", "label": "Best Practices", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L136"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_do", "label": "DO", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L138"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_don_t", "label": "DON'T", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L149"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_common_patterns", "label": "Common Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L160"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_pytest_configuration", "label": "pytest Configuration", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L168"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_running_tests", "label": "Running Tests", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L177"}, {"id": "$graphify-root$_agent_skills_python_testing_skill_quick_reference", "label": "Quick Reference", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L214"}], "edges": [{"source": "$graphify-root$_agent_skills_python_testing_skill_md", "target": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_when_to_activate", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_core_testing_philosophy", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_core_testing_philosophy", "target": "$graphify-root$_agent_skills_python_testing_skill_test_driven_development_tdd", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_core_testing_philosophy", "target": "$graphify-root$_agent_skills_python_testing_skill_coverage_requirements", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L43", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_pytest_fundamentals", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L53", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_fixtures", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L59", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_parametrization", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L70", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_markers_and_test_selection", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L80", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_mocking_and_patching", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L90", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_testing_async_code", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L101", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_testing_exceptions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L110", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_testing_side_effects", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L119", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_test_organization", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L127", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_best_practices", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L136", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_best_practices", "target": "$graphify-root$_agent_skills_python_testing_skill_do", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L138", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_best_practices", "target": "$graphify-root$_agent_skills_python_testing_skill_don_t", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L149", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_common_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L160", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_pytest_configuration", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L168", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_running_tests", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L177", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns", "target": "$graphify-root$_agent_skills_python_testing_skill_quick_reference", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-testing/SKILL.md", "source_location": "L214", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "python-testing",
+        "description": "Python testing strategies using pytest, TDD methodology, fixtures, mocking, parametrization, and coverage requirements. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f python-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002",
+        "origin": "ECC"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "label": "Python Testing Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_when_to_activate",
+      "label": "When to Activate",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_core_testing_philosophy",
+      "label": "Core Testing Philosophy",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_test_driven_development_tdd",
+      "label": "Test-Driven Development (TDD)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_coverage_requirements",
+      "label": "Coverage Requirements",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L43"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_pytest_fundamentals",
+      "label": "pytest Fundamentals",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L53"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_fixtures",
+      "label": "Fixtures",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L59"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_parametrization",
+      "label": "Parametrization",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L70"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_markers_and_test_selection",
+      "label": "Markers and Test Selection",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_mocking_and_patching",
+      "label": "Mocking and Patching",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L90"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_testing_async_code",
+      "label": "Testing Async Code",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L101"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_testing_exceptions",
+      "label": "Testing Exceptions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L110"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_testing_side_effects",
+      "label": "Testing Side Effects",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L119"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_test_organization",
+      "label": "Test Organization",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L127"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_best_practices",
+      "label": "Best Practices",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L136"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_do",
+      "label": "DO",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L138"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_don_t",
+      "label": "DON'T",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L149"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_common_patterns",
+      "label": "Common Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L160"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_pytest_configuration",
+      "label": "pytest Configuration",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L168"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_running_tests",
+      "label": "Running Tests",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L177"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_testing_skill_quick_reference",
+      "label": "Quick Reference",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L214"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_md",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_when_to_activate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_core_testing_philosophy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_core_testing_philosophy",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_test_driven_development_tdd",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_core_testing_philosophy",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_coverage_requirements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_pytest_fundamentals",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L53",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_fixtures",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_parametrization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_markers_and_test_selection",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_mocking_and_patching",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_testing_async_code",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_testing_exceptions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L110",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_testing_side_effects",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L119",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_test_organization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_best_practices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_best_practices",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_do",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L138",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_best_practices",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_don_t",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L149",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_common_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L160",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_pytest_configuration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_running_tests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_testing_skill_python_testing_patterns",
+      "target": "$graphify-root$_agent_skills_python_testing_skill_quick_reference",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-testing/SKILL.md",
+      "source_location": "L214",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

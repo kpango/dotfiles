@@ -1,1 +1,602 @@
-{"nodes": [{"id": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go", "label": "server.go", "file_type": "code", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L1"}, {"id": "pinentry_tmux_server", "label": "Server", "file_type": "code", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L11"}, {"id": "prompter", "label": "Prompter", "file_type": "code", "source_file": "", "source_location": "", "origin_file": "$graphify-root$/tmux.conf.d/pinentry-tmux/server.go"}, {"id": "io_reader", "label": "io.Reader", "file_type": "code", "source_file": "", "source_location": "", "origin_file": "$graphify-root$/tmux.conf.d/pinentry-tmux/server.go"}, {"id": "io_writer", "label": "io.Writer", "file_type": "code", "source_file": "", "source_location": "", "origin_file": "$graphify-root$/tmux.conf.d/pinentry-tmux/server.go"}, {"id": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver", "label": "NewServer()", "file_type": "code", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L17"}, {"id": "pinentry_tmux_server_serve", "label": ".Serve()", "file_type": "code", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L25"}, {"id": "context_context", "label": "context.Context", "file_type": "code", "source_file": "", "source_location": "", "origin_file": "$graphify-root$/tmux.conf.d/pinentry-tmux/server.go"}], "edges": [{"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go", "target": "go_pkg_bufio", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L4", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go", "target": "go_pkg_bytes", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L5", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go", "target": "go_pkg_context", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L6", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go", "target": "go_pkg_fmt", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L7", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go", "target": "go_pkg_io", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L8", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go", "target": "pinentry_tmux_server", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L11", "weight": 1.0}, {"source": "pinentry_tmux_server", "target": "prompter", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L12", "weight": 1.0, "context": "field"}, {"source": "pinentry_tmux_server", "target": "io_reader", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L13", "weight": 1.0, "context": "field"}, {"source": "pinentry_tmux_server", "target": "io_writer", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L14", "weight": 1.0, "context": "field"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go", "target": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L17", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver", "target": "prompter", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L17", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver", "target": "io_reader", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L17", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver", "target": "io_writer", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L17", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver", "target": "pinentry_tmux_server", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L17", "weight": 1.0, "context": "return_type"}, {"source": "pinentry_tmux_server", "target": "pinentry_tmux_server_serve", "relation": "method", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L25", "weight": 1.0}, {"source": "pinentry_tmux_server_serve", "target": "context_context", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L25", "weight": 1.0, "context": "parameter_type"}], "raw_calls": [{"caller_nid": "pinentry_tmux_server_serve", "callee": "NewWriter", "is_member_call": false, "language": "go", "receiver": "bufio", "import_path": "bufio", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L26"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "Fprintln", "is_member_call": false, "language": "go", "receiver": "fmt", "import_path": "fmt", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L28"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "Flush", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L29"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L32"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "NewScanner", "is_member_call": false, "language": "go", "receiver": "bufio", "import_path": "bufio", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L38"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "Scan", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L42"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "TrimRight", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L43"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "Bytes", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L43"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "string", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L43"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "Cut", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L44"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L46"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "assuanDecode", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L47"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L48"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L49"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "assuanDecode", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L50"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L51"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L52"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "assuanDecode", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L53"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L54"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L55"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "assuanDecode", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L56"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L57"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L58"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L63"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L64"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "Flush", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L65"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "GetPin", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L66"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L67"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L69"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L71"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L71"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "Confirm", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L72"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L73"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L75"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "EqualFold", "is_member_call": false, "language": "go", "receiver": "bytes", "import_path": "bytes", "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L77"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L78"}, {"caller_nid": "pinentry_tmux_server_serve", "callee": "send", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/server.go", "source_location": "L81"}], "go_imports": {"bufio": "bufio", "bytes": "bytes", "context": "context", "fmt": "fmt", "io": "io"}}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go",
+      "label": "server.go",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L1"
+    },
+    {
+      "id": "pinentry_tmux_server",
+      "label": "Server",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L11"
+    },
+    {
+      "id": "prompter",
+      "label": "Prompter",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "origin_file": "$graphify-root$/tmux.conf.d/pinentry-tmux/server.go"
+    },
+    {
+      "id": "io_reader",
+      "label": "io.Reader",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "origin_file": "$graphify-root$/tmux.conf.d/pinentry-tmux/server.go"
+    },
+    {
+      "id": "io_writer",
+      "label": "io.Writer",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "origin_file": "$graphify-root$/tmux.conf.d/pinentry-tmux/server.go"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver",
+      "label": "NewServer()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L17"
+    },
+    {
+      "id": "pinentry_tmux_server_serve",
+      "label": ".Serve()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L25"
+    },
+    {
+      "id": "context_context",
+      "label": "context.Context",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "origin_file": "$graphify-root$/tmux.conf.d/pinentry-tmux/server.go"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go",
+      "target": "go_pkg_bufio",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L4",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go",
+      "target": "go_pkg_bytes",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L5",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go",
+      "target": "go_pkg_context",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L6",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go",
+      "target": "go_pkg_fmt",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L7",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go",
+      "target": "go_pkg_io",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L8",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go",
+      "target": "pinentry_tmux_server",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "pinentry_tmux_server",
+      "target": "prompter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L12",
+      "weight": 1.0,
+      "context": "field"
+    },
+    {
+      "source": "pinentry_tmux_server",
+      "target": "io_reader",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L13",
+      "weight": 1.0,
+      "context": "field"
+    },
+    {
+      "source": "pinentry_tmux_server",
+      "target": "io_writer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L14",
+      "weight": 1.0,
+      "context": "field"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_go",
+      "target": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver",
+      "target": "prompter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver",
+      "target": "io_reader",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver",
+      "target": "io_writer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_server_newserver",
+      "target": "pinentry_tmux_server",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L17",
+      "weight": 1.0,
+      "context": "return_type"
+    },
+    {
+      "source": "pinentry_tmux_server",
+      "target": "pinentry_tmux_server_serve",
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "pinentry_tmux_server_serve",
+      "target": "context_context",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L25",
+      "weight": 1.0,
+      "context": "parameter_type"
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "NewWriter",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bufio",
+      "import_path": "bufio",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L26"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "Fprintln",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "fmt",
+      "import_path": "fmt",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L28"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "Flush",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L29"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L32"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "NewScanner",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bufio",
+      "import_path": "bufio",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L38"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "Scan",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L42"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "TrimRight",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L43"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "Bytes",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L43"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "string",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L43"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "Cut",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L44"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L46"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "assuanDecode",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L47"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L48"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L49"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "assuanDecode",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L50"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L51"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L52"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "assuanDecode",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L53"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L54"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L55"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "assuanDecode",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L56"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L57"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L58"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L63"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L64"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "Flush",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L65"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "GetPin",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L66"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L67"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L69"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L71"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L71"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "Confirm",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L72"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L73"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L75"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "EqualFold",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "bytes",
+      "import_path": "bytes",
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L77"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L78"
+    },
+    {
+      "caller_nid": "pinentry_tmux_server_serve",
+      "callee": "send",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/server.go",
+      "source_location": "L81"
+    }
+  ],
+  "go_imports": {
+    "bufio": "bufio",
+    "bytes": "bytes",
+    "context": "context",
+    "fmt": "fmt",
+    "io": "io"
+  }
+}

@@ -1,1 +1,252 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_golang_patterns_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L1", "frontmatter": {"name": "golang-patterns", "description": "Idiomatic Go patterns, best practices, and conventions for building robust, efficient, and maintainable Go applications. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f go-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002", "origin": "ECC"}}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "label": "Go Development Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_when_to_activate", "label": "When to Activate", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L11"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_core_principles", "label": "Core Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L18"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_design_principles_go_solid", "label": "Design Principles (Go-SOLID)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L26"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_error_handling_patterns", "label": "Error Handling Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L38"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_concurrency_patterns", "label": "Concurrency Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L47"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_interface_design", "label": "Interface Design", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L57"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_package_organization", "label": "Package Organization", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L65"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_struct_design", "label": "Struct Design", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L73"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_memory_and_performance", "label": "Memory and Performance", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L80"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_go_tooling_integration", "label": "Go Tooling Integration", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L88"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_quick_reference_go_idioms", "label": "Quick Reference: Go Idioms", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L116"}, {"id": "$graphify-root$_agent_skills_golang_patterns_skill_anti_patterns_to_avoid", "label": "Anti-Patterns to Avoid", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L126"}], "edges": [{"source": "$graphify-root$_agent_skills_golang_patterns_skill_md", "target": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_md", "target": "$graphify-root$_agent_skills_golang_patterns_reference_md", "relation": "references", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L9", "weight": 1.0, "target_file": "$graphify-root$/agent/skills/golang-patterns/reference.md"}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_when_to_activate", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L11", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_core_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L18", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_design_principles_go_solid", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_error_handling_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_concurrency_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L47", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_interface_design", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L57", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_package_organization", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L65", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_struct_design", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L73", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_memory_and_performance", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L80", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_go_tooling_integration", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L88", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_quick_reference_go_idioms", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L116", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns", "target": "$graphify-root$_agent_skills_golang_patterns_skill_anti_patterns_to_avoid", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-patterns/SKILL.md", "source_location": "L126", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "golang-patterns",
+        "description": "Idiomatic Go patterns, best practices, and conventions for building robust, efficient, and maintainable Go applications. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f go-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002",
+        "origin": "ECC"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "label": "Go Development Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_when_to_activate",
+      "label": "When to Activate",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_core_principles",
+      "label": "Core Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_design_principles_go_solid",
+      "label": "Design Principles (Go-SOLID)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L26"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_error_handling_patterns",
+      "label": "Error Handling Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_concurrency_patterns",
+      "label": "Concurrency Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L47"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_interface_design",
+      "label": "Interface Design",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_package_organization",
+      "label": "Package Organization",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L65"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_struct_design",
+      "label": "Struct Design",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L73"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_memory_and_performance",
+      "label": "Memory and Performance",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_go_tooling_integration",
+      "label": "Go Tooling Integration",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L88"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_quick_reference_go_idioms",
+      "label": "Quick Reference: Go Idioms",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L116"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_patterns_skill_anti_patterns_to_avoid",
+      "label": "Anti-Patterns to Avoid",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L126"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_md",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_md",
+      "target": "$graphify-root$_agent_skills_golang_patterns_reference_md",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L9",
+      "weight": 1.0,
+      "target_file": "$graphify-root$/agent/skills/golang-patterns/reference.md"
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_when_to_activate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_core_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_design_principles_go_solid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_error_handling_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_concurrency_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_interface_design",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_package_organization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_struct_design",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_memory_and_performance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_go_tooling_integration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_quick_reference_go_idioms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L116",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_patterns_skill_go_development_patterns",
+      "target": "$graphify-root$_agent_skills_golang_patterns_skill_anti_patterns_to_avoid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-patterns/SKILL.md",
+      "source_location": "L126",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,1 +1,67 @@
-{"nodes": [{"id": "$graphify-root$_agents_forensic_auditor_1_progress_md", "label": "progress.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/forensic_auditor_1/progress.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_forensic_auditor_1_progress_progress_forensic_integrity_auditor", "label": "Progress \u2014 Forensic Integrity Auditor", "file_type": "document", "node_kind": "heading", "source_file": ".agents/forensic_auditor_1/progress.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_forensic_auditor_1_progress_current_status", "label": "Current Status", "file_type": "document", "node_kind": "heading", "source_file": ".agents/forensic_auditor_1/progress.md", "source_location": "L5"}, {"id": "$graphify-root$_agents_forensic_auditor_1_progress_checklist", "label": "Checklist", "file_type": "document", "node_kind": "heading", "source_file": ".agents/forensic_auditor_1/progress.md", "source_location": "L9"}], "edges": [{"source": "$graphify-root$_agents_forensic_auditor_1_progress_md", "target": "$graphify-root$_agents_forensic_auditor_1_progress_progress_forensic_integrity_auditor", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/forensic_auditor_1/progress.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_forensic_auditor_1_progress_progress_forensic_integrity_auditor", "target": "$graphify-root$_agents_forensic_auditor_1_progress_current_status", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/forensic_auditor_1/progress.md", "source_location": "L5", "weight": 1.0}, {"source": "$graphify-root$_agents_forensic_auditor_1_progress_progress_forensic_integrity_auditor", "target": "$graphify-root$_agents_forensic_auditor_1_progress_checklist", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/forensic_auditor_1/progress.md", "source_location": "L9", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_forensic_auditor_1_progress_md",
+      "label": "progress.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/forensic_auditor_1/progress.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_forensic_auditor_1_progress_progress_forensic_integrity_auditor",
+      "label": "Progress \u2014 Forensic Integrity Auditor",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/forensic_auditor_1/progress.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_forensic_auditor_1_progress_current_status",
+      "label": "Current Status",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/forensic_auditor_1/progress.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "$graphify-root$_agents_forensic_auditor_1_progress_checklist",
+      "label": "Checklist",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/forensic_auditor_1/progress.md",
+      "source_location": "L9"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_forensic_auditor_1_progress_md",
+      "target": "$graphify-root$_agents_forensic_auditor_1_progress_progress_forensic_integrity_auditor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/forensic_auditor_1/progress.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_forensic_auditor_1_progress_progress_forensic_integrity_auditor",
+      "target": "$graphify-root$_agents_forensic_auditor_1_progress_current_status",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/forensic_auditor_1/progress.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_forensic_auditor_1_progress_progress_forensic_integrity_auditor",
+      "target": "$graphify-root$_agents_forensic_auditor_1_progress_checklist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/forensic_auditor_1/progress.md",
+      "source_location": "L9",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

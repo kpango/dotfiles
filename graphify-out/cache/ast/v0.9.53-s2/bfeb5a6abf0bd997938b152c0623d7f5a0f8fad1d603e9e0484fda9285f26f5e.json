@@ -1,1 +1,477 @@
-{"nodes": [{"id": "$graphify-root$_agent_harnesses_claude_model_routing_json", "label": "model-routing.json", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L1"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_schema", "label": "$schema", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L2"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_harness", "label": "harness", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L3"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_default_tier", "label": "default_tier", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L4"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers", "label": "tiers", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L5"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low", "label": "Low", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L6"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_low_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L7"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_low_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L8"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_low_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L9"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_low_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L10"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium", "label": "Medium", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L19"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_medium_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L20"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_medium_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L21"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_medium_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L22"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_medium_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L23"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high", "label": "High", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L38"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_high_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L39"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_high_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L40"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_high_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L41"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_high_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L42"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh", "label": "XHigh", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L63"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L64"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L65"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L66"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L67"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max", "label": "Max", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L82"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_max_model", "label": "model", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L83"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_max_effort", "label": "effort", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L84"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_max_description", "label": "description", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L85"}, {"id": "$graphify-root$_agent_harnesses_claude_model_routing_max_fallbacks", "label": "fallbacks", "file_type": "code", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L86"}], "edges": [{"source": "$graphify-root$_agent_harnesses_claude_model_routing_json", "target": "$graphify-root$_agent_harnesses_claude_model_routing_schema", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L2", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_json", "target": "$graphify-root$_agent_harnesses_claude_model_routing_harness", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_json", "target": "$graphify-root$_agent_harnesses_claude_model_routing_default_tier", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L4", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_json", "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L5", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low", "target": "$graphify-root$_agent_harnesses_claude_model_routing_low_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low", "target": "$graphify-root$_agent_harnesses_claude_model_routing_low_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L8", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low", "target": "$graphify-root$_agent_harnesses_claude_model_routing_low_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low", "target": "$graphify-root$_agent_harnesses_claude_model_routing_low_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L10", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium", "target": "$graphify-root$_agent_harnesses_claude_model_routing_medium_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium", "target": "$graphify-root$_agent_harnesses_claude_model_routing_medium_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L21", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium", "target": "$graphify-root$_agent_harnesses_claude_model_routing_medium_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium", "target": "$graphify-root$_agent_harnesses_claude_model_routing_medium_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high", "target": "$graphify-root$_agent_harnesses_claude_model_routing_high_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L39", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high", "target": "$graphify-root$_agent_harnesses_claude_model_routing_high_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L40", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high", "target": "$graphify-root$_agent_harnesses_claude_model_routing_high_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L41", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high", "target": "$graphify-root$_agent_harnesses_claude_model_routing_high_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L42", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L63", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh", "target": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L64", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh", "target": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L65", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh", "target": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L66", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh", "target": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L67", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers", "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L82", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max", "target": "$graphify-root$_agent_harnesses_claude_model_routing_max_model", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L83", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max", "target": "$graphify-root$_agent_harnesses_claude_model_routing_max_effort", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L84", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max", "target": "$graphify-root$_agent_harnesses_claude_model_routing_max_description", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L85", "weight": 1.0}, {"source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max", "target": "$graphify-root$_agent_harnesses_claude_model_routing_max_fallbacks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/claude/model-routing.json", "source_location": "L86", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_json",
+      "label": "model-routing.json",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_schema",
+      "label": "$schema",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_harness",
+      "label": "harness",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_default_tier",
+      "label": "default_tier",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers",
+      "label": "tiers",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low",
+      "label": "Low",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_low_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_low_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_low_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_low_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium",
+      "label": "Medium",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_medium_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_medium_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_medium_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_medium_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high",
+      "label": "High",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_high_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L39"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_high_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L40"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_high_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L41"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_high_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L42"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh",
+      "label": "XHigh",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L63"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L64"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L65"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L66"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L67"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max",
+      "label": "Max",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L82"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_max_model",
+      "label": "model",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L83"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_max_effort",
+      "label": "effort",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L84"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_max_description",
+      "label": "description",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L85"
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_claude_model_routing_max_fallbacks",
+      "label": "fallbacks",
+      "file_type": "code",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L86"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_json",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_json",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_harness",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_json",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_default_tier",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_json",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_low_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_low_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_low_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_low",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_low_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_medium_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_medium_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_medium_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_medium",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_medium_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_high_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_high_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_high_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_high",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_high_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L66",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_xhigh",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_xhigh_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L67",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_max_model",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_max_effort",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_max_description",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_harnesses_claude_model_routing_tiers_max",
+      "target": "$graphify-root$_agent_harnesses_claude_model_routing_max_fallbacks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/claude/model-routing.json",
+      "source_location": "L86",
+      "weight": 1.0
+    }
+  ]
+}

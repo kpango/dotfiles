@@ -1,1 +1,33 @@
-{"nodes": [{"id": "$graphify-root$_agent_swarm_references_md", "label": "SWARM_REFERENCES.md", "file_type": "document", "node_kind": "page", "source_file": "agent/SWARM_REFERENCES.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_swarm_references_swarm_references_\u53c2\u8003\u6587\u732e_\u65e7_swarm_md_8_\u7531\u6765", "label": "SWARM_REFERENCES \u2014 \u53c2\u8003\u6587\u732e\uff08\u65e7 SWARM.md \u00a78 \u7531\u6765\uff09", "file_type": "document", "node_kind": "heading", "source_file": "agent/SWARM_REFERENCES.md", "source_location": "L1"}], "edges": [{"source": "$graphify-root$_agent_swarm_references_md", "target": "$graphify-root$_agent_swarm_references_swarm_references_\u53c2\u8003\u6587\u732e_\u65e7_swarm_md_8_\u7531\u6765", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/SWARM_REFERENCES.md", "source_location": "L1", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_swarm_references_md",
+      "label": "SWARM_REFERENCES.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/SWARM_REFERENCES.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_swarm_references_swarm_references_\u53c2\u8003\u6587\u732e_\u65e7_swarm_md_8_\u7531\u6765",
+      "label": "SWARM_REFERENCES \u2014 \u53c2\u8003\u6587\u732e\uff08\u65e7 SWARM.md \u00a78 \u7531\u6765\uff09",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/SWARM_REFERENCES.md",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_swarm_references_md",
+      "target": "$graphify-root$_agent_swarm_references_swarm_references_\u53c2\u8003\u6587\u732e_\u65e7_swarm_md_8_\u7531\u6765",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/SWARM_REFERENCES.md",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

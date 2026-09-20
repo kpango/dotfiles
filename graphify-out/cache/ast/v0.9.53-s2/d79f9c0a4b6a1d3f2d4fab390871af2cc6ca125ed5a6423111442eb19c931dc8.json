@@ -1,1 +1,37 @@
-{"nodes": [{"id": "$graphify-root$_agent_harnesses_pi_prompts_claude_md", "label": "claude.md", "file_type": "document", "node_kind": "page", "source_file": "agent/harnesses/pi/prompts/claude.md", "source_location": "L1", "frontmatter": {"name": "claude", "description": "Delegate a prompt or task directly to Claude Code CLI with full permissions and streaming feedback."}}, {"id": "$graphify-root$_agent_harnesses_pi_prompts_claude_delegate_to_claude_code", "label": "Delegate to Claude Code", "file_type": "document", "node_kind": "heading", "source_file": "agent/harnesses/pi/prompts/claude.md", "source_location": "L6"}], "edges": [{"source": "$graphify-root$_agent_harnesses_pi_prompts_claude_md", "target": "$graphify-root$_agent_harnesses_pi_prompts_claude_delegate_to_claude_code", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/pi/prompts/claude.md", "source_location": "L6", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_harnesses_pi_prompts_claude_md",
+      "label": "claude.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/harnesses/pi/prompts/claude.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "claude",
+        "description": "Delegate a prompt or task directly to Claude Code CLI with full permissions and streaming feedback."
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_pi_prompts_claude_delegate_to_claude_code",
+      "label": "Delegate to Claude Code",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/harnesses/pi/prompts/claude.md",
+      "source_location": "L6"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_harnesses_pi_prompts_claude_md",
+      "target": "$graphify-root$_agent_harnesses_pi_prompts_claude_delegate_to_claude_code",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/pi/prompts/claude.md",
+      "source_location": "L6",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -49,7 +49,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: [dart, docker, env, gcloud, go, k8s, nim, nix, ollama, rust, vald, zig]
+        image:
+          [
+            dart,
+            docker,
+            env,
+            gcloud,
+            go,
+            k8s,
+            nim,
+            nix,
+            ollama,
+            rust,
+            vald,
+            zig,
+          ]
     uses: ./.github/workflows/docker-reusable.yaml
     with:
       image_name: ${{ matrix.image }}

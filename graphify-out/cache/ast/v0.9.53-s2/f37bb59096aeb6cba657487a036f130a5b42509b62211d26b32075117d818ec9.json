@@ -1,1 +1,62 @@
-{"nodes": [{"id": "$graphify-root$_sway_scripts_screenshot_sh", "label": "screenshot.sh", "file_type": "code", "source_file": "sway/scripts/screenshot.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_sway_scripts_screenshot_sh__entry", "label": "screenshot.sh script", "file_type": "code", "source_file": "sway/scripts/screenshot.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_sway_scripts_screenshot_sh", "target": "$graphify-root$_sway_scripts_screenshot_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "sway/scripts/screenshot.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_sway_scripts_screenshot_sh__entry", "source_file": "sway/scripts/screenshot.sh", "source_location": "L5"}, {"language": "bash", "callee": "wofi", "caller_nid": "$graphify-root$_sway_scripts_screenshot_sh__entry", "source_file": "sway/scripts/screenshot.sh", "source_location": "L5"}, {"language": "bash", "callee": "awk", "caller_nid": "$graphify-root$_sway_scripts_screenshot_sh__entry", "source_file": "sway/scripts/screenshot.sh", "source_location": "L5"}, {"language": "bash", "callee": "/usr/share/sway/scripts/grimshot", "caller_nid": "$graphify-root$_sway_scripts_screenshot_sh__entry", "source_file": "sway/scripts/screenshot.sh", "source_location": "L9"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_sway_scripts_screenshot_sh",
+      "label": "screenshot.sh",
+      "file_type": "code",
+      "source_file": "sway/scripts/screenshot.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_sway_scripts_screenshot_sh__entry",
+      "label": "screenshot.sh script",
+      "file_type": "code",
+      "source_file": "sway/scripts/screenshot.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_sway_scripts_screenshot_sh",
+      "target": "$graphify-root$_sway_scripts_screenshot_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "sway/scripts/screenshot.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_sway_scripts_screenshot_sh__entry",
+      "source_file": "sway/scripts/screenshot.sh",
+      "source_location": "L5"
+    },
+    {
+      "language": "bash",
+      "callee": "wofi",
+      "caller_nid": "$graphify-root$_sway_scripts_screenshot_sh__entry",
+      "source_file": "sway/scripts/screenshot.sh",
+      "source_location": "L5"
+    },
+    {
+      "language": "bash",
+      "callee": "awk",
+      "caller_nid": "$graphify-root$_sway_scripts_screenshot_sh__entry",
+      "source_file": "sway/scripts/screenshot.sh",
+      "source_location": "L5"
+    },
+    {
+      "language": "bash",
+      "callee": "/usr/share/sway/scripts/grimshot",
+      "caller_nid": "$graphify-root$_sway_scripts_screenshot_sh__entry",
+      "source_file": "sway/scripts/screenshot.sh",
+      "source_location": "L9"
+    }
+  ],
+  "bash_sources": []
+}

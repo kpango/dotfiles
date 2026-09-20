@@ -1,1 +1,84 @@
-{"nodes": [{"id": "$graphify-root$_agent_rules_grill_interview_md", "label": "grill-interview.md", "file_type": "document", "node_kind": "page", "source_file": "agent/rules/grill-interview.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention", "label": "Grilling \u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247 (Cognitive Drift Prevention)", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/grill-interview.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_rules_grill_interview_1_\u9069\u7528\u6761\u4ef6_trigger_conditions", "label": "1. \u9069\u7528\u6761\u4ef6 (Trigger Conditions)", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/grill-interview.md", "source_location": "L6"}, {"id": "$graphify-root$_agent_rules_grill_interview_2_\u9075\u5b88\u7fa9\u52d9_mandatory_invariants", "label": "2. \u9075\u5b88\u7fa9\u52d9 (Mandatory Invariants)", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/grill-interview.md", "source_location": "L18"}, {"id": "$graphify-root$_agent_rules_grill_interview_3_\u30ec\u30d3\u30e5\u30fc\u3068\u691c\u8a3c\u306b\u304a\u3051\u308b\u6271\u3044", "label": "3. \u30ec\u30d3\u30e5\u30fc\u3068\u691c\u8a3c\u306b\u304a\u3051\u308b\u6271\u3044", "file_type": "document", "node_kind": "heading", "source_file": "agent/rules/grill-interview.md", "source_location": "L31"}], "edges": [{"source": "$graphify-root$_agent_rules_grill_interview_md", "target": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/grill-interview.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention", "target": "$graphify-root$_agent_rules_grill_interview_1_\u9069\u7528\u6761\u4ef6_trigger_conditions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/grill-interview.md", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention", "target": "$graphify-root$_agent_rules_grill_interview_2_\u9075\u5b88\u7fa9\u52d9_mandatory_invariants", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/grill-interview.md", "source_location": "L18", "weight": 1.0}, {"source": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention", "target": "$graphify-root$_agent_rules_grill_interview_3_\u30ec\u30d3\u30e5\u30fc\u3068\u691c\u8a3c\u306b\u304a\u3051\u308b\u6271\u3044", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/rules/grill-interview.md", "source_location": "L31", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_rules_grill_interview_md",
+      "label": "grill-interview.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention",
+      "label": "Grilling \u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247 (Cognitive Drift Prevention)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_rules_grill_interview_1_\u9069\u7528\u6761\u4ef6_trigger_conditions",
+      "label": "1. \u9069\u7528\u6761\u4ef6 (Trigger Conditions)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agent_rules_grill_interview_2_\u9075\u5b88\u7fa9\u52d9_mandatory_invariants",
+      "label": "2. \u9075\u5b88\u7fa9\u52d9 (Mandatory Invariants)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "$graphify-root$_agent_rules_grill_interview_3_\u30ec\u30d3\u30e5\u30fc\u3068\u691c\u8a3c\u306b\u304a\u3051\u308b\u6271\u3044",
+      "label": "3. \u30ec\u30d3\u30e5\u30fc\u3068\u691c\u8a3c\u306b\u304a\u3051\u308b\u6271\u3044",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L31"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_rules_grill_interview_md",
+      "target": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention",
+      "target": "$graphify-root$_agent_rules_grill_interview_1_\u9069\u7528\u6761\u4ef6_trigger_conditions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention",
+      "target": "$graphify-root$_agent_rules_grill_interview_2_\u9075\u5b88\u7fa9\u52d9_mandatory_invariants",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_rules_grill_interview_grilling_\u8a2d\u8a08\u30c4\u30ea\u30fc\u9762\u8ac7\u898f\u5247_cognitive_drift_prevention",
+      "target": "$graphify-root$_agent_rules_grill_interview_3_\u30ec\u30d3\u30e5\u30fc\u3068\u691c\u8a3c\u306b\u304a\u3051\u308b\u6271\u3044",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/rules/grill-interview.md",
+      "source_location": "L31",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

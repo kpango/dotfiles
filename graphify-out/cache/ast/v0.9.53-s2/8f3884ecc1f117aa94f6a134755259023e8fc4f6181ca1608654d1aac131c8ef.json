@@ -1,1 +1,33 @@
-{"nodes": [{"id": "$graphify-root$_agents_worker_m2_dispatch_md", "label": "DISPATCH.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/worker_m2/DISPATCH.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_m2_dispatch_2026_09_04t15_32_20z", "label": "2026-09-04T15:32:20Z", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m2/DISPATCH.md", "source_location": "L1"}], "edges": [{"source": "$graphify-root$_agents_worker_m2_dispatch_md", "target": "$graphify-root$_agents_worker_m2_dispatch_2026_09_04t15_32_20z", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m2/DISPATCH.md", "source_location": "L1", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_worker_m2_dispatch_md",
+      "label": "DISPATCH.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/worker_m2/DISPATCH.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m2_dispatch_2026_09_04t15_32_20z",
+      "label": "2026-09-04T15:32:20Z",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m2/DISPATCH.md",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_worker_m2_dispatch_md",
+      "target": "$graphify-root$_agents_worker_m2_dispatch_2026_09_04t15_32_20z",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m2/DISPATCH.md",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

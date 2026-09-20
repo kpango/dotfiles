@@ -1,1 +1,152 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh", "label": "harness-record.sh", "file_type": "code", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "label": "harness-record.sh script", "file_type": "code", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_normalize", "label": "normalize()", "file_type": "code", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L37", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh", "target": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh", "target": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_normalize", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L37", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "target": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_normalize", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L45", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L11"}, {"language": "bash", "callee": "readlink", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L30"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L31"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L51"}, {"language": "bash", "callee": "require_flock", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L61"}, {"language": "bash", "callee": "flock", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L64"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L66"}, {"language": "bash", "callee": "read", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L70"}, {"language": "bash", "callee": "continue", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L72"}, {"language": "bash", "callee": "cut", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L80"}, {"language": "bash", "callee": "mv", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L93"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L96"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_normalize", "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh", "source_location": "L42"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh",
+      "label": "harness-record.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "label": "harness-record.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_normalize",
+      "label": "normalize()",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L37",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh",
+      "target": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh",
+      "target": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_normalize",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "target": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_normalize",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L45",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "readlink",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L30"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L31"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L51"
+    },
+    {
+      "language": "bash",
+      "callee": "require_flock",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L61"
+    },
+    {
+      "language": "bash",
+      "callee": "flock",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L64"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L66"
+    },
+    {
+      "language": "bash",
+      "callee": "read",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L70"
+    },
+    {
+      "language": "bash",
+      "callee": "continue",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L72"
+    },
+    {
+      "language": "bash",
+      "callee": "cut",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L80"
+    },
+    {
+      "language": "bash",
+      "callee": "mv",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L93"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L96"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_record_normalize",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-record.sh",
+      "source_location": "L42"
+    }
+  ],
+  "bash_sources": []
+}

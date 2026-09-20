@@ -45,7 +45,7 @@ whatever it powers, so keep this list current.
 | --------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `rtk`           | Bash command token optimization                | `paru -S rtk-ai-bin`                                                                                                            |
 | `codegraph`     | Code navigation (via the Executor MCP gateway) | `bun install -g @colbymchenry/codegraph`                                                                                        |
-| `graft`         | Code context graph CLI + MCP server            | `bun add -g @nanonets/graft`                                                                                                     |
+| `graft`         | Code context graph CLI + MCP server            | `bun add -g @nanonets/graft`                                                                                                    |
 | `golangci-lint` | Go lint                                        | official install script                                                                                                         |
 | `hadolint`      | Dockerfile lint                                | `paru -S hadolint-bin`                                                                                                          |
 | `buf`           | Protobuf lint / breaking-change detection      | `go install github.com/bufbuild/buf/cmd/buf@latest`                                                                             |

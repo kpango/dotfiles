@@ -1,1 +1,424 @@
-{"nodes": [{"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_md", "label": "handoff.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "label": "Specification Mining Report: Pi Coding Agent SOTA Extensions (R1\u2013R4)", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_1_executive_summary", "label": "1. Executive Summary", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L19"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_2_features_discovered", "label": "2. Features Discovered", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L31"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_3_edge_cases_boundary_conditions", "label": "3. Edge Cases & Boundary Conditions", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L58"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications", "label": "4. Formal Interface Contracts & Specifications", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L86"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_1_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering", "label": "4.1 R1: Hermes-Style Closed-Loop Skill Synthesis & Loop Engineering", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L88"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_skill_synthesizer_core_ts", "label": "File: `agent/harnesses/pi/extensions/lib/skill-synthesizer-core.ts`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L90"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_loop_controller_core_ts", "label": "File: `agent/harnesses/pi/extensions/lib/loop-controller-core.ts`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L136"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_2_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement", "label": "4.2 R2: PrimeAgent-Style RLM Context Filtering & Continual Harness Refinement", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L177"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_repl_context_core_ts", "label": "File: `agent/harnesses/pi/extensions/lib/repl-context-core.ts`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L179"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_continual_harness_core_ts", "label": "File: `agent/harnesses/pi/extensions/lib/continual-harness-core.ts`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L225"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_3_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal", "label": "4.3 R3: DeepSeekHarness-Style Reasoning Token Preservation & Idempotent Tool Journal", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L254"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_reasoning_preserver_core_ts", "label": "File: `agent/harnesses/pi/extensions/lib/reasoning-preserver-core.ts`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L256"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_session_journal_core_ts", "label": "File: `agent/harnesses/pi/extensions/lib/session-journal-core.ts`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L284"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_4_r4_grokbot_style_persistent_daemonized_execution_universal_verification", "label": "4.4 R4: GrokBot-Style Persistent Daemonized Execution & Universal Verification", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L318"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_daemon_session_core_ts", "label": "File: `agent/harnesses/pi/extensions/lib/daemon-session-core.ts`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L320"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria", "label": "5. Verification Matrix & Acceptance Criteria", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L348"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_1_unit_tests_100_pass", "label": "5.1 Unit Tests (100% PASS)", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L350"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_2_harness_diagnostics_validate_harness_sh", "label": "5.2 Harness Diagnostics (`validate-harness.sh`)", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L360"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_3_universal_multi_harness_integration_test_all_harnesses_sh", "label": "5.3 Universal Multi-Harness Integration (`test-all-harnesses.sh`)", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L371"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_4_ssot_deployment_make_pi_install", "label": "5.4 SSoT Deployment (`make pi/install`)", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L375"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_6_logic_chain_rationale", "label": "6. Logic Chain & Rationale", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L385"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_7_caveats_assumptions", "label": "7. Caveats & Assumptions", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L397"}, {"id": "$graphify-root$_agents_spec_miner_survey_1_handoff_8_conclusion", "label": "8. Conclusion", "file_type": "document", "node_kind": "heading", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L408"}], "edges": [{"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_md", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_1_executive_summary", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_2_features_discovered", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L31", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_3_edge_cases_boundary_conditions", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L58", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L86", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_1_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L88", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_1_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_skill_synthesizer_core_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L90", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_1_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_loop_controller_core_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L136", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_2_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L177", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_2_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_repl_context_core_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L179", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_2_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_continual_harness_core_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L225", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_3_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L254", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_3_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_reasoning_preserver_core_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L256", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_3_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_session_journal_core_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L284", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_4_r4_grokbot_style_persistent_daemonized_execution_universal_verification", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L318", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_4_r4_grokbot_style_persistent_daemonized_execution_universal_verification", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_daemon_session_core_ts", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L320", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L348", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_1_unit_tests_100_pass", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L350", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_2_harness_diagnostics_validate_harness_sh", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L360", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_3_universal_multi_harness_integration_test_all_harnesses_sh", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L371", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_4_ssot_deployment_make_pi_install", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L375", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_6_logic_chain_rationale", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L385", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_7_caveats_assumptions", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L397", "weight": 1.0}, {"source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4", "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_8_conclusion", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/spec_miner_survey_1/handoff.md", "source_location": "L408", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_md",
+      "label": "handoff.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "label": "Specification Mining Report: Pi Coding Agent SOTA Extensions (R1\u2013R4)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_1_executive_summary",
+      "label": "1. Executive Summary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L19"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_2_features_discovered",
+      "label": "2. Features Discovered",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L31"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_3_edge_cases_boundary_conditions",
+      "label": "3. Edge Cases & Boundary Conditions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L58"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications",
+      "label": "4. Formal Interface Contracts & Specifications",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L86"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_1_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering",
+      "label": "4.1 R1: Hermes-Style Closed-Loop Skill Synthesis & Loop Engineering",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L88"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_skill_synthesizer_core_ts",
+      "label": "File: `agent/harnesses/pi/extensions/lib/skill-synthesizer-core.ts`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L90"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_loop_controller_core_ts",
+      "label": "File: `agent/harnesses/pi/extensions/lib/loop-controller-core.ts`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L136"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_2_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement",
+      "label": "4.2 R2: PrimeAgent-Style RLM Context Filtering & Continual Harness Refinement",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L177"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_repl_context_core_ts",
+      "label": "File: `agent/harnesses/pi/extensions/lib/repl-context-core.ts`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L179"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_continual_harness_core_ts",
+      "label": "File: `agent/harnesses/pi/extensions/lib/continual-harness-core.ts`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L225"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_3_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal",
+      "label": "4.3 R3: DeepSeekHarness-Style Reasoning Token Preservation & Idempotent Tool Journal",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L254"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_reasoning_preserver_core_ts",
+      "label": "File: `agent/harnesses/pi/extensions/lib/reasoning-preserver-core.ts`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L256"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_session_journal_core_ts",
+      "label": "File: `agent/harnesses/pi/extensions/lib/session-journal-core.ts`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L284"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_4_r4_grokbot_style_persistent_daemonized_execution_universal_verification",
+      "label": "4.4 R4: GrokBot-Style Persistent Daemonized Execution & Universal Verification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L318"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_daemon_session_core_ts",
+      "label": "File: `agent/harnesses/pi/extensions/lib/daemon-session-core.ts`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L320"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria",
+      "label": "5. Verification Matrix & Acceptance Criteria",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L348"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_1_unit_tests_100_pass",
+      "label": "5.1 Unit Tests (100% PASS)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L350"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_2_harness_diagnostics_validate_harness_sh",
+      "label": "5.2 Harness Diagnostics (`validate-harness.sh`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L360"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_3_universal_multi_harness_integration_test_all_harnesses_sh",
+      "label": "5.3 Universal Multi-Harness Integration (`test-all-harnesses.sh`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L371"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_4_ssot_deployment_make_pi_install",
+      "label": "5.4 SSoT Deployment (`make pi/install`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L375"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_6_logic_chain_rationale",
+      "label": "6. Logic Chain & Rationale",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L385"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_7_caveats_assumptions",
+      "label": "7. Caveats & Assumptions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L397"
+    },
+    {
+      "id": "$graphify-root$_agents_spec_miner_survey_1_handoff_8_conclusion",
+      "label": "8. Conclusion",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L408"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_md",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_1_executive_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_2_features_discovered",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_3_edge_cases_boundary_conditions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_1_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_1_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_skill_synthesizer_core_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_1_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_loop_controller_core_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_2_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_2_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_repl_context_core_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L179",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_2_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_continual_harness_core_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_3_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L254",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_3_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_reasoning_preserver_core_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L256",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_3_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_session_journal_core_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L284",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_formal_interface_contracts_specifications",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_4_r4_grokbot_style_persistent_daemonized_execution_universal_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L318",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_4_4_r4_grokbot_style_persistent_daemonized_execution_universal_verification",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_file_agent_harnesses_pi_extensions_lib_daemon_session_core_ts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L320",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L348",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_1_unit_tests_100_pass",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L350",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_2_harness_diagnostics_validate_harness_sh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L360",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_3_universal_multi_harness_integration_test_all_harnesses_sh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L371",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_verification_matrix_acceptance_criteria",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_5_4_ssot_deployment_make_pi_install",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L375",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_6_logic_chain_rationale",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L385",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_7_caveats_assumptions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L397",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_spec_miner_survey_1_handoff_specification_mining_report_pi_coding_agent_sota_extensions_r1_r4",
+      "target": "$graphify-root$_agents_spec_miner_survey_1_handoff_8_conclusion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/spec_miner_survey_1/handoff.md",
+      "source_location": "L408",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

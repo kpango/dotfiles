@@ -1,1 +1,259 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_security_scan_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L1", "frontmatter": {"name": "security-scan", "description": "Scan your Claude Code configuration (.claude/ directory) for security vulnerabilities, misconfigurations, and injection risks using AgentShield. Checks CLAUDE.md, settings.json, MCP servers, hooks, and agent definitions.", "origin": "ECC"}}, {"id": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "label": "Security Scan Skill", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_when_to_activate", "label": "When to Activate", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L11"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_what_it_scans", "label": "What It Scans", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L19"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_prerequisites", "label": "Prerequisites", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L29"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_usage", "label": "Usage", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L44"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_basic_scan", "label": "Basic Scan", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L46"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_output_formats", "label": "Output Formats", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L61"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_auto_fix", "label": "Auto-Fix", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L77"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_opus_4_6_deep_analysis", "label": "Opus 4.6 Deep Analysis", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L91"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_initialize_secure_config", "label": "Initialize Secure Config", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L107"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_github_action", "label": "GitHub Action", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L121"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_severity_levels", "label": "Severity Levels", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L133"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_interpreting_results", "label": "Interpreting Results", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L143"}, {"id": "$graphify-root$_agent_skills_security_scan_skill_links", "label": "Links", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L152"}], "edges": [{"source": "$graphify-root$_agent_skills_security_scan_skill_md", "target": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "target": "$graphify-root$_agent_skills_security_scan_skill_when_to_activate", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L11", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "target": "$graphify-root$_agent_skills_security_scan_skill_what_it_scans", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "target": "$graphify-root$_agent_skills_security_scan_skill_prerequisites", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "target": "$graphify-root$_agent_skills_security_scan_skill_usage", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L44", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_usage", "target": "$graphify-root$_agent_skills_security_scan_skill_basic_scan", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L46", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_usage", "target": "$graphify-root$_agent_skills_security_scan_skill_output_formats", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L61", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_usage", "target": "$graphify-root$_agent_skills_security_scan_skill_auto_fix", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L77", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_usage", "target": "$graphify-root$_agent_skills_security_scan_skill_opus_4_6_deep_analysis", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L91", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_usage", "target": "$graphify-root$_agent_skills_security_scan_skill_initialize_secure_config", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L107", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_usage", "target": "$graphify-root$_agent_skills_security_scan_skill_github_action", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L121", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "target": "$graphify-root$_agent_skills_security_scan_skill_severity_levels", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L133", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "target": "$graphify-root$_agent_skills_security_scan_skill_interpreting_results", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L143", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill", "target": "$graphify-root$_agent_skills_security_scan_skill_links", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-scan/SKILL.md", "source_location": "L152", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "security-scan",
+        "description": "Scan your Claude Code configuration (.claude/ directory) for security vulnerabilities, misconfigurations, and injection risks using AgentShield. Checks CLAUDE.md, settings.json, MCP servers, hooks, and agent definitions.",
+        "origin": "ECC"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "label": "Security Scan Skill",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_when_to_activate",
+      "label": "When to Activate",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_what_it_scans",
+      "label": "What It Scans",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L19"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_prerequisites",
+      "label": "Prerequisites",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_usage",
+      "label": "Usage",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L44"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_basic_scan",
+      "label": "Basic Scan",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L46"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_output_formats",
+      "label": "Output Formats",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L61"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_auto_fix",
+      "label": "Auto-Fix",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_opus_4_6_deep_analysis",
+      "label": "Opus 4.6 Deep Analysis",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L91"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_initialize_secure_config",
+      "label": "Initialize Secure Config",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L107"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_github_action",
+      "label": "GitHub Action",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L121"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_severity_levels",
+      "label": "Severity Levels",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_interpreting_results",
+      "label": "Interpreting Results",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_scan_skill_links",
+      "label": "Links",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L152"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_md",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_when_to_activate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_what_it_scans",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_prerequisites",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_usage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_usage",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_basic_scan",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_usage",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_output_formats",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L61",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_usage",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_auto_fix",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_usage",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_opus_4_6_deep_analysis",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_usage",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_initialize_secure_config",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_usage",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_github_action",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_severity_levels",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_interpreting_results",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_scan_skill_security_scan_skill",
+      "target": "$graphify-root$_agent_skills_security_scan_skill_links",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-scan/SKILL.md",
+      "source_location": "L152",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

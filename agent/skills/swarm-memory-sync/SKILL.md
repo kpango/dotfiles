@@ -99,6 +99,7 @@ handling; this skill extracts only the further-generalizable parts from that sum
      fail open into a write.
    - If a plausible existing match is found, prefer folding the new content into that entry's
      topic when the next ingest happens, rather than writing a near-duplicate entry.
+
 5. **Write**:
    - Compose the candidate memory content in a temporary file created with `mktemp` **under
      `/tmp` only** (never under a legacy memory directory). The content is written as

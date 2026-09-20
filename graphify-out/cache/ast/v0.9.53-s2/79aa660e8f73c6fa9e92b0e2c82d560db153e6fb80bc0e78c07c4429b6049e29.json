@@ -1,1 +1,195 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_perf_analyzer_md", "label": "perf-analyzer.md", "file_type": "document", "node_kind": "page", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L1", "frontmatter": {"name": "perf-analyzer", "description": "Performance analysis and optimization specialist. Use for profiling, benchmarking, bottleneck identification, algorithm optimization, and memory reduction.", "tools": "Read, Bash, Grep, Glob, Write, Edit", "model": "inherit", "effort": "high", "memory": "user", "color": "yellow"}}, {"id": "$graphify-root$_agent_agents_perf_analyzer_available_profiling_tools", "label": "Available Profiling Tools", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L13"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_methodology", "label": "Methodology", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L21"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_go_performance", "label": "Go Performance", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L29"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_rust_performance", "label": "Rust Performance", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L52"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_c_performance", "label": "C++ Performance", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L69"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_system_level", "label": "System-Level", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L101"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_common_anti_patterns", "label": "Common Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L114"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_output_format", "label": "Output Format", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L120"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_memory_protocol", "label": "Memory Protocol", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L130"}, {"id": "$graphify-root$_agent_agents_perf_analyzer_ponytail_anti_overengineering_directives", "label": "Ponytail Anti-Overengineering Directives", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L137"}], "edges": [{"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_available_profiling_tools", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_methodology", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L21", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_go_performance", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_rust_performance", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L52", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_c_performance", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L69", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_system_level", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L101", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_common_anti_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L114", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_output_format", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L120", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_memory_protocol", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L130", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_perf_analyzer_md", "target": "$graphify-root$_agent_agents_perf_analyzer_ponytail_anti_overengineering_directives", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/perf-analyzer.md", "source_location": "L137", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "label": "perf-analyzer.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "perf-analyzer",
+        "description": "Performance analysis and optimization specialist. Use for profiling, benchmarking, bottleneck identification, algorithm optimization, and memory reduction.",
+        "tools": "Read, Bash, Grep, Glob, Write, Edit",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "yellow"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_available_profiling_tools",
+      "label": "Available Profiling Tools",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_methodology",
+      "label": "Methodology",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_go_performance",
+      "label": "Go Performance",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_rust_performance",
+      "label": "Rust Performance",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_c_performance",
+      "label": "C++ Performance",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L69"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_system_level",
+      "label": "System-Level",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L101"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_common_anti_patterns",
+      "label": "Common Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L114"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_output_format",
+      "label": "Output Format",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L120"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_memory_protocol",
+      "label": "Memory Protocol",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L130"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_perf_analyzer_ponytail_anti_overengineering_directives",
+      "label": "Ponytail Anti-Overengineering Directives",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L137"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_available_profiling_tools",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_methodology",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_go_performance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_rust_performance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_c_performance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_system_level",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_common_anti_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_output_format",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L120",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_memory_protocol",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_perf_analyzer_md",
+      "target": "$graphify-root$_agent_agents_perf_analyzer_ponytail_anti_overengineering_directives",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/perf-analyzer.md",
+      "source_location": "L137",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

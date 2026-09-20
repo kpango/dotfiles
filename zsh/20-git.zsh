@@ -61,43 +61,51 @@ if (($+commands[git])); then
 	}
 	alias tb=gitthisrepo
 
-	# Get default branch name
+	# Get default branch name (local symbolic-ref first; network fallback if unset)
 	gitdefaultbranch() {
-		git remote show origin | rg 'HEAD' | cut -d':' -f2 | sed -e 's/^ *//g' -e 's/ *$//g'
+		git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||' ||
+			git remote show origin | sed -n 's/.*HEAD branch: *//p'
 	}
 	alias gitdb=gitdefaultbranch
+
+	_git_fetch_reset() {
+		local branch=$1
+		git fetch --prune || return 1
+		git reset --hard "origin/$branch" || {
+			echo "Failed to reset to $branch"
+			return 1
+		}
+	}
+
+	_git_list_merged_remote() {
+		git branch -r --merged "$1" | rg -v -e "$1" -e develop -e release | sed -E 's% *origin/%%'
+	}
+
+	_git_list_merged_local() {
+		git branch --merged "$1" --format='%(refname:short)' | rg -v '^(master|develop|main)$|^release/'
+	}
 
 	# Check for merged branches that can be removed
 	gitremovalcheck() {
 		local db
 		db=$(gitdb)
-		git branch -r --merged "$db" | rg -v -e "$db" -e develop -e release | sed -E 's% *origin/%%'
-		git branch --merged "$db" | rg -v '^\*|master$|develop$|main$'
+		_git_list_merged_remote "$db"
+		_git_list_merged_local "$db"
 	}
 	alias grc=gitremovalcheck
-
-	_git_fetch_reset() {
-		local branch=$1
-		git fetch --prune
-		git reset --hard origin/$branch || {
-			echo "Failed to reset to $branch"
-			return 1
-		}
-	}
 
 	# Common function for fetch, reset, and cleanup.
 	# Deletion failures are reported (not swallowed) so a bad --merged match
 	# is never silently destructive; each branch is still best-effort (one
 	# failure doesn't abort the rest of the cleanup).
 	gfr() {
-		local tb
+		local tb db
 		tb=$(tb)
-		local db
 		db=$(gitdb)
 		_git_fetch_reset "$tb" || return 1
 
 		local remote_merged
-		remote_merged=$(git branch -r --merged "$db" | rg -v -e "$db" -e develop -e release | sed -E 's% *origin/%%')
+		remote_merged=$(_git_list_merged_remote "$db")
 		if [ -n "$remote_merged" ]; then
 			echo "$remote_merged" | while IFS= read -r b; do
 				[ -n "$b" ] || continue
@@ -106,9 +114,8 @@ if (($+commands[git])); then
 			done
 		fi
 
-		_git_fetch_reset $tb || return 1
-
-		local local_merged=$(git branch --merged "$db" --format='%(refname:short)' | rg -v '^(master|develop|main)$|^release/')
+		local local_merged
+		local_merged=$(_git_list_merged_local "$db")
 		if [ -n "$local_merged" ]; then
 			echo "$local_merged" | while IFS= read -r b; do
 				[ -n "$b" ] || continue
@@ -119,7 +126,8 @@ if (($+commands[git])); then
 
 	# Fetch, reset, and update submodules
 	gfrs() {
-		gfr && git submodule foreach git pull origin "$(gitdb)" || {
+		gfr || return 1
+		git submodule foreach git pull origin "$(gitdb)" || {
 			echo "Failed to update submodules"
 			return 1
 		}
@@ -149,7 +157,7 @@ if (($+commands[git])); then
 	# treatment as below, so "commit or stash yourself first" is the
 	# simplest rule that's still safe.
 	_git_require_clean_tree() {
-		if ! git diff --quiet || ! git diff --cached --quiet; then
+		if ! git diff --quiet HEAD; then
 			echo "Uncommitted changes present -- commit or stash before running $1"
 			return 1
 		fi
@@ -281,7 +289,7 @@ if (($+commands[git])); then
 		if [ ${#args[@]} -eq 1 ] || [ ${#args[@]} -eq 2 ]; then
 			_git_require_clean_tree grs || return 1
 			local target="${args[1]}"
-			local branch="$(tb)"
+			local branch; branch=$(tb)
 			if [ "$branch" = "$target" ]; then
 				echo "Refusing to squash '$target' onto itself"
 				return 1
@@ -395,7 +403,7 @@ grs --force: committed with unresolved merge conflicts -- search for conflict ma
 	# its own -- grs is the single source of truth for that and already
 	# echoes its own error and returns 1 on anything invalid.
 	grsp() {
-		local branch="$(tb)"
+		local branch; branch=$(tb)
 		local orig_head
 		orig_head="$(git rev-parse HEAD)" || return 1
 
@@ -419,7 +427,7 @@ grs --force: committed with unresolved merge conflicts -- search for conflict ma
 		fi
 		_git_require_clean_tree gsqh || return 1
 		local branch
-		branch=$(git branch --show-current) || return 1
+		branch=$(tb) || return 1
 		if [ -z "$branch" ]; then
 			echo "Not on a named branch (detached HEAD?)"
 			return 1
@@ -503,15 +511,54 @@ update_git_repo() {
 	local repo_dir=$1
 	if [ -d "$repo_dir" ]; then
 		pushd "$repo_dir" >/dev/null || return
-		if git diff-index --quiet HEAD -- && [ -z "$(git diff --ignore-space-change --ignore-blank-lines --diff-filter=MARC)" ]; then
-			echo "No local changes in $repo_dir, pulling latest changes from origin..."
-			gfrs
+		local stashed=false
+		if ! { git diff-index --quiet HEAD -- && [ -z "$(git diff --ignore-space-change --ignore-blank-lines --diff-filter=MARC)" ]; }; then
+			echo "Local changes in $repo_dir — stashing..."
+			if git stash; then
+				stashed=true
+			else
+				echo "Stash failed in $repo_dir:"
+				git --no-pager status
+				popd >/dev/null || return
+				return 1
+			fi
+		fi
+		local ahead
+		ahead=$(git rev-list --count "@{u}..HEAD" 2>/dev/null || echo 0)
+		if [ "$ahead" -gt 0 ]; then
+			echo "$ahead local commit(s) ahead of origin in $repo_dir — fetching and rebasing..."
+			if git fetch --prune && git rebase "origin/$(tb)"; then
+				echo "Rebase complete in $repo_dir"
+			else
+				git rebase --abort 2>/dev/null || true
+				echo "Rebase failed in $repo_dir — aborted"
+				if $stashed; then
+					git stash pop || true
+				fi
+				popd >/dev/null || return
+				return 1
+			fi
 		else
-			echo "Local changes detected in $repo_dir, not pulling from origin. Here are the changes:"
-			git --no-pager status
-			git --no-pager diff --name-only
-			echo "Detailed changes:"
-			git --no-pager diff
+			echo "No local commits in $repo_dir — syncing with origin..."
+			gfrs
+		fi
+		if $stashed; then
+			if git stash pop; then
+				echo "Stash reapplied successfully in $repo_dir"
+			else
+				echo "Stash pop conflict in $repo_dir — attempting rerere..."
+				git rerere 2>/dev/null || true
+				local unresolved
+				unresolved=$(git ls-files -u | cut -f2 | sort -u)
+				if [ -z "$unresolved" ]; then
+					git add -A
+					git stash drop
+					echo "All conflicts resolved in $repo_dir"
+				else
+					echo "Unresolved conflicts in $repo_dir (resolve manually):"
+					echo "$unresolved"
+				fi
+			fi
 		fi
 		popd >/dev/null || return
 	else

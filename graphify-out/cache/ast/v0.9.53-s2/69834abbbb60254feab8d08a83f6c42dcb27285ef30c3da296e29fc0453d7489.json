@@ -1,1 +1,146 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh", "label": "mission-init.sh", "file_type": "code", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "label": "mission-init.sh script", "file_type": "code", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh", "target": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L9"}, {"language": "bash", "callee": "[interactive", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L11"}, {"language": "bash", "callee": "mission]", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L11"}, {"language": "bash", "callee": "1", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L33"}, {"language": "bash", "callee": "\u2014", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L33"}, {"language": "bash", "callee": "differentiation", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L56"}, {"language": "bash", "callee": "Interactive", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L57"}, {"language": "bash", "callee": "\u5bfe\u8c61\u96c6\u5408\u306e\u91cd\u8907\u306a\u3057", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L59"}, {"language": "bash", "callee": "s", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L139"}, {"language": "bash", "callee": "from", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L139"}, {"language": "bash", "callee": "mv", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L143"}, {"language": "bash", "callee": "fi", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L144"}, {"language": "bash", "callee": "rm", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L145"}, {"language": "bash", "callee": "git", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L151"}, {"language": "bash", "callee": "grep", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L154"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh", "source_location": "L154"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh",
+      "label": "mission-init.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "label": "mission-init.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh",
+      "target": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L9"
+    },
+    {
+      "language": "bash",
+      "callee": "[interactive",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "mission]",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "1",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L33"
+    },
+    {
+      "language": "bash",
+      "callee": "\u2014",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L33"
+    },
+    {
+      "language": "bash",
+      "callee": "differentiation",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L56"
+    },
+    {
+      "language": "bash",
+      "callee": "Interactive",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L57"
+    },
+    {
+      "language": "bash",
+      "callee": "\u5bfe\u8c61\u96c6\u5408\u306e\u91cd\u8907\u306a\u3057",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L59"
+    },
+    {
+      "language": "bash",
+      "callee": "s",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L139"
+    },
+    {
+      "language": "bash",
+      "callee": "from",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L139"
+    },
+    {
+      "language": "bash",
+      "callee": "mv",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L143"
+    },
+    {
+      "language": "bash",
+      "callee": "fi",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L144"
+    },
+    {
+      "language": "bash",
+      "callee": "rm",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L145"
+    },
+    {
+      "language": "bash",
+      "callee": "git",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L151"
+    },
+    {
+      "language": "bash",
+      "callee": "grep",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L154"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_mission_init_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/mission-init.sh",
+      "source_location": "L154"
+    }
+  ],
+  "bash_sources": []
+}

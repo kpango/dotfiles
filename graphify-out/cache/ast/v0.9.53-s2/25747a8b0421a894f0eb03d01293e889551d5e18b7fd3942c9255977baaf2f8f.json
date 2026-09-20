@@ -1,1 +1,37 @@
-{"nodes": [{"id": "$graphify-root$_agent_harnesses_pi_prompts_swarm_graph_md", "label": "swarm-graph.md", "file_type": "document", "node_kind": "page", "source_file": "agent/harnesses/pi/prompts/swarm-graph.md", "source_location": "L1", "frontmatter": {"name": "swarm-graph", "description": "Run the SWARM Graph DAG execution engine with topological frontier dispatch and staleness-aware replanning."}}, {"id": "$graphify-root$_agent_harnesses_pi_prompts_swarm_graph_swarm_graph_frontier_execution", "label": "SWARM Graph Frontier Execution", "file_type": "document", "node_kind": "heading", "source_file": "agent/harnesses/pi/prompts/swarm-graph.md", "source_location": "L6"}], "edges": [{"source": "$graphify-root$_agent_harnesses_pi_prompts_swarm_graph_md", "target": "$graphify-root$_agent_harnesses_pi_prompts_swarm_graph_swarm_graph_frontier_execution", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/pi/prompts/swarm-graph.md", "source_location": "L6", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_harnesses_pi_prompts_swarm_graph_md",
+      "label": "swarm-graph.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/harnesses/pi/prompts/swarm-graph.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "swarm-graph",
+        "description": "Run the SWARM Graph DAG execution engine with topological frontier dispatch and staleness-aware replanning."
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_pi_prompts_swarm_graph_swarm_graph_frontier_execution",
+      "label": "SWARM Graph Frontier Execution",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/harnesses/pi/prompts/swarm-graph.md",
+      "source_location": "L6"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_harnesses_pi_prompts_swarm_graph_md",
+      "target": "$graphify-root$_agent_harnesses_pi_prompts_swarm_graph_swarm_graph_frontier_execution",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/pi/prompts/swarm-graph.md",
+      "source_location": "L6",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

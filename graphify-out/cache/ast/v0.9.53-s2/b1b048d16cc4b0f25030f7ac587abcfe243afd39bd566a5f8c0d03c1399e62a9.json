@@ -1,1 +1,37 @@
-{"nodes": [{"id": "$graphify-root$_agent_harnesses_pi_prompts_codex_md", "label": "codex.md", "file_type": "document", "node_kind": "page", "source_file": "agent/harnesses/pi/prompts/codex.md", "source_location": "L1", "frontmatter": {"name": "codex", "description": "Delegate a prompt or task directly to OpenAI Codex CLI."}}, {"id": "$graphify-root$_agent_harnesses_pi_prompts_codex_delegate_to_codex_cli", "label": "Delegate to Codex CLI", "file_type": "document", "node_kind": "heading", "source_file": "agent/harnesses/pi/prompts/codex.md", "source_location": "L6"}], "edges": [{"source": "$graphify-root$_agent_harnesses_pi_prompts_codex_md", "target": "$graphify-root$_agent_harnesses_pi_prompts_codex_delegate_to_codex_cli", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/harnesses/pi/prompts/codex.md", "source_location": "L6", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_harnesses_pi_prompts_codex_md",
+      "label": "codex.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/harnesses/pi/prompts/codex.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "codex",
+        "description": "Delegate a prompt or task directly to OpenAI Codex CLI."
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_harnesses_pi_prompts_codex_delegate_to_codex_cli",
+      "label": "Delegate to Codex CLI",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/harnesses/pi/prompts/codex.md",
+      "source_location": "L6"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_harnesses_pi_prompts_codex_md",
+      "target": "$graphify-root$_agent_harnesses_pi_prompts_codex_delegate_to_codex_cli",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/harnesses/pi/prompts/codex.md",
+      "source_location": "L6",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

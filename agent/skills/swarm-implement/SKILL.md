@@ -432,12 +432,12 @@ source-of-truth state files. Reference: `agent/harnesses/pi/extensions/SKILL_STA
 
 ```json
 {
-  "task_id":           { "type": "string" },
-  "complexity":        { "type": "string" },
-  "attempt":           { "type": "number" },
+  "task_id": { "type": "string" },
+  "complexity": { "type": "string" },
+  "attempt": { "type": "number" },
   "tested_hypotheses": { "type": "list", "listMerge": "append" },
-  "checker_verdict":   { "type": "string" },
-  "hook_status":       { "type": "map" }
+  "checker_verdict": { "type": "string" },
+  "hook_status": { "type": "map" }
 }
 ```
 

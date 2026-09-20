@@ -1,1 +1,203 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_md", "label": "AGENTS.md", "file_type": "document", "node_kind": "page", "source_file": "agent/AGENTS.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_agents_global_agent_instructions", "label": "Global Agent Instructions", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_agents_identity_context", "label": "Identity & Context", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L10"}, {"id": "$graphify-root$_agent_agents_response_style", "label": "Response Style", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L20"}, {"id": "$graphify-root$_agent_agents_development_environment", "label": "Development Environment", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L27"}, {"id": "$graphify-root$_agent_agents_required_external_tools", "label": "Required External Tools", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L34"}, {"id": "$graphify-root$_agent_agents_code_style_preferences", "label": "Code Style Preferences", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L55"}, {"id": "$graphify-root$_agent_agents_tool_usage", "label": "Tool Usage", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L70"}, {"id": "$graphify-root$_agent_agents_specialized_subagents_skills", "label": "Specialized Subagents & Skills", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L78"}, {"id": "$graphify-root$_agent_agents_vald_law_when_working_in_vdaas_vald", "label": "Vald Law (when working in `vdaas/vald`)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L87"}, {"id": "$graphify-root$_agent_agents_multi_agent_principles", "label": "Multi-Agent Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L95"}, {"id": "$graphify-root$_agent_agents_security", "label": "Security", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS.md", "source_location": "L102"}], "edges": [{"source": "$graphify-root$_agent_agents_md", "target": "$graphify-root$_agent_agents_global_agent_instructions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_identity_context", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L10", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_response_style", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_development_environment", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_required_external_tools", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L34", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_code_style_preferences", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L55", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_tool_usage", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L70", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_specialized_subagents_skills", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L78", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_vald_law_when_working_in_vdaas_vald", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L87", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_multi_agent_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L95", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_global_agent_instructions", "target": "$graphify-root$_agent_agents_security", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS.md", "source_location": "L102", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_md",
+      "label": "AGENTS.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_global_agent_instructions",
+      "label": "Global Agent Instructions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_identity_context",
+      "label": "Identity & Context",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_response_style",
+      "label": "Response Style",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_development_environment",
+      "label": "Development Environment",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L27"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_required_external_tools",
+      "label": "Required External Tools",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L34"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_code_style_preferences",
+      "label": "Code Style Preferences",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_tool_usage",
+      "label": "Tool Usage",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L70"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_specialized_subagents_skills",
+      "label": "Specialized Subagents & Skills",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L78"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_vald_law_when_working_in_vdaas_vald",
+      "label": "Vald Law (when working in `vdaas/vald`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L87"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_multi_agent_principles",
+      "label": "Multi-Agent Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L95"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_security",
+      "label": "Security",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L102"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_md",
+      "target": "$graphify-root$_agent_agents_global_agent_instructions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_identity_context",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_response_style",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_development_environment",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_required_external_tools",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_code_style_preferences",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_tool_usage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_specialized_subagents_skills",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_vald_law_when_working_in_vdaas_vald",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_multi_agent_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L95",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_global_agent_instructions",
+      "target": "$graphify-root$_agent_agents_security",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS.md",
+      "source_location": "L102",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

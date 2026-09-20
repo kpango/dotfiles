@@ -1,1 +1,616 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_rust_patterns_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L1", "frontmatter": {"name": "rust-patterns", "description": "Idiomatic Rust patterns, ownership, error handling, traits, concurrency, and best practices for building safe, performant applications. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f rust-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002", "origin": "ECC"}}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "label": "Rust Development Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_when_to_use", "label": "When to Use", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L9"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_core_principles", "label": "Core Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L16"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_1_ownership_and_borrowing", "label": "1. Ownership and Borrowing", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L18"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_use_cow_for_flexible_ownership", "label": "Use `Cow` for Flexible Ownership", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L40"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling", "label": "Error Handling", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L54"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_use_result_and_never_unwrap_in_production", "label": "Use `Result` and `?` \u2014 Never `unwrap()` in Production", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L56"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_library_errors_with_thiserror_application_errors_with_anyhow", "label": "Library Errors with `thiserror`, Application Errors with `anyhow`", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L77"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_option_combinators_over_nested_matching", "label": "`Option` Combinators Over Nested Matching", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L105"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_enums_and_pattern_matching", "label": "Enums and Pattern Matching", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L126"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_model_states_as_enums", "label": "Model States as Enums", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L128"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_exhaustive_matching_no_catch_all_for_business_logic", "label": "Exhaustive Matching \u2014 No Catch-All for Business Logic", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L151"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics", "label": "Traits and Generics", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L169"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_accept_generics_return_concrete_types", "label": "Accept Generics, Return Concrete Types", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L171"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_trait_objects_for_dynamic_dispatch", "label": "Trait Objects for Dynamic Dispatch", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L187"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_newtype_pattern_for_type_safety", "label": "Newtype Pattern for Type Safety", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L205"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_structs_and_data_modeling", "label": "Structs and Data Modeling", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L223"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_builder_pattern_for_complex_construction", "label": "Builder Pattern for Complex Construction", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L225"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_iterators_and_closures", "label": "Iterators and Closures", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L252"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_prefer_iterator_chains_over_manual_loops", "label": "Prefer Iterator Chains Over Manual Loops", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L254"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_use_collect_with_type_annotation", "label": "Use `collect()` with Type Annotation", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L272"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency", "label": "Concurrency", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L284"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_arc_mutex_t_for_shared_mutable_state", "label": "`Arc<Mutex<T>>` for Shared Mutable State", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L286"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_channels_for_message_passing", "label": "Channels for Message Passing", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L305"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_async_with_tokio", "label": "Async with Tokio", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L325"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_unsafe_code", "label": "Unsafe Code", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L358"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_when_unsafe_is_acceptable", "label": "When Unsafe Is Acceptable", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L360"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_when_unsafe_is_not_acceptable", "label": "When Unsafe Is NOT Acceptable", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L376"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_module_system_and_crate_structure", "label": "Module System and Crate Structure", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L385"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_organize_by_domain_not_by_type", "label": "Organize by Domain, Not by Type", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L387"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_visibility_expose_minimally", "label": "Visibility \u2014 Expose Minimally", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L410"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_tooling_integration", "label": "Tooling Integration", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L426"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_essential_commands", "label": "Essential Commands", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L428"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_quick_reference_rust_idioms", "label": "Quick Reference: Rust Idioms", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L452"}, {"id": "$graphify-root$_agent_skills_rust_patterns_skill_anti_patterns_to_avoid", "label": "Anti-Patterns to Avoid", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L467"}], "edges": [{"source": "$graphify-root$_agent_skills_rust_patterns_skill_md", "target": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_when_to_use", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_core_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_core_principles", "target": "$graphify-root$_agent_skills_rust_patterns_skill_1_ownership_and_borrowing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L18", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_core_principles", "target": "$graphify-root$_agent_skills_rust_patterns_skill_use_cow_for_flexible_ownership", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L40", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L54", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling", "target": "$graphify-root$_agent_skills_rust_patterns_skill_use_result_and_never_unwrap_in_production", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L56", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling", "target": "$graphify-root$_agent_skills_rust_patterns_skill_library_errors_with_thiserror_application_errors_with_anyhow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L77", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling", "target": "$graphify-root$_agent_skills_rust_patterns_skill_option_combinators_over_nested_matching", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L105", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_enums_and_pattern_matching", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L126", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_enums_and_pattern_matching", "target": "$graphify-root$_agent_skills_rust_patterns_skill_model_states_as_enums", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L128", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_enums_and_pattern_matching", "target": "$graphify-root$_agent_skills_rust_patterns_skill_exhaustive_matching_no_catch_all_for_business_logic", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L151", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L169", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics", "target": "$graphify-root$_agent_skills_rust_patterns_skill_accept_generics_return_concrete_types", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L171", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics", "target": "$graphify-root$_agent_skills_rust_patterns_skill_trait_objects_for_dynamic_dispatch", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L187", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics", "target": "$graphify-root$_agent_skills_rust_patterns_skill_newtype_pattern_for_type_safety", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L205", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_structs_and_data_modeling", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L223", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_structs_and_data_modeling", "target": "$graphify-root$_agent_skills_rust_patterns_skill_builder_pattern_for_complex_construction", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L225", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_iterators_and_closures", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L252", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_iterators_and_closures", "target": "$graphify-root$_agent_skills_rust_patterns_skill_prefer_iterator_chains_over_manual_loops", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L254", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_iterators_and_closures", "target": "$graphify-root$_agent_skills_rust_patterns_skill_use_collect_with_type_annotation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L272", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L284", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency", "target": "$graphify-root$_agent_skills_rust_patterns_skill_arc_mutex_t_for_shared_mutable_state", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L286", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency", "target": "$graphify-root$_agent_skills_rust_patterns_skill_channels_for_message_passing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L305", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency", "target": "$graphify-root$_agent_skills_rust_patterns_skill_async_with_tokio", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L325", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_unsafe_code", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L358", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_unsafe_code", "target": "$graphify-root$_agent_skills_rust_patterns_skill_when_unsafe_is_acceptable", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L360", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_unsafe_code", "target": "$graphify-root$_agent_skills_rust_patterns_skill_when_unsafe_is_not_acceptable", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L376", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_module_system_and_crate_structure", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L385", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_module_system_and_crate_structure", "target": "$graphify-root$_agent_skills_rust_patterns_skill_organize_by_domain_not_by_type", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L387", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_module_system_and_crate_structure", "target": "$graphify-root$_agent_skills_rust_patterns_skill_visibility_expose_minimally", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L410", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_tooling_integration", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L426", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_tooling_integration", "target": "$graphify-root$_agent_skills_rust_patterns_skill_essential_commands", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L428", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_quick_reference_rust_idioms", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L452", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns", "target": "$graphify-root$_agent_skills_rust_patterns_skill_anti_patterns_to_avoid", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-patterns/SKILL.md", "source_location": "L467", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "rust-patterns",
+        "description": "Idiomatic Rust patterns, ownership, error handling, traits, concurrency, and best practices for building safe, performant applications. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f rust-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002",
+        "origin": "ECC"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "label": "Rust Development Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_when_to_use",
+      "label": "When to Use",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_core_principles",
+      "label": "Core Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_1_ownership_and_borrowing",
+      "label": "1. Ownership and Borrowing",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_use_cow_for_flexible_ownership",
+      "label": "Use `Cow` for Flexible Ownership",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L40"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling",
+      "label": "Error Handling",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L54"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_use_result_and_never_unwrap_in_production",
+      "label": "Use `Result` and `?` \u2014 Never `unwrap()` in Production",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L56"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_library_errors_with_thiserror_application_errors_with_anyhow",
+      "label": "Library Errors with `thiserror`, Application Errors with `anyhow`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L77"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_option_combinators_over_nested_matching",
+      "label": "`Option` Combinators Over Nested Matching",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L105"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_enums_and_pattern_matching",
+      "label": "Enums and Pattern Matching",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L126"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_model_states_as_enums",
+      "label": "Model States as Enums",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L128"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_exhaustive_matching_no_catch_all_for_business_logic",
+      "label": "Exhaustive Matching \u2014 No Catch-All for Business Logic",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L151"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics",
+      "label": "Traits and Generics",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L169"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_accept_generics_return_concrete_types",
+      "label": "Accept Generics, Return Concrete Types",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L171"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_trait_objects_for_dynamic_dispatch",
+      "label": "Trait Objects for Dynamic Dispatch",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L187"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_newtype_pattern_for_type_safety",
+      "label": "Newtype Pattern for Type Safety",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L205"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_structs_and_data_modeling",
+      "label": "Structs and Data Modeling",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L223"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_builder_pattern_for_complex_construction",
+      "label": "Builder Pattern for Complex Construction",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L225"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_iterators_and_closures",
+      "label": "Iterators and Closures",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L252"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_prefer_iterator_chains_over_manual_loops",
+      "label": "Prefer Iterator Chains Over Manual Loops",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L254"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_use_collect_with_type_annotation",
+      "label": "Use `collect()` with Type Annotation",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L272"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency",
+      "label": "Concurrency",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L284"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_arc_mutex_t_for_shared_mutable_state",
+      "label": "`Arc<Mutex<T>>` for Shared Mutable State",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L286"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_channels_for_message_passing",
+      "label": "Channels for Message Passing",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L305"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_async_with_tokio",
+      "label": "Async with Tokio",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L325"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_unsafe_code",
+      "label": "Unsafe Code",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L358"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_when_unsafe_is_acceptable",
+      "label": "When Unsafe Is Acceptable",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L360"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_when_unsafe_is_not_acceptable",
+      "label": "When Unsafe Is NOT Acceptable",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L376"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_module_system_and_crate_structure",
+      "label": "Module System and Crate Structure",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L385"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_organize_by_domain_not_by_type",
+      "label": "Organize by Domain, Not by Type",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L387"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_visibility_expose_minimally",
+      "label": "Visibility \u2014 Expose Minimally",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L410"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_tooling_integration",
+      "label": "Tooling Integration",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L426"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_essential_commands",
+      "label": "Essential Commands",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L428"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_quick_reference_rust_idioms",
+      "label": "Quick Reference: Rust Idioms",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L452"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_patterns_skill_anti_patterns_to_avoid",
+      "label": "Anti-Patterns to Avoid",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L467"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_md",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_when_to_use",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_core_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_core_principles",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_1_ownership_and_borrowing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_core_principles",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_use_cow_for_flexible_ownership",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_use_result_and_never_unwrap_in_production",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_library_errors_with_thiserror_application_errors_with_anyhow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_error_handling",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_option_combinators_over_nested_matching",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L105",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_enums_and_pattern_matching",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L126",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_enums_and_pattern_matching",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_model_states_as_enums",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L128",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_enums_and_pattern_matching",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_exhaustive_matching_no_catch_all_for_business_logic",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L169",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_accept_generics_return_concrete_types",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_trait_objects_for_dynamic_dispatch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L187",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_traits_and_generics",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_newtype_pattern_for_type_safety",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L205",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_structs_and_data_modeling",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L223",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_structs_and_data_modeling",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_builder_pattern_for_complex_construction",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L225",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_iterators_and_closures",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_iterators_and_closures",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_prefer_iterator_chains_over_manual_loops",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L254",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_iterators_and_closures",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_use_collect_with_type_annotation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L272",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L284",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_arc_mutex_t_for_shared_mutable_state",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L286",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_channels_for_message_passing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L305",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_concurrency",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_async_with_tokio",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L325",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_unsafe_code",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L358",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_unsafe_code",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_when_unsafe_is_acceptable",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L360",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_unsafe_code",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_when_unsafe_is_not_acceptable",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L376",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_module_system_and_crate_structure",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L385",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_module_system_and_crate_structure",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_organize_by_domain_not_by_type",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L387",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_module_system_and_crate_structure",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_visibility_expose_minimally",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L410",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_tooling_integration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L426",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_tooling_integration",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_essential_commands",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L428",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_quick_reference_rust_idioms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L452",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_patterns_skill_rust_development_patterns",
+      "target": "$graphify-root$_agent_skills_rust_patterns_skill_anti_patterns_to_avoid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-patterns/SKILL.md",
+      "source_location": "L467",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

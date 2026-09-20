@@ -337,9 +337,9 @@ source-of-truth state files. Reference: `agent/harnesses/pi/extensions/SKILL_STA
 
 ```json
 {
-  "shards_done":    { "type": "list", "listMerge": "union" },
-  "findings":       { "type": "list", "listMerge": "append" },
-  "root_causes":    { "type": "list", "listMerge": "union" },
+  "shards_done": { "type": "list", "listMerge": "union" },
+  "findings": { "type": "list", "listMerge": "append" },
+  "root_causes": { "type": "list", "listMerge": "union" },
   "priority_queue": { "type": "list", "listMerge": "replace" }
 }
 ```

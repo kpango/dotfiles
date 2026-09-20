@@ -91,16 +91,16 @@ For each usage site, record:
 
 Use this as a starting map, then validate against the repository's workload:
 
-| Existing role | Starting GPT-5.6 target | Reason |
-| --- | --- | --- |
-| Unsuffixed GPT-5 flagship, GPT-5.5, or GPT-5.4 flagship | `gpt-5.6-sol` | Sol is the flagship-equivalent tier. |
-| Mini model, balanced lower-cost route, or medium-throughput worker | `gpt-5.6-terra` | Terra is the mini-like tier. |
-| Nano model, classification, extraction, routing, high-volume, or strict-latency route | `gpt-5.6-luna` | Luna is the nano-like tier. |
-| GPT-4.1 or GPT-4o latency-sensitive flow | Evaluate Luna and Terra first; use Sol only if quality requires it | A flagship replacement can change latency and cost materially. |
-| Reasoning-heavy or hardest quality-first flow | Start with Sol at the old effective effort | Preserve the reasoning contract before tuning. |
-| Old Pro usage | Sol plus `reasoning.mode: "pro"`, only if the user wants Pro behavior | GPT-5.6 Pro is a mode, not a separate model slug. |
-| Router, fallback, or model picker | Add the family by role | Do not collapse a multi-model design into Sol. |
-| Third-party or provider-specific model | Leave unchanged unless the user explicitly requests provider migration | Model-name similarity is not a safe mapping. |
+| Existing role                                                                         | Starting GPT-5.6 target                                                | Reason                                                         |
+| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Unsuffixed GPT-5 flagship, GPT-5.5, or GPT-5.4 flagship                               | `gpt-5.6-sol`                                                          | Sol is the flagship-equivalent tier.                           |
+| Mini model, balanced lower-cost route, or medium-throughput worker                    | `gpt-5.6-terra`                                                        | Terra is the mini-like tier.                                   |
+| Nano model, classification, extraction, routing, high-volume, or strict-latency route | `gpt-5.6-luna`                                                         | Luna is the nano-like tier.                                    |
+| GPT-4.1 or GPT-4o latency-sensitive flow                                              | Evaluate Luna and Terra first; use Sol only if quality requires it     | A flagship replacement can change latency and cost materially. |
+| Reasoning-heavy or hardest quality-first flow                                         | Start with Sol at the old effective effort                             | Preserve the reasoning contract before tuning.                 |
+| Old Pro usage                                                                         | Sol plus `reasoning.mode: "pro"`, only if the user wants Pro behavior  | GPT-5.6 Pro is a mode, not a separate model slug.              |
+| Router, fallback, or model picker                                                     | Add the family by role                                                 | Do not collapse a multi-model design into Sol.                 |
+| Third-party or provider-specific model                                                | Leave unchanged unless the user explicitly requests provider migration | Model-name similarity is not a safe mapping.                   |
 
 Important limits to check in live docs:
 

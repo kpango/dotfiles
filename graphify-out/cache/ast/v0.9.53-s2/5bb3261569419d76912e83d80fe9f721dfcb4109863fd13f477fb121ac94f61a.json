@@ -1,1 +1,124 @@
-{"nodes": [{"id": "$graphify-root$_agent_scripts_test_all_harnesses_sh", "label": "test-all-harnesses.sh", "file_type": "code", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "label": "test-all-harnesses.sh script", "file_type": "code", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite", "label": "run_suite()", "file_type": "code", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L23", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_scripts_test_all_harnesses_sh", "target": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_test_all_harnesses_sh", "target": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "target": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L45", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L9"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L11"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L11"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L11"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L40"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L72"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L98"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L26"}, {"language": "bash", "callee": "eval", "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite", "source_file": "agent/scripts/test-all-harnesses.sh", "source_location": "L30"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_scripts_test_all_harnesses_sh",
+      "label": "test-all-harnesses.sh",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "label": "test-all-harnesses.sh script",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite",
+      "label": "run_suite()",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L23",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_scripts_test_all_harnesses_sh",
+      "target": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_all_harnesses_sh",
+      "target": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "target": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L45",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L9"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L40"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L72"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_sh__entry",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L98"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L26"
+    },
+    {
+      "language": "bash",
+      "callee": "eval",
+      "caller_nid": "$graphify-root$_agent_scripts_test_all_harnesses_run_suite",
+      "source_file": "agent/scripts/test-all-harnesses.sh",
+      "source_location": "L30"
+    }
+  ],
+  "bash_sources": []
+}

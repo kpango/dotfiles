@@ -1,1 +1,180 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh", "label": "verify.sh", "file_type": "code", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "label": "verify.sh script", "file_type": "code", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run", "label": "run()", "file_type": "code", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L12", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh", "target": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh", "target": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L12", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "target": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L28", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L4"}, {"language": "bash", "callee": "git", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L6"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L8"}, {"language": "bash", "callee": "mktemp", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L9"}, {"language": "bash", "callee": "read", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L42"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L43"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L43"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L47"}, {"language": "bash", "callee": "hadolint", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L51"}, {"language": "bash", "callee": "tail", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L51"}, {"language": "bash", "callee": "continue", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L57"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L85"}, {"language": "bash", "callee": "shift", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L13"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L14"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L15"}, {"language": "bash", "callee": "timeout", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L15"}, {"language": "bash", "callee": "tail", "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run", "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh", "source_location": "L20"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh",
+      "label": "verify.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "label": "verify.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run",
+      "label": "run()",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L12",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh",
+      "target": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh",
+      "target": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "target": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L28",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L4"
+    },
+    {
+      "language": "bash",
+      "callee": "git",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L6"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "mktemp",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L9"
+    },
+    {
+      "language": "bash",
+      "callee": "read",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L42"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L43"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L43"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L47"
+    },
+    {
+      "language": "bash",
+      "callee": "hadolint",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L51"
+    },
+    {
+      "language": "bash",
+      "callee": "tail",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L51"
+    },
+    {
+      "language": "bash",
+      "callee": "continue",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L57"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_sh__entry",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L85"
+    },
+    {
+      "language": "bash",
+      "callee": "shift",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L13"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L14"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "timeout",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "tail",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_release_gate_scripts_verify_run",
+      "source_file": "agent/skills/swarm-release-gate/scripts/verify.sh",
+      "source_location": "L20"
+    }
+  ],
+  "bash_sources": []
+}

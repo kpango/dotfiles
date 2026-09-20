@@ -1,1 +1,407 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_golang_testing_reference_md", "label": "reference.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "label": "Go Testing Patterns \u2014 Reference", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_tdd_step_by_step_example", "label": "TDD Step-by-Step Example", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L6"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests", "label": "Table-Driven Tests", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L48"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests_with_error_cases", "label": "Table-Driven Tests with Error Cases", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L78"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_subtests_and_sub_benchmarks", "label": "Subtests and Sub-benchmarks", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L133"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_organizing_related_tests", "label": "Organizing Related Tests", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L135"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_parallel_subtests", "label": "Parallel Subtests", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L173"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_test_helpers", "label": "Test Helpers", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L198"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_helper_functions", "label": "Helper Functions", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L200"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_temporary_files_and_directories", "label": "Temporary Files and Directories", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L239"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_golden_files", "label": "Golden Files", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L264"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_mocking_with_interfaces", "label": "Mocking with Interfaces", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L307"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_interface_based_mocking", "label": "Interface-Based Mocking", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L309"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks", "label": "Benchmarks", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L364"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_basic_benchmarks", "label": "Basic Benchmarks", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L366"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_benchmark_with_different_sizes", "label": "Benchmark with Different Sizes", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L382"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_memory_allocation_benchmarks", "label": "Memory Allocation Benchmarks", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L404"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_fuzzing_go_1_18", "label": "Fuzzing (Go 1.18+)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L438"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_basic_fuzz_test", "label": "Basic Fuzz Test", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L440"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_fuzz_test_with_multiple_inputs", "label": "Fuzz Test with Multiple Inputs", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L470"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_excluding_generated_code_from_coverage", "label": "Excluding Generated Code from Coverage", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L498"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_http_handler_testing", "label": "HTTP Handler Testing", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L507"}, {"id": "$graphify-root$_agent_skills_golang_testing_reference_integration_with_ci_cd", "label": "Integration with CI/CD", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L590"}], "edges": [{"source": "$graphify-root$_agent_skills_golang_testing_reference_md", "target": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_tdd_step_by_step_example", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L48", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests", "target": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests_with_error_cases", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L78", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_subtests_and_sub_benchmarks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L133", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_subtests_and_sub_benchmarks", "target": "$graphify-root$_agent_skills_golang_testing_reference_organizing_related_tests", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L135", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_subtests_and_sub_benchmarks", "target": "$graphify-root$_agent_skills_golang_testing_reference_parallel_subtests", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L173", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_test_helpers", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L198", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_test_helpers", "target": "$graphify-root$_agent_skills_golang_testing_reference_helper_functions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L200", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_test_helpers", "target": "$graphify-root$_agent_skills_golang_testing_reference_temporary_files_and_directories", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L239", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_golden_files", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L264", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_mocking_with_interfaces", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L307", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_mocking_with_interfaces", "target": "$graphify-root$_agent_skills_golang_testing_reference_interface_based_mocking", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L309", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L364", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks", "target": "$graphify-root$_agent_skills_golang_testing_reference_basic_benchmarks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L366", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks", "target": "$graphify-root$_agent_skills_golang_testing_reference_benchmark_with_different_sizes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L382", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks", "target": "$graphify-root$_agent_skills_golang_testing_reference_memory_allocation_benchmarks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L404", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_fuzzing_go_1_18", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L438", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_fuzzing_go_1_18", "target": "$graphify-root$_agent_skills_golang_testing_reference_basic_fuzz_test", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L440", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_fuzzing_go_1_18", "target": "$graphify-root$_agent_skills_golang_testing_reference_fuzz_test_with_multiple_inputs", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L470", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_excluding_generated_code_from_coverage", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L498", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_http_handler_testing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L507", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference", "target": "$graphify-root$_agent_skills_golang_testing_reference_integration_with_ci_cd", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/reference.md", "source_location": "L590", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_md",
+      "label": "reference.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "label": "Go Testing Patterns \u2014 Reference",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_tdd_step_by_step_example",
+      "label": "TDD Step-by-Step Example",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests",
+      "label": "Table-Driven Tests",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests_with_error_cases",
+      "label": "Table-Driven Tests with Error Cases",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L78"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_subtests_and_sub_benchmarks",
+      "label": "Subtests and Sub-benchmarks",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_organizing_related_tests",
+      "label": "Organizing Related Tests",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L135"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_parallel_subtests",
+      "label": "Parallel Subtests",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L173"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_test_helpers",
+      "label": "Test Helpers",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L198"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_helper_functions",
+      "label": "Helper Functions",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L200"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_temporary_files_and_directories",
+      "label": "Temporary Files and Directories",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L239"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_golden_files",
+      "label": "Golden Files",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L264"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_mocking_with_interfaces",
+      "label": "Mocking with Interfaces",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L307"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_interface_based_mocking",
+      "label": "Interface-Based Mocking",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L309"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks",
+      "label": "Benchmarks",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L364"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_basic_benchmarks",
+      "label": "Basic Benchmarks",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L366"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_benchmark_with_different_sizes",
+      "label": "Benchmark with Different Sizes",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L382"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_memory_allocation_benchmarks",
+      "label": "Memory Allocation Benchmarks",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L404"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_fuzzing_go_1_18",
+      "label": "Fuzzing (Go 1.18+)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L438"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_basic_fuzz_test",
+      "label": "Basic Fuzz Test",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L440"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_fuzz_test_with_multiple_inputs",
+      "label": "Fuzz Test with Multiple Inputs",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L470"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_excluding_generated_code_from_coverage",
+      "label": "Excluding Generated Code from Coverage",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L498"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_http_handler_testing",
+      "label": "HTTP Handler Testing",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L507"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_reference_integration_with_ci_cd",
+      "label": "Integration with CI/CD",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L590"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_md",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_tdd_step_by_step_example",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_table_driven_tests_with_error_cases",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_subtests_and_sub_benchmarks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_subtests_and_sub_benchmarks",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_organizing_related_tests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_subtests_and_sub_benchmarks",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_parallel_subtests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L173",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_test_helpers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L198",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_test_helpers",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_helper_functions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L200",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_test_helpers",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_temporary_files_and_directories",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_golden_files",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L264",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_mocking_with_interfaces",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L307",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_mocking_with_interfaces",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_interface_based_mocking",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L309",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L364",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_basic_benchmarks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L366",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_benchmark_with_different_sizes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L382",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_benchmarks",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_memory_allocation_benchmarks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L404",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_fuzzing_go_1_18",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L438",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_fuzzing_go_1_18",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_basic_fuzz_test",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L440",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_fuzzing_go_1_18",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_fuzz_test_with_multiple_inputs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L470",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_excluding_generated_code_from_coverage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L498",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_http_handler_testing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L507",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_reference_go_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_golang_testing_reference_integration_with_ci_cd",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/reference.md",
+      "source_location": "L590",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

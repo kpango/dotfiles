@@ -1,1 +1,191 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_golang_testing_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L1", "frontmatter": {"name": "golang-testing", "description": "Go testing patterns including table-driven tests, subtests, benchmarks, fuzzing, and test coverage. Follows TDD methodology with idiomatic Go practices. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f go-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002", "origin": "ECC"}}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "label": "Go Testing Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_when_to_activate", "label": "When to Activate", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L12"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_tdd_workflow_for_go", "label": "TDD Workflow for Go", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L20"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_the_red_green_refactor_cycle", "label": "The RED-GREEN-REFACTOR Cycle", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L22"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_pattern_catalog", "label": "Pattern Catalog", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L34"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_test_coverage", "label": "Test Coverage", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L60"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_coverage_targets", "label": "Coverage Targets", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L79"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_testing_commands", "label": "Testing Commands", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L90"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_best_practices", "label": "Best Practices", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L121"}, {"id": "$graphify-root$_agent_skills_golang_testing_skill_integration_with_ci_cd", "label": "Integration with CI/CD", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L141"}], "edges": [{"source": "$graphify-root$_agent_skills_golang_testing_skill_md", "target": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "target": "$graphify-root$_agent_skills_golang_testing_skill_when_to_activate", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L12", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "target": "$graphify-root$_agent_skills_golang_testing_skill_tdd_workflow_for_go", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_tdd_workflow_for_go", "target": "$graphify-root$_agent_skills_golang_testing_skill_the_red_green_refactor_cycle", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "target": "$graphify-root$_agent_skills_golang_testing_skill_pattern_catalog", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L34", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "target": "$graphify-root$_agent_skills_golang_testing_skill_test_coverage", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L60", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_test_coverage", "target": "$graphify-root$_agent_skills_golang_testing_skill_coverage_targets", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L79", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "target": "$graphify-root$_agent_skills_golang_testing_skill_testing_commands", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L90", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "target": "$graphify-root$_agent_skills_golang_testing_skill_best_practices", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L121", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns", "target": "$graphify-root$_agent_skills_golang_testing_skill_integration_with_ci_cd", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/golang-testing/SKILL.md", "source_location": "L141", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "golang-testing",
+        "description": "Go testing patterns including table-driven tests, subtests, benchmarks, fuzzing, and test coverage. Follows TDD methodology with idiomatic Go practices. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f go-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002",
+        "origin": "ECC"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "label": "Go Testing Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_when_to_activate",
+      "label": "When to Activate",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_tdd_workflow_for_go",
+      "label": "TDD Workflow for Go",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_the_red_green_refactor_cycle",
+      "label": "The RED-GREEN-REFACTOR Cycle",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_pattern_catalog",
+      "label": "Pattern Catalog",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L34"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_test_coverage",
+      "label": "Test Coverage",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L60"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_coverage_targets",
+      "label": "Coverage Targets",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L79"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_testing_commands",
+      "label": "Testing Commands",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L90"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_best_practices",
+      "label": "Best Practices",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L121"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_golang_testing_skill_integration_with_ci_cd",
+      "label": "Integration with CI/CD",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L141"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_md",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_when_to_activate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_tdd_workflow_for_go",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_tdd_workflow_for_go",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_the_red_green_refactor_cycle",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_pattern_catalog",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_test_coverage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_test_coverage",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_coverage_targets",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_testing_commands",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_best_practices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_golang_testing_skill_go_testing_patterns",
+      "target": "$graphify-root$_agent_skills_golang_testing_skill_integration_with_ci_cd",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/golang-testing/SKILL.md",
+      "source_location": "L141",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

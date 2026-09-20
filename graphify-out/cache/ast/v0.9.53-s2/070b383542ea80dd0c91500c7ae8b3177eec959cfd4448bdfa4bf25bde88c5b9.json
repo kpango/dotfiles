@@ -1,1 +1,50 @@
-{"nodes": [{"id": "$graphify-root$_agents_worker_r4_progress_md", "label": "progress.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/worker_r4/progress.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_r4_progress_progress_worker_r4", "label": "Progress \u2014 Worker R4", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/progress.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_r4_progress_current_status", "label": "Current Status", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/progress.md", "source_location": "L5"}], "edges": [{"source": "$graphify-root$_agents_worker_r4_progress_md", "target": "$graphify-root$_agents_worker_r4_progress_progress_worker_r4", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/progress.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_progress_progress_worker_r4", "target": "$graphify-root$_agents_worker_r4_progress_current_status", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/progress.md", "source_location": "L5", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_worker_r4_progress_md",
+      "label": "progress.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/worker_r4/progress.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_progress_progress_worker_r4",
+      "label": "Progress \u2014 Worker R4",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/progress.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_progress_current_status",
+      "label": "Current Status",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/progress.md",
+      "source_location": "L5"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_worker_r4_progress_md",
+      "target": "$graphify-root$_agents_worker_r4_progress_progress_worker_r4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/progress.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_progress_progress_worker_r4",
+      "target": "$graphify-root$_agents_worker_r4_progress_current_status",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/progress.md",
+      "source_location": "L5",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

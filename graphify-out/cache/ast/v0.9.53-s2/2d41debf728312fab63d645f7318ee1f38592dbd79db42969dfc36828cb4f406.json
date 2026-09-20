@@ -1,1 +1,203 @@
-{"nodes": [{"id": "$graphify-root$_agents_victory_auditor_1_briefing_md", "label": "BRIEFING.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "label": "BRIEFING \u2014 2026-09-04T15:14:20Z", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_mission", "label": "Mission", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L3"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_my_identity", "label": "\ud83d\udd12 My Identity", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L6"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_key_constraints", "label": "\ud83d\udd12 Key Constraints", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L13"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_current_parent", "label": "Current Parent", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L20"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_audit_scope", "label": "Audit Scope", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L24"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_audit_progress", "label": "Audit Progress", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L29"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_key_decisions_made", "label": "Key Decisions Made", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L41"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_artifact_index", "label": "Artifact Index", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L50"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_attack_surface", "label": "Attack Surface", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L56"}, {"id": "$graphify-root$_agents_victory_auditor_1_briefing_loaded_skills", "label": "Loaded Skills", "file_type": "document", "node_kind": "heading", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L66"}], "edges": [{"source": "$graphify-root$_agents_victory_auditor_1_briefing_md", "target": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_mission", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_my_identity", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_key_constraints", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_current_parent", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_audit_scope", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_audit_progress", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_key_decisions_made", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L41", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_artifact_index", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L50", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_attack_surface", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L56", "weight": 1.0}, {"source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z", "target": "$graphify-root$_agents_victory_auditor_1_briefing_loaded_skills", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/victory_auditor_1/BRIEFING.md", "source_location": "L66", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_md",
+      "label": "BRIEFING.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "label": "BRIEFING \u2014 2026-09-04T15:14:20Z",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_mission",
+      "label": "Mission",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_my_identity",
+      "label": "\ud83d\udd12 My Identity",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_key_constraints",
+      "label": "\ud83d\udd12 Key Constraints",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_current_parent",
+      "label": "Current Parent",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_audit_scope",
+      "label": "Audit Scope",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_audit_progress",
+      "label": "Audit Progress",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_key_decisions_made",
+      "label": "Key Decisions Made",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L41"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_artifact_index",
+      "label": "Artifact Index",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_attack_surface",
+      "label": "Attack Surface",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L56"
+    },
+    {
+      "id": "$graphify-root$_agents_victory_auditor_1_briefing_loaded_skills",
+      "label": "Loaded Skills",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L66"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_md",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_mission",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_my_identity",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_key_constraints",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_current_parent",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_audit_scope",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_audit_progress",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_key_decisions_made",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_artifact_index",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_attack_surface",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_victory_auditor_1_briefing_briefing_2026_09_04t15_14_20z",
+      "target": "$graphify-root$_agents_victory_auditor_1_briefing_loaded_skills",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/victory_auditor_1/BRIEFING.md",
+      "source_location": "L66",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

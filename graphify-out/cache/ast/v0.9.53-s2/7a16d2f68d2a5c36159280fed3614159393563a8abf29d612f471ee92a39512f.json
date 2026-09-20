@@ -1,1 +1,245 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "label": "systems-lang-adversarial-reviewer.md", "file_type": "document", "node_kind": "page", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L1", "frontmatter": {"name": "systems-lang-adversarial-reviewer", "description": "Go/Rust/C++ \u306e\u8a00\u8a9e\u4ed5\u69d8\u30fb\u6163\u7528\u53e5\u6e96\u62e0\u306e\u307f\u3092\u3001\u65e2\u5b58\u30ec\u30d3\u30e5\u30fc\u7d50\u679c\u3092\u898b\u305a\u306b\u72ec\u7acb\u3057\u3066\u6575\u5bfe\u7684\u306b\u518d\u691c\u8a3c\u3059\u308b\u5c02\u9580\u5bb6\u3002`/swarm-loop` \u306e Phase 5 GATE\u30fb`/swarm-graph` \u306e Phase G5 GATE(\u3044\u305a\u308c\u3082\u4eba\u9593\u6700\u7d42\u627f\u8a8d)\u76f4\u524d\u306b\u3001\u5b8c\u6210\u3057\u305f\u5909\u66f4\u5168\u4f53\u306b\u5bfe\u3057\u3066\u8d77\u52d5\u3059\u308b\u4e8c\u6bb5\u76ee\u306e\u9632\u5fa1\u3002", "tools": "Read, Grep, Glob", "model": "sonnet", "effort": "high", "memory": "project"}}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u4f4d\u7f6e\u3065\u3051_\u5fc5\u8aad", "label": "\u4f4d\u7f6e\u3065\u3051(\u5fc5\u8aad)", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L12"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u30ec\u30d3\u30e5\u30fc\u624b\u9806", "label": "\u30ec\u30d3\u30e5\u30fc\u624b\u9806", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L25"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u90e8\u5206\u9069\u7528\u6f0f\u308c\u691c\u51fa_\u5168\u8a00\u8a9e\u5171\u901a\u306e\u624b\u9806", "label": "\u90e8\u5206\u9069\u7528\u6f0f\u308c\u691c\u51fa(\u5168\u8a00\u8a9e\u5171\u901a\u306e\u624b\u9806)", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L33"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_go_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "label": "Go \u2014 \u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L41"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_go", "label": "Don'ts(Go)", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L52"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_rust_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "label": "Rust \u2014 \u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L60"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_rust", "label": "Don'ts(Rust)", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L70"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_c_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "label": "C++ \u2014 \u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L78"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_c", "label": "Don'ts(C++)", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L88"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_severity_classification", "label": "Severity Classification", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L96"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u51fa\u529b\u30d5\u30a9\u30fc\u30de\u30c3\u30c8", "label": "\u51fa\u529b\u30d5\u30a9\u30fc\u30de\u30c3\u30c8", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L104"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_memory_discipline", "label": "Memory Discipline", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L138"}, {"id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_ponytail_anti_overengineering_verification_go_rust_c", "label": "Ponytail Anti-Overengineering Verification (Go, Rust, C++)", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L142"}], "edges": [{"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u4f4d\u7f6e\u3065\u3051_\u5fc5\u8aad", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L12", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u30ec\u30d3\u30e5\u30fc\u624b\u9806", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L25", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u90e8\u5206\u9069\u7528\u6f0f\u308c\u691c\u51fa_\u5168\u8a00\u8a9e\u5171\u901a\u306e\u624b\u9806", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L33", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_go_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L41", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_go_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_go", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L52", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_rust_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L60", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_rust_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_rust", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L70", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_c_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L78", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_c_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_c", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L88", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_severity_classification", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L96", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u51fa\u529b\u30d5\u30a9\u30fc\u30de\u30c3\u30c8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L104", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_memory_discipline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L138", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md", "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_ponytail_anti_overengineering_verification_go_rust_c", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/systems-lang-adversarial-reviewer.md", "source_location": "L142", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "label": "systems-lang-adversarial-reviewer.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "systems-lang-adversarial-reviewer",
+        "description": "Go/Rust/C++ \u306e\u8a00\u8a9e\u4ed5\u69d8\u30fb\u6163\u7528\u53e5\u6e96\u62e0\u306e\u307f\u3092\u3001\u65e2\u5b58\u30ec\u30d3\u30e5\u30fc\u7d50\u679c\u3092\u898b\u305a\u306b\u72ec\u7acb\u3057\u3066\u6575\u5bfe\u7684\u306b\u518d\u691c\u8a3c\u3059\u308b\u5c02\u9580\u5bb6\u3002`/swarm-loop` \u306e Phase 5 GATE\u30fb`/swarm-graph` \u306e Phase G5 GATE(\u3044\u305a\u308c\u3082\u4eba\u9593\u6700\u7d42\u627f\u8a8d)\u76f4\u524d\u306b\u3001\u5b8c\u6210\u3057\u305f\u5909\u66f4\u5168\u4f53\u306b\u5bfe\u3057\u3066\u8d77\u52d5\u3059\u308b\u4e8c\u6bb5\u76ee\u306e\u9632\u5fa1\u3002",
+        "tools": "Read, Grep, Glob",
+        "model": "sonnet",
+        "effort": "high",
+        "memory": "project"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u4f4d\u7f6e\u3065\u3051_\u5fc5\u8aad",
+      "label": "\u4f4d\u7f6e\u3065\u3051(\u5fc5\u8aad)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u30ec\u30d3\u30e5\u30fc\u624b\u9806",
+      "label": "\u30ec\u30d3\u30e5\u30fc\u624b\u9806",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L25"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u90e8\u5206\u9069\u7528\u6f0f\u308c\u691c\u51fa_\u5168\u8a00\u8a9e\u5171\u901a\u306e\u624b\u9806",
+      "label": "\u90e8\u5206\u9069\u7528\u6f0f\u308c\u691c\u51fa(\u5168\u8a00\u8a9e\u5171\u901a\u306e\u624b\u9806)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L33"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_go_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "label": "Go \u2014 \u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L41"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_go",
+      "label": "Don'ts(Go)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_rust_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "label": "Rust \u2014 \u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L60"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_rust",
+      "label": "Don'ts(Rust)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L70"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_c_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "label": "C++ \u2014 \u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L78"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_c",
+      "label": "Don'ts(C++)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L88"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_severity_classification",
+      "label": "Severity Classification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u51fa\u529b\u30d5\u30a9\u30fc\u30de\u30c3\u30c8",
+      "label": "\u51fa\u529b\u30d5\u30a9\u30fc\u30de\u30c3\u30c8",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L104"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_memory_discipline",
+      "label": "Memory Discipline",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L138"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_ponytail_anti_overengineering_verification_go_rust_c",
+      "label": "Ponytail Anti-Overengineering Verification (Go, Rust, C++)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L142"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u4f4d\u7f6e\u3065\u3051_\u5fc5\u8aad",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u30ec\u30d3\u30e5\u30fc\u624b\u9806",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u90e8\u5206\u9069\u7528\u6f0f\u308c\u691c\u51fa_\u5168\u8a00\u8a9e\u5171\u901a\u306e\u624b\u9806",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_go_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_go_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_go",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_rust_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_rust_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_rust",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_c_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L78",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_c_\u8a00\u8a9e\u4ed5\u69d8\u30c1\u30a7\u30c3\u30af\u30ea\u30b9\u30c8",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_don_ts_c",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_severity_classification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_\u51fa\u529b\u30d5\u30a9\u30fc\u30de\u30c3\u30c8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L104",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_memory_discipline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L138",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_md",
+      "target": "$graphify-root$_agent_agents_systems_lang_adversarial_reviewer_ponytail_anti_overengineering_verification_go_rust_c",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/systems-lang-adversarial-reviewer.md",
+      "source_location": "L142",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

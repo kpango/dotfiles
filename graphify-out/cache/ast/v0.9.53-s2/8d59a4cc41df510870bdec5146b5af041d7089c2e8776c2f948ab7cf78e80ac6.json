@@ -1,1 +1,594 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_security_review_reference_md", "label": "reference.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/security-review/reference.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "label": "Security Review \u2014 Reference", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_skills_security_review_reference_1_secrets_management", "label": "1. Secrets Management", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L8"}, {"id": "$graphify-root$_agent_skills_security_review_reference_fail_never_do_this", "label": "FAIL: NEVER Do This", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L10"}, {"id": "$graphify-root$_agent_skills_security_review_reference_pass_always_do_this", "label": "PASS: ALWAYS Do This", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L17"}, {"id": "$graphify-root$_agent_skills_security_review_reference_2_input_validation", "label": "2. Input Validation", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L29"}, {"id": "$graphify-root$_agent_skills_security_review_reference_always_validate_user_input", "label": "Always Validate User Input", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L31"}, {"id": "$graphify-root$_agent_skills_security_review_reference_file_upload_validation", "label": "File Upload Validation", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L57"}, {"id": "$graphify-root$_agent_skills_security_review_reference_3_sql_injection_prevention", "label": "3. SQL Injection Prevention", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L84"}, {"id": "$graphify-root$_agent_skills_security_review_reference_fail_never_concatenate_sql", "label": "FAIL: NEVER Concatenate SQL", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L86"}, {"id": "$graphify-root$_agent_skills_security_review_reference_pass_always_use_parameterized_queries", "label": "PASS: ALWAYS Use Parameterized Queries", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L94"}, {"id": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization", "label": "4. Authentication & Authorization", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L107"}, {"id": "$graphify-root$_agent_skills_security_review_reference_jwt_token_handling", "label": "JWT Token Handling", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L109"}, {"id": "$graphify-root$_agent_skills_security_review_reference_authorization_checks", "label": "Authorization Checks", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L122"}, {"id": "$graphify-root$_agent_skills_security_review_reference_row_level_security_supabase", "label": "Row Level Security (Supabase)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L140"}, {"id": "$graphify-root$_agent_skills_security_review_reference_5_xss_prevention", "label": "5. XSS Prevention", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L157"}, {"id": "$graphify-root$_agent_skills_security_review_reference_sanitize_html", "label": "Sanitize HTML", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L159"}, {"id": "$graphify-root$_agent_skills_security_review_reference_content_security_policy", "label": "Content Security Policy", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L174"}, {"id": "$graphify-root$_agent_skills_security_review_reference_6_csrf_protection", "label": "6. CSRF Protection", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L195"}, {"id": "$graphify-root$_agent_skills_security_review_reference_csrf_tokens", "label": "CSRF Tokens", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L197"}, {"id": "$graphify-root$_agent_skills_security_review_reference_samesite_cookies", "label": "SameSite Cookies", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L213"}, {"id": "$graphify-root$_agent_skills_security_review_reference_7_rate_limiting", "label": "7. Rate Limiting", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L222"}, {"id": "$graphify-root$_agent_skills_security_review_reference_api_rate_limiting", "label": "API Rate Limiting", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L224"}, {"id": "$graphify-root$_agent_skills_security_review_reference_expensive_operations", "label": "Expensive Operations", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L239"}, {"id": "$graphify-root$_agent_skills_security_review_reference_8_sensitive_data_exposure", "label": "8. Sensitive Data Exposure", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L252"}, {"id": "$graphify-root$_agent_skills_security_review_reference_logging", "label": "Logging", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L254"}, {"id": "$graphify-root$_agent_skills_security_review_reference_error_messages", "label": "Error Messages", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L266"}, {"id": "$graphify-root$_agent_skills_security_review_reference_9_blockchain_security_solana", "label": "9. Blockchain Security (Solana)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L287"}, {"id": "$graphify-root$_agent_skills_security_review_reference_wallet_verification", "label": "Wallet Verification", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L289"}, {"id": "$graphify-root$_agent_skills_security_review_reference_transaction_verification", "label": "Transaction Verification", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L312"}, {"id": "$graphify-root$_agent_skills_security_review_reference_10_dependency_security", "label": "10. Dependency Security", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L336"}, {"id": "$graphify-root$_agent_skills_security_review_reference_regular_updates", "label": "Regular Updates", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L338"}, {"id": "$graphify-root$_agent_skills_security_review_reference_lock_files", "label": "Lock Files", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L354"}, {"id": "$graphify-root$_agent_skills_security_review_reference_security_testing", "label": "Security Testing", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L364"}, {"id": "$graphify-root$_agent_skills_security_review_reference_automated_security_tests", "label": "Automated Security Tests", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/security-review/reference.md", "source_location": "L366"}], "edges": [{"source": "$graphify-root$_agent_skills_security_review_reference_md", "target": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_1_secrets_management", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L8", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_1_secrets_management", "target": "$graphify-root$_agent_skills_security_review_reference_fail_never_do_this", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L10", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_1_secrets_management", "target": "$graphify-root$_agent_skills_security_review_reference_pass_always_do_this", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L17", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_2_input_validation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_2_input_validation", "target": "$graphify-root$_agent_skills_security_review_reference_always_validate_user_input", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L31", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_2_input_validation", "target": "$graphify-root$_agent_skills_security_review_reference_file_upload_validation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L57", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_3_sql_injection_prevention", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L84", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_3_sql_injection_prevention", "target": "$graphify-root$_agent_skills_security_review_reference_fail_never_concatenate_sql", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L86", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_3_sql_injection_prevention", "target": "$graphify-root$_agent_skills_security_review_reference_pass_always_use_parameterized_queries", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L94", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L107", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization", "target": "$graphify-root$_agent_skills_security_review_reference_jwt_token_handling", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L109", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization", "target": "$graphify-root$_agent_skills_security_review_reference_authorization_checks", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L122", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization", "target": "$graphify-root$_agent_skills_security_review_reference_row_level_security_supabase", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L140", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_5_xss_prevention", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L157", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_5_xss_prevention", "target": "$graphify-root$_agent_skills_security_review_reference_sanitize_html", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L159", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_5_xss_prevention", "target": "$graphify-root$_agent_skills_security_review_reference_content_security_policy", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L174", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_6_csrf_protection", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L195", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_6_csrf_protection", "target": "$graphify-root$_agent_skills_security_review_reference_csrf_tokens", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L197", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_6_csrf_protection", "target": "$graphify-root$_agent_skills_security_review_reference_samesite_cookies", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L213", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_7_rate_limiting", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L222", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_7_rate_limiting", "target": "$graphify-root$_agent_skills_security_review_reference_api_rate_limiting", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L224", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_7_rate_limiting", "target": "$graphify-root$_agent_skills_security_review_reference_expensive_operations", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L239", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_8_sensitive_data_exposure", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L252", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_8_sensitive_data_exposure", "target": "$graphify-root$_agent_skills_security_review_reference_logging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L254", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_8_sensitive_data_exposure", "target": "$graphify-root$_agent_skills_security_review_reference_error_messages", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L266", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_9_blockchain_security_solana", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L287", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_9_blockchain_security_solana", "target": "$graphify-root$_agent_skills_security_review_reference_wallet_verification", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L289", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_9_blockchain_security_solana", "target": "$graphify-root$_agent_skills_security_review_reference_transaction_verification", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L312", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_10_dependency_security", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L336", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_10_dependency_security", "target": "$graphify-root$_agent_skills_security_review_reference_regular_updates", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L338", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_10_dependency_security", "target": "$graphify-root$_agent_skills_security_review_reference_lock_files", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L354", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference", "target": "$graphify-root$_agent_skills_security_review_reference_security_testing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L364", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_security_review_reference_security_testing", "target": "$graphify-root$_agent_skills_security_review_reference_automated_security_tests", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/security-review/reference.md", "source_location": "L366", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_md",
+      "label": "reference.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "label": "Security Review \u2014 Reference",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_1_secrets_management",
+      "label": "1. Secrets Management",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L8"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_fail_never_do_this",
+      "label": "FAIL: NEVER Do This",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_pass_always_do_this",
+      "label": "PASS: ALWAYS Do This",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L17"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_2_input_validation",
+      "label": "2. Input Validation",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_always_validate_user_input",
+      "label": "Always Validate User Input",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L31"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_file_upload_validation",
+      "label": "File Upload Validation",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_3_sql_injection_prevention",
+      "label": "3. SQL Injection Prevention",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_fail_never_concatenate_sql",
+      "label": "FAIL: NEVER Concatenate SQL",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L86"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_pass_always_use_parameterized_queries",
+      "label": "PASS: ALWAYS Use Parameterized Queries",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L94"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization",
+      "label": "4. Authentication & Authorization",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L107"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_jwt_token_handling",
+      "label": "JWT Token Handling",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L109"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_authorization_checks",
+      "label": "Authorization Checks",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L122"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_row_level_security_supabase",
+      "label": "Row Level Security (Supabase)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L140"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_5_xss_prevention",
+      "label": "5. XSS Prevention",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L157"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_sanitize_html",
+      "label": "Sanitize HTML",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L159"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_content_security_policy",
+      "label": "Content Security Policy",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L174"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_6_csrf_protection",
+      "label": "6. CSRF Protection",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L195"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_csrf_tokens",
+      "label": "CSRF Tokens",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L197"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_samesite_cookies",
+      "label": "SameSite Cookies",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L213"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_7_rate_limiting",
+      "label": "7. Rate Limiting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L222"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_api_rate_limiting",
+      "label": "API Rate Limiting",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L224"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_expensive_operations",
+      "label": "Expensive Operations",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L239"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_8_sensitive_data_exposure",
+      "label": "8. Sensitive Data Exposure",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L252"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_logging",
+      "label": "Logging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L254"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_error_messages",
+      "label": "Error Messages",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L266"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_9_blockchain_security_solana",
+      "label": "9. Blockchain Security (Solana)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L287"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_wallet_verification",
+      "label": "Wallet Verification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L289"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_transaction_verification",
+      "label": "Transaction Verification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L312"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_10_dependency_security",
+      "label": "10. Dependency Security",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L336"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_regular_updates",
+      "label": "Regular Updates",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L338"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_lock_files",
+      "label": "Lock Files",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L354"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_security_testing",
+      "label": "Security Testing",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L364"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_security_review_reference_automated_security_tests",
+      "label": "Automated Security Tests",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L366"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_md",
+      "target": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_1_secrets_management",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_1_secrets_management",
+      "target": "$graphify-root$_agent_skills_security_review_reference_fail_never_do_this",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_1_secrets_management",
+      "target": "$graphify-root$_agent_skills_security_review_reference_pass_always_do_this",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_2_input_validation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_2_input_validation",
+      "target": "$graphify-root$_agent_skills_security_review_reference_always_validate_user_input",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_2_input_validation",
+      "target": "$graphify-root$_agent_skills_security_review_reference_file_upload_validation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_3_sql_injection_prevention",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_3_sql_injection_prevention",
+      "target": "$graphify-root$_agent_skills_security_review_reference_fail_never_concatenate_sql",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_3_sql_injection_prevention",
+      "target": "$graphify-root$_agent_skills_security_review_reference_pass_always_use_parameterized_queries",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization",
+      "target": "$graphify-root$_agent_skills_security_review_reference_jwt_token_handling",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization",
+      "target": "$graphify-root$_agent_skills_security_review_reference_authorization_checks",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_4_authentication_authorization",
+      "target": "$graphify-root$_agent_skills_security_review_reference_row_level_security_supabase",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L140",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_5_xss_prevention",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_5_xss_prevention",
+      "target": "$graphify-root$_agent_skills_security_review_reference_sanitize_html",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_5_xss_prevention",
+      "target": "$graphify-root$_agent_skills_security_review_reference_content_security_policy",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L174",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_6_csrf_protection",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L195",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_6_csrf_protection",
+      "target": "$graphify-root$_agent_skills_security_review_reference_csrf_tokens",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L197",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_6_csrf_protection",
+      "target": "$graphify-root$_agent_skills_security_review_reference_samesite_cookies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L213",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_7_rate_limiting",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_7_rate_limiting",
+      "target": "$graphify-root$_agent_skills_security_review_reference_api_rate_limiting",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L224",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_7_rate_limiting",
+      "target": "$graphify-root$_agent_skills_security_review_reference_expensive_operations",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_8_sensitive_data_exposure",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L252",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_8_sensitive_data_exposure",
+      "target": "$graphify-root$_agent_skills_security_review_reference_logging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L254",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_8_sensitive_data_exposure",
+      "target": "$graphify-root$_agent_skills_security_review_reference_error_messages",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_9_blockchain_security_solana",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L287",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_9_blockchain_security_solana",
+      "target": "$graphify-root$_agent_skills_security_review_reference_wallet_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L289",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_9_blockchain_security_solana",
+      "target": "$graphify-root$_agent_skills_security_review_reference_transaction_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L312",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_10_dependency_security",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L336",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_10_dependency_security",
+      "target": "$graphify-root$_agent_skills_security_review_reference_regular_updates",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L338",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_10_dependency_security",
+      "target": "$graphify-root$_agent_skills_security_review_reference_lock_files",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L354",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_review_reference",
+      "target": "$graphify-root$_agent_skills_security_review_reference_security_testing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L364",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_security_review_reference_security_testing",
+      "target": "$graphify-root$_agent_skills_security_review_reference_automated_security_tests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/security-review/reference.md",
+      "source_location": "L366",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

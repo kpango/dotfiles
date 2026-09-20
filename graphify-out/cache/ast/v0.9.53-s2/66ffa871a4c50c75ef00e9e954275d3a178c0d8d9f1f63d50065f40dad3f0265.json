@@ -1,1 +1,144 @@
-{"nodes": [{"id": "$graphify-root$_agent_scripts_harness_check_lib_sh", "label": "harness-check-lib.sh", "file_type": "code", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_scripts_harness_check_lib_sh__entry", "label": "harness-check-lib.sh script", "file_type": "code", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_scripts_harness_check_lib_check", "label": "check()", "file_type": "code", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L18", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test", "label": "harness_run_shared_test()", "file_type": "code", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L39", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_scripts_harness_check_lib_harness_summary", "label": "harness_summary()", "file_type": "code", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L57", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_scripts_harness_check_lib_sh", "target": "$graphify-root$_agent_scripts_harness_check_lib_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_harness_check_lib_sh", "target": "$graphify-root$_agent_scripts_harness_check_lib_check", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L18", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_harness_check_lib_sh", "target": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L39", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_harness_check_lib_sh", "target": "$graphify-root$_agent_scripts_harness_check_lib_harness_summary", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L57", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test", "target": "$graphify-root$_agent_scripts_harness_check_lib_check", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L43", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_check", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L22"}, {"language": "bash", "callee": "return", "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L44"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L52"}, {"language": "bash", "callee": "grep", "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L52"}, {"language": "bash", "callee": "tail", "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L52"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_summary", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L59"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_summary", "source_file": "agent/scripts/harness-check-lib.sh", "source_location": "L66"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_scripts_harness_check_lib_sh",
+      "label": "harness-check-lib.sh",
+      "file_type": "code",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_harness_check_lib_sh__entry",
+      "label": "harness-check-lib.sh script",
+      "file_type": "code",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_harness_check_lib_check",
+      "label": "check()",
+      "file_type": "code",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L18",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test",
+      "label": "harness_run_shared_test()",
+      "file_type": "code",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L39",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_harness_check_lib_harness_summary",
+      "label": "harness_summary()",
+      "file_type": "code",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L57",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_scripts_harness_check_lib_sh",
+      "target": "$graphify-root$_agent_scripts_harness_check_lib_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_harness_check_lib_sh",
+      "target": "$graphify-root$_agent_scripts_harness_check_lib_check",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_harness_check_lib_sh",
+      "target": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_harness_check_lib_sh",
+      "target": "$graphify-root$_agent_scripts_harness_check_lib_harness_summary",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test",
+      "target": "$graphify-root$_agent_scripts_harness_check_lib_check",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L43",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_check",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L22"
+    },
+    {
+      "language": "bash",
+      "callee": "return",
+      "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L44"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L52"
+    },
+    {
+      "language": "bash",
+      "callee": "grep",
+      "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L52"
+    },
+    {
+      "language": "bash",
+      "callee": "tail",
+      "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_run_shared_test",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L52"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_summary",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L59"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_scripts_harness_check_lib_harness_summary",
+      "source_file": "agent/scripts/harness-check-lib.sh",
+      "source_location": "L66"
+    }
+  ],
+  "bash_sources": []
+}

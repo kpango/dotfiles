@@ -1,1 +1,291 @@
-{"nodes": [{"id": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh", "label": "swarm-stop-verify.sh", "file_type": "code", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "label": "swarm-stop-verify.sh script", "file_type": "code", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event", "label": "log_evolve_event()", "file_type": "code", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L35", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_append_err", "label": "append_err()", "file_type": "code", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L62", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh", "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh", "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L35", "weight": 1.0}, {"source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh", "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_append_err", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L62", "weight": 1.0}, {"source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_append_err", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L76", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L155", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L8"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L10"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L11"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L11"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L14"}, {"language": "bash", "callee": "git", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L16"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L24"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L24"}, {"language": "bash", "callee": "readlink", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L24"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L24"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L30"}, {"language": "bash", "callee": "basename", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L31"}, {"language": "bash", "callee": "sort", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L51"}, {"language": "bash", "callee": "rm", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L53"}, {"language": "bash", "callee": "sed", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L57"}, {"language": "bash", "callee": "comm", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L58"}, {"language": "bash", "callee": "read", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L66"}, {"language": "bash", "callee": "continue", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L67"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L74"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L75"}, {"language": "bash", "callee": "swarm_lint_dockerfile", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L84"}, {"language": "bash", "callee": "gofmt", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L96"}, {"language": "bash", "callee": "swarm_lint_is_vald_repo", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L114"}, {"language": "bash", "callee": "realpath", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L117"}, {"language": "bash", "callee": "swarm_lint_go_package", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L118"}, {"language": "bash", "callee": "timeout", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L131"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L142"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L38"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event", "source_file": "agent/hooks/claude/swarm-stop-verify.sh", "source_location": "L40"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh",
+      "label": "swarm-stop-verify.sh",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "label": "swarm-stop-verify.sh script",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event",
+      "label": "log_evolve_event()",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L35",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_append_err",
+      "label": "append_err()",
+      "file_type": "code",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L62",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh",
+      "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh",
+      "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh",
+      "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_append_err",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_append_err",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L76",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "target": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L155",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L14"
+    },
+    {
+      "language": "bash",
+      "callee": "git",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L16"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "readlink",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L30"
+    },
+    {
+      "language": "bash",
+      "callee": "basename",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L31"
+    },
+    {
+      "language": "bash",
+      "callee": "sort",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L51"
+    },
+    {
+      "language": "bash",
+      "callee": "rm",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L53"
+    },
+    {
+      "language": "bash",
+      "callee": "sed",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L57"
+    },
+    {
+      "language": "bash",
+      "callee": "comm",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L58"
+    },
+    {
+      "language": "bash",
+      "callee": "read",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L66"
+    },
+    {
+      "language": "bash",
+      "callee": "continue",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L67"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L74"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L75"
+    },
+    {
+      "language": "bash",
+      "callee": "swarm_lint_dockerfile",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L84"
+    },
+    {
+      "language": "bash",
+      "callee": "gofmt",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L96"
+    },
+    {
+      "language": "bash",
+      "callee": "swarm_lint_is_vald_repo",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L114"
+    },
+    {
+      "language": "bash",
+      "callee": "realpath",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L117"
+    },
+    {
+      "language": "bash",
+      "callee": "swarm_lint_go_package",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L118"
+    },
+    {
+      "language": "bash",
+      "callee": "timeout",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L131"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_sh__entry",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L142"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L38"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_agent_hooks_claude_swarm_stop_verify_log_evolve_event",
+      "source_file": "agent/hooks/claude/swarm-stop-verify.sh",
+      "source_location": "L40"
+    }
+  ],
+  "bash_sources": []
+}

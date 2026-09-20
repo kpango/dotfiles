@@ -1,1 +1,211 @@
-{"nodes": [{"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md", "label": "shell-config-adversarial-reviewer.md", "file_type": "document", "node_kind": "page", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L1", "frontmatter": {"name": "shell-config-adversarial-reviewer", "description": "Adversarial reviewer for Shell, ZSH, and Makefile language-specification conformance (POSIX/bash/zsh syntax and quoting rules, GNU/BSD portability, Makefile tab/.PHONY/expansion-timing semantics). No other agent in this fleet has a dedicated spec-conformance section for these three language families (code-reviewer claims shell-scripting expertise but has no dedicated `### Shell-Specific` checklist section, unlike its Go/Rust/C++/Zig/K8s sections); fires immediately before the /swarm-loop Phase 5 GATE and /s", "tools": "read, grep, find, ls, bash", "model": "sonnet", "effort": "high", "memory": "project"}}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_position_in_the_review_pipeline", "label": "Position in the Review Pipeline", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L13"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_scope_of_review", "label": "Scope of Review", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L25"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_scope_restriction_on_the_bash_tool", "label": "Scope Restriction on the Bash Tool", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L35"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria", "label": "Review Criteria", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L47"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_shell_posix_sh_bash", "label": "Shell (POSIX `sh` / `bash`)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L49"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_zsh", "label": "ZSH", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L65"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_makefile", "label": "Makefile", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L74"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_partial_application_inconsistent_pattern_adoption_across_the_diff", "label": "Partial Application / Inconsistent Pattern Adoption Across the Diff", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L85"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_severity_classification", "label": "Severity Classification", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L89"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_output_format", "label": "Output Format", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L100"}, {"id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_memory_discipline", "label": "Memory Discipline", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L130"}], "edges": [{"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_position_in_the_review_pipeline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_scope_of_review", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L25", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_scope_restriction_on_the_bash_tool", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L35", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L47", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_shell_posix_sh_bash", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L49", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_zsh", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L65", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_makefile", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L74", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_partial_application_inconsistent_pattern_adoption_across_the_diff", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L85", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_severity_classification", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L89", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_output_format", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L100", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_memory_discipline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/shell-config-adversarial-reviewer.md", "source_location": "L130", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md",
+      "label": "shell-config-adversarial-reviewer.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "shell-config-adversarial-reviewer",
+        "description": "Adversarial reviewer for Shell, ZSH, and Makefile language-specification conformance (POSIX/bash/zsh syntax and quoting rules, GNU/BSD portability, Makefile tab/.PHONY/expansion-timing semantics). No other agent in this fleet has a dedicated spec-conformance section for these three language families (code-reviewer claims shell-scripting expertise but has no dedicated `### Shell-Specific` checklist section, unlike its Go/Rust/C++/Zig/K8s sections); fires immediately before the /swarm-loop Phase 5 GATE and /s",
+        "tools": "read, grep, find, ls, bash",
+        "model": "sonnet",
+        "effort": "high",
+        "memory": "project"
+      }
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_position_in_the_review_pipeline",
+      "label": "Position in the Review Pipeline",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_scope_of_review",
+      "label": "Scope of Review",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L25"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_scope_restriction_on_the_bash_tool",
+      "label": "Scope Restriction on the Bash Tool",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L35"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria",
+      "label": "Review Criteria",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L47"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_shell_posix_sh_bash",
+      "label": "Shell (POSIX `sh` / `bash`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L49"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_zsh",
+      "label": "ZSH",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L65"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_makefile",
+      "label": "Makefile",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L74"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_partial_application_inconsistent_pattern_adoption_across_the_diff",
+      "label": "Partial Application / Inconsistent Pattern Adoption Across the Diff",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L85"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_severity_classification",
+      "label": "Severity Classification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L89"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_output_format",
+      "label": "Output Format",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L100"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_memory_discipline",
+      "label": "Memory Discipline",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L130"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_position_in_the_review_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_scope_of_review",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_scope_restriction_on_the_bash_tool",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_shell_posix_sh_bash",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_zsh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_makefile",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_partial_application_inconsistent_pattern_adoption_across_the_diff",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L85",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_severity_classification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_output_format",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_shell_config_adversarial_reviewer_memory_discipline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/shell-config-adversarial-reviewer.md",
+      "source_location": "L130",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,1 +1,186 @@
-{"nodes": [{"id": "$graphify-root$_agents_worker_r4_briefing_md", "label": "BRIEFING.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "label": "BRIEFING \u2014 2026-09-05T04:54:00+09:00", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_r4_briefing_mission", "label": "Mission", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L3"}, {"id": "$graphify-root$_agents_worker_r4_briefing_my_identity", "label": "\ud83d\udd12 My Identity", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L6"}, {"id": "$graphify-root$_agents_worker_r4_briefing_key_constraints", "label": "\ud83d\udd12 Key Constraints", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L13"}, {"id": "$graphify-root$_agents_worker_r4_briefing_current_parent", "label": "Current Parent", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L22"}, {"id": "$graphify-root$_agents_worker_r4_briefing_task_summary", "label": "Task Summary", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L26"}, {"id": "$graphify-root$_agents_worker_r4_briefing_key_decisions_made", "label": "Key Decisions Made", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L32"}, {"id": "$graphify-root$_agents_worker_r4_briefing_artifact_index", "label": "Artifact Index", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L38"}, {"id": "$graphify-root$_agents_worker_r4_briefing_change_tracker", "label": "Change Tracker", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L44"}, {"id": "$graphify-root$_agents_worker_r4_briefing_quality_status", "label": "Quality Status", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L53"}], "edges": [{"source": "$graphify-root$_agents_worker_r4_briefing_md", "target": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_mission", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_my_identity", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_key_constraints", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_current_parent", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_task_summary", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_key_decisions_made", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L32", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_artifact_index", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_change_tracker", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L44", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00", "target": "$graphify-root$_agents_worker_r4_briefing_quality_status", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_r4/BRIEFING.md", "source_location": "L53", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_md",
+      "label": "BRIEFING.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "label": "BRIEFING \u2014 2026-09-05T04:54:00+09:00",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_mission",
+      "label": "Mission",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_my_identity",
+      "label": "\ud83d\udd12 My Identity",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_key_constraints",
+      "label": "\ud83d\udd12 Key Constraints",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_current_parent",
+      "label": "Current Parent",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_task_summary",
+      "label": "Task Summary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L26"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_key_decisions_made",
+      "label": "Key Decisions Made",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L32"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_artifact_index",
+      "label": "Artifact Index",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_change_tracker",
+      "label": "Change Tracker",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L44"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_r4_briefing_quality_status",
+      "label": "Quality Status",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L53"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_md",
+      "target": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_mission",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_my_identity",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_key_constraints",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_current_parent",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_task_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_key_decisions_made",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_artifact_index",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_change_tracker",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_r4_briefing_briefing_2026_09_05t04_54_00_09_00",
+      "target": "$graphify-root$_agents_worker_r4_briefing_quality_status",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_r4/BRIEFING.md",
+      "source_location": "L53",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

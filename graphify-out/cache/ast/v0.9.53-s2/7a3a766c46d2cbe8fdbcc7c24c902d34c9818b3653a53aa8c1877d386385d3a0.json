@@ -1,1 +1,41 @@
-{"nodes": [{"id": "$graphify-root$_tmux_conf_d_pl_right", "label": "pl-right", "file_type": "code", "source_file": "tmux.conf.d/pl-right", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_tmux_conf_d_pl_right__entry", "label": "pl-right script", "file_type": "code", "source_file": "tmux.conf.d/pl-right", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_tmux_conf_d_pl_right", "target": "$graphify-root$_tmux_conf_d_pl_right__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pl-right", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_tmux_conf_d_pl_right__entry", "source_file": "tmux.conf.d/pl-right", "source_location": "L2"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_tmux_conf_d_pl_right",
+      "label": "pl-right",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pl-right",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_pl_right__entry",
+      "label": "pl-right script",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pl-right",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_tmux_conf_d_pl_right",
+      "target": "$graphify-root$_tmux_conf_d_pl_right__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pl-right",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_tmux_conf_d_pl_right__entry",
+      "source_file": "tmux.conf.d/pl-right",
+      "source_location": "L2"
+    }
+  ],
+  "bash_sources": []
+}

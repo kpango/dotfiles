@@ -1,1 +1,394 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_unifi_api_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L1", "frontmatter": {"name": "unifi-api", "description": "Use when querying or configuring Ubiquiti UniFi network devices, sites, clients, WiFi, firewall, or statistics via local controller or cloud API. Covers authentication, endpoint selection, filtering, pagination, actions, and common operational recipes."}}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "label": "UniFi Network API Reference (v10.4.57)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L6"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_api_surfaces_which_to_use", "label": "API Surfaces \u2014 Which to Use", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L11"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_authentication", "label": "Authentication", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L23"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_pagination_filtering", "label": "Pagination & Filtering", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L40"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "label": "Official v1 Endpoint Reference", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L51"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_application_sites", "label": "Application & Sites", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L55"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_devices", "label": "Devices", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L62"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_clients", "label": "Clients", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L92"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_networks_wifi", "label": "Networks & WiFi", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L103"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_firewall_acl", "label": "Firewall & ACL", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L115"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_dns_hotspot_vpn_switching", "label": "DNS, Hotspot, VPN, Switching", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L127"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_dpi_deep_packet_inspection", "label": "DPI (Deep Packet Inspection)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L141"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_error_response_schema", "label": "Error Response Schema", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L147"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes", "label": "Common Recipes", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L168"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_bootstrap_site_id_and_device_id_for_switch_xg_10", "label": "Bootstrap: site ID and device ID for Switch XG 10", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L170"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_poe_usage_per_port_on_a_switch", "label": "PoE usage per port on a switch", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L184"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_device_stats_thermal_load_uptime", "label": "Device stats (thermal, load, uptime)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L191"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_list_all_connected_clients_with_ip_and_hostname", "label": "List all connected clients with IP and hostname", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L198"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_block_client_via_classic_api_not_in_official_v1", "label": "Block client via Classic API (not in Official v1)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L205"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_create_hotspot_voucher", "label": "Create hotspot voucher", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L214"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_classic_api_supplement_features_not_in_official_v1", "label": "Classic API Supplement (features not in Official v1)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L222"}, {"id": "$graphify-root$_agent_skills_unifi_api_skill_notes", "label": "Notes", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L238"}], "edges": [{"source": "$graphify-root$_agent_skills_unifi_api_skill_md", "target": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "target": "$graphify-root$_agent_skills_unifi_api_skill_api_surfaces_which_to_use", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L11", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "target": "$graphify-root$_agent_skills_unifi_api_skill_authentication", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "target": "$graphify-root$_agent_skills_unifi_api_skill_pagination_filtering", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L40", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "target": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L51", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "target": "$graphify-root$_agent_skills_unifi_api_skill_application_sites", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L55", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "target": "$graphify-root$_agent_skills_unifi_api_skill_devices", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L62", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "target": "$graphify-root$_agent_skills_unifi_api_skill_clients", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L92", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "target": "$graphify-root$_agent_skills_unifi_api_skill_networks_wifi", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L103", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "target": "$graphify-root$_agent_skills_unifi_api_skill_firewall_acl", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L115", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "target": "$graphify-root$_agent_skills_unifi_api_skill_dns_hotspot_vpn_switching", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L127", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference", "target": "$graphify-root$_agent_skills_unifi_api_skill_dpi_deep_packet_inspection", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L141", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "target": "$graphify-root$_agent_skills_unifi_api_skill_error_response_schema", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L147", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "target": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L168", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes", "target": "$graphify-root$_agent_skills_unifi_api_skill_bootstrap_site_id_and_device_id_for_switch_xg_10", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L170", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes", "target": "$graphify-root$_agent_skills_unifi_api_skill_poe_usage_per_port_on_a_switch", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L184", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes", "target": "$graphify-root$_agent_skills_unifi_api_skill_device_stats_thermal_load_uptime", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L191", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes", "target": "$graphify-root$_agent_skills_unifi_api_skill_list_all_connected_clients_with_ip_and_hostname", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L198", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes", "target": "$graphify-root$_agent_skills_unifi_api_skill_block_client_via_classic_api_not_in_official_v1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L205", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes", "target": "$graphify-root$_agent_skills_unifi_api_skill_create_hotspot_voucher", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L214", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "target": "$graphify-root$_agent_skills_unifi_api_skill_classic_api_supplement_features_not_in_official_v1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L222", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57", "target": "$graphify-root$_agent_skills_unifi_api_skill_notes", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/unifi-api/SKILL.md", "source_location": "L238", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "unifi-api",
+        "description": "Use when querying or configuring Ubiquiti UniFi network devices, sites, clients, WiFi, firewall, or statistics via local controller or cloud API. Covers authentication, endpoint selection, filtering, pagination, actions, and common operational recipes."
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "label": "UniFi Network API Reference (v10.4.57)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_api_surfaces_which_to_use",
+      "label": "API Surfaces \u2014 Which to Use",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_authentication",
+      "label": "Authentication",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_pagination_filtering",
+      "label": "Pagination & Filtering",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L40"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "label": "Official v1 Endpoint Reference",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L51"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_application_sites",
+      "label": "Application & Sites",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_devices",
+      "label": "Devices",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L62"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_clients",
+      "label": "Clients",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L92"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_networks_wifi",
+      "label": "Networks & WiFi",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L103"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_firewall_acl",
+      "label": "Firewall & ACL",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L115"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_dns_hotspot_vpn_switching",
+      "label": "DNS, Hotspot, VPN, Switching",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L127"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_dpi_deep_packet_inspection",
+      "label": "DPI (Deep Packet Inspection)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L141"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_error_response_schema",
+      "label": "Error Response Schema",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L147"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes",
+      "label": "Common Recipes",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L168"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_bootstrap_site_id_and_device_id_for_switch_xg_10",
+      "label": "Bootstrap: site ID and device ID for Switch XG 10",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L170"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_poe_usage_per_port_on_a_switch",
+      "label": "PoE usage per port on a switch",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L184"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_device_stats_thermal_load_uptime",
+      "label": "Device stats (thermal, load, uptime)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L191"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_list_all_connected_clients_with_ip_and_hostname",
+      "label": "List all connected clients with IP and hostname",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L198"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_block_client_via_classic_api_not_in_official_v1",
+      "label": "Block client via Classic API (not in Official v1)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L205"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_create_hotspot_voucher",
+      "label": "Create hotspot voucher",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L214"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_classic_api_supplement_features_not_in_official_v1",
+      "label": "Classic API Supplement (features not in Official v1)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L222"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_unifi_api_skill_notes",
+      "label": "Notes",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L238"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_md",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_api_surfaces_which_to_use",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_authentication",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_pagination_filtering",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_application_sites",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_devices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_clients",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L92",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_networks_wifi",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L103",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_firewall_acl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_dns_hotspot_vpn_switching",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_official_v1_endpoint_reference",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_dpi_deep_packet_inspection",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L141",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_error_response_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L168",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_bootstrap_site_id_and_device_id_for_switch_xg_10",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L170",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_poe_usage_per_port_on_a_switch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L184",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_device_stats_thermal_load_uptime",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L191",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_list_all_connected_clients_with_ip_and_hostname",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L198",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_block_client_via_classic_api_not_in_official_v1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L205",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_common_recipes",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_create_hotspot_voucher",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L214",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_classic_api_supplement_features_not_in_official_v1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L222",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_unifi_api_skill_unifi_network_api_reference_v10_4_57",
+      "target": "$graphify-root$_agent_skills_unifi_api_skill_notes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/unifi-api/SKILL.md",
+      "source_location": "L238",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

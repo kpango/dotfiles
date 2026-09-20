@@ -78,9 +78,7 @@
     "type": "command",
     "command": "node \"${CLAUDE_PROJECT_DIR:-.}/.claude/helpers/graft-statusline.cjs\""
   },
-  "footerLinksRegexes": [
-    "graft/[\\w./-]+\\.md"
-  ],
+  "footerLinksRegexes": ["graft/[\\w./-]+\\.md"],
   "permissions": {
     "allow": [
       "Bash(npx @nanonets/graft:*)",

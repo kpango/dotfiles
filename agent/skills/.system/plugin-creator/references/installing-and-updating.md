@@ -1,6 +1,6 @@
 # Updating Existing Local Plugins
 
-Use this reference when a plugin already exists and the request is about updating the plugin during 
+Use this reference when a plugin already exists and the request is about updating the plugin during
 local development.
 
 All scripts here are specified relative to the skill root. Update the path for running the scripts

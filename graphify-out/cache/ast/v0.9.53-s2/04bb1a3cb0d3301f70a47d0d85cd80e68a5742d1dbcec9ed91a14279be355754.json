@@ -1,1 +1,203 @@
-{"nodes": [{"id": "$graphify-root$_agents_worker_m3_briefing_md", "label": "BRIEFING.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "label": "BRIEFING \u2014 2026-09-04T15:47:00Z", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_m3_briefing_mission", "label": "Mission", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L3"}, {"id": "$graphify-root$_agents_worker_m3_briefing_my_identity", "label": "\ud83d\udd12 My Identity", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L6"}, {"id": "$graphify-root$_agents_worker_m3_briefing_key_constraints", "label": "\ud83d\udd12 Key Constraints", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L13"}, {"id": "$graphify-root$_agents_worker_m3_briefing_current_parent", "label": "Current Parent", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L26"}, {"id": "$graphify-root$_agents_worker_m3_briefing_task_summary", "label": "Task Summary", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L30"}, {"id": "$graphify-root$_agents_worker_m3_briefing_change_tracker", "label": "Change Tracker", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L36"}, {"id": "$graphify-root$_agents_worker_m3_briefing_quality_status", "label": "Quality Status", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L47"}, {"id": "$graphify-root$_agents_worker_m3_briefing_loaded_skills", "label": "Loaded Skills", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L52"}, {"id": "$graphify-root$_agents_worker_m3_briefing_key_decisions_made", "label": "Key Decisions Made", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L55"}, {"id": "$graphify-root$_agents_worker_m3_briefing_artifact_index", "label": "Artifact Index", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L62"}], "edges": [{"source": "$graphify-root$_agents_worker_m3_briefing_md", "target": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_mission", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_my_identity", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_key_constraints", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_current_parent", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_task_summary", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L30", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_change_tracker", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L36", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_quality_status", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L47", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_loaded_skills", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L52", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_key_decisions_made", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L55", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z", "target": "$graphify-root$_agents_worker_m3_briefing_artifact_index", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/BRIEFING.md", "source_location": "L62", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_md",
+      "label": "BRIEFING.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "label": "BRIEFING \u2014 2026-09-04T15:47:00Z",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_mission",
+      "label": "Mission",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_my_identity",
+      "label": "\ud83d\udd12 My Identity",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_key_constraints",
+      "label": "\ud83d\udd12 Key Constraints",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_current_parent",
+      "label": "Current Parent",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L26"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_task_summary",
+      "label": "Task Summary",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_change_tracker",
+      "label": "Change Tracker",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L36"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_quality_status",
+      "label": "Quality Status",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L47"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_loaded_skills",
+      "label": "Loaded Skills",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_key_decisions_made",
+      "label": "Key Decisions Made",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_briefing_artifact_index",
+      "label": "Artifact Index",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L62"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_md",
+      "target": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_mission",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_my_identity",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_key_constraints",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_current_parent",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_task_summary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_change_tracker",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_quality_status",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_loaded_skills",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_key_decisions_made",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L55",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m3_briefing_briefing_2026_09_04t15_47_00z",
+      "target": "$graphify-root$_agents_worker_m3_briefing_artifact_index",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/BRIEFING.md",
+      "source_location": "L62",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,1 +1,275 @@
-{"nodes": [{"id": "$graphify-root$_agent_scripts_test_vald_law_rules_sh", "label": "test-vald-law-rules.sh", "file_type": "code", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "label": "test-vald-law-rules.sh script", "file_type": "code", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_scripts_test_vald_law_rules_section", "label": "section()", "file_type": "code", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L19", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_scripts_test_vald_law_rules_check_exit2", "label": "check_exit2()", "file_type": "code", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L21", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_scripts_test_vald_law_rules_check345", "label": "check345()", "file_type": "code", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L63", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check", "label": "agy_check()", "file_type": "code", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L84", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_section", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_check_exit2", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L21", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_check345", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L63", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L84", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_section", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L36", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_check_exit2", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L38", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_check345", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L71", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "target": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L91", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L8"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L10"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L10"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L10"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L37"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L107"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L128"}, {"language": "bash", "callee": "mktemp", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L129"}, {"language": "bash", "callee": "trap", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L130"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L131"}, {"language": "bash", "callee": "bun", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L166"}, {"language": "bash", "callee": "rm", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L168"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L179"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_section", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L19"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_check_exit2", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L23"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_check345", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L66"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_check345", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L67"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L86"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check", "source_file": "agent/scripts/test-vald-law-rules.sh", "source_location": "L87"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_scripts_test_vald_law_rules_sh",
+      "label": "test-vald-law-rules.sh",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "label": "test-vald-law-rules.sh script",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_test_vald_law_rules_section",
+      "label": "section()",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L19",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_test_vald_law_rules_check_exit2",
+      "label": "check_exit2()",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L21",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_test_vald_law_rules_check345",
+      "label": "check345()",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L63",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check",
+      "label": "agy_check()",
+      "file_type": "code",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L84",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_section",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_check_exit2",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_check345",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_section",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L36",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_check_exit2",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L38",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_check345",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L71",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "target": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L91",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L37"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L107"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L128"
+    },
+    {
+      "language": "bash",
+      "callee": "mktemp",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L129"
+    },
+    {
+      "language": "bash",
+      "callee": "trap",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L130"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L131"
+    },
+    {
+      "language": "bash",
+      "callee": "bun",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L166"
+    },
+    {
+      "language": "bash",
+      "callee": "rm",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L168"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_sh__entry",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L179"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_section",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L19"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_check_exit2",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L23"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_check345",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L66"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_check345",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L67"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L86"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_agent_scripts_test_vald_law_rules_agy_check",
+      "source_file": "agent/scripts/test-vald-law-rules.sh",
+      "source_location": "L87"
+    }
+  ],
+  "bash_sources": []
+}

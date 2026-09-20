@@ -1,1 +1,174 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_python_patterns_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L1", "frontmatter": {"name": "python-patterns", "description": "Pythonic idioms, PEP 8 standards, type hints, and best practices for building robust, efficient, and maintainable Python applications. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f python-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002", "origin": "ECC"}}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns", "label": "Python Development Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_when_to_activate", "label": "When to Activate", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L9"}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_core_principles", "label": "Core Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L16"}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_1_readability_counts", "label": "1. Readability Counts", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L18"}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_2_explicit_is_better_than_implicit", "label": "2. Explicit is Better Than Implicit", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L34"}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_3_eafp_easier_to_ask_forgiveness_than_permission", "label": "3. EAFP - Easier to Ask Forgiveness Than Permission", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L52"}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_detailed_pattern_catalog", "label": "Detailed Pattern Catalog", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L72"}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_quick_reference_python_idioms", "label": "Quick Reference: Python Idioms", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L89"}, {"id": "$graphify-root$_agent_skills_python_patterns_skill_anti_patterns_to_avoid", "label": "Anti-Patterns to Avoid", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L104"}], "edges": [{"source": "$graphify-root$_agent_skills_python_patterns_skill_md", "target": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns", "target": "$graphify-root$_agent_skills_python_patterns_skill_when_to_activate", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns", "target": "$graphify-root$_agent_skills_python_patterns_skill_core_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_patterns_skill_core_principles", "target": "$graphify-root$_agent_skills_python_patterns_skill_1_readability_counts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L18", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_patterns_skill_core_principles", "target": "$graphify-root$_agent_skills_python_patterns_skill_2_explicit_is_better_than_implicit", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L34", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_patterns_skill_core_principles", "target": "$graphify-root$_agent_skills_python_patterns_skill_3_eafp_easier_to_ask_forgiveness_than_permission", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L52", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns", "target": "$graphify-root$_agent_skills_python_patterns_skill_detailed_pattern_catalog", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L72", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns", "target": "$graphify-root$_agent_skills_python_patterns_skill_quick_reference_python_idioms", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L89", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns", "target": "$graphify-root$_agent_skills_python_patterns_skill_anti_patterns_to_avoid", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/python-patterns/SKILL.md", "source_location": "L104", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "python-patterns",
+        "description": "Pythonic idioms, PEP 8 standards, type hints, and best practices for building robust, efficient, and maintainable Python applications. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f python-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002",
+        "origin": "ECC"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns",
+      "label": "Python Development Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_when_to_activate",
+      "label": "When to Activate",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_core_principles",
+      "label": "Core Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_1_readability_counts",
+      "label": "1. Readability Counts",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_2_explicit_is_better_than_implicit",
+      "label": "2. Explicit is Better Than Implicit",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L34"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_3_eafp_easier_to_ask_forgiveness_than_permission",
+      "label": "3. EAFP - Easier to Ask Forgiveness Than Permission",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_detailed_pattern_catalog",
+      "label": "Detailed Pattern Catalog",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L72"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_quick_reference_python_idioms",
+      "label": "Quick Reference: Python Idioms",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L89"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_python_patterns_skill_anti_patterns_to_avoid",
+      "label": "Anti-Patterns to Avoid",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L104"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_md",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_when_to_activate",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_core_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_core_principles",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_1_readability_counts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_core_principles",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_2_explicit_is_better_than_implicit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_core_principles",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_3_eafp_easier_to_ask_forgiveness_than_permission",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_detailed_pattern_catalog",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_quick_reference_python_idioms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_python_patterns_skill_python_development_patterns",
+      "target": "$graphify-root$_agent_skills_python_patterns_skill_anti_patterns_to_avoid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/python-patterns/SKILL.md",
+      "source_location": "L104",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

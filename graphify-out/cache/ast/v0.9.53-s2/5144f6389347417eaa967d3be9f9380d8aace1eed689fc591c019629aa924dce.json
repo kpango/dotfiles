@@ -1,1 +1,118 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh", "label": "memory-guard.sh", "file_type": "code", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "label": "memory-guard.sh script", "file_type": "code", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh", "target": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L8"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L32"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L32"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L33"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L34"}, {"language": "bash", "callee": "tail", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L38"}, {"language": "bash", "callee": "mv", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L38"}, {"language": "bash", "callee": "wc", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L51"}, {"language": "bash", "callee": "grep", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L65"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L65"}, {"language": "bash", "callee": "sed", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L68"}, {"language": "bash", "callee": "basename", "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry", "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh", "source_location": "L84"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh",
+      "label": "memory-guard.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "label": "memory-guard.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh",
+      "target": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L32"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L32"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L33"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L34"
+    },
+    {
+      "language": "bash",
+      "callee": "tail",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L38"
+    },
+    {
+      "language": "bash",
+      "callee": "mv",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L38"
+    },
+    {
+      "language": "bash",
+      "callee": "wc",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L51"
+    },
+    {
+      "language": "bash",
+      "callee": "grep",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L65"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L65"
+    },
+    {
+      "language": "bash",
+      "callee": "sed",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L68"
+    },
+    {
+      "language": "bash",
+      "callee": "basename",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_memory_sync_scripts_memory_guard_sh__entry",
+      "source_file": "agent/skills/swarm-memory-sync/scripts/memory-guard.sh",
+      "source_location": "L84"
+    }
+  ],
+  "bash_sources": []
+}

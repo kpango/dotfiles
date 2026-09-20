@@ -1,1 +1,91 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_release_gate_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L1", "frontmatter": {"name": "swarm-release-gate", "description": "\u30de\u30fc\u30b8\u30fb\u30c7\u30d7\u30ed\u30a4\u30fb\u7834\u58ca\u7684\u5909\u66f4\u306e\u76f4\u524d\u306b\u5fc5\u305a\u901a\u3059\u6700\u7d42\u30b2\u30fc\u30c8\u3002\u30c8\u30ea\u30ac\u30fc: \u4eba\u9593\u306b\u3088\u308b /swarm-release-gate \u306e \u660e\u793a\u62db\u96c6\u3001\u307e\u305f\u306f `swarm-loop`/`swarm-graph` \u306e Phase 5/G5 GATE \u304b\u3089\u306e `Skill(swarm-release-gate)` \u81ea\u52d5\u8d77\u52d5 (2026-08-13 \u5909\u66f4\u3001\u4eba\u9593\u627f\u8a8d\u6e08\u307f \u2014 GATE\u5230\u9054\u3054\u3068\u306b\u4eba\u9593\u3078\u624b\u52d5\u62db\u96c6\u3092\u6c42\u3081\u306a\u3044)\u3002\u300c\u30de\u30fc\u30b8\u3057\u3066\u300d \u300cPR \u3092\u51fa\u3057\u3066\u672c\u6d41\u306b\u5165\u308c\u3066\u300d\u300c\u30ea\u30ea\u30fc\u30b9\u3057\u3066\u300d\u3068\u3044\u3046\u81ea\u7136\u6587\u306e\u4f9d\u983c\u3067\u3082\u672c skill \u7d4c\u7531\u3067\u51e6\u7406\u3059\u308b\u3002 \u5883\u754c\u6761\u4ef6: \u81ea\u52d5\u8d77\u52d5\u3055\u308c\u3066\u3082\u81ea\u5f8b\u30de\u30fc\u30b8\u306b\u306f\u81f3\u3089\u306a\u3044 \u2014 scripts/verify.sh \u306e\u5b9f\u884c\u7d50\u679c (\u6a19\u6e96\u51fa\u529b) \u304c \u5168\u30d1\u30b9\u3059\u308b\u307e\u3067\u3001\u304a\u3088\u3073\u4eba\u9593\u306e\u6700\u7d42\u627f\u8a8d\u3092\u5f97\u308b\u307e\u3067\u30de\u30fc\u30b8\u30fbpush \u3092\u7d76\u5bfe\u306b\u884c\u308f\u306a\u3044 (\u4e0b\u8a18\u624b\u9806 2/3\u3001 \u81ea\u5df1\u7533\u544a\u30fb\u8a18\u61b6\u306f\u6839\u62e0\u306b\u3057\u306a\u3044)\u3002dmi:false \u304c\u8a31\u3059\u306e\u306f\u691c\u8a3c\u30fb\u63d0\u793a\u30d5\u30a7\u30fc\u30ba\u306e\u81ea\u52d5\u958b\u59cb\u306e\u307f\u3067\u3042\u308a\u3001 \u30de\u30fc\u30b8\u5b9f\u884c\u30d5\u30a7\u30fc\u30ba\u306e\u4eba\u9593\u627f\u8a8d\u8981\u4ef6\u306f\u3053\u308c\u306b\u3088\u3063\u3066\u5909\u66f4\u3055\u308c\u306a\u3044\u3002 \u672c\u756a namespace \u3078\u306e kubectl/helm \u64cd\u4f5c\u306f\u6271\u308f\u306a\u3044 (security-gate hook ", "allowed-tools": ["Read", "Write", "Bash", "Grep", "Glob"], "user-invocable": true, "disable-model-invocation": false}}, {"id": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8", "label": "swarm-release-gate \u2014 \u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L18"}, {"id": "$graphify-root$_agent_skills_swarm_release_gate_skill_\u624b\u9806", "label": "\u624b\u9806", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L23"}, {"id": "$graphify-root$_agent_skills_swarm_release_gate_skill_\u7981\u6b62\u4e8b\u9805", "label": "\u7981\u6b62\u4e8b\u9805", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L47"}, {"id": "$graphify-root$_agent_skills_swarm_release_gate_skill_memory_protocol_skill_\u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9", "label": "Memory Protocol\uff08Skill \u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9\uff09", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L53"}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_release_gate_skill_md", "target": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L18", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8", "target": "$graphify-root$_agent_skills_swarm_release_gate_skill_\u624b\u9806", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8", "target": "$graphify-root$_agent_skills_swarm_release_gate_skill_\u7981\u6b62\u4e8b\u9805", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L47", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8", "target": "$graphify-root$_agent_skills_swarm_release_gate_skill_memory_protocol_skill_\u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-release-gate/SKILL.md", "source_location": "L53", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_release_gate_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "swarm-release-gate",
+        "description": "\u30de\u30fc\u30b8\u30fb\u30c7\u30d7\u30ed\u30a4\u30fb\u7834\u58ca\u7684\u5909\u66f4\u306e\u76f4\u524d\u306b\u5fc5\u305a\u901a\u3059\u6700\u7d42\u30b2\u30fc\u30c8\u3002\u30c8\u30ea\u30ac\u30fc: \u4eba\u9593\u306b\u3088\u308b /swarm-release-gate \u306e \u660e\u793a\u62db\u96c6\u3001\u307e\u305f\u306f `swarm-loop`/`swarm-graph` \u306e Phase 5/G5 GATE \u304b\u3089\u306e `Skill(swarm-release-gate)` \u81ea\u52d5\u8d77\u52d5 (2026-08-13 \u5909\u66f4\u3001\u4eba\u9593\u627f\u8a8d\u6e08\u307f \u2014 GATE\u5230\u9054\u3054\u3068\u306b\u4eba\u9593\u3078\u624b\u52d5\u62db\u96c6\u3092\u6c42\u3081\u306a\u3044)\u3002\u300c\u30de\u30fc\u30b8\u3057\u3066\u300d \u300cPR \u3092\u51fa\u3057\u3066\u672c\u6d41\u306b\u5165\u308c\u3066\u300d\u300c\u30ea\u30ea\u30fc\u30b9\u3057\u3066\u300d\u3068\u3044\u3046\u81ea\u7136\u6587\u306e\u4f9d\u983c\u3067\u3082\u672c skill \u7d4c\u7531\u3067\u51e6\u7406\u3059\u308b\u3002 \u5883\u754c\u6761\u4ef6: \u81ea\u52d5\u8d77\u52d5\u3055\u308c\u3066\u3082\u81ea\u5f8b\u30de\u30fc\u30b8\u306b\u306f\u81f3\u3089\u306a\u3044 \u2014 scripts/verify.sh \u306e\u5b9f\u884c\u7d50\u679c (\u6a19\u6e96\u51fa\u529b) \u304c \u5168\u30d1\u30b9\u3059\u308b\u307e\u3067\u3001\u304a\u3088\u3073\u4eba\u9593\u306e\u6700\u7d42\u627f\u8a8d\u3092\u5f97\u308b\u307e\u3067\u30de\u30fc\u30b8\u30fbpush \u3092\u7d76\u5bfe\u306b\u884c\u308f\u306a\u3044 (\u4e0b\u8a18\u624b\u9806 2/3\u3001 \u81ea\u5df1\u7533\u544a\u30fb\u8a18\u61b6\u306f\u6839\u62e0\u306b\u3057\u306a\u3044)\u3002dmi:false \u304c\u8a31\u3059\u306e\u306f\u691c\u8a3c\u30fb\u63d0\u793a\u30d5\u30a7\u30fc\u30ba\u306e\u81ea\u52d5\u958b\u59cb\u306e\u307f\u3067\u3042\u308a\u3001 \u30de\u30fc\u30b8\u5b9f\u884c\u30d5\u30a7\u30fc\u30ba\u306e\u4eba\u9593\u627f\u8a8d\u8981\u4ef6\u306f\u3053\u308c\u306b\u3088\u3063\u3066\u5909\u66f4\u3055\u308c\u306a\u3044\u3002 \u672c\u756a namespace \u3078\u306e kubectl/helm \u64cd\u4f5c\u306f\u6271\u308f\u306a\u3044 (security-gate hook ",
+        "allowed-tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+        "user-invocable": true,
+        "disable-model-invocation": false
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8",
+      "label": "swarm-release-gate \u2014 \u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L18"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_release_gate_skill_\u624b\u9806",
+      "label": "\u624b\u9806",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L23"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_release_gate_skill_\u7981\u6b62\u4e8b\u9805",
+      "label": "\u7981\u6b62\u4e8b\u9805",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L47"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_release_gate_skill_memory_protocol_skill_\u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9",
+      "label": "Memory Protocol\uff08Skill \u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9\uff09",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L53"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_release_gate_skill_md",
+      "target": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8",
+      "target": "$graphify-root$_agent_skills_swarm_release_gate_skill_\u624b\u9806",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8",
+      "target": "$graphify-root$_agent_skills_swarm_release_gate_skill_\u7981\u6b62\u4e8b\u9805",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_release_gate_skill_swarm_release_gate_\u5f37\u5236\u691c\u8a3c\u3064\u304d\u6700\u7d42\u30b2\u30fc\u30c8",
+      "target": "$graphify-root$_agent_skills_swarm_release_gate_skill_memory_protocol_skill_\u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-release-gate/SKILL.md",
+      "source_location": "L53",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

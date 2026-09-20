@@ -1,1 +1,118 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_pi_supplement_md", "label": "AGENTS-pi-supplement.md", "file_type": "document", "node_kind": "page", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_agents_pi_supplement_external_coding_agent_bridges", "label": "External Coding Agent Bridges", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_agents_pi_supplement_tool_usage_discipline_pi_specific", "label": "Tool Usage Discipline (Pi-specific)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L11"}, {"id": "$graphify-root$_agent_agents_pi_supplement_specialized_subagents_pi_agent_agents", "label": "Specialized Subagents (`~/.pi/agent/agents/`)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L16"}, {"id": "$graphify-root$_agent_agents_pi_supplement_teamwork_preview_subagent_bridge", "label": "Teamwork-Preview Subagent Bridge", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L48"}, {"id": "$graphify-root$_agent_agents_pi_supplement_skills_prompts_pi_agent_skills_pi_agent_prompts", "label": "Skills & Prompts (`~/.pi/agent/skills/` & `~/.pi/agent/prompts/`)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L64"}, {"id": "$graphify-root$_agent_agents_pi_supplement_security_protection_rules_pi_specific_enforcement", "label": "Security & Protection Rules (Pi-specific enforcement)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L90"}], "edges": [{"source": "$graphify-root$_agent_agents_pi_supplement_md", "target": "$graphify-root$_agent_agents_pi_supplement_external_coding_agent_bridges", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_pi_supplement_md", "target": "$graphify-root$_agent_agents_pi_supplement_tool_usage_discipline_pi_specific", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L11", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_pi_supplement_md", "target": "$graphify-root$_agent_agents_pi_supplement_specialized_subagents_pi_agent_agents", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_pi_supplement_md", "target": "$graphify-root$_agent_agents_pi_supplement_teamwork_preview_subagent_bridge", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L48", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_pi_supplement_md", "target": "$graphify-root$_agent_agents_pi_supplement_skills_prompts_pi_agent_skills_pi_agent_prompts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L64", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_pi_supplement_md", "target": "$graphify-root$_agent_agents_pi_supplement_security_protection_rules_pi_specific_enforcement", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-pi-supplement.md", "source_location": "L90", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_pi_supplement_md",
+      "label": "AGENTS-pi-supplement.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_pi_supplement_external_coding_agent_bridges",
+      "label": "External Coding Agent Bridges",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_pi_supplement_tool_usage_discipline_pi_specific",
+      "label": "Tool Usage Discipline (Pi-specific)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L11"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_pi_supplement_specialized_subagents_pi_agent_agents",
+      "label": "Specialized Subagents (`~/.pi/agent/agents/`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_pi_supplement_teamwork_preview_subagent_bridge",
+      "label": "Teamwork-Preview Subagent Bridge",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_pi_supplement_skills_prompts_pi_agent_skills_pi_agent_prompts",
+      "label": "Skills & Prompts (`~/.pi/agent/skills/` & `~/.pi/agent/prompts/`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L64"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_pi_supplement_security_protection_rules_pi_specific_enforcement",
+      "label": "Security & Protection Rules (Pi-specific enforcement)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L90"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_pi_supplement_md",
+      "target": "$graphify-root$_agent_agents_pi_supplement_external_coding_agent_bridges",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_pi_supplement_md",
+      "target": "$graphify-root$_agent_agents_pi_supplement_tool_usage_discipline_pi_specific",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_pi_supplement_md",
+      "target": "$graphify-root$_agent_agents_pi_supplement_specialized_subagents_pi_agent_agents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_pi_supplement_md",
+      "target": "$graphify-root$_agent_agents_pi_supplement_teamwork_preview_subagent_bridge",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_pi_supplement_md",
+      "target": "$graphify-root$_agent_agents_pi_supplement_skills_prompts_pi_agent_skills_pi_agent_prompts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_pi_supplement_md",
+      "target": "$graphify-root$_agent_agents_pi_supplement_security_protection_rules_pi_specific_enforcement",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-pi-supplement.md",
+      "source_location": "L90",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

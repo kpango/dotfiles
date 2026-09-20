@@ -1113,10 +1113,10 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   `executor@1.6.8` のグローバルインストールを完了、`command -v executor`/`which executor` の
   両方を実行し、どちらも `/home/kpango/.bun/bin/executor` としてPATH解決できることを確認した。
   なお、本README自体には2026-09-03時点で `executor tools describe`/`executor call executor mcp
-  addServer` 等のexecutor CLIコマンドが実際に実行された記録が残っている（下記「`claude`/`agy` の
+addServer` 等のexecutor CLIコマンドが実際に実行された記録が残っている（下記「`claude`/`agy` の
   `mcpServers.executor` 呼び出し許可」項目、および本ファイル冒頭の「## MCP サーバー定義の統合
   （Executor gateway 経由）」節（本ファイル167行目付近）の「サーバー登録は `executor call
-  executor mcp addServer` 」の記述）。これは当時の作業環境（別セッション、あるいは別のサンドボックス
+executor mcp addServer` 」の記述）。これは当時の作業環境（別セッション、あるいは別のサンドボックス
   /実マシン環境の可能性がある）に `executor` バイナリが存在していたことを示唆するが、その環境が
   本ミッションの隔離worktreeと同一の `$HOME`/bunグローバルストアを共有していたかどうかは本ミッションでは
   未確認である。よって断定できるのは「本ミッション開始時点でこのサンドボックス環境の `bun pm ls -g`
@@ -1125,7 +1125,7 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   オンデマンド daemon の挙動も一部実地確認した — `executor tools integrations` はdaemon未起動時に
   自動起動して built-inカタログ（`toolCount: 36`）をJSONで返す。このdaemonの実プロセス（`ps -p <pid>`・
   `/proc/<pid>/cmdline` で確認、コマンドラインは `executor daemon run --port 4788 --hostname
-  localhost --foreground`）は起動後も生存し続けていた。`ls -la ~/.executor`・
+localhost --foreground`）は起動後も生存し続けていた。`ls -la ~/.executor`・
   `ls -la ~/.executor/server-control` で実際に確認したところ、`~/.executor` 直下には
   `analytics-id`・`cache/`・`data.db`・`data.db-shm`・`data.db-wal`・`data.db.owner-lock`（0B）・
   `data.db.owner-lock-journal` に加えて、pid を含む `daemon-localhost-4788.json`
@@ -1135,7 +1135,7 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   存在する。設定済みエンドポイント `http://127.0.0.1:4788/mcp`（IPv4表記）へ直接 `curl` でPOSTすると
   接続拒否（`curl` exit 7、"Could not connect to server"）になる一方、`http://localhost:4788/mcp`・
   `http://[::1]:4788/mcp`（いずれも本環境でIPv6ループバックに解決）へのPOSTは `HTTP/1.1 401
-  Unauthorized`（`www-authenticate: Bearer realm="executor"`）を返し、daemonが実際に応答している
+Unauthorized`（`www-authenticate: Bearer realm="executor"`）を返し、daemonが実際に応答している
   ことを確認した。これは daemon の生死・liveness判定機構の問題ではなく、起動オプション
   `--hostname localhost` がこの環境で `localhost` をIPv6（`::1`）へ解決するために daemon がIPv6
   ループバックのみへbindしており、IPv4の `127.0.0.1` では待ち受けていないという、実測に基づく
@@ -1149,7 +1149,7 @@ FAILし続けていた。テストが機能していなかったため、hooks�
   `curl` により再実測し、6日後も同一挙動（`http://127.0.0.1:4788/mcp` は接続拒否 `errno=7`、
   `http://localhost:4788/mcp`・`http://[::1]:4788/mcp` は `401 Unauthorized` で daemon が応答）が
   再現することを確認した — 単発の環境依存ではなく安定した挙動と判断し、`agent/harnesses/claude/
-  settings.json`・`agent/harnesses/pi/mcp.json`・`agent/harnesses/agy/mcp_config.json` の
+settings.json`・`agent/harnesses/pi/mcp.json`・`agent/harnesses/agy/mcp_config.json` の
   `mcpServers.executor` エンドポイントを3件とも `127.0.0.1` から `localhost` へ変更した。ただし
   この修正がClaude Code等のMCPクライアント経由での実際の接続成立まで解決するかは**未検証のまま**
   である — MCPサーバー接続はセッション開始時に確立されるため、今回の設定変更を反映した次回

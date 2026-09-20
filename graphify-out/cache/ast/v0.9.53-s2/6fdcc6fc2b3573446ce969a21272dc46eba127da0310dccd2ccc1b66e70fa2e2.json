@@ -1,1 +1,69 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh", "label": "harness-select.sh", "file_type": "code", "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry", "label": "harness-select.sh script", "file_type": "code", "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh", "target": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh", "source_location": "L15"}, {"language": "bash", "callee": "shift", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh", "source_location": "L20"}, {"language": "bash", "callee": "text", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh", "source_location": "L23"}, {"language": "bash", "callee": "git", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh", "source_location": "L41"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry", "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh", "source_location": "L41"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh",
+      "label": "harness-select.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry",
+      "label": "harness-select.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh",
+      "target": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "shift",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh",
+      "source_location": "L20"
+    },
+    {
+      "language": "bash",
+      "callee": "text",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh",
+      "source_location": "L23"
+    },
+    {
+      "language": "bash",
+      "callee": "git",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh",
+      "source_location": "L41"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_meta_scripts_harness_select_sh__entry",
+      "source_file": "agent/skills/swarm-meta/scripts/harness-select.sh",
+      "source_location": "L41"
+    }
+  ],
+  "bash_sources": []
+}

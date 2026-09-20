@@ -1,1 +1,93 @@
-{"nodes": [{"id": "$graphify-root$_pi_agents_zig_expert_md", "label": "zig-expert.md", "file_type": "document", "node_kind": "page", "source_file": "pi/agents/zig-expert.md", "source_location": "L1", "frontmatter": {"name": "zig-expert", "description": "Zig implementation specialist. Distinct from `code-reviewer`&#x27;s Zig-Specific review section \u2014 this agent implements, `code-reviewer` audits after the fact. Use proactively for Zig code, especially when the codebase or your own assumptions might predate a recent breaking-change release.", "tools": "read, write, edit, bash, grep, find, ls", "model": "inherit", "effort": "high", "memory": "user", "color": "coral"}}, {"id": "$graphify-root$_pi_agents_zig_expert_version_sensitive_facts_verify_against_the_project_s_actual_version_before_applying", "label": "Version-Sensitive Facts (verify against the project's actual version before applying)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/zig-expert.md", "source_location": "L16"}, {"id": "$graphify-root$_pi_agents_zig_expert_core_principles_stable_across_versions", "label": "Core Principles (stable across versions)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/zig-expert.md", "source_location": "L26"}, {"id": "$graphify-root$_pi_agents_zig_expert_workflow", "label": "Workflow", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/zig-expert.md", "source_location": "L33"}, {"id": "$graphify-root$_pi_agents_zig_expert_memory_protocol", "label": "Memory Protocol", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/zig-expert.md", "source_location": "L40"}], "edges": [{"source": "$graphify-root$_pi_agents_zig_expert_md", "target": "$graphify-root$_pi_agents_zig_expert_version_sensitive_facts_verify_against_the_project_s_actual_version_before_applying", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/zig-expert.md", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_zig_expert_md", "target": "$graphify-root$_pi_agents_zig_expert_core_principles_stable_across_versions", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/zig-expert.md", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_zig_expert_md", "target": "$graphify-root$_pi_agents_zig_expert_workflow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/zig-expert.md", "source_location": "L33", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_zig_expert_md", "target": "$graphify-root$_pi_agents_zig_expert_memory_protocol", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/zig-expert.md", "source_location": "L40", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_agents_zig_expert_md",
+      "label": "zig-expert.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "zig-expert",
+        "description": "Zig implementation specialist. Distinct from `code-reviewer`&#x27;s Zig-Specific review section \u2014 this agent implements, `code-reviewer` audits after the fact. Use proactively for Zig code, especially when the codebase or your own assumptions might predate a recent breaking-change release.",
+        "tools": "read, write, edit, bash, grep, find, ls",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "coral"
+      }
+    },
+    {
+      "id": "$graphify-root$_pi_agents_zig_expert_version_sensitive_facts_verify_against_the_project_s_actual_version_before_applying",
+      "label": "Version-Sensitive Facts (verify against the project's actual version before applying)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_zig_expert_core_principles_stable_across_versions",
+      "label": "Core Principles (stable across versions)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L26"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_zig_expert_workflow",
+      "label": "Workflow",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L33"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_zig_expert_memory_protocol",
+      "label": "Memory Protocol",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L40"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_agents_zig_expert_md",
+      "target": "$graphify-root$_pi_agents_zig_expert_version_sensitive_facts_verify_against_the_project_s_actual_version_before_applying",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_zig_expert_md",
+      "target": "$graphify-root$_pi_agents_zig_expert_core_principles_stable_across_versions",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_zig_expert_md",
+      "target": "$graphify-root$_pi_agents_zig_expert_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_zig_expert_md",
+      "target": "$graphify-root$_pi_agents_zig_expert_memory_protocol",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/zig-expert.md",
+      "source_location": "L40",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

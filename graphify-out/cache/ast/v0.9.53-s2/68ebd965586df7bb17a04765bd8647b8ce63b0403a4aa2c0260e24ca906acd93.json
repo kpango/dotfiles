@@ -1,1 +1,97 @@
-{"nodes": [{"id": "$graphify-root$_claude_hooks_post_tool_failure_sh", "label": "post-tool-failure.sh", "file_type": "code", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "label": "post-tool-failure.sh script", "file_type": "code", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_claude_hooks_post_tool_failure_sh", "target": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L2"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L3"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L3"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L4"}, {"language": "bash", "callee": "jq", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L4"}, {"language": "bash", "callee": "date", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L6"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L9"}, {"language": "bash", "callee": "command", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L15"}, {"language": "bash", "callee": "dunstify", "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry", "source_file": "claude/hooks/post-tool-failure.sh", "source_location": "L16"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_claude_hooks_post_tool_failure_sh",
+      "label": "post-tool-failure.sh",
+      "file_type": "code",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "label": "post-tool-failure.sh script",
+      "file_type": "code",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_claude_hooks_post_tool_failure_sh",
+      "target": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L2"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L3"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L3"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L4"
+    },
+    {
+      "language": "bash",
+      "callee": "jq",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L4"
+    },
+    {
+      "language": "bash",
+      "callee": "date",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L6"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L9"
+    },
+    {
+      "language": "bash",
+      "callee": "command",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "dunstify",
+      "caller_nid": "$graphify-root$_claude_hooks_post_tool_failure_sh__entry",
+      "source_file": "claude/hooks/post-tool-failure.sh",
+      "source_location": "L16"
+    }
+  ],
+  "bash_sources": []
+}

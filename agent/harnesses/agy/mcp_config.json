@@ -3,12 +3,7 @@
   "mcpServers": {
     "lsp-go": {
       "command": "mcp-language-server",
-      "args": [
-        "--workspace",
-        "$PWD",
-        "--lsp",
-        "gopls"
-      ],
+      "args": ["--workspace", "$PWD", "--lsp", "gopls"],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -17,12 +12,7 @@
     },
     "lsp-rust": {
       "command": "mcp-language-server",
-      "args": [
-        "--workspace",
-        "$PWD",
-        "--lsp",
-        "rust-analyzer"
-      ],
+      "args": ["--workspace", "$PWD", "--lsp", "rust-analyzer"],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -249,9 +239,7 @@
     },
     "graft": {
       "command": "graft",
-      "args": [
-        "mcp"
-      ]
+      "args": ["mcp"]
     }
   }
 }

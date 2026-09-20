@@ -1,1 +1,169 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_claude_supplement_md", "label": "AGENTS-claude-supplement.md", "file_type": "document", "node_kind": "page", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_agents_claude_supplement_custom_subagents_claude_agents", "label": "Custom Subagents (`~/.claude/agents/`)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_agents_claude_supplement_plugins_skills_available", "label": "Plugins & Skills Available", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L84"}, {"id": "$graphify-root$_agent_agents_claude_supplement_hooks_active", "label": "Hooks Active", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L113"}, {"id": "$graphify-root$_agent_agents_claude_supplement_project_level_hooks_dotfiles_vald_claude_settings_json_not_in_the_global_settings", "label": "Project-level hooks (`dotfiles`/`vald` `.claude/settings.json` \u2014 not in the global settings)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L136"}, {"id": "$graphify-root$_agent_agents_claude_supplement_vald_project_hooks_vald_claude_settings_json_only", "label": "Vald project hooks (`vald/.claude/settings.json` only)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L143"}, {"id": "$graphify-root$_agent_agents_claude_supplement_mcp_servers", "label": "MCP Servers", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L151"}, {"id": "$graphify-root$_agent_agents_claude_supplement_memory_system", "label": "Memory System", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L161"}, {"id": "$graphify-root$_agent_agents_claude_supplement_multi_agent_patterns", "label": "Multi-Agent Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L166"}, {"id": "$graphify-root$_agent_agents_claude_supplement_security_claude_code_specifics", "label": "Security (Claude Code specifics)", "file_type": "document", "node_kind": "heading", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L174"}], "edges": [{"source": "$graphify-root$_agent_agents_claude_supplement_md", "target": "$graphify-root$_agent_agents_claude_supplement_custom_subagents_claude_agents", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_claude_supplement_md", "target": "$graphify-root$_agent_agents_claude_supplement_plugins_skills_available", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L84", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_claude_supplement_md", "target": "$graphify-root$_agent_agents_claude_supplement_hooks_active", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L113", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_claude_supplement_hooks_active", "target": "$graphify-root$_agent_agents_claude_supplement_project_level_hooks_dotfiles_vald_claude_settings_json_not_in_the_global_settings", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L136", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_claude_supplement_hooks_active", "target": "$graphify-root$_agent_agents_claude_supplement_vald_project_hooks_vald_claude_settings_json_only", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L143", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_claude_supplement_md", "target": "$graphify-root$_agent_agents_claude_supplement_mcp_servers", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L151", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_claude_supplement_md", "target": "$graphify-root$_agent_agents_claude_supplement_memory_system", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L161", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_claude_supplement_md", "target": "$graphify-root$_agent_agents_claude_supplement_multi_agent_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L166", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_claude_supplement_md", "target": "$graphify-root$_agent_agents_claude_supplement_security_claude_code_specifics", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/AGENTS-claude-supplement.md", "source_location": "L174", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_md",
+      "label": "AGENTS-claude-supplement.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_custom_subagents_claude_agents",
+      "label": "Custom Subagents (`~/.claude/agents/`)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_plugins_skills_available",
+      "label": "Plugins & Skills Available",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_hooks_active",
+      "label": "Hooks Active",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L113"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_project_level_hooks_dotfiles_vald_claude_settings_json_not_in_the_global_settings",
+      "label": "Project-level hooks (`dotfiles`/`vald` `.claude/settings.json` \u2014 not in the global settings)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L136"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_vald_project_hooks_vald_claude_settings_json_only",
+      "label": "Vald project hooks (`vald/.claude/settings.json` only)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L143"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_mcp_servers",
+      "label": "MCP Servers",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L151"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_memory_system",
+      "label": "Memory System",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L161"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_multi_agent_patterns",
+      "label": "Multi-Agent Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L166"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_claude_supplement_security_claude_code_specifics",
+      "label": "Security (Claude Code specifics)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L174"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_md",
+      "target": "$graphify-root$_agent_agents_claude_supplement_custom_subagents_claude_agents",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_md",
+      "target": "$graphify-root$_agent_agents_claude_supplement_plugins_skills_available",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_md",
+      "target": "$graphify-root$_agent_agents_claude_supplement_hooks_active",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_hooks_active",
+      "target": "$graphify-root$_agent_agents_claude_supplement_project_level_hooks_dotfiles_vald_claude_settings_json_not_in_the_global_settings",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_hooks_active",
+      "target": "$graphify-root$_agent_agents_claude_supplement_vald_project_hooks_vald_claude_settings_json_only",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_md",
+      "target": "$graphify-root$_agent_agents_claude_supplement_mcp_servers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_md",
+      "target": "$graphify-root$_agent_agents_claude_supplement_memory_system",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_md",
+      "target": "$graphify-root$_agent_agents_claude_supplement_multi_agent_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_claude_supplement_md",
+      "target": "$graphify-root$_agent_agents_claude_supplement_security_claude_code_specifics",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/AGENTS-claude-supplement.md",
+      "source_location": "L174",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

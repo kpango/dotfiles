@@ -1,1 +1,69 @@
-{"nodes": [{"id": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh", "label": "10-sysctl.sh", "file_type": "code", "source_file": "network/unifi/on_boot.d/10-sysctl.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry", "label": "10-sysctl.sh script", "file_type": "code", "source_file": "network/unifi/on_boot.d/10-sysctl.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh", "target": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "network/unifi/on_boot.d/10-sysctl.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry", "source_file": "network/unifi/on_boot.d/10-sysctl.sh", "source_location": "L6"}, {"language": "bash", "callee": "sysctl", "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry", "source_file": "network/unifi/on_boot.d/10-sysctl.sh", "source_location": "L10"}, {"language": "bash", "callee": "modprobe", "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry", "source_file": "network/unifi/on_boot.d/10-sysctl.sh", "source_location": "L15"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry", "source_file": "network/unifi/on_boot.d/10-sysctl.sh", "source_location": "L20"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry", "source_file": "network/unifi/on_boot.d/10-sysctl.sh", "source_location": "L37"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh",
+      "label": "10-sysctl.sh",
+      "file_type": "code",
+      "source_file": "network/unifi/on_boot.d/10-sysctl.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry",
+      "label": "10-sysctl.sh script",
+      "file_type": "code",
+      "source_file": "network/unifi/on_boot.d/10-sysctl.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh",
+      "target": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "network/unifi/on_boot.d/10-sysctl.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry",
+      "source_file": "network/unifi/on_boot.d/10-sysctl.sh",
+      "source_location": "L6"
+    },
+    {
+      "language": "bash",
+      "callee": "sysctl",
+      "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry",
+      "source_file": "network/unifi/on_boot.d/10-sysctl.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "modprobe",
+      "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry",
+      "source_file": "network/unifi/on_boot.d/10-sysctl.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry",
+      "source_file": "network/unifi/on_boot.d/10-sysctl.sh",
+      "source_location": "L20"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_network_unifi_on_boot_d_10_sysctl_sh__entry",
+      "source_file": "network/unifi/on_boot.d/10-sysctl.sh",
+      "source_location": "L37"
+    }
+  ],
+  "bash_sources": []
+}

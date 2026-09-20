@@ -15,7 +15,7 @@
 ## 2. システム不変条件 (System Invariants)
 
 - **Invariant-1**: `nix/modules/home/packages/{shared,darwin,linux}.nix` はパッケージの
-  *利用*(`home.packages` への列挙)のみを行い、特定パッケージのバージョン/ハッシュのピン留めは
+  _利用_(`home.packages` への列挙)のみを行い、特定パッケージのバージョン/ハッシュのピン留めは
   行わない。バージョン管理が必要な override は必ず `nix/overlays/default.nix` に集約する。
 - **Invariant-2**: `nix/overlays/default.nix` は `flake.nix` の `mkPkgs`(NixOS/Darwin 共通)からのみ
   適用される。OS 別の overlay ファイルを新設しない — Linux/macOS で同じパッケージ・同じバージョンを

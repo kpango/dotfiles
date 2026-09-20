@@ -1,1 +1,54 @@
-{"nodes": [{"id": "$graphify-root$_pi_prompts_audit_md", "label": "audit.md", "file_type": "document", "node_kind": "page", "source_file": "pi/prompts/audit.md", "source_location": "L1", "frontmatter": {"name": "audit", "description": "Run security audit and vulnerability assessment across the codebase."}}, {"id": "$graphify-root$_pi_prompts_audit_security_vulnerability_audit", "label": "Security & Vulnerability Audit", "file_type": "document", "node_kind": "heading", "source_file": "pi/prompts/audit.md", "source_location": "L6"}, {"id": "$graphify-root$_pi_prompts_audit_steps", "label": "Steps:", "file_type": "document", "node_kind": "heading", "source_file": "pi/prompts/audit.md", "source_location": "L11"}], "edges": [{"source": "$graphify-root$_pi_prompts_audit_md", "target": "$graphify-root$_pi_prompts_audit_security_vulnerability_audit", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/prompts/audit.md", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_pi_prompts_audit_security_vulnerability_audit", "target": "$graphify-root$_pi_prompts_audit_steps", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/prompts/audit.md", "source_location": "L11", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_prompts_audit_md",
+      "label": "audit.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/prompts/audit.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "audit",
+        "description": "Run security audit and vulnerability assessment across the codebase."
+      }
+    },
+    {
+      "id": "$graphify-root$_pi_prompts_audit_security_vulnerability_audit",
+      "label": "Security & Vulnerability Audit",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/prompts/audit.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_pi_prompts_audit_steps",
+      "label": "Steps:",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/prompts/audit.md",
+      "source_location": "L11"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_prompts_audit_md",
+      "target": "$graphify-root$_pi_prompts_audit_security_vulnerability_audit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/prompts/audit.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_prompts_audit_security_vulnerability_audit",
+      "target": "$graphify-root$_pi_prompts_audit_steps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/prompts/audit.md",
+      "source_location": "L11",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

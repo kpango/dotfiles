@@ -1,1 +1,756 @@
-{"nodes": [{"id": "$graphify-root$_pi_settings_json", "label": "settings.json", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L1"}, {"id": "$graphify-root$_pi_settings_schema", "label": "$schema", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L2"}, {"id": "$graphify-root$_pi_settings_defaultprovider", "label": "defaultProvider", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L3"}, {"id": "$graphify-root$_pi_settings_defaultmodel", "label": "defaultModel", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L4"}, {"id": "$graphify-root$_pi_settings_defaultthinkinglevel", "label": "defaultThinkingLevel", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L5"}, {"id": "$graphify-root$_pi_settings_modelthinkinglevels", "label": "modelThinkingLevels", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L6"}, {"id": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_3_7_sonnet_20250219", "label": "anthropic/claude-3-7-sonnet-20250219", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L7"}, {"id": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_sonnet_4_20250514", "label": "anthropic/claude-sonnet-4-20250514", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L8"}, {"id": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_3_5_haiku_20241022", "label": "anthropic/claude-3-5-haiku-20241022", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L9"}, {"id": "$graphify-root$_pi_settings_modelthinkinglevels_openai_o3_mini", "label": "openai/o3-mini", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L10"}, {"id": "$graphify-root$_pi_settings_modelthinkinglevels_google_gemini_2_5_pro", "label": "google/gemini-2.5-pro", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L11"}, {"id": "$graphify-root$_pi_settings_theme", "label": "theme", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L13"}, {"id": "$graphify-root$_pi_settings_externaleditor", "label": "externalEditor", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L14"}, {"id": "$graphify-root$_pi_settings_defaultprojecttrust", "label": "defaultProjectTrust", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L15"}, {"id": "$graphify-root$_pi_settings_compaction", "label": "compaction", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L16"}, {"id": "$graphify-root$_pi_settings_compaction_enabled", "label": "enabled", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L17"}, {"id": "$graphify-root$_pi_settings_compaction_reservetokens", "label": "reserveTokens", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L18"}, {"id": "$graphify-root$_pi_settings_compaction_keeprecenttokens", "label": "keepRecentTokens", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L19"}, {"id": "$graphify-root$_pi_settings_branchsummary", "label": "branchSummary", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L21"}, {"id": "$graphify-root$_pi_settings_branchsummary_reservetokens", "label": "reserveTokens", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L22"}, {"id": "$graphify-root$_pi_settings_branchsummary_skipprompt", "label": "skipPrompt", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L23"}, {"id": "$graphify-root$_pi_settings_retry", "label": "retry", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L25"}, {"id": "$graphify-root$_pi_settings_retry_enabled", "label": "enabled", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L26"}, {"id": "$graphify-root$_pi_settings_retry_maxretries", "label": "maxRetries", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L27"}, {"id": "$graphify-root$_pi_settings_retry_basedelayms", "label": "baseDelayMs", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L28"}, {"id": "$graphify-root$_pi_settings_retry_provider", "label": "provider", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L29"}, {"id": "$graphify-root$_pi_settings_provider_timeoutms", "label": "timeoutMs", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L30"}, {"id": "$graphify-root$_pi_settings_provider_maxretries", "label": "maxRetries", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L31"}, {"id": "$graphify-root$_pi_settings_provider_maxretrydelayms", "label": "maxRetryDelayMs", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L32"}, {"id": "$graphify-root$_pi_settings_defaulttools", "label": "defaultTools", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L35"}, {"id": "ref_read", "label": "read", "file_type": "concept", "source_file": "pi/settings.json", "source_location": "L35"}, {"id": "ref_write", "label": "write", "file_type": "concept", "source_file": "pi/settings.json", "source_location": "L35"}, {"id": "ref_edit", "label": "edit", "file_type": "concept", "source_file": "pi/settings.json", "source_location": "L35"}, {"id": "ref_bash", "label": "bash", "file_type": "concept", "source_file": "pi/settings.json", "source_location": "L35"}, {"id": "ref_grep", "label": "grep", "file_type": "concept", "source_file": "pi/settings.json", "source_location": "L35"}, {"id": "ref_find", "label": "find", "file_type": "concept", "source_file": "pi/settings.json", "source_location": "L35"}, {"id": "ref_ls", "label": "ls", "file_type": "concept", "source_file": "pi/settings.json", "source_location": "L35"}, {"id": "$graphify-root$_pi_settings_enableskillcommands", "label": "enableSkillCommands", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L44"}, {"id": "$graphify-root$_pi_settings_terminal", "label": "terminal", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L45"}, {"id": "$graphify-root$_pi_settings_terminal_showimages", "label": "showImages", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L46"}, {"id": "$graphify-root$_pi_settings_terminal_imagewidthcells", "label": "imageWidthCells", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L47"}, {"id": "$graphify-root$_pi_settings_terminal_truecolor", "label": "trueColor", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L48"}, {"id": "$graphify-root$_pi_settings_markdown", "label": "markdown", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L50"}, {"id": "$graphify-root$_pi_settings_markdown_codeblockindent", "label": "codeBlockIndent", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L51"}, {"id": "$graphify-root$_pi_settings_markdown_mermaid", "label": "mermaid", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L52"}, {"id": "$graphify-root$_pi_settings_sessiondir", "label": "sessionDir", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L54"}, {"id": "$graphify-root$_pi_settings_lastchangelogversion", "label": "lastChangelogVersion", "file_type": "code", "source_file": "pi/settings.json", "source_location": "L55"}], "edges": [{"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_schema", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L2", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_defaultprovider", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_defaultmodel", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L4", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_defaultthinkinglevel", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L5", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_modelthinkinglevels", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_modelthinkinglevels", "target": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_3_7_sonnet_20250219", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_modelthinkinglevels", "target": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_sonnet_4_20250514", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L8", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_modelthinkinglevels", "target": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_3_5_haiku_20241022", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_modelthinkinglevels", "target": "$graphify-root$_pi_settings_modelthinkinglevels_openai_o3_mini", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L10", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_modelthinkinglevels", "target": "$graphify-root$_pi_settings_modelthinkinglevels_google_gemini_2_5_pro", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L11", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_theme", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_externaleditor", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L14", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_defaultprojecttrust", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L15", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_compaction", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_compaction", "target": "$graphify-root$_pi_settings_compaction_enabled", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L17", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_compaction", "target": "$graphify-root$_pi_settings_compaction_reservetokens", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L18", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_compaction", "target": "$graphify-root$_pi_settings_compaction_keeprecenttokens", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L19", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_branchsummary", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L21", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_branchsummary", "target": "$graphify-root$_pi_settings_branchsummary_reservetokens", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_branchsummary", "target": "$graphify-root$_pi_settings_branchsummary_skipprompt", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_retry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L25", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_retry", "target": "$graphify-root$_pi_settings_retry_enabled", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_retry", "target": "$graphify-root$_pi_settings_retry_maxretries", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_retry", "target": "$graphify-root$_pi_settings_retry_basedelayms", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L28", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_retry", "target": "$graphify-root$_pi_settings_retry_provider", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_retry_provider", "target": "$graphify-root$_pi_settings_provider_timeoutms", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L30", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_retry_provider", "target": "$graphify-root$_pi_settings_provider_maxretries", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L31", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_retry_provider", "target": "$graphify-root$_pi_settings_provider_maxretrydelayms", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L32", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_defaulttools", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L35", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_defaulttools", "target": "ref_read", "relation": "extends", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L35", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_pi_settings_defaulttools", "target": "ref_write", "relation": "extends", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L35", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_pi_settings_defaulttools", "target": "ref_edit", "relation": "extends", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L35", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_pi_settings_defaulttools", "target": "ref_bash", "relation": "extends", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L35", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_pi_settings_defaulttools", "target": "ref_grep", "relation": "extends", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L35", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_pi_settings_defaulttools", "target": "ref_find", "relation": "extends", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L35", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_pi_settings_defaulttools", "target": "ref_ls", "relation": "extends", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L35", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_enableskillcommands", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L44", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_terminal", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L45", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_terminal", "target": "$graphify-root$_pi_settings_terminal_showimages", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L46", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_terminal", "target": "$graphify-root$_pi_settings_terminal_imagewidthcells", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L47", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_terminal", "target": "$graphify-root$_pi_settings_terminal_truecolor", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L48", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_markdown", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L50", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_markdown", "target": "$graphify-root$_pi_settings_markdown_codeblockindent", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L51", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_markdown", "target": "$graphify-root$_pi_settings_markdown_mermaid", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L52", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_sessiondir", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L54", "weight": 1.0}, {"source": "$graphify-root$_pi_settings_json", "target": "$graphify-root$_pi_settings_lastchangelogversion", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/settings.json", "source_location": "L55", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_settings_json",
+      "label": "settings.json",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_schema",
+      "label": "$schema",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_defaultprovider",
+      "label": "defaultProvider",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_defaultmodel",
+      "label": "defaultModel",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L4"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_defaultthinkinglevel",
+      "label": "defaultThinkingLevel",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_modelthinkinglevels",
+      "label": "modelThinkingLevels",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_3_7_sonnet_20250219",
+      "label": "anthropic/claude-3-7-sonnet-20250219",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_sonnet_4_20250514",
+      "label": "anthropic/claude-sonnet-4-20250514",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_3_5_haiku_20241022",
+      "label": "anthropic/claude-3-5-haiku-20241022",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_modelthinkinglevels_openai_o3_mini",
+      "label": "openai/o3-mini",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_modelthinkinglevels_google_gemini_2_5_pro",
+      "label": "google/gemini-2.5-pro",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L11"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_theme",
+      "label": "theme",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_externaleditor",
+      "label": "externalEditor",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L14"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_defaultprojecttrust",
+      "label": "defaultProjectTrust",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_compaction",
+      "label": "compaction",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_compaction_enabled",
+      "label": "enabled",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_compaction_reservetokens",
+      "label": "reserveTokens",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_compaction_keeprecenttokens",
+      "label": "keepRecentTokens",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_branchsummary",
+      "label": "branchSummary",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_branchsummary_reservetokens",
+      "label": "reserveTokens",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_branchsummary_skipprompt",
+      "label": "skipPrompt",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_retry",
+      "label": "retry",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_retry_enabled",
+      "label": "enabled",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_retry_maxretries",
+      "label": "maxRetries",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_retry_basedelayms",
+      "label": "baseDelayMs",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L28"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_retry_provider",
+      "label": "provider",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_provider_timeoutms",
+      "label": "timeoutMs",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L30"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_provider_maxretries",
+      "label": "maxRetries",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_provider_maxretrydelayms",
+      "label": "maxRetryDelayMs",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_defaulttools",
+      "label": "defaultTools",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "ref_read",
+      "label": "read",
+      "file_type": "concept",
+      "source_file": "pi/settings.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "ref_write",
+      "label": "write",
+      "file_type": "concept",
+      "source_file": "pi/settings.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "ref_edit",
+      "label": "edit",
+      "file_type": "concept",
+      "source_file": "pi/settings.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "ref_bash",
+      "label": "bash",
+      "file_type": "concept",
+      "source_file": "pi/settings.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "ref_grep",
+      "label": "grep",
+      "file_type": "concept",
+      "source_file": "pi/settings.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "ref_find",
+      "label": "find",
+      "file_type": "concept",
+      "source_file": "pi/settings.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "ref_ls",
+      "label": "ls",
+      "file_type": "concept",
+      "source_file": "pi/settings.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_enableskillcommands",
+      "label": "enableSkillCommands",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L44"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_terminal",
+      "label": "terminal",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L45"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_terminal_showimages",
+      "label": "showImages",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L46"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_terminal_imagewidthcells",
+      "label": "imageWidthCells",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L47"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_terminal_truecolor",
+      "label": "trueColor",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L48"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_markdown",
+      "label": "markdown",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L50"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_markdown_codeblockindent",
+      "label": "codeBlockIndent",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L51"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_markdown_mermaid",
+      "label": "mermaid",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L52"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_sessiondir",
+      "label": "sessionDir",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L54"
+    },
+    {
+      "id": "$graphify-root$_pi_settings_lastchangelogversion",
+      "label": "lastChangelogVersion",
+      "file_type": "code",
+      "source_file": "pi/settings.json",
+      "source_location": "L55"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_schema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_defaultprovider",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_defaultmodel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_defaultthinkinglevel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_modelthinkinglevels",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_modelthinkinglevels",
+      "target": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_3_7_sonnet_20250219",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_modelthinkinglevels",
+      "target": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_sonnet_4_20250514",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_modelthinkinglevels",
+      "target": "$graphify-root$_pi_settings_modelthinkinglevels_anthropic_claude_3_5_haiku_20241022",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_modelthinkinglevels",
+      "target": "$graphify-root$_pi_settings_modelthinkinglevels_openai_o3_mini",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_modelthinkinglevels",
+      "target": "$graphify-root$_pi_settings_modelthinkinglevels_google_gemini_2_5_pro",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_theme",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_externaleditor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_defaultprojecttrust",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_compaction",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_compaction",
+      "target": "$graphify-root$_pi_settings_compaction_enabled",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L17",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_compaction",
+      "target": "$graphify-root$_pi_settings_compaction_reservetokens",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L18",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_compaction",
+      "target": "$graphify-root$_pi_settings_compaction_keeprecenttokens",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_branchsummary",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_branchsummary",
+      "target": "$graphify-root$_pi_settings_branchsummary_reservetokens",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_branchsummary",
+      "target": "$graphify-root$_pi_settings_branchsummary_skipprompt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_retry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L25",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_retry",
+      "target": "$graphify-root$_pi_settings_retry_enabled",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_retry",
+      "target": "$graphify-root$_pi_settings_retry_maxretries",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_retry",
+      "target": "$graphify-root$_pi_settings_retry_basedelayms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L28",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_retry",
+      "target": "$graphify-root$_pi_settings_retry_provider",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_retry_provider",
+      "target": "$graphify-root$_pi_settings_provider_timeoutms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_retry_provider",
+      "target": "$graphify-root$_pi_settings_provider_maxretries",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_retry_provider",
+      "target": "$graphify-root$_pi_settings_provider_maxretrydelayms",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_defaulttools",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_defaulttools",
+      "target": "ref_read",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_pi_settings_defaulttools",
+      "target": "ref_write",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_pi_settings_defaulttools",
+      "target": "ref_edit",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_pi_settings_defaulttools",
+      "target": "ref_bash",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_pi_settings_defaulttools",
+      "target": "ref_grep",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_pi_settings_defaulttools",
+      "target": "ref_find",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_pi_settings_defaulttools",
+      "target": "ref_ls",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L35",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_enableskillcommands",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_terminal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L45",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_terminal",
+      "target": "$graphify-root$_pi_settings_terminal_showimages",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L46",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_terminal",
+      "target": "$graphify-root$_pi_settings_terminal_imagewidthcells",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_terminal",
+      "target": "$graphify-root$_pi_settings_terminal_truecolor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_markdown",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_markdown",
+      "target": "$graphify-root$_pi_settings_markdown_codeblockindent",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_markdown",
+      "target": "$graphify-root$_pi_settings_markdown_mermaid",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_sessiondir",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_settings_json",
+      "target": "$graphify-root$_pi_settings_lastchangelogversion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/settings.json",
+      "source_location": "L55",
+      "weight": 1.0
+    }
+  ]
+}

@@ -1,1 +1,152 @@
-{"nodes": [{"id": "$graphify-root$_agent_scripts_gen_tool_system_sh", "label": "gen-tool-system.sh", "file_type": "code", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "label": "gen-tool-system.sh script", "file_type": "code", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "label": "gen_one()", "file_type": "code", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L43", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_scripts_gen_tool_system_sh", "target": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_gen_tool_system_sh", "target": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L43", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "target": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L75", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L27"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L29"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L29"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L29"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L82"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L83"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L48"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L49"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L57"}, {"language": "bash", "callee": "return", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L58"}, {"language": "bash", "callee": "diff", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L60"}, {"language": "bash", "callee": "head", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L62"}, {"language": "bash", "callee": "sed", "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one", "source_file": "agent/scripts/gen-tool-system.sh", "source_location": "L62"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_scripts_gen_tool_system_sh",
+      "label": "gen-tool-system.sh",
+      "file_type": "code",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "label": "gen-tool-system.sh script",
+      "file_type": "code",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "label": "gen_one()",
+      "file_type": "code",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L43",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_scripts_gen_tool_system_sh",
+      "target": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_gen_tool_system_sh",
+      "target": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "target": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L75",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L27"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L29"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L29"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L29"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L82"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_sh__entry",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L83"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L48"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L49"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L57"
+    },
+    {
+      "language": "bash",
+      "callee": "return",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L58"
+    },
+    {
+      "language": "bash",
+      "callee": "diff",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L60"
+    },
+    {
+      "language": "bash",
+      "callee": "head",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L62"
+    },
+    {
+      "language": "bash",
+      "callee": "sed",
+      "caller_nid": "$graphify-root$_agent_scripts_gen_tool_system_gen_one",
+      "source_file": "agent/scripts/gen-tool-system.sh",
+      "source_location": "L62"
+    }
+  ],
+  "bash_sources": []
+}

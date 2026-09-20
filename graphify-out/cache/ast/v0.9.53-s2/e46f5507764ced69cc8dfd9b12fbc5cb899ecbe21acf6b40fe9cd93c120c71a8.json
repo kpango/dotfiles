@@ -1,1 +1,14 @@
-{"nodes": [{"id": "pkg_github_com_kpango_dotfiles_tmux_conf_d_pinentry_tmux", "label": "github.com/kpango/dotfiles/tmux.conf.d/pinentry-tmux", "file_type": "code", "type": "package", "ecosystem": "go", "source_file": "tmux.conf.d/pinentry-tmux/go.mod", "source_location": "L1"}], "edges": []}
+{
+  "nodes": [
+    {
+      "id": "pkg_github_com_kpango_dotfiles_tmux_conf_d_pinentry_tmux",
+      "label": "github.com/kpango/dotfiles/tmux.conf.d/pinentry-tmux",
+      "file_type": "code",
+      "type": "package",
+      "ecosystem": "go",
+      "source_file": "tmux.conf.d/pinentry-tmux/go.mod",
+      "source_location": "L1"
+    }
+  ],
+  "edges": []
+}

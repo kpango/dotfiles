@@ -1,1 +1,198 @@
-{"nodes": [{"id": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go", "label": "assuan.go", "file_type": "code", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L1"}, {"id": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "label": "assuanDecode()", "file_type": "code", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L9"}, {"id": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode", "label": "assuanEncode()", "file_type": "code", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L27"}], "edges": [{"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go", "target": "go_pkg_bytes", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L4", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go", "target": "go_pkg_fmt", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L5", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go", "target": "go_pkg_strconv", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L6", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go", "target": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go", "target": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L27", "weight": 1.0}], "raw_calls": [{"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "callee": "Grow", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L11"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "callee": "ParseUint", "is_member_call": false, "language": "go", "receiver": "strconv", "import_path": "strconv", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L14"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "callee": "string", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L14"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "callee": "ParseUint", "is_member_call": false, "language": "go", "receiver": "strconv", "import_path": "strconv", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L15"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "callee": "string", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L15"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "callee": "WriteByte", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L17"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "callee": "byte", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L17"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode", "callee": "WriteByte", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L22"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode", "callee": "Grow", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L29"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode", "callee": "Fprintf", "is_member_call": false, "language": "go", "receiver": "fmt", "import_path": "fmt", "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L33"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode", "callee": "WriteByte", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L35"}, {"caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode", "callee": "Bytes", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/pinentry-tmux/assuan.go", "source_location": "L38"}], "go_imports": {"bytes": "bytes", "fmt": "fmt", "strconv": "strconv"}}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go",
+      "label": "assuan.go",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "label": "assuanDecode()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode",
+      "label": "assuanEncode()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L27"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go",
+      "target": "go_pkg_bytes",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L4",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go",
+      "target": "go_pkg_fmt",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L5",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go",
+      "target": "go_pkg_strconv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L6",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go",
+      "target": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_go",
+      "target": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L27",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "callee": "Grow",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L11"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "callee": "ParseUint",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "strconv",
+      "import_path": "strconv",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L14"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "callee": "string",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L14"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "callee": "ParseUint",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "strconv",
+      "import_path": "strconv",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L15"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "callee": "string",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L15"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "callee": "WriteByte",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L17"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "callee": "byte",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L17"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuandecode",
+      "callee": "WriteByte",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L22"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode",
+      "callee": "Grow",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L29"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode",
+      "callee": "Fprintf",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "fmt",
+      "import_path": "fmt",
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L33"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode",
+      "callee": "WriteByte",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L35"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_pinentry_tmux_assuan_assuanencode",
+      "callee": "Bytes",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/pinentry-tmux/assuan.go",
+      "source_location": "L38"
+    }
+  ],
+  "go_imports": { "bytes": "bytes", "fmt": "fmt", "strconv": "strconv" }
+}

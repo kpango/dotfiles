@@ -1,1 +1,251 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh", "label": "test-fable-gate.sh", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "label": "test-fable-gate.sh script", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_home", "label": "HOME", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L23", "metadata": {"language": "bash", "kind": "code"}}, {"id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check", "label": "check()", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L29", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_gate", "label": "gate()", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L39", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left", "label": "grants_left()", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L40", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_home", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L23", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_gate", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L39", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L40", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_gate", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L43", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L43", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L47", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L13"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L15"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L15"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L15"}, {"language": "bash", "callee": "mktemp", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L23"}, {"language": "bash", "callee": "trap", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L24"}, {"language": "bash", "callee": "touch", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L69"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L75"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L77"}, {"language": "bash", "callee": "rm", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L80"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L90"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L32"}, {"language": "bash", "callee": "return", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L32"}, {"language": "bash", "callee": "grep", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L34"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_gate", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L39"}, {"language": "bash", "callee": "ls", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L40"}, {"language": "bash", "callee": "wc", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left", "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh", "source_location": "L40"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh",
+      "label": "test-fable-gate.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "label": "test-fable-gate.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_home",
+      "label": "HOME",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L23",
+      "metadata": { "language": "bash", "kind": "code" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check",
+      "label": "check()",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L29",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_gate",
+      "label": "gate()",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L39",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left",
+      "label": "grants_left()",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L40",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_home",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L23",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_gate",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L40",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_gate",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L43",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L43",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L47",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L13"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "mktemp",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L23"
+    },
+    {
+      "language": "bash",
+      "callee": "trap",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L24"
+    },
+    {
+      "language": "bash",
+      "callee": "touch",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L69"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L75"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L77"
+    },
+    {
+      "language": "bash",
+      "callee": "rm",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L80"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L90"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L32"
+    },
+    {
+      "language": "bash",
+      "callee": "return",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L32"
+    },
+    {
+      "language": "bash",
+      "callee": "grep",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_check",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L34"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_gate",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L39"
+    },
+    {
+      "language": "bash",
+      "callee": "ls",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L40"
+    },
+    {
+      "language": "bash",
+      "callee": "wc",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_test_fable_gate_grants_left",
+      "source_file": "agent/skills/swarm-implement/scripts/test-fable-gate.sh",
+      "source_location": "L40"
+    }
+  ],
+  "bash_sources": []
+}

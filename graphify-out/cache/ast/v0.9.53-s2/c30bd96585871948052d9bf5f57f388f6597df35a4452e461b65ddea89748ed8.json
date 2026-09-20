@@ -1,1 +1,110 @@
-{"nodes": [{"id": "$graphify-root$_pi_agents_cpp_expert_md", "label": "cpp-expert.md", "file_type": "document", "node_kind": "page", "source_file": "pi/agents/cpp-expert.md", "source_location": "L1", "frontmatter": {"name": "cpp-expert", "description": "C++ implementation specialist. Use for C++ code implementation, build-system configuration (CMake/vcpkg/Conan), and test/sanitizer setup. Distinct from `systems-lang-adversarial-reviewer` (GATE-immediate second-stage language-spec review only, not implementation) and `ann-perf-engineer` (ANN/SIMD-specific, not general C++). Use proactively in general C++ projects.", "tools": "read, write, edit, bash, grep, find, ls", "model": "inherit", "effort": "high", "memory": "user", "color": "navy"}}, {"id": "$graphify-root$_pi_agents_cpp_expert_core_principles", "label": "Core Principles", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/cpp-expert.md", "source_location": "L16"}, {"id": "$graphify-root$_pi_agents_cpp_expert_memory_safety_verify_before_recommending_a_specific_mechanism", "label": "Memory Safety (verify before recommending a specific mechanism)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/cpp-expert.md", "source_location": "L24"}, {"id": "$graphify-root$_pi_agents_cpp_expert_testing_sanitizers", "label": "Testing/Sanitizers", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/cpp-expert.md", "source_location": "L34"}, {"id": "$graphify-root$_pi_agents_cpp_expert_workflow", "label": "Workflow", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/cpp-expert.md", "source_location": "L42"}, {"id": "$graphify-root$_pi_agents_cpp_expert_memory_protocol", "label": "Memory Protocol", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/cpp-expert.md", "source_location": "L49"}], "edges": [{"source": "$graphify-root$_pi_agents_cpp_expert_md", "target": "$graphify-root$_pi_agents_cpp_expert_core_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/cpp-expert.md", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_cpp_expert_md", "target": "$graphify-root$_pi_agents_cpp_expert_memory_safety_verify_before_recommending_a_specific_mechanism", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/cpp-expert.md", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_cpp_expert_md", "target": "$graphify-root$_pi_agents_cpp_expert_testing_sanitizers", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/cpp-expert.md", "source_location": "L34", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_cpp_expert_md", "target": "$graphify-root$_pi_agents_cpp_expert_workflow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/cpp-expert.md", "source_location": "L42", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_cpp_expert_md", "target": "$graphify-root$_pi_agents_cpp_expert_memory_protocol", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/cpp-expert.md", "source_location": "L49", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_agents_cpp_expert_md",
+      "label": "cpp-expert.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "cpp-expert",
+        "description": "C++ implementation specialist. Use for C++ code implementation, build-system configuration (CMake/vcpkg/Conan), and test/sanitizer setup. Distinct from `systems-lang-adversarial-reviewer` (GATE-immediate second-stage language-spec review only, not implementation) and `ann-perf-engineer` (ANN/SIMD-specific, not general C++). Use proactively in general C++ projects.",
+        "tools": "read, write, edit, bash, grep, find, ls",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "navy"
+      }
+    },
+    {
+      "id": "$graphify-root$_pi_agents_cpp_expert_core_principles",
+      "label": "Core Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_cpp_expert_memory_safety_verify_before_recommending_a_specific_mechanism",
+      "label": "Memory Safety (verify before recommending a specific mechanism)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_cpp_expert_testing_sanitizers",
+      "label": "Testing/Sanitizers",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L34"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_cpp_expert_workflow",
+      "label": "Workflow",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L42"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_cpp_expert_memory_protocol",
+      "label": "Memory Protocol",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L49"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_agents_cpp_expert_md",
+      "target": "$graphify-root$_pi_agents_cpp_expert_core_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_cpp_expert_md",
+      "target": "$graphify-root$_pi_agents_cpp_expert_memory_safety_verify_before_recommending_a_specific_mechanism",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_cpp_expert_md",
+      "target": "$graphify-root$_pi_agents_cpp_expert_testing_sanitizers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_cpp_expert_md",
+      "target": "$graphify-root$_pi_agents_cpp_expert_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_cpp_expert_md",
+      "target": "$graphify-root$_pi_agents_cpp_expert_memory_protocol",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/cpp-expert.md",
+      "source_location": "L49",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

@@ -1,1 +1,132 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh", "label": "loop-status.sh", "file_type": "code", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "label": "loop-status.sh script", "file_type": "code", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh", "target": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L4"}, {"language": "bash", "callee": "git", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L6"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L10"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L11"}, {"language": "bash", "callee": "sed", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L14"}, {"language": "bash", "callee": "head", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L14"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L19"}, {"language": "bash", "callee": ":", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L21"}, {"language": "bash", "callee": "awk", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L32"}, {"language": "bash", "callee": "continue", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L107"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L110"}, {"language": "bash", "callee": "basename", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L124"}, {"language": "bash", "callee": "tail", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L135"}, {"language": "bash", "callee": "grep", "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry", "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh", "source_location": "L139"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh",
+      "label": "loop-status.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "label": "loop-status.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh",
+      "target": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L4"
+    },
+    {
+      "language": "bash",
+      "callee": "git",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L6"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "sed",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L14"
+    },
+    {
+      "language": "bash",
+      "callee": "head",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L14"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L19"
+    },
+    {
+      "language": "bash",
+      "callee": ":",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L21"
+    },
+    {
+      "language": "bash",
+      "callee": "awk",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L32"
+    },
+    {
+      "language": "bash",
+      "callee": "continue",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L107"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L110"
+    },
+    {
+      "language": "bash",
+      "callee": "basename",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L124"
+    },
+    {
+      "language": "bash",
+      "callee": "tail",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L135"
+    },
+    {
+      "language": "bash",
+      "callee": "grep",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_loop_scripts_loop_status_sh__entry",
+      "source_file": "agent/skills/swarm-loop/scripts/loop-status.sh",
+      "source_location": "L139"
+    }
+  ],
+  "bash_sources": []
+}

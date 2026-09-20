@@ -1,1 +1,305 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_rust_testing_reference_md", "label": "reference.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "label": "Rust Testing Patterns \u2014 Reference", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L1"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_step_by_step_tdd_in_rust", "label": "Step-by-Step TDD in Rust", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L6"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_module_level_test_organization", "label": "Module-Level Test Organization", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L27"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_assertion_macros", "label": "Assertion Macros", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L70"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_testing_result_returns", "label": "Testing `Result` Returns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L80"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_testing_panics", "label": "Testing Panics", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L101"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_file_structure", "label": "File Structure", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L118"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_writing_integration_tests", "label": "Writing Integration Tests", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L131"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_with_tokio", "label": "With Tokio", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L148"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_parameterized_tests_with_rstest", "label": "Parameterized Tests with `rstest`", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L171"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_test_helpers", "label": "Test Helpers", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L197"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_basic_property_tests", "label": "Basic Property Tests", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L217"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_custom_strategies", "label": "Custom Strategies", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L247"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_trait_based_mocking", "label": "Trait-Based Mocking", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L265"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_executable_documentation", "label": "Executable Documentation", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L300"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_benchmarking_with_criterion", "label": "Benchmarking with Criterion", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L340"}, {"id": "$graphify-root$_agent_skills_rust_testing_reference_ci_integration", "label": "CI Integration", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L371"}], "edges": [{"source": "$graphify-root$_agent_skills_rust_testing_reference_md", "target": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_step_by_step_tdd_in_rust", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L6", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_module_level_test_organization", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_assertion_macros", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L70", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_testing_result_returns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L80", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_testing_panics", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L101", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_file_structure", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L118", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_writing_integration_tests", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L131", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_with_tokio", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L148", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_parameterized_tests_with_rstest", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L171", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_test_helpers", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L197", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_basic_property_tests", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L217", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_custom_strategies", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L247", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_trait_based_mocking", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L265", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_executable_documentation", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L300", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_benchmarking_with_criterion", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L340", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference", "target": "$graphify-root$_agent_skills_rust_testing_reference_ci_integration", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/rust-testing/reference.md", "source_location": "L371", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_md",
+      "label": "reference.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "label": "Rust Testing Patterns \u2014 Reference",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_step_by_step_tdd_in_rust",
+      "label": "Step-by-Step TDD in Rust",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L6"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_module_level_test_organization",
+      "label": "Module-Level Test Organization",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L27"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_assertion_macros",
+      "label": "Assertion Macros",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L70"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_testing_result_returns",
+      "label": "Testing `Result` Returns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_testing_panics",
+      "label": "Testing Panics",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L101"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_file_structure",
+      "label": "File Structure",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L118"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_writing_integration_tests",
+      "label": "Writing Integration Tests",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L131"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_with_tokio",
+      "label": "With Tokio",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L148"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_parameterized_tests_with_rstest",
+      "label": "Parameterized Tests with `rstest`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L171"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_test_helpers",
+      "label": "Test Helpers",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L197"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_basic_property_tests",
+      "label": "Basic Property Tests",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L217"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_custom_strategies",
+      "label": "Custom Strategies",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L247"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_trait_based_mocking",
+      "label": "Trait-Based Mocking",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L265"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_executable_documentation",
+      "label": "Executable Documentation",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L300"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_benchmarking_with_criterion",
+      "label": "Benchmarking with Criterion",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L340"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_rust_testing_reference_ci_integration",
+      "label": "CI Integration",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L371"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_md",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_step_by_step_tdd_in_rust",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_module_level_test_organization",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_assertion_macros",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_testing_result_returns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_testing_panics",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_file_structure",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_writing_integration_tests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_with_tokio",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L148",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_parameterized_tests_with_rstest",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L171",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_test_helpers",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L197",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_basic_property_tests",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L217",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_custom_strategies",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L247",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_trait_based_mocking",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_executable_documentation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L300",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_benchmarking_with_criterion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L340",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_rust_testing_reference_rust_testing_patterns_reference",
+      "target": "$graphify-root$_agent_skills_rust_testing_reference_ci_integration",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/rust-testing/reference.md",
+      "source_location": "L371",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

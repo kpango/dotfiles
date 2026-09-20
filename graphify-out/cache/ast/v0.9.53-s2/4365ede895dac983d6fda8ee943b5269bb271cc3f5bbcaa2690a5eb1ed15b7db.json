@@ -1,1 +1,728 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_cpp_patterns_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L1", "frontmatter": {"name": "cpp-patterns", "description": "C++ coding standards based on the C++ Core Guidelines (isocpp.github.io). Use when writing, reviewing, or refactoring C++ code to enforce modern, safe, and idiomatic practices. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f cpp-expert agent \u306b\u59d4\u8b72\u3059\u308b(systems-lang-adversarial-reviewer\u306fGATE\u76f4\u524d\u306e\u8a00\u8a9e\u4ed5\u69d8\u30ec\u30d3\u30e5\u30fc\u5c02\u7528\u3067\u5225\u7269)\u3002", "origin": "ECC"}}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "label": "C++ Coding Standards (C++ Core Guidelines)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_when_to_use", "label": "When to Use", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L13"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_when_not_to_use", "label": "When NOT to Use", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L21"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_cross_cutting_principles", "label": "Cross-Cutting Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L27"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_solid_principles_in_modern_c", "label": "SOLID Principles in Modern C++", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L38"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_philosophy_interfaces_p_i", "label": "Philosophy & Interfaces (P._, I._)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L50"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L52"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_functions_f", "label": "Functions (F.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L70"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_72", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L72"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L87"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_classes_class_hierarchies_c", "label": "Classes & Class Hierarchies (C.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L96"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_98", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L98"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_112", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L112"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_resource_management_r", "label": "Resource Management (R.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L121"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_123", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L123"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_136", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L136"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_expressions_statements_es", "label": "Expressions & Statements (ES.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L145"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_147", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L147"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_162", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L162"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_error_handling_e", "label": "Error Handling (E.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L174"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_176", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L176"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_189", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L189"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_constants_immutability_con", "label": "Constants & Immutability (Con.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L199"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_all_rules", "label": "All Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L201"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_concurrency_parallelism_cp", "label": "Concurrency & Parallelism (CP.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L213"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_215", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L215"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_230", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L230"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_templates_generic_programming_t", "label": "Templates & Generic Programming (T.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L240"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_242", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L242"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_255", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L255"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_standard_library_sl", "label": "Standard Library (SL.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L264"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_266", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L266"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_enumerations_enum", "label": "Enumerations (Enum.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L280"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_282", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L282"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_source_files_naming_sf_nl", "label": "Source Files & Naming (SF._, NL._)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L293"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_295", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L295"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_308", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L308"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_performance_per", "label": "Performance (Per.\\*)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L317"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_319", "label": "Key Rules", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L319"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_331", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L331"}, {"id": "$graphify-root$_agent_skills_cpp_patterns_skill_quick_reference_checklist", "label": "Quick Reference Checklist", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L339"}], "edges": [{"source": "$graphify-root$_agent_skills_cpp_patterns_skill_md", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_md", "target": "$graphify-root$_agent_skills_cpp_patterns_reference_md", "relation": "references", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L11", "weight": 1.0, "target_file": "$graphify-root$/agent/skills/cpp-patterns/reference.md"}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_when_to_use", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_when_to_use", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_when_not_to_use", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L21", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_cross_cutting_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_solid_principles_in_modern_c", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_philosophy_interfaces_p_i", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L50", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_philosophy_interfaces_p_i", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L52", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_functions_f", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L70", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_functions_f", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_72", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L72", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_functions_f", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L87", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_classes_class_hierarchies_c", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L96", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_classes_class_hierarchies_c", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_98", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L98", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_classes_class_hierarchies_c", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_112", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L112", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_resource_management_r", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L121", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_resource_management_r", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_123", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L123", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_resource_management_r", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_136", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L136", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_expressions_statements_es", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L145", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_expressions_statements_es", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_147", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L147", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_expressions_statements_es", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_162", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L162", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_error_handling_e", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L174", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_error_handling_e", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_176", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L176", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_error_handling_e", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_189", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L189", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_constants_immutability_con", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L199", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_constants_immutability_con", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_all_rules", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L201", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_concurrency_parallelism_cp", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L213", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_concurrency_parallelism_cp", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_215", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L215", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_concurrency_parallelism_cp", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_230", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L230", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_templates_generic_programming_t", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L240", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_templates_generic_programming_t", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_242", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L242", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_templates_generic_programming_t", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_255", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L255", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_standard_library_sl", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L264", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_standard_library_sl", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_266", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L266", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_enumerations_enum", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L280", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_enumerations_enum", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_282", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L282", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_source_files_naming_sf_nl", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L293", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_source_files_naming_sf_nl", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_295", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L295", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_source_files_naming_sf_nl", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_308", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L308", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_performance_per", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L317", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_performance_per", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_319", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L319", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_performance_per", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_331", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L331", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines", "target": "$graphify-root$_agent_skills_cpp_patterns_skill_quick_reference_checklist", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/cpp-patterns/SKILL.md", "source_location": "L339", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "cpp-patterns",
+        "description": "C++ coding standards based on the C++ Core Guidelines (isocpp.github.io). Use when writing, reviewing, or refactoring C++ code to enforce modern, safe, and idiomatic practices. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f cpp-expert agent \u306b\u59d4\u8b72\u3059\u308b(systems-lang-adversarial-reviewer\u306fGATE\u76f4\u524d\u306e\u8a00\u8a9e\u4ed5\u69d8\u30ec\u30d3\u30e5\u30fc\u5c02\u7528\u3067\u5225\u7269)\u3002",
+        "origin": "ECC"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "label": "C++ Coding Standards (C++ Core Guidelines)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_when_to_use",
+      "label": "When to Use",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_when_not_to_use",
+      "label": "When NOT to Use",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_cross_cutting_principles",
+      "label": "Cross-Cutting Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L27"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_solid_principles_in_modern_c",
+      "label": "SOLID Principles in Modern C++",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_philosophy_interfaces_p_i",
+      "label": "Philosophy & Interfaces (P._, I._)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L50"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_functions_f",
+      "label": "Functions (F.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L70"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_72",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L72"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L87"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_classes_class_hierarchies_c",
+      "label": "Classes & Class Hierarchies (C.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L96"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_98",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L98"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_112",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L112"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_resource_management_r",
+      "label": "Resource Management (R.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L121"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_123",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L123"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_136",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L136"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_expressions_statements_es",
+      "label": "Expressions & Statements (ES.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L145"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_147",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L147"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_162",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L162"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_error_handling_e",
+      "label": "Error Handling (E.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L174"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_176",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L176"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_189",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L189"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_constants_immutability_con",
+      "label": "Constants & Immutability (Con.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L199"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_all_rules",
+      "label": "All Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L201"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_concurrency_parallelism_cp",
+      "label": "Concurrency & Parallelism (CP.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L213"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_215",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L215"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_230",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L230"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_templates_generic_programming_t",
+      "label": "Templates & Generic Programming (T.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L240"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_242",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L242"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_255",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L255"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_standard_library_sl",
+      "label": "Standard Library (SL.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L264"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_266",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L266"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_enumerations_enum",
+      "label": "Enumerations (Enum.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L280"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_282",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L282"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_source_files_naming_sf_nl",
+      "label": "Source Files & Naming (SF._, NL._)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L293"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_295",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L295"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_308",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L308"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_performance_per",
+      "label": "Performance (Per.\\*)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L317"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_319",
+      "label": "Key Rules",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L319"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_331",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L331"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_cpp_patterns_skill_quick_reference_checklist",
+      "label": "Quick Reference Checklist",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L339"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_md",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_md",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_reference_md",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L11",
+      "weight": 1.0,
+      "target_file": "$graphify-root$/agent/skills/cpp-patterns/reference.md"
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_when_to_use",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_when_to_use",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_when_not_to_use",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_cross_cutting_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_solid_principles_in_modern_c",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_philosophy_interfaces_p_i",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L50",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_philosophy_interfaces_p_i",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_functions_f",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_functions_f",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_72",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_functions_f",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_classes_class_hierarchies_c",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_classes_class_hierarchies_c",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_98",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_classes_class_hierarchies_c",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_112",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_resource_management_r",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L121",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_resource_management_r",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_123",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L123",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_resource_management_r",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_136",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L136",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_expressions_statements_es",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_expressions_statements_es",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_147",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L147",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_expressions_statements_es",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_162",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L162",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_error_handling_e",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L174",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_error_handling_e",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_176",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L176",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_error_handling_e",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_189",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L189",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_constants_immutability_con",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L199",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_constants_immutability_con",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_all_rules",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L201",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_concurrency_parallelism_cp",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L213",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_concurrency_parallelism_cp",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_215",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L215",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_concurrency_parallelism_cp",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_230",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L230",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_templates_generic_programming_t",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L240",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_templates_generic_programming_t",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_242",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L242",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_templates_generic_programming_t",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_255",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L255",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_standard_library_sl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L264",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_standard_library_sl",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_266",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L266",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_enumerations_enum",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L280",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_enumerations_enum",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_282",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L282",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_source_files_naming_sf_nl",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L293",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_source_files_naming_sf_nl",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_295",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L295",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_source_files_naming_sf_nl",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_308",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L308",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_performance_per",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L317",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_performance_per",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_key_rules_319",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L319",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_performance_per",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_anti_patterns_331",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L331",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_cpp_patterns_skill_c_coding_standards_c_core_guidelines",
+      "target": "$graphify-root$_agent_skills_cpp_patterns_skill_quick_reference_checklist",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/cpp-patterns/SKILL.md",
+      "source_location": "L339",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

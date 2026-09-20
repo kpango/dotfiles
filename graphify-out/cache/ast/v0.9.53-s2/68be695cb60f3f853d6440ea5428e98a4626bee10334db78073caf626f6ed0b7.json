@@ -1,1 +1,174 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_zig_patterns_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L1", "frontmatter": {"name": "zig-patterns", "description": "Zig language idioms, comptime, memory management, error handling, and C interop patterns for safe, performant systems programming. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f zig-expert agent \u306b\u59d4\u8b72\u3059\u308b \u2014 Zig\u306f\u7834\u58ca\u7684\u5909\u66f4\u304c\u983b\u7e41\u306a\u305f\u3081\u3001\u672c\u30d5\u30a1\u30a4\u30eb\u306e\u5177\u4f53\u7684\u30b3\u30fc\u30c9\u4f8b\u304cAgent\u4f5c\u6210\u6642\u70b9\u306eZig\u30d0\u30fc\u30b8\u30e7\u30f3\u3088\u308a\u53e4\u3044\u53ef\u80fd\u6027\u304c\u3042\u308b\u70b9\u306b\u6ce8\u610f\u3002", "trigger": "/zig-patterns"}}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "label": "Zig Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_core_principles", "label": "Core Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L9"}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_error_handling", "label": "Error Handling", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L16"}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_memory_management", "label": "Memory Management", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L36"}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_comptime", "label": "Comptime", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L56"}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_struct_patterns", "label": "Struct Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L80"}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_c_interop", "label": "C Interop", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L99"}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_testing", "label": "Testing", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L112"}, {"id": "$graphify-root$_agent_skills_zig_patterns_skill_anti_patterns", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L123"}], "edges": [{"source": "$graphify-root$_agent_skills_zig_patterns_skill_md", "target": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "target": "$graphify-root$_agent_skills_zig_patterns_skill_core_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "target": "$graphify-root$_agent_skills_zig_patterns_skill_error_handling", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "target": "$graphify-root$_agent_skills_zig_patterns_skill_memory_management", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L36", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "target": "$graphify-root$_agent_skills_zig_patterns_skill_comptime", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L56", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "target": "$graphify-root$_agent_skills_zig_patterns_skill_struct_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L80", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "target": "$graphify-root$_agent_skills_zig_patterns_skill_c_interop", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L99", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "target": "$graphify-root$_agent_skills_zig_patterns_skill_testing", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L112", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns", "target": "$graphify-root$_agent_skills_zig_patterns_skill_anti_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/zig-patterns/SKILL.md", "source_location": "L123", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "zig-patterns",
+        "description": "Zig language idioms, comptime, memory management, error handling, and C interop patterns for safe, performant systems programming. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f zig-expert agent \u306b\u59d4\u8b72\u3059\u308b \u2014 Zig\u306f\u7834\u58ca\u7684\u5909\u66f4\u304c\u983b\u7e41\u306a\u305f\u3081\u3001\u672c\u30d5\u30a1\u30a4\u30eb\u306e\u5177\u4f53\u7684\u30b3\u30fc\u30c9\u4f8b\u304cAgent\u4f5c\u6210\u6642\u70b9\u306eZig\u30d0\u30fc\u30b8\u30e7\u30f3\u3088\u308a\u53e4\u3044\u53ef\u80fd\u6027\u304c\u3042\u308b\u70b9\u306b\u6ce8\u610f\u3002",
+        "trigger": "/zig-patterns"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "label": "Zig Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_core_principles",
+      "label": "Core Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_error_handling",
+      "label": "Error Handling",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_memory_management",
+      "label": "Memory Management",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L36"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_comptime",
+      "label": "Comptime",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L56"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_struct_patterns",
+      "label": "Struct Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_c_interop",
+      "label": "C Interop",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L99"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_testing",
+      "label": "Testing",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L112"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_zig_patterns_skill_anti_patterns",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L123"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_md",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_core_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_error_handling",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_memory_management",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_comptime",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_struct_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_c_interop",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L99",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_testing",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_zig_patterns_skill_zig_patterns",
+      "target": "$graphify-root$_agent_skills_zig_patterns_skill_anti_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/zig-patterns/SKILL.md",
+      "source_location": "L123",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

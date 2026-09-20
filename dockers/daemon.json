@@ -27,7 +27,6 @@
   "max-concurrent-uploads": 24,
   "max-download-attempts": 24,
   "shutdown-timeout": 10,
-  "storage-driver": "overlay2",
   "experimental": true,
   "selinux-enabled": false,
   "default-ulimits": {
@@ -75,5 +74,13 @@
     "2001:4860:4860::8888"
   ],
   "dns-opts": ["timeout:5", "ndots:1"],
-  "registry-mirrors": ["https://mirror.gcr.io"]
+  "registry-mirrors": ["https://mirror.gcr.io"],
+  "runtimes": {
+    "runsc": {
+      "path": "/usr/local/bin/runsc"
+    },
+    "runu": {
+      "path": "/usr/local/bin/runu"
+    }
+  }
 }

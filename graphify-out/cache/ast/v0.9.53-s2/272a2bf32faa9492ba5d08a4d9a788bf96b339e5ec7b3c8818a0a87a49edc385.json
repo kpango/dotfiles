@@ -1,1 +1,226 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_loop_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L1", "frontmatter": {"name": "swarm-loop", "description": "\u81ea\u8d70\u30eb\u30fc\u30d7\u306e 0 \u6bb5\uff08\u7dda\u5f62\u72b6\u614b\u6a5f\u68b0\uff09\u30a8\u30f3\u30c8\u30ea\u30dd\u30a4\u30f3\u30c8\uff08\u65e7 dig \u3092\u5b8c\u5168\u7d71\u5408\uff09\u30021 \u884c\u306e typo \u4fee\u6b63\u304b\u3089 100 \u4f53\u898f\u6a21\u306e Haiku \u63a2\u7d22\u3092\u4f34\u3046\u5927\u898f\u6a21\u81ea\u5f8b\u30df\u30c3\u30b7\u30e7\u30f3\u307e\u3067\u3001\u898f\u6a21\u3092\u81ea\u52d5\u5224\u5b9a\u3057\u3066\u540c\u3058\u72b6\u614b\u6a5f\u68b0\u3067\u51e6\u7406\u3059\u308b\u3002\u59c9\u59b9 skill: `swarm-graph`\uff081 \u6bb5\u30fbDAG \u30d5\u30ed\u30f3\u30c6\u30a3\u30a2\u5b9f\u884c\uff09\uff0f`swarm-meta`\uff082 \u6bb5\u30fb\u30e1\u30bf\u5c64\u3001\u3044\u305a\u308c\u3082\u4eba\u9593\u62db\u96c6\u9650\u5b9a\uff09\u3002 `swarm-graph` \u306e GRAPH-FIT UNFIT \u30d5\u30a9\u30fc\u30eb\u30d0\u30c3\u30af\u30fb`swarm-meta` \u306e DISPATCH \u304b\u3089\u306f\u3001Skill tool \u7d4c\u7531\u3067\u306f \u306a\u304f\u672c SKILL.md \u3092 Read \u3057\u3066\u540c\u3058\u72b6\u614b\u6a5f\u68b0\u3078\u30a4\u30f3\u30e9\u30a4\u30f3\u5408\u6d41\u3059\u308b\u59d4\u8b72\u7d4c\u8def\u304c\u3042\u308b\u30021 \u884c\u306e typo \u4fee\u6b63\u304b\u3089 100 \u4f53\u898f\u6a21\u306e Haiku \u63a2\u7d22\u3092\u4f34\u3046\u5927\u898f\u6a21\u81ea\u5f8b\u30df\u30c3\u30b7\u30e7\u30f3\u307e\u3067\u3001\u5e38\u306b\u3053\u306e skill \u4e00\u3064\u3092\u8d77\u70b9\u306b\u3059\u308b\u3002 \u30c8\u30ea\u30ac\u30fc: \u300c\u5b9f\u88c5\u3057\u3066\u300d\u300c\u4fee\u6b63\u3057\u3066\u300d\u300c\u8abf\u3079\u3066\u76f4\u3057\u3066\u300d\u300c\u81ea\u5f8b\u3067\u9032\u3081\u3066\u300d\u300c/swarm-loop\u300d \u300cmassive agents loop\u300d\u306a\u3069\u3001\u30b3\u30fc\u30c9\u30d9\u30fc\u30b9\u3078\u306e\u5909\u66f4\u3092\u4f34\u3046\u30bf\u30b9\u30af\u5168\u822c\u3002 \u5883\u754c\u6761\u4ef6: \u5909\u66f4\u3092\u4f34\u308f\u306a\u3044\u8cea\u554f\u30fb\u8abf\u67fb\u306e\u307f\u306f swarm-explore ", "allowed-tools": ["Read", "Write", "Edit", "Bash", "Grep", "Glob", "Agent", "Workflow", "Skill", "TaskCreate", "TaskUpdate", "TaskList", "TaskGet", "ListAgents", "SendMessage"], "user-invocable": true, "disable-model-invocation": true}}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "label": "swarm-loop \u2014 \u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L38"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_1_scale_\u5224\u5b9a_\u8d77\u52d5\u76f4\u5f8c_\u5fc5\u305a\u6700\u521d\u306b\u5b9f\u884c", "label": "Phase -1: SCALE \u5224\u5b9a\uff08\u8d77\u52d5\u76f4\u5f8c\u3001\u5fc5\u305a\u6700\u521d\u306b\u5b9f\u884c\uff09", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L58"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_0_init", "label": "Phase 0: INIT", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L75"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_1_explore", "label": "Phase 1: EXPLORE", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L163"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_2_plan_\u8a2d\u8a08\u30a4\u30f3\u30bf\u30d3\u30e5\u30fc", "label": "Phase 2: PLAN\uff08+ \u8a2d\u8a08\u30a4\u30f3\u30bf\u30d3\u30e5\u30fc\uff09", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L172"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_3_execute", "label": "Phase 3: EXECUTE", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L216"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_4_checkpoint_\u30eb\u30fc\u30d7\u5236\u5fa1\u3068\u30a8\u30b9\u30ab\u30ec\u30fc\u30b7\u30e7\u30f3\u884c\u5217", "label": "Phase 4: CHECKPOINT \u2014 \u30eb\u30fc\u30d7\u5236\u5fa1\u3068\u30a8\u30b9\u30ab\u30ec\u30fc\u30b7\u30e7\u30f3\u884c\u5217", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L242"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_4_5_adversarial_review_8_agent_\u6575\u5bfe\u7684\u30ec\u30d3\u30e5\u30fc_quick_\u306f\u30b9\u30ad\u30c3\u30d7", "label": "Phase 4.5: ADVERSARIAL REVIEW \u2014 8 Agent \u6575\u5bfe\u7684\u30ec\u30d3\u30e5\u30fc\uff08Quick \u306f\u30b9\u30ad\u30c3\u30d7\uff09", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L287"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_5_gate_report", "label": "Phase 5: GATE \u2192 REPORT", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L354"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_\u30eb\u30fc\u30d7\u4e0d\u5909\u6761\u4ef6_\u5168_phase_\u5171\u901a", "label": "\u30eb\u30fc\u30d7\u4e0d\u5909\u6761\u4ef6\uff08\u5168 Phase \u5171\u901a\uff09", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L447"}, {"id": "$graphify-root$_agent_skills_swarm_loop_skill_memory_protocol_skill_\u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9_\u8ecc\u8de1\u30ed\u30b0\u3068\u306f\u5225\u8ef8", "label": "Memory Protocol\uff08Skill \u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9\u3001\u8ecc\u8de1\u30ed\u30b0\u3068\u306f\u5225\u8ef8\uff09", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L463"}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_loop_skill_md", "target": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_1_scale_\u5224\u5b9a_\u8d77\u52d5\u76f4\u5f8c_\u5fc5\u305a\u6700\u521d\u306b\u5b9f\u884c", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L58", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_0_init", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L75", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_1_explore", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L163", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_2_plan_\u8a2d\u8a08\u30a4\u30f3\u30bf\u30d3\u30e5\u30fc", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L172", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_3_execute", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L216", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_4_checkpoint_\u30eb\u30fc\u30d7\u5236\u5fa1\u3068\u30a8\u30b9\u30ab\u30ec\u30fc\u30b7\u30e7\u30f3\u884c\u5217", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L242", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_4_5_adversarial_review_8_agent_\u6575\u5bfe\u7684\u30ec\u30d3\u30e5\u30fc_quick_\u306f\u30b9\u30ad\u30c3\u30d7", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L287", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_5_gate_report", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L354", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_\u30eb\u30fc\u30d7\u4e0d\u5909\u6761\u4ef6_\u5168_phase_\u5171\u901a", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L447", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7", "target": "$graphify-root$_agent_skills_swarm_loop_skill_memory_protocol_skill_\u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9_\u8ecc\u8de1\u30ed\u30b0\u3068\u306f\u5225\u8ef8", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-loop/SKILL.md", "source_location": "L463", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "swarm-loop",
+        "description": "\u81ea\u8d70\u30eb\u30fc\u30d7\u306e 0 \u6bb5\uff08\u7dda\u5f62\u72b6\u614b\u6a5f\u68b0\uff09\u30a8\u30f3\u30c8\u30ea\u30dd\u30a4\u30f3\u30c8\uff08\u65e7 dig \u3092\u5b8c\u5168\u7d71\u5408\uff09\u30021 \u884c\u306e typo \u4fee\u6b63\u304b\u3089 100 \u4f53\u898f\u6a21\u306e Haiku \u63a2\u7d22\u3092\u4f34\u3046\u5927\u898f\u6a21\u81ea\u5f8b\u30df\u30c3\u30b7\u30e7\u30f3\u307e\u3067\u3001\u898f\u6a21\u3092\u81ea\u52d5\u5224\u5b9a\u3057\u3066\u540c\u3058\u72b6\u614b\u6a5f\u68b0\u3067\u51e6\u7406\u3059\u308b\u3002\u59c9\u59b9 skill: `swarm-graph`\uff081 \u6bb5\u30fbDAG \u30d5\u30ed\u30f3\u30c6\u30a3\u30a2\u5b9f\u884c\uff09\uff0f`swarm-meta`\uff082 \u6bb5\u30fb\u30e1\u30bf\u5c64\u3001\u3044\u305a\u308c\u3082\u4eba\u9593\u62db\u96c6\u9650\u5b9a\uff09\u3002 `swarm-graph` \u306e GRAPH-FIT UNFIT \u30d5\u30a9\u30fc\u30eb\u30d0\u30c3\u30af\u30fb`swarm-meta` \u306e DISPATCH \u304b\u3089\u306f\u3001Skill tool \u7d4c\u7531\u3067\u306f \u306a\u304f\u672c SKILL.md \u3092 Read \u3057\u3066\u540c\u3058\u72b6\u614b\u6a5f\u68b0\u3078\u30a4\u30f3\u30e9\u30a4\u30f3\u5408\u6d41\u3059\u308b\u59d4\u8b72\u7d4c\u8def\u304c\u3042\u308b\u30021 \u884c\u306e typo \u4fee\u6b63\u304b\u3089 100 \u4f53\u898f\u6a21\u306e Haiku \u63a2\u7d22\u3092\u4f34\u3046\u5927\u898f\u6a21\u81ea\u5f8b\u30df\u30c3\u30b7\u30e7\u30f3\u307e\u3067\u3001\u5e38\u306b\u3053\u306e skill \u4e00\u3064\u3092\u8d77\u70b9\u306b\u3059\u308b\u3002 \u30c8\u30ea\u30ac\u30fc: \u300c\u5b9f\u88c5\u3057\u3066\u300d\u300c\u4fee\u6b63\u3057\u3066\u300d\u300c\u8abf\u3079\u3066\u76f4\u3057\u3066\u300d\u300c\u81ea\u5f8b\u3067\u9032\u3081\u3066\u300d\u300c/swarm-loop\u300d \u300cmassive agents loop\u300d\u306a\u3069\u3001\u30b3\u30fc\u30c9\u30d9\u30fc\u30b9\u3078\u306e\u5909\u66f4\u3092\u4f34\u3046\u30bf\u30b9\u30af\u5168\u822c\u3002 \u5883\u754c\u6761\u4ef6: \u5909\u66f4\u3092\u4f34\u308f\u306a\u3044\u8cea\u554f\u30fb\u8abf\u67fb\u306e\u307f\u306f swarm-explore ",
+        "allowed-tools": [
+          "Read",
+          "Write",
+          "Edit",
+          "Bash",
+          "Grep",
+          "Glob",
+          "Agent",
+          "Workflow",
+          "Skill",
+          "TaskCreate",
+          "TaskUpdate",
+          "TaskList",
+          "TaskGet",
+          "ListAgents",
+          "SendMessage"
+        ],
+        "user-invocable": true,
+        "disable-model-invocation": true
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "label": "swarm-loop \u2014 \u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_1_scale_\u5224\u5b9a_\u8d77\u52d5\u76f4\u5f8c_\u5fc5\u305a\u6700\u521d\u306b\u5b9f\u884c",
+      "label": "Phase -1: SCALE \u5224\u5b9a\uff08\u8d77\u52d5\u76f4\u5f8c\u3001\u5fc5\u305a\u6700\u521d\u306b\u5b9f\u884c\uff09",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L58"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_0_init",
+      "label": "Phase 0: INIT",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L75"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_1_explore",
+      "label": "Phase 1: EXPLORE",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L163"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_2_plan_\u8a2d\u8a08\u30a4\u30f3\u30bf\u30d3\u30e5\u30fc",
+      "label": "Phase 2: PLAN\uff08+ \u8a2d\u8a08\u30a4\u30f3\u30bf\u30d3\u30e5\u30fc\uff09",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L172"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_3_execute",
+      "label": "Phase 3: EXECUTE",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L216"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_4_checkpoint_\u30eb\u30fc\u30d7\u5236\u5fa1\u3068\u30a8\u30b9\u30ab\u30ec\u30fc\u30b7\u30e7\u30f3\u884c\u5217",
+      "label": "Phase 4: CHECKPOINT \u2014 \u30eb\u30fc\u30d7\u5236\u5fa1\u3068\u30a8\u30b9\u30ab\u30ec\u30fc\u30b7\u30e7\u30f3\u884c\u5217",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L242"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_4_5_adversarial_review_8_agent_\u6575\u5bfe\u7684\u30ec\u30d3\u30e5\u30fc_quick_\u306f\u30b9\u30ad\u30c3\u30d7",
+      "label": "Phase 4.5: ADVERSARIAL REVIEW \u2014 8 Agent \u6575\u5bfe\u7684\u30ec\u30d3\u30e5\u30fc\uff08Quick \u306f\u30b9\u30ad\u30c3\u30d7\uff09",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L287"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_phase_5_gate_report",
+      "label": "Phase 5: GATE \u2192 REPORT",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L354"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_\u30eb\u30fc\u30d7\u4e0d\u5909\u6761\u4ef6_\u5168_phase_\u5171\u901a",
+      "label": "\u30eb\u30fc\u30d7\u4e0d\u5909\u6761\u4ef6\uff08\u5168 Phase \u5171\u901a\uff09",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L447"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_loop_skill_memory_protocol_skill_\u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9_\u8ecc\u8de1\u30ed\u30b0\u3068\u306f\u5225\u8ef8",
+      "label": "Memory Protocol\uff08Skill \u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9\u3001\u8ecc\u8de1\u30ed\u30b0\u3068\u306f\u5225\u8ef8\uff09",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L463"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_md",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_1_scale_\u5224\u5b9a_\u8d77\u52d5\u76f4\u5f8c_\u5fc5\u305a\u6700\u521d\u306b\u5b9f\u884c",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_0_init",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_1_explore",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_2_plan_\u8a2d\u8a08\u30a4\u30f3\u30bf\u30d3\u30e5\u30fc",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L172",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_3_execute",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L216",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_4_checkpoint_\u30eb\u30fc\u30d7\u5236\u5fa1\u3068\u30a8\u30b9\u30ab\u30ec\u30fc\u30b7\u30e7\u30f3\u884c\u5217",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L242",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_4_5_adversarial_review_8_agent_\u6575\u5bfe\u7684\u30ec\u30d3\u30e5\u30fc_quick_\u306f\u30b9\u30ad\u30c3\u30d7",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L287",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_phase_5_gate_report",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L354",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_\u30eb\u30fc\u30d7\u4e0d\u5909\u6761\u4ef6_\u5168_phase_\u5171\u901a",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L447",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_loop_skill_swarm_loop_\u7d71\u5408\u81ea\u8d70\u30eb\u30fc\u30d7",
+      "target": "$graphify-root$_agent_skills_swarm_loop_skill_memory_protocol_skill_\u81ea\u5df1\u30e1\u30f3\u30c6\u30ca\u30f3\u30b9_\u8ecc\u8de1\u30ed\u30b0\u3068\u306f\u5225\u8ef8",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-loop/SKILL.md",
+      "source_location": "L463",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

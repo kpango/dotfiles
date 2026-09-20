@@ -12658,9 +12658,7 @@
       "community_name": "Performance \u898f\u7d04 (\u8a00\u8a9e\u975e\u4f9d\u5b58)",
       "file_type": "document",
       "frontmatter": {
-        "paths": [
-          "**/*.{go,rs,py,c,cc,cpp,h,hpp,ts,tsx,zig,proto}"
-        ]
+        "paths": ["**/*.{go,rs,py,c,cc,cpp,h,hpp,ts,tsx,zig,proto}"]
       },
       "node_kind": "page",
       "norm_label": "performance.md",
@@ -12954,14 +12952,7 @@
       "frontmatter": {
         "name": "swarm-memory-sync",
         "description": "swarm-loop \u5404\u5c64(Haiku\u63a2\u7d22\u7fa4/\u79d8\u66f8/Maker/Checker)\u306e\u5b9f\u884c\u3068\u4eba\u9593\u3068\u306e\u5bfe\u8a71(Interactive \u8a2d\u8a08\u30a4\u30f3\u30bf\u30d3\u30e5\u30fc\u7b49) \u3092\u901a\u3058\u3066\u8ecc\u8de1\u30ed\u30b0\u30fb`@fix_plan.md` \u306b\u84c4\u7a4d\u3055\u308c\u305f\u300c\u5b66\u3073\u300d\u306e\u3046\u3061\u3001\u4e00\u822c\u5316\u53ef\u80fd\u306a\u3082\u306e\u3092 `~/.claude/memory/`(auto-memory\uff09\u3078\u84b8\u7559\u3059\u308b\u30d6\u30ea\u30c3\u30b8\u3002\u30c8\u30ea\u30ac\u30fc: `swarm-loop` Phase 5 GATE \u5b8c\u4e86\u6642 (\u8ecc\u8de1\u30ed\u30b0\u8ffd\u8a18\u306e\u76f4\u5f8c\u3001\u5185\u90e8\u547c\u3073\u51fa\u3057)\u3001`swarm-loop` Phase 2 PLAN \u306e Interactive \u8a2d\u8a08\u30a4\u30f3\u30bf\u30d3\u30e5\u30fc \u7d42\u4e86\u6642(\u5185\u90e8\u547c\u3073\u51fa\u3057)\u3001\u307e\u305f\u306f\u4eba\u9593\u306b\u3088\u308b `/swarm-memory-sync` \u306e\u660e\u793a\u62db\u96c6(\u65e2\u5b58\u8ecc\u8de1\u30ed\u30b0\u306e\u9061\u53ca\u51e6\u7406\u30fb \u4efb\u610f\u30bf\u30a4\u30df\u30f3\u30b0\u3067\u306e\u624b\u52d5\u5b9f\u884c)\u3002\u5883\u754c\u6761\u4ef6: SKILL.md / hooks / SWARM.md \u81ea\u4f53\u306e\u884c\u52d5\u898f\u7bc4\u5909\u66f4\u306f `swarm-evolve` \u306e\u5bfe\u8c61\u3067\u3042\u308a\u672c skill \u3067\u306f\u884c\u308f\u306a\u3044(\u672c skill \u306f\u30c9\u30e1\u30a4\u30f3\u77e5\u8b58\u306e\u8a18\u9332\u306e\u307f\u3092\u6271\u3046)\u3002\u4eba\u9593\u627f\u8a8d \u306f\u4e0d\u8981(\u77e5\u8b58\u306e\u8a18\u9332\u3067\u3042\u308a\u884c\u52d5\u898f\u7bc4\u306e\u5909\u66f4\u3067\u306f\u306a\u3044\u305f\u3081)\u3060\u304c\u3001\u4e00\u822c\u5316\u53ef\u80fd\u6027\u306e\u5224\u5b9a\u30fb\u91cd\u8907\u30c1\u30a7\u30c3\u30af\u306f `scripts/m",
-        "allowed-tools": [
-          "Read",
-          "Grep",
-          "Glob",
-          "Bash",
-          "Write",
-          "Edit"
-        ],
+        "allowed-tools": ["Read", "Grep", "Glob", "Bash", "Write", "Edit"],
         "user-invocable": true,
         "disable-model-invocation": false
       },
@@ -20007,13 +19998,7 @@
       "frontmatter": {
         "name": "swarm-release-gate",
         "description": "\u30de\u30fc\u30b8\u30fb\u30c7\u30d7\u30ed\u30a4\u30fb\u7834\u58ca\u7684\u5909\u66f4\u306e\u76f4\u524d\u306b\u5fc5\u305a\u901a\u3059\u6700\u7d42\u30b2\u30fc\u30c8\u3002\u30c8\u30ea\u30ac\u30fc: \u4eba\u9593\u306b\u3088\u308b /swarm-release-gate \u306e \u660e\u793a\u62db\u96c6\u3001\u307e\u305f\u306f `swarm-loop`/`swarm-graph` \u306e Phase 5/G5 GATE \u304b\u3089\u306e `Skill(swarm-release-gate)` \u81ea\u52d5\u8d77\u52d5 (2026-08-13 \u5909\u66f4\u3001\u4eba\u9593\u627f\u8a8d\u6e08\u307f \u2014 GATE\u5230\u9054\u3054\u3068\u306b\u4eba\u9593\u3078\u624b\u52d5\u62db\u96c6\u3092\u6c42\u3081\u306a\u3044)\u3002\u300c\u30de\u30fc\u30b8\u3057\u3066\u300d \u300cPR \u3092\u51fa\u3057\u3066\u672c\u6d41\u306b\u5165\u308c\u3066\u300d\u300c\u30ea\u30ea\u30fc\u30b9\u3057\u3066\u300d\u3068\u3044\u3046\u81ea\u7136\u6587\u306e\u4f9d\u983c\u3067\u3082\u672c skill \u7d4c\u7531\u3067\u51e6\u7406\u3059\u308b\u3002 \u5883\u754c\u6761\u4ef6: \u81ea\u52d5\u8d77\u52d5\u3055\u308c\u3066\u3082\u81ea\u5f8b\u30de\u30fc\u30b8\u306b\u306f\u81f3\u3089\u306a\u3044 \u2014 scripts/verify.sh \u306e\u5b9f\u884c\u7d50\u679c (\u6a19\u6e96\u51fa\u529b) \u304c \u5168\u30d1\u30b9\u3059\u308b\u307e\u3067\u3001\u304a\u3088\u3073\u4eba\u9593\u306e\u6700\u7d42\u627f\u8a8d\u3092\u5f97\u308b\u307e\u3067\u30de\u30fc\u30b8\u30fbpush \u3092\u7d76\u5bfe\u306b\u884c\u308f\u306a\u3044 (\u4e0b\u8a18\u624b\u9806 2/3\u3001 \u81ea\u5df1\u7533\u544a\u30fb\u8a18\u61b6\u306f\u6839\u62e0\u306b\u3057\u306a\u3044)\u3002dmi:false \u304c\u8a31\u3059\u306e\u306f\u691c\u8a3c\u30fb\u63d0\u793a\u30d5\u30a7\u30fc\u30ba\u306e\u81ea\u52d5\u958b\u59cb\u306e\u307f\u3067\u3042\u308a\u3001 \u30de\u30fc\u30b8\u5b9f\u884c\u30d5\u30a7\u30fc\u30ba\u306e\u4eba\u9593\u627f\u8a8d\u8981\u4ef6\u306f\u3053\u308c\u306b\u3088\u3063\u3066\u5909\u66f4\u3055\u308c\u306a\u3044\u3002 \u672c\u756a namespace \u3078\u306e kubectl/helm \u64cd\u4f5c\u306f\u6271\u308f\u306a\u3044 (security-gate hook ",
-        "allowed-tools": [
-          "Read",
-          "Write",
-          "Bash",
-          "Grep",
-          "Glob"
-        ],
+        "allowed-tools": ["Read", "Write", "Bash", "Grep", "Glob"],
         "user-invocable": true,
         "disable-model-invocation": false
       },
@@ -20356,10 +20341,7 @@
       "frontmatter": {
         "name": "swarm-secretary",
         "description": "\u60c5\u5831\u96c6\u7d04\u5c64 (Sonnet) \u306e\u5185\u90e8\u79d8\u66f8\u3002Swarm \u5c64 (Haiku) \u304c\u53ce\u96c6\u3057\u305f\u751f\u30ec\u30dd\u30fc\u30c8\u7fa4\u3092\u53d7\u3051\u53d6\u308a\u3001 \u300c\u91cd\u8907\u6392\u9664\u300d\u300c\u69cb\u9020\u5316\u300d\u300c\u4f9d\u5b58\u95a2\u4fc2\u306b\u57fa\u3065\u304f\u512a\u5148\u9806\u4f4d\u3065\u3051\u300d\u300c\u30b7\u30e3\u30fc\u30c9\u54c1\u8cea\u8a55\u4fa1\u300d\u300c\u540c\u8abf\u6027\u30ea\u30b9\u30af\u306e\u691c\u8a3c\u5019\u88dc\u62bd\u51fa\u300d \u306e\u307f\u3092\u884c\u3044\u3001\u30ce\u30a4\u30ba\u3092\u5b8c\u5168\u306b\u906e\u65ad\u3059\u308b\u3002 \u30c8\u30ea\u30ac\u30fc: swarm-explore \u306e\u96c6\u7d04\u30d5\u30a7\u30fc\u30ba\u3001\u307e\u305f\u306f\u8907\u6570\u30b5\u30d6\u30a8\u30fc\u30b8\u30a7\u30f3\u30c8\u306e\u7d50\u679c\u7d71\u5408\u304c\u5fc5\u8981\u306a\u3068\u304d (\u30b7\u30b9\u30c6\u30e0\u5185\u90e8\u304b\u3089\u547c\u3070\u308c\u308b\u3002\u4eba\u9593\u306e\u30e1\u30cb\u30e5\u30fc\u306b\u306f\u8868\u793a\u3057\u306a\u3044)\u3002 \u5883\u754c\u6761\u4ef6: \u65b0\u898f\u8abf\u67fb\u30fb\u30b3\u30fc\u30c9\u7de8\u96c6\u30fb\u5165\u529b\u30ec\u30dd\u30fc\u30c8\u4ee5\u5916\u306e\u30d5\u30a1\u30a4\u30eb\u8aad\u307f\u8fbc\u307f\u306f\u7981\u6b62\u3002 \u5165\u529b\u306b\u542b\u307e\u308c\u306a\u3044\u4e8b\u5b9f\u3092\u63a8\u6e2c\u3067\u88dc\u5b8c\u3057\u3066\u306f\u306a\u3089\u306a\u3044\u3002\u51fa\u529b\u306f\u4e0b\u8a18\u306e\u69cb\u9020\u5316\u30ec\u30dd\u30fc\u30c8\u5f62\u5f0f\u306e\u307f\u3002",
-        "allowed-tools": [
-          "Read",
-          "Write"
-        ],
+        "allowed-tools": ["Read", "Write"],
         "user-invocable": false,
         "disable-model-invocation": false
       },
@@ -38331,14 +38313,7 @@
       "frontmatter": {
         "name": "ponytail-patterns",
         "description": "Ponytail 7-step anti-overengineering logic ladder and safe minimal code patterns. Enforces YAGNI, codebase reuse, stdlib priority, and surgical minimal diffs.",
-        "allowed-tools": [
-          "Read",
-          "Grep",
-          "Glob",
-          "Bash",
-          "Edit",
-          "Write"
-        ],
+        "allowed-tools": ["Read", "Grep", "Glob", "Bash", "Edit", "Write"],
         "user-invocable": true
       },
       "node_kind": "page",
@@ -38584,13 +38559,7 @@
       "frontmatter": {
         "name": "grill-interview",
         "description": "Interactive design-tree interview protocol for cognitive drift prevention, clarifying ambiguities, and synthesizing ADR and CONTEXT.md before implementation.",
-        "allowed-tools": [
-          "Read",
-          "Grep",
-          "Glob",
-          "Bash",
-          "Write"
-        ],
+        "allowed-tools": ["Read", "Grep", "Glob", "Bash", "Write"],
         "user-invocable": true
       },
       "node_kind": "page",
@@ -38988,9 +38957,7 @@
       "community_name": "Ponytail \u904e\u5270\u8a2d\u8a08\u9632\u6b62\u30fb\u5b89\u5168\u306a\u6700\u5c0f\u30b3\u30fc\u30c9\u898f\u5247 (Anti-Overengineering & Safe Minimal Code)",
       "file_type": "document",
       "frontmatter": {
-        "paths": [
-          "**/*.{go,rs,py,c,cc,cpp,h,hpp,ts,tsx,zig,sh,zsh,mk}"
-        ]
+        "paths": ["**/*.{go,rs,py,c,cc,cpp,h,hpp,ts,tsx,zig,sh,zsh,mk}"]
       },
       "node_kind": "page",
       "norm_label": "ponytail.md",

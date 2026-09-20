@@ -1,1 +1,41 @@
-{"nodes": [{"id": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh", "label": "x1-gen9-audio-problem-fix.sh", "file_type": "code", "source_file": "arch/x1-gen9-audio-problem-fix.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh__entry", "label": "x1-gen9-audio-problem-fix.sh script", "file_type": "code", "source_file": "arch/x1-gen9-audio-problem-fix.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh", "target": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "arch/x1-gen9-audio-problem-fix.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "hda-verb", "caller_nid": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh__entry", "source_file": "arch/x1-gen9-audio-problem-fix.sh", "source_location": "L1"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh",
+      "label": "x1-gen9-audio-problem-fix.sh",
+      "file_type": "code",
+      "source_file": "arch/x1-gen9-audio-problem-fix.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh__entry",
+      "label": "x1-gen9-audio-problem-fix.sh script",
+      "file_type": "code",
+      "source_file": "arch/x1-gen9-audio-problem-fix.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh",
+      "target": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/x1-gen9-audio-problem-fix.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "hda-verb",
+      "caller_nid": "$graphify-root$_arch_x1_gen9_audio_problem_fix_sh__entry",
+      "source_file": "arch/x1-gen9-audio-problem-fix.sh",
+      "source_location": "L1"
+    }
+  ],
+  "bash_sources": []
+}

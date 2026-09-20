@@ -1,1 +1,110 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_k8s_expert_md", "label": "k8s-expert.md", "file_type": "document", "node_kind": "page", "source_file": "agent/agents/k8s-expert.md", "source_location": "L1", "frontmatter": {"name": "k8s-expert", "description": "General Kubernetes manifest/Helm/Kustomize implementation specialist. Distinct from `vald-reviewer`, which already covers Vald-specific Law/config-sync enforcement and K8s resource rules together \u2014 route Vald-repo K8s work to `vald-reviewer` instead, and general/non-Vald K8s design or manifest work here. Use proactively for Kubernetes work outside the vald repo.", "tools": "Read, Write, Edit, Bash, Grep, Glob", "model": "inherit", "effort": "high", "memory": "user", "color": "indigo"}}, {"id": "$graphify-root$_agent_agents_k8s_expert_core_principles", "label": "Core Principles", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/k8s-expert.md", "source_location": "L15"}, {"id": "$graphify-root$_agent_agents_k8s_expert_manifest_resource_practices", "label": "Manifest/Resource Practices", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/k8s-expert.md", "source_location": "L24"}, {"id": "$graphify-root$_agent_agents_k8s_expert_workflow", "label": "Workflow", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/k8s-expert.md", "source_location": "L30"}, {"id": "$graphify-root$_agent_agents_k8s_expert_memory_protocol", "label": "Memory Protocol", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/k8s-expert.md", "source_location": "L38"}, {"id": "$graphify-root$_agent_agents_k8s_expert_ponytail_anti_overengineering_directives", "label": "Ponytail Anti-Overengineering Directives", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/k8s-expert.md", "source_location": "L42"}], "edges": [{"source": "$graphify-root$_agent_agents_k8s_expert_md", "target": "$graphify-root$_agent_agents_k8s_expert_core_principles", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/k8s-expert.md", "source_location": "L15", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_k8s_expert_md", "target": "$graphify-root$_agent_agents_k8s_expert_manifest_resource_practices", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/k8s-expert.md", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_k8s_expert_md", "target": "$graphify-root$_agent_agents_k8s_expert_workflow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/k8s-expert.md", "source_location": "L30", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_k8s_expert_md", "target": "$graphify-root$_agent_agents_k8s_expert_memory_protocol", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/k8s-expert.md", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_k8s_expert_md", "target": "$graphify-root$_agent_agents_k8s_expert_ponytail_anti_overengineering_directives", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/k8s-expert.md", "source_location": "L42", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_k8s_expert_md",
+      "label": "k8s-expert.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "k8s-expert",
+        "description": "General Kubernetes manifest/Helm/Kustomize implementation specialist. Distinct from `vald-reviewer`, which already covers Vald-specific Law/config-sync enforcement and K8s resource rules together \u2014 route Vald-repo K8s work to `vald-reviewer` instead, and general/non-Vald K8s design or manifest work here. Use proactively for Kubernetes work outside the vald repo.",
+        "tools": "Read, Write, Edit, Bash, Grep, Glob",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "indigo"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_agents_k8s_expert_core_principles",
+      "label": "Core Principles",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L15"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_k8s_expert_manifest_resource_practices",
+      "label": "Manifest/Resource Practices",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_k8s_expert_workflow",
+      "label": "Workflow",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L30"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_k8s_expert_memory_protocol",
+      "label": "Memory Protocol",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_k8s_expert_ponytail_anti_overengineering_directives",
+      "label": "Ponytail Anti-Overengineering Directives",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L42"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_k8s_expert_md",
+      "target": "$graphify-root$_agent_agents_k8s_expert_core_principles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_k8s_expert_md",
+      "target": "$graphify-root$_agent_agents_k8s_expert_manifest_resource_practices",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_k8s_expert_md",
+      "target": "$graphify-root$_agent_agents_k8s_expert_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_k8s_expert_md",
+      "target": "$graphify-root$_agent_agents_k8s_expert_memory_protocol",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_k8s_expert_md",
+      "target": "$graphify-root$_agent_agents_k8s_expert_ponytail_anti_overengineering_directives",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/k8s-expert.md",
+      "source_location": "L42",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

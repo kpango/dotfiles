@@ -1,1 +1,245 @@
-{"nodes": [{"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md", "label": "code-quality-adversarial-reviewer.md", "file_type": "document", "node_kind": "page", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L1", "frontmatter": {"name": "code-quality-adversarial-reviewer", "description": "Second-line adversarial code-quality reviewer invoked immediately before the swarm-loop Phase 5 GATE / swarm-graph Phase G5 GATE (human final approval). Independently re-audits the finished diff for maintainability, simplicity, and consistency only, without reading the prior code-reviewer verdict.", "tools": "read, grep, find, ls", "model": "sonnet", "effort": "high", "memory": "project"}}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_position_in_the_review_pipeline", "label": "Position in the Review Pipeline", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L13"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_workflow", "label": "Review Workflow", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L20"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria", "label": "Review Criteria", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L27"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_dry_boundary_vs_over_abstraction", "label": "DRY boundary vs. over-abstraction", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L29"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_self_documenting_naming", "label": "Self-documenting naming", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L35"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_one_function_one_responsibility", "label": "One function, one responsibility", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L39"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_cross_diff_consistency_partial_application_detection", "label": "Cross-diff consistency (partial-application detection)", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L43"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_comments_why_vs_what", "label": "Comments: WHY vs. WHAT", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L48"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_test_readability", "label": "Test readability", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L52"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_don_t", "label": "Don't", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L56"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_severity_classification", "label": "Severity Classification", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L65"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_output_format", "label": "Output Format", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L72"}, {"id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_memory_discipline", "label": "Memory Discipline", "file_type": "document", "node_kind": "heading", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L92"}], "edges": [{"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_position_in_the_review_pipeline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_workflow", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L27", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_dry_boundary_vs_over_abstraction", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L29", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_self_documenting_naming", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L35", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_one_function_one_responsibility", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L39", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_cross_diff_consistency_partial_application_detection", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L43", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_comments_why_vs_what", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L48", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_test_readability", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L52", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_don_t", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L56", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_severity_classification", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L65", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_output_format", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L72", "weight": 1.0}, {"source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md", "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_memory_discipline", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/agents/code-quality-adversarial-reviewer.md", "source_location": "L92", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md",
+      "label": "code-quality-adversarial-reviewer.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "code-quality-adversarial-reviewer",
+        "description": "Second-line adversarial code-quality reviewer invoked immediately before the swarm-loop Phase 5 GATE / swarm-graph Phase G5 GATE (human final approval). Independently re-audits the finished diff for maintainability, simplicity, and consistency only, without reading the prior code-reviewer verdict.",
+        "tools": "read, grep, find, ls",
+        "model": "sonnet",
+        "effort": "high",
+        "memory": "project"
+      }
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_position_in_the_review_pipeline",
+      "label": "Position in the Review Pipeline",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_workflow",
+      "label": "Review Workflow",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria",
+      "label": "Review Criteria",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L27"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_dry_boundary_vs_over_abstraction",
+      "label": "DRY boundary vs. over-abstraction",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L29"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_self_documenting_naming",
+      "label": "Self-documenting naming",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L35"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_one_function_one_responsibility",
+      "label": "One function, one responsibility",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L39"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_cross_diff_consistency_partial_application_detection",
+      "label": "Cross-diff consistency (partial-application detection)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L43"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_comments_why_vs_what",
+      "label": "Comments: WHY vs. WHAT",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L48"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_test_readability",
+      "label": "Test readability",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L52"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_don_t",
+      "label": "Don't",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L56"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_severity_classification",
+      "label": "Severity Classification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L65"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_output_format",
+      "label": "Output Format",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L72"
+    },
+    {
+      "id": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_memory_discipline",
+      "label": "Memory Discipline",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L92"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_position_in_the_review_pipeline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_workflow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_dry_boundary_vs_over_abstraction",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L29",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_self_documenting_naming",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_one_function_one_responsibility",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L39",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_cross_diff_consistency_partial_application_detection",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L43",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_comments_why_vs_what",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L48",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_review_criteria",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_test_readability",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L52",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_don_t",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_severity_classification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_output_format",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L72",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_md",
+      "target": "$graphify-root$_pi_agents_code_quality_adversarial_reviewer_memory_discipline",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/agents/code-quality-adversarial-reviewer.md",
+      "source_location": "L92",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

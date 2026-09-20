@@ -1,1 +1,220 @@
-{"nodes": [{"id": "$graphify-root$_original_request_md", "label": "ORIGINAL_REQUEST.md", "file_type": "document", "node_kind": "page", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L1"}, {"id": "$graphify-root$_original_request_original_user_request", "label": "Original User Request", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L1"}, {"id": "$graphify-root$_original_request_initial_request_2026_09_04t15_21_41z", "label": "Initial Request \u2014 2026-09-04T15:21:41Z", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L3"}, {"id": "$graphify-root$_original_request_requirements", "label": "Requirements", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L10"}, {"id": "$graphify-root$_original_request_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering", "label": "R1. Hermes-Style Closed-Loop Skill Synthesis & Loop Engineering", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L12"}, {"id": "$graphify-root$_original_request_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement", "label": "R2. PrimeAgent-Style RLM Context Filtering & Continual Harness Refinement", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L16"}, {"id": "$graphify-root$_original_request_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal", "label": "R3. DeepSeekHarness-Style Reasoning Token Preservation & Idempotent Tool Journal", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L20"}, {"id": "$graphify-root$_original_request_r4_grokbot_style_persistent_daemonized_execution_universal_verification", "label": "R4. GrokBot-Style Persistent Daemonized Execution & Universal Verification", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L24"}, {"id": "$graphify-root$_original_request_acceptance_criteria", "label": "Acceptance Criteria", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L32"}, {"id": "$graphify-root$_original_request_skill_synthesis_loop_engineering_r1", "label": "Skill Synthesis & Loop Engineering (R1)", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L34"}, {"id": "$graphify-root$_original_request_rlm_context_continual_refinement_r2", "label": "RLM Context & Continual Refinement (R2)", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L38"}, {"id": "$graphify-root$_original_request_reasoning_preservation_idempotency_r3", "label": "Reasoning Preservation & Idempotency (R3)", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L42"}, {"id": "$graphify-root$_original_request_daemon_execution_multi_harness_robustness_r4", "label": "Daemon Execution & Multi-Harness Robustness (R4)", "file_type": "document", "node_kind": "heading", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L46"}], "edges": [{"source": "$graphify-root$_original_request_md", "target": "$graphify-root$_original_request_original_user_request", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_original_request_original_user_request", "target": "$graphify-root$_original_request_initial_request_2026_09_04t15_21_41z", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_original_request_original_user_request", "target": "$graphify-root$_original_request_requirements", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L10", "weight": 1.0}, {"source": "$graphify-root$_original_request_requirements", "target": "$graphify-root$_original_request_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L12", "weight": 1.0}, {"source": "$graphify-root$_original_request_requirements", "target": "$graphify-root$_original_request_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_original_request_requirements", "target": "$graphify-root$_original_request_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_original_request_requirements", "target": "$graphify-root$_original_request_r4_grokbot_style_persistent_daemonized_execution_universal_verification", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_original_request_original_user_request", "target": "$graphify-root$_original_request_acceptance_criteria", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L32", "weight": 1.0}, {"source": "$graphify-root$_original_request_acceptance_criteria", "target": "$graphify-root$_original_request_skill_synthesis_loop_engineering_r1", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L34", "weight": 1.0}, {"source": "$graphify-root$_original_request_acceptance_criteria", "target": "$graphify-root$_original_request_rlm_context_continual_refinement_r2", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_original_request_acceptance_criteria", "target": "$graphify-root$_original_request_reasoning_preservation_idempotency_r3", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L42", "weight": 1.0}, {"source": "$graphify-root$_original_request_acceptance_criteria", "target": "$graphify-root$_original_request_daemon_execution_multi_harness_robustness_r4", "relation": "contains", "confidence": "EXTRACTED", "source_file": "ORIGINAL_REQUEST.md", "source_location": "L46", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_original_request_md",
+      "label": "ORIGINAL_REQUEST.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_original_request_original_user_request",
+      "label": "Original User Request",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_original_request_initial_request_2026_09_04t15_21_41z",
+      "label": "Initial Request \u2014 2026-09-04T15:21:41Z",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_original_request_requirements",
+      "label": "Requirements",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "$graphify-root$_original_request_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering",
+      "label": "R1. Hermes-Style Closed-Loop Skill Synthesis & Loop Engineering",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "$graphify-root$_original_request_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement",
+      "label": "R2. PrimeAgent-Style RLM Context Filtering & Continual Harness Refinement",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L16"
+    },
+    {
+      "id": "$graphify-root$_original_request_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal",
+      "label": "R3. DeepSeekHarness-Style Reasoning Token Preservation & Idempotent Tool Journal",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_original_request_r4_grokbot_style_persistent_daemonized_execution_universal_verification",
+      "label": "R4. GrokBot-Style Persistent Daemonized Execution & Universal Verification",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L24"
+    },
+    {
+      "id": "$graphify-root$_original_request_acceptance_criteria",
+      "label": "Acceptance Criteria",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L32"
+    },
+    {
+      "id": "$graphify-root$_original_request_skill_synthesis_loop_engineering_r1",
+      "label": "Skill Synthesis & Loop Engineering (R1)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L34"
+    },
+    {
+      "id": "$graphify-root$_original_request_rlm_context_continual_refinement_r2",
+      "label": "RLM Context & Continual Refinement (R2)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L38"
+    },
+    {
+      "id": "$graphify-root$_original_request_reasoning_preservation_idempotency_r3",
+      "label": "Reasoning Preservation & Idempotency (R3)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L42"
+    },
+    {
+      "id": "$graphify-root$_original_request_daemon_execution_multi_harness_robustness_r4",
+      "label": "Daemon Execution & Multi-Harness Robustness (R4)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L46"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_original_request_md",
+      "target": "$graphify-root$_original_request_original_user_request",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_original_user_request",
+      "target": "$graphify-root$_original_request_initial_request_2026_09_04t15_21_41z",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_original_user_request",
+      "target": "$graphify-root$_original_request_requirements",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_requirements",
+      "target": "$graphify-root$_original_request_r1_hermes_style_closed_loop_skill_synthesis_loop_engineering",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_requirements",
+      "target": "$graphify-root$_original_request_r2_primeagent_style_rlm_context_filtering_continual_harness_refinement",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_requirements",
+      "target": "$graphify-root$_original_request_r3_deepseekharness_style_reasoning_token_preservation_idempotent_tool_journal",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_requirements",
+      "target": "$graphify-root$_original_request_r4_grokbot_style_persistent_daemonized_execution_universal_verification",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_original_user_request",
+      "target": "$graphify-root$_original_request_acceptance_criteria",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_acceptance_criteria",
+      "target": "$graphify-root$_original_request_skill_synthesis_loop_engineering_r1",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_acceptance_criteria",
+      "target": "$graphify-root$_original_request_rlm_context_continual_refinement_r2",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_acceptance_criteria",
+      "target": "$graphify-root$_original_request_reasoning_preservation_idempotency_r3",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_original_request_acceptance_criteria",
+      "target": "$graphify-root$_original_request_daemon_execution_multi_harness_robustness_r4",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "ORIGINAL_REQUEST.md",
+      "source_location": "L46",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

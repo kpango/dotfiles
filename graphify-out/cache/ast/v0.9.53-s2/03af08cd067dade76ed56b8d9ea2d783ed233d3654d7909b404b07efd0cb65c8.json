@@ -1,1 +1,69 @@
-{"nodes": [{"id": "$graphify-root$_network_scripts_99_coalesce_x710", "label": "99-coalesce-x710", "file_type": "code", "source_file": "network/scripts/99-coalesce-x710", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_network_scripts_99_coalesce_x710__entry", "label": "99-coalesce-x710 script", "file_type": "code", "source_file": "network/scripts/99-coalesce-x710", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_network_scripts_99_coalesce_x710", "target": "$graphify-root$_network_scripts_99_coalesce_x710__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "network/scripts/99-coalesce-x710", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry", "source_file": "network/scripts/99-coalesce-x710", "source_location": "L4"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry", "source_file": "network/scripts/99-coalesce-x710", "source_location": "L8"}, {"language": "bash", "callee": "ethtool", "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry", "source_file": "network/scripts/99-coalesce-x710", "source_location": "L11"}, {"language": "bash", "callee": "tc", "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry", "source_file": "network/scripts/99-coalesce-x710", "source_location": "L15"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry", "source_file": "network/scripts/99-coalesce-x710", "source_location": "L26"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_network_scripts_99_coalesce_x710",
+      "label": "99-coalesce-x710",
+      "file_type": "code",
+      "source_file": "network/scripts/99-coalesce-x710",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_network_scripts_99_coalesce_x710__entry",
+      "label": "99-coalesce-x710 script",
+      "file_type": "code",
+      "source_file": "network/scripts/99-coalesce-x710",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_network_scripts_99_coalesce_x710",
+      "target": "$graphify-root$_network_scripts_99_coalesce_x710__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "network/scripts/99-coalesce-x710",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry",
+      "source_file": "network/scripts/99-coalesce-x710",
+      "source_location": "L4"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry",
+      "source_file": "network/scripts/99-coalesce-x710",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": "ethtool",
+      "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry",
+      "source_file": "network/scripts/99-coalesce-x710",
+      "source_location": "L11"
+    },
+    {
+      "language": "bash",
+      "callee": "tc",
+      "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry",
+      "source_file": "network/scripts/99-coalesce-x710",
+      "source_location": "L15"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_network_scripts_99_coalesce_x710__entry",
+      "source_file": "network/scripts/99-coalesce-x710",
+      "source_location": "L26"
+    }
+  ],
+  "bash_sources": []
+}

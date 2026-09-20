@@ -1,1 +1,684 @@
-{"nodes": [{"id": "$graphify-root$_agent_scripts_resolve_model_tier_py", "label": "resolve-model-tier.py", "file_type": "code", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L1"}, {"id": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "label": "find_repo_root()", "file_type": "code", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L20", "_callable": true}, {"id": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "label": "get_harness_config_path()", "file_type": "code", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L24", "_callable": true}, {"id": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config", "label": "load_harness_config()", "file_type": "code", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L37", "_callable": true}, {"id": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "label": "resolve_tier()", "file_type": "code", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L44", "_callable": true}, {"id": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "label": "validate_config()", "file_type": "code", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L112", "_callable": true}, {"id": "$graphify-root$_agent_scripts_resolve_model_tier_main", "label": "main()", "file_type": "code", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L146", "_callable": true}], "edges": [{"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "json", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "os", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L14", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "sys", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L15", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L24", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L37", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L44", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L112", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_py", "target": "$graphify-root$_agent_scripts_resolve_model_tier_main", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L146", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "target": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L26", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config", "target": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L38", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "target": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L70", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "target": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L114", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_main", "target": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L152", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_main", "target": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L157", "weight": 1.0}, {"source": "$graphify-root$_agent_scripts_resolve_model_tier_main", "target": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L194", "weight": 1.0}], "raw_calls": [{"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "callee": "dirname", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L21", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "callee": "abspath", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L21", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "callee": "__file__", "is_member_call": false, "indirect": true, "context": "argument", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L21"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "callee": "abspath", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L22", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root", "callee": "join", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L22", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "callee": "join", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L28", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "callee": "join", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L29", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "callee": "join", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L30", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path", "callee": "isfile", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L33", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config", "callee": "isfile", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L39", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config", "callee": "FileNotFoundError", "is_member_call": false, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L40", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config", "callee": "load", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L42", "receiver": "json"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config", "callee": "f", "is_member_call": false, "indirect": true, "context": "argument", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L42"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "split", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L49", "receiver": "tier_str"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "lower", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L50", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "lower", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L52", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L59", "receiver": "TIER_MAP"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "lower", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L59", "receiver": "clean_tier"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "lower", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L60", "receiver": "normalized_tier"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L71", "receiver": "cfg"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L73", "receiver": "tiers"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L75", "receiver": "cfg"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L76", "receiver": "tiers"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L81", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L85", "receiver": "target_cfg"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L85", "receiver": "tier_cfg"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L94", "receiver": "f"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L103", "receiver": "active_cfg"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L104", "receiver": "active_cfg"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L105", "receiver": "active_cfg"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L106", "receiver": "active_cfg"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L108", "receiver": "resolved_fallback"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "isfile", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L115", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "load", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L120", "receiver": "json"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "f", "is_member_call": false, "indirect": true, "context": "argument", "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L120"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L124", "receiver": "data"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "append", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L125", "receiver": "errors"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L125", "receiver": "data"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L127", "receiver": "data"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "append", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L129", "receiver": "errors"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L131", "receiver": "data"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "append", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L135", "receiver": "errors"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L138", "receiver": "t"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "append", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L139", "receiver": "errors"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L140", "receiver": "t"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config", "callee": "append", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L142", "receiver": "errors"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "strip", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L148", "receiver": "__doc__"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "exit", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L149", "receiver": "sys"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "exit", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L165", "receiver": "sys"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "index", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L174", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "index", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L178", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "index", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L182", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "index", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L189", "receiver": null}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L196", "receiver": "res"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L198", "receiver": "res"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "get", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L200", "receiver": "res"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "dumps", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L202", "receiver": "json"}, {"caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main", "callee": "exit", "is_member_call": true, "source_file": "agent/scripts/resolve-model-tier.py", "source_location": "L205", "receiver": "sys"}]}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "label": "resolve-model-tier.py",
+      "file_type": "code",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "label": "find_repo_root()",
+      "file_type": "code",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L20",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "label": "get_harness_config_path()",
+      "file_type": "code",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L24",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config",
+      "label": "load_harness_config()",
+      "file_type": "code",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L37",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "label": "resolve_tier()",
+      "file_type": "code",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L44",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "label": "validate_config()",
+      "file_type": "code",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L112",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L146",
+      "_callable": true
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L24",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L112",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_py",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L26",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L70",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L114",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L157",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "target": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L194",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "callee": "dirname",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L21",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "callee": "abspath",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L21",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "callee": "__file__",
+      "is_member_call": false,
+      "indirect": true,
+      "context": "argument",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L21"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "callee": "abspath",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L22",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_find_repo_root",
+      "callee": "join",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L22",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "callee": "join",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L28",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "callee": "join",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L29",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "callee": "join",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L30",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_get_harness_config_path",
+      "callee": "isfile",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L33",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config",
+      "callee": "isfile",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L39",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config",
+      "callee": "FileNotFoundError",
+      "is_member_call": false,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L40",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config",
+      "callee": "load",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L42",
+      "receiver": "json"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_load_harness_config",
+      "callee": "f",
+      "is_member_call": false,
+      "indirect": true,
+      "context": "argument",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L42"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "split",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L49",
+      "receiver": "tier_str"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "lower",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L50",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "lower",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L52",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L59",
+      "receiver": "TIER_MAP"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "lower",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L59",
+      "receiver": "clean_tier"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "lower",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L60",
+      "receiver": "normalized_tier"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L71",
+      "receiver": "cfg"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L73",
+      "receiver": "tiers"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L75",
+      "receiver": "cfg"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L76",
+      "receiver": "tiers"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L81",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L85",
+      "receiver": "target_cfg"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L85",
+      "receiver": "tier_cfg"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L94",
+      "receiver": "f"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L103",
+      "receiver": "active_cfg"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L104",
+      "receiver": "active_cfg"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L105",
+      "receiver": "active_cfg"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L106",
+      "receiver": "active_cfg"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_resolve_tier",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L108",
+      "receiver": "resolved_fallback"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "isfile",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L115",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "load",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L120",
+      "receiver": "json"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "f",
+      "is_member_call": false,
+      "indirect": true,
+      "context": "argument",
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L120"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L124",
+      "receiver": "data"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "append",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L125",
+      "receiver": "errors"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L125",
+      "receiver": "data"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L127",
+      "receiver": "data"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "append",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L129",
+      "receiver": "errors"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L131",
+      "receiver": "data"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "append",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L135",
+      "receiver": "errors"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L138",
+      "receiver": "t"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "append",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L139",
+      "receiver": "errors"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L140",
+      "receiver": "t"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_validate_config",
+      "callee": "append",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L142",
+      "receiver": "errors"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "strip",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L148",
+      "receiver": "__doc__"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "exit",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L149",
+      "receiver": "sys"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "exit",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L165",
+      "receiver": "sys"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "index",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L174",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "index",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L178",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "index",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L182",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "index",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L189",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L196",
+      "receiver": "res"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L198",
+      "receiver": "res"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L200",
+      "receiver": "res"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "dumps",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L202",
+      "receiver": "json"
+    },
+    {
+      "caller_nid": "$graphify-root$_agent_scripts_resolve_model_tier_main",
+      "callee": "exit",
+      "is_member_call": true,
+      "source_file": "agent/scripts/resolve-model-tier.py",
+      "source_location": "L205",
+      "receiver": "sys"
+    }
+  ]
+}

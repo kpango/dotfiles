@@ -1,1 +1,33 @@
-{"nodes": [{"id": "$graphify-root$_agents_worker_m3_progress_md", "label": "progress.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/worker_m3/progress.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_m3_progress_progress_log_m3_pi_coding_agent_extensions_for_grill_and_ponytail", "label": "Progress Log - M3: Pi Coding Agent Extensions for /grill and /ponytail", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m3/progress.md", "source_location": "L1"}], "edges": [{"source": "$graphify-root$_agents_worker_m3_progress_md", "target": "$graphify-root$_agents_worker_m3_progress_progress_log_m3_pi_coding_agent_extensions_for_grill_and_ponytail", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m3/progress.md", "source_location": "L1", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_worker_m3_progress_md",
+      "label": "progress.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/worker_m3/progress.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m3_progress_progress_log_m3_pi_coding_agent_extensions_for_grill_and_ponytail",
+      "label": "Progress Log - M3: Pi Coding Agent Extensions for /grill and /ponytail",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m3/progress.md",
+      "source_location": "L1"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_worker_m3_progress_md",
+      "target": "$graphify-root$_agents_worker_m3_progress_progress_log_m3_pi_coding_agent_extensions_for_grill_and_ponytail",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m3/progress.md",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

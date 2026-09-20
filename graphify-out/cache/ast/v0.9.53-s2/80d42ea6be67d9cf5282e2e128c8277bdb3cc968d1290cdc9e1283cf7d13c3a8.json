@@ -1,1 +1,647 @@
-{"nodes": [{"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "label": "main_bench_test.go", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L1"}, {"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "label": "silenceStdout()", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L10"}, {"id": "testing_b", "label": "testing.B", "file_type": "code", "source_file": "", "source_location": "", "origin_file": "$graphify-root$/tmux.conf.d/tmux-pane-info/main_bench_test.go"}, {"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit", "label": "BenchmarkReadCacheHit()", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L20"}, {"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch", "label": "BenchmarkReadCacheHitBranch()", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L31"}, {"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath", "label": "BenchmarkFindGitHeadPath()", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L42"}, {"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath", "label": "BenchmarkAbbreviatePath()", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L51"}, {"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "label": "BenchmarkReadCacheToStdout()", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L60"}, {"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit", "label": "BenchmarkPaneSegmentCacheHit()", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L80"}, {"id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment", "label": "BenchmarkWriteSegment()", "file_type": "code", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L91"}], "edges": [{"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "go_pkg_io", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L4", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "go_pkg_os", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L5", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "go_pkg_strconv", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L6", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "go_pkg_testing", "relation": "imports_from", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L7", "weight": 1.0, "context": "import"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L10", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "target": "testing_b", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L10", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L20", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit", "target": "testing_b", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L20", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L31", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch", "target": "testing_b", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L31", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L42", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath", "target": "testing_b", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L42", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L51", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath", "target": "testing_b", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L51", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L60", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "target": "testing_b", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L60", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L80", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit", "target": "testing_b", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L80", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment", "relation": "contains", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L91", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment", "target": "testing_b", "relation": "references", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L91", "weight": 1.0, "context": "parameter_type"}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L33", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L62", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L82", "weight": 1.0}, {"source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment", "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L94", "weight": 1.0}], "raw_calls": [{"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "callee": "Helper", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L11"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "callee": "OpenFile", "is_member_call": false, "language": "go", "receiver": "os", "import_path": "os", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L13"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "callee": "Cleanup", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L14"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout", "callee": "Close", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L15"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit", "callee": "paneOut", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L23"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit", "callee": "ReportAllocs", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L24"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit", "callee": "ResetTimer", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L25"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit", "callee": "paneOut", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L27"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch", "callee": "paneOut", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L34"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch", "callee": "ReportAllocs", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L35"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch", "callee": "ResetTimer", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L36"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch", "callee": "paneOut", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L38"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath", "callee": "ReportAllocs", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L44"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath", "callee": "ResetTimer", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L45"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath", "callee": "findGitHeadPath", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L47"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath", "callee": "ReportAllocs", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L53"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath", "callee": "ResetTimer", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L54"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath", "callee": "abbreviatePath", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L56"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "callee": "paneOut", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L63"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "callee": "cachePathForDir", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L65"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "callee": "findGitHeadPath", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L66"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "callee": "AppendInt", "is_member_call": false, "language": "go", "receiver": "strconv", "import_path": "strconv", "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L71"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "callee": "ReportAllocs", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L73"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "callee": "ResetTimer", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L74"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout", "callee": "readCacheToStdout", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L76"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit", "callee": "paneSegment", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L83"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit", "callee": "ReportAllocs", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L84"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit", "callee": "ResetTimer", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L85"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit", "callee": "paneSegment", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L87"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment", "callee": "ReportAllocs", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L95"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment", "callee": "ResetTimer", "is_member_call": true, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L96"}, {"caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment", "callee": "writeSegment", "is_member_call": false, "language": "go", "receiver": null, "import_path": null, "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go", "source_location": "L98"}], "go_imports": {"io": "io", "os": "os", "strconv": "strconv", "testing": "testing"}}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "label": "main_bench_test.go",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "label": "silenceStdout()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L10"
+    },
+    {
+      "id": "testing_b",
+      "label": "testing.B",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "origin_file": "$graphify-root$/tmux.conf.d/tmux-pane-info/main_bench_test.go"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit",
+      "label": "BenchmarkReadCacheHit()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L20"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch",
+      "label": "BenchmarkReadCacheHitBranch()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L31"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath",
+      "label": "BenchmarkFindGitHeadPath()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L42"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath",
+      "label": "BenchmarkAbbreviatePath()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L51"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "label": "BenchmarkReadCacheToStdout()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L60"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit",
+      "label": "BenchmarkPaneSegmentCacheHit()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L80"
+    },
+    {
+      "id": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment",
+      "label": "BenchmarkWriteSegment()",
+      "file_type": "code",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L91"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "go_pkg_io",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L4",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "go_pkg_os",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L5",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "go_pkg_strconv",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L6",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "go_pkg_testing",
+      "relation": "imports_from",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L7",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "target": "testing_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L10",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L20",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit",
+      "target": "testing_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L20",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch",
+      "target": "testing_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L31",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L42",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath",
+      "target": "testing_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L42",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L51",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath",
+      "target": "testing_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L51",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "target": "testing_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L60",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit",
+      "target": "testing_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L80",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_go",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment",
+      "target": "testing_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L91",
+      "weight": 1.0,
+      "context": "parameter_type"
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L33",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L82",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment",
+      "target": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L94",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "callee": "Helper",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L11"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "callee": "OpenFile",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "os",
+      "import_path": "os",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L13"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "callee": "Cleanup",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L14"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_silencestdout",
+      "callee": "Close",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L15"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit",
+      "callee": "paneOut",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L23"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit",
+      "callee": "ReportAllocs",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L24"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit",
+      "callee": "ResetTimer",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L25"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehit",
+      "callee": "paneOut",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L27"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch",
+      "callee": "paneOut",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L34"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch",
+      "callee": "ReportAllocs",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L35"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch",
+      "callee": "ResetTimer",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L36"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachehitbranch",
+      "callee": "paneOut",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L38"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath",
+      "callee": "ReportAllocs",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L44"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath",
+      "callee": "ResetTimer",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L45"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkfindgitheadpath",
+      "callee": "findGitHeadPath",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L47"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath",
+      "callee": "ReportAllocs",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L53"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath",
+      "callee": "ResetTimer",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L54"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkabbreviatepath",
+      "callee": "abbreviatePath",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L56"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "callee": "paneOut",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L63"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "callee": "cachePathForDir",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L65"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "callee": "findGitHeadPath",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L66"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "callee": "AppendInt",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": "strconv",
+      "import_path": "strconv",
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L71"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "callee": "ReportAllocs",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L73"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "callee": "ResetTimer",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L74"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkreadcachetostdout",
+      "callee": "readCacheToStdout",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L76"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit",
+      "callee": "paneSegment",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L83"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit",
+      "callee": "ReportAllocs",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L84"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit",
+      "callee": "ResetTimer",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L85"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkpanesegmentcachehit",
+      "callee": "paneSegment",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L87"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment",
+      "callee": "ReportAllocs",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L95"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment",
+      "callee": "ResetTimer",
+      "is_member_call": true,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L96"
+    },
+    {
+      "caller_nid": "$graphify-root$_tmux_conf_d_tmux_pane_info_main_bench_test_benchmarkwritesegment",
+      "callee": "writeSegment",
+      "is_member_call": false,
+      "language": "go",
+      "receiver": null,
+      "import_path": null,
+      "source_file": "tmux.conf.d/tmux-pane-info/main_bench_test.go",
+      "source_location": "L98"
+    }
+  ],
+  "go_imports": {
+    "io": "io",
+    "os": "os",
+    "strconv": "strconv",
+    "testing": "testing"
+  }
+}

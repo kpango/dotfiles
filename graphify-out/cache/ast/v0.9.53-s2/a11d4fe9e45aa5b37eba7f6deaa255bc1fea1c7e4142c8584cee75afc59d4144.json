@@ -1,1 +1,743 @@
-{"nodes": [{"id": "$graphify-root$_scripts_merge_skill_stats_py", "label": "merge-skill-stats.py", "file_type": "code", "source_file": "scripts/merge-skill-stats.py", "source_location": "L1"}, {"id": "$graphify-root$_scripts_merge_skill_stats_load", "label": "load()", "file_type": "code", "source_file": "scripts/merge-skill-stats.py", "source_location": "L22", "_callable": true}, {"id": "$graphify-root$_scripts_merge_skill_stats_merge_metrics", "label": "merge_metrics()", "file_type": "code", "source_file": "scripts/merge-skill-stats.py", "source_location": "L30", "_callable": true}, {"id": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "label": "merge_lifecycle()", "file_type": "code", "source_file": "scripts/merge-skill-stats.py", "source_location": "L79", "_callable": true}, {"id": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "label": "merge_failure_signatures()", "file_type": "code", "source_file": "scripts/merge-skill-stats.py", "source_location": "L96", "_callable": true}, {"id": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "label": "merge_prompt_revision_history()", "file_type": "code", "source_file": "scripts/merge-skill-stats.py", "source_location": "L119", "_callable": true}, {"id": "$graphify-root$_scripts_merge_skill_stats_merge_one", "label": "merge_one()", "file_type": "code", "source_file": "scripts/merge-skill-stats.py", "source_location": "L135", "_callable": true}, {"id": "$graphify-root$_scripts_merge_skill_stats_main", "label": "main()", "file_type": "code", "source_file": "scripts/merge-skill-stats.py", "source_location": "L150", "_callable": true}], "edges": [{"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "glob", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "json", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L14", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "os", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L15", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "sys", "relation": "imports", "context": "import", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L16", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "$graphify-root$_scripts_merge_skill_stats_load", "relation": "contains", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "$graphify-root$_scripts_merge_skill_stats_merge_metrics", "relation": "contains", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L30", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "relation": "contains", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L79", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "relation": "contains", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L96", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "relation": "contains", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L119", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "$graphify-root$_scripts_merge_skill_stats_merge_one", "relation": "contains", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L135", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_py", "target": "$graphify-root$_scripts_merge_skill_stats_main", "relation": "contains", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L150", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_merge_one", "target": "$graphify-root$_scripts_merge_skill_stats_merge_metrics", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L143", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_merge_one", "target": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L144", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_merge_one", "target": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L145", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_merge_one", "target": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L146", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_main", "target": "$graphify-root$_scripts_merge_skill_stats_load", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L163", "weight": 1.0}, {"source": "$graphify-root$_scripts_merge_skill_stats_main", "target": "$graphify-root$_scripts_merge_skill_stats_merge_one", "relation": "calls", "context": "call", "confidence": "EXTRACTED", "source_file": "scripts/merge-skill-stats.py", "source_location": "L168", "weight": 1.0}], "raw_calls": [{"caller_nid": "$graphify-root$_scripts_merge_skill_stats_load", "callee": "load", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L25", "receiver": "json"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_load", "callee": "f", "is_member_call": false, "indirect": true, "context": "argument", "source_file": "scripts/merge-skill-stats.py", "source_location": "L25"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_metrics", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L44", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_metrics", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L47", "receiver": "dm"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_metrics", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L48", "receiver": "dm"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_metrics", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L51", "receiver": "dm"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L80", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L80", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L80", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L80", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L81", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L81", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L81", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L81", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L81", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L81", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L82", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L82", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L82", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L82", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle", "callee": "sort", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L86", "receiver": "lasts"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L99", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L100", "receiver": "sig"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L103", "receiver": "by_cat"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L107", "receiver": "existing"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L107", "receiver": "sig"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L108", "receiver": "sig"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L108", "receiver": "existing"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L110", "receiver": "sig"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L110", "receiver": "existing"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L112", "receiver": "sig"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L112", "receiver": "existing"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "values", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L113", "receiver": "by_cat"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L114", "receiver": "s"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures", "callee": "upper", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L115", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L123", "receiver": "d"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L124", "receiver": "rev"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L124", "receiver": "rev"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "callee": "add", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L127", "receiver": "seen"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "callee": "append", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L128", "receiver": "merged"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "callee": "sort", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L129", "receiver": "merged"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L129", "receiver": "r"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_one", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L138", "receiver": "base"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_one", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L140", "receiver": "base"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_one", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L142", "receiver": "base"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_one", "callee": "get", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L146", "receiver": "base"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "glob", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L155", "receiver": "glob"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "join", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L155", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "ROOT", "is_member_call": false, "indirect": true, "context": "argument", "source_file": "scripts/merge-skill-stats.py", "source_location": "L155"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "add", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L156", "receiver": "skill_names"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "basename", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L156", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "dirname", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L156", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "join", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L162", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "ROOT", "is_member_call": false, "indirect": true, "context": "argument", "source_file": "scripts/merge-skill-stats.py", "source_location": "L162"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "append", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L165", "receiver": "docs"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "join", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L169", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "ROOT", "is_member_call": false, "indirect": true, "context": "argument", "source_file": "scripts/merge-skill-stats.py", "source_location": "L169"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "makedirs", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L180", "receiver": "os"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "dirname", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L180", "receiver": null}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "dump", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L182", "receiver": "json"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "f", "is_member_call": false, "indirect": true, "context": "argument", "source_file": "scripts/merge-skill-stats.py", "source_location": "L182"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "write", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L183", "receiver": "f"}, {"caller_nid": "$graphify-root$_scripts_merge_skill_stats_main", "callee": "exit", "is_member_call": true, "source_file": "scripts/merge-skill-stats.py", "source_location": "L187", "receiver": "sys"}]}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_scripts_merge_skill_stats_py",
+      "label": "merge-skill-stats.py",
+      "file_type": "code",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_scripts_merge_skill_stats_load",
+      "label": "load()",
+      "file_type": "code",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L22",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_scripts_merge_skill_stats_merge_metrics",
+      "label": "merge_metrics()",
+      "file_type": "code",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L30",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "label": "merge_lifecycle()",
+      "file_type": "code",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L79",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "label": "merge_failure_signatures()",
+      "file_type": "code",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L96",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "label": "merge_prompt_revision_history()",
+      "file_type": "code",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L119",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "label": "merge_one()",
+      "file_type": "code",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L135",
+      "_callable": true
+    },
+    {
+      "id": "$graphify-root$_scripts_merge_skill_stats_main",
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L150",
+      "_callable": true
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "glob",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "json",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "os",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "sys",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "$graphify-root$_scripts_merge_skill_stats_load",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_metrics",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L30",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L79",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L96",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L119",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L135",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_py",
+      "target": "$graphify-root$_scripts_merge_skill_stats_main",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L150",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_metrics",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L144",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_main",
+      "target": "$graphify-root$_scripts_merge_skill_stats_load",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_scripts_merge_skill_stats_main",
+      "target": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L168",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_load",
+      "callee": "load",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L25",
+      "receiver": "json"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_load",
+      "callee": "f",
+      "is_member_call": false,
+      "indirect": true,
+      "context": "argument",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L25"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_metrics",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L44",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_metrics",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L47",
+      "receiver": "dm"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_metrics",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L48",
+      "receiver": "dm"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_metrics",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L51",
+      "receiver": "dm"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L80",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L80",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L80",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L80",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L81",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L81",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L81",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L81",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L81",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L81",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L82",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L82",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L82",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L82",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_lifecycle",
+      "callee": "sort",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L86",
+      "receiver": "lasts"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L99",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L100",
+      "receiver": "sig"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L103",
+      "receiver": "by_cat"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L107",
+      "receiver": "existing"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L107",
+      "receiver": "sig"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L108",
+      "receiver": "sig"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L108",
+      "receiver": "existing"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L110",
+      "receiver": "sig"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L110",
+      "receiver": "existing"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L112",
+      "receiver": "sig"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L112",
+      "receiver": "existing"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "values",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L113",
+      "receiver": "by_cat"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L114",
+      "receiver": "s"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_failure_signatures",
+      "callee": "upper",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L115",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L123",
+      "receiver": "d"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L124",
+      "receiver": "rev"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L124",
+      "receiver": "rev"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "callee": "add",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L127",
+      "receiver": "seen"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "callee": "append",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L128",
+      "receiver": "merged"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "callee": "sort",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L129",
+      "receiver": "merged"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_prompt_revision_history",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L129",
+      "receiver": "r"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L138",
+      "receiver": "base"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L140",
+      "receiver": "base"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L142",
+      "receiver": "base"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_merge_one",
+      "callee": "get",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L146",
+      "receiver": "base"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "glob",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L155",
+      "receiver": "glob"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "join",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L155",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "ROOT",
+      "is_member_call": false,
+      "indirect": true,
+      "context": "argument",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L155"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "add",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L156",
+      "receiver": "skill_names"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "basename",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L156",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "dirname",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L156",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "join",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L162",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "ROOT",
+      "is_member_call": false,
+      "indirect": true,
+      "context": "argument",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L162"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "append",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L165",
+      "receiver": "docs"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "join",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L169",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "ROOT",
+      "is_member_call": false,
+      "indirect": true,
+      "context": "argument",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L169"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "makedirs",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L180",
+      "receiver": "os"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "dirname",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L180",
+      "receiver": null
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "dump",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L182",
+      "receiver": "json"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "f",
+      "is_member_call": false,
+      "indirect": true,
+      "context": "argument",
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L182"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "write",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L183",
+      "receiver": "f"
+    },
+    {
+      "caller_nid": "$graphify-root$_scripts_merge_skill_stats_main",
+      "callee": "exit",
+      "is_member_call": true,
+      "source_file": "scripts/merge-skill-stats.py",
+      "source_location": "L187",
+      "receiver": "sys"
+    }
+  ]
+}

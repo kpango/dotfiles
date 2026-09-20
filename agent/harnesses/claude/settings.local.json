@@ -94,6 +94,9 @@
       "Bash(dive *)",
       "Bash(perf *)",
       "Bash(strace *)",
+      "Bash(update_git_repo *)",
+      "Bash(update_multiple_git_repos *)",
+      "Bash(kpangoup)",
       "Skill(*)"
     ]
   }

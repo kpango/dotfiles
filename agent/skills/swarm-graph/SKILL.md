@@ -372,11 +372,11 @@ source-of-truth state files. Reference: `agent/harnesses/pi/extensions/SKILL_STA
 
 ```json
 {
-  "frontier":    { "type": "list", "listMerge": "union" },
-  "completed":   { "type": "list", "listMerge": "union" },
-  "stale":       { "type": "list", "listMerge": "union" },
+  "frontier": { "type": "list", "listMerge": "union" },
+  "completed": { "type": "list", "listMerge": "union" },
+  "stale": { "type": "list", "listMerge": "union" },
   "node_status": { "type": "map" },
-  "replans":     { "type": "number" }
+  "replans": { "type": "number" }
 }
 ```
 

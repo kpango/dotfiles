@@ -1,1 +1,131 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh", "label": "agents-log-lib.sh", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry", "label": "agents-log-lib.sh script", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "label": "agents_log_path()", "file_type": "code", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L12", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "relation": "defines", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L12", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry", "target": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "relation": "calls", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L31", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L8"}, {"language": "bash", "callee": ":", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L10"}, {"language": "bash", "callee": "cd", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L21"}, {"language": "bash", "callee": "git", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L21"}, {"language": "bash", "callee": "pwd", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L21"}, {"language": "bash", "callee": "return", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L21"}, {"language": "bash", "callee": "dirname", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L22"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L26"}, {"language": "bash", "callee": "true", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L26"}, {"language": "bash", "callee": "printf", "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path", "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh", "source_location": "L27"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh",
+      "label": "agents-log-lib.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry",
+      "label": "agents-log-lib.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "label": "agents_log_path()",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L12",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry",
+      "target": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L31",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L8"
+    },
+    {
+      "language": "bash",
+      "callee": ":",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_sh__entry",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L10"
+    },
+    {
+      "language": "bash",
+      "callee": "cd",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L21"
+    },
+    {
+      "language": "bash",
+      "callee": "git",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L21"
+    },
+    {
+      "language": "bash",
+      "callee": "pwd",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L21"
+    },
+    {
+      "language": "bash",
+      "callee": "return",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L21"
+    },
+    {
+      "language": "bash",
+      "callee": "dirname",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L22"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L26"
+    },
+    {
+      "language": "bash",
+      "callee": "true",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L26"
+    },
+    {
+      "language": "bash",
+      "callee": "printf",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_implement_scripts_agents_log_lib_agents_log_path",
+      "source_file": "agent/skills/swarm-implement/scripts/agents-log-lib.sh",
+      "source_location": "L27"
+    }
+  ],
+  "bash_sources": []
+}

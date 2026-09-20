@@ -1,1 +1,67 @@
-{"nodes": [{"id": "$graphify-root$_pi_system_md", "label": "SYSTEM.md", "file_type": "document", "node_kind": "page", "source_file": "pi/SYSTEM.md", "source_location": "L1"}, {"id": "$graphify-root$_pi_system_pi_coding_agent_system_prompt", "label": "Pi Coding Agent \u2014 System Prompt", "file_type": "document", "node_kind": "heading", "source_file": "pi/SYSTEM.md", "source_location": "L1"}, {"id": "$graphify-root$_pi_system_behavioral_directives", "label": "Behavioral Directives", "file_type": "document", "node_kind": "heading", "source_file": "pi/SYSTEM.md", "source_location": "L5"}, {"id": "$graphify-root$_pi_system_shared_directives_all_tools", "label": "Shared Directives (all tools)", "file_type": "document", "node_kind": "heading", "source_file": "pi/SYSTEM.md", "source_location": "L28"}], "edges": [{"source": "$graphify-root$_pi_system_md", "target": "$graphify-root$_pi_system_pi_coding_agent_system_prompt", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/SYSTEM.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_pi_system_pi_coding_agent_system_prompt", "target": "$graphify-root$_pi_system_behavioral_directives", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/SYSTEM.md", "source_location": "L5", "weight": 1.0}, {"source": "$graphify-root$_pi_system_pi_coding_agent_system_prompt", "target": "$graphify-root$_pi_system_shared_directives_all_tools", "relation": "contains", "confidence": "EXTRACTED", "source_file": "pi/SYSTEM.md", "source_location": "L28", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_system_md",
+      "label": "SYSTEM.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "pi/SYSTEM.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_pi_system_pi_coding_agent_system_prompt",
+      "label": "Pi Coding Agent \u2014 System Prompt",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/SYSTEM.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_pi_system_behavioral_directives",
+      "label": "Behavioral Directives",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/SYSTEM.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "$graphify-root$_pi_system_shared_directives_all_tools",
+      "label": "Shared Directives (all tools)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "pi/SYSTEM.md",
+      "source_location": "L28"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_system_md",
+      "target": "$graphify-root$_pi_system_pi_coding_agent_system_prompt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/SYSTEM.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_system_pi_coding_agent_system_prompt",
+      "target": "$graphify-root$_pi_system_behavioral_directives",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/SYSTEM.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_pi_system_pi_coding_agent_system_prompt",
+      "target": "$graphify-root$_pi_system_shared_directives_all_tools",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "pi/SYSTEM.md",
+      "source_location": "L28",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

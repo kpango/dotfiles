@@ -1,1 +1,118 @@
-{"nodes": [{"id": "$graphify-root$_agents_worker_m2_handoff_md", "label": "handoff.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement", "label": "Handoff Report: Worker M2 (Milestone 2: R2 RLM Context Filtering & Continual Harness Refinement)", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_m2_handoff_1_observation", "label": "1. Observation", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L12"}, {"id": "$graphify-root$_agents_worker_m2_handoff_2_logic_chain", "label": "2. Logic Chain", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L63"}, {"id": "$graphify-root$_agents_worker_m2_handoff_3_caveats", "label": "3. Caveats", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L80"}, {"id": "$graphify-root$_agents_worker_m2_handoff_4_conclusion", "label": "4. Conclusion", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L86"}, {"id": "$graphify-root$_agents_worker_m2_handoff_5_verification_method", "label": "5. Verification Method", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L92"}], "edges": [{"source": "$graphify-root$_agents_worker_m2_handoff_md", "target": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement", "target": "$graphify-root$_agents_worker_m2_handoff_1_observation", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L12", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement", "target": "$graphify-root$_agents_worker_m2_handoff_2_logic_chain", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L63", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement", "target": "$graphify-root$_agents_worker_m2_handoff_3_caveats", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L80", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement", "target": "$graphify-root$_agents_worker_m2_handoff_4_conclusion", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L86", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement", "target": "$graphify-root$_agents_worker_m2_handoff_5_verification_method", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m2/handoff.md", "source_location": "L92", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_worker_m2_handoff_md",
+      "label": "handoff.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement",
+      "label": "Handoff Report: Worker M2 (Milestone 2: R2 RLM Context Filtering & Continual Harness Refinement)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m2_handoff_1_observation",
+      "label": "1. Observation",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m2_handoff_2_logic_chain",
+      "label": "2. Logic Chain",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L63"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m2_handoff_3_caveats",
+      "label": "3. Caveats",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L80"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m2_handoff_4_conclusion",
+      "label": "4. Conclusion",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L86"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m2_handoff_5_verification_method",
+      "label": "5. Verification Method",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L92"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_worker_m2_handoff_md",
+      "target": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement",
+      "target": "$graphify-root$_agents_worker_m2_handoff_1_observation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement",
+      "target": "$graphify-root$_agents_worker_m2_handoff_2_logic_chain",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L63",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement",
+      "target": "$graphify-root$_agents_worker_m2_handoff_3_caveats",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement",
+      "target": "$graphify-root$_agents_worker_m2_handoff_4_conclusion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m2_handoff_handoff_report_worker_m2_milestone_2_r2_rlm_context_filtering_continual_harness_refinement",
+      "target": "$graphify-root$_agents_worker_m2_handoff_5_verification_method",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m2/handoff.md",
+      "source_location": "L92",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

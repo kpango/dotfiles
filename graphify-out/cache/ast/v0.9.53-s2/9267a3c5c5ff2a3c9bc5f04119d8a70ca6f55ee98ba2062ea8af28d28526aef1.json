@@ -1,1 +1,32 @@
-{"nodes": [{"id": "$graphify-root$_pi_mcp_json", "label": "mcp.json", "file_type": "code", "source_file": "pi/mcp.json", "source_location": "L1", "metadata": {"mcp_kind": "mcp_config_file"}}, {"id": "$graphify-root$_pi_mcp_mcp_server_executor", "label": "executor", "file_type": "code", "source_file": "pi/mcp.json", "source_location": "L1", "metadata": {"mcp_kind": "mcp_server"}}], "edges": [{"source": "$graphify-root$_pi_mcp_json", "target": "$graphify-root$_pi_mcp_mcp_server_executor", "relation": "contains", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "pi/mcp.json", "source_location": "L1", "weight": 1.0}]}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_pi_mcp_json",
+      "label": "mcp.json",
+      "file_type": "code",
+      "source_file": "pi/mcp.json",
+      "source_location": "L1",
+      "metadata": { "mcp_kind": "mcp_config_file" }
+    },
+    {
+      "id": "$graphify-root$_pi_mcp_mcp_server_executor",
+      "label": "executor",
+      "file_type": "code",
+      "source_file": "pi/mcp.json",
+      "source_location": "L1",
+      "metadata": { "mcp_kind": "mcp_server" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_pi_mcp_json",
+      "target": "$graphify-root$_pi_mcp_mcp_server_executor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "pi/mcp.json",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ]
+}

@@ -1,1 +1,50 @@
-{"nodes": [{"id": "$graphify-root$_agents_reviewer_1_dispatch_md", "label": "DISPATCH.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/reviewer_1/DISPATCH.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_reviewer_1_dispatch_2026_09_04t12_37_07z", "label": "2026-09-04T12:37:07Z", "file_type": "document", "node_kind": "heading", "source_file": ".agents/reviewer_1/DISPATCH.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_reviewer_1_dispatch_2026_09_04t21_10_22z", "label": "2026-09-04T21:10:22Z", "file_type": "document", "node_kind": "heading", "source_file": ".agents/reviewer_1/DISPATCH.md", "source_location": "L35"}], "edges": [{"source": "$graphify-root$_agents_reviewer_1_dispatch_md", "target": "$graphify-root$_agents_reviewer_1_dispatch_2026_09_04t12_37_07z", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/reviewer_1/DISPATCH.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_reviewer_1_dispatch_md", "target": "$graphify-root$_agents_reviewer_1_dispatch_2026_09_04t21_10_22z", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/reviewer_1/DISPATCH.md", "source_location": "L35", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_reviewer_1_dispatch_md",
+      "label": "DISPATCH.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/reviewer_1/DISPATCH.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_reviewer_1_dispatch_2026_09_04t12_37_07z",
+      "label": "2026-09-04T12:37:07Z",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/reviewer_1/DISPATCH.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_reviewer_1_dispatch_2026_09_04t21_10_22z",
+      "label": "2026-09-04T21:10:22Z",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/reviewer_1/DISPATCH.md",
+      "source_location": "L35"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_reviewer_1_dispatch_md",
+      "target": "$graphify-root$_agents_reviewer_1_dispatch_2026_09_04t12_37_07z",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/reviewer_1/DISPATCH.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_reviewer_1_dispatch_md",
+      "target": "$graphify-root$_agents_reviewer_1_dispatch_2026_09_04t21_10_22z",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/reviewer_1/DISPATCH.md",
+      "source_location": "L35",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

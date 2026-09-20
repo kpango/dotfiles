@@ -1,1 +1,62 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh", "label": "extract-checker-input.sh", "file_type": "code", "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry", "label": "extract-checker-input.sh script", "file_type": "code", "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}], "edges": [{"source": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh", "target": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh", "source_location": "L1", "weight": 1.0}], "raw_calls": [{"language": "bash", "callee": "set", "caller_nid": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry", "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh", "source_location": "L9"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry", "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh", "source_location": "L13"}, {"language": "bash", "callee": "exit", "caller_nid": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry", "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh", "source_location": "L13"}, {"language": "bash", "callee": "python3", "caller_nid": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry", "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh", "source_location": "L15"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh",
+      "label": "extract-checker-input.sh",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry",
+      "label": "extract-checker-input.sh script",
+      "file_type": "code",
+      "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh",
+      "target": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "set",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry",
+      "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh",
+      "source_location": "L9"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry",
+      "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh",
+      "source_location": "L13"
+    },
+    {
+      "language": "bash",
+      "callee": "exit",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry",
+      "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh",
+      "source_location": "L13"
+    },
+    {
+      "language": "bash",
+      "callee": "python3",
+      "caller_nid": "$graphify-root$_agent_skills_swarm_evolve_scripts_extract_checker_input_sh__entry",
+      "source_file": "agent/skills/swarm-evolve/scripts/extract-checker-input.sh",
+      "source_location": "L15"
+    }
+  ],
+  "bash_sources": []
+}

@@ -1,1 +1,174 @@
-{"nodes": [{"id": "$graphify-root$_agent_skills_claude_api_go_skill_md", "label": "SKILL.md", "file_type": "document", "node_kind": "page", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L1", "frontmatter": {"name": "claude-api-go", "description": "Claude API / Anthropic Go SDK usage patterns, prompt caching, streaming, tool use, and model selection for Go applications. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f go-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002", "trigger": "/claude-api-go"}}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "label": "Claude API \u2014 Go SDK Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L7"}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_setup", "label": "Setup", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L9"}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_basic_message", "label": "Basic Message", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L21"}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_prompt_caching_required_for_large_contexts", "label": "Prompt Caching (Required for large contexts)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L37"}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_streaming", "label": "Streaming", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L65"}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_tool_use_agentic_loop", "label": "Tool Use (Agentic Loop)", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L88"}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_model_selection", "label": "Model Selection", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L131"}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_error_handling", "label": "Error Handling", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L139"}, {"id": "$graphify-root$_agent_skills_claude_api_go_skill_anti_patterns", "label": "Anti-Patterns", "file_type": "document", "node_kind": "heading", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L154"}], "edges": [{"source": "$graphify-root$_agent_skills_claude_api_go_skill_md", "target": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L7", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "target": "$graphify-root$_agent_skills_claude_api_go_skill_setup", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L9", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "target": "$graphify-root$_agent_skills_claude_api_go_skill_basic_message", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L21", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "target": "$graphify-root$_agent_skills_claude_api_go_skill_prompt_caching_required_for_large_contexts", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L37", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "target": "$graphify-root$_agent_skills_claude_api_go_skill_streaming", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L65", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "target": "$graphify-root$_agent_skills_claude_api_go_skill_tool_use_agentic_loop", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L88", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "target": "$graphify-root$_agent_skills_claude_api_go_skill_model_selection", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L131", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "target": "$graphify-root$_agent_skills_claude_api_go_skill_error_handling", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L139", "weight": 1.0}, {"source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns", "target": "$graphify-root$_agent_skills_claude_api_go_skill_anti_patterns", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/skills/claude-api-go/SKILL.md", "source_location": "L154", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_md",
+      "label": "SKILL.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "claude-api-go",
+        "description": "Claude API / Anthropic Go SDK usage patterns, prompt caching, streaming, tool use, and model selection for Go applications. \u5b9f\u88c5\u4f5c\u696d\u81ea\u4f53\u306f go-expert agent \u306b\u59d4\u8b72\u3059\u308b\u3002",
+        "trigger": "/claude-api-go"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "label": "Claude API \u2014 Go SDK Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L7"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_setup",
+      "label": "Setup",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L9"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_basic_message",
+      "label": "Basic Message",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L21"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_prompt_caching_required_for_large_contexts",
+      "label": "Prompt Caching (Required for large contexts)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L37"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_streaming",
+      "label": "Streaming",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L65"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_tool_use_agentic_loop",
+      "label": "Tool Use (Agentic Loop)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L88"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_model_selection",
+      "label": "Model Selection",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L131"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_error_handling",
+      "label": "Error Handling",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L139"
+    },
+    {
+      "id": "$graphify-root$_agent_skills_claude_api_go_skill_anti_patterns",
+      "label": "Anti-Patterns",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L154"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_md",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_setup",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_basic_message",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_prompt_caching_required_for_large_contexts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_streaming",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L65",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_tool_use_agentic_loop",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L88",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_model_selection",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_error_handling",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L139",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_skills_claude_api_go_skill_claude_api_go_sdk_patterns",
+      "target": "$graphify-root$_agent_skills_claude_api_go_skill_anti_patterns",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/skills/claude-api-go/SKILL.md",
+      "source_location": "L154",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

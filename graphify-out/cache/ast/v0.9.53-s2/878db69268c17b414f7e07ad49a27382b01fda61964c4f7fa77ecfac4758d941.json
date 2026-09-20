@@ -1,1 +1,161 @@
-{"nodes": [{"id": "$graphify-root$_agent_agents_debugger_md", "label": "debugger.md", "file_type": "document", "node_kind": "page", "source_file": "agent/agents/debugger.md", "source_location": "L1", "frontmatter": {"name": "debugger", "description": "Debugging specialist for Go, Rust, C++, and K8s. Use proactively when errors, test failures, unexpected behavior, panics, or crashes occur. Identifies and fixes root causes.", "tools": "Read, Edit, Bash, Grep, Glob, Write", "model": "inherit", "effort": "high", "memory": "user", "color": "pink"}}, {"id": "$graphify-root$_agent_agents_debugger_debugging_methodology", "label": "Debugging Methodology", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/debugger.md", "source_location": "L13"}, {"id": "$graphify-root$_agent_agents_debugger_go_debugging", "label": "Go Debugging", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/debugger.md", "source_location": "L22"}, {"id": "$graphify-root$_agent_agents_debugger_rust_debugging", "label": "Rust Debugging", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/debugger.md", "source_location": "L41"}, {"id": "$graphify-root$_agent_agents_debugger_c_debugging", "label": "C++ Debugging", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/debugger.md", "source_location": "L57"}, {"id": "$graphify-root$_agent_agents_debugger_k8s_debugging", "label": "K8s Debugging", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/debugger.md", "source_location": "L84"}, {"id": "$graphify-root$_agent_agents_debugger_system_debugging", "label": "System Debugging", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/debugger.md", "source_location": "L115"}, {"id": "$graphify-root$_agent_agents_debugger_structured_diagnosis_output", "label": "Structured Diagnosis Output", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/debugger.md", "source_location": "L133"}, {"id": "$graphify-root$_agent_agents_debugger_ponytail_anti_overengineering_directives", "label": "Ponytail Anti-Overengineering Directives", "file_type": "document", "node_kind": "heading", "source_file": "agent/agents/debugger.md", "source_location": "L143"}], "edges": [{"source": "$graphify-root$_agent_agents_debugger_md", "target": "$graphify-root$_agent_agents_debugger_debugging_methodology", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/debugger.md", "source_location": "L13", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_debugger_md", "target": "$graphify-root$_agent_agents_debugger_go_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/debugger.md", "source_location": "L22", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_debugger_md", "target": "$graphify-root$_agent_agents_debugger_rust_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/debugger.md", "source_location": "L41", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_debugger_md", "target": "$graphify-root$_agent_agents_debugger_c_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/debugger.md", "source_location": "L57", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_debugger_md", "target": "$graphify-root$_agent_agents_debugger_k8s_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/debugger.md", "source_location": "L84", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_debugger_md", "target": "$graphify-root$_agent_agents_debugger_system_debugging", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/debugger.md", "source_location": "L115", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_debugger_md", "target": "$graphify-root$_agent_agents_debugger_structured_diagnosis_output", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/debugger.md", "source_location": "L133", "weight": 1.0}, {"source": "$graphify-root$_agent_agents_debugger_md", "target": "$graphify-root$_agent_agents_debugger_ponytail_anti_overengineering_directives", "relation": "contains", "confidence": "EXTRACTED", "source_file": "agent/agents/debugger.md", "source_location": "L143", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agent_agents_debugger_md",
+      "label": "debugger.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L1",
+      "frontmatter": {
+        "name": "debugger",
+        "description": "Debugging specialist for Go, Rust, C++, and K8s. Use proactively when errors, test failures, unexpected behavior, panics, or crashes occur. Identifies and fixes root causes.",
+        "tools": "Read, Edit, Bash, Grep, Glob, Write",
+        "model": "inherit",
+        "effort": "high",
+        "memory": "user",
+        "color": "pink"
+      }
+    },
+    {
+      "id": "$graphify-root$_agent_agents_debugger_debugging_methodology",
+      "label": "Debugging Methodology",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L13"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_debugger_go_debugging",
+      "label": "Go Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L22"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_debugger_rust_debugging",
+      "label": "Rust Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L41"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_debugger_c_debugging",
+      "label": "C++ Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L57"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_debugger_k8s_debugging",
+      "label": "K8s Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L84"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_debugger_system_debugging",
+      "label": "System Debugging",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L115"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_debugger_structured_diagnosis_output",
+      "label": "Structured Diagnosis Output",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L133"
+    },
+    {
+      "id": "$graphify-root$_agent_agents_debugger_ponytail_anti_overengineering_directives",
+      "label": "Ponytail Anti-Overengineering Directives",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L143"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agent_agents_debugger_md",
+      "target": "$graphify-root$_agent_agents_debugger_debugging_methodology",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_debugger_md",
+      "target": "$graphify-root$_agent_agents_debugger_go_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L22",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_debugger_md",
+      "target": "$graphify-root$_agent_agents_debugger_rust_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_debugger_md",
+      "target": "$graphify-root$_agent_agents_debugger_c_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L57",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_debugger_md",
+      "target": "$graphify-root$_agent_agents_debugger_k8s_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L84",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_debugger_md",
+      "target": "$graphify-root$_agent_agents_debugger_system_debugging",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_debugger_md",
+      "target": "$graphify-root$_agent_agents_debugger_structured_diagnosis_output",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agent_agents_debugger_md",
+      "target": "$graphify-root$_agent_agents_debugger_ponytail_anti_overengineering_directives",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "agent/agents/debugger.md",
+      "source_location": "L143",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

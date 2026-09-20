@@ -1,1 +1,441 @@
-{"nodes": [{"id": "$graphify-root$_arch_install_p1_sh", "label": "install_p1.sh", "file_type": "code", "source_file": "arch/install_p1.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "file"}}, {"id": "$graphify-root$_arch_install_p1_sh__entry", "label": "install_p1.sh script", "file_type": "code", "source_file": "arch/install_p1.sh", "source_location": "L1", "metadata": {"language": "bash", "kind": "bash_entrypoint"}}, {"id": "$graphify-root$_arch_install_p1_unmount", "label": "unmount()", "file_type": "code", "source_file": "arch/install_p1.sh", "source_location": "L21", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_arch_install_p1_unmdadm", "label": "unmdadm()", "file_type": "code", "source_file": "arch/install_p1.sh", "source_location": "L37", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_arch_install_p1_rmpart", "label": "rmpart()", "file_type": "code", "source_file": "arch/install_p1.sh", "source_location": "L62", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_arch_install_p1_partition", "label": "partition()", "file_type": "code", "source_file": "arch/install_p1.sh", "source_location": "L80", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_arch_install_p1_mkraid", "label": "mkraid()", "file_type": "code", "source_file": "arch/install_p1.sh", "source_location": "L87", "metadata": {"language": "bash", "kind": "bash_function"}}, {"id": "$graphify-root$_arch_install_p1_partraid", "label": "partraid()", "file_type": "code", "source_file": "arch/install_p1.sh", "source_location": "L91", "metadata": {"language": "bash", "kind": "bash_function"}}], "edges": [{"source": "$graphify-root$_arch_install_p1_sh", "target": "$graphify-root$_arch_install_p1_sh__entry", "relation": "contains", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_arch_install_p1_sh", "target": "$graphify-root$_arch_install_p1_unmount", "relation": "defines", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L21", "weight": 1.0}, {"source": "$graphify-root$_arch_install_p1_sh", "target": "$graphify-root$_arch_install_p1_unmdadm", "relation": "defines", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L37", "weight": 1.0}, {"source": "$graphify-root$_arch_install_p1_sh", "target": "$graphify-root$_arch_install_p1_rmpart", "relation": "defines", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L62", "weight": 1.0}, {"source": "$graphify-root$_arch_install_p1_sh", "target": "$graphify-root$_arch_install_p1_partition", "relation": "defines", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L80", "weight": 1.0}, {"source": "$graphify-root$_arch_install_p1_sh", "target": "$graphify-root$_arch_install_p1_mkraid", "relation": "defines", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L87", "weight": 1.0}, {"source": "$graphify-root$_arch_install_p1_sh", "target": "$graphify-root$_arch_install_p1_partraid", "relation": "defines", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L91", "weight": 1.0}, {"source": "$graphify-root$_arch_install_p1_sh__entry", "target": "$graphify-root$_arch_install_p1_unmount", "relation": "calls", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L100", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_arch_install_p1_sh__entry", "target": "$graphify-root$_arch_install_p1_unmdadm", "relation": "calls", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L105", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_arch_install_p1_sh__entry", "target": "$graphify-root$_arch_install_p1_rmpart", "relation": "calls", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L116", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_arch_install_p1_sh__entry", "target": "$graphify-root$_arch_install_p1_partition", "relation": "calls", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L161", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_arch_install_p1_sh__entry", "target": "$graphify-root$_arch_install_p1_mkraid", "relation": "calls", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L166", "weight": 1.0, "context": "call"}, {"source": "$graphify-root$_arch_install_p1_sh__entry", "target": "$graphify-root$_arch_install_p1_partraid", "relation": "calls", "confidence": "EXTRACTED", "source_file": "arch/install_p1.sh", "source_location": "L173", "weight": 1.0, "context": "call"}], "raw_calls": [{"language": "bash", "callee": "ip", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L95"}, {"language": "bash", "callee": "rm", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L96"}, {"language": "bash", "callee": "lsblk", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L97"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L99"}, {"language": "bash", "callee": "wipefs", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L122"}, {"language": "bash", "callee": "sync", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L122"}, {"language": "bash", "callee": "shred", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L128"}, {"language": "bash", "callee": "lvremove", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L138"}, {"language": "bash", "callee": "pvremove", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L144"}, {"language": "bash", "callee": "sleep", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L155"}, {"language": "bash", "callee": "cat", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L156"}, {"language": "bash", "callee": "mkfs.vfat", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L179"}, {"language": "bash", "callee": "mkdir", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L187"}, {"language": "bash", "callee": "mount", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L188"}, {"language": "bash", "callee": "df", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L198"}, {"language": "bash", "callee": "curl", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L201"}, {"language": "bash", "callee": "pacman", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L205"}, {"language": "bash", "callee": "ls", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L208"}, {"language": "bash", "callee": "pacstrap", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L210"}, {"language": "bash", "callee": "genfstab", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L213"}, {"language": "bash", "callee": "cp", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L214"}, {"language": "bash", "callee": "mdadm", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L219"}, {"language": "bash", "callee": "arch-chroot", "caller_nid": "$graphify-root$_arch_install_p1_sh__entry", "source_file": "arch/install_p1.sh", "source_location": "L220"}, {"language": "bash", "callee": "umount", "caller_nid": "$graphify-root$_arch_install_p1_unmount", "source_file": "arch/install_p1.sh", "source_location": "L22"}, {"language": "bash", "callee": "sync", "caller_nid": "$graphify-root$_arch_install_p1_unmount", "source_file": "arch/install_p1.sh", "source_location": "L22"}, {"language": "bash", "callee": "mdadm", "caller_nid": "$graphify-root$_arch_install_p1_unmdadm", "source_file": "arch/install_p1.sh", "source_location": "L38"}, {"language": "bash", "callee": "sync", "caller_nid": "$graphify-root$_arch_install_p1_unmdadm", "source_file": "arch/install_p1.sh", "source_location": "L38"}, {"language": "bash", "callee": "echo", "caller_nid": "$graphify-root$_arch_install_p1_rmpart", "source_file": "arch/install_p1.sh", "source_location": "L63"}, {"language": "bash", "callee": "fdisk", "caller_nid": "$graphify-root$_arch_install_p1_rmpart", "source_file": "arch/install_p1.sh", "source_location": "L67"}, {"language": "bash", "callee": "parted", "caller_nid": "$graphify-root$_arch_install_p1_partition", "source_file": "arch/install_p1.sh", "source_location": "L81"}, {"language": "bash", "callee": "sync", "caller_nid": "$graphify-root$_arch_install_p1_partition", "source_file": "arch/install_p1.sh", "source_location": "L81"}, {"language": "bash", "callee": "mdadm", "caller_nid": "$graphify-root$_arch_install_p1_mkraid", "source_file": "arch/install_p1.sh", "source_location": "L88"}, {"language": "bash", "callee": "sync", "caller_nid": "$graphify-root$_arch_install_p1_mkraid", "source_file": "arch/install_p1.sh", "source_location": "L88"}, {"language": "bash", "callee": "parted", "caller_nid": "$graphify-root$_arch_install_p1_partraid", "source_file": "arch/install_p1.sh", "source_location": "L92"}, {"language": "bash", "callee": "sync", "caller_nid": "$graphify-root$_arch_install_p1_partraid", "source_file": "arch/install_p1.sh", "source_location": "L92"}], "bash_sources": []}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_arch_install_p1_sh",
+      "label": "install_p1.sh",
+      "file_type": "code",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "file" }
+    },
+    {
+      "id": "$graphify-root$_arch_install_p1_sh__entry",
+      "label": "install_p1.sh script",
+      "file_type": "code",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L1",
+      "metadata": { "language": "bash", "kind": "bash_entrypoint" }
+    },
+    {
+      "id": "$graphify-root$_arch_install_p1_unmount",
+      "label": "unmount()",
+      "file_type": "code",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L21",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_arch_install_p1_unmdadm",
+      "label": "unmdadm()",
+      "file_type": "code",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L37",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_arch_install_p1_rmpart",
+      "label": "rmpart()",
+      "file_type": "code",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L62",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_arch_install_p1_partition",
+      "label": "partition()",
+      "file_type": "code",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L80",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_arch_install_p1_mkraid",
+      "label": "mkraid()",
+      "file_type": "code",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L87",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    },
+    {
+      "id": "$graphify-root$_arch_install_p1_partraid",
+      "label": "partraid()",
+      "file_type": "code",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L91",
+      "metadata": { "language": "bash", "kind": "bash_function" }
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_arch_install_p1_sh",
+      "target": "$graphify-root$_arch_install_p1_sh__entry",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh",
+      "target": "$graphify-root$_arch_install_p1_unmount",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh",
+      "target": "$graphify-root$_arch_install_p1_unmdadm",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L37",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh",
+      "target": "$graphify-root$_arch_install_p1_rmpart",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L62",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh",
+      "target": "$graphify-root$_arch_install_p1_partition",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh",
+      "target": "$graphify-root$_arch_install_p1_mkraid",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh",
+      "target": "$graphify-root$_arch_install_p1_partraid",
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L91",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh__entry",
+      "target": "$graphify-root$_arch_install_p1_unmount",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L100",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh__entry",
+      "target": "$graphify-root$_arch_install_p1_unmdadm",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L105",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh__entry",
+      "target": "$graphify-root$_arch_install_p1_rmpart",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L116",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh__entry",
+      "target": "$graphify-root$_arch_install_p1_partition",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L161",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh__entry",
+      "target": "$graphify-root$_arch_install_p1_mkraid",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L166",
+      "weight": 1.0,
+      "context": "call"
+    },
+    {
+      "source": "$graphify-root$_arch_install_p1_sh__entry",
+      "target": "$graphify-root$_arch_install_p1_partraid",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L173",
+      "weight": 1.0,
+      "context": "call"
+    }
+  ],
+  "raw_calls": [
+    {
+      "language": "bash",
+      "callee": "ip",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L95"
+    },
+    {
+      "language": "bash",
+      "callee": "rm",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L96"
+    },
+    {
+      "language": "bash",
+      "callee": "lsblk",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L97"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L99"
+    },
+    {
+      "language": "bash",
+      "callee": "wipefs",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L122"
+    },
+    {
+      "language": "bash",
+      "callee": "sync",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L122"
+    },
+    {
+      "language": "bash",
+      "callee": "shred",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L128"
+    },
+    {
+      "language": "bash",
+      "callee": "lvremove",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L138"
+    },
+    {
+      "language": "bash",
+      "callee": "pvremove",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L144"
+    },
+    {
+      "language": "bash",
+      "callee": "sleep",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L155"
+    },
+    {
+      "language": "bash",
+      "callee": "cat",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L156"
+    },
+    {
+      "language": "bash",
+      "callee": "mkfs.vfat",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L179"
+    },
+    {
+      "language": "bash",
+      "callee": "mkdir",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L187"
+    },
+    {
+      "language": "bash",
+      "callee": "mount",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L188"
+    },
+    {
+      "language": "bash",
+      "callee": "df",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L198"
+    },
+    {
+      "language": "bash",
+      "callee": "curl",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L201"
+    },
+    {
+      "language": "bash",
+      "callee": "pacman",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L205"
+    },
+    {
+      "language": "bash",
+      "callee": "ls",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L208"
+    },
+    {
+      "language": "bash",
+      "callee": "pacstrap",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L210"
+    },
+    {
+      "language": "bash",
+      "callee": "genfstab",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L213"
+    },
+    {
+      "language": "bash",
+      "callee": "cp",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L214"
+    },
+    {
+      "language": "bash",
+      "callee": "mdadm",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L219"
+    },
+    {
+      "language": "bash",
+      "callee": "arch-chroot",
+      "caller_nid": "$graphify-root$_arch_install_p1_sh__entry",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L220"
+    },
+    {
+      "language": "bash",
+      "callee": "umount",
+      "caller_nid": "$graphify-root$_arch_install_p1_unmount",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L22"
+    },
+    {
+      "language": "bash",
+      "callee": "sync",
+      "caller_nid": "$graphify-root$_arch_install_p1_unmount",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L22"
+    },
+    {
+      "language": "bash",
+      "callee": "mdadm",
+      "caller_nid": "$graphify-root$_arch_install_p1_unmdadm",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L38"
+    },
+    {
+      "language": "bash",
+      "callee": "sync",
+      "caller_nid": "$graphify-root$_arch_install_p1_unmdadm",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L38"
+    },
+    {
+      "language": "bash",
+      "callee": "echo",
+      "caller_nid": "$graphify-root$_arch_install_p1_rmpart",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L63"
+    },
+    {
+      "language": "bash",
+      "callee": "fdisk",
+      "caller_nid": "$graphify-root$_arch_install_p1_rmpart",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L67"
+    },
+    {
+      "language": "bash",
+      "callee": "parted",
+      "caller_nid": "$graphify-root$_arch_install_p1_partition",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L81"
+    },
+    {
+      "language": "bash",
+      "callee": "sync",
+      "caller_nid": "$graphify-root$_arch_install_p1_partition",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L81"
+    },
+    {
+      "language": "bash",
+      "callee": "mdadm",
+      "caller_nid": "$graphify-root$_arch_install_p1_mkraid",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L88"
+    },
+    {
+      "language": "bash",
+      "callee": "sync",
+      "caller_nid": "$graphify-root$_arch_install_p1_mkraid",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L88"
+    },
+    {
+      "language": "bash",
+      "callee": "parted",
+      "caller_nid": "$graphify-root$_arch_install_p1_partraid",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L92"
+    },
+    {
+      "language": "bash",
+      "callee": "sync",
+      "caller_nid": "$graphify-root$_arch_install_p1_partraid",
+      "source_file": "arch/install_p1.sh",
+      "source_location": "L92"
+    }
+  ],
+  "bash_sources": []
+}

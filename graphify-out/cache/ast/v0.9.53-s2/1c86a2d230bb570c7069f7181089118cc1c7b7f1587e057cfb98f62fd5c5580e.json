@@ -1,1 +1,237 @@
-{"nodes": [{"id": "$graphify-root$_agents_worker_m4_handoff_md", "label": "handoff.md", "file_type": "document", "node_kind": "page", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify", "label": "Handoff Report: Milestone 4 (M4: Mechanical Verification, SSoT Deployment & Graphify)", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L1"}, {"id": "$graphify-root$_agents_worker_m4_handoff_1_observation", "label": "1. Observation", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L3"}, {"id": "$graphify-root$_agents_worker_m4_handoff_1_1_scope_modified_files", "label": "1.1 Scope & Modified Files", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L5"}, {"id": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs", "label": "1.2 Verbatim Verification Outputs", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L10"}, {"id": "$graphify-root$_agents_worker_m4_handoff_command_1_bash_agent_harnesses_pi_validate_harness_sh", "label": "Command 1: `bash agent/harnesses/pi/validate-harness.sh`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L12"}, {"id": "$graphify-root$_agents_worker_m4_handoff_command_2_bash_agent_scripts_test_all_harnesses_sh", "label": "Command 2: `bash agent/scripts/test-all-harnesses.sh`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L118"}, {"id": "$graphify-root$_agents_worker_m4_handoff_command_3_make_pi_install", "label": "Command 3: `make pi/install`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L130"}, {"id": "$graphify-root$_agents_worker_m4_handoff_command_4_bash_agent_scripts_sync_verify_sh", "label": "Command 4: `bash agent/scripts/sync-verify.sh`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L146"}, {"id": "$graphify-root$_agents_worker_m4_handoff_command_5_graphify_update", "label": "Command 5: `graphify update .`", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L192"}, {"id": "$graphify-root$_agents_worker_m4_handoff_2_logic_chain", "label": "2. Logic Chain", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L209"}, {"id": "$graphify-root$_agents_worker_m4_handoff_3_caveats", "label": "3. Caveats", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L234"}, {"id": "$graphify-root$_agents_worker_m4_handoff_4_conclusion", "label": "4. Conclusion", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L239"}, {"id": "$graphify-root$_agents_worker_m4_handoff_5_verification_method", "label": "5. Verification Method", "file_type": "document", "node_kind": "heading", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L249"}], "edges": [{"source": "$graphify-root$_agents_worker_m4_handoff_md", "target": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L1", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify", "target": "$graphify-root$_agents_worker_m4_handoff_1_observation", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L3", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_1_observation", "target": "$graphify-root$_agents_worker_m4_handoff_1_1_scope_modified_files", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L5", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_1_observation", "target": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L10", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs", "target": "$graphify-root$_agents_worker_m4_handoff_command_1_bash_agent_harnesses_pi_validate_harness_sh", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L12", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs", "target": "$graphify-root$_agents_worker_m4_handoff_command_2_bash_agent_scripts_test_all_harnesses_sh", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L118", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs", "target": "$graphify-root$_agents_worker_m4_handoff_command_3_make_pi_install", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L130", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs", "target": "$graphify-root$_agents_worker_m4_handoff_command_4_bash_agent_scripts_sync_verify_sh", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L146", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs", "target": "$graphify-root$_agents_worker_m4_handoff_command_5_graphify_update", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L192", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify", "target": "$graphify-root$_agents_worker_m4_handoff_2_logic_chain", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L209", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify", "target": "$graphify-root$_agents_worker_m4_handoff_3_caveats", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L234", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify", "target": "$graphify-root$_agents_worker_m4_handoff_4_conclusion", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L239", "weight": 1.0}, {"source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify", "target": "$graphify-root$_agents_worker_m4_handoff_5_verification_method", "relation": "contains", "confidence": "EXTRACTED", "source_file": ".agents/worker_m4/handoff.md", "source_location": "L249", "weight": 1.0}], "input_tokens": 0, "output_tokens": 0}
+{
+  "nodes": [
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_md",
+      "label": "handoff.md",
+      "file_type": "document",
+      "node_kind": "page",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify",
+      "label": "Handoff Report: Milestone 4 (M4: Mechanical Verification, SSoT Deployment & Graphify)",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L1"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_1_observation",
+      "label": "1. Observation",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L3"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_1_1_scope_modified_files",
+      "label": "1.1 Scope & Modified Files",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L5"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs",
+      "label": "1.2 Verbatim Verification Outputs",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L10"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_command_1_bash_agent_harnesses_pi_validate_harness_sh",
+      "label": "Command 1: `bash agent/harnesses/pi/validate-harness.sh`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L12"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_command_2_bash_agent_scripts_test_all_harnesses_sh",
+      "label": "Command 2: `bash agent/scripts/test-all-harnesses.sh`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L118"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_command_3_make_pi_install",
+      "label": "Command 3: `make pi/install`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L130"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_command_4_bash_agent_scripts_sync_verify_sh",
+      "label": "Command 4: `bash agent/scripts/sync-verify.sh`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L146"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_command_5_graphify_update",
+      "label": "Command 5: `graphify update .`",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L192"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_2_logic_chain",
+      "label": "2. Logic Chain",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L209"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_3_caveats",
+      "label": "3. Caveats",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L234"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_4_conclusion",
+      "label": "4. Conclusion",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L239"
+    },
+    {
+      "id": "$graphify-root$_agents_worker_m4_handoff_5_verification_method",
+      "label": "5. Verification Method",
+      "file_type": "document",
+      "node_kind": "heading",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L249"
+    }
+  ],
+  "edges": [
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_md",
+      "target": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify",
+      "target": "$graphify-root$_agents_worker_m4_handoff_1_observation",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_1_observation",
+      "target": "$graphify-root$_agents_worker_m4_handoff_1_1_scope_modified_files",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_1_observation",
+      "target": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs",
+      "target": "$graphify-root$_agents_worker_m4_handoff_command_1_bash_agent_harnesses_pi_validate_harness_sh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs",
+      "target": "$graphify-root$_agents_worker_m4_handoff_command_2_bash_agent_scripts_test_all_harnesses_sh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs",
+      "target": "$graphify-root$_agents_worker_m4_handoff_command_3_make_pi_install",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs",
+      "target": "$graphify-root$_agents_worker_m4_handoff_command_4_bash_agent_scripts_sync_verify_sh",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L146",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_1_2_verbatim_verification_outputs",
+      "target": "$graphify-root$_agents_worker_m4_handoff_command_5_graphify_update",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L192",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify",
+      "target": "$graphify-root$_agents_worker_m4_handoff_2_logic_chain",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L209",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify",
+      "target": "$graphify-root$_agents_worker_m4_handoff_3_caveats",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L234",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify",
+      "target": "$graphify-root$_agents_worker_m4_handoff_4_conclusion",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L239",
+      "weight": 1.0
+    },
+    {
+      "source": "$graphify-root$_agents_worker_m4_handoff_handoff_report_milestone_4_m4_mechanical_verification_ssot_deployment_graphify",
+      "target": "$graphify-root$_agents_worker_m4_handoff_5_verification_method",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".agents/worker_m4/handoff.md",
+      "source_location": "L249",
+      "weight": 1.0
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
