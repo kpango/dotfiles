@@ -137,34 +137,34 @@ Pi can directly orchestrate and delegate to external CLI coding agents via built
 
 Delegation via `subagent` tool (single, parallel, chain, or DAG workflow mode; supports `agent: 'auto'`) or `/agent [name|auto] <task>` (reference: `agent/ROUTING_CATALOG.md`):
 
-| Agent                               | Purpose                                                                                | Model   |
-| :---------------------------------- | :------------------------------------------------------------------------------------- | :------ |
-| `go-expert`                         | Go implementation, optimization, testing, debugging                                    | inherit |
-| `rust-expert`                       | Rust ownership/lifetimes, unsafe code review, cargo                                    | inherit |
-| `arch-ops`                          | Arch Linux, pacman, systemd, Sway, Docker/containers                                   | haiku   |
+| Agent                               | Purpose                                                                                      | Model   |
+| :---------------------------------- | :------------------------------------------------------------------------------------------- | :------ |
+| `go-expert`                         | Go implementation, optimization, testing, debugging                                          | inherit |
+| `rust-expert`                       | Rust ownership/lifetimes, unsafe code review, cargo                                          | inherit |
+| `arch-ops`                          | Arch Linux, pacman, systemd, Sway, Docker/containers                                         | haiku   |
 | `unifi-expert`                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity | sonnet  |
-| `security-audit`                    | Vulnerability audit, OWASP, secret detection                                           | sonnet  |
-| `perf-analyzer`                     | pprof, criterion, perf, bottleneck analysis                                            | inherit |
-| `code-reviewer`                     | Code quality, maintainability, security review (Go/Rust/C++/Python/Zig/K8s)            | sonnet  |
-| `debugger`                          | Root cause analysis, test failure investigation                                        | inherit |
-| `proto-expert`                      | Protobuf/.proto editing, make proto/all, breaking change detection                     | inherit |
-| `vald-reviewer`                     | Vald Law enforcement, config sync, K8s resource rules                                  | sonnet  |
-| `ann-perf-engineer`                 | ANN vector search (ArcFlare/NGT/NGTAQ) SIMD kernel opt, ann-benchmarks Pareto analysis | inherit |
-| `ci-investigator`                   | CI/build pipeline root-cause analysis                                                  | inherit |
-| `python-expert`                     | Python/PyTorch implementation, packaging, testing, training pipelines                  | inherit |
-| `cpp-expert`                        | C++ implementation, build-system (CMake/vcpkg/Conan), sanitizers                       | inherit |
-| `k8s-expert`                        | General Kubernetes manifest/Helm/Kustomize implementation                              | inherit |
-| `nix-expert`                        | Nix/NixOS/nix-darwin/home-manager implementation                                       | inherit |
-| `zig-expert`                        | Zig implementation, version-sensitive breaking change awareness                        | inherit |
-| `github-actions-expert`             | GitHub Actions workflow authoring/design                                               | inherit |
-| `security-adversarial-reviewer`     | Adversarial security re-review (second line of defense)                                | sonnet  |
-| `architecture-adversarial-reviewer` | Adversarial architecture-consistency review                                            | sonnet  |
-| `perf-simd-adversarial-reviewer`    | Adversarial perf/SIMD re-review                                                        | sonnet  |
-| `code-quality-adversarial-reviewer` | Adversarial code-quality re-review                                                     | sonnet  |
-| `docs-comment-adversarial-reviewer` | Adversarial technical-doc/comment quality review                                       | sonnet  |
-| `systems-lang-adversarial-reviewer` | Adversarial Go/Rust/C++ language-spec review                                           | sonnet  |
-| `shell-config-adversarial-reviewer` | Adversarial Shell/Zsh/Makefile language-spec review                                    | sonnet  |
-| `infra-config-adversarial-reviewer` | Adversarial Nix/Lua/YAML/JSON syntax & schema review                                   | sonnet  |
+| `security-audit`                    | Vulnerability audit, OWASP, secret detection                                                 | sonnet  |
+| `perf-analyzer`                     | pprof, criterion, perf, bottleneck analysis                                                  | inherit |
+| `code-reviewer`                     | Code quality, maintainability, security review (Go/Rust/C++/Python/Zig/K8s)                  | sonnet  |
+| `debugger`                          | Root cause analysis, test failure investigation                                              | inherit |
+| `proto-expert`                      | Protobuf/.proto editing, make proto/all, breaking change detection                           | inherit |
+| `vald-reviewer`                     | Vald Law enforcement, config sync, K8s resource rules                                        | sonnet  |
+| `ann-perf-engineer`                 | ANN vector search (ArcFlare/NGT/NGTAQ) SIMD kernel opt, ann-benchmarks Pareto analysis       | inherit |
+| `ci-investigator`                   | CI/build pipeline root-cause analysis                                                        | inherit |
+| `python-expert`                     | Python/PyTorch implementation, packaging, testing, training pipelines                        | inherit |
+| `cpp-expert`                        | C++ implementation, build-system (CMake/vcpkg/Conan), sanitizers                             | inherit |
+| `k8s-expert`                        | General Kubernetes manifest/Helm/Kustomize implementation                                    | inherit |
+| `nix-expert`                        | Nix/NixOS/nix-darwin/home-manager implementation                                             | inherit |
+| `zig-expert`                        | Zig implementation, version-sensitive breaking change awareness                              | inherit |
+| `github-actions-expert`             | GitHub Actions workflow authoring/design                                                     | inherit |
+| `security-adversarial-reviewer`     | Adversarial security re-review (second line of defense)                                      | sonnet  |
+| `architecture-adversarial-reviewer` | Adversarial architecture-consistency review                                                  | sonnet  |
+| `perf-simd-adversarial-reviewer`    | Adversarial perf/SIMD re-review                                                              | sonnet  |
+| `code-quality-adversarial-reviewer` | Adversarial code-quality re-review                                                           | sonnet  |
+| `docs-comment-adversarial-reviewer` | Adversarial technical-doc/comment quality review                                             | sonnet  |
+| `systems-lang-adversarial-reviewer` | Adversarial Go/Rust/C++ language-spec review                                                 | sonnet  |
+| `shell-config-adversarial-reviewer` | Adversarial Shell/Zsh/Makefile language-spec review                                          | sonnet  |
+| `infra-config-adversarial-reviewer` | Adversarial Nix/Lua/YAML/JSON syntax & schema review                                         | sonnet  |
 
 ## Teamwork-Preview Subagent Bridge
 
@@ -213,7 +213,7 @@ Pi seamlessly maps to Antigravity `teamwork-preview` subagents and Swarm protoco
 Pi provides an extensive suite of built-in TypeScript extensions and GrokBot-inspired autonomous capabilities:
 
 | Tool                         | Slash Command         | Description & Purpose                                                                                          |
-| :--------------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------- |
+| :--------------------------- | :-------------------- | :------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | `daemon_spawn`               | `/daemon [spawn       | ...]`                                                                                                          | GrokBot-style persistent headless background daemon surviving TTY disconnects with state/log tracking |
 | `mesh_publish`               | `/mesh`               | Publish topic messages (`spec`, `draft`, `critique`, `verification`, `blocker`) to P2P blackboard stream       |
 | `mesh_query`                 | `/mesh`               | Query correlation event stream on decentralized blackboard                                                     |

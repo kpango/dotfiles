@@ -92,3 +92,96 @@ re-run DeepResearch-driven config audits.
   主張は、本ミッション自身のセッションでの実際の`TaskOutput`呼び出し成功と矛盾するため採用しない
   （`agent/rules/verify-before-assert.md`のAI要約単独では断定しない原則）。将来のセッションでこの矛盾を
   再検証する場合は、まずこのセッションの実行環境（Claude Code バージョン）を確認すること。
+
+## agent-pdf-deepresearch-env-overhaul (2026-09-23) — agent.pdf DeepResearchに基づくSkill/Hook/Rule見直し
+
+`agent.pdf`（「次世代AIエージェント開発環境の統合仕様書」）のDeepResearch検証結果に基づき、
+Claude/Pi/AGY Agent開発環境（Skill・Hook・Plugin・Extension・Rule）を見直すミッションの
+Grilling設計面談で合意した決定事項。
+
+### Terms
+
+- **SoL-Pi**: NVIDIA発の論文/リポジトリ（arXiv:2609.20519, github.com/NVlabs/SoL-Pi）。
+  ハーネス層に自律研究ループを適用し4つの効率化メカニズムを実証。ここでの「Pi」は
+  `earendil-works/pi`（旧 badlogic/pi-mono）を指し、ユーザーの Pi Coding Agent
+  （`agent/harnesses/pi/`）の実体そのもの。
+- **ObservationPack**: 10KiB超のツール出力をローカル退避し、3リクエスト目以降は固定ポインタ
+  （Stable Handle）+先頭・末尾抜粋に置換する機構。
+- **Evidence-Preserving Reducer**: 4KiB以上のビルド/テストログを小型モデルで要約し、決定論的
+  検証器が引用行の完全一致を照合、不一致/資格情報検出時は原本へ即時フォールバックする機構。
+- **Action Fusion**: ファイル編集と直後の検証コマンドを単一ツールリクエストに融合し中間ターンを
+  排除する機構（ハーネスコア変更が必要、hookでは完全代替不可）。
+- **Online Context Compact**: サブタスク完了境界でのみ圧縮要否を評価する機構（同上、hookでは
+  完全代替不可。ただしPi拡張APIには`session_before_compact`という実在する介入点があり、
+  「完全代替不可」は「hookで完全再現できる範囲は超える」の意で「介入点が全く無い」の意ではない）。
+- **Jev / System-1判定モデル**: TypeSafe AI提供のChoice/Score/Noul判定プリミティブ。本ミッション
+  では不採用（既存の決定論的ツール第一権威原則と重複、非公式MCP依存）、将来の別ミッション候補。
+
+### Invariants this mission's decisions depend on
+
+- 新規hookは既存の「決定論的ツール第一権威」原則（SWARM.md §2）を破らない —
+  要約/圧縮ロジックはverifier判定を代替せず、あくまで観測値ハンドリングの効率化に留まる。
+- Evidence-Preserving Reducer相当のhookは、引用行の完全一致検証に失敗した場合、
+  または資格情報（秘密鍵等）を検出した場合、**要約を破棄し原文をそのまま返す**（安全側フォール
+  バック、SoL-Pi原設計を踏襲）。
+- Action Fusion / Online Context Compact はハーネスコア（ツール呼び出しループ・
+  コンパクションタイミング）の変更を要するため、hookによる完全実装はしない。代わりに
+  (a) CLAUDE.md/agent/rules 配下への行動規律としての明記、(b) 違反パターン検知の
+  PostToolUse hook（警告のみ、非ブロッキング）の2点に限定する。
+- ObservationPack・Evidence-Preserving Reducer相当の**実機能hook**は
+  `agent/hooks/pi/` にのみ実装する（SoL-Pi自体がPi=earendil-works/piの公開拡張APIのみで
+  構築されており、既存の `agent/hooks/pi/extensions/` と設計思想が一致するため）。Claude/AGY側は
+  同等のhookコードを新規実装せず、SKILL.md/rules文書内の参照パターンとして記述するに留める。
+- `agent/hooks/pi/`・`agent/harnesses/pi/extensions/`・`agent/skills/*/*.md`・
+  `agent/SWARM_REFERENCES.md`・`agent/agents/*` は実行時hook(`swarm-write-scope-gate.sh`)による
+  Tier Bガバナンス保護対象であり、`/swarm-evolve`のDrafter→Checker→人間承認→grant発行フローを
+  経ずに直接Write/Editできない（2026-09-23実装時に実測確認）。`agent/rules/*`・リポジトリルート
+  直下の`CLAUDE.md`はこの保護対象に**含まれない**。
+- **許可される依存方向**: 新規hookは `agent/hooks/pi/` 配下に追加し、既存の
+  `agent/scripts/hooks/rule_engine.py` / `decide.py` 委譲構造とは独立したPi extension固有の
+  実装とする（既存shimの改変はしない、impact-A相当の新規ファイル追加を優先）。
+- **エラー処理規約**: 新規hookは失敗時に処理をブロックしない（非ブロッキング、警告/フォール
+  バックのみ）。既存の `swarm-post-edit-lint.sh` 等の exit 2 ブロッキング契約とは別枠。
+- **Graft パッケージ名**: GitHub本体は`trailhq/Graft`へ組織移管済みだが、npmパッケージ名
+  `@nanonets/graft`自体は現行（2026-09-23に`npm view`で確認）。CLAUDE.mdには再現可能な検証コマンド
+  を明記し、スナップショット事実（発行時刻等）は書かない方針とする。
+
+### 検討された選択肢と決定根拠
+
+- **Jev/TypeSafe AI System-1層統合**: [不採用/別ミッション化] 実在・有用性は確認できたが
+  (1) 非公式MCP依存、(2) 新規外部ベンダー依存、(3) 既存Checker(Opus)+決定論的ツール第一権威
+  との設計原則重複、という3リスクを抱える。ユーザーは「本格統合」を志向するが、その本格統合こそが
+  swarm-loop/swarm-graph/hooks全体に及ぶimpact-C全面改修であるため、**本ミッションでは実装せず、
+  人間が別途 `/swarm-architect`（フル設計モード）を招集する新規ミッションとして切り出す**。
+  本ミッションでは参考文献として `SWARM_REFERENCES.md` に記録するのみ（swarm-evolve draft経由）。
+- **context-mode（ツール出力サンドボックス化）**: [不採用、ObservationPack方式を採用]
+  目的は同じ（巨大出力のコンテキスト肥大化防止）だが、新規外部依存(SQLite+FTS5)を要する
+  context-modeより、SoL-Piの実証済みObservationPack方式を採用。理由: 既存
+  `agent/hooks/pi/extensions/` の「コア無改変・公開拡張APIのみ」という既存パターンと完全一致し、
+  新規ライブラリ依存が不要。
+- **codebase-memory-mcp**: [不採用] 既存の `@nanonets/graft`（trailhq/Graft）と機能的に重複。
+  2026-09-18の `codegraph-tooling-consolidation` ミッション（上記セクション参照）でgraphify退役・
+  graft一本化を既に決定済みであり、屋上屋を架す判断は既存決定と矛盾する。
+- **Ruflo / Orca / agency-agents / OmniRoute / Paseo（マルチエージェント基盤）**: [不採用]
+  実在は確認したが、LiteLLM（正当な有機成長51.5 stars/日）との比較でagency-agents(447/日)・
+  orca(400/日)・OmniRoute(313/日)が異常成長を示し、star水増し/信憑性演出が疑われる
+  （確信度: 中〜高）。既存swarm-loop/swarm-graphのMaker/Checker分離・verifier独立性に相当する
+  設計原則を欠く。`ai-boost/awesome-harness-engineering`のみ参考リンクとして記録。
+- **anthropics/skills frontend-design / mcp-builder**: [両方採用、swarm-evolve draft経由]
+  実在確認済み・現行スキル体系との重複なし。frontend-design は将来のフロントエンド作業に備えた
+  先行投資、mcp-builder は既存 `mcp-ecosystem-audit`（棚卸し専用）が埋めていない「新規MCPサーバー
+  構築」のギャップを埋める。
+
+### 既知の制約と非目標
+
+- **非目標**: Jev/System-1判定層の実装（別ミッション）、context-modeの導入、codebase-memory-mcp
+  の導入、Ruflo/Orca等マルチエージェント基盤の採用。
+- **非目標**: vald リポジトリ側の変更（本ミッションはdotfilesの `agent/` 配下のみ）。
+- **非目標**: Antigravityのグローバル配線変更（既存の意図的な対象外事項、CLAUDE.md参照）。
+- **制約**: 新規hookはすべて非ブロッキング（既存のexit 2強制契約とは独立）。
+- **制約**: 予算 task_max=5 / mission_max=20（swarm-meta M1 SELECTのharness-plan.jsonに準拠）。
+- **本ミッションで実際に直接実装した範囲**: リポジトリルート`CLAUDE.md`への2件の追記（Action
+  Fusion規律・Graftパッケージprovenance注記）のみ。SoL-Pi hooks 3件・スキル追加2件・
+  SWARM_REFERENCES.md更新1件は `/swarm-evolve` draft
+  （`~/.claude/session-data/swarm/evolve-proposals/2026-09-23-agent-pdf-deepresearch-draft.md`）
+  として人間承認待ち。

@@ -13,15 +13,15 @@
 
 `claude/`・`pi/`・`agy/` 配下の実ファイルを md5sum/diff で全数比較した:
 
-| 対象                                                                             | claude vs agy                                                                    | claude vs pi                                | 備考                                                                                                                                                                          |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `rules/*.md`（4件）                                                              | 完全一致                                                                         | 完全一致                                    | 差分ゼロ、変換不要                                                                                                                                                            |
-| `SWARM.md` / `SWARM_REFERENCES.md`                                               | 完全一致                                                                         | 完全一致                                    | 差分ゼロ、変換不要                                                                                                                                                            |
-| `skills/`（**33ディレクトリ**）の静的部分（SKILL.md・scripts/・reference.md 等） | 完全一致                                                                         | 完全一致（`allowed-tools` frontmatter含む） | 差分ゼロ、変換不要                                                                                                                                                            |
-| `skills/*/SKILL.stats.json`                                                      | **エコシステムごとに実際に異なる実行統計データ**                                 | 同左                                        | **Git管理下の実データ**（.gitignore対象外）。例: `security-scan` の実行回数は claude/pi=1回、agy=7回。集約対象から除外（後述）                                                |
-| `self-improve-registry.tsv`・`harness-registry.tsv`                              | 当初はエコシステムごとに別内容（実行統計）だったが2026-09-04に単一正典へ統合済み | 同左                                        | `agent/skills/{swarm-loop,swarm-meta}/`へ統合。詳細は「registry.tsvの単一正典化」節参照                                                                                       |
+| 対象                                                                             | claude vs agy                                                                    | claude vs pi                                | 備考                                                                                                                                                                           |
+| -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `rules/*.md`（4件）                                                              | 完全一致                                                                         | 完全一致                                    | 差分ゼロ、変換不要                                                                                                                                                             |
+| `SWARM.md` / `SWARM_REFERENCES.md`                                               | 完全一致                                                                         | 完全一致                                    | 差分ゼロ、変換不要                                                                                                                                                             |
+| `skills/`（**33ディレクトリ**）の静的部分（SKILL.md・scripts/・reference.md 等） | 完全一致                                                                         | 完全一致（`allowed-tools` frontmatter含む） | 差分ゼロ、変換不要                                                                                                                                                             |
+| `skills/*/SKILL.stats.json`                                                      | **エコシステムごとに実際に異なる実行統計データ**                                 | 同左                                        | **Git管理下の実データ**（.gitignore対象外）。例: `security-scan` の実行回数は claude/pi=1回、agy=7回。集約対象から除外（後述）                                                 |
+| `self-improve-registry.tsv`・`harness-registry.tsv`                              | 当初はエコシステムごとに別内容（実行統計）だったが2026-09-04に単一正典へ統合済み | 同左                                        | `agent/skills/{swarm-loop,swarm-meta}/`へ統合。詳細は「registry.tsvの単一正典化」節参照                                                                                        |
 | `agents/*.md`（25件）                                                            | 完全一致                                                                         | frontmatter `tools:` 行のみ機械的に異なる   | 例: `Read, Write, Edit, Bash, Grep, Glob`（claude/agy）↔ `read, write, edit, bash, grep, find, ls`（pi、全小文字化＋`Glob`→`find, ls`分割、順序は保持）。本文・順序以外は同一 |
-| `AGENTS.md`(pi)/`SYSTEM.md`(pi/agy)/`CLAUDE.md`(claude)                          | 意図的に非共通                                                                   | 意図的に非共通                              | ツール固有のアイデンティティ・システムプロンプト。共通化対象外                                                                                                                |
+| `AGENTS.md`(pi)/`SYSTEM.md`(pi/agy)/`CLAUDE.md`(claude)                          | 意図的に非共通                                                                   | 意図的に非共通                              | ツール固有のアイデンティティ・システムプロンプト。共通化対象外                                                                                                                 |
 
 **codex について**: `/usr/local/bin/codex` バイナリは本マシンに存在するが、`~/.codex/` 相当の設定
 ディレクトリは存在せず、dotfiles にも codex 向けテンプレートは無い（未設定）。現状 codex は本ディレクトリ
@@ -115,7 +115,7 @@ swarm-meta}/`へ単一正典化済みのため、この2ファイルに関して
   Harness governance 5件+permission-request.sh等汎用lifecycle hook 7件、計12件)も含め`claude/hooks/`
   配下の全ファイルを`agent/hooks/claude/`へ実体移動した — `claude/hooks/`は現在空ディレクトリ**
   (対応するagy/pi実装が存在しないため単純な物理配置の統一のみ、判定ロジック共有はこれらのファイルには
-  無い)。agy/piの非shimファイル(agy/hooks/post-edit-lint.sh、pi/extensions/bridge-*.ts等)は本ミッション
+  無い)。agy/piの非shimファイル(agy/hooks/post-edit-lint.sh、pi/extensions/bridge-_.ts等)は本ミッション
   のスコープ外のため元のディレクトリに実ファイルとして残る(claudeとの非対称は意図的、詳細は「rtk-rewrite.
   sh/rtk-optimizer.tsの物理配置統一について」節と同じ判断基準)。`$HOME` 側の `~/.claude/hooks`・
   `~/.agy/hooks`・`~/.gemini/hooks`・`~/.pi/agent/extensions`
@@ -128,14 +128,14 @@ swarm-meta}/`へ単一正典化済みのため、この2ファイルに関して
   「claude/hooks/.gitkeepについて」節参照)は拡張子.shを持たないため、当時の`Makefile.d/install.mk`
   (`claude/install`ターゲット)・`nix/modules/home/dotfiles/agent-tools.nix`の`mergedDirFiles`
   ヘルパーとも"regular"ファイルなら拡張子を問わず全て対象にしており、どちらも`.gitkeep`を
-  誤ってsymlinkしてしまう状態だった(`claude/docker/install`ターゲットのみ元々`-name "*.sh"`
-  フィルタを持っていたため無事だった)。Round 3で`Makefile.d/install.mk`の`claude/install`
-  ターゲットへ`-name "*.sh"`フィルタを追加、Round 4で`nix`側にも
-  `mergedDirPlaceholders`という名前ベースのblocklistを`mergedDirFiles`へ追加して揃えた
-  (この関数は`.agy/hooks`ターゲットで`hooks.json`という非`.sh`ファイルも正当に含むため、
-  拡張子allowlist化は他ターゲットを壊す。placeholder名のblocklist化で対処した)。
-  修正後の現状: 5箇所の`mergedDirFiles`呼び出し全てと`claude/install`・`claude/docker/install`
-  両ターゲットが`.gitkeep`を正しく除外する。)。
+  誤ってsymlinkしてしまう状態だった(`claude/docker/install`ターゲットのみ元々`-name "_.sh"`
+フィルタを持っていたため無事だった)。Round 3で`Makefile.d/install.mk`の`claude/install`
+ターゲットへ`-name "\*.sh"`フィルタを追加、Round 4で`nix`側にも
+`mergedDirPlaceholders`という名前ベースのblocklistを`mergedDirFiles`へ追加して揃えた
+(この関数は`.agy/hooks`ターゲットで`hooks.json`という非`.sh`ファイルも正当に含むため、
+拡張子allowlist化は他ターゲットを壊す。placeholder名のblocklist化で対処した)。
+修正後の現状: 5箇所の`mergedDirFiles`呼び出し全てと`claude/install`・`claude/docker/install`
+両ターゲットが`.gitkeep`を正しく除外する。)。
 - `claude/SWARM.md`・`claude/SWARM_REFERENCES.md` は `agent/` へ移動済み。`Makefile.d/install.mk` の
   `DOTFILES_MAP`（6 destination 分）のソース列は `agent/SWARM.md`・`agent/SWARM_REFERENCES.md` を
   直接参照する（symlink chain を作らず単一ソースを直接参照する設計）。
@@ -306,7 +306,7 @@ agy/install`後に`~/.claude/hooks/rtk-rewrite.sh`等へ正しくsymlinkされ�
 後続の複数節(判定ロジック統合・Vald Law統合・memory_context統合等)は、`claude/hooks/*.sh`・
 `agy/hooks/*.sh`・`pi/extensions/*.ts`という当時の実際のファイル配置を前提に書かれた歴史的記録
 であり、意図的にそのまま残してある。decide.py委譲shim本体(security-gate.sh・graphify-hint.sh・
-vald-law*.sh・session-start.sh等)は現在 `agent/hooks/{claude,agy,pi}/` へ実体移動済みで、
+vald-law\*.sh・session-start.sh等)は現在 `agent/hooks/{claude,agy,pi}/` へ実体移動済みで、
 以下の記述にある`claude/hooks/xxx.sh`は`agent/hooks/claude/xxx.sh`、`agy/hooks/xxx.sh`は
 `agent/hooks/agy/xxx.sh`、`pi/extensions/{security-gate,graphify-hint,auto-memory}.ts`・
 `pi/extensions/lib/shared.ts`はそれぞれ`agent/hooks/pi/`配下と読み替えること(現状の正確な配置は
@@ -509,7 +509,7 @@ Medium 1件）:
 claude/pi/agy それぞれの `validate-harness.sh` は検証項目自体（各ツールのsettings.jsonスキーマに
 依存する部分）は大きく分岐しており、ファイル全体の1本化は対象外（上記「共通化しないもの」参照）。
 一方で `check()` 関数（PASS/WARN/FAIL集計と整形出力）は3ファイルでbyte-identicalだったため、
-`agent/scripts/harness-check-lib.sh` へ切り出した（`check()`・外部test-*.shの結果を1件のcheckへ
+`agent/scripts/harness-check-lib.sh` へ切り出した（`check()`・外部test-\*.shの結果を1件のcheckへ
 畳み込む `harness_run_shared_test()`・最終サマリを出す `harness_summary()`）。
 
 あわせて2種類のstalenessを発見・修正した:
@@ -901,7 +901,7 @@ security-gate.tsの周辺コード変更がVald Law部分に影響していな�
   ヘッダ有無・ローカルoverride選択方式の違いを検証し、claude/agy双方の実hookファイル経由でも
   動作することを確認。3つの`validate-harness.sh`へ共有テスト委譲を配線。
 
-> **[2026-09-10 追記] この Phase 4 の仕組み(`memory_context.py`・`decide.py`の`memory_context`
+> \*\*[2026-09-10 追記] この Phase 4 の仕組み(`memory_context.py`・`decide.py`の`memory_context`
 > family・`test-memory-context.sh`)は supermemory-migration ミッションで全面撤去された。
 > claude/agy の session-start.sh は `agent/scripts/hooks/supermemory.sh`(`sm_inject`)経由の
 > supermemory RAG検索へ移行済み。上記は当時の実装記録としてそのまま残す。
@@ -1071,7 +1071,7 @@ FAILし続けていた。テストが機能していなかったため、hooks�
 
 **検証**: `test-fable-gate.sh`(19件、全PASS)・`test-parallel-gate.sh`(7件、全PASS)・
 `test-write-scope-gate.sh`(新設13件、全PASS)・`test-fable-guard.sh`(43件、既存のまま影響なし
-全PASS)。3つの`validate-harness.sh`・共有hooks test-*.sh群も再確認しクリーン。
+全PASS)。3つの`validate-harness.sh`・共有hooks test-\*.sh群も再確認しクリーン。
 
 **Tier B保護が実際に機能するようになったことの実地確認**: 本Roundの作業中、`swarm-write-scope-gate.sh`
 自身への2回目の編集(`../skills/`修正後)が実際にブロックされ、`budget-guard.sh --write-scope-grant`

@@ -291,7 +291,7 @@ SSH_ASKPASS="$ASKPASS" SSH_ASKPASS_REQUIRE=force \
 ## Package Safety — Never Let `apt upgrade` Touch UniFi-Native Packages
 
 UniFi OS runs on a Debian (trixie) base with `/etc/apt/sources.list.d/ubiquiti.list` pointing at
-Ubiquiti's own repo *alongside* the standard Debian repos. Ubiquiti ships **custom builds** of
+Ubiquiti's own repo _alongside_ the standard Debian repos. Ubiquiti ships **custom builds** of
 several packages (`iptables`/`libxtables12`/`libip4tc2`/`libip6tc2` with vendor iptables
 extensions `dpi128`/`dyn_random`/`geoip`/`ubnt_mark`; `frr` for zebra/OSPF; `dnsmasq`, `openvpn`,
 `ppp`, `keepalived`, `lldpd`, `miniupnpd`, `wireguard-tools`, `xl2tpd`,
@@ -301,7 +301,7 @@ while installing an unrelated package — silently pulls the generic Debian buil
 Ubiquiti one wherever Debian's version compares higher, with two distinct failure modes observed
 in production:
 
-1. **ABI split, not a full downgrade**: the `iptables`/`iptables-restore` *binary* and
+1. **ABI split, not a full downgrade**: the `iptables`/`iptables-restore` _binary_ and
    `libxtables.so.12` core library get replaced (new ABI) while individual extension `.so` files
    under `/usr/lib/aarch64-linux-gnu/xtables/` are left as the old vendor build (or vice versa,
    depending on which packages actually had matching Debian candidates) — the resulting **binary
@@ -328,7 +328,7 @@ drifted files from the firmware's read-only lower layer (`/mnt/.rofs/...`), repa
 `dpkg`. Check project memory for this device's specific path/tool name and run its own verify
 step first before assuming a fresh repair is needed. Only recreate such a framework from scratch
 if it's genuinely absent — and never duplicate it with an ad-hoc per-package `Pin-Priority: -10`
-file, which starves `apt` of *any* candidate for that package (including the vendor one) rather
+file, which starves `apt` of _any_ candidate for that package (including the vendor one) rather
 than steering it toward the vendor repo.
 
 ## Non-Destructive Diagnostic Recipes
@@ -370,7 +370,7 @@ mongo --quiet --port 27117 --eval 'db.networkconf.find({purpose:"wan"},{name:1,e
 
 The `ace` database backs the classic controller; `device`/`networkconf`/`power_supervisor` are
 the collections most relevant to connectivity troubleshooting. A WAN `networkconf` document
-missing its `enabled` field entirely (not `false` — *absent*) has been the root cause of a
+missing its `enabled` field entirely (not `false` — _absent_) has been the root cause of a
 persistent internal `mcad` error flood (`wan_man_get_primary(): UDAPI required field 'status' is
 missing`, tens of thousands of log lines/hour) even while the interface itself forwards traffic
 normally — fix via `PUT /proxy/network/api/s/default/rest/networkconf/{id}` (Classic REST API)

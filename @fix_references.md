@@ -88,7 +88,7 @@ SoL-Piの設計思想における特筆すべき点は、Piフレームワーク
 | **context-mode** [mksglu/context-mode](https://github.com/mksglu/context-mode?utm_source=gemini) \[cite: 4\]                          | mksglu 17プラットフォーム対応4   | ツール出力をコンテキスト外のサンドボックスで捕捉。セッション履歴をSQLite+FTS5に格納しBM25検索でオンデマンド復元。コードを直接実行させて集計結果のみを出力させる原則を強制4。        | ツール出力データサイズを315 KBから5.4 KBへ圧縮（98%削減）。47回のファイル読込（700 KB）を1回のJS実行（3.6 KB）に置換4。 |
 | **PageIndex** [VectifyAI/PageIndex](https://github.com/VectifyAI/PageIndex?utm_source=gemini)                                         | VectifyAI                        | ツリー構造ベースのRAG。文書の階層的論理構造を維持したままインデックス化し、エージェントが長大なドキュメントの文脈を論理的に追跡できるように支援。                                   | 長大な仕様書や設計書に対する文脈喪失とハルシネーションの防止。                                                          |
 | **Letta** [letta-ai/letta](https://github.com/letta-ai/letta?utm_source=gemini)                                                       | Letta (旧MemGPT)                 | インコンテキストの短期記憶、外部DBの長期記憶（Archival）、履歴記憶（Recall）を分離管理する階層型メモリ管理エージェント基盤。                                                        | 無制限のセッション継続性とエージェントの長期自己整合性の維持。                                                          |
-| **llm\_wiki** [nashsu/llm\_wiki](https://github.com/nashsu/llm_wiki?utm_source=gemini) \[cite: 22\]                                   | nash\_su Karpathyパターン22      | ドキュメント群を自律更新型の相互リンクMarkdown Wikiへ段階的にコンパイル。ベクトル検索（オプション）とグラフ構造解析（Louvain法）を併用22。                                          | 検索のたびに都度ゼロから合成するRAGと異なり、事前に整理された知識を参照することで検索再現率を58.2%から71.4%に改善22。   |
+| **llm_wiki** [nashsu/llm_wiki](https://github.com/nashsu/llm_wiki?utm_source=gemini) \[cite: 22\]                                     | nash_su Karpathyパターン22       | ドキュメント群を自律更新型の相互リンクMarkdown Wikiへ段階的にコンパイル。ベクトル検索（オプション）とグラフ構造解析（Louvain法）を併用22。                                          | 検索のたびに都度ゼロから合成するRAGと異なり、事前に整理された知識を参照することで検索再現率を58.2%から71.4%に改善22。   |
 
 コードベースの探索においては、エージェントにファイル全体を読ませるのではなく、まずGraftやcodebase-memory-mcpのグラフから構造的シンボルを特定させ、context-modeのサンドボックススクリプト実行でピンポイントに値を取り出させる多段階パイプラインを組むことが、コンテキスト節約の決定的な最適化手法となる4。
 
@@ -206,7 +206,7 @@ GitHubスター288k超を記録する obra/superpowers は、エージェント�
 
 > 1. Jevとは｜TypeSafe AIの料金・仕様・使い方【2026年9月】, [https://uravation.com/media/jev-typesafe-ai-system-one-guide-2026/](https://uravation.com/media/jev-typesafe-ai-system-one-guide-2026/)
 > 2. How to Use Jev: A practical guide to TypeSafe's System One model, [https://dev.to/valyuai/how-to-use-jev-a-practical-guide-to-typesafes-system-one-model-g5e](https://dev.to/valyuai/how-to-use-jev-a-practical-guide-to-typesafes-system-one-model-g5e)
-> 3. 賢くするより無駄を削る。NVIDIAが開発したAIエージェントの劇的, [https://note.com/humble\_bobcat51/n/n7256ef770914](https://note.com/humble_bobcat51/n/n7256ef770914)
+> 3. 賢くするより無駄を削る。NVIDIAが開発したAIエージェントの劇的, [https://note.com/humble_bobcat51/n/n7256ef770914](https://note.com/humble_bobcat51/n/n7256ef770914)
 > 4. context-mode \- AI Agents on GitHub (23.4k ) | SkillsLLM, [https://skillsllm.com/skill/context-mode](https://skillsllm.com/skill/context-mode)
 > 5. Jev Explained: Typesafe AI's Non-Autoregressive System-1 Model, [https://www.mindstudio.ai/blog/jev-system-one-model-launch](https://www.mindstudio.ai/blog/jev-system-one-model-launch)
 > 6. Recursively Scaling Auto-Research Loops for Efficient Agent Harness, [https://arxiv.org/html/2609.20519](https://arxiv.org/html/2609.20519)
@@ -218,15 +218,15 @@ GitHubスター288k超を記録する obra/superpowers は、エージェント�
 > 12. SoL-Pi: Scaling Auto-Research Loops for Efficient Agent Harnesses, [https://github.com/NVlabs/SoL-Pi](https://github.com/NVlabs/SoL-Pi)
 > 13. GitHub \- ai-boost/awesome-harness-engineering, [https://github.com/ai-boost/awesome-harness-engineering](https://github.com/ai-boost/awesome-harness-engineering)
 > 14. GitHub \- ruvnet/ruflo, [https://github.com/ruvnet/ruflo](https://github.com/ruvnet/ruflo)
-> 15. r/LocalLLaMA on Reddit: Pi Agent Users \- Nvidia Released Sol-Pi, [https://www.reddit.com/r/LocalLLaMA/comments/1wcujgg/pi\_agent\_users\_nvidia\_released\_solpi\_a/](https://www.reddit.com/r/LocalLLaMA/comments/1wcujgg/pi_agent_users_nvidia_released_solpi_a/)
+> 15. r/LocalLLaMA on Reddit: Pi Agent Users \- Nvidia Released Sol-Pi, [https://www.reddit.com/r/LocalLLaMA/comments/1wcujgg/pi_agent_users_nvidia_released_solpi_a/](https://www.reddit.com/r/LocalLLaMA/comments/1wcujgg/pi_agent_users_nvidia_released_solpi_a/)
 > 16. SoL-Pi: Scaling Auto-Research Loops for Efficient Agent Harnesses, [https://nvlabs.github.io/SoL-Pi/](https://nvlabs.github.io/SoL-Pi/)
-> 17. Reduce Claude Code Costs & Improve Performance with Graft, [https://www.reddit.com/r/ClaudeWorkflows/comments/1vef933/workflow\_reduce\_claude\_code\_costs\_improve/](https://www.reddit.com/r/ClaudeWorkflows/comments/1vef933/workflow_reduce_claude_code_costs_improve/)
+> 17. Reduce Claude Code Costs & Improve Performance with Graft, [https://www.reddit.com/r/ClaudeWorkflows/comments/1vef933/workflow_reduce_claude_code_costs_improve/](https://www.reddit.com/r/ClaudeWorkflows/comments/1vef933/workflow_reduce_claude_code_costs_improve/)
 > 18. Graft for AI Agents: Map Your Codebase with Markdown \- IT-Connect, [https://www.it-connect.tech/graft-the-open-source-tool-that-maps-your-code-for-ai-agents/](https://www.it-connect.tech/graft-the-open-source-tool-that-maps-your-code-for-ai-agents/)
 > 19. NanoNets/Graft — Your codebase, as a graph. Clone \#Shorts, [https://www.youtube.com/shorts/PbACu050jG4?vl=it](https://www.youtube.com/shorts/PbACu050jG4?vl=it)
-> 20. graft 0.16.0-1 (x86\_64) \- Arch Linux, [https://archlinux.org/packages/extra/x86\_64/graft/](https://archlinux.org/packages/extra/x86_64/graft/)
+> 20. graft 0.16.0-1 (x86_64) \- Arch Linux, [https://archlinux.org/packages/extra/x86_64/graft/](https://archlinux.org/packages/extra/x86_64/graft/)
 > 21. Context Mode | MCP Servers \- LobeHub, [https://lobehub.com/mcp/mksglu-context-mode](https://lobehub.com/mcp/mksglu-context-mode)
-> 22. GitHub \- nashsu/llm\_wiki: LLM Wiki is a cross-platform desktop, [https://github.com/nashsu/llm\_wiki](https://github.com/nashsu/llm_wiki)
-> 23. What is the difference between llm\_wiki and RAG? I tried it out ... \- note, [https://note.com/hokosaki\_inc/n/n87c17ce1b834?hl=en](https://note.com/hokosaki_inc/n/n87c17ce1b834?hl=en)
+> 22. GitHub \- nashsu/llm_wiki: LLM Wiki is a cross-platform desktop, [https://github.com/nashsu/llm_wiki](https://github.com/nashsu/llm_wiki)
+> 23. What is the difference between llm_wiki and RAG? I tried it out ... \- note, [https://note.com/hokosaki_inc/n/n87c17ce1b834?hl=en](https://note.com/hokosaki_inc/n/n87c17ce1b834?hl=en)
 > 24. Superpowers by obra: What It Is and How to Use It to Improve AI, [https://www.c-sharpcorner.com/article/superpowers-by-obra-what-it-is-and-how-to-use-it-to-improve-ai-coding/](https://www.c-sharpcorner.com/article/superpowers-by-obra-what-it-is-and-how-to-use-it-to-improve-ai-coding/)
 > 25. AIコーディングエージェントの弱点を補う「obra/superpowers」, [https://tech-lab.sios.jp/archives/52268](https://tech-lab.sios.jp/archives/52268)
 > 26. Superpowers: Skills Framework Reshaping AI Dev \- Termdock, [https://www.termdock.com/en/blog/superpowers-framework-agent-skills](https://www.termdock.com/en/blog/superpowers-framework-agent-skills)
@@ -239,11 +239,11 @@ GitHubスター288k超を記録する obra/superpowers は、エージェント�
 > 33. diagram-design \- AI Agents on GitHub (40.9k ) | SkillsLLM, [https://skillsllm.com/skill/diagram-design](https://skillsllm.com/skill/diagram-design)
 > 34. cathrynlavery/diagram-design \- 41k Stars · Global Rank \#687, [https://www.star-history.com/cathrynlavery/diagram-design](https://www.star-history.com/cathrynlavery/diagram-design)
 > 35. Cathryn Lavery cathrynlavery \- GitHub, [https://github.com/cathrynlavery](https://github.com/cathrynlavery)
-> 36. Why diagram-design is a Great Fit for AI Agents｜株式会社ホコサキ, [https://note.com/hokosaki\_inc/n/neb8d1c836caa?hl=en](https://note.com/hokosaki_inc/n/neb8d1c836caa?hl=en)
+> 36. Why diagram-design is a Great Fit for AI Agents｜株式会社ホコサキ, [https://note.com/hokosaki_inc/n/neb8d1c836caa?hl=en](https://note.com/hokosaki_inc/n/neb8d1c836caa?hl=en)
 > 37. Analyze ayghri/i-have-adhd \- OSSInsight, [https://ossinsight.io/analyze/ayghri/i-have-adhd](https://ossinsight.io/analyze/ayghri/i-have-adhd)
 > 38. GitHub \- ayghri/i-have-adhd: A skill to stop your coding agent from, [https://github.com/ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd)
 > 39. GitHub \- ayghri/i-have-adhd \- Amit Gawande's Devlog, [https://dev.amitgawande.com/2026/github-ayghri/i-have-adhd](https://dev.amitgawande.com/2026/github-ayghri/i-have-adhd)
-> 40. 'llmfit' is a terminal tool that teaches you the appropriate AI model, [https://gigazine.net/gsc\_news/en/20260308-llmfit/](https://gigazine.net/gsc_news/en/20260308-llmfit/)
+> 40. 'llmfit' is a terminal tool that teaches you the appropriate AI model, [https://gigazine.net/gsc_news/en/20260308-llmfit/](https://gigazine.net/gsc_news/en/20260308-llmfit/)
 > 41. GitHub \- AlexsJones/llmfit: Hundreds of models & providers. One, [https://github.com/AlexsJones/llmfit](https://github.com/AlexsJones/llmfit)
 > 42. OpenMontage とは｜AI動画制作を自律実行するOSS \- 秋霜堂株式会社, [https://syusodo.co.jp/tech-blog/articles/repo-calesthio-OpenMontage](https://syusodo.co.jp/tech-blog/articles/repo-calesthio-OpenMontage)
 > 43. shareAI-lab/learn-claude-code: 从零开始动手实现AI Agent, [https://hellogithub.com/repository/shareAI-lab/learn-claude-code](https://hellogithub.com/repository/shareAI-lab/learn-claude-code)

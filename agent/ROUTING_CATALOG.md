@@ -60,15 +60,15 @@ This catalog is the single source of truth for the complete multi-agent and skil
 
 ### Cluster B: Infrastructure, Systems & Tooling Specialists
 
-| Specialized Agent       | Paired Skills                                    | Primary Focus & Capabilities                                                   | Default Tier / Model |
-| :---------------------- | :----------------------------------------------- | :----------------------------------------------------------------------------- | :------------------- |
-| `k8s-expert`            | `k8s-patterns`                                   | General Kubernetes manifests, Helm charts, Kustomize overlays, Operator design | High / Sonnet        |
-| `nix-expert`            | `nix-patterns`                                   | Nix flakes, derivations, overlays, home-manager, reproducible environments     | High / Sonnet        |
-| `github-actions-expert` | `github-actions-patterns`, `deployment-patterns` | GitHub Actions workflow authoring, matrix builds, caching, security hardening  | High / Sonnet        |
-| `proto-expert`          | `protobuf-patterns`                              | Protobuf schema design, `buf lint/breaking`, gRPC service patterns, codegen    | High / Sonnet        |
-| `ann-perf-engineer`     | `ann-benchmark-patterns`                         | ANN vector search (ArcFlare/NGT) SIMD distance kernels, ann-benchmarks Pareto  | High / Sonnet        |
-| `arch-ops`              | —                                                | Arch Linux operations (pacman/AUR, systemd, Sway/Wayland, Docker containerd)   | Low / Haiku          |
-| `unifi-expert`          | `unifi-api`                                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity | High / Sonnet |
+| Specialized Agent       | Paired Skills                                    | Primary Focus & Capabilities                                                                 | Default Tier / Model |
+| :---------------------- | :----------------------------------------------- | :------------------------------------------------------------------------------------------- | :------------------- |
+| `k8s-expert`            | `k8s-patterns`                                   | General Kubernetes manifests, Helm charts, Kustomize overlays, Operator design               | High / Sonnet        |
+| `nix-expert`            | `nix-patterns`                                   | Nix flakes, derivations, overlays, home-manager, reproducible environments                   | High / Sonnet        |
+| `github-actions-expert` | `github-actions-patterns`, `deployment-patterns` | GitHub Actions workflow authoring, matrix builds, caching, security hardening                | High / Sonnet        |
+| `proto-expert`          | `protobuf-patterns`                              | Protobuf schema design, `buf lint/breaking`, gRPC service patterns, codegen                  | High / Sonnet        |
+| `ann-perf-engineer`     | `ann-benchmark-patterns`                         | ANN vector search (ArcFlare/NGT) SIMD distance kernels, ann-benchmarks Pareto                | High / Sonnet        |
+| `arch-ops`              | —                                                | Arch Linux operations (pacman/AUR, systemd, Sway/Wayland, Docker containerd)                 | Low / Haiku          |
+| `unifi-expert`          | `unifi-api`                                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity | High / Sonnet        |
 
 ### Cluster C: Quality, Performance & Diagnostics (First Line of Defense)
 
@@ -122,25 +122,25 @@ All 8 adversarial reviewers are invoked immediately before the Phase 5 / G5 Gate
 
 When `/swarm-meta` receives a goal, it automatically analyzes keywords, file types, and task characteristics to compose the execution pipeline:
 
-| Detected Goal Signatures          | Target Domain      | Auto-Dispatched Agent(s)              | Associated Skill(s)                   | Recommended Lens / Verification                          |
-| :-------------------------------- | :----------------- | :------------------------------------ | :------------------------------------ | :------------------------------------------------------- |
-| Go, golang, `*.go`, `go.mod`      | Go Development     | `go-expert`                           | `golang-patterns`, `golang-testing`   | `systems-lang-adversarial-reviewer`, `golangci-lint`     |
-| Rust, cargo, `*.rs`, `Cargo.toml` | Rust Systems       | `rust-expert`                         | `rust-patterns`, `rust-testing`       | `systems-lang-adversarial-reviewer`, `cargo clippy/test` |
-| C++, cmake, `*.cpp`, `*.h`        | Modern C++         | `cpp-expert`                          | `cpp-patterns`, `cpp-testing`         | `systems-lang-adversarial-reviewer`, cmake build         |
-| Python, pytorch, `*.py`           | Python / ML        | `python-expert`                       | `python-patterns`, `python-testing`   | pytest, ruff, `code-quality-adversarial-reviewer`        |
-| Zig, `build.zig`, `*.zig`         | Zig Systems        | `zig-expert`                          | `zig-patterns`                        | `zig build/test`                                         |
-| K8s, Helm, manifests, `*.yaml`    | Kubernetes         | `k8s-expert`                          | `k8s-patterns`                        | `infra-config-adversarial-reviewer`, yamllint            |
-| Nix, flake, `*.nix`               | Nix Infrastructure | `nix-expert`                          | `nix-patterns`                        | `infra-config-adversarial-reviewer`, `nix eval/build`    |
-| CI, Workflow, GitHub Actions      | CI/CD Automation   | `github-actions-expert`               | `github-actions-patterns`             | actionlint, `infra-config-adversarial-reviewer`          |
-| Protobuf, gRPC, `*.proto`         | Interface Schema   | `proto-expert`                        | `protobuf-patterns`                   | `buf lint`, `buf breaking`, Vald Law 1                   |
-| Benchmark, perf, pprof, SIMD      | Performance Eng    | `perf-analyzer` / `ann-perf-engineer` | `benchmark`, `ann-benchmark-patterns` | `perf-simd-adversarial-reviewer`, criterion              |
-| Security, CVE, auth, secret       | Security Audit     | `security-audit`                      | `security-review`, `security-scan`    | `security-adversarial-reviewer`                          |
-| Bug, failure, panic, crash        | Root-Cause Fix     | `debugger`                            | — (Fixer clean slate)                 | `make test`, independent verification                    |
-| Vald, `vdaas/vald`                | Vald Core          | `vald-reviewer`                       | — (`vald-guard` ext)                  | Vald Laws 1–5, config sync, `make test`                  |
-| Arch, pacman, systemd, Sway       | OS / Environment   | `arch-ops`                            | —                                     | `systemctl --user`, pacman verify                        |
-| UniFi, Ubiquiti, UDM Pro, GatewayConfigurationError, GeoIP | Network Ops | `unifi-expert`                | `unifi-api`                           | `iptables-restore --test`, non-destructive mongo/API verify |
-| Architecture, ADR, design         | System Design      | `swarm-architect`                     | `grill-interview`                     | `architecture-adversarial-reviewer`                      |
-| Audit, scan, review               | Multi-Perspective  | `code-reviewer` + `security-audit`    | —                                     | 8-lens adversarial review, 3-model consensus             |
+| Detected Goal Signatures                                   | Target Domain      | Auto-Dispatched Agent(s)              | Associated Skill(s)                   | Recommended Lens / Verification                             |
+| :--------------------------------------------------------- | :----------------- | :------------------------------------ | :------------------------------------ | :---------------------------------------------------------- |
+| Go, golang, `*.go`, `go.mod`                               | Go Development     | `go-expert`                           | `golang-patterns`, `golang-testing`   | `systems-lang-adversarial-reviewer`, `golangci-lint`        |
+| Rust, cargo, `*.rs`, `Cargo.toml`                          | Rust Systems       | `rust-expert`                         | `rust-patterns`, `rust-testing`       | `systems-lang-adversarial-reviewer`, `cargo clippy/test`    |
+| C++, cmake, `*.cpp`, `*.h`                                 | Modern C++         | `cpp-expert`                          | `cpp-patterns`, `cpp-testing`         | `systems-lang-adversarial-reviewer`, cmake build            |
+| Python, pytorch, `*.py`                                    | Python / ML        | `python-expert`                       | `python-patterns`, `python-testing`   | pytest, ruff, `code-quality-adversarial-reviewer`           |
+| Zig, `build.zig`, `*.zig`                                  | Zig Systems        | `zig-expert`                          | `zig-patterns`                        | `zig build/test`                                            |
+| K8s, Helm, manifests, `*.yaml`                             | Kubernetes         | `k8s-expert`                          | `k8s-patterns`                        | `infra-config-adversarial-reviewer`, yamllint               |
+| Nix, flake, `*.nix`                                        | Nix Infrastructure | `nix-expert`                          | `nix-patterns`                        | `infra-config-adversarial-reviewer`, `nix eval/build`       |
+| CI, Workflow, GitHub Actions                               | CI/CD Automation   | `github-actions-expert`               | `github-actions-patterns`             | actionlint, `infra-config-adversarial-reviewer`             |
+| Protobuf, gRPC, `*.proto`                                  | Interface Schema   | `proto-expert`                        | `protobuf-patterns`                   | `buf lint`, `buf breaking`, Vald Law 1                      |
+| Benchmark, perf, pprof, SIMD                               | Performance Eng    | `perf-analyzer` / `ann-perf-engineer` | `benchmark`, `ann-benchmark-patterns` | `perf-simd-adversarial-reviewer`, criterion                 |
+| Security, CVE, auth, secret                                | Security Audit     | `security-audit`                      | `security-review`, `security-scan`    | `security-adversarial-reviewer`                             |
+| Bug, failure, panic, crash                                 | Root-Cause Fix     | `debugger`                            | — (Fixer clean slate)                 | `make test`, independent verification                       |
+| Vald, `vdaas/vald`                                         | Vald Core          | `vald-reviewer`                       | — (`vald-guard` ext)                  | Vald Laws 1–5, config sync, `make test`                     |
+| Arch, pacman, systemd, Sway                                | OS / Environment   | `arch-ops`                            | —                                     | `systemctl --user`, pacman verify                           |
+| UniFi, Ubiquiti, UDM Pro, GatewayConfigurationError, GeoIP | Network Ops        | `unifi-expert`                        | `unifi-api`                           | `iptables-restore --test`, non-destructive mongo/API verify |
+| Architecture, ADR, design                                  | System Design      | `swarm-architect`                     | `grill-interview`                     | `architecture-adversarial-reviewer`                         |
+| Audit, scan, review                                        | Multi-Perspective  | `code-reviewer` + `security-audit`    | —                                     | 8-lens adversarial review, 3-model consensus                |
 
 ---
 

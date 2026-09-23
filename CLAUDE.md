@@ -106,6 +106,13 @@ The dotfiles root `CLAUDE.md` (this file) applies only when Claude Code is run f
 - Zsh config changes: source files are in `zsh/` directory
 - systemd services: use `systemctl --user` for user services
 - Packages: prefer `pacman` over AUR when available; use `paru` for AUR
+- **Action Fusion**: after editing a file, run its verification command (test/build/lint) before
+  the next edit — don't stack unverified edits. Convention only, not machine-enforced: Pi Coding
+  Agent's extension API (`@earendil-works/pi-coding-agent@0.84.4`, `dist/core/extensions/types.d.ts`)
+  has no primitive to fuse edit+verify into one tool call. Sourced from SoL-Pi (arXiv:2609.20519);
+  full citation trail, and the not-yet-applied ObservationPack/Evidence-Preserving Reducer hook
+  proposals for `agent/hooks/pi/`, are in
+  `~/.claude/session-data/swarm/evolve-proposals/2026-09-23-agent-pdf-deepresearch-draft.md`.
 
 ## Common Tasks
 
@@ -178,11 +185,16 @@ re-read whole files.
 
 After big code changes, refresh the graph with `graft build` (deterministic,
 no API key, $0).
+
 <!-- graft:end -->
 
 **One-time setup**: `bun add -g @nanonets/graft` (or `npm install -g @nanonets/graft`; no nixpkgs
 derivation exists for it as of this writing, so it is installed per-machine rather than declared in
-this repo's Nix config). Run `graft telemetry disable` (machine-wide setting, not repo-scoped;
+this repo's Nix config). **Provenance note**: the upstream GitHub repo has since moved to
+`github.com/trailhq/Graft` (a rebrand), but the npm package name is unchanged — verify with
+`npm view @nanonets/graft` (last checked 2026-09-23) rather than assuming the GitHub rename means
+the package is abandoned; keep using `@nanonets/graft` as below. Run `graft telemetry disable`
+(machine-wide setting, not repo-scoped;
 anonymous aggregate-only stats to `events.nanonets.com` per its own
 [TELEMETRY.md](https://github.com/NanoNets/context-graph-engine/blob/main/TELEMETRY.md) — disabled
 here for consistency with this repo's no-unnecessary-egress stance elsewhere). Then `graft build`

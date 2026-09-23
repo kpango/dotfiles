@@ -175,17 +175,19 @@ if (($+commands[pacman])); then
 		fi
 
 		# Call reflector
+		# --fastest triggers rate-testing of every matching mirror (slow/hanging);
+		# --isos eliminates most mirrors and is irrelevant for package updates;
+		# --delay 0.2 (12 min) is overly strict — relaxed to 1.0 h.
+		# Sort by score (Arch MirrorStatus quality metric) for reliability.
 		if ! reflector \
 			--country "Australia,Austria,Bulgaria,Canada,Czechia,France,Germany,India,Japan,New Zealand,Singapore,South Korea,Sweden,Taiwan,Thailand,United Kingdom,United States" \
 			--protocol https \
-			--fastest 60 \
 			--sort score \
-			--threads 64 \
 			--age 24 \
-			--isos \
 			--ipv6 \
-			--delay 0.2 \
+			--delay 1.0 \
 			--completion-percent 90 \
+			--number 20 \
 			--save "$tmpfile"; then
 			echo "Reflector failed; keeping existing mirrorlist"
 			rm -f "$tmpfile"

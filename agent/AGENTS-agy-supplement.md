@@ -16,34 +16,34 @@ Antigravity can orchestrate external CLI coding agents seamlessly:
 
 Antigravity can invoke or define specialized subagents for isolated task delegation:
 
-| Agent                               | Purpose                                                            | Model / Role                |
-| :---------------------------------- | :----------------------------------------------------------------- | :-------------------------- |
-| `go-expert`                         | Go implementation, optimization, testing, debugging                | Go Specialist               |
-| `rust-expert`                       | Rust ownership/lifetimes, unsafe code review, cargo                | Rust Specialist             |
-| `arch-ops`                          | Arch Linux, pacman, systemd, Sway, Docker/containers               | Arch System Ops             |
+| Agent                               | Purpose                                                                                      | Model / Role                |
+| :---------------------------------- | :------------------------------------------------------------------------------------------- | :-------------------------- |
+| `go-expert`                         | Go implementation, optimization, testing, debugging                                          | Go Specialist               |
+| `rust-expert`                       | Rust ownership/lifetimes, unsafe code review, cargo                                          | Rust Specialist             |
+| `arch-ops`                          | Arch Linux, pacman, systemd, Sway, Docker/containers                                         | Arch System Ops             |
 | `unifi-expert`                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity | Network Ops                 |
-| `security-audit`                    | Vulnerability audit, OWASP, secret detection                       | Security Auditor            |
-| `perf-analyzer`                     | pprof, criterion, perf, bottleneck analysis                        | Performance Engineer        |
-| `code-reviewer`                     | Code quality, maintainability, multi-language review               | Code Reviewer               |
-| `debugger`                          | Root cause analysis, test failure investigation                    | Debugger                    |
-| `proto-expert`                      | Protobuf/.proto editing, make proto/all, breaking change detection | Protocol Buffer Specialist  |
-| `vald-reviewer`                     | Vald Law enforcement, config sync, K8s resource rules              | Vald Architecture Reviewer  |
-| `ann-perf-engineer`                 | ANN vector search (ArcFlare/NGT/NGTAQ) SIMD kernel opt             | Vector Search Perf Engineer |
-| `ci-investigator`                   | CI/build pipeline root-cause analysis                              | CI Investigator             |
-| `python-expert`                     | Python/PyTorch implementation, packaging, testing                  | Python Specialist           |
-| `cpp-expert`                        | C++ implementation, build-system (CMake/vcpkg/Conan)               | C++ Specialist              |
-| `k8s-expert`                        | General Kubernetes manifest/Helm/Kustomize implementation          | K8s Specialist              |
-| `nix-expert`                        | Nix/NixOS/nix-darwin/home-manager implementation                   | Nix Specialist              |
-| `zig-expert`                        | Zig implementation, version-sensitive breaking change awareness    | Zig Specialist              |
-| `github-actions-expert`             | GitHub Actions workflow authoring/design                           | GitHub Actions Specialist   |
-| `security-adversarial-reviewer`     | Adversarial security re-review (second line of defense)            | Adversarial Security        |
-| `architecture-adversarial-reviewer` | Adversarial architecture-consistency review                        | Adversarial Architect       |
-| `perf-simd-adversarial-reviewer`    | Adversarial perf/SIMD re-review                                    | Adversarial Perf            |
-| `code-quality-adversarial-reviewer` | Adversarial code-quality re-review                                 | Adversarial QA              |
-| `docs-comment-adversarial-reviewer` | Adversarial technical-doc/comment quality review                   | Adversarial Docs            |
-| `systems-lang-adversarial-reviewer` | Adversarial Go/Rust/C++ language-spec review                       | Adversarial Spec Reviewer   |
-| `shell-config-adversarial-reviewer` | Adversarial Shell/Zsh/Makefile language-spec review                | Adversarial Shell Reviewer  |
-| `infra-config-adversarial-reviewer` | Adversarial Nix/Lua/YAML/JSON syntax & schema review               | Adversarial Infra Reviewer  |
+| `security-audit`                    | Vulnerability audit, OWASP, secret detection                                                 | Security Auditor            |
+| `perf-analyzer`                     | pprof, criterion, perf, bottleneck analysis                                                  | Performance Engineer        |
+| `code-reviewer`                     | Code quality, maintainability, multi-language review                                         | Code Reviewer               |
+| `debugger`                          | Root cause analysis, test failure investigation                                              | Debugger                    |
+| `proto-expert`                      | Protobuf/.proto editing, make proto/all, breaking change detection                           | Protocol Buffer Specialist  |
+| `vald-reviewer`                     | Vald Law enforcement, config sync, K8s resource rules                                        | Vald Architecture Reviewer  |
+| `ann-perf-engineer`                 | ANN vector search (ArcFlare/NGT/NGTAQ) SIMD kernel opt                                       | Vector Search Perf Engineer |
+| `ci-investigator`                   | CI/build pipeline root-cause analysis                                                        | CI Investigator             |
+| `python-expert`                     | Python/PyTorch implementation, packaging, testing                                            | Python Specialist           |
+| `cpp-expert`                        | C++ implementation, build-system (CMake/vcpkg/Conan)                                         | C++ Specialist              |
+| `k8s-expert`                        | General Kubernetes manifest/Helm/Kustomize implementation                                    | K8s Specialist              |
+| `nix-expert`                        | Nix/NixOS/nix-darwin/home-manager implementation                                             | Nix Specialist              |
+| `zig-expert`                        | Zig implementation, version-sensitive breaking change awareness                              | Zig Specialist              |
+| `github-actions-expert`             | GitHub Actions workflow authoring/design                                                     | GitHub Actions Specialist   |
+| `security-adversarial-reviewer`     | Adversarial security re-review (second line of defense)                                      | Adversarial Security        |
+| `architecture-adversarial-reviewer` | Adversarial architecture-consistency review                                                  | Adversarial Architect       |
+| `perf-simd-adversarial-reviewer`    | Adversarial perf/SIMD re-review                                                              | Adversarial Perf            |
+| `code-quality-adversarial-reviewer` | Adversarial code-quality re-review                                                           | Adversarial QA              |
+| `docs-comment-adversarial-reviewer` | Adversarial technical-doc/comment quality review                                             | Adversarial Docs            |
+| `systems-lang-adversarial-reviewer` | Adversarial Go/Rust/C++ language-spec review                                                 | Adversarial Spec Reviewer   |
+| `shell-config-adversarial-reviewer` | Adversarial Shell/Zsh/Makefile language-spec review                                          | Adversarial Shell Reviewer  |
+| `infra-config-adversarial-reviewer` | Adversarial Nix/Lua/YAML/JSON syntax & schema review                                         | Adversarial Infra Reviewer  |
 
 ## Teamwork-Preview Subagent Bridge
 

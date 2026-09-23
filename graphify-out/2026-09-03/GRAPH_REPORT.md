@@ -74,7 +74,7 @@
 - pi/agents/systems-lang-adversarial-reviewer.md
 - Global Agent Instructions
 - cd
-- set_
+- set\_
 - Dotfiles Project — Claude Code Instructions
 - Dotfiles Project — Claude Code Instructions
 - Root-Cause Categories (check in this order — cheapest/most common first)
@@ -490,7 +490,7 @@
 ### Community 0 - "allow"
 
 Cohesion: 0.03
-Nodes (58): allow, Bash(cmake *), Bash(date *), Bash(df *), Bash(du *), Bash(echo *), Bash(gmake *), Bash(/home/kpango/go/src/github.com/vdaas/ArcFlare/build/tests/ann_bench *) (+50 more)
+Nodes (58): allow, Bash(cmake _), Bash(date _), Bash(df _), Bash(du _), Bash(echo _), Bash(gmake _), Bash(/home/kpango/go/src/github.com/vdaas/ArcFlare/build/tests/ann_bench \*) (+50 more)
 
 ### Community 1 - "agent/ — claude / pi / agy(/codex) 共通設定ディレクトリ"
 
@@ -500,7 +500,7 @@ Nodes (20): agent/ — claude / pi / agy(/codex) 共通設定ディレクトリ,
 ### Community 2 - "rule_engine.py"
 
 Cohesion: 0.09
-Nodes (34): handle_graphify_hint(), handle_security_shell(), handle_security_write(), handle_vald_law1(), handle_vald_law2(), handle_vald_law345(), _load_json(), main() (+26 more)
+Nodes (34): handle_graphify_hint(), handle_security_shell(), handle_security_write(), handle_vald_law1(), handle_vald_law2(), handle_vald_law345(), \_load_json(), main() (+26 more)
 
 ### Community 3 - "unmap"
 
@@ -535,7 +535,7 @@ Nodes (34): alwaysThinkingEnabled, autoMemoryDirectory, autoMemoryEnabled, autoS
 ### Community 9 - "deny"
 
 Cohesion: 0.06
-Nodes (35): permissions, defaultMode, deny, Edit(//**/.aws/credentials), Edit(//**/.credentials.json), Edit(//**/.env), Edit(//**/.env.local), Edit(//**/id_ed25519) (+27 more)
+Nodes (35): permissions, defaultMode, deny, Edit(//**/.aws/credentials), Edit(//**/.credentials.json), Edit(//**/.env), Edit(//**/.env.local), Edit(//\*\*/id_ed25519) (+27 more)
 
 ### Community 10 - "Rust Development Patterns"
 
@@ -545,7 +545,7 @@ Nodes (35): 1. Ownership and Borrowing, Accept Generics, Return Concrete Types, 
 ### Community 11 - "commands_full.py"
 
 Cohesion: 0.08
-Nodes (21): bulkrename, cmap, console, eval_, load_copy_buffer, map_, pmap, quit_bang (+13 more)
+Nodes (21): bulkrename, cmap, console, eval*, load_copy_buffer, map*, pmap, quit_bang (+13 more)
 
 ### Community 12 - "environment"
 
@@ -560,7 +560,7 @@ Nodes (46): type, url, args, command, type, args, command, type (+38 more)
 ### Community 14 - "Command"
 
 Cohesion: 0.07
-Nodes (18): alias, chain, filter_inode_type, filter_stack, grep, help_, narrow, Command (+10 more)
+Nodes (18): alias, chain, filter*inode_type, filter_stack, grep, help*, narrow, Command (+10 more)
 
 ### Community 15 - "Security Review — Reference"
 
@@ -757,10 +757,10 @@ Nodes (11): Code Style Preferences, Development Environment, Global Agent Instru
 Cohesion: 0.31
 Nodes (3): cd, :cd [-r] <path> The cd command changes the directory. If the path is a file,…, Find directories matching tokens recursively
 
-### Community 55 - "set_"
+### Community 55 - "set\_"
 
 Cohesion: 0.20
-Nodes (6): :set <option name>=<python expression> Gives an option a new value. Use `:set…, :setlocal path=<regular expression> <option name>=<python expression> Gives an…, :setintag <tag or tags> <option name>=<option value> Sets an option for…, set_, setintag, setlocal
+Nodes (6): :set <option name>=<python expression> Gives an option a new value. Use `:set…, :setlocal path=<regular expression> <option name>=<python expression> Gives an…, :setintag <tag or tags> <option name>=<option value> Sets an option for…, set\_, setintag, setlocal
 
 ### Community 56 - "Dotfiles Project — Claude Code Instructions"
 

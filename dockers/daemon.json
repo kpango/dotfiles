@@ -73,8 +73,13 @@
     "2606:4700:4700::1111",
     "2001:4860:4860::8888"
   ],
-  "dns-opts": ["timeout:5", "ndots:1"],
-  "registry-mirrors": ["https://mirror.gcr.io"],
+  "dns-opts": [
+    "timeout:5",
+    "ndots:1"
+  ],
+  "registry-mirrors": [
+    "https://mirror.gcr.io"
+  ],
   "runtimes": {
     "runsc": {
       "path": "/usr/local/bin/runsc"

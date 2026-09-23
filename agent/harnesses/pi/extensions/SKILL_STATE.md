@@ -123,7 +123,7 @@ to re-deriving state from transcripts.
 
 Long-horizon procedural skills declare their execution-state schema in a
 `## SKILL.state Schema` section (a `domain` + a fenced JSON `fields` block). This
-is the authoring convention used by the major swarm-* skills. Under the Pi harness
+is the authoring convention used by the major swarm-_ skills. Under the Pi harness
 SKILL.state is their **default working pattern**: `skill_state_declare` the schema
 at the start of a run, then emit `ΔΣ` via `skill_state_update` after each phase
 instead of accumulating history. The `skill-state` extension also **auto-injects a
@@ -131,9 +131,8 @@ bounded Σ digest into context every turn by default** (a `before_agent_start`
 hook; toggle with `/state autocontext off`), so Σ — not the full transcript — is
 the sufficient statistic the model reasons over. This is layered on Pi's immutable
 base loop, which still owns the transcript, so the digest **augments** context
-with Σ rather than replacing history. On harnesses without the `skill_state_*`
-tools the section is inert documentation, and any adopted Σ stays subordinate to
-each skill's existing source-of-truth state files (e.g. `@fix_plan.md`,
+with Σ rather than replacing history. On harnesses without the `skill*state*_`tools the section is inert documentation, and any adopted Σ stays subordinate to
+each skill's existing source-of-truth state files (e.g.`@fix_plan.md`,
 `graph-status.sh`).
 
 ## Limitations (paper §7)

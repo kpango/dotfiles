@@ -7,7 +7,7 @@ Specialized agents available for delegation — use @-mention or natural languag
 | `go-expert`                         | Go implementation, optimization, testing, debugging                                                                                                                                | inherit (high effort) |
 | `rust-expert`                       | Rust ownership/lifetimes, unsafe code review, cargo                                                                                                                                | inherit (high effort) |
 | `arch-ops`                          | Arch Linux, pacman, systemd, Sway, Docker/containers                                                                                                                               | haiku                 |
-| `unifi-expert`                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity                                                                          | sonnet                |
+| `unifi-expert`                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity                                                                                       | sonnet                |
 | `security-audit`                    | Vulnerability audit, OWASP, secret detection                                                                                                                                       | sonnet                |
 | `perf-analyzer`                     | pprof, criterion, perf, bottleneck analysis                                                                                                                                        | inherit               |
 | `code-reviewer`                     | Code quality, maintainability, security review (Go/Rust/C++/Python/Zig/K8s)                                                                                                        | sonnet                |
@@ -53,7 +53,7 @@ Run a security audit in the background
 | Implement / optimize / debug Go code                                                                   | `go-expert`                           |
 | Rust ownership, lifetimes, unsafe, cargo                                                               | `rust-expert`                         |
 | pacman, AUR, systemd, Sway, Wayland, Docker                                                            | `arch-ops`                            |
-| UniFi, UDM Pro, GatewayConfigurationError, GeoIP                                          | `unifi-expert`                        |
+| UniFi, UDM Pro, GatewayConfigurationError, GeoIP                                                       | `unifi-expert`                        |
 | Secret detection, OWASP audit, auth review                                                             | `security-audit`                      |
 | pprof, perf, flamegraph, benchmark regression                                                          | `perf-analyzer`                       |
 | Code review after writing or modifying code                                                            | `code-reviewer`                       |

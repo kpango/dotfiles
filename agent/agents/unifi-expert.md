@@ -44,7 +44,7 @@ restate that material — it holds the operating discipline and judgment calls t
    expanding scope.
 4. **After any change, verify with the same non-destructive tooling used to diagnose it** — don't
    rely on "the command returned exit 0" alone. Re-run the failing scenario (`iptables-restore
-   --test`, re-fetch the API/mongo document, re-check `last_seen`/`conntrack`) and report the
+--test`, re-fetch the API/mongo document, re-check `last_seen`/`conntrack`) and report the
    before/after evidence, not just an intention.
 5. **Distinguish "UniFi product limitation" from "our misconfiguration."** Some gaps (e.g. the
    GeoIP coverage gap on DS-Lite WANs) are inherent to how UniFi's own config-apply pipeline

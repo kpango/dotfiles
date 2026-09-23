@@ -505,7 +505,7 @@
 ### Community 0 - "allow"
 
 Cohesion: 0.06
-Nodes (32): allow, Bash(cmake *), Bash(date *), Bash(df *), Bash(du *), Bash(echo *), Bash(gmake *), Bash(/home/kpango/go/src/github.com/vdaas/ArcFlare/build/tests/ann_bench *) (+24 more)
+Nodes (32): allow, Bash(cmake _), Bash(date _), Bash(df _), Bash(du _), Bash(echo _), Bash(gmake _), Bash(/home/kpango/go/src/github.com/vdaas/ArcFlare/build/tests/ann_bench \*) (+24 more)
 
 ### Community 1 - "agent/ — claude / pi / agy(/codex) 共通設定ディレクトリ"
 
@@ -515,7 +515,7 @@ Nodes (27): 1. ハーネス設定の完全集約 (`agent/harnesses/`), 2026-09-0
 ### Community 2 - "rule_engine.py"
 
 Cohesion: 0.07
-Nodes (41): handle_graphify_hint(), handle_security_shell(), handle_security_write(), handle_vald_law1(), handle_vald_law2(), handle_vald_law345(), _load_json(), main() (+33 more)
+Nodes (41): handle_graphify_hint(), handle_security_shell(), handle_security_write(), handle_vald_law1(), handle_vald_law2(), handle_vald_law345(), \_load_json(), main() (+33 more)
 
 ### Community 3 - "colors"
 
@@ -550,7 +550,7 @@ Nodes (34): alwaysThinkingEnabled, autoMemoryDirectory, autoMemoryEnabled, autoS
 ### Community 9 - "deny"
 
 Cohesion: 0.06
-Nodes (33): deny, Edit(//**/.aws/credentials), Edit(//**/.credentials.json), Edit(//**/.env), Edit(//**/.env.local), Edit(//**/id_ed25519), Edit(//**/id_rsa), Edit(//**/*.key) (+25 more)
+Nodes (33): deny, Edit(//**/.aws/credentials), Edit(//**/.credentials.json), Edit(//**/.env), Edit(//**/.env.local), Edit(//**/id_ed25519), Edit(//**/id_rsa), Edit(//\*_/_.key) (+25 more)
 
 ### Community 10 - "Rust Development Patterns"
 
@@ -1725,7 +1725,7 @@ Nodes (3): block(), info(), swarm-fable-gate.sh script
 ### Community 296 - "swarm-post-edit-lint.sh"
 
 Cohesion: 0.83
-Nodes (3): log_evolve_event(), swarm-post-edit-lint.sh script, _source_lint_lib()
+Nodes (3): log_evolve_event(), swarm-post-edit-lint.sh script, \_source_lint_lib()
 
 ### Community 297 - "swarm-stop-verify.sh"
 
