@@ -118,3 +118,5 @@
 2026-09-20	devrun-container-launch	swarm-loop	container-ops	claude-sonnet-4-6	done=3 blocked=0 attempts=1 replans=0
 2026-09-23	permission-update-git-repo	swarm-loop	neutral	claude-sonnet-4-6	quick=1 note=update_git_repo+update_multiple_git_repos+kpangoup permission added to agent/harnesses/claude/settings.local.json via write-scope-grant
 2026-09-23	update-git-repo-stash-flow	swarm-loop	neutral	claude-sonnet-4-6	done=1 blocked=0 attempts=1 replans=0 note=update_git_repo-else-branch-replaced-with-stash+gfrs+stash-pop-flow zsh-n-PASS
+2026-09-23	unifi-controller-config-integrity	swarm-loop	neutral	claude-sonnet-5	network-ops-only no-code-diff enabled-field-fixed inform-6of8-recovered geoip-verified gatewayconfigerror-fixed
+2026-09-23	unifi-expert-agent-creation	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0 adversarial_review=3agent-2rounds(round1_all-FAIL,round2_2PASS-1FAIL-then-fixed) merged_to_main=yes(@5fd787d1)
