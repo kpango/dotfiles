@@ -7,6 +7,7 @@ Specialized agents available for delegation — use @-mention or natural languag
 | `go-expert`                         | Go implementation, optimization, testing, debugging                                                                                                                                | inherit (high effort) |
 | `rust-expert`                       | Rust ownership/lifetimes, unsafe code review, cargo                                                                                                                                | inherit (high effort) |
 | `arch-ops`                          | Arch Linux, pacman, systemd, Sway, Docker/containers                                                                                                                               | haiku                 |
+| `unifi-expert`                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity                                                                          | sonnet                |
 | `security-audit`                    | Vulnerability audit, OWASP, secret detection                                                                                                                                       | sonnet                |
 | `perf-analyzer`                     | pprof, criterion, perf, bottleneck analysis                                                                                                                                        | inherit               |
 | `code-reviewer`                     | Code quality, maintainability, security review (Go/Rust/C++/Python/Zig/K8s)                                                                                                        | sonnet                |
@@ -52,6 +53,7 @@ Run a security audit in the background
 | Implement / optimize / debug Go code                                                                   | `go-expert`                           |
 | Rust ownership, lifetimes, unsafe, cargo                                                               | `rust-expert`                         |
 | pacman, AUR, systemd, Sway, Wayland, Docker                                                            | `arch-ops`                            |
+| UniFi, UDM Pro, GatewayConfigurationError, GeoIP                                          | `unifi-expert`                        |
 | Secret detection, OWASP audit, auth review                                                             | `security-audit`                      |
 | pprof, perf, flamegraph, benchmark regression                                                          | `perf-analyzer`                       |
 | Code review after writing or modifying code                                                            | `code-reviewer`                       |
@@ -75,6 +77,9 @@ Rules:
 - Use `debugger` **before** guessing at a fix — let it identify root cause first
 - Use `ci-investigator` instead of `debugger` when the failure is in the CI pipeline/build environment layer rather than application logic
 - `arch-ops` uses `haiku` (fast/cheap); use it freely for system ops
+- `unifi-expert` operates against a production home-network device — it must get explicit human
+  confirmation before any state-changing action (see its own agent definition); always load the
+  `unifi-api` skill alongside it rather than duplicating endpoint/credential details in prompts
 - Never use `go-expert` for Rust or `rust-expert` for Go — stay within language boundaries (same rule across `python-expert`/`cpp-expert`/`nix-expert`/`zig-expert`)
 - Use `k8s-expert` for general Kubernetes work outside `vdaas/vald`; inside `vdaas/vald`, `vald-reviewer` already covers K8s resource rules alongside Vald Law/config-sync enforcement
 - The 8 `*-adversarial-reviewer` agents are for the GATE-immediate adversarial re-review stage only

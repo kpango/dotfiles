@@ -141,6 +141,7 @@ Antigravity can invoke or define specialized subagents for isolated task delegat
 | `go-expert`                         | Go implementation, optimization, testing, debugging                | Go Specialist               |
 | `rust-expert`                       | Rust ownership/lifetimes, unsafe code review, cargo                | Rust Specialist             |
 | `arch-ops`                          | Arch Linux, pacman, systemd, Sway, Docker/containers               | Arch System Ops             |
+| `unifi-expert`                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity | Network Ops                 |
 | `security-audit`                    | Vulnerability audit, OWASP, secret detection                       | Security Auditor            |
 | `perf-analyzer`                     | pprof, criterion, perf, bottleneck analysis                        | Performance Engineer        |
 | `code-reviewer`                     | Code quality, maintainability, multi-language review               | Code Reviewer               |
@@ -191,6 +192,10 @@ Antigravity seamlessly integrates with Swarm protocol layers via `teamwork-previ
 - `python-patterns` / `python-testing`: Pythonic code, typing, pytest
 - `k8s-patterns` / `nix-patterns`: Cloud native & declarative system management
 - `security-review` / `security-scan`: Security audit checklists and vulnerability scanners
+
+`unifi-expert` operates against a production home-network device — it must get explicit human
+confirmation before any state-changing action (see its own agent definition); always load the
+`unifi-api` skill alongside it rather than duplicating endpoint/credential details in prompts.
 
 ## Security & Safety Boundaries (Antigravity-specific enforcement)
 
