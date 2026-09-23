@@ -1,6 +1,6 @@
 # SWARM & Pi Agent / Skill Routing Catalog
 
-This catalog is the single source of truth for the complete multi-agent and skill routing topology across kpango's environment. It organizes all **25 specialized agents** and **36 skills** into a unified, autonomous routing matrix orchestrated via `/swarm-meta`.
+This catalog is the single source of truth for the complete multi-agent and skill routing topology across kpango's environment. It organizes all **26 specialized agents** and **36 skills** into a unified, autonomous routing matrix orchestrated via `/swarm-meta`.
 
 ---
 
@@ -68,7 +68,7 @@ This catalog is the single source of truth for the complete multi-agent and skil
 | `proto-expert`          | `protobuf-patterns`                              | Protobuf schema design, `buf lint/breaking`, gRPC service patterns, codegen    | High / Sonnet        |
 | `ann-perf-engineer`     | `ann-benchmark-patterns`                         | ANN vector search (ArcFlare/NGT) SIMD distance kernels, ann-benchmarks Pareto  | High / Sonnet        |
 | `arch-ops`              | —                                                | Arch Linux operations (pacman/AUR, systemd, Sway/Wayland, Docker containerd)   | Low / Haiku          |
-| —                       | `unifi-api`                                      | Ubiquiti UniFi network devices, WiFi, firewall, operational scripts            | Skill only           |
+| `unifi-expert`          | `unifi-api`                                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity | High / Sonnet |
 
 ### Cluster C: Quality, Performance & Diagnostics (First Line of Defense)
 
@@ -138,6 +138,7 @@ When `/swarm-meta` receives a goal, it automatically analyzes keywords, file typ
 | Bug, failure, panic, crash        | Root-Cause Fix     | `debugger`                            | — (Fixer clean slate)                 | `make test`, independent verification                    |
 | Vald, `vdaas/vald`                | Vald Core          | `vald-reviewer`                       | — (`vald-guard` ext)                  | Vald Laws 1–5, config sync, `make test`                  |
 | Arch, pacman, systemd, Sway       | OS / Environment   | `arch-ops`                            | —                                     | `systemctl --user`, pacman verify                        |
+| UniFi, Ubiquiti, UDM Pro, GatewayConfigurationError, GeoIP | Network Ops | `unifi-expert`                | `unifi-api`                           | `iptables-restore --test`, non-destructive mongo/API verify |
 | Architecture, ADR, design         | System Design      | `swarm-architect`                     | `grill-interview`                     | `architecture-adversarial-reviewer`                      |
 | Audit, scan, review               | Multi-Perspective  | `code-reviewer` + `security-audit`    | —                                     | 8-lens adversarial review, 3-model consensus             |
 

@@ -22,6 +22,7 @@ Delegation via `subagent` tool (single, parallel, chain, or DAG workflow mode; s
 | `go-expert`                         | Go implementation, optimization, testing, debugging                                    | inherit |
 | `rust-expert`                       | Rust ownership/lifetimes, unsafe code review, cargo                                    | inherit |
 | `arch-ops`                          | Arch Linux, pacman, systemd, Sway, Docker/containers                                   | haiku   |
+| `unifi-expert`                      | UniFi/UDM Pro network ops: GatewayConfigurationError, GeoIP, controller API config integrity | sonnet  |
 | `security-audit`                    | Vulnerability audit, OWASP, secret detection                                           | sonnet  |
 | `perf-analyzer`                     | pprof, criterion, perf, bottleneck analysis                                            | inherit |
 | `code-reviewer`                     | Code quality, maintainability, security review (Go/Rust/C++/Python/Zig/K8s)            | sonnet  |
@@ -112,6 +113,10 @@ Pi provides an extensive suite of built-in TypeScript extensions and GrokBot-ins
 | `open_in_helix`              | `/hx <file> [line]`   | Split-pane file navigation in Helix (`hx`) editor via tmux                                                     |
 | `search_sessions`            | `/sessions <query>`   | Search past conversation sessions in `~/.pi/agent/sessions/` for solutions and decisions                       |
 | `harness_refine`             | `/refine`             | Continual harness self-tuning from session error signatures                                                    |
+
+`unifi-expert` operates against a production home-network device — it must get explicit human
+confirmation before any state-changing action (see its own agent definition); always load the
+`unifi-api` skill alongside it rather than duplicating endpoint/credential details in prompts.
 
 ## Security & Protection Rules (Pi-specific enforcement)
 

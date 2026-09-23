@@ -304,6 +304,16 @@ export function inferAgentFromTask(taskText: string, targetCwd?: string, availab
     return "arch-ops";
   }
 
+  if (
+    t.includes("unifi") ||
+    t.includes("ubiquiti") ||
+    t.includes("udm pro") ||
+    t.includes("gatewayconfigurationerror") ||
+    t.includes("geoip")
+  ) {
+    return "unifi-expert";
+  }
+
   // 3. Fallback based on repository manifest files
   try {
     if (fs.existsSync(path.join(checkDir, "go.mod"))) return "go-expert";
