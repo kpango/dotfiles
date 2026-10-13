@@ -1,0 +1,3 @@
+# nextdns healthcheck: probe DNS every 5 min, restart service on failure
+MAILTO=""
+*/5 * * * * root /data/nextdns-healthcheck.sh

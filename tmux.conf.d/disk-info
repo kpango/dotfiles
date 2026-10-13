@@ -1,0 +1,10 @@
+#!/bin/sh
+df -BG / 2>/dev/null | awk 'NR==2{
+  gsub(/G/,"",$2); gsub(/G/,"",$3)
+  used=$3+0; total=$2+0
+  pct=(total>0) ? int(used*100/total) : 0
+  if (pct >= 90) color="#f38ba8"
+  else if (pct >= 70) color="#f9e2af"
+  else color="#a6e3a1"
+  printf "#[fg=%s]%s/%sGB", color, used, total
+}'

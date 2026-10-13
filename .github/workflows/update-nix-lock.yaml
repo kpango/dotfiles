@@ -1,0 +1,108 @@
+name: Update nix flake.lock
+
+# Keeps nix/flake.lock from drifting behind nixpkgs.
+#
+# The packages this repo gets from nixpkgs are only ever as fresh as the pinned
+# nixpkgs revision, and nothing else in CI refreshes it: update-actions.yaml
+# rewrites GitHub Actions/tool version pins and commits `.github/` alone, so
+# flake.lock was last moved by hand. For a fast-moving package that is a real
+# gap -- on 2026-10-14 nixpkgs-unstable carried claude-code 2.1.296 (identical
+# to npm's `latest`) while this repo's lock, pinned on 2026-09-16, still
+# resolved 2.1.272.
+#
+# Updates land straight on main, so the full `make nix/test` gate runs first and
+# a red gate means nothing is pushed. nix/flake.lock also matches nix.yaml's
+# `paths: nix/**`, so the push additionally triggers that workflow's complete
+# matrix (NixOS builds, Darwin builds) as a second line of defence.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every 6 hours, offset off the hour to stay clear of update-actions.yaml
+    # (18:00 UTC) and docker-matrix.yaml (23:00 UTC).
+    - cron: "20 */6 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-nix-lock
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  update:
+    name: "Update flake.lock"
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          # The push below supplies its own credentials in the remote URL, the
+          # same way update-actions.yaml does.
+          persist-credentials: false
+
+      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+        with:
+          extra-conf: |
+            extra-experimental-features = nix-command flakes
+            accept-flake-config = true
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+
+      - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+        with:
+          use-flakehub: false
+
+      - name: Update flake.lock
+        run: make nix/update
+
+      - name: Check for changes
+        id: check_diff
+        run: |
+          if git diff --quiet --exit-code -- nix/flake.lock; then
+            echo "flake.lock is already at the latest input revisions — nothing to do."
+          else
+            git --no-pager diff --stat -- nix/flake.lock
+            echo "HAS_GIT_DIFF=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # eval (4 NixOS hosts) + eval/darwin (3 hosts) + flake check + dry-run
+      # (NIX_HOST_NAME, default tr) + dry-run/darwin. Resolves every derivation
+      # graph without building, which is what catches the regression class this
+      # gate exists for: an attribute that disappeared, a renamed builder, a
+      # hash mismatch. See nix/overlays/default.nix for the prior occurrences.
+      - name: Full nix test gate
+        if: steps.check_diff.outputs.HAS_GIT_DIFF == 'true'
+        run: make nix/test
+
+      - name: Push flake.lock to main
+        if: steps.check_diff.outputs.HAS_GIT_DIFF == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add nix/flake.lock
+          git commit -m "chore(nix): update flake.lock to the latest input revisions"
+          # main can move while the gate above runs (it takes minutes). Rebase
+          # this single-file commit onto the current tip instead of failing the
+          # whole run on a stale ref; a genuine conflict means someone else
+          # changed flake.lock, so abort cleanly and let the next run redo it.
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          git fetch --no-tags "$REMOTE" main
+          if ! git rebase FETCH_HEAD; then
+            git rebase --abort
+            echo "::error::flake.lock conflicts with main — skipping this run." >&2
+            exit 1
+          fi
+          git push "$REMOTE" HEAD:main

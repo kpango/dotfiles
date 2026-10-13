@@ -1,0 +1,10 @@
+[Unit]
+Description=Re-check eth8 Region Blocking rules every 30s (udapi rebuilds the firewall)
+
+[Timer]
+OnBootSec=45s
+OnUnitActiveSec=30s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,7 @@
+[Unit]
+Description=Region Block exception for Windows game PCs (codefusion / WNS)
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/game-geo-bypass/apply.sh

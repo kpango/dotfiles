@@ -1,0 +1,9 @@
+[Unit]
+Description=Re-apply eth8 Region Blocking when the gateway config changes
+
+[Path]
+PathChanged=/data/udapi-config/udapi-net-cfg.json
+Unit=unifi-native-guard-geoip-eth8.service
+
+[Install]
+WantedBy=paths.target

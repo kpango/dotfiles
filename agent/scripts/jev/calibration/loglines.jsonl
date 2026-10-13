@@ -1,0 +1,155 @@
+{"line": "go: downloading github.com/pkg/errors v0.9.1", "label": "noise", "tool": "go"}
+{"line": "ok  \tgithub.com/kpango/dotfiles/agent/scripts\t0.012s", "label": "noise", "tool": "go"}
+{"line": "=== RUN   TestParseConfig", "label": "noise", "tool": "go"}
+{"line": "go: extracting golang.org/x/sync v0.7.0", "label": "noise", "tool": "go"}
+{"line": "PASS", "label": "noise", "tool": "go"}
+{"line": "--- PASS: TestParseConfig (0.00s)", "label": "noise", "tool": "go"}
+{"line": "go vet ./...", "label": "noise", "tool": "go"}
+{"line": "go: downloading golang.org/x/mod v0.18.0", "label": "noise", "tool": "go"}
+{"line": "    config_test.go:42: comparing expected vs actual output", "label": "context", "tool": "go"}
+{"line": "coverage: 82.4% of statements", "label": "context", "tool": "go"}
+{"line": "goroutine 1 [running]:", "label": "context", "tool": "go"}
+{"line": "\tmain.main()", "label": "context", "tool": "go"}
+{"line": "note: module requires Go 1.22", "label": "context", "tool": "go"}
+{"line": "vet: possible misuse of unbounded loop variable in closure", "label": "context", "tool": "go"}
+{"line": "go: warning: \"go get\" without a version is deprecated", "label": "context", "tool": "go"}
+{"line": "--- FAIL: TestParseConfig (0.01s)", "label": "critical", "tool": "go"}
+{"line": "FAIL\tgithub.com/kpango/dotfiles/agent/scripts\t0.031s", "label": "critical", "tool": "go"}
+{"line": "panic: runtime error: index out of range [3] with length 3", "label": "critical", "tool": "go"}
+{"line": "config_test.go:45: expected 200, got 500", "label": "critical", "tool": "go"}
+{"line": "undefined: strings.CutPrefix", "label": "critical", "tool": "go"}
+{"line": "# github.com/kpango/dotfiles/agent/scripts [build failed]", "label": "critical", "tool": "go"}
+{"line": "fatal error: all goroutines are asleep - deadlock!", "label": "critical", "tool": "go"}
+{"line": "   Compiling serde v1.0.204", "label": "noise", "tool": "rust"}
+{"line": "   Compiling mylib v0.1.0 (/home/user/project)", "label": "noise", "tool": "rust"}
+{"line": "    Finished dev [unoptimized + debuginfo] target(s) in 4.21s", "label": "noise", "tool": "rust"}
+{"line": "     Running unittests src/lib.rs (target/debug/deps/mylib-abc123)", "label": "noise", "tool": "rust"}
+{"line": "running 12 tests", "label": "noise", "tool": "rust"}
+{"line": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out", "label": "noise", "tool": "rust"}
+{"line": "test tests::it_adds_two ... ok", "label": "noise", "tool": "rust"}
+{"line": "    Updating crates.io index", "label": "noise", "tool": "rust"}
+{"line": "warning: unused variable: `x`", "label": "context", "tool": "rust"}
+{"line": "  --> src/lib.rs:15:9", "label": "context", "tool": "rust"}
+{"line": "   = note: `#[warn(unused_variables)]` on by default", "label": "context", "tool": "rust"}
+{"line": "help: if this is intentional, prefix it with an underscore: `_x`", "label": "context", "tool": "rust"}
+{"line": "note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace", "label": "context", "tool": "rust"}
+{"line": "1 warning emitted", "label": "context", "tool": "rust"}
+{"line": "error[E0433]: failed to resolve: use of undeclared crate or module `serde_json`", "label": "critical", "tool": "rust"}
+{"line": "test tests::it_fails ... FAILED", "label": "critical", "tool": "rust"}
+{"line": "thread 'main' panicked at 'index out of bounds: the len is 3 but the index is 5', src/lib.rs:20:5", "label": "critical", "tool": "rust"}
+{"line": "error: could not compile `mylib` due to 2 previous errors", "label": "critical", "tool": "rust"}
+{"line": "test result: FAILED. 10 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out", "label": "critical", "tool": "rust"}
+{"line": "error: linking with `cc` failed: exit status: 1", "label": "critical", "tool": "rust"}
+{"line": "assertion `left == right` failed", "label": "critical", "tool": "rust"}
+{"line": "[ 12%] Building CXX object CMakeFiles/app.dir/main.cpp.o", "label": "noise", "tool": "cpp"}
+{"line": "Scanning dependencies of target app", "label": "noise", "tool": "cpp"}
+{"line": "[100%] Built target app", "label": "noise", "tool": "cpp"}
+{"line": "-- Configuring done", "label": "noise", "tool": "cpp"}
+{"line": "-- Generating done", "label": "noise", "tool": "cpp"}
+{"line": "-- Build files have been written to: /home/user/project/build", "label": "noise", "tool": "cpp"}
+{"line": "[ 45%] Linking CXX executable app", "label": "noise", "tool": "cpp"}
+{"line": "make[1]: Entering directory '/home/user/project/build'", "label": "noise", "tool": "cpp"}
+{"line": "main.cpp: In function 'int main()':", "label": "context", "tool": "cpp"}
+{"line": "main.cpp:12:5: note: in expansion of macro 'ASSERT'", "label": "context", "tool": "cpp"}
+{"line": "1 warning generated.", "label": "context", "tool": "cpp"}
+{"line": "main.cpp:10:9: warning: unused variable 'x' [-Wunused-variable]", "label": "context", "tool": "cpp"}
+{"line": "note: candidate: 'void foo(int)'", "label": "context", "tool": "cpp"}
+{"line": "note: the last parameter is 'int' from 'operator=='", "label": "context", "tool": "cpp"}
+{"line": "clang-tidy: 0 warnings generated (checked 12 files)", "label": "noise", "tool": "cpp"}
+{"line": "main.cpp:15:10: error: 'undeclaredFunc' was not declared in this scope", "label": "critical", "tool": "cpp"}
+{"line": "collect2: error: ld returned 1 exit status", "label": "critical", "tool": "cpp"}
+{"line": "undefined reference to `Foo::bar()'", "label": "critical", "tool": "cpp"}
+{"line": "Segmentation fault (core dumped)", "label": "critical", "tool": "cpp"}
+{"line": "make: *** [Makefile:32: app] Error 1", "label": "critical", "tool": "cpp"}
+{"line": "AddressSanitizer: heap-buffer-overflow on address 0x602000000010", "label": "critical", "tool": "cpp"}
+{"line": "terminate called after throwing an instance of 'std::runtime_error'", "label": "critical", "tool": "cpp"}
+{"line": "collecting ... collected 42 items", "label": "noise", "tool": "python"}
+{"line": "platform linux -- Python 3.12.4, pytest-8.2.0, pluggy-1.5.0", "label": "noise", "tool": "python"}
+{"line": "Requirement already satisfied: numpy in ./venv/lib/python3.12/site-packages (1.26.4)", "label": "noise", "tool": "python"}
+{"line": "test_parser.py::test_basic PASSED", "label": "noise", "tool": "python"}
+{"line": "Building wheel for mypkg (pyproject.toml) ... done", "label": "noise", "tool": "python"}
+{"line": "rootdir: /home/user/project", "label": "noise", "tool": "python"}
+{"line": "cachedir: .pytest_cache", "label": "noise", "tool": "python"}
+{"line": "Successfully installed numpy-1.26.4", "label": "noise", "tool": "python"}
+{"line": "DeprecationWarning: ssl.PROTOCOL_TLS is deprecated", "label": "context", "tool": "python"}
+{"line": "test_parser.py:12: in test_basic", "label": "context", "tool": "python"}
+{"line": "    assert result == expected", "label": "context", "tool": "python"}
+{"line": "-------------- coverage: platform linux -----------", "label": "context", "tool": "python"}
+{"line": "TOTAL                              412     18    96%", "label": "context", "tool": "python"}
+{"line": "1 warning in 2.14s", "label": "context", "tool": "python"}
+{"line": "collected 42 items / 1 skipped", "label": "context", "tool": "python"}
+{"line": "test_parser.py::test_edge_case FAILED", "label": "critical", "tool": "python"}
+{"line": "E   AssertionError: assert 200 == 500", "label": "critical", "tool": "python"}
+{"line": "Traceback (most recent call last):", "label": "critical", "tool": "python"}
+{"line": "ModuleNotFoundError: No module named 'requests'", "label": "critical", "tool": "python"}
+{"line": "FAILED test_parser.py::test_edge_case - AssertionError", "label": "critical", "tool": "python"}
+{"line": "====== 1 failed, 41 passed in 3.21s ======", "label": "critical", "tool": "python"}
+{"line": "NameError: name 'undefined_var' is not defined", "label": "critical", "tool": "python"}
+{"line": "make[1]: Entering directory '/home/user/project/src'", "label": "noise", "tool": "make"}
+{"line": "cc -c -o main.o main.c", "label": "noise", "tool": "make"}
+{"line": "make[1]: Leaving directory '/home/user/project/src'", "label": "noise", "tool": "make"}
+{"line": "echo 'Build complete'", "label": "noise", "tool": "make"}
+{"line": "ar rcs libapp.a main.o util.o", "label": "noise", "tool": "make"}
+{"line": "main.c:10:5: note: expected 'int' but argument is of type 'char *'", "label": "context", "tool": "make"}
+{"line": "Nothing to be done for 'all'.", "label": "noise", "tool": "make"}
+{"line": "make: Warning: File 'Makefile' has modification time in the future", "label": "context", "tool": "make"}
+{"line": "target 'test' is up to date.", "label": "noise", "tool": "make"}
+{"line": "make: *** No rule to make target 'missing.c', needed by 'main.o'.  Stop.", "label": "critical", "tool": "make"}
+{"line": "main.c:10:5: error: expected ';' before '}' token", "label": "critical", "tool": "make"}
+{"line": "make: *** [Makefile:20: main.o] Error 1", "label": "critical", "tool": "make"}
+{"line": "recipe for target 'all' failed", "label": "critical", "tool": "make"}
+{"line": "Step 3/10 : RUN apt-get update", "label": "noise", "tool": "docker"}
+{"line": " ---> Using cache", "label": "noise", "tool": "docker"}
+{"line": "Sending build context to Docker daemon  2.048kB", "label": "noise", "tool": "docker"}
+{"line": "Successfully built 4f2a9c1e8b3d", "label": "noise", "tool": "docker"}
+{"line": "Successfully tagged myapp:latest", "label": "noise", "tool": "docker"}
+{"line": " ---> Running in 3a1b2c3d4e5f", "label": "noise", "tool": "docker"}
+{"line": "latest: Pulling from library/golang", "label": "noise", "tool": "docker"}
+{"line": "#5 [2/4] RUN go mod download", "label": "context", "tool": "docker"}
+{"line": "#5 DONE 3.2s", "label": "context", "tool": "docker"}
+{"line": "WARN[0000] The requested image's platform (linux/amd64) does not match the detected host platform", "label": "context", "tool": "docker"}
+{"line": "note: image built for linux/amd64, host is linux/arm64", "label": "context", "tool": "docker"}
+{"line": "#7 exporting to image", "label": "context", "tool": "docker"}
+{"line": "digest: sha256:abcd1234ef567890", "label": "context", "tool": "docker"}
+{"line": "Step 5/10 : RUN go build ./... returned a non-zero code: 1", "label": "critical", "tool": "docker"}
+{"line": "ERROR: failed to solve: process \"/bin/sh -c go build ./...\" did not complete successfully: exit code: 1", "label": "critical", "tool": "docker"}
+{"line": "docker: Error response from daemon: pull access denied for myapp, repository does not exist", "label": "critical", "tool": "docker"}
+{"line": "exec /usr/local/bin/entrypoint.sh: no such file or directory", "label": "critical", "tool": "docker"}
+{"line": "OCI runtime create failed: container_linux.go:380: starting container process caused: exec: \"app\": executable file not found in $PATH", "label": "critical", "tool": "docker"}
+{"line": "Error: failed to fetch metadata: dial tcp: lookup registry.example.com: no such host", "label": "critical", "tool": "docker"}
+{"line": "Release \"myapp\" has been upgraded. Happy Helming!", "label": "noise", "tool": "helm"}
+{"line": "NAME: myapp", "label": "noise", "tool": "helm"}
+{"line": "LAST DEPLOYED: Thu Sep 24 12:00:00 2026", "label": "noise", "tool": "helm"}
+{"line": "NAMESPACE: default", "label": "noise", "tool": "helm"}
+{"line": "STATUS: deployed", "label": "noise", "tool": "helm"}
+{"line": "REVISION: 3", "label": "noise", "tool": "helm"}
+{"line": "==> v1/Pod(related)", "label": "context", "tool": "helm"}
+{"line": "NAME             READY   STATUS    RESTARTS   AGE", "label": "context", "tool": "helm"}
+{"line": "myapp-7d4b9-abcde   1/1     Running   0          2m", "label": "context", "tool": "helm"}
+{"line": "NOTES:", "label": "context", "tool": "helm"}
+{"line": "Get the application URL by running these commands:", "label": "context", "tool": "helm"}
+{"line": "Error: UPGRADE FAILED: another operation (install/upgrade/rollback) is in progress", "label": "critical", "tool": "helm"}
+{"line": "Error: failed to create resource: admission webhook denied the request", "label": "critical", "tool": "helm"}
+{"line": "Error: timed out waiting for the condition", "label": "critical", "tool": "helm"}
+{"line": "Error: INSTALLATION FAILED: chart requires kubeVersion: >=1.24.0 which is incompatible with Kubernetes v1.20.0", "label": "critical", "tool": "helm"}
+{"line": "Error: could not find template: templates/deployment.yaml", "label": "critical", "tool": "helm"}
+{"line": "Terraform will perform the following actions:", "label": "noise", "tool": "terraform"}
+{"line": "Plan: 3 to add, 1 to change, 0 to destroy.", "label": "noise", "tool": "terraform"}
+{"line": "aws_instance.web: Creating...", "label": "noise", "tool": "terraform"}
+{"line": "aws_instance.web: Creation complete after 12s [id=i-0abcd1234]", "label": "noise", "tool": "terraform"}
+{"line": "  # aws_instance.web will be created", "label": "context", "tool": "terraform"}
+{"line": "  + resource \"aws_instance\" \"web\" {", "label": "context", "tool": "terraform"}
+{"line": "Note: Objects have changed outside of Terraform", "label": "context", "tool": "terraform"}
+{"line": "Error: creating EC2 Instance: InsufficientInstanceCapacity", "label": "critical", "tool": "terraform"}
+{"line": "Error: error configuring Terraform AWS Provider: no valid credential sources", "label": "critical", "tool": "terraform"}
+{"line": "Error: Provider produced inconsistent final plan", "label": "critical", "tool": "terraform"}
+{"line": "pod/myapp-7d4b9-abcde created", "label": "noise", "tool": "kubectl"}
+{"line": "deployment.apps/myapp configured", "label": "noise", "tool": "kubectl"}
+{"line": "service/myapp unchanged", "label": "noise", "tool": "kubectl"}
+{"line": "Waiting for deployment \"myapp\" rollout to finish: 1 of 3 updated replicas are available...", "label": "noise", "tool": "kubectl"}
+{"line": "Events:", "label": "context", "tool": "kubectl"}
+{"line": "  Type     Reason     Age   From               Message", "label": "context", "tool": "kubectl"}
+{"line": "  Normal   Scheduled  2m    default-scheduler  Successfully assigned default/myapp to node-1", "label": "context", "tool": "kubectl"}
+{"line": "0/3 nodes are available: 3 Insufficient memory.", "label": "critical", "tool": "kubectl"}
+{"line": "Back-off restarting failed container", "label": "critical", "tool": "kubectl"}
+{"line": "Error from server (NotFound): deployments.apps \"myapp\" not found", "label": "critical", "tool": "kubectl"}

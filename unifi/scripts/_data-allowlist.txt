@@ -1,0 +1,23 @@
+# unifi-pull.sh が /data 配下から取り込む user-created asset の allowlist。
+# 1 行 1 path (relative to /data on UDM Pro)。'#' 以降と空行は無視。
+# vendor/service state (unifi/, unifi-credential-server/, udapi-config/, uid/) は
+# 意図的に含めない — それらは UniFi Cloud 側でバックアップされる。
+
+nextdns.conf
+nextdns.conf.bak-*
+nextdns-healthcheck.sh
+forget_ghosts.sh
+
+on_boot.d
+game-geo-bypass
+unifi-native-guard
+
+tailscale/manage.sh
+tailscale/unios_1.x.sh
+tailscale/unios_2.x.sh
+tailscale/tailscale-env
+tailscale/tailscale-install.service
+tailscale/tailscale-install.timer
+tailscale/tailscale-cert-renewal.service
+tailscale/tailscale-cert-renewal.timer
+tailscale/helpers

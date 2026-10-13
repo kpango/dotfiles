@@ -1,0 +1,9 @@
+[Unit]
+Description=Re-apply Region Block exception every minute
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=60
+
+[Install]
+WantedBy=timers.target

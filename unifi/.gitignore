@@ -1,0 +1,26 @@
+# Reject known-secret shapes even if a future pull/add forgets to filter them.
+# These names should never appear anywhere under unifi/.
+**/tailscaled.state
+**/profile-data/
+**/dns-cache/
+**/derpmap.cached.json
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx
+**/id_rsa*
+**/id_ed25519*
+# Belt-and-braces: anything claiming to be process state (tailscaled.state is
+# the specific worry, but any `*.state` under unifi/ is almost certainly a
+# runtime file that must not be shadowed in git).
+**/*.state
+**/*.vlt
+**/*.vlt.uuid
+# Linked-IP update token file (nextdns setup page writes a per-profile token
+# under /data when linked IP is configured; it is a secret the way an API key
+# is).
+**/.nextdns-update-token*
+# Historical: unifi/backup/ was dropped on 2026-10-14 because UniFi Cloud
+# already backs up the controller state and the raw dumps carry WPA/SSH/SSO
+# secrets. Reject any accidental re-creation of that path.
+backup/

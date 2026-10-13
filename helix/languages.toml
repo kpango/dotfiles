@@ -1,0 +1,162 @@
+# ==========================================
+#  Global / AI / Helper Settings
+# ==========================================
+[language-server.ai]
+command = "lsp-ai"
+
+[language-server.copilot]
+command = "copilot-language-server"
+
+[language-server.hx-lsp]
+command = "hx-lsp"
+
+[language-server.typos]
+command = "typos-lsp"
+config.diagnosticSeverity = "Info"
+
+# ==========================================
+#  Rust
+# ==========================================
+[language-server.rust-analyzer]
+command = "rust-analyzer"
+
+[language-server.rust-analyzer.config]
+checkOnSave = { command = "clippy" } # run Clippy on save
+procMacro = { enable = true }        # enable proc-macro expansion
+inlayHints = { bindingModeHints = { enable = false } } # adjust if hints are too noisy
+
+[[language]]
+name = "rust"
+language-servers = [ "rust-analyzer", "ai", "hx-lsp", "typos" ]
+formatter = { command = "rustfmt" }
+auto-format = true
+
+# ==========================================
+#  Go (Vald / High Performance)
+# ==========================================
+[language-server.gopls]
+command = "gopls"
+
+[language-server.gopls.config]
+buildFlags = ["-tags=e2e,linux"] # comma-separated tags are safer in some cases
+staticcheck = true               # enable powerful static analysis
+gofumpt = true                   # stricter formatting (optional)
+usePlaceholders = true           # insert placeholders on completion
+analyze = { unusedparams = true, nilness = true, unusedwrite = true }
+
+[language-server.gopls.config.hints]
+assignVariableTypes = true
+compositeLiteralFields = true
+constantValues = true
+functionTypeParameters = true
+parameterNames = true            # parameter name hints (Rust-like experience)
+
+[language-server.golangci-lint-lsp]
+command = "golangci-lint-langserver"
+[language-server.golangci-lint-lsp.config]
+# receiving output via LSP instead of writing to a file is fine,
+# but may be slow on large projects.
+command = ["golangci-lint", "run", "--out-format", "json", "--issues-exit-code=1"]
+
+[[language]]
+name = "go"
+roots = ["go.work", "go.mod"]
+auto-format = true
+# prefer goimports (or gofumpt) over gofmt — automates import organization.
+formatter = { command = "gofumpt" }
+language-servers = [ "gopls", "golangci-lint-lsp", "copilot", "ai", "hx-lsp", "typos" ]
+
+# ==========================================
+#  C / C++
+# ==========================================
+[language-server.clangd]
+command = "clangd"
+# enable background indexing, parallelism, and header completion
+args = ["--background-index", "--clang-tidy", "--completion-style=detailed", "--header-insertion=iwyu", "-j=4"]
+
+[[language]]
+name = "cpp"
+language-servers = [ "clangd", "ai", "hx-lsp", "typos" ]
+auto-format = true
+
+# ==========================================
+#  Python (Modern / Rust-based)
+# ==========================================
+# Microsoft Pyright (type checking)
+[language-server.pyright]
+command = "pyright-langserver"
+args = ["--stdio"]
+
+# Ruff — blazing-fast Rust-based linter/formatter (recommended)
+[language-server.ruff]
+command = "ruff-lsp" # pip install ruff-lsp
+
+[[language]]
+name = "python"
+roots = ["pyproject.toml", "setup.py", "poetry.lock"]
+auto-format = true
+# use Ruff instead of Black (significantly faster)
+formatter = { command = "ruff", args = ["format", "-"] }
+language-servers = [ "pyright", "ruff", "ai", "hx-lsp", "typos" ]
+
+# ==========================================
+#  Cloud Native (YAML / Kubernetes)
+# ==========================================
+[language-server.yamlls]
+command = "yaml-language-server"
+args = ["--stdio"]
+
+[language-server.yamlls.config.yaml]
+keyOrdering = false
+format = { enable = true }
+validate = true
+# enable Kubernetes schema completion (required for Vald development)
+schemas = { "kubernetes" = ["/*.yaml", "/*.k8s.yaml"] }
+
+[[language]]
+name = "yaml"
+language-servers = [ "yamlls", "ai", "hx-lsp", "typos" ]
+formatter = { command = "prettier", args = ["--parser", "yaml"] } # Prettier often produces cleaner formatting
+auto-format = true
+
+# ==========================================
+#  Protobuf (Modern / Buf)
+# ==========================================
+# Buf is the mainstream ecosystem choice over Google's protobuf-ls
+[language-server.buf]
+command = "buf"
+args = ["lsp"]
+
+[[language]]
+name = "protobuf"
+roots = ["buf.work.yaml", "buf.yaml"]
+language-servers = [ "buf", "ai", "hx-lsp", "typos" ]
+auto-format = true
+formatter = { command = "buf", args = ["format"] }
+
+# ==========================================
+#  Other Configs (Lua, TOML, JSON)
+# ==========================================
+[language-server.taplo]
+command = "taplo"
+args = ["lsp", "stdio"]
+
+[[language]]
+name = "toml"
+language-servers = [ "taplo", "ai", "hx-lsp", "typos" ]
+auto-format = true
+
+[language-server.json]
+command = "vscode-json-languageserver"
+args = ["--stdio"]
+
+[[language]]
+name = "json"
+language-servers = [ "json", "ai", "hx-lsp", "typos" ]
+auto-format = true
+
+[[language]]
+name = "lua"
+auto-format = true
+formatter = { command = "stylua", args = ["-"] }
+language-servers = [ "ai", "hx-lsp", "typos" ]

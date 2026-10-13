@@ -1,0 +1,152 @@
+{
+  "$schema": "../../models/schema.json",
+  "harness": "primeagent",
+  "default_tier": "High",
+  "tiers": {
+    "Low": {
+      "provider": "antigravity",
+      "model": "antigravity/gemini-3.8-flash-low",
+      "effort": "low",
+      "description": "Antigravity Gemini 3.8 Flash (Low) for high-performance 1M context research, repository survey, and semantic search",
+      "sub_routes": {
+        "web_research": {
+          "provider": "antigravity",
+          "model": "antigravity/gemini-3.8-flash-low",
+          "effort": "low",
+          "description": "Antigravity Gemini 3.8 Flash (Low) for 1M context web/docs research, RFCs, and semantic search"
+        },
+        "code_research": {
+          "provider": "opencode-go",
+          "model": "opencode-go/qwen3.8-flash",
+          "effort": "low",
+          "description": "OpenCode Go Qwen 3.8 Flash for high-throughput zero-marginal-cost repository code scanning"
+        }
+      },
+      "fallbacks": [
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/qwen3.8-flash",
+          "effort": "low",
+          "trigger": "token_exhaustion",
+          "description": "Zero-marginal-cost open-weights fallback to preserve session tokens"
+        },
+        {
+          "provider": "antigravity",
+          "model": "antigravity/gemini-3.7-flash-low",
+          "effort": "low",
+          "trigger": "rate_limit",
+          "description": "Cluster load balancing fallback"
+        }
+      ]
+    },
+    "Medium": {
+      "provider": "opencode-go",
+      "model": "opencode-go/kimi-k3",
+      "effort": "medium",
+      "description": "OpenCode Go Kimi K3 (2.8T MoE) for high-completion coding, AST synthesis, and multi-step planning",
+      "fallbacks": [
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/kimi-k2.7-code",
+          "effort": "medium",
+          "trigger": "token_exhaustion",
+          "description": "Previous-gen Kimi Code fallback for session survival"
+        },
+        {
+          "provider": "antigravity",
+          "model": "antigravity/gemini-3.8-flash-medium",
+          "effort": "medium",
+          "trigger": "rate_limit",
+          "description": "Antigravity 1M context structured synthesis fallback"
+        }
+      ]
+    },
+    "High": {
+      "provider": "anthropic",
+      "model": "anthropic/claude-sonnet-5",
+      "effort": "high",
+      "description": "Claude Sonnet 5 for top-tier Maker code implementation",
+      "fallbacks": [
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-sonnet-4-6",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Sonnet 4.6 fallback when Sonnet 5 rate limits are reached"
+        },
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4-pro",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "DeepSeek V4 Pro high-capability coding fallback with zero marginal token cost"
+        },
+        {
+          "provider": "antigravity",
+          "model": "antigravity/gemini-3.8-flash-high",
+          "effort": "high",
+          "trigger": "cost_saver",
+          "description": "Gemini 3.8 Flash High cost-saving Maker fallback"
+        }
+      ]
+    },
+    "XHigh": {
+      "provider": "codex",
+      "model": "codex/gpt-6-astra",
+      "effort": "high",
+      "description": "OpenAI Codex GPT-6 Astra for independent cross-family Checker verification",
+      "fallbacks": [
+        {
+          "provider": "antigravity",
+          "model": "antigravity/gemini-3.8-flash-high",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Antigravity Gemini 3.8 Flash High independent verifier fallback"
+        },
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-opus-5",
+          "effort": "high",
+          "trigger": "cost_saver",
+          "description": "Claude Opus 5 deep invariant verifier fallback"
+        },
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/kimi-k3",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "Kimi K3 reasoning verifier fallback with zero marginal cost"
+        }
+      ]
+    },
+    "Max": {
+      "provider": "anthropic",
+      "model": "anthropic/claude-fable-5-1",
+      "effort": "high",
+      "description": "Claude Fable 5.1 for frontier spot architectural diagnosis",
+      "fallbacks": [
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-fable-5",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "Claude Fable 5 fallback when 5.1 quota is strained"
+        },
+        {
+          "provider": "codex",
+          "model": "codex/gpt-6-astra",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "OpenAI GPT-6 Astra cross-provider frontier architectural diagnosis fallback"
+        },
+        {
+          "provider": "antigravity",
+          "model": "antigravity/gemini-3.8-flash-high",
+          "effort": "max",
+          "trigger": "cost_saver",
+          "description": "Antigravity Gemini 3.8 Flash (Max effort) budget survival fallback"
+        }
+      ]
+    }
+  }
+}

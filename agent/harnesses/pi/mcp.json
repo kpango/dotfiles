@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "executor": {
+      "url": "http://localhost:4788/mcp"
+    }
+  }
+}

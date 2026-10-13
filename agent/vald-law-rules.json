@@ -1,0 +1,48 @@
+{
+  "$comment": "claude/agy/pi のVald Law hook実装(agent/hooks/claude/vald-law-gate.sh・agent/hooks/claude/vald-law2-gate.sh・agent/hooks/claude/vald-law345-check.sh・agent/hooks/agy/vald-law-gate.sh・agent/hooks/pi/security-gate.ts)が共有するVald Law判定データ。3実装を突き合わせた結果、Law3/4/5(panic/log.Fatal禁止・エラー握り潰し禁止・stdlib import禁止)の強制力がclaude=PostToolUse warn止まり・pi=未実装・agy=PreToolUse hard blockと大きく食い違っていた。security-rules.jsonと同じ安全側統合の原則で、claude/piをPreToolUse ask-tier(agyはask相当primitiveが無いためtier=blockと同じくPreToolUse deny)へ引き上げて統一した。vald_repo_patternは対象リポジトリ判定を`/vdaas/vald`パスセグメント一致に統一し、agy旧実装の緩い部分文字列一致(`'vald' in path`、'myvald-test'のような無関係なpathも誤検知しうる)より厳密にした。law345のスキャンはpanic/log.Fatal等のcontentを直接検査するdata-flow上の理由から、コメント行の除外・_test.goファイルの除外(agy旧実装が既に採用、テストコードでの`_ = err`等の正当な用法との誤検知を避ける)を全実装共通のデータとして持つ。security-audit指摘(2026-09-03)により、vald_repo_patternの当初版(`(?:^|/)vdaas/vald(?:/|$)`)がパス文字列専用の末尾アンカーで、agyのLaw2フォールバック(コマンド文字列自体への一致確認 `cd /x/vdaas/vald && go build` のような埋め込みcd検出)を静かに壊していたバグと、agyのLaw3/4/5がworkspacePathsのみで判定しWrite/Editの実ターゲットパスを見ていなかった抜け穴を修正した。cd_target_pattern/dash_c_target_patternはsecurity-rules.jsonのgit_reset_hard_protected_branchと同じ「hookプロセス自身のcwdでなくコマンドが実際に切り替える対象で判定する」ためのフィールド(claude/pi Law2のcd埋め込みbypass対策として追加)。さらに同監査で、law2_prohibited_commandsの各patternが`^`(文字列先頭)アンカーだったため`cd /path/to/vald && go build`のような複合コマンドがそもそもマッチしない(cwd判定以前の問題)という、claude/agy旧実装から引き継いだ既存の穴も発見・修正した — `^`を`(?:^|[;&|])`(先頭、または`;`/`&`/`|`区切り直後)へ緩めることで、単体コマンドとしての誤検知を増やさずに複合コマンド内での出現も検出できるようにした。",
+  "vald_repo_pattern": "(?:^|/)vdaas/vald(?=/|$|[\\s;&|])",
+  "cd_target_pattern": "cd\\s+([^;&|]+)\\s*&&",
+  "dash_c_target_pattern": "-C\\s+(\\S+)",
+  "law1_generated_file_pattern": "(?:\\.pb|_vtproto\\.pb|_grpc\\.pb|\\.pb\\.gw)\\.go$",
+  "law1_message": "Vald Law 1 violation: Direct editing of generated protobuf Go files (*.pb.go, *_vtproto.pb.go, *_grpc.pb.go, *.pb.gw.go) is forbidden. Edit the source .proto file in apis/proto/v1/ and run: `make proto/all`.",
+  "law2_prohibited_commands": [
+    {
+      "id": "go_toolchain",
+      "pattern": "(?i)(?:^|[;&|])\\s*go\\s+(?:build|run|install|test)\\b",
+      "remediation": "Direct `go` toolchain invocation is forbidden in Vald. Use: `make build`, `make test`, or the appropriate make target."
+    },
+    {
+      "id": "cargo_toolchain",
+      "pattern": "(?i)(?:^|[;&|])\\s*cargo\\s+(?:build|run|install|test)\\b",
+      "remediation": "Direct `cargo` toolchain invocation is forbidden in Vald. Use: `make build/rust` or `make test/rust`."
+    },
+    {
+      "id": "kubectl_apply",
+      "pattern": "(?i)(?:^|[;&|])\\s*kubectl\\s+apply\\b",
+      "remediation": "Direct `kubectl apply` is forbidden in Vald. Use: `make k8s/vald/deploy HELM_VALUES=...`."
+    },
+    {
+      "id": "helm_mutate",
+      "pattern": "(?i)(?:^|[;&|])\\s*helm\\s+(?:install|upgrade|uninstall|delete)\\b",
+      "remediation": "Direct `helm` commands are forbidden in Vald. Use: `make k8s/vald/deploy` or the helm make targets."
+    }
+  ],
+  "law345_exclude_test_files": true,
+  "law345_go_content_rules": [
+    {
+      "id": "law3_panic_fatal",
+      "pattern": "\\b(?:panic|log\\.Fatal(?:f|ln)?)\\s*\\(",
+      "message": "Law 3 (no panic/log.Fatal): use structured error returns instead."
+    },
+    {
+      "id": "law4_discarded_error",
+      "pattern": "^\\s*_\\s*=\\s*(?:err|.+Error|.+\\(.*\\))",
+      "message": "Law 4 (no discarded errors): wrap and handle errors with internal/errors."
+    },
+    {
+      "id": "law5_stdlib_import",
+      "pattern": "^\\s*\"(?:log|errors|sync|strings)\"\\s*$",
+      "message": "Law 5 (use internal/* not stdlib): import internal/<pkg> instead."
+    }
+  ]
+}

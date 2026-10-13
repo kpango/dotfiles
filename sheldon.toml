@@ -1,0 +1,240 @@
+shell = "zsh"
+
+apply = ["defer"]
+
+[plugins]
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
+
+# zsh-completions only adds to fpath (no completion function needs to exist yet), so it
+# must run before [plugins.compinit] scans fpath — it used to be registered after compinit
+# (queued later ⇒ runs later) and its ~242 completions were silently never picked up.
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ['defer']
+
+[plugins.compinit]
+# .zcompdump existence alone doesn't imply freshness: also force a full compinit once the
+# dump is more than 24h old (#qN.mh+24 glob qualifier). `(){ setopt local_options
+# extended_glob; ... }` is required here, not just a global `setopt extended_glob`
+# elsewhere: every zsh-defer task runs inside _zsh-defer-resume's `emulate -L zsh`, which
+# resets options (including extended_glob) to the zsh baseline for the task's own
+# duration regardless of what's set globally, so the glob qualifier would otherwise be
+# parsed as a literal (always-true) string match and this branch never take the -C path.
+# N=nullglob so a missing file still falls through to the full-compinit branch.
+inline = 'zsh-defer -mpr -c "autoload -Uz compinit && () { setopt local_options extended_glob; local _zcd=\${ZDOTDIR:-\$HOME}/.zcompdump; if [[ ! -f \$_zcd ]] || [[ -n \$_zcd(#qN.mh+24) ]]; then compinit; else compinit -C; fi }"'
+
+# -t 0.01 opens a yield point: without it _zsh-defer-resume drains its whole queue
+# inside a single `zle -F` callback, and the `!KEYS_QUEUED_COUNT && !PENDING` guard in
+# that loop cannot see a keypress that arrives *during* the callback (zsh only refreshes
+# those parameters while zle itself is reading), so the first keystroke after the prompt
+# is echoed only once every task has finished. A non-zero delay makes _zsh-defer-schedule
+# arm a zselect timer fd instead, which returns to zle's main loop for real. The cost is
+# a 10ms gap per yield point (zsh-defer floors -t at one centisecond: ceil(100*OPTARG)),
+# so yield points are placed to cap each chunk at ~20ms rather than on every task.
+[plugins.colors]
+inline = 'autoload -Uz colors && zsh-defer -mpr -t 0.01 colors'
+
+[plugins.fzf]
+github = 'junegunn/fzf'
+apply = ['fzf-install', 'fzf-source']
+
+[plugins.kubectl-fzf]
+remote = "https://raw.githubusercontent.com/bonnefoa/kubectl-fzf/main/shell/kubectl_fzf.plugin.zsh"
+
+[plugins.bun-completions-zsh]
+remote = "https://raw.githubusercontent.com/oven-sh/bun/refs/heads/main/completions/bun.zsh"
+
+[plugins.prmt]
+inline = '''
+if (($+commands[prmt])) && [[ -t 0 ]]; then
+  zmodload zsh/datetime
+  # PRMT_HOSTNAME: stripped hostname (prmt has no native hostname stripping)
+  # PRMT_DURATION: command duration (prmt has no native duration module)
+  local _prmt_h=${HOSTNAME%%-*}
+  export PRMT_HOSTNAME=${_prmt_h:0:12} PRMT_DURATION=''
+  typeset -g _prmt_fd=0
+  # {time}       — native 24h time with seconds
+  # {path:r}     — native relative path (~ substituted for home)
+  # {git:full}   — native branch + status indicators (dirty/staged/untracked)
+  # {go}/{rust}/{node} — auto-detected versions, shown only in relevant project dirs
+  # {ok}/{fail}  — native exit-code indicator (symbol only; prmt >=0.7 rejects a
+  # module used twice per template, so the numeric code is appended separately
+  # by _prmt_async_callback via _prmt_last_exit instead of a second {fail} token)
+  # {env}        — native env var interpolation for USER, hostname, duration
+  typeset -g _prmt_fmt="🕙 {time:cyan:24hs}\n{env:green.bold:USER:╭─:@}{env::PRMT_HOSTNAME::: in }{path:cyan:r}{git:purple:: }{go:cyan:: 🐹}{rust:red:: 🦀}{node:green:: ⬢}{env:yellow:PRMT_DURATION:  took }\n{ok:green.bold:╰─λ}{fail:red.bold:╰─✗} "
+  typeset -g _prmt_last_exit=0
+
+  _prmt_preexec() { _prmt_cmd_start=$EPOCHREALTIME }
+
+  _prmt_async_callback() {
+    local fd=$1
+    {
+      local line buf=''
+      while IFS= read -r -u $fd line || [[ -n $line ]]; do
+        [[ -n $buf ]] && buf+=$'\n'
+        buf+=$line
+      done
+      if [[ -n $buf ]]; then
+        (( _prmt_last_exit != 0 )) && buf+="%F{red}${_prmt_last_exit}%f "
+        PROMPT=$buf
+        zle reset-prompt 2>/dev/null
+      fi
+    } always {
+      zle -F $fd 2>/dev/null
+      [[ $_prmt_fd -eq $fd ]] && _prmt_fd=0
+    }
+  }
+
+  _prmt_precmd() {
+    local _exit=$?
+    [[ -t 0 ]] || return
+    _prmt_last_exit=$_exit
+    if [[ -n $_prmt_cmd_start ]]; then
+      local -F elapsed=$(( EPOCHREALTIME - _prmt_cmd_start ))
+      (( elapsed >= 1.0 )) && printf -v PRMT_DURATION '%.1fs' $elapsed || PRMT_DURATION=''
+      unset _prmt_cmd_start
+    else
+      PRMT_DURATION=''
+    fi
+
+    (( _prmt_fd )) && {
+      zle -F $_prmt_fd 2>/dev/null
+      _prmt_fd=0
+    }
+
+    # Show placeholder immediately so no stale prompt data is visible while prmt renders
+    PROMPT='%F{blue}…%f '
+    exec {_prmt_fd}< <(prmt --shell zsh --code $_exit "$_prmt_fmt" 2>/dev/null)
+    # Register async callback (succeeds once ZLE is active; first call may fail — _prmt_zle_init handles that)
+    zle -F $_prmt_fd _prmt_async_callback 2>/dev/null
+  }
+
+  # Idempotent zle-line-init hook: when ZLE first becomes active, register the fd callback that
+  # precmd opened but could not register (ZLE was not yet active at precmd time).
+  typeset -g _prmt_init_done=''
+  _prmt_zle_init() {
+    [[ -n $_prmt_init_done ]] && return
+    _prmt_init_done=1
+    (( _prmt_fd )) && zle -F $_prmt_fd _prmt_async_callback 2>/dev/null
+  }
+  autoload -Uz add-zle-hook-widget
+  { add-zle-hook-widget zle-line-init _prmt_zle_init } 2>/dev/null || \
+    zle -N zle-line-init _prmt_zle_init
+
+  (( ${preexec_functions[(Ie)_prmt_preexec]} )) || preexec_functions=(_prmt_preexec "${preexec_functions[@]}")
+  (( ${precmd_functions[(Ie)_prmt_precmd]}   )) || precmd_functions=(_prmt_precmd   "${precmd_functions[@]}")
+  # _prmt_precmd skips for non-TTY (no point rendering a prompt to a pipe/file)
+fi
+'''
+
+# Same shape as [plugins.atuin]: _zcache_eval's own deferred-source path leaves precmd
+# hooks enabled, and every deferred task that fires precmd starts another async prmt
+# render. Now that the queue is split across several zle callbacks (see
+# [plugins.colors]) those renders are no longer coalesced into a single repaint, so
+# the prompt visibly flickers while the queue drains.
+[plugins.zoxide]
+inline = '''
+if (($+commands[zoxide])); then
+  if [[ -f "$ZCACHE_DIR/zoxide.zsh" && ! "$commands[zoxide]" -nt "$ZCACHE_DIR/zoxide.zsh" ]]; then
+    zsh-defer -mpr source "$ZCACHE_DIR/zoxide.zsh"
+  else
+    zsh-defer -mpr _zcache_eval zoxide 0 "zoxide init zsh" "$commands[zoxide]"
+  fi
+fi
+'''
+
+[plugins.atuin]
+inline = '''
+if (($+commands[atuin])); then
+  autoload -Uz _atuin_init
+  if [[ -f "$ZCACHE_DIR/atuin.zsh" && ! "$commands[atuin]" -nt "$ZCACHE_DIR/atuin.zsh" ]]; then
+    zsh-defer -mpr source "$ZCACHE_DIR/atuin.zsh"
+  else
+    zsh-defer -mpr _zcache_eval atuin 0 "_atuin_init" "$commands[atuin]"
+  fi
+fi
+'''
+
+# Same shape as [plugins.atuin]: _zcache_eval's own deferred-source path leaves precmd
+# hooks enabled, and every deferred task that fires precmd starts another async prmt
+# render. Now that the queue is split across several zle callbacks (see
+# [plugins.colors]) those renders are no longer coalesced into a single repaint, so
+# the prompt visibly flickers while the queue drains.
+[plugins.pay-respects]
+inline = '''
+if (($+commands[pay-respects])); then
+  if [[ -f "$ZCACHE_DIR/pay-respects.zsh" && ! "$commands[pay-respects]" -nt "$ZCACHE_DIR/pay-respects.zsh" ]]; then
+    zsh-defer -mpr source "$ZCACHE_DIR/pay-respects.zsh"
+  else
+    zsh-defer -mpr _zcache_eval pay-respects 0 "pay-respects zsh" "$commands[pay-respects]"
+  fi
+fi
+'''
+
+# Same shape as [plugins.atuin]: _zcache_eval's own deferred-source path leaves precmd
+# hooks enabled, and every deferred task that fires precmd starts another async prmt
+# render. Now that the queue is split across several zle callbacks (see
+# [plugins.colors]) those renders are no longer coalesced into a single repaint, so
+# the prompt visibly flickers while the queue drains.
+[plugins.zsh-patina]
+inline = '''
+if (($+commands[zsh-patina])); then
+  if [[ -f "$ZCACHE_DIR/zsh-patina.zsh" && ! "$commands[zsh-patina]" -nt "$ZCACHE_DIR/zsh-patina.zsh" ]]; then
+    zsh-defer -mpr source "$ZCACHE_DIR/zsh-patina.zsh"
+  else
+    zsh-defer -mpr _zcache_eval zsh-patina 0 "zsh-patina activate" "$commands[zsh-patina]"
+  fi
+fi
+'''
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ['defer']
+
+[plugins.tmux-xpanes]
+github = "greymd/tmux-xpanes"
+# defer-t (not defer): starts a new yield chunk — tmux-xpanes is ~9ms and the
+# async-compile task right after it is ~17ms, too much to keep in one callback.
+apply = ['defer-t']
+
+# Intentionally the only deferred task without -m -p: being the last plugin in this file,
+# it is always the last zsh-defer task in the queue, so its default precmd+reset-prompt
+# firing is the single real refresh needed once every other deferred task above has loaded.
+# Every other deferred task disables -m -p to avoid redundant precmd+reset-prompt calls
+# during the same idle flush.
+[plugins.async-compile]
+inline = '''zsh-defer -r -t 0.01 -c "(
+  [[ ! -f ~/.zshrc.zwc || ~/.zshrc -nt ~/.zshrc.zwc ]] && zcompile ~/.zshrc 2>/dev/null
+  [[ ! -f ~/.zshenv.zwc || ~/.zshenv -nt ~/.zshenv.zwc ]] && zcompile ~/.zshenv 2>/dev/null
+  [[ ! -f ~/.zcompdump.zwc || ~/.zcompdump -nt ~/.zcompdump.zwc ]] && zcompile ~/.zcompdump 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zsh/01-tmux.zsh.zwc || \$DOTFILES_DIR/zsh/01-tmux.zsh -nt \$DOTFILES_DIR/zsh/01-tmux.zsh.zwc ]] && zcompile \$DOTFILES_DIR/zsh/01-tmux.zsh 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_zcache_eval.zwc || \$DOTFILES_DIR/zfunc/_zcache_eval -nt \$DOTFILES_DIR/zfunc/_zcache_eval.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_zcache_eval 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_atuin_init.zwc || \$DOTFILES_DIR/zfunc/_atuin_init -nt \$DOTFILES_DIR/zfunc/_atuin_init.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_atuin_init 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_gen_env.zwc || \$DOTFILES_DIR/zfunc/_gen_env -nt \$DOTFILES_DIR/zfunc/_gen_env.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_gen_env 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/pinentry-tmux.zwc || \$DOTFILES_DIR/zfunc/pinentry-tmux -nt \$DOTFILES_DIR/zfunc/pinentry-tmux.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/pinentry-tmux 2>/dev/null
+  for f in $XDG_DATA_HOME/sheldon/repos/**/*.zsh(N) $XDG_DATA_HOME/sheldon/downloads/**/*.zsh(N); do
+      [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
+  done
+  _zcache_eval combined 0 'for _f in \"\$DOTFILES_DIR/zsh\"/*.zsh(N); do [[ \"\${_f:t}\" = 20-os-*.zsh || \"\${_f:t}\" = 01-tmux.zsh ]] || cat \"\$_f\"; done' \"\$DOTFILES_DIR/zsh\"/*.zsh(N)
+  if [[ \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\" -nt \"\$ZCACHE_DIR/sheldon.zsh\" ]]; then
+      _zcache_eval sheldon 0 \"sheldon source\" \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\"
+  fi
+  if (($+commands[direnv])) && [[ \"\$commands[direnv]\" -nt \"\$ZCACHE_DIR/direnv.zsh\" ]]; then
+      _zcache_eval direnv 1 \"direnv hook zsh\" \"\$commands[direnv]\"
+  fi
+  if [[ ${OSTYPE} == "darwin"* && -x /usr/libexec/path_helper ]] && [[ /etc/paths -nt \"\$ZCACHE_DIR/path_helper.zsh\" || /etc/paths.d -nt \"\$ZCACHE_DIR/path_helper.zsh\" ]]; then
+      _zcache_eval path_helper 0 \"/usr/libexec/path_helper -s\" /etc/paths /etc/paths.d
+  fi
+  for f in \$ZCACHE_DIR/*.zsh(N); do
+      [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
+  done
+) &|"'''
+
+[templates]
+defer = "zsh-defer -mpr -c \"{% for file in files %}source '{{ file }}'\n{% endfor %}\""
+# Same as defer but opens a yield point first (see the comment above [plugins.colors]).
+defer-t = "zsh-defer -mpr -t 0.01 -c \"{% for file in files %}source '{{ file }}'\n{% endfor %}\""
+fzf-install = "[[ ! -x {{ dir }}/bin/fzf ]] && {{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\" && rehash\n"
+fzf-source = "zsh-defer -mpr -c \"{% for file in files %}source <(sed -e '/bindkey.*fzf-history-widget/d' '{{ file }}')\n{% endfor %}\""
