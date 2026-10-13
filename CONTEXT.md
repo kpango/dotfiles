@@ -667,3 +667,65 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
 - **Non-Goal**: `format/zsh` の sed をコメント非適用にする改修。既存の全 zsh ファイルが
   sed 正規化後の形でコミットされており、規約そのものの変更は影響範囲が別物。
 - **前提**: 上記すべては `origin/main` へ push されて初めて CI に反映される。
+
+## primeagent-max-customize (2026-10-14) — prime-agent 0.10.0 (Rust) ネイティブ化と swarm 移植
+
+`/swarm-meta` → `swarm-graph` ミッション。DeepResearch 6 shard（重複除去 687 URL、うち WebFetch で本文確認 130）
+と、インストール済みバイナリをサンドボックス HOME で動かした仕様抽出（`prime-agent prompt --json`、
+`telemetry off` 等）に基づく。`/swarm-architect` 提案書と Grilling 設計面談（Q1〜Q9）の決定事項。
+
+### 実測で確定した前提（2026-10-14、prime-agent 0.10.0）
+
+- **P-1 SYSTEM.md はコアを置換する**: `~/.prime/agent/SYSTEM.md`（または `<cwd>/.prime/agent/SYSTEM.md`）があると
+  core/usage/opinionated の 3 層（約 22KB、ipython/rlm の使い方）が消える。`APPEND_SYSTEM.md` は無視される。
+  したがって prime-agent には SYSTEM.md を置かない（install と validate で不在を強制）。
+- **P-2 settings.json は symlink できない**: CLI が設定を書くと（`telemetry off` 等）一時ファイル＋rename で
+  通常ファイル（0600）に置き換わり、symlink は外れる。不正な値は警告なしで捨てられ、壊れた JSON は全 null に戻る。
+- **P-3 TypeScript 拡張は読まれない**: pi の `extensions/*.ts`・hooks・prompts・keybindings・`mcp.json` は無効。
+  拡張手段は Python スキル（kernel-venv）、markdown スキル、MCP（settings の `mcpServers`）、packages、factory machine。
+- **P-4 AGENTS.md は `/` までの全祖先を読む**: git root で止まらない。repo 内の worktree では repo の AGENTS.md が二重に入る。
+- **P-5 スキル探索**: `~/.prime/agent/skills`、`~/.agents/skills`、`<cwd>/.prime/agent/skills`、祖先の `.agents/skills`
+  （git root まで）、settings の `skills`。`~/.claude/skills` は読まない。
+- **P-6 認証**: `auth.json` にあるのは `prime-inference` と `opencode-go` のみ。Claude は `prime-inference/anthropic/*` 経由。
+- **P-7 factory machine**: machine 形式（`states`/`transitions`、guard、自己ループ、`retries`、`run.max_transitions`、
+  state ごとの `subagent.model`/`thinking`）で loop を表現できる。全 state がサブエージェントで、シェルを直接実行する
+  決定論的ノードは無い。
+- 以上により、上記 I-8（「インストーラは `~/.prime/agent` を触らない」は正しいが、repo の `primeagent/install` が
+  pi 由来の SYSTEM.md・extensions を張る点は誤配線だった）と I-9（Rust 版 0.10.0 では pi とワイヤ互換ではない）を
+  本節で訂正する。
+
+### 決定事項
+
+- **Q1 全体方針 = 全面移植（案 C）**: settings/AGENTS.md/skills/guard/検証の作り直しに加え、swarm-* を prime-agent へ移植する。
+  Claude 側の `agent/skills/swarm-*/SKILL.md`・hooks・SWARM.md（Tier B）は変更しない。prime 用は
+  `agent/harnesses/primeagent/` 配下に新設する。
+- **Q2 移植方式 = factory machine（MACHINE.md）主体、Python 化できるものは Python**: 状態機械は MACHINE.md、
+  手順・判断の説明は prime 用 markdown スキル、機械的な処理は Python 実行スキル。
+- **Q3 Python は薄いアダプタ**: Python スキルは REPL から使える型付き API を提供し、ロジックは既存スクリプト
+  （将来は Go の agentctl）を subprocess で呼ぶ。budget-guard・graph-compile・decide.py 等を Python で再実装しない
+  （agent-go-unification の決定と整合、pi の TS 薄アダプタ方針と対称）。
+- **Q4 モデル = 混成・別系統検証**: root=`prime-inference/anthropic/claude-opus-5.5`(high)、High(Maker)=
+  `prime-inference/anthropic/claude-sonnet-5`、XHigh(Checker)=`prime-inference/openai/gpt-6-astra`（別系統）、
+  Max=`prime-inference/anthropic/claude-fable-5.1`、Medium=`opencode-go/kimi-k3`、Low/auxiliary=`opencode-go/qwen3.8-flash`、
+  providerBackupModel=`opencode-go/glm-5.3`（prime-inference の残高切れ・障害時も継続）。SSoT は
+  `agent/harnesses/primeagent/model-routing.json`。prime-inference の残高補充が前提（2026-10-14 時点で 402 を確認）。
+- **Q5 安全 = 二段構え**: 既定は `shellCommandPrefix` に `security-rules.json` を decide.py で判定するガード（ガードレールで
+  あり境界ではない。REPL の Python は通らない）＋起動時の環境変数ホワイトリスト。自律実行・信頼できない repo 用に
+  prime-agent プロセス全体を bwrap で囲む `pa-sandbox` を別途用意する。
+- **Q6 autoRefine = 既定値で有効**: `autoRefine.enabled=true`、間隔等は prime-agent 既定値。global harness state の
+  大きさは validate で報告のみ（失敗にはしない）。
+- **Q7 settings 合成 = repo 優先＋差分表示**: install は symlink をやめ、live（CLI 所有キー）に repo 所有キーを jq で上書き
+  マージし 0600 で置換。上書きで失われる CLI 側の値は差分表示し、バックアップを残す。
+- **Q8 worktree = repo の外**: prime 版 swarm は `${SWARM_WORKTREE_DIR:-<repo の親>/.worktrees/<repo 名>}` に作る（P-4 対策）。
+  Claude 側 `mission-worktree-alloc.sh` は変えない。
+- **Q9 検証 = 静的＋ローカル実走**: pytest・shellcheck・JSON 検証・`prime-agent factory import`（MACHINE.md 検証）・
+  サンドボックス HOME での `prompt --json`/install 検証を必須とし、ローカル ollama（`qwen2.5-coder:32b`）を
+  サンドボックスの models.json 経由で使って shellCommandPrefix の意味と小さな machine を実走する。
+  実環境 `~/.prime/agent` への反映は GATE 承認後。
+
+### システム不変条件
+
+- prime-agent に SYSTEM.md を置かない。settings.json を symlink しない。pi 専用キーを prime の settings に書かない。
+- prime 用の swarm 成果物は Claude 用 SKILL.md・hooks・SWARM.md を複製・改変しない（参照のみ）。
+- 決定論的検証の結果は Python アダプタが構造化 JSON で返し、machine の guard はその JSON のフィールドだけで分岐する。
+  LLM の自然文による「合格」で遷移しない。残存リスク: 中継するサブエージェントが JSON を改変しうる（P-7）。
