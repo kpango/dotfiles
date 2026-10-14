@@ -6,6 +6,7 @@ set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 routing="$here/../model-routing.json"
+runtime_src="${PRIME_RUNTIME_SRC:-$HOME/.local/share/prime-agent/prime-agent-runtime/src}"
 sandbox="$(mktemp -d)"
 trap 'command rm -r -- "$sandbox"' EXIT
 
@@ -51,4 +52,10 @@ PY
 		fail=1
 	fi
 done
+if PRIME_RUNTIME_SRC="$runtime_src" python3 -I "$here/sim_machines.py"; then
+	echo "ok   simulator"
+else
+	echo "FAIL simulator" >&2
+	fail=1
+fi
 exit "$fail"
