@@ -99,7 +99,9 @@ class Sim:
 
         rlm.spawn, rlm.collect, rlm.host_request = self.spawn, self.collect, host_request
         ex = factory.FactoryExecutor(harness=object(), now=lambda: self.t)
+        self.ex = ex
         res = await ex.run_machine(load(machine_name))
+        self.run_id = res["run_id"]
         run = ex._runs[res["run_id"]]
         for _ in range(5000):
             if run.state != "running":
@@ -583,27 +585,69 @@ async def failure_explore_scope_free_text_fails():
     assert s.state == "failed" and ("spawn", "swarm-explorer") not in s.events, s.state
 
 
-@scenario
-async def run_budgets_cover_critical_paths():
+def critical_path_ms(name):
     import math
-    for name, waves_of in (("swarm-explore", None), ("swarm-review", None)):
+    spec = load(name).spec
+    b = {st["id"]: st["budget_ms"] for st in spec["states"]}
+    par = spec["run"]["max_parallel"]
+    if name == "swarm-implement":
+        return b["init"] + b["test-maker"] + 5 * (b["maker"] + b["checker"]) + b["maker"] + b["escalate"]
+    if name == "swarm-explore":
+        return b["init"] + b["scope"] + math.ceil(8 / par) * b["explorer"] + b["secretary"]
+    lens = max(v for k, v in b.items() if k.startswith("lens-"))
+    return b["init"] + b["diff-source"] + math.ceil(8 / par) * lens + b["aggregator"]
+
+
+@scenario
+async def run_budgets_cover_critical_paths_and_match_docs():
+    """Critical path computed from the parsed spec; the numbers written in MACHINE.md must equal it."""
+    for name in ("swarm-implement", "swarm-explore", "swarm-review"):
         spec = load(name).spec
-        b = {st["id"]: st["budget_ms"] for st in spec["states"]}
-        par = spec["run"]["max_parallel"]
-        if name == "swarm-explore":
-            need = b["init"] + b["scope"] + math.ceil(8 / par) * b["explorer"] + b["secretary"]
-        else:
-            lens = max(v for k, v in b.items() if k.startswith("lens-"))
-            need = b["init"] + b["diff-source"] + math.ceil(8 / par) * lens + b["aggregator"]
+        need = critical_path_ms(name)
         assert spec["run"]["budget_ms"] >= need, f"{name}: run budget {spec['run']['budget_ms']} < {need}"
+        text = (HERE / name / "MACHINE.md").read_text(encoding="utf-8")
+        doc_need = re.findall(r"= (\d+) ms", text)
+        doc_run = re.findall(r"run `budget_ms` of (\d+)", text)
+        assert doc_need == [str(need)], f"{name}: docs say {doc_need}, spec path is {need}"
+        assert doc_run == [str(spec["run"]["budget_ms"])], f"{name}: docs say run budget {doc_run}, spec {spec['run']['budget_ms']}"
     spec = load("swarm-implement").spec
     assert [st["budget_ms"] for st in spec["states"] if st["id"] == "checker"] == [900000]
+
+
+async def resume_ends_failed(sim, machine, label):
+    s = await sim.run(machine)
+    assert s.state == "paused", f"{label}: expected paused, got {s.state}"
+    for _ in range(4):  # a pause caused by an unbindable dependent may need a second resume
+        if s.run_obj.state != "paused":
+            break
+        await s.ex.resume(s.run_id)
+        for _ in range(5000):
+            if s.run_obj.state != "running":
+                break
+            await asyncio.sleep(0.001)
+    assert s.run_obj.state == "failed", f"{label}: resume gave {s.run_obj.state}"
+    assert not s.entered("done") and not s.entered("escalate"), f"{label}: a terminal state ran after resume"
+    return s
+
+
+@scenario
+async def failure_resume_after_pause_ends_failed():
+    a = impl_ok(); a["swarm-maker"] = lambda n: ("error", None)
+    await resume_ends_failed(Sim(a), "swarm-implement", "maker child error")
+    a = impl_ok(); a["swarm-test-maker"] = FREE_TEXT
+    await resume_ends_failed(Sim(a), "swarm-implement", "test-maker free text")
+    a = impl_ok(); a["swarm-checker"] = lambda n: ("error", None)
+    await resume_ends_failed(Sim(a), "swarm-implement", "checker child error")
+    sim = Sim(impl_ok()); sim.bump["swarm-test-maker"] = 601
+    await resume_ends_failed(sim, "swarm-implement", "budget overrun")
+    a = review_answers({}); a["swarm-lens-security"] = lambda n: ("error", None)
+    await resume_ends_failed(Sim(a), "swarm-review", "review lens child error")
 
 
 async def main():
     for fn in (failure_test_maker_free_text_pauses, failure_maker_child_error_pauses, failure_budget_overrun_pauses,
                failure_unparseable_guard_reply_ends_done_without_outcome, failure_review_free_text_pauses,
-               failure_explore_scope_free_text_fails, run_budgets_cover_critical_paths, every_prompt_template_is_parseable_json, prompt_templates_drive_pass_and_escalate_paths,
+               failure_explore_scope_free_text_fails, run_budgets_cover_critical_paths_and_match_docs, failure_resume_after_pause_ends_failed, every_prompt_template_is_parseable_json, prompt_templates_drive_pass_and_escalate_paths,
                implement_run_budget_covers_five_attempts, init_reject_emit_is_constant_and_fuzzed_inputs_fit, explore_runtime_failure_ends_failed_without_report, impl_refused_run_dir_escalates, prompts_read_only_inside_run_dir, impl_pass_path,
                impl_five_verify_failures_escalate, impl_five_checker_fails_escalate,
                impl_tamper_escalates_immediately, impl_checker_is_isolated_and_reverifies,
