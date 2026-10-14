@@ -15,13 +15,14 @@ import asyncio
 import json
 import os
 import re
+import signal
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 __all__ = [
-    "budget_guard", "fable_grant", "graph_compile", "graph_status", "mission_init",
+    "budget_guard", "fable_grant", "fable_maker", "graph_compile", "graph_status", "mission_init",
     "worktree_alloc", "worktree_release", "verify", "decide_shell", "scripts_root",
 ]
 
@@ -76,14 +77,29 @@ def _mission(mission: str | None) -> list[str]:
     return [f"--mission={mission}"] if mission else []
 
 
-async def budget_guard(task_id: str, mission: str | None = None) -> dict[str, Any]:
-    """Count one attempt for task_id (budget-guard.sh). exit_code 1 = budget exceeded."""
-    return await _a(_script, _BUDGET, [task_id, *_mission(mission)])
+async def budget_guard(task_id: str, mission: str | None = None, max_attempts: int | None = None,
+                       mission_max: int | None = None, reset: bool = False) -> dict[str, Any]:
+    """Count one attempt for task_id (budget-guard.sh). exit_code 1 = budget exceeded.
+
+    max_attempts is the 2nd positional (script default 5); mission_max -> --mission-max=N;
+    reset=True runs `--reset <task> [--mission=m]` instead of counting.
+    """
+    if reset:
+        return await _a(_script, _BUDGET, ["--reset", task_id, *_mission(mission)])
+    args = [task_id] + ([str(max_attempts)] if max_attempts is not None else []) + _mission(mission)
+    if mission_max is not None:
+        args.append(f"--mission-max={mission_max}")
+    return await _a(_script, _BUDGET, args)
 
 
 async def fable_grant(task_id: str, mission: str | None = None) -> dict[str, Any]:
     """Request a Fable spot grant (budget-guard.sh --fable). exit_code 1 = denied."""
     return await _a(_script, _BUDGET, ["--fable", task_id, *_mission(mission)])
+
+
+async def fable_maker(task_id: str) -> dict[str, Any]:
+    """Fable Maker continuation grant for a base task (budget-guard.sh --fable-maker <base>)."""
+    return await _a(_script, _BUDGET, ["--fable-maker", task_id])
 
 
 async def graph_compile(plan_path: str, fit: bool = False, stale: str | None = None) -> dict[str, Any]:
@@ -110,9 +126,18 @@ async def graph_status(plan_path: str) -> dict[str, Any]:
     return await _a(_script, _STATUS, [plan_path])
 
 
-async def mission_init(slug: str, goal: str, scale: str, targets: str | None = None) -> dict[str, Any]:
-    """Initialise a mission (mission-init.sh); scale is 'interactive' or 'mission'. stdout = state dir."""
-    return await _a(_script, _INIT, [slug, goal, scale, *([targets] if targets else [])])
+async def mission_init(slug: str, goal: str, scale: str, targets: str | None = None,
+                       depth: int | None = None, cwd: str | None = None) -> dict[str, Any]:
+    """Initialise a mission (mission-init.sh <slug> <goal> <scale> [targets] [depth]), run in `cwd` (the mission worktree).
+
+    scale is 'interactive' or 'mission'. stdout = state dir.
+    """
+    args = [slug, goal, scale]
+    if targets is not None or depth is not None:
+        args.append(targets or "")
+    if depth is not None:
+        args.append(str(depth))
+    return await _a(_script, _INIT, args, cwd)
 
 
 def _git(cwd: str, *args: str) -> dict[str, Any]:
@@ -127,11 +152,24 @@ def _main_repo(cwd: str) -> Path | None:
     return common.parent if common.name == ".git" else common
 
 
+def _worktree_base(root: Path) -> tuple[Path | None, str]:
+    """Worktree root (CONTEXT Q8), absolute and resolved; refuses a location inside the repo."""
+    env = os.environ.get("SWARM_WORKTREE_DIR")
+    base = Path(os.path.abspath(env)) if env else root.parent / ".worktrees" / root.name
+    base = base.resolve()
+    rr = root.resolve()
+    if base == rr or rr in base.parents:
+        return None, f"worktree dir {base} is inside the repo {rr}"
+    return base, ""
+
+
 def _worktree_alloc(slug: str, scale: str | None, cwd: str | None) -> dict[str, Any]:
     root = _main_repo(cwd or os.getcwd())
     if root is None:
         return {"exit_code": 128, "error": f"not a git repository: {cwd or os.getcwd()}"}
-    base = Path(os.environ.get("SWARM_WORKTREE_DIR") or root.parent / ".worktrees" / root.name)
+    base, err = _worktree_base(root)
+    if base is None:
+        return {"exit_code": 1, "error": err}
     safe = re.sub(r"[^A-Za-z0-9._-]+", "-", slug).strip("-") or "mission"
     ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     path, branch = base / f"{safe}-{ts}", f"swarm-prime/{safe}-{ts}"
@@ -145,61 +183,105 @@ def _worktree_alloc(slug: str, scale: str | None, cwd: str | None) -> dict[str, 
 async def worktree_alloc(slug: str, scale: str | None = None, cwd: str | None = None) -> dict[str, Any]:
     """Create a worktree outside the repo (CONTEXT Q8): ${SWARM_WORKTREE_DIR:-<repo parent>/.worktrees/<repo>}/<slug>-<UTC ts>.
 
+    A relative SWARM_WORKTREE_DIR is made absolute against the process cwd; a location inside the repo is refused.
     Returns {path, branch, scale, exit_code} or {exit_code, error}. `cwd` selects the repo (default: process cwd).
     """
     return await _a(_worktree_alloc, slug, scale, cwd)
 
 
+def _worktree_branch(root: Path, path: Path) -> str | None:
+    out = _git(str(root), "worktree", "list", "--porcelain")["stdout"]
+    for block in out.split("\n\n"):
+        lines = block.strip().split("\n")
+        if lines and lines[0] == f"worktree {path}":
+            return next((l[7:] for l in lines if l.startswith("branch ")), None)
+    return None
+
+
 def _worktree_release(path: str) -> dict[str, Any]:
-    root = _main_repo(path)
+    def refuse(msg: str) -> dict[str, Any]:
+        return {"exit_code": 1, "stdout": "", "stderr": "", "error": msg}
+
+    real = Path(path).resolve()
+    root = _main_repo(str(real)) if real.is_dir() else None
     if root is None:
-        return {"exit_code": 128, "stdout": "", "stderr": f"not a git worktree: {path}"}
-    return _git(str(root), "worktree", "remove", "--force", path)
+        return refuse(f"not a git worktree: {real}")
+    base, err = _worktree_base(root)
+    if base is None:
+        return refuse(err)
+    if base not in real.parents:
+        return refuse(f"{real} is not under the swarm worktree root {base}")
+    branch = _worktree_branch(root, real)
+    if branch is None or not branch.startswith("refs/heads/swarm-prime/"):
+        return refuse(f"{real} is not a swarm-prime/* worktree (branch: {branch})")
+    if _git(str(real), "status", "--porcelain")["stdout"].strip():
+        return refuse(f"worktree {real} is dirty; commit or discard changes first")
+    return _git(str(root), "worktree", "remove", str(real))
 
 
 async def worktree_release(path: str) -> dict[str, Any]:
-    """Remove a worktree made by worktree_alloc. The swarm-prime/* branch is kept (it may hold unmerged work)."""
+    """Remove a swarm worktree. Refuses (exit_code != 0, `error`) unless the real path is under the worktree root,
+    its branch is swarm-prime/*, and it is clean. The branch is kept (it may hold unmerged work)."""
     return await _a(_worktree_release, path)
 
 
 def _verify(commands: list[str], cwd: str, timeout: float) -> dict[str, Any]:
+    if isinstance(commands, str):
+        commands = [commands]
+    if not Path(cwd).is_dir():
+        return {"passed": False, "results": [], "error": f"cwd does not exist: {cwd}"}
     results = []
     for c in commands:
+        p = subprocess.Popen(["bash", "-c", c], cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                             text=True, errors="replace", start_new_session=True)
         try:
-            p = subprocess.run(["bash", "-c", c], cwd=cwd, stdout=subprocess.PIPE,
-                               stderr=subprocess.STDOUT, text=True, timeout=timeout, errors="replace")
-            rc, out = p.returncode, p.stdout
-        except subprocess.TimeoutExpired as e:
-            rc, out = 124, (e.stdout.decode(errors="replace") if isinstance(e.stdout, bytes) else e.stdout or "")
+            out, _ = p.communicate(timeout=timeout)
+            rc = p.returncode
+        except subprocess.TimeoutExpired:
+            os.killpg(p.pid, signal.SIGKILL)  # whole group: backgrounded grandchildren too
+            out, _ = p.communicate()
+            rc = 124
         results.append({"command": c, "exit_code": rc, "output_tail": out[-_TAIL:]})
     return {"passed": bool(results) and all(r["exit_code"] == 0 for r in results), "results": results}
 
 
-async def verify(commands: list[str], cwd: str, timeout: float = 600) -> dict[str, Any]:
-    """Run each deterministic gate command via bash in cwd; machine guards branch on `passed`/`exit_code`."""
-    return await _a(_verify, list(commands), cwd, timeout)
+async def verify(commands: list[str] | str, cwd: str, timeout: float = 600) -> dict[str, Any]:
+    """Run each deterministic gate command via bash in cwd; machine guards branch on `passed`/`exit_code`.
+
+    A bare str is one command. On timeout the whole process group is killed (exit_code 124).
+    A missing cwd returns {passed: False, results: [], error}.
+    """
+    return await _a(_verify, commands, cwd, timeout)
 
 
-def _decide_shell(command: str) -> dict[str, Any]:
+def _block(msg: str) -> dict[str, Any]:
+    return {"decision": "block", "reason": "swarm-adapter: " + msg, "error": msg}
+
+
+def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
     env = os.environ.get("SWARM_AGENT_DIR")
     agent = Path(env) if env else _repo_agent_dir()
     decide = agent / "scripts/hooks/decide.py" if agent else None
     rules = agent / "security-rules.json" if agent else None
     if not (decide and decide.is_file() and rules and rules.is_file()):
-        return {"decision": "allow", "reason": "", "error": "decide.py/security-rules.json unavailable (fail-open, as the hook)"}
-    req = {"family": "security_shell", "command": command, "cwd": os.getcwd(),
+        return _block("decide.py/security-rules.json unavailable (fail-closed: this adapter runs without hooks)")
+    # harness stays "claude": decide.py only enables its advisory layer for known harnesses
+    # (claude/agy/pi); an unknown value would silently skip it.
+    req = {"family": "security_shell", "command": command, "cwd": cwd or os.getcwd(),
            "rules_file": str(rules), "resolve_command_target": False, "harness": "claude"}
     r = _sync_run(["python3", str(decide)], stdin=json.dumps(req), timeout=10)
     try:
         out = json.loads(r["stdout"])
-        if isinstance(out, dict):
-            out.setdefault("decision", "allow")
-            return out
     except ValueError:
-        pass
-    return {"decision": "allow", "reason": "", "error": f"decide.py failed (fail-open): {r['stderr'][:200]}"}
+        out = None
+    if r["exit_code"] != 0 or not isinstance(out, dict) or out.get("decision") not in ("allow", "ask", "block"):
+        return _block(f"decide.py failed (fail-closed): exit {r['exit_code']} {r['stderr'][:200]}")
+    return out
 
 
-async def decide_shell(command: str) -> dict[str, Any]:
-    """Security decision for a shell command via agent/scripts/hooks/decide.py: {decision: allow|ask|block, reason}."""
-    return await _a(_decide_shell, command)
+async def decide_shell(command: str, cwd: str | None = None) -> dict[str, Any]:
+    """Security decision for a shell command via agent/scripts/hooks/decide.py: {decision: allow|ask|block, reason}.
+
+    Fail-closed: if decide.py cannot be found or run, returns decision "block" with an `error` field.
+    """
+    return await _a(_decide_shell, command, cwd)

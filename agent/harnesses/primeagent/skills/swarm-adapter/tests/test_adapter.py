@@ -1,5 +1,6 @@
 """Hermetic tests for the swarm-adapter thin wrapper (stub script roots + temp git repos)."""
 import asyncio
+import os
 import stat
 import subprocess
 from pathlib import Path
@@ -14,6 +15,17 @@ REAL_SKILLS = REPO_AGENT / "skills"
 
 def run(coro):
     return asyncio.run(coro)
+
+
+@pytest.fixture(autouse=True)
+def _isolated_git(monkeypatch, tmp_path):
+    """Hermetic git: ignore the developer's global/system config (signing, hooks, identity)."""
+    monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
+    monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
+    monkeypatch.setenv("GIT_AUTHOR_NAME", "t")
+    monkeypatch.setenv("GIT_AUTHOR_EMAIL", "t@t")
+    monkeypatch.setenv("GIT_COMMITTER_NAME", "t")
+    monkeypatch.setenv("GIT_COMMITTER_EMAIL", "t@t")
 
 
 def _script(root: Path, rel: str, body: str) -> None:
@@ -105,7 +117,8 @@ def repo(tmp_path):
     r = tmp_path / "proj" / "myrepo"
     r.mkdir(parents=True)
     _git(r, "init", "-q", "-b", "main")
-    _git(r, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "i")
+    _git(r, "-c", "commit.gpgsign=false", "-c", "user.name=t", "-c", "user.email=t@t",
+         "commit", "-q", "--allow-empty", "-m", "i")
     return r
 
 
@@ -177,7 +190,7 @@ def test_decide_shell_block():
 def test_decide_shell_unavailable(monkeypatch, tmp_path):
     monkeypatch.setenv("SWARM_AGENT_DIR", str(tmp_path))
     r = run(sa.decide_shell("ls"))
-    assert r["decision"] == "allow" and "error" in r
+    assert r["decision"] == "block" and "error" in r
 
 
 # ---- integration: REAL graph-compile.sh -------------------------------------------
@@ -212,3 +225,147 @@ def test_real_graph_compile_no_tasks_and_unfit(tmp_path, monkeypatch):
     small.write_text(HEAD + "| a | one | - | - | pending | 0 | impl | - |\n| b | two | - | - | pending | 0 | impl | - |\n")
     r = run(sa.graph_compile(str(small), fit=True))
     assert r["exit_code"] == 2 and r["verdict"] == "UNFIT_FALLBACK_LOOP"
+
+
+# ======================= attempt 2 (checker findings) ===========================
+def _alloc(repo, tmp_path, monkeypatch, slug="s"):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    return run(sa.worktree_alloc(slug, cwd=str(repo)))
+
+
+def test_release_refuses_outside_root(repo, tmp_path, monkeypatch):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    other = tmp_path / "elsewhere"
+    _git(repo, "worktree", "add", "-b", "swarm-prime/x", str(other))
+    r = run(sa.worktree_release(str(other)))
+    assert r["exit_code"] != 0 and r["error"] and other.exists()
+
+
+def test_release_refuses_non_swarm_branch(repo, tmp_path, monkeypatch):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    inside = tmp_path / "wt" / "mine"
+    _git(repo, "worktree", "add", "-b", "feature/y", str(inside))
+    r = run(sa.worktree_release(str(inside)))
+    assert r["exit_code"] != 0 and r["error"] and inside.exists()
+
+
+def test_release_refuses_dirty(repo, tmp_path, monkeypatch):
+    r = _alloc(repo, tmp_path, monkeypatch)
+    (Path(r["path"]) / "unsaved.txt").write_text("work")
+    out = run(sa.worktree_release(r["path"]))
+    assert out["exit_code"] != 0 and "dirty" in out["error"] and Path(r["path"]).exists()
+
+
+def test_release_refuses_plain_dir(repo, tmp_path, monkeypatch):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    d = tmp_path / "wt" / "plain"
+    d.mkdir(parents=True)
+    r = run(sa.worktree_release(str(d)))
+    assert r["exit_code"] != 0 and d.exists()
+
+
+def test_release_resolves_symlink_and_relative(repo, tmp_path, monkeypatch):
+    r = _alloc(repo, tmp_path, monkeypatch)
+    link = tmp_path / "lnk"
+    link.symlink_to(r["path"])
+    out = run(sa.worktree_release(str(link)))
+    assert out["exit_code"] == 0 and not Path(r["path"]).exists()
+
+
+def test_alloc_relative_env_made_absolute(repo, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", "rel-wt")
+    r = run(sa.worktree_alloc("s", cwd=str(repo)))
+    assert Path(r["path"]).parent == tmp_path / "rel-wt"
+
+
+def test_alloc_refuses_dir_inside_repo(repo, monkeypatch):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(repo / "wt"))
+    r = run(sa.worktree_alloc("s", cwd=str(repo)))
+    assert r["exit_code"] != 0 and r["error"] and "path" not in r
+    assert not (repo / "wt").exists()
+
+
+def test_alloc_refuses_relative_dir_resolving_inside_repo(repo, monkeypatch):
+    monkeypatch.chdir(repo)
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", "wt")
+    r = run(sa.worktree_alloc("s", cwd=str(repo)))
+    assert r["exit_code"] != 0 and "path" not in r
+
+
+def test_verify_missing_cwd(tmp_path):
+    r = run(sa.verify(["true"], str(tmp_path / "nope")))
+    assert r["passed"] is False and r["results"] == [] and r["error"]
+
+
+def test_verify_str_is_single_command(tmp_path):
+    r = run(sa.verify("echo one two", str(tmp_path)))
+    assert r["passed"] is True and len(r["results"]) == 1
+
+
+def test_verify_timeout_kills_process_group(tmp_path):
+    marker = tmp_path / "marker"
+    cmd = f"(sleep 2; touch {marker}) & sleep 30"
+    r = run(sa.verify([cmd], str(tmp_path), timeout=0.5))
+    assert r["passed"] is False and r["results"][0]["exit_code"] == 124
+    import time
+    time.sleep(3)
+    assert not marker.exists()
+
+
+def test_mission_init_cwd_and_depth(stubs, tmp_path):
+    _script(stubs, "swarm-loop/scripts/mission-init.sh", 'pwd; printf "%s\\n" "$@"\n')
+    wt = tmp_path / "wtdir"
+    wt.mkdir()
+    r = run(sa.mission_init("s", "g", "mission", depth=1, cwd=str(wt)))
+    lines = r["stdout"].split("\n")
+    assert lines[0] == str(wt.resolve())
+    assert lines[1:6] == ["s", "g", "mission", "", "1"]
+
+
+def test_budget_guard_options(stubs):
+    r = run(sa.budget_guard("t", max_attempts=3, mission="m", mission_max=7))
+    assert r["stdout"].split() == ["t", "3", "--mission=m", "--mission-max=7"]
+
+
+def test_budget_guard_reset(stubs):
+    r = run(sa.budget_guard("t", reset=True, mission="m"))
+    assert r["stdout"].split() == ["--reset", "t", "--mission=m"]
+
+
+def test_fable_maker(stubs):
+    r = run(sa.fable_maker("base"))
+    assert r["stdout"].split() == ["--fable-maker", "base"]
+
+
+def _fake_agent(tmp_path, body):
+    a = tmp_path / "agent"
+    (a / "scripts/hooks").mkdir(parents=True)
+    (a / "security-rules.json").write_text("{}")
+    (a / "scripts/hooks/decide.py").write_text(body)
+    return a
+
+
+def test_decide_shell_passes_cwd(tmp_path, monkeypatch):
+    a = _fake_agent(tmp_path, 'import sys,json\nr=json.load(sys.stdin)\nprint(json.dumps({"decision":"allow","reason":r["cwd"]+"|"+r["harness"]}))\n')
+    monkeypatch.setenv("SWARM_AGENT_DIR", str(a))
+    r = run(sa.decide_shell("ls", cwd=str(tmp_path)))
+    assert r["reason"].startswith(str(tmp_path))
+
+
+def test_decide_shell_crash_fails_closed(tmp_path, monkeypatch):
+    a = _fake_agent(tmp_path, "raise SystemExit(3)\n")
+    monkeypatch.setenv("SWARM_AGENT_DIR", str(a))
+    r = run(sa.decide_shell("ls"))
+    assert r["decision"] == "block" and r["error"]
+
+
+def test_agent_dir_found_through_symlinked_skill_dir(tmp_path):
+    skill = Path(sa.__file__).resolve().parents[2]
+    link = tmp_path / "installed"
+    link.symlink_to(skill)
+    out = subprocess.run(
+        ["python3", "-c", "import swarm_adapter as s; print(s._repo_agent_dir())"],
+        env={**os.environ, "PYTHONPATH": str(link / "src")}, capture_output=True, text=True,
+    )
+    assert out.stdout.strip() == str(REPO_AGENT.resolve())
