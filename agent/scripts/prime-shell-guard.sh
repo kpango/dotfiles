@@ -67,6 +67,8 @@ r = subprocess.run([sys.executable, "-I", decide], input=json.dumps(req), captur
 d = json.loads(r.stdout)
 reason = (d.get("reason") or "").replace("\n", " ")
 dec = d.get("decision", "")
+if dec not in ("allow", "ask", "block"):  # strict: exactly one of the three, else refuse
+    dec = "invalid:" + repr(dec)
 if "fail-open" in reason:  # decide.py degraded to allow: never trust that here
     dec = "block"
 print(dec, reason, sep="\t")
@@ -96,8 +98,12 @@ _psg_extract() { # sets _PSG_EXTRACTED ; returns 1 on unexpected shape
     script=${argv[2]}
     [[ "$script" == *$'\n{\n'* && "$script" == *$'\n} 8>&- 9>&-\n'* ]] || return 1
     script=${script#*$'\n{\n'}   # drop everything up to the brace group
+    # the line right after `{` must be exactly the prefix the runtime used (else shape drifted)
+    [[ -n "${PRIME_AGENT_BASH_COMMAND_PREFIX:-}" && "$script" == *$'\n'* ]] || return 1
+    [[ "${script%%$'\n'*}" == "$PRIME_AGENT_BASH_COMMAND_PREFIX" ]] || return 1
     script=${script#*$'\n'}      # drop the (single-line) prefix itself
     script=${script%$'\n} 8>&- 9>&-\n'*}
+    [[ -n "$script" ]] || return 1
     _PSG_EXTRACTED=$script
 }
 
