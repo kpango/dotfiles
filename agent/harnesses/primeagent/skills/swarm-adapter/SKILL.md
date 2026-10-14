@@ -31,7 +31,19 @@ await swarm_adapter.worktree_release(wt["path"])
 - `worktree_release` is guarded: it refuses (`exit_code` != 0 plus `error`) unless the real path is under the worktree root, the worktree's
   branch is `swarm-prime/*`, and it is clean (no `--force`; uncommitted work is never destroyed). The branch is kept.
 - `verify` runs every command (no short-circuit); a bare str is one command; `passed` is false for an empty list or a missing `cwd`
-  (`error` set); it never raises (OSError → exit_code 126/127, non-str element → 126). `output_tail` is the last 4000 chars of stdout+stderr. A timeout kills the whole process group (`exit_code` 124).
+  (`error` set). `output_tail` is the last 4000 chars of stdout+stderr. A per-command failure to launch (OSError, null byte, non-str element,
+  bad `timeout`) is that command's `exit_code` 126/127 and the others still run.
+  A timeout kills the whole process group (`exit_code` 124) and the call returns within `timeout` + 2s per command.
+  **Known limit:** a descendant that left the group (`setsid`, `set -m`) is not killed; its still-open output pipe is abandoned
+  after 2s (the `output_tail` says so) and the process may outlive the call.
+- **Never raises, by construction:** every public function sits behind one `_boundary` wrapper that turns any Exception into
+  `{exit_code: 1, stdout: "", stderr: "", error: "<Type>: <msg>"}` (verify: `{passed: false, results: [], error}`; decide_shell:
+  `decision: "block"`, `error`). Inputs are therefore not type-checked individually (non-str task ids, `cwd` pointing at a file, ... yield `error`).
+- Repo layout: `worktree_alloc`/`worktree_release` support only a plain checkout (git common dir == `<toplevel>/.git`, which includes linked
+  worktrees of it). A submodule or `--separate-git-dir` checkout is refused (`error` "unsupported repository layout"). The worktree dir may be
+  neither inside the main checkout nor inside the caller's checkout. Inherited `GIT_DIR`/`GIT_WORK_TREE`/`GIT_INDEX_FILE`/... are
+  stripped from every git call (e.g. when run from a git hook).
+- `graph_compile`/`graph_status`/`mission_init` take `cwd` (default: process cwd).
 - `budget_guard(task, mission=, max_attempts=, mission_max=, reset=)` maps to the script's positional/`--mission`/`--mission-max`/`--reset`
   options; `fable_maker(base_task)` is `--fable-maker`. `mission_init(..., depth=, cwd=)` runs in the mission worktree `cwd`.
 - `decide_shell(command, cwd=None)` is FAIL-CLOSED: this adapter runs without hooks, so if decide.py or security-rules.json cannot be found

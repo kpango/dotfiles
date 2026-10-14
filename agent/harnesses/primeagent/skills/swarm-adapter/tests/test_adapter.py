@@ -21,7 +21,11 @@ def run(coro):
 
 @pytest.fixture(autouse=True)
 def _isolated_git(monkeypatch, tmp_path):
-    """Hermetic git: ignore the developer's global/system config (signing, hooks, identity)."""
+    """Hermetic git/env: ignore the developer's global/system config and any inherited repo/script selection
+    (e.g. GIT_DIR exported by a git hook that runs pytest). Tests that need these set them explicitly."""
+    for k in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY", "GIT_COMMON_DIR",
+              "SWARM_AGENT_DIR", "SWARM_WORKTREE_DIR", "SWARM_SCRIPTS_ROOT"):
+        monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
     monkeypatch.setenv("GIT_AUTHOR_NAME", "t")
@@ -472,3 +476,144 @@ def test_optional_plan_path_and_scale(stubs):
 def test_leading_dash_rejected(stubs, call):
     r = run(call())
     assert r["exit_code"] != 0 and r["error"]
+
+
+# ======================= attempt 4: structural (boundary wrapper, bounded verify, layout) ==========
+import time  # noqa: E402
+
+PUBLIC = ["budget_guard", "fable_grant", "fable_maker", "graph_compile", "graph_status", "mission_init",
+          "worktree_alloc", "worktree_release", "verify", "decide_shell"]
+
+
+def test_boundary_on_every_public_async_function(monkeypatch):
+    """By construction: any Exception inside any public function becomes an error dict."""
+    def boom(*a, **k):
+        raise RuntimeError("boom")
+    for name in ("_script", "_worktree_alloc", "_worktree_release", "_verify", "_decide_shell"):
+        monkeypatch.setattr(sa, name, boom)
+    calls = {
+        "budget_guard": ("t",), "fable_grant": ("t",), "fable_maker": ("t",), "graph_compile": (),
+        "graph_status": (), "mission_init": ("s", "g"), "worktree_alloc": ("s",),
+        "worktree_release": ("/x",), "verify": (["true"], "/"), "decide_shell": ("ls",),
+    }
+    assert sorted(calls) == sorted(PUBLIC)
+    for name, args in calls.items():
+        r = run(getattr(sa, name)(*args))
+        assert isinstance(r, dict) and "RuntimeError: boom" in r["error"], name
+        if name == "verify":
+            assert r["passed"] is False
+        elif name == "decide_shell":
+            assert r["decision"] == "block"
+        else:
+            assert r["exit_code"] != 0
+
+
+def test_boundary_catches_bad_argument_binding():
+    r = run(sa.budget_guard())  # missing required arg
+    assert r["exit_code"] != 0 and "TypeError" in r["error"]
+
+
+def test_verify_null_byte_command(tmp_path):
+    r = run(sa.verify(["true\x00x", "true"], str(tmp_path)))
+    assert r["passed"] is False and [x["exit_code"] for x in r["results"]] == [126, 0]
+
+
+def test_verify_cwd_none_and_bad_types(tmp_path):
+    assert run(sa.verify(["true"], None))["passed"] is False
+    r = run(sa.verify(["true"], str(tmp_path), timeout="x"))
+    assert r["passed"] is False and r["results"][0]["exit_code"] == 126
+
+
+def test_verify_timeout_bounded_when_descendant_escapes_group(tmp_path):
+    pidfile = tmp_path / "pid"
+    code = f"import os,time;os.setsid();open({str(pidfile)!r},'w').write(str(os.getpid()));time.sleep(30)"
+    cmd = f"python3 -c \"{code}\" & sleep 30"
+    t0 = time.monotonic()
+    try:
+        r = run(sa.verify([cmd], str(tmp_path), timeout=0.5))
+        took = time.monotonic() - t0
+    finally:
+        if pidfile.exists():
+            try:
+                os.kill(int(pidfile.read_text()), 9)
+            except ProcessLookupError:
+                pass
+    assert took < 0.5 + 2 + 2, took
+    assert r["passed"] is False and r["results"][0]["exit_code"] == 124
+    assert "setsid" in r["results"][0]["output_tail"]
+
+
+def test_verify_killpg_race_is_ignored(tmp_path, monkeypatch):
+    def gone(pid, sig):
+        raise ProcessLookupError
+    monkeypatch.setattr(sa.os, "killpg", gone)
+    r = run(sa.verify(["sleep 0.3"], str(tmp_path), timeout=0.1))
+    assert r["results"][0]["exit_code"] == 124
+
+
+def test_alloc_refuses_submodule(tmp_path):
+    sub_src = tmp_path / "subsrc"
+    sub_src.mkdir()
+    _git(sub_src, "init", "-q", "-b", "main")
+    _git(sub_src, "commit", "-q", "--allow-empty", "-m", "i")
+    sup = tmp_path / "sup"
+    sup.mkdir()
+    _git(sup, "init", "-q", "-b", "main")
+    _git(sup, "-c", "protocol.file.allow=always", "submodule", "add", "-q", str(sub_src), "sm")
+    r = run(sa.worktree_alloc("s", cwd=str(sup / "sm")))
+    assert r["exit_code"] != 0 and "unsupported" in r["error"] and "path" not in r
+    assert not any((sup / ".git").rglob("swarm-prime*"))
+
+
+def test_alloc_refuses_separate_git_dir(tmp_path):
+    work, gd = tmp_path / "work", tmp_path / "elsewhere.git"
+    work.mkdir()
+    _git(work, "init", "-q", "-b", "main", f"--separate-git-dir={gd}")
+    _git(work, "commit", "-q", "--allow-empty", "-m", "i")
+    r = run(sa.worktree_alloc("s", cwd=str(work)))
+    assert r["exit_code"] != 0 and "unsupported" in r["error"]
+
+
+def test_alloc_refuses_base_nested_in_callers_checkout(repo, tmp_path, monkeypatch):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    mission = run(sa.worktree_alloc("mission", cwd=str(repo)))
+    mp = Path(mission["path"])
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(mp / "nested"))
+    r = run(sa.worktree_alloc("child", cwd=str(mp)))
+    assert r["exit_code"] != 0 and "path" not in r and not (mp / "nested").exists()
+
+
+def test_alloc_and_release_unaffected_by_inherited_git_dir(repo, tmp_path, monkeypatch):
+    other = tmp_path / "other"
+    other.mkdir()
+    _git(other, "init", "-q", "-b", "main")
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    for k, v in (("GIT_DIR", str(other / ".git")), ("GIT_WORK_TREE", str(other)),
+                 ("GIT_INDEX_FILE", str(other / ".git" / "index"))):
+        monkeypatch.setenv(k, v)
+    r = run(sa.worktree_alloc("s", cwd=str(repo)))
+    assert r["exit_code"] == 0, r
+    out = run(sa.worktree_release(r["path"]))
+    assert out["exit_code"] == 0 and not Path(r["path"]).exists()
+    for k in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
+        monkeypatch.delenv(k)
+    assert "swarm-prime" not in _git(other, "branch", "--list", "swarm-prime/*")  # outer repo untouched
+    assert "swarm-prime/s-" in _git(repo, "branch", "--list", "swarm-prime/*")
+
+
+def test_script_cwd_is_file_and_non_str_task_id(stubs, tmp_path):
+    f = tmp_path / "afile"
+    f.write_text("x")
+    r = run(sa.mission_init("s", "g", cwd=str(f)))
+    assert r["exit_code"] != 0 and "NotADirectoryError" in r["error"]
+    r = run(sa.budget_guard(5))
+    assert r["exit_code"] != 0 and r["error"]
+
+
+def test_graph_cwd_param(stubs, tmp_path):
+    _script(stubs, "swarm-graph/scripts/graph-compile.sh", 'echo "{\\"pwd\\": \\"$PWD\\"}"\n')
+    _script(stubs, "swarm-graph/scripts/graph-status.sh", 'pwd\n')
+    d = tmp_path / "d"
+    d.mkdir()
+    assert run(sa.graph_compile(cwd=str(d)))["pwd"] == str(d.resolve())
+    assert run(sa.graph_status(cwd=str(d)))["stdout"].strip() == str(d.resolve())
