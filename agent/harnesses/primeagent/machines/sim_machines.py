@@ -644,8 +644,58 @@ async def failure_resume_after_pause_ends_failed():
     await resume_ends_failed(Sim(a), "swarm-review", "review lens child error")
 
 
+@scenario
+async def failure_stop_leaves_stopped_and_resume_raises():
+    a = impl_ok(); a["swarm-maker"] = lambda n: ("error", None)
+    s = await Sim(a).run("swarm-implement")
+    assert s.state == "paused"
+    res = await s.ex.stop(s.run_id)
+    assert res["state"] == "stopped" and s.run_obj.state == "stopped", res
+    try:
+        await s.ex.resume(s.run_id)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("resume of a stopped run must raise")
+
+
+@scenario
+async def terminal_state_overrunning_its_budget_is_not_success():
+    """The `done` state ran (it would have written outcome.json) but overran its budget: the run is
+    paused, not `done`, so the success rule (state done AND file) is not met."""
+    sim = Sim(impl_ok()); sim.bump["swarm-done"] = 61  # seconds; done budget_ms is 60000
+    s = await sim.run("swarm-implement")
+    assert s.entered("done") and s.state == "paused", (s.state, s.run_obj.pause_reason)
+    sim = Sim(review_answers({})); sim.bump["swarm-aggregator"] = 601
+    s = await sim.run("swarm-review")
+    assert s.entered("aggregator") and s.state == "paused", s.state
+
+
+@scenario
+async def docs_state_one_success_rule_and_no_per_case_claims():
+    needles = {
+        "swarm-implement": "reports state `done` AND `<run_dir>/outcome.json` exists AND its `status` is `pass`",
+        "swarm-explore": "reports state `done` AND `<run_dir>/report.md` exists.",
+        "swarm-review": "reports state `done` AND `<run_dir>/summary.md` exists AND it reports `all_pass` true",
+    }
+    must = ("ANY other combination", "NOT success", "`stop`", "start a new run directory", "does not re-run the failed state", "`stopped`")
+    banned = ("Outcomes (what the caller sees)", "| `paused` |", "| `done` |", "without `report.md`", "without `summary.md`",
+              "no `report.md`", "no `summary`", "there is no summary", "deliberately writes nothing", "without the result file",
+              "Run `done` without", "Run `paused`", "ends `failed` with no", "without a report")
+    for name, needle in needles.items():
+        text = (HERE / name / "MACHINE.md").read_text(encoding="utf-8")
+        assert text.count("**Success rule.**") == 1, f"{name}: exactly one success rule"
+        assert needle in text, f"{name}: rule text missing"
+        for m in must:
+            assert m in text, f"{name}: missing {m!r}"
+        for b in banned:
+            assert b not in text, f"{name}: removed per-case claim present: {b!r}"
+    impl = (HERE / "swarm-implement" / "MACHINE.md").read_text(encoding="utf-8")
+    assert "budget-guard.sh" in impl and "SWARM_STATE_DIR" in impl and "outside the run directory" in impl
+
+
 async def main():
-    for fn in (failure_test_maker_free_text_pauses, failure_maker_child_error_pauses, failure_budget_overrun_pauses,
+    for fn in (failure_stop_leaves_stopped_and_resume_raises, terminal_state_overrunning_its_budget_is_not_success, docs_state_one_success_rule_and_no_per_case_claims, failure_test_maker_free_text_pauses, failure_maker_child_error_pauses, failure_budget_overrun_pauses,
                failure_unparseable_guard_reply_ends_done_without_outcome, failure_review_free_text_pauses,
                failure_explore_scope_free_text_fails, run_budgets_cover_critical_paths_and_match_docs, failure_resume_after_pause_ends_failed, every_prompt_template_is_parseable_json, prompt_templates_drive_pass_and_escalate_paths,
                implement_run_budget_covers_five_attempts, init_reject_emit_is_constant_and_fuzzed_inputs_fit, explore_runtime_failure_ends_failed_without_report, impl_refused_run_dir_escalates, prompts_read_only_inside_run_dir, impl_pass_path,
