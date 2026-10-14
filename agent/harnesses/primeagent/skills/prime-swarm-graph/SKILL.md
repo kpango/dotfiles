@@ -12,7 +12,7 @@ the DAG scheduling.
 Human-only boundaries: merging into or pushing to the user's main branch or any remote, and any deploy, are
 human-only. Merging a task worktree branch into the mission worktree is orchestrator work and allowed (step 3).
 Tier B governance files are never edited by this skill. Protected (Tier B) paths come from
-`agent/write-scope-rules.json`; apply the write-scope check in `~/.prime/agent/skills/prime-swarm-loop/SKILL.md`
+the dotfiles `agent/write-scope-rules.json` (located as in prime-swarm-loop, never the target repo's copy); apply the write-scope check in `~/.prime/agent/skills/prime-swarm-loop/SKILL.md`
 before ANY file edit (prompt contract, no write hook in prime).
 
 ## Steps
@@ -32,24 +32,32 @@ before ANY file edit (prompt contract, no write hook in prime).
    `stale`, `blocked(budget)`, `blocked(design)`, `blocked(spec)`. Edit only the `status`, `worktree`,
    `attempts`, `note` cells, and after EVERY edit recompile and run `graph_status(plan_path, cwd=<mission worktree>)`.
    - **Start** (at most 3 `swarm-implement` runs at once): task worktree =
-     `swarm_adapter.worktree_alloc(slug, cwd=<mission worktree>)`, so its base is the mission worktree's current
-     HEAD (which already holds every merged upstream task). Set `in_progress` and the `worktree` cell; NEVER start
-     a task that is `in_progress`. The machines share a pointer file: start one run, wait until its `init` settles
-     (`rlm.factory.status`), then the next.
+     `swarm_adapter.worktree_alloc(slug, cwd=<mission worktree>)` with slug `<task-id>-a<attempts>`, so its base
+     is the mission worktree's current HEAD (which already holds every merged upstream task). Every start, retries
+     included, allocates a NEW worktree (`worktree_alloc` creates a new `<slug>-<UTC ts>` path and
+     `swarm-prime/...` branch; a non-zero `exit_code` is a non-success start). An old task worktree is never reused
+     and never removed or deleted by you (human-only cleanup; its path stays in `note`). Set `in_progress` and the
+     `worktree` cell; NEVER start a task that is `in_progress`. The machines share a pointer file: start one run,
+     wait until its `init` settles (`rlm.factory.status`), then the next.
    - **Success** (the machine's Success rule holds): the maker does not commit. In the TASK worktree stage every
      changed and untracked path by name (from `git status --porcelain`) and `git commit -m "<task-id>: <summary>"`;
      that is exactly what the checker judged (`git diff <init.base>` plus untracked files). Then, one merge at a
      time, in the MISSION worktree:
      `git merge --no-ff <task branch>`. Set `done` only after that merge commit exists, so a downstream worktree
-     cut later contains the upstream result. A merge conflict: `git merge --abort`, keep the task `in_progress`
-     with the reason in `note`, and replan (step 4). Run these git commands through `swarm_adapter.decide_shell`.
-   - **Non-success run** (paused, stopped, failed, `done` without `outcome.json`): `rlm.factory.stop(run_id)`,
-     increment `attempts`, and set the task back to `pending` (it becomes ready again; the retry uses a NEW run
-     directory, as MACHINE.md says) while `attempts` < 3. At 3, set `blocked(budget)`.
-   - **Escalated outcome** (`outcome.json` status `escalated`, or attempt limit / `MISSION_BUDGET_EXCEEDED` from the
-     budget guard): `blocked(budget)`; a refused `init` or a wrong `task_spec`: `blocked(spec)`; the checker or a
-     spot diagnosis says the approach is wrong: `blocked(design)`. Reason in `note`. A `TAMPER` verdict: stop the
-     mission and report to the human.
+     cut later contains the upstream result. A merge conflict: `git merge --abort` (the mission worktree is back
+     at its pre-merge HEAD), increment `attempts`, put the conflict and the old task worktree path in `note`, and
+     set the task back to `pending` while `attempts` < 3 (at 3: `blocked(budget)`). Its next start cuts a NEW
+     worktree from the mission HEAD, which now holds the conflicting upstream change, and re-runs the task in a
+     NEW run directory. Run these git commands through `swarm_adapter.decide_shell`.
+   - **Non-success run** (paused, stopped, failed, `done` without `outcome.json`, which includes a refused
+     `init`): `rlm.factory.stop(run_id)`, increment `attempts`, and set the task back to `pending` (it becomes
+     ready again; the retry uses a NEW run directory, as MACHINE.md says) while `attempts` < 3. At 3, set
+     `blocked(budget)`.
+   - **Escalated outcome** (`outcome.json` status `escalated`; tell the kind apart as in `prime-swarm-loop`
+     "Kinds of `escalated`"): checker `judgement.verdict` `"TAMPER"`: stop the mission and report to the human;
+     maker `verify.budget` `"exceeded"` (attempt or mission limit): `blocked(budget)`. The plan's `task_spec` is
+     found wrong (by you or the checker's `checker.md`): `blocked(spec)`; the checker or a spot diagnosis says the
+     approach is wrong: `blocked(design)`. Reason in `note`.
    - **blocked -> pending**: `blocked(spec)`/`blocked(design)` go back to `pending` only through a replan that
      fixes the spec or design (step 4). `blocked(budget)` goes back to `pending` only after the human raises or
      resets the budget; never reset counters yourself.
@@ -58,8 +66,10 @@ before ANY file edit (prompt contract, no write hook in prime).
      and set every id in the returned `stale_closure` (done descendants) to `stale`. `stale` tasks are ready again
      once their dependencies are `done`; re-run them like `pending` ones.
 4. **REPLAN (max 2)** - triggers: a `blocked(spec)`/`blocked(design)` task, a cycle/missing-dep compile error, a
-   merge conflict, an empty `ready` list with tasks left that are not `done`, or a plan found wrong. Update
-   `@fix_plan.md`, recompile, continue. A third replan: stop and report to the human.
+   true deadlock, or a plan found wrong. True deadlock = `ready` is empty AND no task is `in_progress` AND some
+   task is not `done` (every remaining task is blocked or waits on a blocked one). An empty `ready` while a task is
+   `in_progress` is NOT a trigger: wait for that run to settle. Update `@fix_plan.md`, recompile, continue. A third
+   replan: stop and report to the human.
 5. **REVIEW / GATE** - when every task is `done`: as `prime-swarm-loop` steps 6-7, running `swarm-review` with
    `{"worktree": <mission worktree>, "base_ref": <INIT base sha>}` (the merged task commits are the diff), read
    `summary.all_pass`, then read `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it, then

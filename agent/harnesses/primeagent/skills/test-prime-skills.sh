@@ -104,6 +104,12 @@ for m in call_re.finditer(text):
 PY
 }
 
+# (6) the escalation fields the skills branch on exist in the swarm-implement machine spec
+implement_md="$harness/machines/swarm-implement/MACHINE.md"
+grep -qF '{\"judgement\": {\"verdict\": \"PASS\"|\"FAIL\"|\"TAMPER\"}}' "$implement_md" || bad "MACHINE.md: checker judgement.verdict TAMPER not found"
+grep -qF '\"budget\": \"ok\"|\"exceeded\"' "$implement_md" || bad "MACHINE.md: maker verify.budget exceeded not found"
+grep -qF 'write RUN/outcome.json with exactly {\"status\": \"escalated\"}' "$implement_md" || bad "MACHINE.md: escalate outcome.json shape changed"
+
 for name in "${expected[@]}"; do
 	dir="$skills_dir/$name"
 	f="$dir/SKILL.md"
@@ -162,8 +168,30 @@ for name in "${expected[@]}"; do
 		case "$flat" in *'stale_closure'*) ;; *) bad "$name: no stale_closure handling" ;; esac
 		case "$flat" in *'back to `pending`'*) ;; *) bad "$name: no retry path back to pending" ;; esac
 		case "$flat" in *'git commit -m'*'git merge --no-ff'*'Set `done` only after that merge'*) ;; *) bad "$name: no commit before merge before done" ;; esac
+		# (1) replan only on a true deadlock: an empty ready list is normal while a task is in_progress
+		case "$flat" in *'`ready` is empty AND no task is `in_progress` AND some task is not `done`'*) ;; *) bad "$name: replan trigger ignores in_progress" ;; esac
+		if printf '%s' "$flat" | grep -qiE 'empty `ready` list with tasks left'; then bad "$name: replan trigger ignores in_progress"; fi
+		# (2) merge conflict: abort, back to pending, NEW worktree from mission HEAD; no worktree/branch removal
+		case "$flat" in *'A merge conflict: `git merge --abort`'*'set the task back to `pending` while `attempts` < 3'*'NEW worktree from the mission HEAD'*) ;; *) bad "$name: merge conflict has no retry path" ;; esac
+		if printf '%s' "$flat" | grep -qE 'keep the task `in_progress`|worktree remove|branch -[dD]'; then bad "$name: merge conflict keeps task in_progress or deletes worktree/branch"; fi
+		# (5) a refused init is a non-success retry, never blocked(spec)
+		case "$flat" in *'`done` without `outcome.json`, which includes a refused `init`'*) ;; *) bad "$name: refused init not a non-success retry" ;; esac
+		if printf '%s' "$flat" | grep -qE 'refused `init`[^.]*`blocked\(spec\)`'; then bad "$name: refused init mapped to blocked(spec)"; fi
+		# (6) escalation kinds by real output fields
+		case "$flat" in *'`judgement.verdict` `"TAMPER"`'*'`verify.budget` `"exceeded"`'*) ;; *) bad "$name: TAMPER/budget escalation not told apart by output fields" ;; esac
+		;;
+	prime-swarm-loop)
+		# (4) Tier B rules never from cwd / target repo
+		case "$flat" in *'NEVER read a cwd-relative path or a copy inside the target repo'*) ;; *) bad "$name: Tier B rules may come from the target repo" ;; esac
+		if grep -qF 'open("<rules path>")' "$f" || grep -qE 'open\("agent/write-scope-rules' "$f"; then bad "$name: Tier B rules may come from the target repo"; fi
+		# (5)(6)(7)
+		case "$flat" in *'A refused `init` (`init.ok` false) goes to `escalate`'*'never a spec block'*) ;; *) bad "$name: refused init not a non-success retry" ;; esac
+		case "$flat" in *'`judgement.verdict` is `"TAMPER"` = TAMPER'*'`verify.budget` is `"exceeded"` = budget exhausted'*) ;; *) bad "$name: TAMPER/budget escalation not told apart by output fields" ;; esac
+		case "$flat" in *'at most 3 runs per task in total'*) ;; *) bad "$name: non-success retries unbounded" ;; esac
 		;;
 	prime-swarm-meta)
+		# (3) harness-select runs from an empty temp cwd with PYTHONSAFEPATH=1
+		case "$flat" in *'tempfile.TemporaryDirectory() as d'*'cwd=d, env={**os.environ, "PYTHONSAFEPATH": "1"}'*) ;; *) bad "$name: harness-select run without empty cwd + PYTHONSAFEPATH" ;; esac
 		if grep -qE '(^|[^/A-Za-z0-9_.-])agent/skills/swarm-meta/' "$f"; then bad "$name: relative harness-select path"; fi
 		grep -qF 'swarm_adapter.__file__' "$f" || bad "$name: harness-select not resolved from the adapter's real path"
 		rel="$(sed -n 's/.*rel = "\([^"]*\)".*/\1/p' "$f" | head -1)"
@@ -184,6 +212,9 @@ for name in "${expected[@]}"; do
 	if grep -q 'Skill(' "$f"; then bad "$name: contains Skill( call"; fi
 	# Tier B is defined by write-scope-rules.json (shared procedure lives in prime-swarm-loop)
 	grep -q 'write-scope-rules.json' "$f" || bad "$name: does not reference write-scope-rules.json"
+	if [ "$name" != prime-swarm-loop ]; then
+		case "$flat" in *"never the target repo's copy"*) ;; *) bad "$name: Tier B rules may come from the target repo" ;; esac
+	fi
 	# every fable_grant call carries mission=
 	while read -r call; do
 		[ -n "$call" ] || continue
@@ -248,7 +279,75 @@ neg_case prime-swarm-meta 's|rel = "swarm-meta|rel = "agent/skills/swarm-meta|' 
 neg_case prime-swarm-loop 's/fable_grant(task_id, mission=/fable_grant(task_id, missions=/' "fable_grant: unknown keyword 'missions'"
 neg_case prime-swarm-loop 's/decide_shell(cmd, cwd)/decide_shell(cmd, cwd, 1)/' "decide_shell: 3 positional args > 2"
 neg_case prime-swarm-loop 's/mission_init(slug, goal, scale, /mission_init(scale, /' "mission_init: missing required 'goal'"
+# T8 attempt 4 regressions (1-7)
+neg_case prime-swarm-graph 's/AND no task is `in_progress` //' "replan trigger ignores in_progress"
+neg_case prime-swarm-graph 's/(the mission worktree is back/keep the task `in_progress` (the mission worktree is back/' "merge conflict keeps task in_progress or deletes worktree/branch"
+neg_case prime-swarm-graph 's/set the task back to `pending` while `attempts` < 3 (at 3/leave the task while `attempts` < 3 (at 3/' "merge conflict has no retry path"
+neg_case prime-swarm-graph 's/which includes a refused/which excludes a refused/' "refused init not a non-success retry"
+neg_case prime-swarm-graph 's/`blocked(spec)`; the checker/`blocked(spec)`, as is a refused `init`: `blocked(spec)`; the checker/' "refused init mapped to blocked(spec)"
+neg_case prime-swarm-graph 's/`verify.budget` `"exceeded"`/`verify.reason` `"exceeded"`/' "TAMPER/budget escalation not told apart by output fields"
+neg_case prime-swarm-loop 's/\. NEVER$/. Prefer not to/' "prime-swarm-loop: Tier B rules may come from the target repo"
+neg_case prime-swarm-architect "s/, never the target repo's copy//" "prime-swarm-architect: Tier B rules may come from the target repo"
+neg_case prime-swarm-loop 's/never a spec block/or `blocked(spec)`/' "prime-swarm-loop: refused init not a non-success retry"
+neg_case prime-swarm-loop 's/`verify.budget` is `"exceeded"`/`outcome.reason` is `"exceeded"`/' "prime-swarm-loop: TAMPER/budget escalation not told apart"
+neg_case prime-swarm-loop 's/at most 3 runs per task in total/as often as needed/' "non-success retries unbounded"
+neg_case prime-swarm-meta 's/, "PYTHONSAFEPATH": "1"//' "harness-select run without empty cwd + PYTHONSAFEPATH"
 }
+
+# behavioural checks (offline, sandboxed HOME, no model call)
+beh="$(mktemp -d "${TMPDIR:-/tmp}/prime-skills-beh.XXXXXX")"
+# (1) premise: with A in_progress and B,C depending on it, graph-compile.sh reports an empty ready list, so a
+# trigger on "ready is empty" alone would replan a healthy DAG
+printf '%s\n' '## Tasks' '' '| task-id | summary | depends | worktree | status | attempts | domain | note |' \
+	'|---|---|---|---|---|---|---|---|' '| A | a | - | - | in_progress | 0 | x | - |' \
+	'| B | b | A | - | pending | 0 | x | - |' '| C | c | A | - | pending | 0 | x | - |' >"$beh/plan.md"
+if (cd "$beh" && bash "$repo/agent/skills/swarm-graph/scripts/graph-compile.sh" plan.md) | python3 -I -c \
+	'import json,sys; d=json.load(sys.stdin); sys.exit(0 if d["ready"]==[] and any(n["status"]=="in_progress" for n in d["nodes"]) else 1)'; then
+	echo "ok   behaviour graph: ready empty while in_progress (replan must also require no in_progress)"
+else
+	bad "behaviour graph: premise check failed"
+fi
+# (3) a json.py planted in the cwd: runs without the defence (repro), not with the skill's snippet
+mkdir -p "$beh/home" "$beh/repo"
+git -C "$beh/repo" init -q
+printf 'import pathlib\npathlib.Path(%s).write_text("pwned")\n' "'$beh/PWNED'" >"$beh/repo/json.py"
+hs="$repo/agent/skills/swarm-meta/scripts/harness-select.sh"
+(cd "$beh/repo" && env -u PYTHONSAFEPATH HOME="$beh/home" bash "$hs" "fix a typo" "$beh/repo" >/dev/null 2>&1 || true)
+if [ -f "$beh/PWNED" ]; then echo "ok   behaviour meta: planted json.py runs from cwd without the defence (repro)"; else bad "behaviour meta: repro did not trigger (test would pass vacuously)"; fi
+command rm -f "$beh/PWNED"
+snippet="$(python3 -I - "$here/prime-swarm-meta/SKILL.md" <<'PY'
+import sys, textwrap
+lines = open(sys.argv[1]).read().splitlines()
+i = next(k for k, l in enumerate(lines) if l.strip() == "import os, subprocess, tempfile")
+j = next(k for k in range(i, len(lines)) if "subprocess.run(" in lines[k])
+print(textwrap.dedent("\n".join(lines[i:j + 1])))
+PY
+)"
+if (cd "$beh/repo" && env -u PYTHONSAFEPATH HOME="$beh/home" python3 -I - "$hs" "$beh/repo" <<PY
+import sys; script, repo, goal = sys.argv[1], sys.argv[2], "fix a typo"
+$snippet
+import json as _j; d = _j.loads(r.stdout); sys.exit(0 if r.returncode == 0 and "recommendation" in d else 1)
+PY
+) && [ ! -f "$beh/PWNED" ]; then
+	echo "ok   behaviour meta: skill snippet runs harness-select without importing the planted json.py"
+else
+	bad "behaviour meta: skill snippet failed or imported the planted json.py"
+fi
+# (4) a target repo planting agent/write-scope-rules.json with no patterns must not empty Tier B
+mkdir -p "$beh/repo/agent"
+printf '{"suffix_patterns": [], "fixed_absolute_path_patterns": []}\n' >"$beh/repo/agent/write-scope-rules.json"
+command rm -f "$beh/repo/json.py"
+wsnip="$(python3 -I - "$here/prime-swarm-loop/SKILL.md" <<'PY'
+import sys, textwrap
+lines = open(sys.argv[1]).read().splitlines()
+i = next(k for k, l in enumerate(lines) if l.strip().startswith("import json, os, fnmatch"))
+j = next(k for k in range(i, len(lines)) if lines[k].strip().startswith("print(any("))
+print(textwrap.dedent("\n".join(lines[i:j + 1])).replace("/abs/target", "/x/agent/hooks/claude/gate.sh"))
+PY
+)"
+out="$(cd "$beh/repo" && PYTHONPATH="$here/swarm-adapter/src" HOME="$beh/home" python3 -c "$wsnip" 2>&1 || true)"
+if [ "$out" = "True" ]; then echo "ok   behaviour loop: planted repo write-scope-rules.json ignored (hook path protected)"; else bad "behaviour loop: Tier B check returned '$out'"; fi
+command rm -rf "$beh"
 
 # sandboxed prime-agent: every skill appears in the skills-inventory
 sandbox="$(mktemp -d "${TMPDIR:-/tmp}/prime-skills.XXXXXX")"

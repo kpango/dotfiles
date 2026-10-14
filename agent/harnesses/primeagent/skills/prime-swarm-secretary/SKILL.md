@@ -10,7 +10,7 @@ secretary state; use this skill for hand-collected or ad-hoc `rlm.spawn` results
 
 Human-only boundaries: merging into or pushing to the user's main branch or any remote, and any deploy, are
 human-only; Tier B governance files are never edited by this skill.
-Protected (Tier B) paths come from `agent/write-scope-rules.json`; apply the write-scope check in
+Protected (Tier B) paths come from the dotfiles `agent/write-scope-rules.json` (located as in prime-swarm-loop, never the target repo's copy); apply the write-scope check in
 `~/.prime/agent/skills/prime-swarm-loop/SKILL.md` before ANY file edit (prompt contract, no write hook in prime). It writes no code and no
 repo files; its output is a message or a file the caller names.
 

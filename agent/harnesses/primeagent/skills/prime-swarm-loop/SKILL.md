@@ -20,12 +20,17 @@ has its input JSON, run recipe and residual risks - read it before the first run
 
 ## Write-scope check (shared by all prime-swarm-* skills)
 
-Tier B = the paths in `agent/write-scope-rules.json` (repo path; installed copy `~/.prime/agent/write-scope-rules.json`
-if present). Before ANY file edit by you or in a task spec you write, resolve the target's absolute path and test it
-against `suffix_patterns` and `fixed_absolute_path_patterns` (fnmatch; `${HOME}` -> home dir, see its `$comment`).
-On a match: do not edit, refuse, and escalate to the human.
+Tier B = the paths in the dotfiles `agent/write-scope-rules.json`, located like `swarm-adapter` locates its scripts
+(absolute, from the adapter module's real path), else the installed `~/.prime/agent/write-scope-rules.json`. NEVER
+read a cwd-relative path or a copy inside the target repo: that repo could plant one that empties Tier B. Neither
+file found: treat every edit as protected and ask the human. Before ANY file edit by you or in a task spec you
+write, resolve the target's absolute path and test it against `suffix_patterns` and `fixed_absolute_path_patterns`
+(fnmatch; `${HOME}` -> home dir, see its `$comment`). On a match: do not edit, refuse, and escalate to the human.
 
-    import json, os, fnmatch; r = json.load(open("<rules path>")); h = os.path.expanduser("~"); p = os.path.realpath("/abs/target")
+    import json, os, fnmatch, swarm_adapter; from pathlib import Path
+    agent = next((d for d in Path(swarm_adapter.__file__).resolve().parents if d.name == "agent" and (d / "skills").is_dir()), None)
+    rules = next((c for c in ([agent / "write-scope-rules.json"] if agent else []) + [Path.home() / ".prime" / "agent" / "write-scope-rules.json"] if c.is_file()), None)  # None: ask the human
+    r = json.load(open(rules)); h = os.path.expanduser("~"); p = os.path.realpath("/abs/target")
     print(any(fnmatch.fnmatch(p, g) for g in r["suffix_patterns"]) or any(fnmatch.fnmatch(p, g.replace("${HOME}", h)) for g in r["fixed_absolute_path_patterns"]))  # True = protected
 
 Residual risk: prime has no write hook, so this is a prompt contract, not an enforced gate. Include the list of
@@ -38,6 +43,13 @@ output file present (implement: `outcome.json` with `status: pass`). Anything el
 `done` without the file) is NOT success. Then: `await rlm.factory.status(run_id)`, `await rlm.factory.stop(run_id)`,
 and follow the MACHINE.md instruction (fresh run directory, resize budgets, or escalate to the human). Branch on
 status/exit codes, never on prose. Start runs of one machine one at a time (shared pointer file).
+A refused `init` (`init.ok` false) goes to `escalate`, which writes no file: it is a non-success run (`done`
+without `outcome.json`), retried in a fresh run directory like any other, never a spec block.
+
+**Kinds of `escalated`** (implement `outcome.json` is exactly `{"status": "escalated"}` in every case, so tell
+them apart from the node outputs in `await rlm.factory.status(run_id)`): the last `checker` output
+`judgement.verdict` is `"TAMPER"` = TAMPER (stop the mission, report to the human); the last `maker` output
+`verify.budget` is `"exceeded"` = budget exhausted (attempt or mission limit; stop and report, never raise limits).
 
 ## States
 
@@ -55,8 +67,11 @@ status/exit codes, never on prose. Start runs of one machine one at a time (shar
 5. **EXECUTE** - for each task in dependency order, run `swarm-implement` with
    `{"mission", "task_spec", "worktree", "commands", "test_commands"}`. Size `budget_ms` first if the gate takes
    long (MACHINE.md Residual risks). One task = one run directory.
-   - Budget: the machine already calls `swarm_adapter.budget_guard` (5 attempts per run, 20 per mission). If the
-     mission budget is exhausted or `outcome.json` is `escalated`, stop and report; do not raise limits.
+   - Budget: the machine already calls `swarm_adapter.budget_guard` (5 attempts per run, 20 per mission). If
+     `outcome.json` is `escalated`, branch on its kind (above), stop and report; do not raise limits.
+   - Non-success run (Success rule fails, the maker may never have run): retry the task in a NEW run directory,
+     at most 3 runs per task in total (the same `attempts` limit as `prime-swarm-graph`); after the 3rd, stop
+     and report.
    - After `pass`, `git diff` in the worktree is the evidence to show, not the checker prose. Then commit it (the
      maker does not commit): stage every changed and untracked path by name (from `git status --porcelain`) and
      `git commit -m "<task-id>: <summary>"`, via `swarm_adapter.decide_shell`, so the next task's checker diff

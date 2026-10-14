@@ -9,7 +9,7 @@ A selector, not an executor. Governance is in `~/.prime/agent/SWARM.md`.
 
 Human-only boundaries: merging into or pushing to the user's main branch or any remote, and any deploy, are
 human-only; Tier B governance files are never edited by this skill or the skills it selects.
-Protected (Tier B) paths come from `agent/write-scope-rules.json`; apply the write-scope check in
+Protected (Tier B) paths come from the dotfiles `agent/write-scope-rules.json` (located as in prime-swarm-loop, never the target repo's copy); apply the write-scope check in
 `~/.prime/agent/skills/prime-swarm-loop/SKILL.md` before ANY file edit (prompt contract, no write hook in prime).
 
 ## Steps
@@ -25,9 +25,15 @@ Protected (Tier B) paths come from `agent/write-scope-rules.json`; apply the wri
        script = next((str(c) for c in cands if c.is_file()), None)  # None: report to the human, use prime-swarm-loop
 
    Read its usage lines first (`sed -n 1,20p "<script>"`), because flags and output change.
-2. Run it with bash(): `bash "<script>" "<goal text>" <repo-root>` (add `--profile-only` only if you just want the
-   repo profile). It uses no model and decides from repo signals plus its registry.
-3. Parse its JSON (`profile`, `recommendation`, `registry_matches`): use `recommendation.harness`, never your own
+2. Run it from a fresh EMPTY temp dir as cwd and with `PYTHONSAFEPATH=1` (the script runs `python3 -`, which
+   would import a planted `json.py` etc. from its cwd; the adapter's own `_sync_run` uses the same defence, but no
+   public adapter function runs an arbitrary script). Never run it from the target repo or a shell `cd` there.
+   Insert `"--profile-only"` before `goal` only if you just want the repo profile. No model is used:
+
+       import os, subprocess, tempfile
+       with tempfile.TemporaryDirectory() as d:
+           r = subprocess.run(["bash", script, goal, repo], cwd=d, env={**os.environ, "PYTHONSAFEPATH": "1"}, capture_output=True, text=True, timeout=120)
+3. Parse `r.stdout` as JSON (`profile`, `recommendation`, `registry_matches`): use `recommendation.harness`, never your own
    opinion; `recommendation.scale` seeds SCALE and `recommendation.rationale` (a list of rule strings) is the
    reason. Map `swarm-loop` -> `prime-swarm-loop`, `swarm-graph` -> `prime-swarm-graph`. Any other value or a
    non-zero exit: report the raw output to the human and default to `prime-swarm-loop`.

@@ -12,7 +12,7 @@ Human-only boundaries: merging into or pushing to the user's main branch or any 
 human-only. This skill NEVER merges, pushes, deploys, tags, force-updates a ref or removes a worktree,
 and it never tells anyone it may. It only presents results and stops; the human performs any merge or push
 themselves. Tier B governance files are never edited by this skill. Protected paths come from
-`agent/write-scope-rules.json` (check procedure in `~/.prime/agent/skills/prime-swarm-loop/SKILL.md`); a diff
+the dotfiles `agent/write-scope-rules.json` (located as in prime-swarm-loop, never the target repo's copy) (check procedure in `~/.prime/agent/skills/prime-swarm-loop/SKILL.md`); a diff
 that touches one is flagged to the human for their own review.
 
 ## Steps
