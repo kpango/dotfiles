@@ -56,6 +56,14 @@
 #     creating project-local prime-agent config (<repo>/.prime/agent/settings.json,
 #     AGENTS.md, .agents/skills ...) that a later UNSANDBOXED run in that repo would
 #     load. Review untracked files (git status) after a sandboxed run. Not blocked.
+#   - rw state dirs could get planted symlinks/FIFOs that a later UNSANDBOXED daemon
+#     follows; they are scrubbed (non-regular, non-directory entries deleted) at
+#     launch and after the sandboxed process exits (also on INT/TERM; not on
+#     SIGKILL of pa-sandbox itself -- the next launch scrubs). Not a defence
+#     against races while the sandboxed process is still running.
+#   - A symlinked nested `.git` makes pa-sandbox refuse to start (override, UNSAFE:
+#     PA_SANDBOX_ALLOW_GIT_SYMLINKS=1); any error while scanning for nested `.git`
+#     (unreadable dir) also refuses.
 #   - mcp-service-catalog.v2.json and daemon-workers/ are ro (see PA_SANDBOX_AGENT_RW_*).
 #   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
 #   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
@@ -250,16 +258,40 @@ pa_sandbox_build_argv() {
 	# point cannot be renamed or replaced. Linked-worktree common dir: ro as a whole.
 	_ro "$repo/.git"
 	[[ -n "$gcd" ]] && _ro "$gcd"
-	local ng nn=0
+	# Scan to files (not process substitution) so a find failure is seen: an
+	# unreadable directory could hide a nested .git, so ANY find error fails closed.
+	local ng nn=0 scan scanerr frc=0 links=()
+	scan="$(mktemp)"
+	scanerr="$(mktemp)"
+	find "$repo" -name .git -prune -print0 >"$scan" 2>"$scanerr" || frc=$?
+	if [[ $frc -ne 0 || -s "$scanerr" ]]; then
+		pa_sandbox_die "scan for nested .git failed (rc=$frc): $(head -c 600 "$scanerr"); refusing"
+		command rm -f "$scan" "$scanerr"
+		return 1
+	fi
+	command rm -f "$scanerr"
+	# shellcheck disable=SC2094 # the rm in the cap branch runs right before `return`, not concurrently
 	while IFS= read -r -d '' ng; do
+		if [[ -L "$ng" ]]; then
+			links+=("$ng")
+			continue
+		fi
 		[[ "$ng" == "$repo/.git" ]] && continue
 		nn=$((nn + 1))
 		if [[ $nn -gt $PA_SANDBOX_MAX_NESTED_GIT ]]; then
 			pa_sandbox_die "more than $PA_SANDBOX_MAX_NESTED_GIT nested .git entries under '$repo'; refusing (raise PA_SANDBOX_MAX_NESTED_GIT to accept)"
+			command rm -f "$scan"
 			return 1
 		fi
 		_ro "$ng"
-	done < <(find "$repo" -name .git \( -type d -o -type f \) -prune -print0 2>/dev/null)
+	done <"$scan"
+	command rm -f "$scan"
+	# A symlinked .git cannot be bound read-only (bwrap would bind its target, and the
+	# link itself, in the rw workspace, could be swapped), so refuse to start.
+	if [[ ${#links[@]} -gt 0 && "${PA_SANDBOX_ALLOW_GIT_SYMLINKS:-0}" != 1 ]]; then
+		pa_sandbox_die "symlinked .git entries cannot be protected, refusing: ${links[*]} (UNSAFE override: PA_SANDBOX_ALLOW_GIT_SYMLINKS=1)"
+		return 1
+	fi
 	unset -f _ro
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
@@ -276,6 +308,7 @@ pa_sandbox_build_argv() {
 	done < <(compgen -e)
 	# Fixed values last (bwrap: later --setenv wins).
 	PA_BWRAP_ARGV+=(
+		--setenv GIT_CONFIG_NOSYSTEM 1
 		--setenv PRIME_AGENT_CODING_AGENT_DIR "$agent_dir"
 		--setenv PRIME_AGENT_DAEMON_SOCKET /tmp/pa-sandbox/daemon.sock
 		--setenv PRIME_AGENT_BASH_COMMAND_PREFIX "$PA_SANDBOX_GUARD_PREFIX"
@@ -309,13 +342,34 @@ pa_sandbox_verify_guard() {
 	return 0
 }
 
+# The rw state dirs are later written by an UNSANDBOXED daemon, which would follow a
+# planted symlink (or open a planted FIFO/device) and write wherever it points.
+# Remove every non-regular, non-directory entry there, at launch and after exit.
+pa_sandbox_scrub_state() { # <agent_dir>
+	local name n
+	for name in "${PA_SANDBOX_AGENT_RW_DIRS[@]}"; do
+		[[ -d "$1/$name" && ! -L "$1/$name" ]] || continue
+		n="$(find "$1/$name" \( -type l -o -type p -o -type s -o -type b -o -type c \) -print -delete 2>/dev/null | wc -l)" || n=0
+		[[ "$n" -gt 0 ]] && pa_sandbox_warn "removed $n planted symlink/special entries under $1/$name"
+	done
+	return 0
+}
+
 pa_sandbox_main() {
 	pa_sandbox_require_bwrap || return $?
-	local repo
+	local repo agent_dir rc=0
 	repo="$(pa_sandbox_repo_root "$PWD")"
 	pa_sandbox_build_argv "$repo" || return $?
+	agent_dir="$(cd -P "$HOME/.prime/agent" && pwd)"
+	pa_sandbox_scrub_state "$agent_dir"
 	pa_sandbox_verify_guard || return $?
-	exec "${PA_BWRAP_ARGV[@]}" prime-agent "$@"
+	# not exec: the post-exit scrub must run (also on INT/TERM)
+	PA_SANDBOX_SCRUB_DIR="$agent_dir" # global: a local is gone when the EXIT trap fires
+	trap 'pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR"' EXIT
+	trap 'exit 130' INT
+	trap 'exit 143' TERM
+	"${PA_BWRAP_ARGV[@]}" prime-agent "$@" || rc=$?
+	return "$rc"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then

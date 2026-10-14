@@ -467,6 +467,58 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	expect_eq "nested .git count over the cap fails closed rc" "1" "$rc"
 	expect_has "nested .git cap message" "nested .git" "$out"
 
+	# symlinked nested .git: refuse to start (cannot be bound safely)
+	mkdir -p "$REPO/store/dep.git" "$REPO/vendor/dep2"
+	git init -q --bare "$REPO/store/dep.git"
+	ln -s ../../store/dep.git "$REPO/vendor/dep2/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "symlinked nested .git refused rc" "1" "$rc"
+	expect_has "symlinked nested .git listed" "vendor/dep2/.git" "$out"
+	# MUTATION: with the (UNSAFE) override the sandbox starts and the symlink target is writable
+	( cd "$REPO"; export HOME="$FH" PA_SANDBOX_ALLOW_GIT_SYMLINKS=1; pa_sandbox_build_argv "$REPO" 2>/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c 'echo "[evil]" >> store/dep.git/config' ) >/dev/null 2>&1 || true
+	grep -q '^\[evil\]' "$REPO/store/dep.git/config" && ok "MUTATION (symlink override): linked git dir config is writable" || bad "MUTATION (symlink override): linked git dir config is writable"
+	command rm -rf "$REPO/vendor/dep2" "$REPO/store"
+
+	# find errors fail closed: an unreadable directory could hide a nested .git
+	mkdir -p "$REPO/locked/x"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "scan baseline (readable tree) ok rc" "0" "$rc"
+	chmod 000 "$REPO/locked"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	chmod 755 "$REPO/locked"
+	expect_eq "unreadable dir during .git scan fails closed rc" "1" "$rc"
+	expect_has "scan failure message" "scan for nested .git failed" "$out"
+	command rm -rf "$REPO/locked"
+
+	# planted symlinks in rw state dirs are scrubbed at launch and after exit
+	VICTIM="$T/victim-file"
+	printf 'ORIG\n' >"$VICTIM"
+	STUBDIR="$T/stubbin"
+	mkdir -p "$STUBDIR"
+	printf '#!/bin/sh\nln -s "%s" "$HOME/.prime/agent/sessions/evil.window-cache.json"\nmkfifo "$HOME/.prime/agent/logs/evil.fifo" 2>/dev/null\nexit 3\n' "$VICTIM" >"$STUBDIR/prime-agent"
+	chmod +x "$STUBDIR/prime-agent"
+	# MUTATION: without the scrub the planted symlink persists on the host
+	run_ws "$REPO" "ln -s \"$VICTIM\" \"\$HOME/.prime/agent/sessions/planted-link\"" >/dev/null || true
+	[[ -L "$FH/.prime/agent/sessions/planted-link" ]] && ok "MUTATION (no scrub): symlink planted in sessions/ persists on host" || bad "MUTATION (no scrub): symlink planted in sessions/ persists on host"
+	# launch-time scrub (symlink already there before start)
+	( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; pa_sandbox_main ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
+	expect_eq "pa_sandbox_main returns the sandboxed command's rc" "3" "$rc"
+	[[ ! -L "$FH/.prime/agent/sessions/planted-link" ]] && ok "launch scrub removed pre-planted symlink" || bad "launch scrub removed pre-planted symlink"
+	[[ ! -L "$FH/.prime/agent/sessions/evil.window-cache.json" && ! -e "$FH/.prime/agent/logs/evil.fifo" ]] && ok "post-exit scrub removed symlink and FIFO planted during the run" || bad "post-exit scrub removed symlink and FIFO planted during the run"
+	expect_eq "scrub left the symlink target untouched" "ORIG" "$(cat "$VICTIM")"
+
+	# interpreter dir and guard tree: the bind is what protects (mutation: rw bind -> writable)
+	run_mut_drop "$REPO" "$FH/.data/uv/python/cpy" 'echo X > "$HOME/.data/uv/python/cpy/bin/mut-new"' >/dev/null || true
+	[[ -e "$FH/.data/uv/python/cpy/bin/mut-new" ]] && ok "MUTATION: interpreter dir writable when its bind is rw" || bad "MUTATION: interpreter dir writable when its bind is rw"
+	command rm -f "$FH/.data/uv/python/cpy/bin/mut-new"
+	run_mut_drop "$REPO" "$DOT/agent" 'echo X >> "$HOME/dotfiles/agent/security-rules.json"' >/dev/null || true
+	! cmp -s "$DOT/agent/security-rules.json" "$REAL_ROOT/agent/security-rules.json" && ok "MUTATION: guard rules writable when the agent/ bind is rw" || bad "MUTATION: guard rules writable when the agent/ bind is rw"
+	command cp "$REAL_ROOT/agent/security-rules.json" "$DOT/agent/security-rules.json"
+
+	# git inside the sandbox ignores system config
+	out="$(run_ws "$REPO" 'echo "$GIT_CONFIG_NOSYSTEM"')"
+	expect_eq "GIT_CONFIG_NOSYSTEM=1 inside the sandbox" "1" "$(printf '%s' "$out" | tail -n1)"
+
 	# mcp catalog + daemon-workers are read-only; telemetry stays writable
 	for hp in mcp-service-catalog.v2.json daemon-workers/w1/supervisor-config daemon-workers/new-worker; do
 		run_ws "$REPO" "echo ATTACK > \"\$HOME/.prime/agent/$hp\" 2>/dev/null; true" >/dev/null || true
