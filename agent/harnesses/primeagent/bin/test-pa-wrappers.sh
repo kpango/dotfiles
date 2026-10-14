@@ -507,6 +507,37 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	[[ ! -L "$FH/.prime/agent/sessions/evil.window-cache.json" && ! -e "$FH/.prime/agent/logs/evil.fifo" ]] && ok "post-exit scrub removed symlink and FIFO planted during the run" || bad "post-exit scrub removed symlink and FIFO planted during the run"
 	expect_eq "scrub left the symlink target untouched" "ORIG" "$(cat "$VICTIM")"
 
+	# setsid grandchild outliving the command must not plant a symlink after the scrub
+	cat >"$STUBDIR/prime-agent" <<'STUB'
+#!/bin/sh
+(setsid sh -c 'sleep 2; ln -s /etc/hostname "$HOME/.prime/agent/sessions/late-link"' >/dev/null 2>&1 &)
+exit 0
+STUB
+	chmod +x "$STUBDIR/prime-agent"
+	# MUTATION: same background trick without the sweep -> the link appears
+	run_ws "$REPO" '(setsid sh -c "sleep 2; ln -s /etc/hostname \"$HOME/.prime/agent/sessions/late-link\"" >/dev/null 2>&1 &); exit 0' >/dev/null || true
+	sleep 3.5
+	[[ -L "$FH/.prime/agent/sessions/late-link" ]] && ok "MUTATION (no sweep): setsid grandchild plants late-link after exit" || bad "MUTATION (no sweep): setsid grandchild plants late-link after exit"
+	command rm -f "$FH/.prime/agent/sessions/late-link"
+	( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; pa_sandbox_main ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
+	expect_eq "setsid case: pa_sandbox_main rc" "0" "$rc"
+	sleep 3.5
+	[[ ! -L "$FH/.prime/agent/sessions/late-link" ]] && ok "setsid grandchild swept: no late-link after main returns (waited 3.5s)" || bad "setsid grandchild swept: no late-link after main returns (waited 3.5s)"
+	command rm -f "$FH/.prime/agent/sessions/late-link"
+	# stale/forged ipc token is rejected (host ns must never be swept)
+	out="$( (pa_sandbox_sweep "$(readlink /proc/self/ns/ipc)") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "sweep refuses the host's own ipc namespace" "1" "$rc"
+
+	# PA_SANDBOX_MAX_NESTED_GIT is honoured from the environment at source time
+	CAPR="$FH/work/caprepo"
+	mkrepo "$CAPR"
+	for i in $(seq 1 501); do mkdir -p "$CAPR/n$i/.git"; done
+	out="$(HOME="$FH" "$BASH" -c 'source "$1"; pa_sandbox_build_argv "$2"' _ "$PA_SANDBOX" "$CAPR" 2>&1)" && rc=0 || rc=$?
+	expect_eq "default cap (500) refuses 501 nested .git" "1" "$rc"
+	out="$(HOME="$FH" PA_SANDBOX_MAX_NESTED_GIT=5000 "$BASH" -c 'source "$1"; pa_sandbox_build_argv "$2"' _ "$PA_SANDBOX" "$CAPR" 2>&1)" && rc=0 || rc=$?
+	expect_eq "env PA_SANDBOX_MAX_NESTED_GIT=5000 is honoured" "0" "$rc"
+	command rm -rf "$CAPR"
+
 	# interpreter dir and guard tree: the bind is what protects (mutation: rw bind -> writable)
 	run_mut_drop "$REPO" "$FH/.data/uv/python/cpy" 'echo X > "$HOME/.data/uv/python/cpy/bin/mut-new"' >/dev/null || true
 	[[ -e "$FH/.data/uv/python/cpy/bin/mut-new" ]] && ok "MUTATION: interpreter dir writable when its bind is rw" || bad "MUTATION: interpreter dir writable when its bind is rw"

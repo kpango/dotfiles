@@ -32,7 +32,7 @@
 #     skipped) are bound; more than PA_SANDBOX_MAX_NESTED_GIT (500) FAILS CLOSED.
 #     A workspace without a `.git` is refused (an agent
 #     could plant one that a later unsandboxed git run would trust), override:
-#     PA_SANDBOX_ALLOW_NO_GIT=1.
+#     PA_SANDBOX_ALLOW_NO_GIT=1 (UNSAFE).
 #   - The workspace may not be /, $HOME, any ancestor of $HOME or of ~/.prime/agent,
 #     or inside ~/.prime/agent (realpath comparison).
 #   - /run/user and /run/dbus are emptied; PA_SANDBOX_MASK_PATHS (default
@@ -46,6 +46,15 @@
 #     else fail closed (override: PA_SANDBOX_ALLOW_NO_GUARD=1).
 #   - --unshare-pid + private /proc; if the host refuses that mount, falling back to
 #     the host /proc is opt-in (PA_SANDBOX_ALLOW_HOST_PROC=1) and warns every run.
+#     The fallback has NO PID namespace (inside a pid ns the host /proc shows the
+#     wrong /proc/$$, which makes the guard fail closed). So survivors are swept
+#     instead: the sandbox runs with its own IPC namespace; after the command exits
+#     (and on INT/TERM) every process left in that ipc namespace (e.g. a `setsid`
+#     grandchild) is SIGKILLed and waited for (5 s bound, then pa-sandbox fails
+#     loudly with rc 70) BEFORE the final state scrub. The namespace id is written
+#     by the sandboxed launcher into a file; it is only trusted if it is a
+#     well-formed ipc id different from the host's (so at worst another sandbox
+#     instance's processes could be targeted, never ordinary host processes).
 #   - --unshare-ipc/uts, --die-with-parent, --new-session when stdin is not a tty.
 #
 # KNOWN LIMITS
@@ -94,7 +103,7 @@ set -euo pipefail
 # against the real binary).
 PA_SANDBOX_AGENT_RW_DIRS=(sessions session-artifacts session-leases logs swarm)
 PA_SANDBOX_AGENT_RW_FILES=(telemetry.json telemetry.jsonl)
-PA_SANDBOX_MAX_NESTED_GIT=500
+: "${PA_SANDBOX_MAX_NESTED_GIT:=500}"
 # shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
 PA_SANDBOX_GUARD_PREFIX='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
 PA_SANDBOX_ENV_ALLOW=(PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY)
@@ -159,7 +168,7 @@ pa_sandbox_build_argv() {
 	# validated strictly and bound read-only. A plain `.git` dir is bound ro as is.
 	local gcd=""
 	if [[ ! -e "$repo/.git" && "${PA_SANDBOX_ALLOW_NO_GIT:-0}" != 1 ]]; then
-		pa_sandbox_die "workspace '$repo' has no .git (an agent could plant one that a later host git run trusts); set PA_SANDBOX_ALLOW_NO_GIT=1 to override"
+		pa_sandbox_die "workspace '$repo' has no .git (an agent could plant one that a later host git run trusts); UNSAFE override: PA_SANDBOX_ALLOW_NO_GIT=1"
 		return 1
 	fi
 	if [[ -f "$repo/.git" ]]; then
@@ -355,6 +364,46 @@ pa_sandbox_scrub_state() { # <agent_dir>
 	return 0
 }
 
+# Kill every process still in the sandbox's IPC namespace and wait until none is left.
+pa_sandbox_sweep() { # <ipc ns token, e.g. ipc:[4026532000]>
+	local me d pid ns n deadline
+	me="$(readlink /proc/self/ns/ipc)"
+	if [[ ! "$1" =~ ^ipc:\[[0-9]+\]$ || "$1" == "$me" ]]; then
+		pa_sandbox_warn "sandbox ipc namespace id '$1' unusable; cannot sweep leftover processes"
+		return 1
+	fi
+	deadline=$((SECONDS + 5))
+	while :; do
+		n=0
+		for d in /proc/[0-9]*; do
+			pid="${d#/proc/}"
+			ns="$(readlink "$d/ns/ipc" 2>/dev/null)" || continue
+			if [[ "$ns" == "$1" ]]; then
+				kill -9 "$pid" 2>/dev/null || true
+				n=$((n + 1))
+			fi
+		done
+		[[ $n -eq 0 ]] && return 0
+		if [[ $SECONDS -ge $deadline ]]; then
+			pa_sandbox_warn "$n process(es) still alive in the sandbox after SIGKILL"
+			return 1
+		fi
+		sleep 0.05
+	done
+}
+
+# Final cleanup (EXIT trap): sweep leftovers, then scrub state dirs.
+pa_sandbox_cleanup() {
+	local tok="" rc=0
+	if [[ -n "${PA_SANDBOX_NSFILE:-}" ]]; then
+		tok="$(cat "$PA_SANDBOX_NSFILE" 2>/dev/null || true)"
+		command rm -f "$PA_SANDBOX_NSFILE"
+		pa_sandbox_sweep "$tok" || rc=70
+	fi
+	pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR"
+	return "$rc"
+}
+
 pa_sandbox_main() {
 	pa_sandbox_require_bwrap || return $?
 	local repo agent_dir rc=0
@@ -364,11 +413,22 @@ pa_sandbox_main() {
 	pa_sandbox_scrub_state "$agent_dir"
 	pa_sandbox_verify_guard || return $?
 	# not exec: the post-exit scrub must run (also on INT/TERM)
-	PA_SANDBOX_SCRUB_DIR="$agent_dir" # global: a local is gone when the EXIT trap fires
-	trap 'pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR"' EXIT
+	PA_SANDBOX_SCRUB_DIR="$agent_dir" # globals: locals are gone when the EXIT trap fires
+	PA_SANDBOX_NSFILE="$(mktemp)"
+	PA_BWRAP_ARGV=("${PA_BWRAP_ARGV[@]:0:${#PA_BWRAP_ARGV[@]}-1}" --bind "$PA_SANDBOX_NSFILE" "$PA_SANDBOX_NSFILE" --)
+	trap 'pa_sandbox_cleanup' EXIT
 	trap 'exit 130' INT
 	trap 'exit 143' TERM
-	"${PA_BWRAP_ARGV[@]}" prime-agent "$@" || rc=$?
+	# shellcheck disable=SC2016 # expanded by the sandboxed sh, not here
+	"${PA_BWRAP_ARGV[@]}" sh -c 'readlink /proc/self/ns/ipc >"$1"; shift; exec "$@"' pa-sandbox-init \
+		"$PA_SANDBOX_NSFILE" prime-agent "$@" || rc=$?
+	# sweep now (not only in the trap) so a failure can change the return code
+	local tok
+	tok="$(cat "$PA_SANDBOX_NSFILE" 2>/dev/null || true)"
+	if ! pa_sandbox_sweep "$tok"; then
+		pa_sandbox_die "sandbox processes could not be cleaned up; state may be tainted" 70 || true
+		rc=70
+	fi
 	return "$rc"
 }
 
