@@ -1,70 +1,64 @@
 {
-  "$schema": "https://pi.dev/schemas/settings.json",
-  "defaultProvider": "anthropic",
-  "defaultModel": "anthropic/claude-sonnet-5",
   "defaultThinkingLevel": "high",
-  "modelThinkingLevels": {
-    "anthropic/claude-sonnet-5": "high",
-    "anthropic/claude-opus-5": "high",
-    "anthropic/claude-fable-5-1": "high",
-    "codex/gpt-6-astra": "high",
-    "opencode-go/kimi-k3": "high",
-    "opencode-go/deepseek-v4-pro": "high",
-    "antigravity/gemini-3.8-flash-high": "high",
-    "antigravity/gemini-3.8-flash-medium": "medium",
-    "antigravity/gemini-3.8-flash-low": "low",
-    "opencode-go/qwen3.8-flash": "low",
-    "opencode-go/grok-4.6": "high"
+  "rlmMaxDepth": 1,
+  "transport": "auto",
+  "autonomous": {
+    "maxTurns": 60,
+    "maxTokens": 600000,
+    "timeoutMs": 3600000,
+    "maxContinuations": 5
   },
-  "thinkingBudgets": {
-    "minimal": 1024,
-    "low": 4096,
-    "medium": 10240,
-    "high": 32768,
-    "xhigh": 65536,
-    "max": 131072
-  },
-  "warnings": {
-    "anthropicExtraUsage": false
-  },
-  "showCacheMissNotices": true,
-  "treeFilterMode": "no-tools",
-  "doubleEscapeAction": "tree",
-  "fullscreenCopyOnSelect": false,
-  "theme": "kpango-dark",
-  "externalEditor": "hx",
-  "defaultProjectTrust": "always",
   "compaction": {
     "enabled": true,
-    "reserveTokens": 16384,
-    "keepRecentTokens": 32768
+    "agentCallable": true
   },
-  "branchSummary": {
-    "reserveTokens": 16384,
-    "skipPrompt": false
+  "autoRefine": {
+    "enabled": true
   },
   "retry": {
     "enabled": true,
     "maxRetries": 3,
     "baseDelayMs": 2000,
+    "failover": {
+      "enabled": true
+    },
     "provider": {
       "timeoutMs": 3600000,
-      "maxRetries": 0,
       "maxRetryDelayMs": 60000
     }
   },
-  "defaultTools": ["read", "write", "edit", "bash", "grep", "find", "ls"],
-  "enableSkillCommands": true,
-  "terminal": {
-    "showImages": true,
-    "imageWidthCells": 60,
-    "trueColor": true
+  "telemetry": {
+    "enabled": false
   },
+  "agentTraces": {
+    "enabled": false
+  },
+  "factory": {
+    "enabled": true
+  },
+  "enableSkillCommands": true,
+  "treeFilterMode": "no-tools",
+  "theme": "kpango-dark",
+  "themes": ["~/.prime/agent/themes"],
   "markdown": {
     "codeBlockIndent": "  ",
     "mermaid": "streaming"
   },
-  "sessionDir": "~/.prime/agent/sessions",
-  "lastChangelogVersion": "0.85.1",
-  "packages": ["npm:pi-antigravity"]
+  "terminal": {
+    "showImages": true
+  },
+  "warnings": {
+    "anthropicExtraUsage": false
+  },
+  "mcpServers": {
+    "graft": {
+      "type": "stdio",
+      "command": "graft",
+      "args": ["mcp"]
+    },
+    "executor": {
+      "type": "http",
+      "url": "http://localhost:4788/mcp"
+    }
+  }
 }
