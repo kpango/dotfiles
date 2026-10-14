@@ -19,6 +19,10 @@ case "$T" in /tmp/*) echo "fixture root must not be under /tmp: $T" >&2; exit 2 
 trap 'command rm -rf "$T"' EXIT
 FAIL=0 PASS=0
 
+# Hermetic git: never the real global config, system config or signing key.
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 \
+	GIT_AUTHOR_NAME=t GIT_AUTHOR_EMAIL=t@example.invalid GIT_COMMITTER_NAME=t GIT_COMMITTER_EMAIL=t@example.invalid
+
 ok() { PASS=$((PASS + 1)); printf 'ok   %s\n' "$1"; }
 bad() { FAIL=$((FAIL + 1)); printf 'FAIL %s\n     %s\n' "$1" "${2:-}"; }
 # expect <name> <expected-substring-or-exact> <actual>
@@ -171,6 +175,9 @@ else
 	ln -s "$DOT/agent/agents" "$FH/.prime/agent/agents"
 	ln -s "$DOT/agent/AGENTS.md" "$FH/.prime/agent/AGENTS.md"
 	ln -s "$DOT/agent/harnesses/primeagent/models.json" "$FH/.prime/agent/models.json"
+	mkdir -p "$FH/.prime/agent/harness"
+	printf '{}\n' >"$FH/.prime/agent/harness/harness_state.json"
+	printf '[]\n' >"$FH/.prime/agent/cron-jobs.json"
 	for f in settings.json auth.json machines/m.json kernel-venv/pkg.py; do
 		printf 'TRUSTED\n' >"$FH/.prime/agent/$f"
 	done
@@ -325,29 +332,117 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	run_in 'echo l > "$HOME/.prime/agent/logs/x"' >/dev/null
 	[[ -f "$FH/.prime/agent/logs/x" ]] && ok "missing rw state dir created on host, writable inside" || bad "missing rw state dir created on host, writable inside"
 
-	# git: commondir / gitfile redirect attacks, hooks + config write-back
-	run_in 'echo "$HOME/.prime/agent" > .git/commondir' >/dev/null
-	out="$( (cd "$REPO"; export HOME="$FH"; pa_sandbox_build_argv "$REPO" 2>&1 >/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c 'touch "$HOME/.prime/agent/PLANTED" 2>&1; echo done') 2>&1 )" || true
-	[[ ! -e "$FH/.prime/agent/PLANTED" ]] && ok "commondir redirect: agent dir stays unwritable" || bad "commondir redirect: agent dir stays unwritable"
+	# ---- git metadata is entirely read-only (Checker attacks A-D) -------------
+	# run_mut_drop: same profile with the ro bind of <path> turned rw (mutation)
+	run_mut_drop() { # <workspace> <ro-path> <sh-snippet>
+		(
+			cd "$1"
+			export HOME="$FH"
+			pa_sandbox_build_argv "$1" 2>/dev/null
+			local -a mut=()
+			local i=0
+			while [[ $i -lt ${#PA_BWRAP_ARGV[@]} ]]; do
+				if [[ "${PA_BWRAP_ARGV[$i]}" == --ro-bind && "${PA_BWRAP_ARGV[$((i + 1))]}" == "$2" ]]; then
+					if [[ "$2" == "$1"/* ]]; then
+						i=$((i + 3)) # inside the rw workspace: drop the bind entirely
+					else
+						mut+=(--bind) # outside it: same mount, rw instead of ro
+						i=$((i + 1))
+					fi
+					continue
+				fi
+				mut+=("${PA_BWRAP_ARGV[$i]}")
+				i=$((i + 1))
+			done
+			"${mut[@]}" sh -c "$3"
+		) 2>&1
+	}
+	run_ws() { # <workspace> <sh-snippet>: real profile
+		( cd "$1"; export HOME="$FH"; pa_sandbox_build_argv "$1" 2>/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c "$2" ) 2>&1
+	}
+	git -C "$REPO" -c commit.gpgsign=false commit -q --allow-empty -m init
+
+	# A: plain repo, .git/commondir -> evil dir whose config sets core.fsmonitor
+	EVIL="$FH/evil-common"
+	mkdir -p "$EVIL"
+	attackA='printf "%s\n" "$HOME/evil-common" > .git/commondir'
+	run_mut_drop "$REPO" "$REPO/.git" "$attackA" >/dev/null
+	[[ -f "$REPO/.git/commondir" ]] && ok "MUTATION (no .git ro bind): commondir write succeeds" || bad "MUTATION (no .git ro bind): commondir write succeeds"
 	command rm -f "$REPO/.git/commondir"
-	GREPO="$FH/work/gitfile-repo"
-	mkdir -p "$GREPO"
-	printf 'gitdir: %s\n' "$FH/.prime/agent" >"$GREPO/.git"
-	out="$( (HOME="$FH" pa_sandbox_build_argv "$GREPO") 2>&1 )" && rc=0 || rc=$?
-	expect_eq "gitfile redirect to agent dir refused rc" "1" "$rc"
-	[[ ! -e "$FH/.prime/agent/PLANTED" ]] && ok "gitfile redirect: nothing planted" || bad "gitfile redirect: nothing planted"
-	run_in 'echo "#!/bin/sh" > .git/hooks/pre-commit 2>/dev/null; echo "[core]" >> .git/config 2>/dev/null; true' >/dev/null
-	[[ ! -e "$REPO/.git/hooks/pre-commit" ]] && ok ".git/hooks is read-only inside" || bad ".git/hooks is read-only inside"
-	! grep -q '^\[core\]$' <<<"$(tail -n1 "$REPO/.git/config")" && ok ".git/config is read-only inside" || bad ".git/config is read-only inside"
-	# legit linked worktree: common dir bound rw (objects) but hooks/config ro
+	run_ws "$REPO" "$attackA" >/dev/null || true
+	[[ ! -e "$REPO/.git/commondir" ]] && ok "A: .git/commondir cannot be written" || bad "A: .git/commondir cannot be written"
+
+	# B: replace .git wholesale (mv .git .git-old; fresh .git with hooks)
+	attackB='mv .git .git-old && mkdir .git && mkdir .git/hooks'
+	BREPO="$FH/work/repoB"
+	mkrepo "$BREPO"
+	run_mut_drop "$BREPO" "$BREPO/.git" "$attackB" >/dev/null
+	[[ -d "$BREPO/.git-old" ]] && ok "MUTATION: .git can be renamed away without the ro bind" || bad "MUTATION: .git can be renamed away without the ro bind"
+	command rm -rf "$BREPO/.git" && mv "$BREPO/.git-old" "$BREPO/.git"
+	run_ws "$BREPO" "$attackB" >/dev/null || true
+	[[ ! -e "$BREPO/.git-old" && -f "$BREPO/.git/HEAD" && ! -d "$BREPO/.git/hooks-planted" ]] && ok "B: .git cannot be renamed or replaced" || bad "B: .git cannot be renamed or replaced"
+	run_ws "$BREPO" 'rmdir .git 2>/dev/null; rm -rf .git 2>/dev/null; true' >/dev/null || true
+	[[ -f "$BREPO/.git/HEAD" ]] && ok "B: .git cannot be removed" || bad "B: .git cannot be removed"
+
+	# C: linked worktree: gitfile rewrite and $gcd/worktrees/<n>/commondir redirect
 	WT="$FH/work/wt"
-	git -C "$REPO" -c user.email=a@b -c user.name=n commit -q --allow-empty -m init
 	git -C "$REPO" worktree add -q "$WT" -b wtbranch
-	run_in_wt() { ( cd "$WT"; export HOME="$FH"; pa_sandbox_build_argv "$WT" 2>/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c "$1" ) 2>&1; }
-	run_in_wt 'touch "$HOME/work/repo/.git/objects/wt-ok"; echo x > "$HOME/work/repo/.git/hooks/h" 2>/dev/null; echo x >> "$HOME/work/repo/.git/config" 2>/dev/null; true' >/dev/null
-	[[ -e "$REPO/.git/objects/wt-ok" ]] && ok "worktree: common dir objects writable" || bad "worktree: common dir objects writable"
-	[[ ! -e "$REPO/.git/hooks/h" ]] && ok "worktree: common dir hooks read-only" || bad "worktree: common dir hooks read-only"
-	command rm -f "$REPO/.git/objects/wt-ok"
+	WTN="$(ls "$REPO/.git/worktrees")"
+	attackC1='printf "gitdir: %s\n" "$HOME/evil-common" > .git'
+	attackC2="printf '%s\\n' \"\$HOME/evil-common\" > \"$REPO/.git/worktrees/$WTN/commondir\""
+	cp "$WT/.git" "$T/wt-gitfile.orig"
+	run_mut_drop "$WT" "$WT/.git" "$attackC1" >/dev/null
+	! cmp -s "$WT/.git" "$T/wt-gitfile.orig" && ok "MUTATION: worktree gitfile rewrite succeeds without ro bind" || bad "MUTATION: worktree gitfile rewrite succeeds without ro bind"
+	cp "$T/wt-gitfile.orig" "$WT/.git"
+	run_ws "$WT" "$attackC1" >/dev/null || true
+	cmp -s "$WT/.git" "$T/wt-gitfile.orig" && ok "C1: worktree gitfile cannot be rewritten" || bad "C1: worktree gitfile cannot be rewritten"
+	run_mut_drop "$WT" "$REPO/.git" "$attackC2" >/dev/null || true
+	[[ -f "$REPO/.git/worktrees/$WTN/commondir" ]] && ok "MUTATION: worktrees/<n>/commondir writable without ro bind" || bad "MUTATION: worktrees/<n>/commondir writable without ro bind"
+	printf '../..\n' >"$REPO/.git/worktrees/$WTN/commondir"
+	run_ws "$WT" "$attackC2" >/dev/null || true
+	[[ "$(cat "$REPO/.git/worktrees/$WTN/commondir")" == "../.." ]] && ok "C2: worktrees/<n>/commondir cannot be redirected" || bad "C2: worktrees/<n>/commondir cannot be redirected"
+	run_ws "$WT" 'touch "$HOME/work/repo/.git/objects/x" 2>/dev/null; true' >/dev/null || true
+	[[ ! -e "$REPO/.git/objects/x" ]] && ok "worktree common dir is read-only as a whole" || bad "worktree common dir is read-only as a whole"
+	out="$(run_ws "$WT" 'git status --short >/dev/null && echo git-read-ok')"
+	expect_has "worktree: git read operations still work" "git-read-ok" "$out"
+
+	# D: repo without .git/hooks: hooks cannot be created
+	DREPO="$FH/work/repoD"
+	git init -q --template= "$DREPO"
+	[[ ! -e "$DREPO/.git/hooks" ]] && ok "D fixture: repo has no .git/hooks" || bad "D fixture: repo has no .git/hooks"
+	run_mut_drop "$DREPO" "$DREPO/.git" 'mkdir .git/hooks && echo x > .git/hooks/pre-commit' >/dev/null
+	[[ -f "$DREPO/.git/hooks/pre-commit" ]] && ok "MUTATION: hooks creatable without the .git ro bind" || bad "MUTATION: hooks creatable without the .git ro bind"
+	command rm -rf "$DREPO/.git/hooks"
+	run_ws "$DREPO" 'mkdir .git/hooks 2>/dev/null; echo x > .git/hooks/pre-commit 2>/dev/null; echo "[evil]" >> .git/config 2>/dev/null; true' >/dev/null || true
+	[[ ! -e "$DREPO/.git/hooks" ]] && ok "D: .git/hooks cannot be created" || bad "D: .git/hooks cannot be created"
+	! grep -q "^\[evil\]" "$DREPO/.git/config" && ok "D: .git/config cannot be appended" || bad "D: .git/config cannot be appended"
+
+	# nested .git (e.g. a vendored clone) is read-only too; write ops fail by design
+	mkdir -p "$REPO/vendor"
+	git init -q "$REPO/vendor/dep"
+	run_ws "$REPO" 'echo x > vendor/dep/.git/config 2>/dev/null; mkdir vendor/dep/.git/hooks2 2>/dev/null; echo ok > vendor/dep/tree-file; true' >/dev/null || true
+	[[ ! -e "$REPO/vendor/dep/.git/hooks2" ]] && ok "nested .git is read-only" || bad "nested .git is read-only"
+	[[ -f "$REPO/vendor/dep/tree-file" ]] && ok "working-tree files under nested repo stay writable" || bad "working-tree files under nested repo stay writable"
+	out="$(run_ws "$REPO" 'git -c commit.gpgsign=false commit --allow-empty -m x 2>&1; echo rc=$?')"
+	expect_has "git commit fails inside (by design)" "rc=128" "$out"
+	# workspace without .git is refused unless overridden
+	NOGIT="$FH/work/nogit"
+	mkdir -p "$NOGIT"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$NOGIT") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "non-git workspace refused rc" "1" "$rc"
+	out="$( (HOME="$FH" PA_SANDBOX_ALLOW_NO_GIT=1 pa_sandbox_build_argv "$NOGIT") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "non-git workspace override allowed" "0" "$rc"
+
+	# global harness memory and cron schedules are NOT writable from inside
+	for hp in harness/harness_state.json cron-jobs.json harness/new-state; do
+		run_ws "$REPO" "echo ATTACK > \"\$HOME/.prime/agent/$hp\" 2>/dev/null; true" >/dev/null || true
+		! grep -q ATTACK "$FH/.prime/agent/$hp" 2>/dev/null && ok "agent $hp cannot be written" || bad "agent $hp cannot be written"
+	done
+	run_mut_rw 'echo ATTACK > "$HOME/.prime/agent/cron-jobs.json"; mkdir -p "$HOME/.prime/agent/harness"; echo ATTACK > "$HOME/.prime/agent/harness/harness_state.json"' >/dev/null
+	grep -q ATTACK "$FH/.prime/agent/cron-jobs.json" && grep -q ATTACK "$FH/.prime/agent/harness/harness_state.json" \
+		&& ok "MUTATION (agent dir rw): harness+cron writable" || bad "MUTATION (agent dir rw): harness+cron writable"
+	printf '[]\n' >"$FH/.prime/agent/cron-jobs.json"
+	printf '{}\n' >"$FH/.prime/agent/harness/harness_state.json"
 
 	# (D) ancestors of HOME / agent dir are refused
 	for ws in "$T" "$(dirname "$FH")" "$FH" "$FH/.prime" "$FH/.prime/agent" "$FH/.prime/agent/sessions" /; do

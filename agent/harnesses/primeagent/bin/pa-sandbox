@@ -16,15 +16,21 @@
 #   - rw ONLY: the explicit state list PA_SANDBOX_AGENT_RW_DIRS (dirs are created
 #     on the host before binding) and PA_SANDBOX_AGENT_RW_FILES (bound only if
 #     they exist; atomic rename-over of a bind-mounted file fails with EBUSY),
-#     plus the workspace (git toplevel of $PWD, else $PWD) and, for a linked
-#     worktree, its validated git common dir.
+#     plus the workspace (git toplevel of $PWD).
 #   - BIND ORDER: tmpfs -> ro agent dir -> all rw binds -> all ro (re)binds last,
 #     so no rw bind can shadow a protection.
 #   - ro re-binds: ~/.local/bin, ~/.local/share/prime-agent, the kernel venv's
 #     resolved interpreter install, the guard checkout's agent/ tree, targets of
 #     symlinked agent-dir entries, PA_SANDBOX_RO_EXTRA (colon-separated), and the
-#     workspace's .git/hooks, .git/config (+ the common dir's hooks/config) so no
-#     hook/config can be planted for a later UNSANDBOXED git run.
+#     workspace's whole `.git` path (the directory, or the gitfile of a linked
+#     worktree, as the mount point itself: it cannot be renamed, replaced or
+#     recreated), the linked worktree's validated common dir as a whole, and every
+#     nested `.git` under the workspace (depth <= 6). Git metadata is therefore
+#     entirely READ-ONLY: edits to working-tree files work, but git write
+#     operations (commit, branch, add, config) fail BY DESIGN; the human commits on
+#     the host after review. A workspace without a `.git` is refused (an agent
+#     could plant one that a later unsandboxed git run would trust), override:
+#     PA_SANDBOX_ALLOW_NO_GIT=1.
 #   - The workspace may not be /, $HOME, any ancestor of $HOME or of ~/.prime/agent,
 #     or inside ~/.prime/agent (realpath comparison).
 #   - /run/user and /run/dbus are emptied; PA_SANDBOX_MASK_PATHS (default
@@ -47,7 +53,11 @@
 #   - The workspace is rw: a prompt-injected agent can modify its files.
 #   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
 #   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
-#   - Git config/hooks are ro inside, so git commands that write config fail.
+#   - Git write operations inside fail by design (see above); linked-worktree
+#     gitfile targets must already be valid common dirs.
+#   - Requires the installed layout: `make primeagent/install` must have put
+#     ~/.prime/agent/bin/prime-shell-guard.sh in place; without it pa-sandbox fails
+#     closed (T10 owns the installer wiring).
 #   - With the host /proc fallback, same-uid /proc/<pid>/environ is readable.
 #   - Host files outside $HOME are readable (ro); other unix sockets under /run
 #     stay connectable (connect() works on ro mounts).
@@ -58,8 +68,12 @@
 # "${PA_BWRAP_ARGV[@]}" <command...>.
 set -euo pipefail
 
-PA_SANDBOX_AGENT_RW_DIRS=(sessions session-artifacts session-leases logs daemon-workers harness swarm)
-PA_SANDBOX_AGENT_RW_FILES=(telemetry.json telemetry.jsonl mcp-service-catalog.v2.json cron-jobs.json)
+# Pure session/runtime state only. harness/ (global cross-session harness memory)
+# and cron-jobs.json (scheduled prompts run by the host daemon) are deliberately
+# NOT here: later unsandboxed sessions trust them, so sandboxed runs cannot
+# persist harness memory or schedules.
+PA_SANDBOX_AGENT_RW_DIRS=(sessions session-artifacts session-leases logs daemon-workers swarm)
+PA_SANDBOX_AGENT_RW_FILES=(telemetry.json telemetry.jsonl mcp-service-catalog.v2.json)
 # shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
 PA_SANDBOX_GUARD_PREFIX='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
 PA_SANDBOX_ENV_ALLOW=(PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY)
@@ -120,9 +134,13 @@ pa_sandbox_build_argv() {
 		return 1
 	fi
 
-	# Workspace common dir: a plain `.git` directory cannot be redirected; a `.git`
-	# FILE (linked worktree) points outside the workspace and is validated strictly.
+	# A `.git` FILE (linked worktree) points outside the workspace; its common dir is
+	# validated strictly and bound read-only. A plain `.git` dir is bound ro as is.
 	local gcd=""
+	if [[ ! -e "$repo/.git" && "${PA_SANDBOX_ALLOW_NO_GIT:-0}" != 1 ]]; then
+		pa_sandbox_die "workspace '$repo' has no .git (an agent could plant one that a later host git run trusts); set PA_SANDBOX_ALLOW_NO_GIT=1 to override"
+		return 1
+	fi
 	if [[ -f "$repo/.git" ]]; then
 		if ! gcd="$(pa_sandbox_valid_gcd "$repo" "$home" "$agent_dir")"; then
 			pa_sandbox_die "workspace .git points to a git dir that is not a valid, safe common dir; refusing"
@@ -179,7 +197,6 @@ pa_sandbox_build_argv() {
 		[[ -f "$agent_dir/$name" && ! -L "$agent_dir/$name" ]] && PA_BWRAP_ARGV+=(--bind "$agent_dir/$name" "$agent_dir/$name")
 	done
 	PA_BWRAP_ARGV+=(--bind "$repo" "$repo")
-	[[ -n "$gcd" ]] && PA_BWRAP_ARGV+=(--bind "$gcd" "$gcd")
 
 	# 3) all ro (re)binds LAST
 	local -A seen=()
@@ -215,13 +232,15 @@ pa_sandbox_build_argv() {
 		IFS=: read -ra ex <<<"$PA_SANDBOX_RO_EXTRA"
 		for extra in "${ex[@]}"; do _ro "$extra"; done
 	fi
-	# git write-back: hooks and config run/apply on a later UNSANDBOXED git command.
-	local gd
-	for gd in "$repo/.git" "$gcd"; do
-		[[ -n "$gd" && -d "$gd" ]] || continue
-		_ro "$gd/hooks"
-		_ro "$gd/config"
-	done
+	# git write-back (hooks, config, fsmonitor, commondir/gitfile redirects, rename and
+	# re-create of .git) is closed by binding the .git PATH ITSELF read-only: a mount
+	# point cannot be renamed or replaced. Linked-worktree common dir: ro as a whole.
+	_ro "$repo/.git"
+	[[ -n "$gcd" ]] && _ro "$gcd"
+	local ng
+	while IFS= read -r -d '' ng; do
+		[[ "$ng" == "$repo/.git" ]] || _ro "$ng"
+	done < <(find "$repo" -maxdepth 6 -name .git -prune -print0 2>/dev/null)
 	unset -f _ro
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
