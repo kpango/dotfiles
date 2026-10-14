@@ -723,6 +723,19 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
   サンドボックスの models.json 経由で使って shellCommandPrefix の意味と小さな machine を実走する。
   実環境 `~/.prime/agent` への反映は GATE 承認後。
 
+### 実装中に判明した訂正（2026-10-14）
+
+- **C-1 Q5 のガード配線**: settings の `shellCommandPrefix` は ipython の `bash()` に効かない（サンドボックスで
+  probe を仕込んでも実行されず、バイナリ内でも schema キー一覧にしか現れない）。効くのは環境変数
+  `PRIME_AGENT_BASH_COMMAND_PREFIX` のみで、`rlm/bash.py` の `_with_prefix()` が値を `bash -c` スクリプト内の
+  コマンド直前の行へ生のシェルコードとして挿入する（実行時 `/proc/$$/cmdline` で確認）。したがってガードは
+  `. ~/.prime/agent/bin/prime-shell-guard.sh` として source され、スクリプト本文からコマンドを取り出して判定する。
+  env はカーネルを起動したプロセス（daemon）から継承されるため、設定は起動経路すべてに効く場所で行う。
+- **C-2 root / backup モデルの置き場所**: `agent/models/schema.json` の `tiers` は Low〜Max のみ許可
+  （`additionalProperties:false`）で Inherit を置けない。root（`defaultProvider`/`defaultModel`）と
+  `providerBackupModel` は settings.json の repo 所有キーとし、`subagentDefaultModel`(High)・`auxiliaryModel`(Low)・
+  `allowedModels`（全 tier の主・fallback ＋ root/backup）は install 時に model-routing.json から導出する。
+
 ### システム不変条件
 
 - prime-agent に SYSTEM.md を置かない。settings.json を symlink しない。pi 専用キーを prime の settings に書かない。
