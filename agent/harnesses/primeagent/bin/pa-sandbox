@@ -1,0 +1,165 @@
+#!/usr/bin/env bash
+# pa-sandbox -- run `prime-agent "$@"` inside a bubblewrap (bwrap) sandbox.
+#
+# Layer 2 of the two-layer model (CONTEXT.md, primeagent-max-customize Q5):
+# layer 1 is the shell guard + env allowlist wired by default; this wrapper is
+# the whole-process jail for autonomous / untrusted runs.
+#
+# Profile
+#   - / is bound READ-ONLY (the Python kernel venv lives under ~/.prime/agent,
+#     the binary under ~/.local/share/prime-agent, system libs under /usr).
+#   - $HOME is replaced by an empty tmpfs; only these binds are re-added:
+#       rw  the repo (git toplevel of $PWD, else $PWD) and, for linked
+#           worktrees, the shared git common dir
+#       rw  ~/.prime/agent  (sessions, auth.json, kernel-venv, state)
+#       ro  ~/.local/bin and ~/.local/share/prime-agent (launcher + binary)
+#       ro  entries of PA_SANDBOX_RO_EXTRA (colon-separated extra paths)
+#     so ~/.ssh ~/.aws ~/.gnupg ~/.kube ~/.config/gh ~/.netrc ~/.password-store
+#     and .env files outside the repo do not exist inside.
+#   - /run/user and /run/dbus are emptied; /run/docker.sock is masked.
+#   - Environment is cleared to an allowlist: PATH HOME TERM COLORTERM LANG
+#     LC_* TZ USER LOGNAME, PRIME_AGENT_*, the provider key env names listed in
+#     models.json (OLLAMA_API_KEY VLLM_API_KEY), plus PA_SANDBOX_PASS_ENV
+#     (space-separated extra names). SSH_AUTH_SOCK, cloud/GitHub tokens etc.
+#     are therefore not inherited.
+#   - Its own daemon socket (/tmp/pa-sandbox/daemon.sock on a private tmpfs),
+#     so it never talks to an unsandboxed daemon.
+#   - PRIME_AGENT_BASH_COMMAND_PREFIX sources the shell guard; fails closed if
+#     ~/.prime/agent/bin/prime-shell-guard.sh is missing
+#     (override: PA_SANDBOX_ALLOW_NO_GUARD=1).
+#   - --unshare-pid (+ private /proc; host-/proc fallback is opt-in via
+#     PA_SANDBOX_ALLOW_HOST_PROC=1) /ipc/uts, --die-with-parent, --new-session when stdin is
+#     not a tty (with a tty, new-session would break the TUI).
+#
+# KNOWN LIMITS
+#   - Network stays ON (model APIs need it): there is NO egress allowlist, so
+#     anything readable inside (the repo, ~/.prime/agent/auth.json) can be
+#     exfiltrated over the network.
+#   - The repo is rw: a prompt-injected agent can modify it (and .git hooks).
+#   - ~/.prime/agent/auth.json (provider keys) is deliberately visible.
+#   - With a tty, TIOCSTI keystroke injection depends on the host kernel
+#     (disabled by default since Linux 6.2).
+#   - Outside HOME, host files are readable (ro) except the masked paths above.
+#   - Unix sockets elsewhere under /run and /tmp-less host paths remain
+#     connectable through the ro bind (connect() works on ro mounts).
+#
+# Usage: pa-sandbox [prime-agent args...]
+# Test hook: source this file; call pa_sandbox_build_argv <repo>; then run
+# "${PA_BWRAP_ARGV[@]}" <command...>.
+# shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
+set -euo pipefail
+
+PA_SANDBOX_ENV_ALLOW=(PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY)
+
+pa_sandbox_die() {
+	printf 'pa-sandbox: %s\n' "$1" >&2
+	return "${2:-1}"
+}
+
+pa_sandbox_warn() { printf 'pa-sandbox: warning: %s\n' "$1" >&2; }
+
+pa_sandbox_require_bwrap() {
+	command -v bwrap >/dev/null 2>&1 || {
+		pa_sandbox_die "bwrap (bubblewrap) not found in PATH; refusing to run unsandboxed (install: pacman -S bubblewrap)" 127
+		return 127
+	}
+}
+
+pa_sandbox_repo_root() { # <dir> -> repo root (git toplevel or the dir itself)
+	local top
+	top="$(git -C "$1" rev-parse --show-toplevel 2>/dev/null)" || top="$1"
+	printf '%s\n' "$top"
+}
+
+# pa_sandbox_build_argv <repo>: fills global array PA_BWRAP_ARGV (ends with "--").
+pa_sandbox_build_argv() {
+	local repo home agent_dir name extra
+	repo="$(cd -P "$1" && pwd)" || return 1
+	home="${HOME:?HOME unset}"
+	home="$(cd -P "$home" && pwd)" || return 1
+	agent_dir="$home/.prime/agent"
+
+	if [[ "$repo" == "/" || "$repo" == "$home" ]]; then
+		pa_sandbox_die "refusing to use '$repo' as the writable workspace; run from inside a project directory"
+		return 1
+	fi
+	if [[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" != 1 && ! -f "$agent_dir/bin/prime-shell-guard.sh" ]]; then
+		pa_sandbox_die "$agent_dir/bin/prime-shell-guard.sh not found (run the installer); set PA_SANDBOX_ALLOW_NO_GUARD=1 to override"
+		return 1
+	fi
+	mkdir -p "$agent_dir"
+
+	PA_BWRAP_ARGV=(
+		bwrap
+		--ro-bind / /
+		--dev /dev
+		--tmpfs /tmp
+		--tmpfs "$home"
+		--unshare-ipc --unshare-uts
+		--die-with-parent
+	)
+	# Private PID namespace + fresh /proc hides other processes' environ.
+	# Some hosts (nested userns / masked /proc) refuse that mount; falling back
+	# to the host /proc would leak same-uid process environments, so it is an
+	# explicit opt-in (PA_SANDBOX_ALLOW_HOST_PROC=1), never a silent downgrade.
+	if bwrap --ro-bind / / --unshare-pid --proc /proc true 2>/dev/null; then
+		PA_BWRAP_ARGV+=(--unshare-pid --proc /proc)
+	elif [[ "${PA_SANDBOX_ALLOW_HOST_PROC:-0}" == 1 ]]; then
+		pa_sandbox_warn "private /proc unavailable; using host /proc (same-uid process environments are readable)"
+		PA_BWRAP_ARGV+=(--proc /proc)
+	else
+		pa_sandbox_die "cannot mount a private /proc (--unshare-pid) on this host; set PA_SANDBOX_ALLOW_HOST_PROC=1 to accept host /proc exposure"
+		return 1
+	fi
+	for extra in /run/user /run/dbus; do
+		[[ -d "$extra" ]] && PA_BWRAP_ARGV+=(--tmpfs "$extra")
+	done
+	[[ -S /run/docker.sock ]] && PA_BWRAP_ARGV+=(--ro-bind /dev/null /run/docker.sock)
+	[[ -t 0 ]] || PA_BWRAP_ARGV+=(--new-session)
+
+	PA_BWRAP_ARGV+=(--bind "$agent_dir" "$agent_dir" --bind "$repo" "$repo")
+	local gcd
+	if gcd="$(git -C "$repo" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" && [[ -d "$gcd" && "$gcd" != "$repo"/* ]]; then
+		PA_BWRAP_ARGV+=(--bind "$gcd" "$gcd")
+	fi
+	for extra in "$home/.local/bin" "$home/.local/share/prime-agent"; do
+		[[ -d "$extra" ]] && PA_BWRAP_ARGV+=(--ro-bind "$extra" "$extra")
+	done
+	if [[ -n "${PA_SANDBOX_RO_EXTRA:-}" ]]; then
+		local IFS=:
+		for extra in $PA_SANDBOX_RO_EXTRA; do
+			[[ -e "$extra" ]] && PA_BWRAP_ARGV+=(--ro-bind "$extra" "$extra")
+		done
+	fi
+
+	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
+	local var
+	for name in "${PA_SANDBOX_ENV_ALLOW[@]}" ${PA_SANDBOX_PASS_ENV:-}; do
+		[[ -n "${!name+x}" ]] && PA_BWRAP_ARGV+=(--setenv "$name" "${!name}")
+	done
+	while IFS='=' read -r var _; do
+		case "$var" in
+		LC_* | PRIME_AGENT_*) PA_BWRAP_ARGV+=(--setenv "$var" "${!var}") ;;
+		esac
+	done < <(env)
+	# Fixed values last (bwrap: later --setenv wins).
+	PA_BWRAP_ARGV+=(
+		--setenv PRIME_AGENT_CODING_AGENT_DIR "$agent_dir"
+		--setenv PRIME_AGENT_DAEMON_SOCKET /tmp/pa-sandbox/daemon.sock
+		--setenv PRIME_AGENT_BASH_COMMAND_PREFIX '. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
+		--chdir "$repo"
+		--
+	)
+}
+
+pa_sandbox_main() {
+	pa_sandbox_require_bwrap || return $?
+	local repo
+	repo="$(pa_sandbox_repo_root "$PWD")"
+	pa_sandbox_build_argv "$repo" || return $?
+	exec "${PA_BWRAP_ARGV[@]}" prime-agent "$@"
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+	pa_sandbox_main "$@"
+fi

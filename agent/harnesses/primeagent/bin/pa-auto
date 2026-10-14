@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+# pa-auto -- autonomous prime-agent run inside pa-sandbox with deterministic gates.
+#
+# Usage: pa-auto [-n] [--gate <cmd>]... [--] [prime-agent args...]
+#   -n         print the resolved command (stdout) and exit; run nothing
+#   --gate C   explicit gate command (repeatable); disables auto-detection
+#
+# Gate detection (first match wins, in the repo = git toplevel of $PWD or $PWD):
+#   1. Makefile / GNUmakefile / makefile: `make lint` and `make test`, each only
+#      if that target exists (`make -q <t>` exit code <= 1; 2 means no rule).
+#      If at least one exists, the Makefile decides and no language default is
+#      added.
+#   2. Language defaults:
+#        go.mod          -> go vet ./...   ; go test ./...
+#        Cargo.toml      -> cargo check    ; cargo test
+#        package.json    -> npm test        (only if a "test" script exists)
+#        pyproject.toml / setup.py / pytest.ini -> python3 -m pytest
+#   3. Nothing found -> exit 2 (autonomous mode without gates never converges);
+#      pass --gate.
+# The resolved command is printed first (stderr when executing, stdout with -n).
+set -euo pipefail
+
+SELF_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PA_SANDBOX="${PA_SANDBOX:-$SELF_DIR/pa-sandbox}"
+
+q() { # single-quote one word for display
+	printf "'%s'" "${1//\'/\'\\\'\'}"
+}
+
+make_has_target() {
+	local rc=0
+	make -q "$1" >/dev/null 2>&1 || rc=$?
+	[[ $rc -le 1 ]]
+}
+
+detect_gates() { # sets global GATES
+	GATES=()
+	local f
+	for f in GNUmakefile makefile Makefile; do
+		if [[ -f $f ]]; then
+			make_has_target lint && GATES+=("make lint")
+			make_has_target test && GATES+=("make test")
+			[[ ${#GATES[@]} -gt 0 ]] && return 0
+			break
+		fi
+	done
+	if [[ -f go.mod ]]; then
+		GATES+=("go vet ./..." "go test ./...")
+	elif [[ -f Cargo.toml ]]; then
+		GATES+=("cargo check" "cargo test")
+	elif [[ -f package.json ]] && grep -q '"test"[[:space:]]*:' package.json; then
+		GATES+=("npm test")
+	elif [[ -f pyproject.toml || -f setup.py || -f pytest.ini ]]; then
+		GATES+=("python3 -m pytest")
+	fi
+}
+
+main() {
+	local dry=0 explicit=() args=() root
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		-n) dry=1 ;;
+		--gate)
+			[[ $# -ge 2 ]] || { echo "pa-auto: --gate needs a command" >&2; return 2; }
+			explicit+=("$2")
+			shift
+			;;
+		--)
+			shift
+			args+=("$@")
+			break
+			;;
+		*) args+=("$1") ;;
+		esac
+		shift
+	done
+
+	root="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
+	cd "$root"
+	GATES=()
+	if [[ ${#explicit[@]} -gt 0 ]]; then
+		GATES=("${explicit[@]}")
+	else
+		detect_gates
+	fi
+	if [[ ${#GATES[@]} -eq 0 ]]; then
+		echo "pa-auto: no gates detected in $root (no make lint/test, go.mod, Cargo.toml, package.json test script, pytest config); pass --gate <cmd>" >&2
+		return 2
+	fi
+
+	local cmd=("$PA_SANDBOX" --autonomous) shown g a
+	shown="${PA_SANDBOX##*/} --autonomous"
+	for g in "${GATES[@]}"; do
+		cmd+=(--autonomous-gate "$g")
+		shown+=" --autonomous-gate $(q "$g")"
+	done
+	for a in "${args[@]}"; do
+		cmd+=("$a")
+		shown+=" $(q "$a")"
+	done
+	if [[ $dry -eq 1 ]]; then
+		printf '%s\n' "$shown"
+		return 0
+	fi
+	printf 'pa-auto: %s\n' "$shown" >&2
+	exec "${cmd[@]}"
+}
+
+main "$@"
