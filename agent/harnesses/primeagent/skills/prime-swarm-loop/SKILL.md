@@ -1,0 +1,62 @@
+---
+name: prime-swarm-loop
+description: Linear swarm mission for Prime Agent - scale check, mission init in an isolated worktree, explore, plan, implement each task with a Maker/Checker machine, adversarial review, then stop at a human gate. Use when the user asks for a multi-step code change, "swarm loop", or a mission on a repo where tasks run one after another. Never merges or pushes.
+---
+
+# prime-swarm-loop
+
+Governance (tiers, budgets, human gates, Tier B list) is defined in `~/.prime/agent/SWARM.md`; this file only
+sequences the prime-native pieces. Run everything from the Python REPL. Load `swarm-adapter` for the API
+(`swarm_adapter.*`); the three machines are `swarm-explore`, `swarm-implement`, `swarm-review` (each MACHINE.md
+has its input JSON, run recipe and residual risks - read it before the first run).
+
+## Human-only boundaries (never crossed by this skill)
+
+- No merge, push, deploy, branch deletion or worktree removal without explicit human approval; the loop ends at GATE.
+- Tier B governance files are never edited: any `SKILL.md` under `agent/skills`, hooks, `SWARM.md`. If the task
+  needs one, stop and tell the human.
+- Mission work happens only in the worktree from `swarm_adapter.worktree_alloc`, never in the main checkout.
+
+## Success rule for every machine run
+
+Use each machine's own **Success rule** (MACHINE.md) verbatim: `rlm.factory.status(run_id)` state `done` AND its
+output file present (implement: `outcome.json` with `status: pass`). Anything else (paused, stopped, failed,
+`done` without the file) is NOT success. Then: `await rlm.factory.status(run_id)`, `await rlm.factory.stop(run_id)`,
+and follow the MACHINE.md instruction (fresh run directory, resize budgets, or escalate to the human). Branch on
+status/exit codes, never on prose. Start runs of one machine one at a time (shared pointer file).
+
+## States
+
+1. **SCALE** - `interactive` (one small change, no worktree churn) or `mission` (several tasks, or any
+   impact-C change per `agent/rules/impact-scope.md`). Unsure: `mission`.
+2. **INIT** - `swarm_adapter.worktree_alloc(slug, scale, cwd=<repo>)` then
+   `swarm_adapter.mission_init(slug, goal, scale, cwd=<worktree>)`; stop if either result has `error`/non-zero
+   `exit_code`. All later steps use the returned worktree path.
+3. **EXPLORE** - skip for a known, small target. Otherwise run `swarm-explore` with
+   `{"question", "roots": [<worktree>]}`; the report is `<run_dir>/report.md`. Read the report, not raw shards.
+4. **PLAN** - write `@fix_plan.md` in the worktree: tasks with id, spec, deps, and the verification commands
+   (the repo's own build/test/lint). If the design is ambiguous or touches a shared contract, grill the human
+   first (`Skill(grill-interview)` rules: one question at a time, 2-4 options with a `[Recommended]` badge) and
+   record decisions in `CONTEXT.md` before any edit. For an architectural dead end use `prime-swarm-architect`.
+5. **EXECUTE** - for each task in dependency order, run `swarm-implement` with
+   `{"mission", "task_spec", "worktree", "commands", "test_commands"}`. Size `budget_ms` first if the gate takes
+   long (MACHINE.md Residual risks). One task = one run directory.
+   - Budget: the machine already calls `swarm_adapter.budget_guard` (5 attempts per run, 20 per mission). If the
+     mission budget is exhausted or `outcome.json` is `escalated`, stop and report; do not raise limits.
+   - After `pass`, `git diff` in the worktree is the evidence to show, not the checker prose.
+6. **REVIEW** - run `swarm-review` with `{"worktree", "base_ref"}` once all tasks pass. Run success (Success rule)
+   and verdict are separate: read `summary.all_pass` and `summary.failed`. Failed lenses become new tasks (back to
+   EXECUTE, max 2 review rounds), then stop and report.
+7. **GATE** - present: task outcomes, `git diff --stat`, review summary, residual risks. Then
+   `Skill(prime-swarm-release-gate)` for the deterministic gate. STOP and wait for the human.
+
+## Optional tools (only where they add value)
+
+- `goal.create(...)` only if the human explicitly asked for a persistent goal; never infer one.
+- `rlm.spawn(prompt, name=..., model=<selector>)` for ad-hoc read-only helpers. `model` is the exact
+  `tiers.<Tier>.model` value from `~/.prime/agent/model-routing.json`: `tiers.Low` for bulk reading,
+  `tiers.Medium` for summarising, `tiers.High` for edits (Maker), `tiers.XHigh` for independent checking,
+  `tiers.Max` only for design (see `prime-swarm-architect`). Never hard-code a selector.
+- Spot Max-tier help on a stuck task: `swarm_adapter.fable_grant(task_id)` must allow it first (denied = no).
+- Shell guard: for any command not run through a machine, `swarm_adapter.decide_shell(cmd, cwd)`; `block` or
+  `ask` means do not run it and ask the human.
