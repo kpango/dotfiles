@@ -10,12 +10,19 @@ HERE="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PA_AUTO="$HERE/pa-auto"
 PA_SANDBOX="$HERE/pa-sandbox"
 
-# The fixture tree lives OUTSIDE /tmp: the sandbox mounts a tmpfs over /tmp, so a
-# fake HOME under /tmp would be hidden by that, not by the HOME tmpfs under test.
-PA_TEST_ROOT="${PA_TEST_ROOT:-${XDG_CACHE_HOME:-$HOME/.cache}}"
+# The fixture tree lives OUTSIDE /tmp (the sandbox mounts a tmpfs over /tmp, which
+# would hide it instead of the HOME tmpfs under test) and OUTSIDE the real $HOME
+# (never expose real-home paths to experiments). Default: /var/tmp.
+PA_TEST_ROOT="${PA_TEST_ROOT:-/var/tmp}"
 mkdir -p "$PA_TEST_ROOT"
 T="$(mktemp -d "$PA_TEST_ROOT/pa-wrappers-test.XXXXXX")"
-case "$T" in /tmp/*) echo "fixture root must not be under /tmp: $T" >&2; exit 2 ;; esac
+case "$T" in
+/tmp/* | "$HOME"/* | "$HOME")
+	echo "fixture root must be outside /tmp and \$HOME: $T" >&2
+	command rm -rf "$T"
+	exit 2
+	;;
+esac
 trap 'command rm -rf "$T"' EXIT
 FAIL=0 PASS=0
 
@@ -108,6 +115,14 @@ mkrepo "$R"
 printf 'lint::\n\t@true\n' >"$R/Makefile"
 out="$(cd "$R" && "$PA_AUTO" -n 2>&1 || true)"
 expect_has "double-colon rule lint:: is a target" "'make lint'" "$out"
+R="$T/r-make-tsv"
+mkrepo "$R"
+printf 'build:\n\t@true\ntest: CFLAGS = -O2\nlint: override X := 1\nlint: export Y = 1\ntest: private Z = 1\n' >"$R/Makefile"
+printf 'module x\n' >"$R/go.mod"
+out="$(cd "$R" && "$PA_AUTO" -n 2>&1 || true)"
+expect_lacks "target-specific vars are not rules: lint" "'make lint'" "$out"
+expect_lacks "target-specific vars are not rules: test" "'make test'" "$out"
+expect_has "target-specific vars only -> go defaults" "'go test ./...'" "$out"
 R="$T/r-make-phony"
 mkrepo "$R"
 printf '.PHONY: lint test\nbuild:\n\t@true\nfoo test: dep\n\t@true\n' >"$R/Makefile"
@@ -175,7 +190,11 @@ else
 	ln -s "$DOT/agent/agents" "$FH/.prime/agent/agents"
 	ln -s "$DOT/agent/AGENTS.md" "$FH/.prime/agent/AGENTS.md"
 	ln -s "$DOT/agent/harnesses/primeagent/models.json" "$FH/.prime/agent/models.json"
-	mkdir -p "$FH/.prime/agent/harness"
+	mkdir -p "$FH/.prime/agent/harness" "$FH/.prime/agent/daemon-workers/w1"
+	printf 'TRUSTED\n' >"$FH/.prime/agent/mcp-service-catalog.v2.json"
+	printf 'TRUSTED\n' >"$FH/.prime/agent/daemon-workers/w1/supervisor-config"
+	printf 'T\n' >"$FH/.prime/agent/telemetry.json"
+	printf 'T\n' >"$FH/.prime/agent/telemetry.jsonl"
 	printf '{}\n' >"$FH/.prime/agent/harness/harness_state.json"
 	printf '[]\n' >"$FH/.prime/agent/cron-jobs.json"
 	for f in settings.json auth.json machines/m.json kernel-venv/pkg.py; do
@@ -433,6 +452,35 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	out="$( (HOME="$FH" PA_SANDBOX_ALLOW_NO_GIT=1 pa_sandbox_build_argv "$NOGIT") 2>&1 )" && rc=0 || rc=$?
 	expect_eq "non-git workspace override allowed" "0" "$rc"
 
+	# deeply nested .git (depth 9) is read-only; mutation shows it would be writable
+	DEEP="$REPO/a/b/c/d/e/f/g/h"
+	mkdir -p "$DEEP"
+	git init -q "$DEEP/dep"
+	run_mut_drop "$REPO" "$DEEP/dep/.git" 'echo "[evil]" >> a/b/c/d/e/f/g/h/dep/.git/config' >/dev/null || true
+	grep -q '^\[evil\]' "$DEEP/dep/.git/config" && ok "MUTATION: depth-9 nested .git/config writable without its ro bind" || bad "MUTATION: depth-9 nested .git/config writable without its ro bind"
+	git -C "$DEEP/dep" config --unset-all evil 2>/dev/null || true
+	sed -i '/^\[evil\]/d' "$DEEP/dep/.git/config"
+	run_ws "$REPO" 'echo "[evil]" >> a/b/c/d/e/f/g/h/dep/.git/config 2>/dev/null; true' >/dev/null || true
+	! grep -q '^\[evil\]' "$DEEP/dep/.git/config" && ok "depth-9 nested .git/config is read-only inside" || bad "depth-9 nested .git/config is read-only inside"
+	# more nested .git than the cap fails closed (never silently skipped)
+	out="$( (HOME="$FH" PA_SANDBOX_MAX_NESTED_GIT=1 pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "nested .git count over the cap fails closed rc" "1" "$rc"
+	expect_has "nested .git cap message" "nested .git" "$out"
+
+	# mcp catalog + daemon-workers are read-only; telemetry stays writable
+	for hp in mcp-service-catalog.v2.json daemon-workers/w1/supervisor-config daemon-workers/new-worker; do
+		run_ws "$REPO" "echo ATTACK > \"\$HOME/.prime/agent/$hp\" 2>/dev/null; true" >/dev/null || true
+		! grep -q ATTACK "$FH/.prime/agent/$hp" 2>/dev/null && ok "agent $hp cannot be written" || bad "agent $hp cannot be written"
+	done
+	run_mut_rw 'echo ATTACK > "$HOME/.prime/agent/mcp-service-catalog.v2.json"; echo ATTACK > "$HOME/.prime/agent/daemon-workers/w1/supervisor-config"' >/dev/null
+	grep -q ATTACK "$FH/.prime/agent/mcp-service-catalog.v2.json" && grep -q ATTACK "$FH/.prime/agent/daemon-workers/w1/supervisor-config" \
+		&& ok "MUTATION (agent dir rw): mcp catalog + daemon-workers writable" || bad "MUTATION (agent dir rw): mcp catalog + daemon-workers writable"
+	printf 'TRUSTED\n' >"$FH/.prime/agent/mcp-service-catalog.v2.json"
+	printf 'TRUSTED\n' >"$FH/.prime/agent/daemon-workers/w1/supervisor-config"
+	command rm -f "$FH/.prime/agent/daemon-workers/new-worker"
+	run_ws "$REPO" 'echo t >> "$HOME/.prime/agent/telemetry.jsonl"' >/dev/null
+	grep -q '^t$' "$FH/.prime/agent/telemetry.jsonl" && ok "telemetry.jsonl stays writable" || bad "telemetry.jsonl stays writable"
+
 	# global harness memory and cron schedules are NOT writable from inside
 	for hp in harness/harness_state.json cron-jobs.json harness/new-state; do
 		run_ws "$REPO" "echo ATTACK > \"\$HOME/.prime/agent/$hp\" 2>/dev/null; true" >/dev/null || true
@@ -475,6 +523,35 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	expect_lacks "daemon socket differs from host default" "prime-agent-rust-" "$out"
 	out="$(run_in "test -S \"$HOSTTMP/daemon.sock\" && echo REACHABLE || echo unreachable")"
 	expect_has "host daemon socket (in /tmp) unreachable inside" "unreachable" "$out"
+	run_mut_args() { # <drop-arg...> -- <sh-snippet>: profile minus the given argv pair/single (mutation)
+		local -a drop=()
+		while [[ "$1" != -- ]]; do drop+=("$1"); shift; done
+		shift
+		(
+			cd "$REPO"
+			export HOME="$FH" SSH_AUTH_SOCK=/x/agent AWS_SECRET_ACCESS_KEY=leak GITHUB_TOKEN=leak
+			pa_sandbox_build_argv "$REPO" 2>/dev/null
+			local -a mut=()
+			local i=0 n=${#drop[@]}
+			while [[ $i -lt ${#PA_BWRAP_ARGV[@]} ]]; do
+				if [[ "${PA_BWRAP_ARGV[$i]}" == "${drop[0]}" && ( $n -eq 1 || "${PA_BWRAP_ARGV[$((i + 1))]}" == "${drop[1]}" ) ]]; then
+					i=$((i + n))
+					continue
+				fi
+				if [[ "${PA_BWRAP_ARGV[$i]}" == --dir && "${PA_BWRAP_ARGV[$((i + 1))]}" == /tmp/pa-sandbox ]]; then
+					i=$((i + 2)) # cannot create it on the host /tmp (ro /); irrelevant to the mutation
+					continue
+				fi
+				mut+=("${PA_BWRAP_ARGV[$i]}")
+				i=$((i + 1))
+			done
+			"${mut[@]}" sh -c "$1"
+		) 2>&1
+	}
+	out="$(run_mut_args --tmpfs /tmp -- "test -S \"$HOSTTMP/daemon.sock\" && echo REACHABLE || echo unreachable")" || true
+	expect_has "MUTATION (no /tmp tmpfs): host daemon socket reachable" "REACHABLE" "$out"
+	out="$(run_mut_args --clearenv -- 'env')" || true
+	expect_has "MUTATION (no --clearenv): SSH_AUTH_SOCK leaks" "SSH_AUTH_SOCK=" "$out"
 
 	# (5) resolved interpreter of the kernel venv is bound ro; env handling
 	out="$(run_in '"$HOME/.prime/agent/kernel-venv/bin/python"')"

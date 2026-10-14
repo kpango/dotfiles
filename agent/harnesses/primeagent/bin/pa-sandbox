@@ -25,10 +25,12 @@
 #     workspace's whole `.git` path (the directory, or the gitfile of a linked
 #     worktree, as the mount point itself: it cannot be renamed, replaced or
 #     recreated), the linked worktree's validated common dir as a whole, and every
-#     nested `.git` under the workspace (depth <= 6). Git metadata is therefore
+#     nested `.git` under the workspace. Git metadata is therefore
 #     entirely READ-ONLY: edits to working-tree files work, but git write
 #     operations (commit, branch, add, config) fail BY DESIGN; the human commits on
-#     the host after review. A workspace without a `.git` is refused (an agent
+#     the host after review. ALL nested `.git` entries (no depth limit; symlinks
+#     skipped) are bound; more than PA_SANDBOX_MAX_NESTED_GIT (500) FAILS CLOSED.
+#     A workspace without a `.git` is refused (an agent
 #     could plant one that a later unsandboxed git run would trust), override:
 #     PA_SANDBOX_ALLOW_NO_GIT=1.
 #   - The workspace may not be /, $HOME, any ancestor of $HOME or of ~/.prime/agent,
@@ -50,7 +52,11 @@
 #   - Network stays ON (model APIs need it): there is NO egress allowlist, so
 #     anything readable inside (the workspace, ~/.prime/agent/auth.json) can be
 #     exfiltrated.
-#   - The workspace is rw: a prompt-injected agent can modify its files.
+#   - The workspace is rw: a prompt-injected agent can modify its files, including
+#     creating project-local prime-agent config (<repo>/.prime/agent/settings.json,
+#     AGENTS.md, .agents/skills ...) that a later UNSANDBOXED run in that repo would
+#     load. Review untracked files (git status) after a sandboxed run. Not blocked.
+#   - mcp-service-catalog.v2.json and daemon-workers/ are ro (see PA_SANDBOX_AGENT_RW_*).
 #   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
 #   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
 #   - Git write operations inside fail by design (see above); linked-worktree
@@ -72,8 +78,15 @@ set -euo pipefail
 # and cron-jobs.json (scheduled prompts run by the host daemon) are deliberately
 # NOT here: later unsandboxed sessions trust them, so sandboxed runs cannot
 # persist harness memory or schedules.
-PA_SANDBOX_AGENT_RW_DIRS=(sessions session-artifacts session-leases logs daemon-workers swarm)
-PA_SANDBOX_AGENT_RW_FILES=(telemetry.json telemetry.jsonl mcp-service-catalog.v2.json)
+# Also NOT rw: mcp-service-catalog.v2.json (MCP service definitions incl. stdio
+# commands that unsandboxed runs trust) and daemon-workers/ (holds supervisor-config
+# the daemon reads back; it cannot be shown that a host daemon never reads it).
+# Consequence: the sandboxed daemon cannot persist worker state or refresh the MCP
+# catalog; prime-agent may degrade or report errors for those (documented, untested
+# against the real binary).
+PA_SANDBOX_AGENT_RW_DIRS=(sessions session-artifacts session-leases logs swarm)
+PA_SANDBOX_AGENT_RW_FILES=(telemetry.json telemetry.jsonl)
+PA_SANDBOX_MAX_NESTED_GIT=500
 # shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
 PA_SANDBOX_GUARD_PREFIX='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
 PA_SANDBOX_ENV_ALLOW=(PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY)
@@ -237,10 +250,16 @@ pa_sandbox_build_argv() {
 	# point cannot be renamed or replaced. Linked-worktree common dir: ro as a whole.
 	_ro "$repo/.git"
 	[[ -n "$gcd" ]] && _ro "$gcd"
-	local ng
+	local ng nn=0
 	while IFS= read -r -d '' ng; do
-		[[ "$ng" == "$repo/.git" ]] || _ro "$ng"
-	done < <(find "$repo" -maxdepth 6 -name .git -prune -print0 2>/dev/null)
+		[[ "$ng" == "$repo/.git" ]] && continue
+		nn=$((nn + 1))
+		if [[ $nn -gt $PA_SANDBOX_MAX_NESTED_GIT ]]; then
+			pa_sandbox_die "more than $PA_SANDBOX_MAX_NESTED_GIT nested .git entries under '$repo'; refusing (raise PA_SANDBOX_MAX_NESTED_GIT to accept)"
+			return 1
+		fi
+		_ro "$ng"
+	done < <(find "$repo" -name .git \( -type d -o -type f \) -prune -print0 2>/dev/null)
 	unset -f _ro
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
