@@ -48,14 +48,20 @@
 #     the host /proc is opt-in (PA_SANDBOX_ALLOW_HOST_PROC=1) and warns every run.
 #     The fallback has NO PID namespace (inside a pid ns the host /proc shows the
 #     wrong /proc/$$, which makes the guard fail closed). So survivors are swept
-#     instead: the sandbox runs with its own IPC namespace; after the command exits
-#     (and on INT/TERM) every process left in that ipc namespace (e.g. a `setsid`
-#     grandchild) is SIGKILLed and waited for (5 s bound, then pa-sandbox fails
-#     loudly with rc 70) BEFORE the final state scrub. The namespace id is written
-#     by the sandboxed launcher into a file; it is only trusted if it is a
-#     well-formed ipc id different from the host's (so at worst another sandbox
-#     instance's processes could be targeted, never ordinary host processes).
-#   - --unshare-ipc/uts, --die-with-parent, --new-session when stdin is not a tty.
+#     instead, with an identity taken ON THE HOST: bwrap runs with --info-fd and
+#     --block-fd; a host-side watcher reads the sandbox child's /proc/<pid>/ns/ipc
+#     and ns/user while the child is held blocked, and pa-sandbox keeps that pair in
+#     its own files (never bound into the sandbox: nothing the sandbox writes can
+#     choose what gets swept). After the command exits (once; also on INT/TERM) every
+#     process whose ipc namespace equals the recorded one AND whose user namespace is
+#     the recorded one or nested inside it (kernel ancestry) is SIGKILLed and
+#     waited for (5 s bound, then rc 70, loudly) BEFORE the final state scrub. The
+#     pair is never used if either id equals pa-sandbox's own. A namespace id cannot
+#     be reused while any member process is alive (members hold the ns), so matching
+#     live members is safe; a bwrap user ns is unique to its sandbox, so other
+#     sandboxes, containers and host processes cannot match.
+#   - --unshare-user --disable-userns --assert-userns-disabled: no nested user
+#     namespaces inside (otherwise `unshare -U --ipc` leaves the swept namespace).
 #
 # KNOWN LIMITS
 #   - Network stays ON (model APIs need it): there is NO egress allowlist, so
@@ -193,6 +199,7 @@ pa_sandbox_build_argv() {
 		--dev /dev
 		--tmpfs /tmp
 		--tmpfs "$home"
+		--unshare-user --disable-userns --assert-userns-disabled
 		--unshare-ipc --unshare-uts
 		--die-with-parent
 	)
@@ -364,24 +371,65 @@ pa_sandbox_scrub_state() { # <agent_dir>
 	return 0
 }
 
-# Kill every process still in the sandbox's IPC namespace and wait until none is left.
-pa_sandbox_sweep() { # <ipc ns token, e.g. ipc:[4026532000]>
-	local me d pid ns n deadline
-	me="$(readlink /proc/self/ns/ipc)"
-	if [[ ! "$1" =~ ^ipc:\[[0-9]+\]$ || "$1" == "$me" ]]; then
-		pa_sandbox_warn "sandbox ipc namespace id '$1' unusable; cannot sweep leftover processes"
+# PIDs whose ipc namespace equals <ipc id> AND whose user namespace is <user ns id> or
+# a DESCENDANT of it (the sandbox's payload runs in a user ns nested inside the one
+# bwrap created, because of --disable-userns). Ancestry is read from the kernel
+# (NS_GET_PARENT), so a victim in an unrelated user ns can never match.
+pa_sandbox_members() { # <ipc id> <user ns id>
+	python3 -I -c '
+import fcntl, os, sys
+NS_GET_PARENT = 0xB702
+want_i, want_u = sys.argv[1], sys.argv[2]
+out = []
+for e in os.listdir("/proc"):
+    if not e.isdigit():
+        continue
+    try:
+        if os.readlink("/proc/%s/ns/ipc" % e) != want_i:
+            continue
+        fd = os.open("/proc/%s/ns/user" % e, os.O_RDONLY)
+    except OSError:
+        continue
+    try:
+        for _ in range(32):
+            if os.readlink("/proc/self/fd/%d" % fd) == want_u:
+                out.append(e)
+                break
+            try:
+                nfd = fcntl.ioctl(fd, NS_GET_PARENT, 0)
+            except OSError:
+                break
+            os.close(fd)
+            fd = nfd
+    finally:
+        try:
+            os.close(fd)
+        except OSError:
+            pass
+print(" ".join(out))
+' "$1" "$2"
+}
+
+# Kill every member (see pa_sandbox_members) and wait until none is left. Never runs
+# against pa-sandbox's own namespaces.
+pa_sandbox_sweep() { # <ipc id> <user ns id>
+	local me_i me_u pid pids n deadline
+	me_i="$(readlink /proc/self/ns/ipc)"
+	me_u="$(readlink /proc/self/ns/user)"
+	if [[ ! "$1" =~ ^ipc:\[[0-9]+\]$ || ! "$2" =~ ^user:\[[0-9]+\]$ || "$1" == "$me_i" || "$2" == "$me_u" ]]; then
+		pa_sandbox_warn "sandbox namespace identity '$1' '$2' unusable; cannot sweep leftover processes"
 		return 1
 	fi
 	deadline=$((SECONDS + 5))
 	while :; do
+		pids="$(pa_sandbox_members "$1" "$2")" || {
+			pa_sandbox_warn "member scan failed; cannot verify the sandbox is empty"
+			return 1
+		}
 		n=0
-		for d in /proc/[0-9]*; do
-			pid="${d#/proc/}"
-			ns="$(readlink "$d/ns/ipc" 2>/dev/null)" || continue
-			if [[ "$ns" == "$1" ]]; then
-				kill -9 "$pid" 2>/dev/null || true
-				n=$((n + 1))
-			fi
+		for pid in $pids; do
+			kill -9 "$pid" 2>/dev/null || true
+			n=$((n + 1))
 		done
 		[[ $n -eq 0 ]] && return 0
 		if [[ $SECONDS -ge $deadline ]]; then
@@ -392,14 +440,46 @@ pa_sandbox_sweep() { # <ipc ns token, e.g. ipc:[4026532000]>
 	done
 }
 
-# Final cleanup (EXIT trap): sweep leftovers, then scrub state dirs.
-pa_sandbox_cleanup() {
-	local tok="" rc=0
-	if [[ -n "${PA_SANDBOX_NSFILE:-}" ]]; then
-		tok="$(cat "$PA_SANDBOX_NSFILE" 2>/dev/null || true)"
-		command rm -f "$PA_SANDBOX_NSFILE"
-		pa_sandbox_sweep "$tok" || rc=70
+# Host-side watcher (background): learn the sandbox child's namespace ids from the
+# host while bwrap holds the child blocked, then release it.
+pa_sandbox_watch() { # <rundir>
+	local d="$1" i line pid="" ipc usr
+	for ((i = 0; i < 400; i++)); do
+		line="$(cat "$d/info" 2>/dev/null || true)"
+		if [[ "$line" =~ \"child-pid\":[[:space:]]*([0-9]+)[,}[:space:]] ]]; then
+			pid="${BASH_REMATCH[1]}"
+			break
+		fi
+		sleep 0.05
+	done
+	if [[ -n "$pid" ]]; then
+		ipc="$(readlink "/proc/$pid/ns/ipc" 2>/dev/null || true)"
+		usr="$(readlink "/proc/$pid/ns/user" 2>/dev/null || true)"
+		printf '%s\n%s\n' "$ipc" "$usr" >"$d/record.tmp" && mv "$d/record.tmp" "$d/record"
 	fi
+	exec 9<>"$d/block"
+	printf x >&9
+}
+
+# One-shot sweep from the recorded identity. rc 0 = clean, 1 = failed/unknown.
+pa_sandbox_sweep_recorded() {
+	[[ "${PA_SANDBOX_SWEPT:-0}" == 1 ]] && return 0
+	PA_SANDBOX_SWEPT=1
+	local ipc usr
+	if [[ ! -s "${PA_SANDBOX_RUNDIR:-/nonexistent}/record" ]]; then
+		pa_sandbox_warn "sandbox namespace identity was not recorded; cannot sweep leftover processes"
+		return 1
+	fi
+	{ read -r ipc && read -r usr; } <"$PA_SANDBOX_RUNDIR/record" || true
+	pa_sandbox_sweep "${ipc:-}" "${usr:-}"
+}
+
+# Final cleanup (EXIT trap): sweep if not done yet (INT/TERM), scrub state, drop rundir.
+pa_sandbox_cleanup() {
+	local rc=0
+	[[ -n "${PA_SANDBOX_WATCHER:-}" ]] && kill "$PA_SANDBOX_WATCHER" 2>/dev/null || true
+	pa_sandbox_sweep_recorded || rc=70
+	[[ -n "${PA_SANDBOX_RUNDIR:-}" ]] && command rm -rf "$PA_SANDBOX_RUNDIR"
 	pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR"
 	return "$rc"
 }
@@ -412,20 +492,19 @@ pa_sandbox_main() {
 	agent_dir="$(cd -P "$HOME/.prime/agent" && pwd)"
 	pa_sandbox_scrub_state "$agent_dir"
 	pa_sandbox_verify_guard || return $?
-	# not exec: the post-exit scrub must run (also on INT/TERM)
 	PA_SANDBOX_SCRUB_DIR="$agent_dir" # globals: locals are gone when the EXIT trap fires
-	PA_SANDBOX_NSFILE="$(mktemp)"
-	PA_BWRAP_ARGV=("${PA_BWRAP_ARGV[@]:0:${#PA_BWRAP_ARGV[@]}-1}" --bind "$PA_SANDBOX_NSFILE" "$PA_SANDBOX_NSFILE" --)
+	PA_SANDBOX_SWEPT=0
+	PA_SANDBOX_RUNDIR="$(mktemp -d)"
+	mkfifo "$PA_SANDBOX_RUNDIR/block"
+	PA_BWRAP_ARGV=("${PA_BWRAP_ARGV[@]:0:${#PA_BWRAP_ARGV[@]}-1}" --info-fd 7 --block-fd 8 --)
+	pa_sandbox_watch "$PA_SANDBOX_RUNDIR" &
+	PA_SANDBOX_WATCHER=$!
 	trap 'pa_sandbox_cleanup' EXIT
 	trap 'exit 130' INT
 	trap 'exit 143' TERM
-	# shellcheck disable=SC2016 # expanded by the sandboxed sh, not here
-	"${PA_BWRAP_ARGV[@]}" sh -c 'readlink /proc/self/ns/ipc >"$1"; shift; exec "$@"' pa-sandbox-init \
-		"$PA_SANDBOX_NSFILE" prime-agent "$@" || rc=$?
+	"${PA_BWRAP_ARGV[@]}" prime-agent "$@" 7>"$PA_SANDBOX_RUNDIR/info" 8<>"$PA_SANDBOX_RUNDIR/block" || rc=$?
 	# sweep now (not only in the trap) so a failure can change the return code
-	local tok
-	tok="$(cat "$PA_SANDBOX_NSFILE" 2>/dev/null || true)"
-	if ! pa_sandbox_sweep "$tok"; then
+	if ! pa_sandbox_sweep_recorded; then
 		pa_sandbox_die "sandbox processes could not be cleaned up; state may be tainted" 70 || true
 		rc=70
 	fi

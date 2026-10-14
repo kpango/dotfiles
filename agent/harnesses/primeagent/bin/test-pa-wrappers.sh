@@ -524,9 +524,60 @@ STUB
 	sleep 3.5
 	[[ ! -L "$FH/.prime/agent/sessions/late-link" ]] && ok "setsid grandchild swept: no late-link after main returns (waited 3.5s)" || bad "setsid grandchild swept: no late-link after main returns (waited 3.5s)"
 	command rm -f "$FH/.prime/agent/sessions/late-link"
-	# stale/forged ipc token is rejected (host ns must never be swept)
-	out="$( (pa_sandbox_sweep "$(readlink /proc/self/ns/ipc)") 2>&1 )" && rc=0 || rc=$?
-	expect_eq "sweep refuses the host's own ipc namespace" "1" "$rc"
+	# sweep never targets pa-sandbox's own namespaces and needs BOTH ids to match
+	out="$( (pa_sandbox_sweep "$(readlink /proc/self/ns/ipc)" "$(readlink /proc/self/ns/user)") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "sweep refuses pa-sandbox's own namespace pair" "1" "$rc"
+
+	# (B) FORGE: a same-uid host process in ANOTHER ipc+user ns must never be killed
+	unshare -U --ipc sh -c 'exec sleep 25' &
+	VPID=$!
+	sleep 0.4
+	VIPC="$(readlink /proc/$VPID/ns/ipc)"
+	VUSR="$(readlink /proc/$VPID/ns/user)"
+	cat >"$STUBDIR/prime-agent" <<STUB
+#!/bin/sh
+# try everything: leave forged ids in every writable place, including the old token style
+for f in /tmp/tmp.* /tmp/*/* "\$HOME"/.prime/agent/sessions/* ; do [ -f "\$f" ] && printf '%s\n%s\n' "$VIPC" "$VUSR" > "\$f" 2>/dev/null; done
+exit 0
+STUB
+	chmod +x "$STUBDIR/prime-agent"
+	( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; pa_sandbox_main ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
+	expect_eq "forge attempt: main rc" "0" "$rc"
+	kill -0 "$VPID" 2>/dev/null && ok "forge attempt: host victim in another namespace survives" || bad "forge attempt: host victim in another namespace survives"
+	# pair semantics: right ipc but wrong user id (and vice versa) kills nothing
+	pa_sandbox_sweep "$VIPC" "user:[1]" >/dev/null 2>&1 || true
+	kill -0 "$VPID" 2>/dev/null && ok "sweep with matching ipc but wrong user ns kills nothing" || bad "sweep with matching ipc but wrong user ns kills nothing"
+	# MUTATION: taking the id from a sandbox-writable file lets the sandbox pick the victim
+	FORGEF="$T/forge-token"
+	: >"$FORGEF"
+	( cd "$REPO"; export HOME="$FH"; pa_sandbox_build_argv "$REPO" 2>/dev/null
+	  mut=("${PA_BWRAP_ARGV[@]:0:${#PA_BWRAP_ARGV[@]}-1}" --bind "$FORGEF" "$FORGEF" --)
+	  "${mut[@]}" sh -c "printf '%s\n%s\n' '$VIPC' '$VUSR' > '$FORGEF'" ) >/dev/null 2>&1 || true
+	{ read -r fi_ && read -r fu_; } <"$FORGEF" || true
+	pa_sandbox_sweep "$fi_" "$fu_" >/dev/null 2>&1 || true
+	! kill -0 "$VPID" 2>/dev/null && ok "MUTATION (id read from sandbox-writable file): sandbox picks the victim, it is killed" || bad "MUTATION (id read from sandbox-writable file): sandbox picks the victim, it is killed"
+	kill "$VPID" 2>/dev/null || true
+	wait "$VPID" 2>/dev/null || true
+
+	# (A) ESCAPE: nested user namespace + new ipc ns must be impossible
+	out="$(run_ws "$REPO" 'unshare -U true >/dev/null 2>&1; echo u=$?; unshare --ipc true >/dev/null 2>&1; echo i=$?')"
+	expect_eq "unshare -U and unshare --ipc fail inside" "$(printf 'u=1\ni=1')" "$out"
+	out="$( (cd "$REPO"; export HOME="$FH"; pa_sandbox_build_argv "$REPO" 2>/dev/null
+		mut=()
+		for a in "${PA_BWRAP_ARGV[@]}"; do [[ "$a" == --disable-userns || "$a" == --assert-userns-disabled ]] || mut+=("$a"); done
+		"${mut[@]}" sh -c 'unshare -U true >/dev/null 2>&1; echo u=$?') 2>&1 )" || true
+	expect_has "MUTATION (no --disable-userns): nested userns possible" "u=0" "$out"
+	cat >"$STUBDIR/prime-agent" <<'STUB'
+#!/bin/sh
+(setsid unshare -U --ipc sh -c 'sleep 2; ln -s /etc/hostname "$HOME/.prime/agent/sessions/late-link-userns"' >/dev/null 2>&1 &)
+exit 0
+STUB
+	chmod +x "$STUBDIR/prime-agent"
+	( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; pa_sandbox_main ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
+	expect_eq "escape repro: main rc" "0" "$rc"
+	sleep 3.5
+	[[ ! -L "$FH/.prime/agent/sessions/late-link-userns" ]] && ok "escape repro blocked: no late-link-userns after main returns (waited 3.5s)" || bad "escape repro blocked: no late-link-userns after main returns (waited 3.5s)"
+	command rm -f "$FH/.prime/agent/sessions/late-link-userns"
 
 	# PA_SANDBOX_MAX_NESTED_GIT is honoured from the environment at source time
 	CAPR="$FH/work/caprepo"
