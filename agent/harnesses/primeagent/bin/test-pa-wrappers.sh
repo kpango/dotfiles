@@ -730,6 +730,185 @@ STUB
 	expect_has "workspace gitfile symlink message" "goes through a symlink" "$out"
 	command rm -rf "$RA" "$RB" "$RC"
 
+	# ---- git config references (Checker attempt 10): paths that HOST git later runs or
+	# reads because a config names them. Each case: MUTATION (the new ro bind dropped)
+	# shows host git runs the attacker's code; the real profile blocks it.
+	host_case() { # <label> <workspace> <ro-path> <attack sh> <host cmd> <marker>
+		local lbl="$1" ws="$2" rp="$3" atk="$4" hc="$5" mk="$6"
+		command cp -a "$ws" "$ws.pristine"
+		run_mut_drop "$ws" "$rp" "$atk" >/dev/null 2>&1 || true
+		(eval "$hc") >/dev/null 2>&1 || true
+		[[ -e "$mk" ]] && ok "MUTATION ($lbl, ro bind dropped): host git runs the attacker's code" || bad "MUTATION ($lbl, ro bind dropped): host git runs the attacker's code"
+		command rm -rf "$ws" "$mk"
+		command cp -a "$ws.pristine" "$ws"
+		(HOME="$FH" pa_sandbox_build_argv "$ws") >/dev/null 2>&1 && ok "$lbl: real profile builds (control)" || bad "$lbl: real profile builds (control)"
+		run_ws "$ws" "$atk" >/dev/null 2>&1 || true
+		(eval "$hc") >/dev/null 2>&1 || true
+		[[ ! -e "$mk" ]] && ok "$lbl: blocked (host git does not run it)" || bad "$lbl: blocked (host git does not run it)"
+		command rm -rf "$ws.pristine" "$mk"
+	}
+	hook='printf "#!/bin/sh\ntouch %s\n" "$MK" >'
+	# (1) core.hooksPath = .githooks (directly under the root, exists)
+	H1="$FH/work/cfg-hooks"
+	mkrepo "$H1"
+	mkdir -p "$H1/.githooks"
+	printf '#!/bin/sh\nexit 0\n' >"$H1/.githooks/pre-commit"
+	chmod +x "$H1/.githooks/pre-commit"
+	git -C "$H1" config core.hooksPath .githooks
+	host_case "(1) core.hooksPath .githooks" "$H1" "$H1/.githooks" \
+		"MK=$T/PWNED-h1; $hook .githooks/pre-commit" \
+		"git -C '$H1' -c commit.gpgsign=false commit -q --allow-empty -m x" "$T/PWNED-h1"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$H1") 2>&1 )" || true
+	expect_has "hooksPath dir announced as read-only" ".githooks" "$out"
+	# (1b) husky layout: core.hooksPath = .husky/_ (relative, nested) -> .husky/ ro
+	H2="$FH/work/cfg-husky"
+	mkrepo "$H2"
+	mkdir -p "$H2/.husky/_"
+	printf '#!/bin/sh\nexit 0\n' >"$H2/.husky/_/pre-commit"
+	chmod +x "$H2/.husky/_/pre-commit"
+	git -C "$H2" config core.hooksPath .husky/_
+	host_case "(1b) core.hooksPath .husky/_" "$H2" "$H2/.husky/_" \
+		"MK=$T/PWNED-h2; $hook .husky/_/pre-commit" \
+		"git -C '$H2' -c commit.gpgsign=false commit -q --allow-empty -m x" "$T/PWNED-h2"
+	# (1c) relative hooksPath that does not exist yet (tools/hooks): its top-level dir is
+	# ro, so the sandbox cannot create it
+	H3="$FH/work/cfg-relhooks"
+	mkrepo "$H3"
+	mkdir -p "$H3/tools"
+	git -C "$H3" config core.hooksPath tools/hooks
+	host_case "(1c) missing relative core.hooksPath tools/hooks" "$H3" "$H3/tools/hooks" \
+		"MK=$T/PWNED-h3; mkdir -p tools/hooks && $hook tools/hooks/pre-commit && chmod +x tools/hooks/pre-commit" \
+		"git -C '$H3' -c commit.gpgsign=false commit -q --allow-empty -m x" "$T/PWNED-h3"
+	# relative hooksPath resolves against the worktree root of a NESTED repo too
+	mkdir -p "$H3/vendor"
+	git init -q "$H3/vendor/dep"
+	mkdir -p "$H3/vendor/dep/hk"
+	git -C "$H3/vendor/dep" config core.hooksPath hk
+	out="$(run_ws "$H3" 'echo x > vendor/dep/hk/pre-commit 2>/dev/null; echo rc=$?')"
+	[[ ! -e "$H3/vendor/dep/hk/pre-commit" ]] && ok "nested repo: relative hooksPath (to its own root) is read-only" || bad "nested repo: relative hooksPath (to its own root) is read-only" "$out"
+	# a missing hooksPath directly under the root cannot be protected: refuse
+	git -C "$H3" config core.hooksPath .missing-hooks
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$H3") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "missing hooksPath directly under the root refused rc" "1" "$rc"
+	expect_has "missing hooksPath message" "does not exist" "$out"
+	command rm -rf "$H1" "$H2" "$H3"
+
+	# (2) include.path ../.gitconfig (workspace file) + recursive include + includeIf
+	I2="$FH/work/cfg-inc"
+	mkrepo "$I2"
+	mkdir -p "$I2/conf"
+	printf '[include]\n\tpath = conf/inner.cfg\n' >"$I2/.gitconfig"
+	printf '[user]\n\tname = t\n' >"$I2/conf/inner.cfg"
+	printf '[user]\n\tname = t\n' >"$I2/cond.cfg"
+	git -C "$I2" config include.path ../.gitconfig
+	git -C "$I2" config 'includeIf.gitdir:/nonexistent-pa/.path' ../cond.cfg
+	fsmon='printf "[core]\n\tfsmonitor = touch %s\n" "$MK" >>'
+	host_case "(2) include.path ../.gitconfig" "$I2" "$I2/.gitconfig" \
+		"MK=$T/PWNED-i1; $fsmon .gitconfig" "git -C '$I2' status" "$T/PWNED-i1"
+	host_case "(2b) recursive include conf/inner.cfg" "$I2" "$I2/conf/inner.cfg" \
+		"MK=$T/PWNED-i2; $fsmon conf/inner.cfg" "git -C '$I2' status" "$T/PWNED-i2"
+	run_mut_drop "$I2" "$I2/cond.cfg" 'echo "[evil]" >> cond.cfg' >/dev/null 2>&1 || true
+	grep -q '^\[evil\]' "$I2/cond.cfg" && ok "MUTATION: includeIf target (condition false now) writable without its bind" || bad "MUTATION: includeIf target (condition false now) writable without its bind"
+	printf '[user]\n\tname = t\n' >"$I2/cond.cfg"
+	run_ws "$I2" 'echo "[evil]" >> cond.cfg 2>/dev/null; true' >/dev/null 2>&1 || true
+	! grep -q '^\[evil\]' "$I2/cond.cfg" && ok "(2c) includeIf target is read-only even while its condition is false" || bad "(2c) includeIf target is read-only even while its condition is false"
+	# reading the configs never runs fsmonitor on the host (git config --file only parses)
+	printf '[core]\n\tfsmonitor = touch %s\n' "$T/PWNED-read" >>"$I2/conf/inner.cfg"
+	(HOME="$FH" pa_sandbox_build_argv "$I2") >/dev/null 2>&1 || true
+	[[ ! -e "$T/PWNED-read" ]] && ok "config scan does not run fsmonitor of a scanned file" || bad "config scan does not run fsmonitor of a scanned file"
+	# include loop and a missing include directly under the root: refuse
+	printf '[include]\n\tpath = conf/inner.cfg\n' >"$I2/.gitconfig"
+	printf '[include]\n\tpath = ../.gitconfig\n' >"$I2/conf/inner.cfg"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$I2") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "include loop refused rc" "1" "$rc"
+	expect_has "include loop message" "too deep" "$out"
+	printf '[user]\n\tname = t\n' >"$I2/conf/inner.cfg"
+	git -C "$I2" config --add include.path ../missing.cfg
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$I2") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "missing include directly under the root refused rc" "1" "$rc"
+	command rm -rf "$I2"
+
+	# (2d) command value naming a workspace script: core.fsmonitor = sh tools/fsmon.sh
+	C2="$FH/work/cfg-cmd"
+	mkrepo "$C2"
+	mkdir -p "$C2/tools"
+	printf 'exit 1\n' >"$C2/tools/fsmon.sh"
+	git -C "$C2" config core.fsmonitor 'sh tools/fsmon.sh'
+	host_case "(2d) core.fsmonitor command naming tools/fsmon.sh" "$C2" "$C2/tools/fsmon.sh" \
+		"MK=$T/PWNED-c2; printf 'touch %s\nexit 1\n' \"\$MK\" > tools/fsmon.sh" "git -C '$C2' status" "$T/PWNED-c2"
+	command rm -rf "$C2"
+
+	# (3) gitdir path `lnk/../meta/gs` with lnk -> src: the old realpath -s/readlink -f
+	# comparison accepted it (both give meta/gs); the per-component walk refuses
+	S3="$FH/work/cfg-symdot"
+	mkdir -p "$S3/src" "$S3/meta"
+	git init -q --separate-git-dir="$S3/meta/gs" "$S3"
+	ln -s src "$S3/lnk"
+	printf 'gitdir: %s/lnk/../meta/gs\n' "$S3" >"$S3/.git"
+	[[ "$(realpath -s -m -- "$S3/lnk/../meta/gs")" == "$(readlink -f -- "$S3/lnk/../meta/gs")" ]] && ok "(3) fixture: the old symlink comparison does not see lnk/.." || bad "(3) fixture: the old symlink comparison does not see lnk/.."
+	atk3="MK=$T/PWNED-s3; rm lnk && mkdir -p evil/sub evil/meta && ln -s evil/sub lnk && cp -r meta/gs evil/meta/gs && $fsmon evil/meta/gs/config"
+	MUTSB="$T/pa-sandbox.mut-walk"
+	sed 's|_rw "$cur/$c" \&\& return 2|: # MUTATION|' "$PA_SANDBOX" >"$MUTSB"
+	grep -q ': # MUTATION' "$MUTSB" && ok "(3) mutation applied (writable-symlink refusal removed)" || bad "(3) mutation applied (writable-symlink refusal removed)"
+	command cp -a "$S3" "$S3.pristine"
+	# shellcheck source=/dev/null # mutated copy of pa-sandbox
+	( cd "$S3"; export HOME="$FH"; source "$MUTSB"; pa_sandbox_build_argv "$S3" 2>/dev/null && "${PA_BWRAP_ARGV[@]}" sh -c "$atk3" ) >/dev/null 2>&1 || true
+	git -C "$S3" status >/dev/null 2>&1 || true
+	[[ -e "$T/PWNED-s3" ]] && ok "MUTATION ((3) no per-component check): re-pointed lnk runs fsmonitor on host" || bad "MUTATION ((3) no per-component check): re-pointed lnk runs fsmonitor on host"
+	command rm -rf "$S3" "$T/PWNED-s3"
+	command cp -a "$S3.pristine" "$S3"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$S3") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(3) gitdir lnk/../meta/gs refused rc" "1" "$rc"
+	expect_has "(3) refusal message" "goes through a symlink" "$out"
+	# nested gitfile with the same trick, and a legitimate `..` path (no symlink) accepted
+	printf 'gitdir: %s/meta/gs\n' "$S3" >"$S3/.git"
+	mkdir -p "$S3/vendor/gf"
+	git init -q --bare "$S3/store/gd"
+	printf 'gitdir: ../../lnk/../store/gd\n' >"$S3/vendor/gf/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$S3") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(3) nested gitfile lnk/.. refused rc" "1" "$rc"
+	printf 'gitdir: ../../src/../store/gd\n' >"$S3/vendor/gf/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$S3") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "legitimate .. in a gitdir path (no symlink) accepted rc" "0" "$rc"
+	# a symlink OUTSIDE the workspace whose target goes through the workspace's lnk
+	ln -s "$S3/lnk" "$T/outlnk"
+	printf 'gitdir: %s/outlnk/../meta/gs\n' "$T" >"$S3/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$S3") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(3) outside symlink chaining into a workspace symlink refused rc" "1" "$rc"
+	command rm -rf "$S3" "$S3.pristine" "$T/outlnk"
+
+	# (4) workspace gitfile -> admin dir inside the workspace, NOT under the common dir:
+	# the admin dir (tgd) itself and its commondir file are read-only
+	T4="$FH/work/cfg-tgd"
+	mkdir -p "$T4/admin"
+	git init -q "$T4/main"
+	git -C "$T4/main" -c commit.gpgsign=false commit -q --allow-empty -m i
+	git -C "$T4/main" worktree add -q --detach "$T4/tmpwt"
+	mv "$T4/main/.git/worktrees/tmpwt" "$T4/admin/wt"
+	command rm -rf "$T4/tmpwt"
+	printf '%s\n' "$T4/main/.git" >"$T4/admin/wt/commondir"
+	printf '%s\n' "$T4/.git" >"$T4/admin/wt/gitdir"
+	printf 'gitdir: %s\n' "$T4/admin/wt" >"$T4/.git"
+	git -C "$T4" status >/dev/null 2>&1 && ok "(4) fixture: host git accepts the layout" || bad "(4) fixture: host git accepts the layout"
+	host_case "(4) workspace gitdir (tgd) commondir redirect" "$T4" "$T4/admin/wt" \
+		"MK=$T/PWNED-t4; mkdir -p evil && cp -r main/.git evil/gcd && $fsmon evil/gcd/config && printf '%s\n' \"\$PWD/evil/gcd\" > admin/wt/commondir" \
+		"git -C '$T4' status" "$T/PWNED-t4"
+	command rm -rf "$T4"
+
+	# (5) nested .git DIRECTORY with a commondir file -> shared/c (not named .git)
+	N5="$FH/work/cfg-ncd"
+	mkrepo "$N5"
+	git -C "$N5" -c commit.gpgsign=false commit -q --allow-empty -m i
+	mkdir -p "$N5/shared" "$N5/vendor/dep/.git"
+	git init -q --bare "$N5/shared/c"
+	git -C "$N5/shared/c" config core.bare false
+	printf 'ref: refs/heads/main\n' >"$N5/vendor/dep/.git/HEAD"
+	printf '../../../shared/c\n' >"$N5/vendor/dep/.git/commondir"
+	git -C "$N5/vendor/dep" status >/dev/null 2>&1 && ok "(5) fixture: host git accepts the layout" || bad "(5) fixture: host git accepts the layout"
+	host_case "(5) nested .git dir commondir target" "$N5" "$N5/shared/c" \
+		"MK=$T/PWNED-n5; $fsmon shared/c/config" "git -C '$N5/vendor/dep' status" "$T/PWNED-n5"
+	command rm -rf "$N5"
+
 	# interpreter dir and guard tree: the bind is what protects (mutation: rw bind -> writable)
 	run_mut_drop "$REPO" "$FH/.data/uv/python/cpy" 'echo X > "$HOME/.data/uv/python/cpy/bin/mut-new"' >/dev/null || true
 	[[ -e "$FH/.data/uv/python/cpy/bin/mut-new" ]] && ok "MUTATION: interpreter dir writable when its bind is rw" || bad "MUTATION: interpreter dir writable when its bind is rw"

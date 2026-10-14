@@ -28,17 +28,36 @@
 #     nested `.git` under the workspace. Git metadata is therefore
 #     entirely READ-ONLY: edits to working-tree files work, but git write
 #     operations (commit, branch, add, config) fail BY DESIGN; the human commits on
-#     the host after review. Nested gitfiles: each `gitdir:` target (and its commondir)
-#     is resolved and ro-bound if inside the workspace, else the run is refused unless
-#     it is already under a protected git dir; a `gitdir:`/commondir path that goes
-#     through a symlink is refused. ALL nested `.git` entries (no depth limit; symlinks
-#     skipped) are bound; more than PA_SANDBOX_MAX_NESTED_GIT (500) FAILS CLOSED.
+#     the host after review. Every git dir (the workspace gitfile's own gitdir, nested
+#     `.git` dirs, nested gitfile targets) AND the `commondir` of each is resolved and
+#     ro-bound if inside the workspace, else the run is refused unless it is already
+#     under a protected git dir. Paths are walked component by component BEFORE
+#     normalisation: a symlink inside the writable workspace anywhere on the way (also
+#     before a `..`, e.g. `lnk/../meta/gs`) refuses. ALL nested `.git` entries (no depth
+#     limit; symlinks skipped) are bound; more than PA_SANDBOX_MAX_NESTED_GIT (500)
+#     FAILS CLOSED.
+#   - CONFIG REFERENCES: for each of those repos, the common config, config.worktree,
+#     and every include.path / includeIf.*.path file (followed recursively by
+#     pa-sandbox itself with `git config --file --no-includes`, which only parses; all
+#     includeIf targets regardless of their condition; plus the host global/system
+#     config from `git var`) are scanned. Every path host git later READS or RUNS
+#     because of them is protected the same way: the include files, core.hooksPath
+#     (relative: to the worktree root, githooks(5); core.worktree adds a root), and
+#     every word containing `/` in a command value (core.fsmonitor, core.sshCommand,
+#     core.editor/pager/askPass, sequence.editor, filter.*.clean/smudge/process,
+#     diff.*.command/textconv, diff.external, merge.*.driver, mergetool/difftool
+#     cmd/path, credential helpers, gpg programs, hook.*.command, `!` aliases, pager.*,
+#     remote.*.uploadpack/receivepack, ...). Inside the workspace an existing target is
+#     ro-bound; a missing one is covered by its ro top-level ancestor, and refuses if it
+#     would sit directly under the root. Includes deeper than 10 (loops) or more than
+#     1000 config files per repo, unparsable configs, `~user/` paths and targets in the
+#     rw state dirs refuse.
 #   - ANCESTORS: a mount point cannot be renamed, but its writable parent can (the
 #     mount moves along and the original path is free for an attacker-made git dir
 #     that the unchanged gitfile / a later host git run trusts). So for every protected
 #     git path below the workspace root, its TOP-LEVEL ancestor directory (the entry
 #     directly under the root) is ro-bound as well (a mount point itself, read-only
-#     inside). Paths are canonical (realpath); a non-directory/symlink ancestor refuses.
+#     inside). Paths are canonical; a non-directory/symlink/missing ancestor refuses.
 #     A workspace without a `.git` is refused (an agent
 #     could plant one that a later unsandboxed git run would trust), override:
 #     PA_SANDBOX_ALLOW_NO_GIT=1 (UNSAFE).
@@ -92,9 +111,21 @@
 #     PA_SANDBOX_ALLOW_GIT_SYMLINKS=1); any error while scanning for nested `.git`
 #     (unreadable dir) also refuses.
 #   - TRADE-OFF: every top-level workspace directory that contains a protected git
-#     path (nested `.git`, a gitfile's gitdir, an in-workspace common dir), e.g. vendor/
-#     holding vendor/dep/.git, is ENTIRELY read-only inside the sandbox (listed on
-#     stderr every run). A `.git` directly under the root needs no extra bind.
+#     path (nested `.git`, a gitfile's gitdir, an in-workspace common dir, a config
+#     reference such as .husky/_ or tools/fsmon.sh), e.g. vendor/ holding
+#     vendor/dep/.git, is ENTIRELY read-only inside the sandbox, and so is a config
+#     reference directly under the root (.githooks, .gitconfig); all are listed on
+#     stderr every run. A `.git` directly under the root needs no extra bind.
+#   - CONFIG REFERENCES are heuristic for command values: only words containing `/`
+#     count as paths (quotes stripped, `--opt=` prefixes cut). A script found via PATH,
+#     a file another script reads, or a word without `/` is NOT followed. A word with
+#     `/` that is not a path (e.g. `textconv = sed s/a/b/`) can make pa-sandbox refuse.
+#   - Not protected on purpose: core.attributesFile / core.excludesFile targets
+#     (in-tree .gitattributes / .gitignore are writable anyway; they only select
+#     drivers defined in the ro config), .gitmodules (a worktree file; git ignores
+#     `update = !cmd` from it), objects/info/alternates targets (object data, never
+#     executed). A git repo CREATED inside the workspace by the sandbox is attacker
+#     controlled: do not run host git inside directories that were not repos before.
 #   - mcp-service-catalog.v2.json and daemon-workers/ are ro (see PA_SANDBOX_AGENT_RW_*).
 #   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
 #   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
@@ -188,7 +219,7 @@ pa_sandbox_build_argv() {
 
 	# A `.git` FILE (linked worktree) points outside the workspace; its common dir is
 	# validated strictly and bound read-only. A plain `.git` dir is bound ro as is.
-	local gcd=""
+	local gcd="" tgd=""
 	if [[ ! -e "$repo/.git" && "${PA_SANDBOX_ALLOW_NO_GIT:-0}" != 1 ]]; then
 		pa_sandbox_die "workspace '$repo' has no .git (an agent could plant one that a later host git run trusts); UNSAFE override: PA_SANDBOX_ALLOW_NO_GIT=1"
 		return 1
@@ -198,15 +229,15 @@ pa_sandbox_build_argv() {
 			pa_sandbox_die "workspace .git points to a git dir that is not a valid, safe common dir; refusing"
 			return 1
 		fi
-		# its gitdir path must not go through a symlink (one in the workspace could be re-pointed)
-		local tl tgd
+		# its gitdir (tgd) is protected like every other git dir below (_git_ctx)
+		local tl
 		tl="$(head -n1 "$repo/.git")"
-		tgd="${tl#gitdir: }"
-		[[ "$tgd" == /* ]] || tgd="$repo/$tgd"
-		if [[ "$tl" != "gitdir: "* || "$(realpath -s -m -- "$tgd" 2>/dev/null)" != "$(readlink -f -- "$tgd" 2>/dev/null)" ]]; then
-			pa_sandbox_die "workspace .git gitdir path '$tgd' is malformed or goes through a symlink; refusing"
+		if [[ "$tl" != "gitdir: "* ]]; then
+			pa_sandbox_die "workspace .git gitfile has an unexpected format; refusing"
 			return 1
 		fi
+		tgd="${tl#gitdir: }"
+		[[ "$tgd" == /* ]] || tgd="$repo/$tgd"
 	fi
 
 	# State dirs must exist on the host before binding (nothing new may appear later).
@@ -301,7 +332,7 @@ pa_sandbox_build_argv() {
 	[[ -n "$gcd" ]] && _ro "$gcd"
 	# Scan to files (not process substitution) so a find failure is seen: an
 	# unreadable directory could hide a nested .git, so ANY find error fails closed.
-	local ng nn=0 scan scanerr frc=0 links=() gfiles=() prot=("$repo/.git")
+	local ng nn=0 scan scanerr frc=0 links=() gfiles=() gdirs=() cfgp=() prot=("$repo/.git")
 	[[ -n "$gcd" ]] && prot+=("$gcd")
 	scan="$(mktemp)"
 	scanerr="$(mktemp)"
@@ -327,7 +358,7 @@ pa_sandbox_build_argv() {
 			return 1
 		fi
 		_ro "$ng"
-		[[ -d "$ng" ]] && prot+=("$ng")
+		[[ -d "$ng" ]] && prot+=("$ng") && gdirs+=("$ng")
 	done <"$scan"
 	command rm -f "$scan"
 	# A symlinked .git cannot be bound read-only (bwrap would bind its target, and the
@@ -336,20 +367,63 @@ pa_sandbox_build_argv() {
 		pa_sandbox_die "symlinked .git entries cannot be protected, refusing: ${links[*]} (UNSAFE override: PA_SANDBOX_ALLOW_GIT_SYMLINKS=1)"
 		return 1
 	fi
-	# Nested gitfiles point at a gitdir that need not be named .git (and its commondir
-	# may point elsewhere): resolve each target, make sure it is read-only (already
-	# under a protected path, or ro-bound if inside the workspace) or refuse to start.
-	_protect_dir() { # <dir> <label>
-		local q pp lex
-		q="$(readlink -f "$1" 2>/dev/null)" || q=""
-		lex="$(realpath -s -m -- "$1" 2>/dev/null)" || lex=""
-		if [[ -z "$q" || ! -d "$q" ]]; then
-			pa_sandbox_die "$2 does not resolve to an existing directory; refusing"
+	# Every git dir (the workspace's own, its gitfile target tgd, nested .git dirs, nested
+	# gitfile targets) and the commondir of each is resolved and made read-only (already
+	# under a protected path, or ro-bound if inside the workspace) or the run is refused.
+	# Then every path that host git later READS or RUNS because a config of that repo
+	# (common config, config.worktree, every include/includeIf file, recursively, plus the
+	# host global/system config) names it -- core.hooksPath, includes, scripts named in
+	# command values -- is protected the same way (CONFIG REFERENCES in the header).
+	local -a rwp=("$repo") gk=() gv=() ek=() ev=()
+	for name in "${PA_SANDBOX_AGENT_RW_DIRS[@]}" "${PA_SANDBOX_AGENT_RW_FILES[@]}"; do
+		rwp+=("$agent_dir/$name")
+	done
+	_rw() { # <canonical path>: writable from inside the sandbox
+		local p
+		for p in "${rwp[@]}"; do pa_sandbox_within "$1" "$p" && return 0; done
+		return 1
+	}
+	# _walk <abs path>: resolve component by component as the kernel does, BEFORE any
+	# normalisation (so `lnk/../x` is seen through lnk). rc 2 = a symlink inside a
+	# writable area (it could be re-pointed later); symlinks elsewhere are followed one
+	# level at a time (their target is walked the same way; at most 40).
+	_walk() {
+		local cur="" c t n=0
+		local -a parts=() tp=()
+		[[ "$1" == /* && "$1" != *$'\n'* ]] || return 1
+		IFS=/ read -ra parts <<<"$1"
+		while [[ ${#parts[@]} -gt 0 ]]; do
+			c="${parts[0]}"
+			parts=("${parts[@]:1}")
+			case "$c" in
+			"" | .) continue ;;
+			..)
+				cur="${cur%/*}"
+				continue
+				;;
+			esac
+			if [[ -L "$cur/$c" ]]; then
+				_rw "$cur/$c" && return 2
+				n=$((n + 1))
+				t="$(readlink -- "$cur/$c")" && [[ $n -le 40 && -n "$t" && "$t" != *$'\n'* ]] || return 1
+				[[ "$t" == /* ]] && cur=""
+				IFS=/ read -ra tp <<<"$t"
+				parts=("${tp[@]}" "${parts[@]}")
+				continue
+			fi
+			cur="$cur/$c"
+		done
+		printf '%s\n' "${cur:-/}"
+	}
+	_protect_dir() { # <dir> <label>: an existing git dir
+		local q pp rc=0
+		q="$(_walk "$1")" || rc=$?
+		if [[ $rc -eq 2 ]]; then
+			pa_sandbox_die "$2 path '$1' goes through a symlink inside the writable workspace; refusing"
 			return 1
 		fi
-		# a symlink on the way (e.g. in the rw workspace) could be re-pointed later
-		if [[ "$lex" != "$q" ]]; then
-			pa_sandbox_die "$2 path '$1' goes through a symlink (-> '$q'); refusing"
+		if [[ $rc -ne 0 || ! -d "$q" ]]; then
+			pa_sandbox_die "$2 does not resolve to an existing directory; refusing"
 			return 1
 		fi
 		for pp in "${prot[@]}"; do
@@ -363,7 +437,166 @@ pa_sandbox_build_argv() {
 		pa_sandbox_die "$2 points to '$q' outside the workspace and outside protected git dirs; refusing"
 		return 1
 	}
-	local gf gline gd cdir
+	_protect_path() { # <abs path> <label>: a file/dir host git reads or runs; may not exist yet
+		local q pp rc=0
+		q="$(_walk "$1")" || rc=$?
+		if [[ $rc -ne 0 ]]; then
+			pa_sandbox_die "$2: '$1' goes through a symlink inside the writable workspace or cannot be resolved; refusing"
+			return 1
+		fi
+		for pp in "${prot[@]}"; do
+			pa_sandbox_within "$q" "$pp" && return 0
+		done
+		if pa_sandbox_within "$q" "$repo"; then
+			if [[ "$q" == "$repo" ]]; then
+				pa_sandbox_die "$2: '$1' is the workspace root itself; refusing"
+				return 1
+			elif [[ -e "$q" ]]; then
+				_ro "$q"
+				prot+=("$q")
+			elif [[ "${q#"$repo"/}" != */* ]]; then
+				pa_sandbox_die "$2: '$q' does not exist and sits directly under the workspace root (the sandbox could create it); refusing"
+				return 1
+			else
+				cfgp+=("$q") # missing: its top-level ancestor is ro-bound below (ANCESTORS)
+			fi
+			return 0
+		fi
+		if _rw "$q"; then
+			pa_sandbox_die "$2: '$q' is in a sandbox-writable state path; refusing"
+			return 1
+		fi
+		return 0
+	}
+	_abs() { # <value> <base dir> -> absolute path (git: `~/` is the host HOME)
+		case "$1" in
+		/*) printf '%s\n' "$1" ;;
+		\~/*) printf '%s\n' "$home/${1#\~/}" ;;
+		\~*) return 1 ;; # ~user: not supported, the caller refuses
+		*) printf '%s\n' "$2/$1" ;;
+		esac
+	}
+	# _cfg_read <file> <depth>: append the entries of <file> to ek/ev, following
+	# include.path and includeIf.*.path ourselves (`git config --file --no-includes`;
+	# `--includes` would silently skip a missing target and an includeIf whose condition
+	# is false now, both of which can become live later). Every include target is
+	# protected. `git config --file` only parses the file (no fsmonitor, no hooks).
+	local ncfg=0
+	_cfg_read() {
+		local f="$1" ent k v inc tmp frc=0 bad=0
+		ncfg=$((ncfg + 1))
+		if [[ $2 -gt 10 || $ncfg -gt 1000 ]]; then
+			pa_sandbox_die "git config includes too deep or too many (loop?) at '$f'; refusing"
+			return 1
+		fi
+		[[ -e "$f" ]] || return 0 # missing: protected by the caller, cannot appear inside
+		if [[ ! -f "$f" ]]; then
+			pa_sandbox_die "git config file '$f' is not a regular file; refusing"
+			return 1
+		fi
+		tmp="$(mktemp)"
+		(cd / && git config --file "$f" --no-includes -z --list) >"$tmp" 2>/dev/null || frc=$?
+		if [[ $frc -ne 0 ]]; then
+			command rm -f "$tmp"
+			pa_sandbox_die "cannot parse git config '$f'; refusing"
+			return 1
+		fi
+		while IFS= read -r -d '' ent; do
+			k="${ent%%$'\n'*}"
+			v=""
+			[[ "$ent" == *$'\n'* ]] && v="${ent#*$'\n'}"
+			ek+=("$k")
+			ev+=("$v")
+			case "$k" in
+			include.path | includeif.*.path)
+				if ! inc="$(_abs "$v" "$(dirname "$f")")" || ! _protect_path "$inc" "include in $f"; then
+					pa_sandbox_die "cannot protect include '$v' in '$f'; refusing" || true
+					bad=1
+					break
+				fi
+				_cfg_read "$inc" $(($2 + 1)) || {
+					bad=1
+					break
+				}
+				;;
+			esac
+		done <"$tmp"
+		command rm -f "$tmp"
+		return "$bad"
+	}
+	# host global + system config (outside the sandbox's reach, but a RELATIVE hooksPath
+	# or script path there resolves into each worktree)
+	local hf
+	while IFS= read -r hf; do
+		[[ -f "$hf" ]] || continue # unset, missing or /dev/null
+		_cfg_read "$hf" 0 || return 1
+	done < <(git var GIT_CONFIG_GLOBAL 2>/dev/null; git var GIT_CONFIG_SYSTEM 2>/dev/null)
+	gk=("${ek[@]}")
+	gv=("${ev[@]}")
+	# _git_ctx <git dir> <worktree root>
+	_git_ctx() {
+		local g c f i r t v
+		local -a roots=("$2") toks=() files=()
+		_protect_dir "$1" "git dir of '$2'" || return 1
+		g="$(_walk "$1")"
+		c="$g"
+		if [[ -f "$g/commondir" ]]; then
+			c="$(head -n1 "$g/commondir")"
+			[[ "$c" == /* ]] || c="$g/$c"
+			_protect_dir "$c" "commondir of '$g'" || return 1
+			c="$(_walk "$c")"
+		fi
+		ek=("${gk[@]}")
+		ev=("${gv[@]}")
+		ncfg=0
+		files=("$c/config" "$g/config.worktree")
+		[[ "$c" != "$g" ]] && files+=("$g/config" "$c/config.worktree")
+		for f in "${files[@]}"; do _cfg_read "$f" 0 || return 1; done
+		# core.worktree (relative to the git dir) moves the worktree root
+		for i in "${!ek[@]}"; do
+			[[ "${ek[$i]}" == core.worktree && -n "${ev[$i]}" ]] || continue
+			if ! r="$(_abs "${ev[$i]}" "$g")"; then
+				pa_sandbox_die "unsupported core.worktree '${ev[$i]}' (config of '$g'); refusing"
+				return 1
+			fi
+			roots+=("$r")
+		done
+		for i in "${!ek[@]}"; do
+			v="${ev[$i]}"
+			toks=()
+			case "${ek[$i]}" in
+			core.hookspath) toks=("$v") ;; # relative: to the worktree root (githooks(5))
+			alias.*) [[ "$v" != '!'* ]] || read -ra toks -d '' <<<"${v#!}" || true ;;
+			core.fsmonitor | core.sshcommand | core.editor | core.pager | core.askpass | sequence.editor | \
+				core.alternaterefscommand | diff.external | interactive.difffilter | uploadpack.packobjectshook | \
+				pager.* | gpg.program | gpg.*.program | credential.helper | credential.*.helper | hook.*.command | \
+				filter.*.clean | filter.*.smudge | filter.*.process | diff.*.command | diff.*.textconv | \
+				merge.*.driver | mergetool.*.cmd | mergetool.*.path | difftool.*.cmd | difftool.*.path | \
+				remote.*.uploadpack | remote.*.receivepack)
+				read -ra toks -d '' <<<"$v" || true ;; # command values: protect every word that is a path
+			esac
+			for t in "${toks[@]}"; do
+				t="${t//[\"\']/}"
+				[[ "${ek[$i]}" != core.hookspath ]] && t="${t##*=}"
+				[[ -n "$t" && ("${ek[$i]}" == core.hookspath || "$t" == */*) ]] || continue
+				for r in "${roots[@]}"; do
+					if ! f="$(_abs "$t" "$r")" || ! _protect_path "$f" "${ek[$i]} in the config of '$g'"; then
+						pa_sandbox_die "cannot protect '$t' named by ${ek[$i]} (config of '$g'); refusing" || true
+						return 1
+					fi
+				done
+			done
+		done
+	}
+	local gf gline gd
+	if [[ -d "$repo/.git" && ! -L "$repo/.git" ]]; then
+		_git_ctx "$repo/.git" "$repo" || return 1
+	elif [[ -n "$tgd" ]]; then
+		_git_ctx "$tgd" "$repo" || return 1
+	fi
+	for gd in "${gdirs[@]}"; do
+		_git_ctx "$gd" "$(dirname "$gd")" || return 1
+	done
 	for gf in "${gfiles[@]}"; do
 		gline="$(head -n1 "$gf")"
 		if [[ "$gline" != "gitdir: "* ]]; then
@@ -372,22 +605,22 @@ pa_sandbox_build_argv() {
 		fi
 		gd="${gline#gitdir: }"
 		[[ "$gd" == /* ]] || gd="$(dirname "$gf")/$gd"
-		_protect_dir "$gd" "gitfile $gf" || return 1
-		gd="$(readlink -f "$gd")"
-		if [[ -f "$gd/commondir" ]]; then
-			cdir="$(head -n1 "$gd/commondir")"
-			[[ "$cdir" == /* ]] || cdir="$gd/$cdir"
-			_protect_dir "$cdir" "commondir of $gf" || return 1
-		fi
+		_git_ctx "$gd" "$(dirname "$gf")" || return 1
 	done
 	# ANCESTORS (see header): ro-bind the top-level ancestor of every protected git path
 	# below the root, so no writable parent can be renamed to move the mount away.
 	local pg rel top
 	local -a anc=()
-	for pg in "${prot[@]}" "${gfiles[@]}"; do
+	for pg in "${prot[@]}" "${gfiles[@]}" "${cfgp[@]}"; do
 		pa_sandbox_within "$pg" "$repo" || continue
 		rel="${pg#"$repo"/}"
-		[[ "$rel" == */* ]] || continue # directly under the root: parent is the root mount
+		if [[ "$rel" != */* ]]; then # directly under the root: itself a mount point already
+			[[ "$rel" == .git || -n "${seen[$repo/$rel/]:-}" ]] || {
+				seen[$repo/$rel/]=1
+				anc+=("$rel")
+			}
+			continue
+		fi
 		top="$repo/${rel%%/*}"
 		if [[ ! -d "$top" || -L "$top" ]]; then
 			pa_sandbox_die "cannot protect '$top' (ancestor of git path '$pg'): not a real directory; refusing"
@@ -399,7 +632,7 @@ pa_sandbox_build_argv() {
 	if [[ ${#anc[@]} -gt 0 ]]; then
 		pa_sandbox_warn "read-only inside the sandbox (they contain protected git metadata; edits there fail by design): ${anc[*]}"
 	fi
-	unset -f _ro _protect_dir
+	unset -f _ro _rw _walk _protect_dir _protect_path _abs _cfg_read _git_ctx
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
 	local -a pass=()
