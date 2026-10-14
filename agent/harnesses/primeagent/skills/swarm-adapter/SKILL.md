@@ -49,6 +49,8 @@ await swarm_adapter.worktree_release(wt["path"])
 - `decide_shell(command, cwd=None)` is FAIL-CLOSED: this adapter runs without hooks, so if decide.py or security-rules.json cannot be found
   or run, the result is `decision: "block"` with an `error` field. `SWARM_AGENT_DIR` overrides the agent dir (discovery uses the real path, so a
   symlinked install works). It sends harness `"claude"` because decide.py only enables its advisory layer for known harnesses (claude/agy/pi).
+- `decide_shell` runs decide.py with its process cwd set to `cwd` (default: process cwd), because the protected-branch rules read the branch of that
+  directory; a nonexistent `cwd` yields `block`.
 - `decide_shell` also validates `security-rules.json` itself (JSON object, non-empty `shell_command_rules`) and treats any decide.py reply whose
   reason contains `fail-open` as `block`.
 - `worktree_alloc(..., base_ref="HEAD")` branches from `base_ref` resolved in the caller's `cwd` checkout (not the main repo HEAD); result has `base` (sha).

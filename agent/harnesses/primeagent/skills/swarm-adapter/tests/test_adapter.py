@@ -22,9 +22,10 @@ def run(coro):
 @pytest.fixture(autouse=True)
 def _isolated_git(monkeypatch, tmp_path):
     """Hermetic git/env: ignore the developer's global/system config and any inherited repo/script selection
-    (e.g. GIT_DIR exported by a git hook that runs pytest). Tests that need these set them explicitly."""
-    for k in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY", "GIT_COMMON_DIR",
-              "SWARM_AGENT_DIR", "SWARM_WORKTREE_DIR", "SWARM_SCRIPTS_ROOT"):
+    (e.g. GIT_DIR / GIT_CONFIG_COUNT exported by a git hook or the shell that runs pytest). Tests that need these set them explicitly."""
+    for k in [k for k in os.environ if k.startswith("GIT_")]:  # GIT_DIR, GIT_CONFIG_COUNT/KEY_n/PARAMETERS, ...
+        monkeypatch.delenv(k)
+    for k in ("SWARM_AGENT_DIR", "SWARM_WORKTREE_DIR", "SWARM_SCRIPTS_ROOT"):
         monkeypatch.delenv(k, raising=False)
     monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
@@ -617,3 +618,35 @@ def test_graph_cwd_param(stubs, tmp_path):
     d.mkdir()
     assert run(sa.graph_compile(cwd=str(d)))["pwd"] == str(d.resolve())
     assert run(sa.graph_status(cwd=str(d)))["stdout"].strip() == str(d.resolve())
+
+
+# ======================= attempt 5 =====================================================
+def _repo_on(tmp_path, name, branch):
+    r = tmp_path / name
+    r.mkdir()
+    _git(r, "init", "-q", "-b", branch)
+    _git(r, "commit", "-q", "--allow-empty", "-m", "a")
+    _git(r, "commit", "-q", "--allow-empty", "-m", "b")
+    return r
+
+
+RESET = "git reset --hard HEAD~1"  # only ever EVALUATED by decide_shell, never executed
+
+
+def test_decide_shell_uses_requested_cwd_not_process_cwd(tmp_path, monkeypatch):
+    on_main, on_feature = _repo_on(tmp_path, "m", "main"), _repo_on(tmp_path, "f", "feature")
+    monkeypatch.chdir(on_feature)
+    assert run(sa.decide_shell(RESET, cwd=str(on_main)))["decision"] == "block"
+    monkeypatch.chdir(on_main)
+    assert run(sa.decide_shell(RESET, cwd=str(on_feature)))["decision"] != "block"
+
+
+def test_decide_shell_default_cwd_is_process_cwd(tmp_path, monkeypatch):
+    on_main = _repo_on(tmp_path, "m", "main")
+    monkeypatch.chdir(on_main)
+    assert run(sa.decide_shell(RESET))["decision"] == "block"
+
+
+def test_decide_shell_bad_cwd_blocks(tmp_path):
+    r = run(sa.decide_shell("ls", cwd=str(tmp_path / "nope")))
+    assert r["decision"] == "block" and r["error"]

@@ -388,7 +388,9 @@ def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
     # (claude/agy/pi); an unknown value would silently skip it.
     req = {"family": "security_shell", "command": command, "cwd": cwd or os.getcwd(),
            "rules_file": str(rules), "resolve_command_target": False, "harness": "claude"}
-    r = _sync_run(["python3", str(decide)], stdin=json.dumps(req), timeout=10)
+    # decide.py resolves "." / relative `cd`/`-C` targets (e.g. the protected-branch rules) against ITS process cwd,
+    # so it must run in the requested cwd; a missing dir surfaces as a failed run -> block (fail-closed).
+    r = _sync_run(["python3", str(decide)], cwd=req["cwd"], stdin=json.dumps(req), timeout=10)
     try:
         out = json.loads(r["stdout"])
     except ValueError:
@@ -402,7 +404,7 @@ def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
 
 @_boundary(lambda e: _block(f"{type(e).__name__}: {e} (fail-closed)"))
 async def decide_shell(command: str, cwd: str | None = None) -> dict[str, Any]:
-    """Security decision for a shell command via agent/scripts/hooks/decide.py: {decision: allow|ask|block, reason}.
+    """Security decision for a shell command via agent/scripts/hooks/decide.py (run in `cwd`, default process cwd): {decision: allow|ask|block, reason}.
 
     Fail-closed: if decide.py cannot be found or run, returns decision "block" with an `error` field.
     """
