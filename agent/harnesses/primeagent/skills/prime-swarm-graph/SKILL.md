@@ -31,6 +31,12 @@ before ANY file edit (prompt contract, no write hook in prime).
 3. **SCHEDULE** - status values are exactly the ones `graph-compile.sh` knows: `pending`, `in_progress`, `done`,
    `stale`, `blocked(budget)`, `blocked(design)`, `blocked(spec)`. Edit only the `status`, `worktree`,
    `attempts`, `note` cells, and after EVERY edit recompile and run `graph_status(plan_path, cwd=<mission worktree>)`.
+   Write every cell through `cell = lambda s: " ".join(str(s).replace("|", "/").split())[:120]` (one line, no `|`):
+   `graph-compile.sh` silently drops a row whose cell count is not 8, so a git error or conflict text with a `|` or
+   newline would delete the task from the DAG. After every compile STOP if `warnings` is non-empty (a dropped
+   row or an unknown status: fix the plan row first) or if `metrics.nodes` differs from the
+   number of rows in the `## Tasks` table (`sum(l.startswith("|") for l in <Tasks section lines>) - 2`, header
+   and separator excluded): "all `done`" is only trusted when every plan row is a node.
    - **Start** (at most 3 `swarm-implement` runs at once): task worktree =
      `swarm_adapter.worktree_alloc(slug, cwd=<mission worktree>)` with slug `<task-id>-a<attempts>`, so its base
      is the mission worktree's current HEAD (which already holds every merged upstream task). Every start, retries
@@ -39,15 +45,18 @@ before ANY file edit (prompt contract, no write hook in prime).
      and never removed or deleted by you (human-only cleanup; its path stays in `note`). Set `in_progress` and the
      `worktree` cell; NEVER start a task that is `in_progress`. The machines share a pointer file: start one run,
      wait until its `init` settles (`rlm.factory.status`), then the next.
-   - **Success** (the machine's Success rule holds): the maker does not commit. In the TASK worktree first run the
-     commit check of the loop's write-scope snippet on `changed(<task worktree>)`: any protected (Tier B) path
-     means NO commit and NO merge; set `blocked(spec)` (the spec led the maker into Tier B), the paths in `note`,
-     and stop and report to the human. Then stage every path in `changed` by name and
-     `git commit -m "<task-id>: <summary>"`; that is exactly what the checker judged (`git diff <init.base>` plus
-     untracked files). Zero-diff PASS (`changed` empty and `git rev-list --count HEAD..<task branch>` in the MISSION
-     worktree is 0; the mission HEAD already satisfies the task): no commit (it would exit 1) and no merge (it
-     would report "Already up to date" and create nothing), set `done` directly. Otherwise, one merge at a
-     time, in the MISSION worktree:
+   - **Success** (the machine's Success rule holds): the maker may have committed. In the TASK worktree first run
+     the commit check of the loop's write-scope snippet on `changed(<task worktree>, <init.base>)` (`init.base` of
+     the run; committed range + uncommitted + untracked, so a maker's own commit is covered): any protected (Tier B)
+     path means NO commit and NO merge; set `blocked(spec)` (the spec led the maker into Tier B), the paths in
+     `note`, and stop and report to the human. A git error (exception, e.g. a missing worktree) is fail closed:
+     NO commit, NO merge, `blocked(design)`, the error in `note`, report. Then `git add -- <path>` each
+     stageable path by name and, if `git diff --cached --quiet` exits 1, `git commit -m "<task-id>: <summary>"`;
+     the merged branch is exactly what the checker judged (`git diff <init.base>` plus untracked files).
+     Zero-diff PASS (`stageable(changed)` empty and `commits(<task worktree>, <init.base>)` is 0: HEAD unmoved, the
+     mission HEAD already satisfies the task): no commit (it would exit 1) and no merge (it would report
+     "Already up to date" and create nothing), set `done` directly. Otherwise, one merge at a time, in the
+     MISSION worktree:
      `git merge --no-ff <task branch>`. Set `done` only after that merge commit exists, or after a zero-diff PASS,
      so a downstream worktree cut later contains the upstream result. A failed commit or a merge that fails for a
      reason other than a conflict (or a `decide_shell` `block`/`ask`): `git merge --abort` if one is open, set

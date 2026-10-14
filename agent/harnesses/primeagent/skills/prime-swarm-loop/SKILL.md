@@ -30,24 +30,36 @@ The fixed paths only name the main checkouts and Claude's `.claude/worktrees/*`,
 the repo (`worktree_alloc`: `<repo parent>/.worktrees/<repo>/<slug>-<ts>`), so a bare realpath match misses their
 `.claude/settings*.json` (`write-scope-lib.sh` protects those copies). `protected` therefore also tests the
 main-checkout twin of the path (same repo-relative path under the git common dir's parent); extra candidates can
-only add protection. `changed` lists every path a commit would stage (tracked changes incl. deletions and renames,
-plus untracked); it runs read-only git, the commit itself goes through `decide_shell`.
+only add protection. `changed(wt, base)` lists every path a commit or merge would carry: the COMMITTED range too
+(the maker may commit; `base` = the run's `init.base` from `await rlm.factory.status(run_id)`), uncommitted tracked
+changes incl. deletions, and untracked files; a rename lists old and new path. It runs read-only git; a failing git
+(missing worktree, bad base) raises = fail closed: no commit/merge, stop and report. The commit goes through `decide_shell`.
 
     import json, os, fnmatch, subprocess, swarm_adapter; from pathlib import Path
     agent = next((d for d in Path(swarm_adapter.__file__).resolve().parents if d.name == "agent" and (d / "skills").is_dir()), None)
     rules = next((c for c in ([agent / "write-scope-rules.json"] if agent else []) + [Path.home() / ".prime" / "agent" / "write-scope-rules.json"] if c.is_file()), None)  # None: ask the human
     r = json.load(open(rules)); h = os.path.expanduser("~")
-    E = {**{k: v for k, v in os.environ.items() if not k.startswith("GIT_")}, "PYTHONSAFEPATH": "1"}
-    def git(wd, *a): return subprocess.run(["git", "-C", wd, *a], capture_output=True, text=True, env=E).stdout.rstrip("\n")
+    E = {**{k: v for k, v in os.environ.items() if not k.startswith("GIT_")}, "PYTHONSAFEPATH": "1", "LC_ALL": "C"}
+    def git(wd, *a):  # a failing git raises: a missing worktree must not read as "no changes"
+        p = subprocess.run(["git", "-C", wd, *a], capture_output=True, text=True, env=E)
+        if p.returncode: raise RuntimeError("git %s failed in %s: %s" % (a[0], wd, p.stderr.strip()))
+        return p.stdout.rstrip("\n")
     def protected(target):  # True = protected
         p = os.path.realpath(target); c = [p]
         d = next(str(x) for x in [Path(p), *Path(p).parents] if x.is_dir())
-        top, common = git(d, "rev-parse", "--show-toplevel"), git(d, "rev-parse", "--path-format=absolute", "--git-common-dir")
+        try: top, common = git(d, "rev-parse", "--show-toplevel"), git(d, "rev-parse", "--path-format=absolute", "--git-common-dir")
+        except RuntimeError as e:
+            if "not a git repository" not in str(e): raise
+            top = common = ""  # outside any repo: no twin
         if top and common: c.append(os.path.realpath(os.path.join(os.path.dirname(common), os.path.relpath(p, os.path.realpath(top)))))
         return any(fnmatch.fnmatch(x, g) for x in c for g in r["suffix_patterns"] + [g.replace("${HOME}", h) for g in r["fixed_absolute_path_patterns"]])
-    def changed(wt): return [x for a in (("diff", "--no-renames", "--name-only", "-z", "HEAD"), ("ls-files", "--others", "--exclude-standard", "-z")) for x in git(wt, *a).split("\0") if x]
+    def changed(wt, base):  # committed (base..HEAD) + uncommitted + untracked; --no-renames lists old AND new path
+        if not base.isalnum(): raise ValueError("bad base %r" % base)
+        return sorted({x for a in (("diff", "--no-renames", "--name-only", "-z", base, "--"), ("ls-files", "--others", "--exclude-standard", "-z")) for x in git(wt, *a).split("\0") if x})
+    def commits(wt, base): return int(git(wt, "rev-list", "--count", base + "..HEAD"))  # > 0: HEAD moved (the maker committed)
+    def stageable(ch): return [x for x in ch if x != "@fix_plan.md"]  # mission-init.sh's plan file (name-exact, repo root)
     print(protected("/abs/target"))  # edit check
-    print([x for x in changed("/abs/worktree") if protected(os.path.join("/abs/worktree", x))])  # commit check: non-empty = stop
+    print([x for x in changed("/abs/worktree", "<init.base>") if protected(os.path.join("/abs/worktree", x))])  # non-empty = stop
 
 Residual risk: prime has no write hook, so this is a prompt contract, not an enforced gate. Include the list of
 protected targets you checked in the GATE report. Put "never edit Tier B (write-scope-rules.json) files" into every
@@ -91,13 +103,16 @@ them apart from the node outputs in `await rlm.factory.status(run_id)`): the las
    - Non-success run (Success rule fails, the maker may never have run): retry the task in a NEW run directory,
      at most 3 runs per task in total (the same `attempts` limit as `prime-swarm-graph`); after the 3rd, stop
      and report.
-   - After `pass`, `git diff` in the worktree is the evidence to show, not the checker prose. Then commit it (the
-     maker does not commit), in this order. (a) Run the commit check of the write-scope snippet on `changed(<worktree>)`:
-     any protected path means NO commit; stop and report the paths to the human (the task is `blocked(spec)`: its
-     spec led the maker into Tier B). (b) `changed` empty = zero-diff PASS (the code already satisfied the task):
-     skip the commit, the task is done. (c) Otherwise stage every path in `changed` by name and
-     `git commit -m "<task-id>: <summary>"`, via `swarm_adapter.decide_shell`, so the next task's checker diff
-     (`git diff <init.base>`) holds only that task's change; a failed commit: stop and report.
+   - After `pass`, `git diff <init.base>` in the worktree is the evidence to show, not the checker prose. The maker
+     may or may not have committed, so in this order. (a) Run the commit check of the write-scope snippet on
+     `changed(<worktree>, <init.base>)`: any protected path (`@fix_plan.md` included) means NO commit; stop and report
+     the paths to the human (the task is `blocked(spec)`: its spec led the maker into Tier B). A git error
+     (exception) is fail closed: stop and report. (b) `stageable(changed)` empty AND `commits(...)` 0 = zero-diff
+     PASS (the code already satisfied the task, HEAD unmoved): skip the commit, the task is done. (c) Otherwise
+     `git add -- <path>` for each stageable path by name (`@fix_plan.md` is untracked in the worktree and may be
+     missing from `.git/info/exclude`: never stage it) and, if `git diff --cached --quiet` exits 1,
+     `git commit -m "<task-id>: <summary>"`, via `swarm_adapter.decide_shell` (a maker that committed everything
+     leaves nothing to commit), so the next task's `init.base` is past this task's change; a failed commit: stop and report.
 6. **REVIEW** - run `swarm-review` with `{"worktree", "base_ref": <INIT base sha>}` once all tasks pass. Run success (Success rule)
    and verdict are separate: read `summary.all_pass` and `summary.failed`. Non-success run: a NEW run directory, at
    most 3 review runs per review round (no `budget_guard` runs there, so no mission budget either); after the 3rd,

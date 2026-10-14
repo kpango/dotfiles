@@ -169,9 +169,13 @@ for name in "${expected[@]}"; do
 		case "$flat" in *'back to `pending`'*) ;; *) bad "$name: no retry path back to pending" ;; esac
 		case "$flat" in *'git commit -m'*'git merge --no-ff'*'Set `done` only after that merge'*) ;; *) bad "$name: no commit before merge before done" ;; esac
 		# (2) Tier B check on every path to be committed, before commit and merge; hit = blocked(spec) + report
-		case "$flat" in *'`changed(<task worktree>)`: any protected (Tier B) path means NO commit and NO merge; set `blocked(spec)`'*'git commit -m'*) ;; *) bad "$name: no Tier B check before commit" ;; esac
+		case "$flat" in *'`changed(<task worktree>, <init.base>)`'*'committed range + uncommitted + untracked'*'any protected (Tier B) path means NO commit and NO merge; set `blocked(spec)`'*'git commit -m'*) ;; *) bad "$name: no Tier B check (committed range) before commit" ;; esac
+			# (2b) a failing git is fail closed: blocked(design), never "no changes"
+			case "$flat" in *'A git error (exception, e.g. a missing worktree) is fail closed: NO commit, NO merge, `blocked(design)`'*) ;; *) bad "$name: git failure not fail-closed" ;; esac
+			# (3b) note cells are one line without `|`; compile warnings and a node-count mismatch stop the mission
+			case "$flat" in *'cell = lambda s: " ".join(str(s).replace("|", "/").split())[:120]'*'STOP if `warnings` is non-empty'*'`metrics.nodes` differs from the number of rows in the `## Tasks` table'*) ;; *) bad "$name: note cells unsanitised / warnings and row count not checked" ;; esac
 		# (3) zero-diff PASS is an explicit done branch (commit rc=1 / merge "Already up to date" create nothing)
-		case "$flat" in *'Zero-diff PASS'*'set `done` directly'*'merge commit exists, or after a zero-diff PASS'*) ;; *) bad "$name: no zero-diff PASS done branch" ;; esac
+		case "$flat" in *'Zero-diff PASS (`stageable(changed)` empty and `commits(<task worktree>, <init.base>)` is 0'*'set `done` directly'*'merge commit exists, or after a zero-diff PASS'*) ;; *) bad "$name: no zero-diff PASS done branch" ;; esac
 		# (5) every escalated / failed-git outcome maps to a blocked(*) state, never left in_progress
 		case "$flat" in *'Any other `escalated` (neither kind identifiable): `blocked(design)`'*'so no task stays `in_progress`'*) ;; *) bad "$name: unclassified escalated stays in_progress" ;; esac
 		case "$flat" in *'A failed commit or a merge that fails for a reason other than a conflict'*'set `blocked(design)`, the error in `note`, and report. A merge conflict'*) ;; *) bad "$name: failed commit/merge stays in_progress" ;; esac
@@ -200,7 +204,12 @@ for name in "${expected[@]}"; do
 		# (1) prime worktrees live outside the repo: protected() also tests the main-checkout twin
 		case "$flat" in *'def protected(target)'*'if top and common: c.append('*) ;; *) bad "$name: write-scope check ignores prime worktree layout" ;; esac
 		# (2) commit check before the commit; (3) zero-diff PASS skips the commit
-		case "$flat" in *'Run the commit check of the write-scope snippet on `changed(<worktree>)`: any protected path means NO commit'*'`changed` empty = zero-diff PASS'*'git commit -m'*) ;; *) bad "$name: no Tier B check / zero-diff branch before commit" ;; esac
+		case "$flat" in *'`changed(<worktree>, <init.base>)`: any protected path (`@fix_plan.md` included) means NO commit'*'`stageable(changed)` empty AND `commits(...)` 0 = zero-diff PASS'*'git commit -m'*) ;; *) bad "$name: no Tier B check / zero-diff branch before commit" ;; esac
+			# (2b) git failures fail closed; the committed range is part of the union; @fix_plan.md is never staged
+			case "$flat" in *'A git error (exception) is fail closed: stop and report'*) ;; *) bad "$name: git failure not fail-closed" ;; esac
+			case "$flat" in *'if p.returncode: raise RuntimeError('*) ;; *) bad "$name: git helper ignores the exit code" ;; esac
+			case "$flat" in *'def changed(wt, base): # committed (base..HEAD) + uncommitted + untracked'*'"diff", "--no-renames", "--name-only", "-z", base'*) ;; *) bad "$name: changed() ignores the committed range" ;; esac
+			case "$flat" in *'`@fix_plan.md` is untracked in the worktree'*'never stage it'*'x != "@fix_plan.md"'*|*'x != "@fix_plan.md"'*'`@fix_plan.md` is untracked in the worktree'*'never stage it'*) ;; *) bad "$name: @fix_plan.md not excluded from staging" ;; esac
 		# (4) explore / review non-success runs are capped
 		case "$flat" in *'at most 3 explore runs in total'*) ;; *) bad "$name: explore retries unbounded" ;; esac
 		case "$flat" in *'at most 3 review runs per review round'*) ;; *) bad "$name: review retries unbounded" ;; esac
@@ -310,16 +319,26 @@ neg_case prime-swarm-loop 's/at most 3 runs per task in total/as often as needed
 neg_case prime-swarm-meta 's/, "PYTHONSAFEPATH": "1"//' "harness-select run without empty cwd + PYTHONSAFEPATH"
 # T8 attempt 5 regressions (1-5)
 neg_case prime-swarm-loop 's/if top and common: c.append(/if top and common: pass; c.extend(/' "write-scope check ignores prime worktree layout"
-neg_case prime-swarm-loop 's/any protected path means NO commit/any protected path is noted/' "no Tier B check / zero-diff branch before commit"
-neg_case prime-swarm-loop 's/`changed` empty = zero-diff PASS/`changed` empty = commit anyway/' "no Tier B check / zero-diff branch before commit"
+neg_case prime-swarm-loop 's/included) means NO commit/included) is noted/' "no Tier B check / zero-diff branch before commit"
+neg_case prime-swarm-loop 's/`commits(...)` 0 = zero-diff/`commits(...)` 0 = commit anyway/' "no Tier B check / zero-diff branch before commit"
 neg_case prime-swarm-loop 's/at most 3 explore runs in total/as many explore runs as needed/' "explore retries unbounded"
 neg_case prime-swarm-loop 's/most 3 review runs per review round/many review runs as needed/' "review retries unbounded"
-neg_case prime-swarm-graph 's/means NO commit and NO merge/means log it/' "no Tier B check before commit"
+neg_case prime-swarm-graph 's/means NO commit and NO merge/means log it/' "no Tier B check (committed range) before commit"
 neg_case prime-swarm-graph 's/or after a zero-diff PASS/and nothing else/' "no zero-diff PASS done branch"
 neg_case prime-swarm-graph 's/set `done` directly/wait/' "no zero-diff PASS done branch"
 neg_case prime-swarm-graph 's/Any other `escalated` (neither kind identifiable): `blocked(design)`/Any other `escalated`: leave it/' "unclassified escalated stays in_progress"
 neg_case prime-swarm-graph 's/`blocked(design)`, the error in `note`, and report\. A merge/leave it, with the error in `note`. A merge/' "failed commit/merge stays in_progress"
 neg_case prime-swarm-graph 's/at most 3 runs per review round/any number of runs/' "explore/review retries unbounded"
+# T8 attempt 6 regressions
+neg_case prime-swarm-loop 's/"-z", base, "--")/"-z", "HEAD", "--")/' "changed() ignores the committed range"
+neg_case prime-swarm-loop 's/if p.returncode: raise RuntimeError(/if False: raise RuntimeError(/' "git helper ignores the exit code"
+neg_case prime-swarm-loop 's/x != "@fix_plan.md"/True/' "@fix_plan.md not excluded from staging"
+neg_case prime-swarm-loop 's/(exception) is fail closed: stop and report/(exception) is ignored/' "git failure not fail-closed"
+neg_case prime-swarm-graph 's/`changed(<task worktree>, <init.base>)`/`changed(<task worktree>)`/' "no Tier B check (committed range) before commit"
+neg_case prime-swarm-graph 's/A git error (exception, e.g. a missing worktree) is fail closed/A git error is retried/' "git failure not fail-closed"
+neg_case prime-swarm-graph 's/replace("|", "\/")/replace("|", "")/' "note cells unsanitised / warnings and row count not checked"
+neg_case prime-swarm-graph 's/STOP if `warnings` is non-empty/note `warnings` if non-empty/' "note cells unsanitised / warnings and row count not checked"
+neg_case prime-swarm-graph 's/`metrics.nodes` differs from the/`metrics.width` differs from the/' "note cells unsanitised / warnings and row count not checked"
 neg_case prime-swarm-graph 's/`swarm-explore`, at most 3 runs/`swarm-explore`/' "explore/review retries unbounded"
 }
 
@@ -378,9 +397,18 @@ if sys.argv[2] == "protected":
     for label, path, want in json.loads(sys.argv[3]):
         got = protected(path)
         print("ok" if got == want else "FAIL", label, "->", got)
+elif sys.argv[2] == "meta":
+    ch = changed(sys.argv[3], sys.argv[4])
+    print(json.dumps({"stageable": stageable(ch), "commits": commits(sys.argv[3], sys.argv[4])}))
+elif sys.argv[2] == "raises":
+    try:
+        changed(sys.argv[3], sys.argv[4])
+        print("returned")
+    except (RuntimeError, ValueError) as e:
+        print("raised")
 else:
     wt = sys.argv[3]
-    ch = changed(wt)
+    ch = changed(wt, sys.argv[4])
     print(json.dumps({"changed": sorted(ch), "bad": sorted(x for x in ch if protected(os.path.join(wt, x)))}))
 PY
 # (4a) a target repo planting agent/write-scope-rules.json with no patterns must not empty Tier B
@@ -449,10 +477,10 @@ else
 fi
 # changed(): what a commit would stage, and the Tier B subset of it
 chk() { # <label> <expected json>; worktree in $wt
-	local got; got="$(run_ws "$wdefs" changed "$wt" 2>&1)"
+	local got; got="$(run_ws "$wdefs" changed "$wt" "$wbase" 2>&1)"
 	if [ "$got" = "$2" ]; then echo "ok   behaviour loop: $1"; else bad "behaviour loop: $1: got $got, want $2"; fi
 }
-wt="$wdot"
+wt="$wdot"; wbase="$(gitq -C "$wt" rev-parse HEAD)"
 chk "clean worktree: changed() empty (zero-diff PASS has nothing to commit)" '{"changed": [], "bad": []}'
 printf 'new\n' >"$wt/src/new.go"; command rm -f "$wt/del.txt"; printf 'a2\n' >>"$wt/a.txt"
 chk "untracked + deleted + modified, no Tier B: all listed, none protected" '{"changed": ["a.txt", "del.txt", "src/new.go"], "bad": []}'
@@ -463,6 +491,50 @@ gitq -C "$wt" mv .claude/settings.local.json .claude/renamed.json
 chk "rename away from a protected path: the old path is listed and caught" '{"changed": [".claude/renamed.json", ".claude/settings.local.json", "a.txt", "del.txt", "src/new.go"], "bad": [".claude/settings.local.json"]}'
 printf 'hook\n' >"$wt/agent/hooks/claude/new-hook.sh"
 chk "untracked file under agent/hooks/claude is caught by the suffix rule" '{"changed": [".claude/renamed.json", ".claude/settings.local.json", "a.txt", "agent/hooks/claude/new-hook.sh", "del.txt", "src/new.go"], "bad": [".claude/settings.local.json", "agent/hooks/claude/new-hook.sh"]}'
+# (T8 attempt 6) the maker may COMMIT: committed Tier B changes are in the union (prime layout, worktree_alloc)
+wc="$(mkwt "$dot" committed)"; cbase="$(gitq -C "$wc" rev-parse HEAD | cut -c1-12)"
+printf '{"x":2}\n' >"$wc/.claude/settings.json"; gitq -C "$wc" add .claude/settings.json; gitq -C "$wc" commit -qm "maker commit"
+printf 'package main\n' >"$wc/src/a.go"
+if [ "$(run_ws "$wdefs" changed "$wc" "$cbase" 2>&1)" = '{"changed": [".claude/settings.json", "src/a.go"], "bad": [".claude/settings.json"]}' ]; then
+	echo "ok   behaviour loop: maker-committed .claude/settings.json is in changed() and caught (base = 12-hex init.base)"
+else
+	bad "behaviour loop: committed Tier B change not detected: $(run_ws "$wdefs" changed "$wc" "$cbase" 2>&1)"
+fi
+# repro: the old HEAD-based union misses it (checking against HEAD only) - and the mutant is detected
+sed 's/"-z", base, "--")/"-z", "HEAD", "--")/' "$wdefs" >"$beh/ws_defs_head.py"
+if run_ws "$beh/ws_defs_head.py" changed "$wc" "$cbase" 2>&1 | grep -q '"bad": \[\]'; then
+	echo "ok   behaviour loop: HEAD-based changed() misses the committed Tier B change (negative)"
+else
+	bad "behaviour loop: HEAD-based mutant not detected"
+fi
+if [ "$(run_ws "$wdefs" meta "$wc" "$cbase" 2>&1)" = '{"stageable": [".claude/settings.json", "src/a.go"], "commits": 1}' ]; then
+	echo "ok   behaviour loop: commits() > 0 after a maker commit (not a zero-diff PASS)"
+else
+	bad "behaviour loop: commits()/stageable wrong: $(run_ws "$wdefs" meta "$wc" "$cbase" 2>&1)"
+fi
+# fail closed: a missing worktree raises; the old helper (exit code ignored) returned an empty list
+if [ "$(run_ws "$wdefs" raises "$wsb/no-such-worktree" "$cbase" 2>&1)" = "raised" ]; then echo "ok   behaviour loop: changed() on a missing worktree raises (fail closed)"; else bad "behaviour loop: missing worktree did not raise"; fi
+if [ "$(run_ws "$wdefs" raises "$wc" "-x" 2>&1)" = "raised" ]; then echo "ok   behaviour loop: changed() with a non-hex base raises"; else bad "behaviour loop: bad base did not raise"; fi
+sed 's/if p.returncode: raise/if False: raise/' "$wdefs" >"$beh/ws_defs_open.py"
+if [ "$(run_ws "$beh/ws_defs_open.py" raises "$wsb/no-such-worktree" "$cbase" 2>&1)" = "returned" ]; then
+	echo "ok   behaviour loop: ignoring the git exit code fails open on a missing worktree (negative)"
+else
+	bad "behaviour loop: fail-open mutant not detected"
+fi
+# @fix_plan.md (mission-init.sh) is untracked: it is in changed() (Tier B still sees it) but never stageable, so zero-diff PASS holds
+wf="$(mkwt "$dot" plan)"; fbase="$(gitq -C "$wf" rev-parse HEAD | cut -c1-12)"
+printf '# plan\n' >"$wf/@fix_plan.md"
+if [ "$(run_ws "$wdefs" changed "$wf" "$fbase" 2>&1)" = '{"changed": ["@fix_plan.md"], "bad": []}' ] && [ "$(run_ws "$wdefs" meta "$wf" "$fbase" 2>&1)" = '{"stageable": [], "commits": 0}' ]; then
+	echo "ok   behaviour loop: untracked @fix_plan.md is not stageable, zero-diff PASS still holds"
+else
+	bad "behaviour loop: @fix_plan.md handling wrong: $(run_ws "$wdefs" meta "$wf" "$fbase" 2>&1)"
+fi
+sed 's/x != "@fix_plan.md"/True/' "$wdefs" >"$beh/ws_defs_plan.py"
+if [ "$(run_ws "$beh/ws_defs_plan.py" meta "$wf" "$fbase" 2>&1)" = '{"stageable": ["@fix_plan.md"], "commits": 0}' ]; then
+	echo "ok   behaviour loop: without the exclusion @fix_plan.md would be staged (negative)"
+else
+	bad "behaviour loop: @fix_plan.md mutant not detected"
+fi
 # the zero-diff facts the skills rely on: commit exits non-zero and a no-op merge creates no commit
 zt="$(mkwt "$dot" zero)"
 zb="$(gitq -C "$zt" rev-parse --abbrev-ref HEAD)"
@@ -474,7 +546,24 @@ if [ "$(gitq -C "$dot" rev-parse HEAD)" = "$before" ] && printf '%s' "$nm" | gre
 else
 	bad "behaviour zero-diff: merge facts changed: $nm"
 fi
-if [ "$(gitq -C "$dot" rev-list --count "HEAD..$zb")" = "0" ]; then echo "ok   behaviour zero-diff: rev-list --count HEAD..<task branch> is 0"; else bad "behaviour zero-diff: rev-list count not 0"; fi
+zbase="$(gitq -C "$zt" rev-parse HEAD | cut -c1-12)"
+if [ "$(run_ws "$wdefs" meta "$zt" "$zbase" 2>&1)" = '{"stageable": [], "commits": 0}' ]; then echo "ok   behaviour zero-diff: untouched task worktree has empty stageable() and commits() 0"; else bad "behaviour zero-diff: meta not empty"; fi
+# graph note cells: `cell` from the skill; a raw `|` row is dropped by graph-compile.sh (repro), the sanitised row is kept
+cellfn="$(sed -n 's/.*`\(cell = lambda s: [^`]*\)`.*/\1/p' "$here/prime-swarm-graph/SKILL.md" | head -1)"
+[ -n "$cellfn" ] || bad "behaviour graph: cell lambda not found in the skill"
+gplan() { # <note> -> plan with tasks A (done) and B (pending, depends A), B's note as given
+	printf '%s\n' '## Tasks' '' '| task-id | summary | depends | worktree | status | attempts | domain | note |' '|---|---|---|---|---|---|---|---|' \
+		'| A | a | - | - | done | 0 | x | - |' "| B | b | A | - | pending | 1 | x | $1 |" '| C | c | A | - | pending | 0 | x | - |' >"$beh2/plan.md"
+	(cd "$beh2" && bash "$repo/agent/skills/swarm-graph/scripts/graph-compile.sh" plan.md) | python3 -I -c 'import json,sys; d=json.load(sys.stdin); print(len(d["warnings"]), d["metrics"]["nodes"])'
+}
+beh2="$(mktemp -d "${TMPDIR:-/tmp}/prime-skills-beh2.XXXXXX")"
+raw='fatal: bad | pipe'
+if [ "$(gplan "$raw")" = "1 2" ]; then echo "ok   behaviour graph: a raw '|' in note drops the row (warnings=1, nodes 2 of 3 rows) - why the skill stops on warnings/node count"; else bad "behaviour graph: raw '|' repro changed: $(gplan "$raw")"; fi
+safe="$(python3 -I -c "$cellfn
+print(cell('$raw' + chr(10) + 'second line ' + 'x' * 300))")"
+case "$safe" in *'|'*|*$'\n'*) bad "behaviour graph: cell() output has | or newline" ;; esac
+if [ "${#safe}" -le 120 ] && [ "$(gplan "$safe")" = "0 3" ]; then echo "ok   behaviour graph: cell() output is one line, <= 120 chars, no '|'; the row survives (warnings=0, nodes 3 of 3)"; else bad "behaviour graph: cell() output not accepted: $(gplan "$safe")"; fi
+command rm -rf "$beh2"
 command rm -rf "$beh"
 
 # sandboxed prime-agent: every skill appears in the skills-inventory
