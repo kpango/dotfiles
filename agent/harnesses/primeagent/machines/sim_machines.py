@@ -20,7 +20,7 @@ import rlm  # noqa: E402
 from rlm import factory  # noqa: E402
 
 HERE = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parent
-CAP = factory.ANSWER_CAPTURE_CAP
+CAP = 120  # host preview cap is 160; every emitted json stays at or below 120 in the worst case
 SUFFIX = re.compile(r"(-i\d+|-a\d+)+$")
 
 
@@ -46,6 +46,9 @@ class Sim:
         self.running = set()
         self.max_running = 0
         self.counter = 0
+        self.polls = {}
+        self.numbers = {}
+        self.events = []
 
     async def spawn(self, prompt, *, name=None, model=None, thinking=None):
         self.counter += 1
@@ -54,6 +57,7 @@ class Sim:
         self.spawned[cid] = base
         self.prompts.setdefault(base, []).append(prompt)
         self.running.add(cid)
+        self.events.append(("spawn", base))
         self.max_running = max(self.max_running, len(self.running))
         return rlm.RLMSpawnHandle(rlm_child_id=cid, name=name, session_dir=Path("/tmp"), model=model or "")
 
@@ -61,9 +65,21 @@ class Sim:
         out = []
         for cid in ids:
             base = self.spawned[cid]
-            n = self.calls[base] = self.calls.get(base, 0) + 1
-            status, answer = self.answers[base](n)
+            if cid not in self.numbers:
+                self.numbers[cid] = self.calls[base] = self.calls.get(base, 0) + 1
+            n = self.numbers[cid]
+            got = self.answers[base](n)
+            status, answer = got[0], got[1]
+            delay = got[2] if len(got) > 2 else 0
+            self.polls[cid] = self.polls.get(cid, 0) + 1
+            if self.polls[cid] <= delay:
+                out.append(rlm.RLMChildResult(
+                    rlm_child_id=cid, session_name=base, session_dir=None, status="running",
+                    settled=False, answer_preview=None, error=None, duration_ms=1,
+                    tool_use_count=0, replied_since_task=None))
+                continue
             self.running.discard(cid)
+            self.events.append(("settle", base, n, status))
             out.append(
                 rlm.RLMChildResult(
                     rlm_child_id=cid, session_name=base, session_dir=None, status=status,
@@ -108,7 +124,9 @@ def seq(*answers):
     return lambda n: ("done", answers[min(n, len(answers)) - 1])
 
 
-INIT = fence({"init": {"sha": "a" * 64, "base": "b" * 40}})
+INIT = fence({"init": {"ok": True, "run": "0123456789ab", "sha": "a" * 24, "base": "b" * 12}})
+INIT_REFUSED = fence({"init": {"ok": False, "run": "0123456789ab"}})
+PLAIN_INIT = fence({"init": {"ok": True, "run": "0123456789ab"}})
 TESTS = fence({"tests": {"red": True}})
 
 
@@ -124,9 +142,9 @@ OUTCOME_DONE = fence({"outcome": {"status": "pass"}})
 OUTCOME_ESC = fence({"outcome": {"status": "escalated"}})
 
 
-def impl_answers(maker, checker):
+def impl_answers(maker, checker, init=INIT):
     return {
-        "swarm-init": ok(INIT), "swarm-test-maker": ok(TESTS), "swarm-maker": maker,
+        "swarm-init": ok(init), "swarm-test-maker": ok(TESTS), "swarm-maker": maker,
         "swarm-checker": checker, "swarm-done": ok(OUTCOME_DONE), "swarm-escalate": ok(OUTCOME_ESC),
     }
 
@@ -176,10 +194,9 @@ async def impl_five_checker_fails_escalate():
 
 
 @scenario
-async def impl_forged_maker_pass_is_not_success():
-    # Maker claims passed=true (fake verify.json) but the checker's own re-verify fails.
-    s = await Sim(impl_answers(maker_five_then_budget("check", True), ok(judge("FAIL")))).run("swarm-implement")
-    assert not s.entered("done") and s.entered("escalate")
+async def impl_refused_run_dir_escalates():
+    s = await Sim(impl_answers(ok(verify("check", True)), ok(judge("PASS")), init=INIT_REFUSED)).run("swarm-implement")
+    assert s.entered("escalate") and not s.entered("done") and not s.entered("maker")
 
 
 @scenario
@@ -195,11 +212,28 @@ async def impl_checker_is_isolated_and_reverifies():
     sources = {i["from"].split(".")[0] for i in states["checker"].get("inputs", [])}
     assert sources == {"init"}, f"checker must bind only init, got {sources}"
     prompt = states["checker"]["subagent"]["prompt"]
-    for needle in ("{init}", "input.snapshot.json", "sha256sum", "swarm_adapter.verify", "ls-files --others", "<init.base>"):
+    for needle in ("{init}", "input.snapshot.json", "sha256sum", "swarm_adapter.verify", "ls-files --others", "<init.base>", "swarm/runs/<run>"):
         assert needle in prompt, f"checker prompt missing {needle!r}"
     assert "verify.json" not in prompt and "git diff HEAD" not in prompt.replace("Do not use `git diff HEAD`", "")
     assert states["maker"]["subagent"]["prompt"].index("budget_guard") < states["maker"]["subagent"]["prompt"].index("implement the task_spec")
     assert states["maker"].get("max_entries", 1) >= 6, "backstop must sit above the 5-attempt path"
+
+
+@scenario
+async def prompts_read_only_inside_run_dir():
+    """Stale files of earlier runs are never read: only `init` names the fixed pointer; every
+    other prompt addresses swarm files exclusively under swarm/runs/<run>."""
+    for name in ("swarm-implement", "swarm-explore", "swarm-review"):
+        for st in load(name).spec["states"]:
+            prompt = st["subagent"]["prompt"]
+            for path in re.findall(r"[^\s`'\"]*swarm/[^\s`'\"]*", prompt):
+                if st["id"] == "init":
+                    assert path.endswith(".input.json") or "/swarm/runs/" in path, f"{name}.init: {path}"
+                else:
+                    assert "/swarm/runs/<run>" in path, f"{name}.{st['id']} reads outside the run dir: {path}"
+            if st["id"] != "init":
+                assert "{init}" in prompt, f"{name}.{st['id']} must be given the bound init json (run id)"
+                assert re.search(r"out/(implement|explore|review)", prompt) is None, "old shared out/ directory referenced"
 
 
 def worst(name, obj):
@@ -210,7 +244,7 @@ def worst(name, obj):
 async def outputs_fit_under_cap():
     worst_cases = {
         "swarm-implement": {
-            "init": worst("init", {"sha": "f" * 64, "base": "e" * 64}),
+            "init": worst("init", {"ok": True, "run": "f" * 12, "sha": "f" * 24, "base": "e" * 12}),
             "test-maker": worst("tests", {"red": False}),
             "maker": worst("verify", {"next": "escalate", "passed": False, "budget": "exceeded"}),
             "checker": worst("judgement", {"verdict": "TAMPER"}),
@@ -218,10 +252,13 @@ async def outputs_fit_under_cap():
             "escalate": worst("outcome", {"status": "escalated"}),
         },
         "swarm-explore": {
+            "init": worst("init", {"ok": True, "run": "f" * 12}),
             "scope": worst("shards", [f"s{i}" for i in range(1, 9)]),
             "secretary": worst("report", {"items": 99999, "missing": 8}),
+            "explorer": "s8|error|99999",
         },
         "swarm-review": {
+            "init": worst("init", {"ok": True, "run": "f" * 12}),
             "diff-source": worst("diff", {"changed_files": 999999}),
             **{f"lens-{x}": worst("review", {"lens": x, "verdict": "FAIL", "findings": 99999})
                for x in ("architecture", "code-quality", "docs-comment", "infra-config", "perf-simd", "security", "shell-config", "systems-lang")},
@@ -231,8 +268,10 @@ async def outputs_fit_under_cap():
     for name, cases in worst_cases.items():
         states = {s["id"]: s for s in load(name).spec["states"]}
         for sid, text in cases.items():
-            assert len(text) < CAP, f"{name}.{sid} worst case {len(text)} >= {CAP}"
+            assert len(text) <= CAP, f"{name}.{sid} worst case {len(text)} > {CAP}"
             for out in states[sid]["outputs"]:
+                if out["type"] != "json":
+                    continue
                 value, err = factory._parse_json_output(text[:CAP], out["name"])
                 assert err is None, f"{name}.{sid}: {err}"
         # every json output the machine declares must have a worst case above
@@ -247,8 +286,8 @@ async def outputs_fit_under_cap():
 
 
 def review_answers(verdicts):
-    answers = {"swarm-diff-source": ok(fence({"diff": {"changed_files": 4}})),
-               "swarm-aggregator": ok(fence({"summary": {"all_pass": not any(v == "FAIL" for v in verdicts.values()), "failed": 0}}))}
+    answers = {"swarm-init": ok(PLAIN_INIT), "swarm-diff-source": ok(fence({"diff": {"changed_files": 4}})),
+               "swarm-aggregator": ok(fence({"summary": {"all_pass": False, "failed": 1}}))}
     for lens in ("architecture", "code-quality", "docs-comment", "infra-config", "perf-simd", "security", "shell-config", "systems-lang"):
         answers[f"swarm-lens-{lens}"] = ok(fence({"review": {"lens": lens, "verdict": verdicts.get(lens, "PASS"), "findings": 0}}))
     return answers
@@ -262,33 +301,52 @@ async def review_runs_all_lenses_max_three_parallel():
     assert s.max_running <= 3, f"max_parallel breached: {s.max_running}"
     prompt = s.prompts["swarm-diff-source"][0]
     assert "merge-base" in prompt and "ls-files --others" in prompt
+    last_lens = max(i for i, e in enumerate(s.events) if e[0] == "settle" and e[1].startswith("swarm-lens-"))
+    agg = next(i for i, e in enumerate(s.events) if e == ("spawn", "swarm-aggregator"))
+    assert agg > last_lens, "aggregator started before every lens settled"
 
 
-def explore_answers(fail_shard=None):
+def explore_answers(delays):
+    """Explorer n settles after delays[n-1] polls; shard 2 reports its own error immediately."""
     def explorer(n):
-        return ("error", "") if fail_shard == n else ("done", f"s{n}|4")
-    return {"swarm-scope": ok(fence({"shards": ["s1", "s2", "s3"]})), "swarm-explorer": explorer,
-            "swarm-secretary": ok(fence({"report": {"items": 5, "missing": 1 if fail_shard else 0}}))}
+        line = f"s{n}|error|0" if n == 2 else f"s{n}|ok|4"
+        return ("done", line, delays[n - 1])
+    return {"swarm-init": ok(PLAIN_INIT), "swarm-scope": ok(fence({"shards": ["s1", "s2", "s3"]})),
+            "swarm-explorer": explorer, "swarm-secretary": ok(fence({"report": {"items": 5, "missing": 1}}))}
 
 
 @scenario
 async def explore_all_ok():
-    s = await Sim(explore_answers()).run("swarm-explore")
+    s = await Sim(explore_answers([0, 0, 0])).run("swarm-explore")
     assert s.entered("secretary") and s.calls["swarm-explorer"] == 3
 
 
 @scenario
-async def explore_one_failed_shard_still_reports():
-    s = await Sim(explore_answers(fail_shard=2)).run("swarm-explore")
-    assert s.entered("secretary"), f"secretary must still run after one failed shard (run state {s.state})"
-    assert s.calls.get("swarm-secretary") == 1
+async def explore_staggered_settles_wait_for_every_shard():
+    s = await Sim(explore_answers([6, 0, 3])).run("swarm-explore")
+    assert s.entered("secretary"), f"run state {s.state}"
+    explorer_settles = [i for i, e in enumerate(s.events) if e[0] == "settle" and e[1] == "swarm-explorer"]
+    secretary = next(i for i, e in enumerate(s.events) if e == ("spawn", "swarm-secretary"))
+    assert len(explorer_settles) == 3 and secretary > max(explorer_settles), "secretary started before every shard settled"
+    prompt = s.prompts["swarm-secretary"][0]
+    for line in ("s1|ok|4", "s2|error|0", "s3|ok|4"):
+        assert line in prompt, f"secretary prompt lacks {line!r}"
+
+
+@scenario
+async def explore_explorers_never_fail_by_contract():
+    states = {st["id"]: st for st in load("swarm-explore").spec["states"]}
+    prompt = states["explorer"]["subagent"]["prompt"]
+    assert "never fail" in prompt and "ALWAYS write" in prompt and '"status": "error"' in prompt
+    assert not states["secretary"]["inputs"][1].get("optional"), "secretary must require the joined input"
 
 
 async def main():
-    for fn in (impl_pass_path, impl_five_verify_failures_escalate, impl_five_checker_fails_escalate,
-               impl_forged_maker_pass_is_not_success, impl_tamper_escalates_immediately,
-               impl_checker_is_isolated_and_reverifies, outputs_fit_under_cap,
-               review_runs_all_lenses_max_three_parallel, explore_all_ok, explore_one_failed_shard_still_reports):
+    for fn in (impl_refused_run_dir_escalates, prompts_read_only_inside_run_dir, impl_pass_path,
+               impl_five_verify_failures_escalate, impl_five_checker_fails_escalate,
+               impl_tamper_escalates_immediately, impl_checker_is_isolated_and_reverifies,
+               outputs_fit_under_cap, review_runs_all_lenses_max_three_parallel, explore_all_ok,
+               explore_staggered_settles_wait_for_every_shard, explore_explorers_never_fail_by_contract):
         await fn()
     failed = 0
     for name, passed, why in RESULTS:
