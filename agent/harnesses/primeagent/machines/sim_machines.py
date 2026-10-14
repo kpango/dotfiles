@@ -676,7 +676,7 @@ async def docs_state_one_success_rule_and_no_per_case_claims():
     needles = {
         "swarm-implement": "reports state `done` AND `<run_dir>/outcome.json` exists AND its `status` is `pass`",
         "swarm-explore": "reports state `done` AND `<run_dir>/report.md` exists.",
-        "swarm-review": "reports state `done` AND `<run_dir>/summary.md` exists AND it reports `all_pass` true",
+        "swarm-review": "reports state `done` AND `<run_dir>/summary.md` exists and the aggregator's `summary` json output parsed.",
     }
     must = ("ANY other combination", "NOT success", "`stop`", "start a new run directory", "does not re-run the failed state", "`stopped`")
     banned = ("Outcomes (what the caller sees)", "| `paused` |", "| `done` |", "without `report.md`", "without `summary.md`",
@@ -690,6 +690,11 @@ async def docs_state_one_success_rule_and_no_per_case_claims():
             assert m in text, f"{name}: missing {m!r}"
         for b in banned:
             assert b not in text, f"{name}: removed per-case claim present: {b!r}"
+    rv = (HERE / "swarm-review" / "MACHINE.md").read_text(encoding="utf-8")
+    rule = rv[rv.index("**Success rule.**"):rv.index("**Review verdict")]
+    assert "all_pass" not in rule, "run success must not depend on the verdict"
+    assert "`summary.all_pass` json output" in rv and "successful review that found defects, not a run failure" in rv
+    assert "the only file read outside the run directory" not in rv and "`diff-source` and the lenses read the repo" in rv
     impl = (HERE / "swarm-implement" / "MACHINE.md").read_text(encoding="utf-8")
     assert "budget-guard.sh" in impl and "SWARM_STATE_DIR" in impl and "outside the run directory" in impl
 
