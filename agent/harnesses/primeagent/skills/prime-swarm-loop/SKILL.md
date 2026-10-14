@@ -30,14 +30,16 @@ The fixed paths only name the main checkouts and Claude's `.claude/worktrees/*`,
 the repo (`worktree_alloc`: `<repo parent>/.worktrees/<repo>/<slug>-<ts>`), so a bare realpath match misses their
 `.claude/settings*.json` (`write-scope-lib.sh` protects those copies). `protected` therefore also tests the
 main-checkout twin of the path (same repo-relative path under the git common dir's parent); extra candidates can
-only add protection. `changed(wt, base)` lists every path a commit or merge would carry: the COMMITTED range too
-(the maker may commit; `base` = the run's `init.base` from `await rlm.factory.status(run_id)`), uncommitted tracked
-changes incl. deletions, and untracked files; a rename lists old and new path. It runs read-only git; a failing git
+only add protection. `changed(wt, base)` lists every path a commit or merge would carry, as the union of base..HEAD (the maker may
+commit; `base` = the run's `init.base` from `await rlm.factory.status(run_id)`), index vs base, working tree vs base
+(all incl. deletions), and untracked files: a path the maker committed but reverted in the working tree still shows.
+A rename lists old and new path. It runs read-only git; a failing git
 (missing worktree, bad base) raises = fail closed: no commit/merge, stop and report. The commit goes through `decide_shell`.
 
     import json, os, fnmatch, subprocess, swarm_adapter; from pathlib import Path
     agent = next((d for d in Path(swarm_adapter.__file__).resolve().parents if d.name == "agent" and (d / "skills").is_dir()), None)
     rules = next((c for c in ([agent / "write-scope-rules.json"] if agent else []) + [Path.home() / ".prime" / "agent" / "write-scope-rules.json"] if c.is_file()), None)  # None: ask the human
+    if rules is None: raise RuntimeError("no write-scope-rules.json: every edit is protected; stop and ask the human")
     r = json.load(open(rules)); h = os.path.expanduser("~")
     E = {**{k: v for k, v in os.environ.items() if not k.startswith("GIT_")}, "PYTHONSAFEPATH": "1", "LC_ALL": "C"}
     def git(wd, *a):  # a failing git raises: a missing worktree must not read as "no changes"
@@ -53,9 +55,14 @@ changes incl. deletions, and untracked files; a rename lists old and new path. I
             top = common = ""  # outside any repo: no twin
         if top and common: c.append(os.path.realpath(os.path.join(os.path.dirname(common), os.path.relpath(p, os.path.realpath(top)))))
         return any(fnmatch.fnmatch(x, g) for x in c for g in r["suffix_patterns"] + [g.replace("${HOME}", h) for g in r["fixed_absolute_path_patterns"]])
-    def changed(wt, base):  # committed (base..HEAD) + uncommitted + untracked; --no-renames lists old AND new path
+    D = ("diff", "--no-renames", "--name-only", "-z")  # --no-renames: old AND new path of a rename
+    def changed(wt, base):  # base..HEAD + index + working tree + untracked
         if not base.isalnum(): raise ValueError("bad base %r" % base)
-        return sorted({x for a in (("diff", "--no-renames", "--name-only", "-z", base, "--"), ("ls-files", "--others", "--exclude-standard", "-z")) for x in git(wt, *a).split("\0") if x})
+        qs = (D + (base, "HEAD", "--"), D + ("--cached", base, "--"), D + (base, "--"), ("ls-files", "--others", "--exclude-standard", "-z"))
+        return sorted({x for q in qs for x in git(wt, *q).split("\0") if x})
+    def incoming(mwt, branch):  # what `git merge <branch>` would bring into the mission worktree (graph)
+        if branch.startswith("-"): raise ValueError("bad branch %r" % branch)
+        return sorted(x for x in git(mwt, *D, "HEAD..." + branch, "--").split("\0") if x)
     def commits(wt, base): return int(git(wt, "rev-list", "--count", base + "..HEAD"))  # > 0: HEAD moved (the maker committed)
     def stageable(ch): return [x for x in ch if x != "@fix_plan.md"]  # mission-init.sh's plan file (name-exact, repo root)
     print(protected("/abs/target"))  # edit check
@@ -103,7 +110,7 @@ them apart from the node outputs in `await rlm.factory.status(run_id)`): the las
    - Non-success run (Success rule fails, the maker may never have run): retry the task in a NEW run directory,
      at most 3 runs per task in total (the same `attempts` limit as `prime-swarm-graph`); after the 3rd, stop
      and report.
-   - After `pass`, `git diff <init.base>` in the worktree is the evidence to show, not the checker prose. The maker
+   - After `pass`, `git diff <init.base> HEAD` plus the working-tree diff is the evidence to show, not the checker prose. The maker
      may or may not have committed, so in this order. (a) Run the commit check of the write-scope snippet on
      `changed(<worktree>, <init.base>)`: any protected path (`@fix_plan.md` included) means NO commit; stop and report
      the paths to the human (the task is `blocked(spec)`: its spec led the maker into Tier B). A git error
@@ -117,7 +124,7 @@ them apart from the node outputs in `await rlm.factory.status(run_id)`): the las
    and verdict are separate: read `summary.all_pass` and `summary.failed`. Non-success run: a NEW run directory, at
    most 3 review runs per review round (no `budget_guard` runs there, so no mission budget either); after the 3rd,
    stop and report. Failed lenses become new tasks (back to EXECUTE, max 2 review rounds), then stop and report.
-7. **GATE** - present: task outcomes, `git diff --stat`, review summary, residual risks. Then
+7. **GATE** - present: task outcomes, `git diff --stat <INIT base> HEAD` and the working-tree diff, review summary, residual risks. Then
    read `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it (or ask the human to run `/skill:prime-swarm-release-gate`). STOP and wait for the human.
 
 ## Optional tools (only where they add value)

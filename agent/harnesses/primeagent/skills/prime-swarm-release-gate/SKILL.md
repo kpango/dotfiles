@@ -23,7 +23,8 @@ that touches one is flagged to the human for their own review.
 2. Run them in the mission worktree: `swarm_adapter.verify([...commands], cwd=<worktree>)`. Pass a larger
    `timeout` for slow suites. Branch on `passed` and each result's `exit_code`; a timeout (124), launch failure
    (126/127) or `error` is a failure, not a skip. Never substitute a remembered earlier pass.
-3. Pre-merge facts for the human, each from a command you ran now: `git diff --stat <base>`, `git status --short`
+3. Pre-merge facts for the human, each from a command you ran now: `git diff --stat <base> HEAD` (committed) and
+   `git diff --stat <base>` (working tree; both, so a commit cannot hide a change), `git status --short`
    (must be clean apart from the intended change), and the `swarm-review` summary if one exists.
 4. Present: per-command `exit_code` with `output_tail` for any failure, the diff stat, open residual risks.
    Any failure: report it and stop; fixing goes back to `prime-swarm-loop` EXECUTE.

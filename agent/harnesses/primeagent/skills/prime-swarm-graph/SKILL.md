@@ -47,12 +47,15 @@ before ANY file edit (prompt contract, no write hook in prime).
      wait until its `init` settles (`rlm.factory.status`), then the next.
    - **Success** (the machine's Success rule holds): the maker may have committed. In the TASK worktree first run
      the commit check of the loop's write-scope snippet on `changed(<task worktree>, <init.base>)` (`init.base` of
-     the run; committed range + uncommitted + untracked, so a maker's own commit is covered): any protected (Tier B)
+     the run; base..HEAD + index + working tree + untracked, so a maker's own commit is covered even if the working
+     tree was reverted): any protected (Tier B)
      path means NO commit and NO merge; set `blocked(spec)` (the spec led the maker into Tier B), the paths in
      `note`, and stop and report to the human. A git error (exception, e.g. a missing worktree) is fail closed:
      NO commit, NO merge, `blocked(design)`, the error in `note`, report. Then `git add -- <path>` each
      stageable path by name and, if `git diff --cached --quiet` exits 1, `git commit -m "<task-id>: <summary>"`;
-     the merged branch is exactly what the checker judged (`git diff <init.base>` plus untracked files).
+     the merged branch is exactly what the checker judged (`git diff <init.base> HEAD` plus working tree and untracked).
+     Immediately before the merge also test `incoming(<mission worktree>, <task branch>)` (the loop snippet:
+     `HEAD...<branch>`) with the same protected check; a hit or a git error is the same stop, NO merge.
      Zero-diff PASS (`stageable(changed)` empty and `commits(<task worktree>, <init.base>)` is 0: HEAD unmoved, the
      mission HEAD already satisfies the task): no commit (it would exit 1) and no merge (it would report
      "Already up to date" and create nothing), set `done` directly. Otherwise, one merge at a time, in the
