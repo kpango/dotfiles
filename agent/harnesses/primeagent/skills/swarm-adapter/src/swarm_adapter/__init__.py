@@ -69,6 +69,14 @@ def _script(rel: str, args: list[str], cwd: str | None = None) -> dict[str, Any]
     return _sync_run(["bash", str(path), *args], cwd=cwd)
 
 
+def _bad_dash(**vals: str | None) -> dict[str, Any] | None:
+    """Reject option-looking values so they cannot be parsed as script flags."""
+    for k, v in vals.items():
+        if isinstance(v, str) and v.startswith("-"):
+            return {"exit_code": 2, "stdout": "", "stderr": "", "error": f"{k} must not start with '-': {v!r}"}
+    return None
+
+
 async def _a(fn, *a, **kw):
     return await asyncio.to_thread(fn, *a, **kw)
 
@@ -84,6 +92,8 @@ async def budget_guard(task_id: str, mission: str | None = None, max_attempts: i
     max_attempts is the 2nd positional (script default 5); mission_max -> --mission-max=N;
     reset=True runs `--reset <task> [--mission=m]` instead of counting.
     """
+    if (bad := _bad_dash(task_id=task_id, mission=mission)):
+        return bad
     if reset:
         return await _a(_script, _BUDGET, ["--reset", task_id, *_mission(mission)])
     args = [task_id] + ([str(max_attempts)] if max_attempts is not None else []) + _mission(mission)
@@ -94,22 +104,28 @@ async def budget_guard(task_id: str, mission: str | None = None, max_attempts: i
 
 async def fable_grant(task_id: str, mission: str | None = None) -> dict[str, Any]:
     """Request a Fable spot grant (budget-guard.sh --fable). exit_code 1 = denied."""
+    if (bad := _bad_dash(task_id=task_id, mission=mission)):
+        return bad
     return await _a(_script, _BUDGET, ["--fable", task_id, *_mission(mission)])
 
 
 async def fable_maker(task_id: str) -> dict[str, Any]:
     """Fable Maker continuation grant for a base task (budget-guard.sh --fable-maker <base>)."""
+    if (bad := _bad_dash(task_id=task_id)):
+        return bad
     return await _a(_script, _BUDGET, ["--fable-maker", task_id])
 
 
-async def graph_compile(plan_path: str, fit: bool = False, stale: str | None = None) -> dict[str, Any]:
+async def graph_compile(plan_path: str | None = None, fit: bool = False, stale: str | None = None) -> dict[str, Any]:
     """Compile @fix_plan.md into a DAG (graph-compile.sh).
 
     Returns the script's parsed JSON plus `exit_code`. Exit codes: 0 OK, 2
     UNFIT_FALLBACK_LOOP, 3 CYCLE, 4 MISSING_DEP, 5 VERIFIER_FLOOR, 6 NO_TASKS,
     7 PARSE_ERROR. Non-JSON output yields {exit_code, stdout, stderr}.
     """
-    args = (["--fit"] if fit else []) + (["--stale", stale] if stale else []) + [plan_path]
+    if (bad := _bad_dash(plan_path=plan_path, stale=stale)):
+        return bad
+    args = (["--fit"] if fit else []) + (["--stale", stale] if stale else []) + ([plan_path] if plan_path else [])
     r = await _a(_script, _COMPILE, args)
     try:
         parsed = json.loads(r["stdout"])
@@ -121,18 +137,24 @@ async def graph_compile(plan_path: str, fit: bool = False, stale: str | None = N
     return parsed
 
 
-async def graph_status(plan_path: str) -> dict[str, Any]:
-    """Human-readable graph mission summary (graph-status.sh)."""
-    return await _a(_script, _STATUS, [plan_path])
+async def graph_status(plan_path: str | None = None) -> dict[str, Any]:
+    """Human-readable graph mission summary (graph-status.sh). plan_path defaults to <toplevel>/@fix_plan.md."""
+    if (bad := _bad_dash(plan_path=plan_path)):
+        return bad
+    return await _a(_script, _STATUS, [plan_path] if plan_path else [])
 
 
-async def mission_init(slug: str, goal: str, scale: str, targets: str | None = None,
+async def mission_init(slug: str, goal: str, scale: str | None = None, targets: str | None = None,
                        depth: int | None = None, cwd: str | None = None) -> dict[str, Any]:
     """Initialise a mission (mission-init.sh <slug> <goal> <scale> [targets] [depth]), run in `cwd` (the mission worktree).
 
-    scale is 'interactive' or 'mission'. stdout = state dir.
+    scale is 'interactive' or 'mission' (script default 'mission'). stdout = state dir.
     """
-    args = [slug, goal, scale]
+    if (bad := _bad_dash(slug=slug)):
+        return bad
+    args = [slug, goal]
+    if scale is not None or targets is not None or depth is not None:
+        args.append(scale or "mission")  # script default; keeps later positionals in place
     if targets is not None or depth is not None:
         args.append(targets or "")
     if depth is not None:
@@ -163,30 +185,39 @@ def _worktree_base(root: Path) -> tuple[Path | None, str]:
     return base, ""
 
 
-def _worktree_alloc(slug: str, scale: str | None, cwd: str | None) -> dict[str, Any]:
+def _worktree_alloc(slug: str, scale: str | None, cwd: str | None, base_ref: str) -> dict[str, Any]:
     root = _main_repo(cwd or os.getcwd())
     if root is None:
         return {"exit_code": 128, "error": f"not a git repository: {cwd or os.getcwd()}"}
     base, err = _worktree_base(root)
     if base is None:
         return {"exit_code": 1, "error": err}
+    caller = cwd or os.getcwd()
+    sha = _git(caller, "rev-parse", "--verify", "--end-of-options", f"{base_ref}^{{commit}}")
+    if sha["exit_code"] != 0:
+        return {"exit_code": sha["exit_code"], "error": f"cannot resolve base_ref {base_ref!r}: {sha['stderr'].strip()}"}
+    base_sha = sha["stdout"].strip()
     safe = re.sub(r"[^A-Za-z0-9._-]+", "-", slug).strip("-") or "mission"
     ts = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
     path, branch = base / f"{safe}-{ts}", f"swarm-prime/{safe}-{ts}"
     base.mkdir(parents=True, exist_ok=True)
-    r = _git(str(root), "worktree", "add", "-b", branch, str(path))
+    r = _git(str(root), "worktree", "add", "-b", branch, str(path), base_sha)
     if r["exit_code"] != 0:
         return {"exit_code": r["exit_code"], "error": r["stderr"].strip()}
-    return {"path": str(path), "branch": branch, "scale": scale, "exit_code": 0}
+    return {"path": str(path), "branch": branch, "base": base_sha, "scale": scale, "exit_code": 0}
 
 
-async def worktree_alloc(slug: str, scale: str | None = None, cwd: str | None = None) -> dict[str, Any]:
+async def worktree_alloc(slug: str, scale: str | None = None, cwd: str | None = None,
+                         base_ref: str = "HEAD") -> dict[str, Any]:
     """Create a worktree outside the repo (CONTEXT Q8): ${SWARM_WORKTREE_DIR:-<repo parent>/.worktrees/<repo>}/<slug>-<UTC ts>.
 
     A relative SWARM_WORKTREE_DIR is made absolute against the process cwd; a location inside the repo is refused.
-    Returns {path, branch, scale, exit_code} or {exit_code, error}. `cwd` selects the repo (default: process cwd).
+    The branch starts at `base_ref` (default HEAD) resolved in the CALLER's checkout (`cwd`), not the main repo's HEAD.
+    Returns {path, branch, base, scale, exit_code} or {exit_code, error}. `cwd` selects the repo (default: process cwd).
     """
-    return await _a(_worktree_alloc, slug, scale, cwd)
+    if (bad := _bad_dash(base_ref=base_ref)):
+        return bad
+    return await _a(_worktree_alloc, slug, scale, cwd, base_ref)
 
 
 def _worktree_branch(root: Path, path: Path) -> str | None:
@@ -225,15 +256,25 @@ async def worktree_release(path: str) -> dict[str, Any]:
     return await _a(_worktree_release, path)
 
 
-def _verify(commands: list[str], cwd: str, timeout: float) -> dict[str, Any]:
+def _verify(commands: Any, cwd: str, timeout: float) -> dict[str, Any]:
     if isinstance(commands, str):
         commands = [commands]
+    if not isinstance(commands, (list, tuple)):
+        return {"passed": False, "results": [], "error": f"commands must be a list of str, got {type(commands).__name__}"}
     if not Path(cwd).is_dir():
         return {"passed": False, "results": [], "error": f"cwd does not exist: {cwd}"}
     results = []
     for c in commands:
-        p = subprocess.Popen(["bash", "-c", c], cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             text=True, errors="replace", start_new_session=True)
+        if not isinstance(c, str):
+            results.append({"command": repr(c), "exit_code": 126, "output_tail": f"command must be str, got {type(c).__name__}"})
+            continue
+        try:
+            p = subprocess.Popen(["bash", "-c", c], cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                 text=True, errors="replace", start_new_session=True)
+        except OSError as e:  # missing bash (ENOENT), unreadable cwd (EACCES), ...
+            results.append({"command": c, "exit_code": 127 if isinstance(e, FileNotFoundError) else 126,
+                            "output_tail": f"{type(e).__name__}: {e}"[-_TAIL:]})
+            continue
         try:
             out, _ = p.communicate(timeout=timeout)
             rc = p.returncode
@@ -258,6 +299,16 @@ def _block(msg: str) -> dict[str, Any]:
     return {"decision": "block", "reason": "swarm-adapter: " + msg, "error": msg}
 
 
+def _rules_ok(path: Path) -> bool:
+    """Same root cause decide.py fails open on: an unreadable/empty rules file. Validate before trusting it."""
+    try:
+        data = json.loads(path.read_text())
+    except (OSError, ValueError):
+        return False
+    rules = data.get("shell_command_rules") if isinstance(data, dict) else None
+    return isinstance(rules, list) and len(rules) > 0
+
+
 def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
     env = os.environ.get("SWARM_AGENT_DIR")
     agent = Path(env) if env else _repo_agent_dir()
@@ -265,6 +316,8 @@ def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
     rules = agent / "security-rules.json" if agent else None
     if not (decide and decide.is_file() and rules and rules.is_file()):
         return _block("decide.py/security-rules.json unavailable (fail-closed: this adapter runs without hooks)")
+    if not _rules_ok(rules):
+        return _block(f"{rules} is not a JSON object with a non-empty shell_command_rules list (fail-closed)")
     # harness stays "claude": decide.py only enables its advisory layer for known harnesses
     # (claude/agy/pi); an unknown value would silently skip it.
     req = {"family": "security_shell", "command": command, "cwd": cwd or os.getcwd(),
@@ -276,6 +329,8 @@ def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
         out = None
     if r["exit_code"] != 0 or not isinstance(out, dict) or out.get("decision") not in ("allow", "ask", "block"):
         return _block(f"decide.py failed (fail-closed): exit {r['exit_code']} {r['stderr'][:200]}")
+    if "fail-open" in str(out.get("reason", "")):
+        return _block(f"decide.py replied fail-open: {out.get('reason')}")
     return out
 
 

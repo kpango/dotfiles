@@ -1,6 +1,8 @@
 """Hermetic tests for the swarm-adapter thin wrapper (stub script roots + temp git repos)."""
 import asyncio
+import json
 import os
+import shutil
 import stat
 import subprocess
 from pathlib import Path
@@ -341,7 +343,7 @@ def test_fable_maker(stubs):
 def _fake_agent(tmp_path, body):
     a = tmp_path / "agent"
     (a / "scripts/hooks").mkdir(parents=True)
-    (a / "security-rules.json").write_text("{}")
+    (a / "security-rules.json").write_text(json.dumps({"shell_command_rules": [{"id": "x"}]}))
     (a / "scripts/hooks/decide.py").write_text(body)
     return a
 
@@ -369,3 +371,104 @@ def test_agent_dir_found_through_symlinked_skill_dir(tmp_path):
         env={**os.environ, "PYTHONPATH": str(link / "src")}, capture_output=True, text=True,
     )
     assert out.stdout.strip() == str(REPO_AGENT.resolve())
+
+
+# ======================= attempt 3 ===============================================
+@pytest.mark.parametrize("content", ["", "{}", "not json", '{"shell_command_rules": []}',
+                                     '{"shell_command_rules": "x"}', "[]"])
+def test_decide_shell_bad_rules_file_blocks(tmp_path, monkeypatch, content):
+    a = _fake_agent(tmp_path, 'import json;print(json.dumps({"decision":"allow","reason":""}))\n')
+    (a / "security-rules.json").write_text(content)
+    monkeypatch.setenv("SWARM_AGENT_DIR", str(a))
+    r = run(sa.decide_shell("ls"))
+    assert r["decision"] == "block" and r["error"]
+
+
+@pytest.mark.parametrize("content", ["", "{}", "not json"])
+def test_decide_shell_real_decide_py_with_broken_rules_blocks(tmp_path, monkeypatch, content):
+    a = tmp_path / "agent"
+    shutil.copytree(REPO_AGENT / "scripts", a / "scripts")
+    shutil.copy(REPO_AGENT / "security-rules.json", a / "security-rules.json")
+    monkeypatch.setenv("SWARM_AGENT_DIR", str(a))
+    assert run(sa.decide_shell("ls"))["decision"] == "allow"  # valid copy works
+    (a / "security-rules.json").write_text(content)
+    assert run(sa.decide_shell("ls"))["decision"] == "block"
+
+
+def test_decide_shell_failopen_reply_blocks(tmp_path, monkeypatch):
+    a = _fake_agent(tmp_path, 'import json;print(json.dumps({"decision":"allow","reason":"unknown family: x (fail-open)"}))\n')
+    monkeypatch.setenv("SWARM_AGENT_DIR", str(a))
+    r = run(sa.decide_shell("ls"))
+    assert r["decision"] == "block" and "fail-open" in r["error"]
+
+
+def test_verify_unreadable_cwd_never_raises(tmp_path):
+    d = tmp_path / "locked"
+    d.mkdir()
+    d.chmod(0)
+    try:
+        r = run(sa.verify(["true"], str(d)))
+    finally:
+        d.chmod(0o700)
+    assert r["passed"] is False and isinstance(r, dict)
+    assert r.get("error") or r["results"][0]["exit_code"] in (126, 127)
+
+
+def test_verify_non_str_element(tmp_path):
+    r = run(sa.verify(["true", 5, None], str(tmp_path)))
+    assert r["passed"] is False
+    assert [x["exit_code"] for x in r["results"]] == [0, 126, 126]
+
+
+def test_verify_non_list_commands(tmp_path):
+    r = run(sa.verify(5, str(tmp_path)))
+    assert r["passed"] is False and r["error"]
+
+
+def test_verify_missing_bash(tmp_path, monkeypatch):
+    monkeypatch.setattr(sa.subprocess, "Popen", lambda *a, **k: (_ for _ in ()).throw(FileNotFoundError("bash")))
+    r = run(sa.verify(["true"], str(tmp_path)))
+    assert r["passed"] is False and r["results"][0]["exit_code"] == 127
+
+
+def test_alloc_branches_from_callers_checkout(repo, tmp_path, monkeypatch):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    mission = run(sa.worktree_alloc("mission", cwd=str(repo)))
+    mp = mission["path"]
+    _git(mp, "-c", "commit.gpgsign=false", "commit", "-q", "--allow-empty", "-m", "extra")
+    want = _git(mp, "rev-parse", "HEAD").strip()
+    child = run(sa.worktree_alloc("child", cwd=mp))
+    assert _git(child["path"], "rev-parse", "HEAD").strip() == want
+    assert child["base"] == want
+
+
+def test_alloc_explicit_base_ref(repo, tmp_path, monkeypatch):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    first = _git(repo, "rev-parse", "HEAD").strip()
+    _git(repo, "-c", "commit.gpgsign=false", "commit", "-q", "--allow-empty", "-m", "two")
+    r = run(sa.worktree_alloc("b", cwd=str(repo), base_ref=first))
+    assert _git(r["path"], "rev-parse", "HEAD").strip() == first
+
+
+def test_alloc_bad_base_ref(repo, tmp_path, monkeypatch):
+    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
+    r = run(sa.worktree_alloc("b", cwd=str(repo), base_ref="nope-ref"))
+    assert r["exit_code"] != 0 and "path" not in r
+
+
+def test_optional_plan_path_and_scale(stubs):
+    _script(stubs, "swarm-graph/scripts/graph-compile.sh", 'echo "{\\"n\\": $#}"\n')
+    assert run(sa.graph_compile())["n"] == 0
+    assert run(sa.graph_status())["exit_code"] == 0
+    r = run(sa.mission_init("s", "g"))
+    assert r["stdout"].split("\n")[:2] == ["s", "g"]
+
+
+@pytest.mark.parametrize("call", [
+    lambda: sa.budget_guard("-x"), lambda: sa.fable_grant("--fable"), lambda: sa.fable_maker("-b"),
+    lambda: sa.graph_compile("-p"), lambda: sa.graph_status("--help"), lambda: sa.mission_init("-s", "g"),
+    lambda: sa.graph_compile("p", stale="-a"),
+])
+def test_leading_dash_rejected(stubs, call):
+    r = run(call())
+    assert r["exit_code"] != 0 and r["error"]

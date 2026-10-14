@@ -31,10 +31,14 @@ await swarm_adapter.worktree_release(wt["path"])
 - `worktree_release` is guarded: it refuses (`exit_code` != 0 plus `error`) unless the real path is under the worktree root, the worktree's
   branch is `swarm-prime/*`, and it is clean (no `--force`; uncommitted work is never destroyed). The branch is kept.
 - `verify` runs every command (no short-circuit); a bare str is one command; `passed` is false for an empty list or a missing `cwd`
-  (`error` set). `output_tail` is the last 4000 chars of stdout+stderr. A timeout kills the whole process group (`exit_code` 124).
+  (`error` set); it never raises (OSError → exit_code 126/127, non-str element → 126). `output_tail` is the last 4000 chars of stdout+stderr. A timeout kills the whole process group (`exit_code` 124).
 - `budget_guard(task, mission=, max_attempts=, mission_max=, reset=)` maps to the script's positional/`--mission`/`--mission-max`/`--reset`
   options; `fable_maker(base_task)` is `--fable-maker`. `mission_init(..., depth=, cwd=)` runs in the mission worktree `cwd`.
 - `decide_shell(command, cwd=None)` is FAIL-CLOSED: this adapter runs without hooks, so if decide.py or security-rules.json cannot be found
   or run, the result is `decision: "block"` with an `error` field. `SWARM_AGENT_DIR` overrides the agent dir (discovery uses the real path, so a
   symlinked install works). It sends harness `"claude"` because decide.py only enables its advisory layer for known harnesses (claude/agy/pi).
+- `decide_shell` also validates `security-rules.json` itself (JSON object, non-empty `shell_command_rules`) and treats any decide.py reply whose
+  reason contains `fail-open` as `block`.
+- `worktree_alloc(..., base_ref="HEAD")` branches from `base_ref` resolved in the caller's `cwd` checkout (not the main repo HEAD); result has `base` (sha).
+- `plan_path` (graph_*) and `scale` (mission_init) are optional like the scripts'; task_id/slug/plan_path/stale/base_ref starting with `-` return an error dict.
 - Tests: `uv run --with pytest pytest -q` from this directory.
