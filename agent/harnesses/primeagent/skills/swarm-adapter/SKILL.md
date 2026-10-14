@@ -23,8 +23,9 @@ await swarm_adapter.decide_shell("git status")           # {decision: allow|ask|
 
 - `graph_compile` exit codes: 0 OK, 2 UNFIT_FALLBACK_LOOP, 3 CYCLE, 4 MISSING_DEP, 5 VERIFIER_FLOOR,
   6 NO_TASKS, 7 PARSE_ERROR. Branch on `verdict`/`exit_code`, never on prose.
-- Script root: `$SWARM_SCRIPTS_ROOT` (exclusive when set), else the dotfiles repo `agent/skills`
-  (found from this skill's real path), else `~/.claude/skills`. A missing script yields `exit_code` 127.
+- Script root: the dotfiles repo `agent/skills` found from this skill's real path, else `~/.claude/skills`; always absolute. There is NO env
+  override (`SWARM_SCRIPTS_ROOT`/`SWARM_AGENT_DIR` were removed): scripts and decide.py run with the caller's target repo as cwd, so a
+  cwd-relative or env-chosen path would let that repo make the adapter execute its own code. A missing script yields `exit_code` 127.
 - `worktree_alloc` places worktrees outside the repo: `${SWARM_WORKTREE_DIR:-<repo parent>/.worktrees/<repo>}/<slug>-<UTC ts>`,
   branch `swarm-prime/<slug>-<ts>`. A relative `SWARM_WORKTREE_DIR` is made absolute against the process cwd; a location inside the repo is refused.
 - The adapter performs NO destructive operation, so there is no release/remove function. Worktree cleanup is done by the human or by
@@ -34,7 +35,7 @@ await swarm_adapter.decide_shell("git status")           # {decision: allow|ask|
   bad `timeout`) is that command's `exit_code` 126/127 and the others still run.
   A timeout kills the whole process group (`exit_code` 124) and the call returns within `timeout` + 2s per command.
   **Known limit:** a descendant that left the group (`setsid`, `set -m`) is not killed; its still-open output pipe is abandoned
-  after 2s (the `output_tail` says so) and the process may outlive the call.
+  after 2s (the `output_tail` says so) and the process may outlive the call. If the command itself had already exited on its own, its real `exit_code` is reported (not 124) together with that note.
 - **Never raises, by construction:** every public function sits behind one `_boundary` wrapper that turns any Exception into
   `{exit_code: 1, stdout: "", stderr: "", error: "<Type>: <msg>"}` (verify: `{passed: false, results: [], error}`; decide_shell:
   `decision: "block"`, `error`). Inputs are therefore not type-checked individually (non-str task ids, `cwd` pointing at a file, ... yield `error`).
@@ -47,8 +48,8 @@ await swarm_adapter.decide_shell("git status")           # {decision: allow|ask|
 - `budget_guard(task, mission=, max_attempts=, mission_max=, reset=)` maps to the script's positional/`--mission`/`--mission-max`/`--reset`
   options; `fable_maker(base_task)` is `--fable-maker`. `mission_init(..., depth=, cwd=)` runs in the mission worktree `cwd`.
 - `decide_shell(command, cwd=None)` is FAIL-CLOSED: this adapter runs without hooks, so if decide.py or security-rules.json cannot be found
-  or run, the result is `decision: "block"` with an `error` field. `SWARM_AGENT_DIR` overrides the agent dir (discovery uses the real path, so a
-  symlinked install works). It sends harness `"claude"` because decide.py only enables its advisory layer for known harnesses (claude/agy/pi).
+  or run, the result is `decision: "block"` with an `error` field. The agent dir is discovered from this skill's real path (so a symlinked install works).
+  It sends harness `"primeagent"`: prime has no human confirm, so decide.py's advisory layer (guard_relax; claude/agy/pi only) must not relax a decision.
 - `decide_shell` runs decide.py with its process cwd set to `cwd` (default: process cwd), because the protected-branch rules read the branch of that
   directory; a nonexistent `cwd` yields `block`.
 - `decide_shell` also validates `security-rules.json` itself (JSON object, non-empty `shell_command_rules`) and treats any decide.py reply whose

@@ -5,10 +5,11 @@ script and returns a plain dict. Only worktree_alloc and verify are
 new, and they are deliberately minimal prime-specific control. No destructive operation lives here:
 worktree cleanup is done by the human or agent/skills/swarm-implement/scripts/worktree-release.sh.
 
-Script lookup (per script, first hit wins):
-  1. $SWARM_SCRIPTS_ROOT  (exclusive when set)
-  2. the dotfiles repo `agent/skills` found by walking up from this file's real path
-  3. ~/.claude/skills
+Script lookup (per script, first hit wins), derived ONLY from this module's own real path, never from the
+environment or the caller's cwd (subprocesses run in the caller's target repo, so anything cwd-relative or
+env-overridable would let that repo choose which code the adapter executes):
+  1. the dotfiles repo `agent/skills` found by walking up from this file's real path
+  2. ~/.claude/skills
 """
 from __future__ import annotations
 
@@ -39,7 +40,9 @@ _STATUS = "swarm-graph/scripts/graph-status.sh"
 _INIT = "swarm-loop/scripts/mission-init.sh"
 
 
+@functools.cache
 def _repo_agent_dir() -> Path | None:
+    """The dotfiles `agent` dir above this module's real path (absolute, resolved once)."""
     for p in Path(__file__).resolve().parents:
         if p.name == "agent" and (p / "skills").is_dir():
             return p
@@ -48,9 +51,6 @@ def _repo_agent_dir() -> Path | None:
 
 def scripts_root(rel: str) -> str:
     """Return the skills root that contains `rel` (or the best candidate if none does)."""
-    env = os.environ.get("SWARM_SCRIPTS_ROOT")
-    if env:
-        return env
     agent = _repo_agent_dir()
     cands = ([agent / "skills"] if agent else []) + [Path.home() / ".claude" / "skills"]
     return str(next((c for c in cands if (c / rel).is_file()), cands[0]))
@@ -296,6 +296,9 @@ def _run_gate(c: str, cwd: str, timeout: float) -> dict[str, Any]:
         except subprocess.TimeoutExpired as e:  # a descendant that left the group (setsid) still holds the pipe
             out = _text(e.output)
             note += f"; output pipe still held after {_REAP}s by a descendant outside the group (setsid): abandoned"
+            rc = p.poll()
+            if rc is not None and rc != -signal.SIGKILL:  # the command itself had exited on its own: keep its real code
+                return {"command": c, "exit_code": rc, "output_tail": (out + note)[-_TAIL:]}
         return {"command": c, "exit_code": 124, "output_tail": (out + note)[-_TAIL:]}
     except BaseException:  # bad timeout type, KeyboardInterrupt, ...: never leave the gate running
         _killpg(p)
@@ -346,18 +349,17 @@ def _rules_ok(path: Path) -> bool:
 
 
 def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
-    env = os.environ.get("SWARM_AGENT_DIR")
-    agent = Path(env) if env else _repo_agent_dir()
+    agent = _repo_agent_dir()
     decide = agent / "scripts/hooks/decide.py" if agent else None
     rules = agent / "security-rules.json" if agent else None
     if not (decide and decide.is_file() and rules and rules.is_file()):
         return _block("decide.py/security-rules.json unavailable (fail-closed: this adapter runs without hooks)")
     if not _rules_ok(rules):
         return _block(f"{rules} is not a JSON object with a non-empty shell_command_rules list (fail-closed)")
-    # harness stays "claude": decide.py only enables its advisory layer for known harnesses
-    # (claude/agy/pi); an unknown value would silently skip it.
+    # harness "primeagent": prime has no human confirm, so decide.py's advisory layer (which it runs, incl. guard_relax,
+    # only for claude/agy/pi) must NOT be able to relax a deterministic decision here.
     req = {"family": "security_shell", "command": command, "cwd": cwd or os.getcwd(),
-           "rules_file": str(rules), "resolve_command_target": False, "harness": "claude"}
+           "rules_file": str(rules), "resolve_command_target": False, "harness": "primeagent"}
     # decide.py resolves "." / relative `cd`/`-C` targets (e.g. the protected-branch rules) against ITS process cwd,
     # so it must run in the requested cwd; a missing dir surfaces as a failed run -> block (fail-closed).
     r = _sync_run(["python3", str(decide)], cwd=req["cwd"], stdin=json.dumps(req), timeout=10)
