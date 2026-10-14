@@ -53,13 +53,11 @@ check_tier "pi" "High" "anthropic/claude-sonnet-5"
 check_tier "pi" "XHigh" "codex/gpt-6-astra"
 check_tier "pi" "Max" "anthropic/claude-fable-5-1"
 
-check_tier "primeagent" "Low" "antigravity/gemini-3.8-flash-low"
-check_tier "primeagent" "Low-Code" "opencode-go/qwen3.8-flash"
-check_tier "primeagent" "Low-Web" "antigravity/gemini-3.8-flash-low"
+check_tier "primeagent" "Low" "opencode-go/qwen3.8-flash"
 check_tier "primeagent" "Medium" "opencode-go/kimi-k3"
-check_tier "primeagent" "High" "anthropic/claude-sonnet-5"
-check_tier "primeagent" "XHigh" "codex/gpt-6-astra"
-check_tier "primeagent" "Max" "anthropic/claude-fable-5-1"
+check_tier "primeagent" "High" "prime-inference/anthropic/claude-sonnet-5"
+check_tier "primeagent" "XHigh" "prime-inference/openai/gpt-6-astra"
+check_tier "primeagent" "Max" "prime-inference/anthropic/claude-fable-5.1"
 
 check_fallback() {
     local harness="$1"
@@ -84,7 +82,7 @@ check_fallback "agy" "High" "rate_limit" "claude-sonnet-4-6"
 check_fallback "codex" "Medium" "token_exhaustion" "gpt-5.4-mini"
 check_fallback "pi" "High" "token_exhaustion" "opencode-go/deepseek-v4-pro"
 check_fallback "pi" "XHigh" "rate_limit" "antigravity/gemini-3.8-flash-high"
-check_fallback "primeagent" "High" "token_exhaustion" "opencode-go/deepseek-v4-pro"
+check_fallback "primeagent" "High" "token_exhaustion" "opencode-go/glm-5.3"
 
 echo
 echo "test-model-routing: 全テストPASS"
