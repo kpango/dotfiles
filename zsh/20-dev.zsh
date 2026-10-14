@@ -204,4 +204,7 @@ alias dbox="make -C \$rcpath devbox/shell" dbox-install="make -C \$rcpath devbox
 # expands $HOME itself when it sources the prefix.
 if [[ -f "$HOME/.prime/agent/bin/prime-shell-guard.sh" ]]; then
 	export PRIME_AGENT_BASH_COMMAND_PREFIX='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
+	# pa-sandbox cannot mount a private /proc on this machine; accept the host /proc
+	# (pa-sandbox still warns on every run). The script's own default stays fail-closed.
+	export PA_SANDBOX_ALLOW_HOST_PROC=1
 fi

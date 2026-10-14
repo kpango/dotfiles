@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# shellcheck disable=SC2015,SC2016  # A&&B||C is the ok/bad reporter idiom; single quotes defer expansion to the sandbox shell
+# shellcheck disable=SC2015,SC2016,SC2030,SC2031  # A&&B||C is the ok/bad reporter idiom; single quotes defer expansion to the sandbox shell
 # Tests for pa-auto (gate detection) and pa-sandbox (bwrap profile).
 # No network, no paid calls, never touches the real HOME: every case uses a
 # fake HOME under a fresh mktemp dir. Sandbox cases run harmless shell commands
@@ -10,7 +10,12 @@ HERE="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PA_AUTO="$HERE/pa-auto"
 PA_SANDBOX="$HERE/pa-sandbox"
 
-T="$(mktemp -d "${TMPDIR:-/tmp}/pa-wrappers-test.XXXXXX")"
+# The fixture tree lives OUTSIDE /tmp: the sandbox mounts a tmpfs over /tmp, so a
+# fake HOME under /tmp would be hidden by that, not by the HOME tmpfs under test.
+PA_TEST_ROOT="${PA_TEST_ROOT:-${XDG_CACHE_HOME:-$HOME/.cache}}"
+mkdir -p "$PA_TEST_ROOT"
+T="$(mktemp -d "$PA_TEST_ROOT/pa-wrappers-test.XXXXXX")"
+case "$T" in /tmp/*) echo "fixture root must not be under /tmp: $T" >&2; exit 2 ;; esac
 trap 'command rm -rf "$T"' EXIT
 FAIL=0 PASS=0
 
@@ -80,6 +85,21 @@ mkrepo "$R"
 printf '[project]\nname="x"\n' >"$R/pyproject.toml"
 run_auto_case "python defaults" "$R" "'python3 -m pytest'"
 
+# Detection must never invoke make (make -q evaluates $(shell ...) on the host).
+R="$T/r-make-shell"
+mkrepo "$R"
+printf 'X := $(shell touch %s/marker)\nlint:\n\t@echo l\nlint2:=1\n' "$R" >"$R/Makefile"
+out="$(cd "$R" && "$PA_AUTO" -n 2>&1 || true)"
+[[ ! -e "$R/marker" ]] && ok "pa-auto -n does not execute the Makefile" || bad "pa-auto -n does not execute the Makefile" "marker created"
+expect_has "textual detection finds lint" "'make lint'" "$out"
+expect_lacks "var assignment lint2:=1 is not a target" "lint2" "$out"
+R="$T/r-make-phony"
+mkrepo "$R"
+printf '.PHONY: lint test\nbuild:\n\t@true\nfoo test: dep\n\t@true\n' >"$R/Makefile"
+out="$(cd "$R" && "$PA_AUTO" -n 2>&1 || true)"
+expect_has "multi-target line finds test" "'make test'" "$out"
+expect_lacks ".PHONY alone does not define lint" "make lint" "$out"
+
 R="$T/r-none"
 mkrepo "$R"
 out="$(cd "$R" && "$PA_AUTO" -n 2>&1)" && rc=0 || rc=$?
@@ -119,13 +139,40 @@ else
 		.password-store/s.gpg work/.env outside.txt; do
 		printf 'SENTINEL-SECRET\n' >"$FH/$p"
 	done
-	printf 'guard\n' >"$FH/.prime/agent/bin/prime-shell-guard.sh"
+	# The guard is a symlink into a fake dotfiles tree under the fake HOME (the real
+	# install layout); the tree holds real copies of the guard's dependencies.
+	DOT="$FH/dotfiles"
+	mkdir -p "$DOT/agent/scripts/hooks"
+	REAL_ROOT="$(cd -P "$HERE/../../../.." && pwd)"
+	command cp "$REAL_ROOT/agent/scripts/prime-shell-guard.sh" "$DOT/agent/scripts/"
+	command cp "$REAL_ROOT/agent/scripts/hooks/decide.py" "$REAL_ROOT/agent/scripts/hooks/rule_engine.py" "$DOT/agent/scripts/hooks/"
+	command cp "$REAL_ROOT/agent/security-rules.json" "$DOT/agent/"
+	ln -s "$DOT/agent/scripts/prime-shell-guard.sh" "$FH/.prime/agent/bin/prime-shell-guard.sh"
+	# trusted files/dirs an unsandboxed run later executes or reads
+	mkdir -p "$FH/.prime/agent/skills" "$FH/.prime/agent/machines" "$FH/.prime/agent/kernel-venv/bin" \
+		"$FH/.prime/agent/sessions" "$FH/.data/uv/python/cpy/bin"
+	for f in settings.json models.json AGENTS.md auth.json skills/s.md machines/m.json kernel-venv/pkg.py; do
+		printf 'TRUSTED\n' >"$FH/.prime/agent/$f"
+	done
+	printf '#!/bin/sh\necho interp\n' >"$FH/.data/uv/python/cpy/bin/python3.11"
+	chmod +x "$FH/.data/uv/python/cpy/bin/python3.11"
+	ln -s "$FH/.data/uv/python/cpy/bin/python3.11" "$FH/.prime/agent/kernel-venv/bin/python"
 	REPO="$FH/work/repo"
 	mkrepo "$REPO"
 	printf 'inrepo\n' >"$REPO/.env"
-	OUTSIDE="$T/outside-repo"
-	mkdir -p "$OUTSIDE"
-	printf 'SENTINEL-SECRET\n' >"$OUTSIDE/.env"
+	printf 'SENTINEL-SECRET\n' >"$FH/.env"
+	# real unix sockets: a stand-in docker socket, and a "host daemon" socket in /tmp
+	mkdir -p "$T/socks"
+	python3 -I -c 'import socket,sys,time
+s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(120)' "$T/socks/docker.sock" &
+	SOCKPID=$!
+	HOSTTMP="$(mktemp -d /tmp/pa-hostdaemon.XXXXXX)"
+	python3 -I -c 'import socket,sys,time
+s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(120)' "$HOSTTMP/daemon.sock" &
+	SOCK2PID=$!
+	trap 'kill $SOCKPID $SOCK2PID 2>/dev/null || true; command rm -rf "$T" "$HOSTTMP"' EXIT
+	sleep 0.5
+	export PA_SANDBOX_MASK_PATHS="$T/socks/docker.sock"
 
 	# shellcheck source=pa-sandbox
 	source "$PA_SANDBOX"
@@ -150,8 +197,31 @@ else
 	out="$(run_in "echo alive")" || true
 	expect_eq "sandbox runs commands (positive control)" "alive" "$(printf '%s' "$out" | tail -n1)"
 
+	run_mut() { # same profile WITHOUT the --tmpfs $HOME pair (mutation: proves the hide tests have teeth)
+		(
+			cd "$REPO"
+			export HOME="$FH"
+			pa_sandbox_build_argv "$REPO" 2>/dev/null
+			local -a mut=()
+			local i=0
+			while [[ $i -lt ${#PA_BWRAP_ARGV[@]} ]]; do
+				if [[ "${PA_BWRAP_ARGV[$i]}" == --tmpfs && "${PA_BWRAP_ARGV[$((i + 1))]}" == "$FH" ]]; then
+					i=$((i + 2))
+					continue
+				fi
+				mut+=("${PA_BWRAP_ARGV[$i]}")
+				i=$((i + 1))
+			done
+			"${mut[@]}" sh -c "$1"
+		) 2>&1
+	}
 	for p in .ssh/id_x .aws/credentials .gnupg/key .kube/config .config/gh/hosts.yml .netrc \
-		.password-store/s.gpg work/.env outside.txt; do
+		.password-store/s.gpg work/.env .env outside.txt; do
+		out="$(run_mut "cat \"\$HOME/$p\"" || true)"
+		expect_has "MUTATION (no HOME tmpfs) leaks \$HOME/$p" "SENTINEL-SECRET" "$out"
+	done
+	for p in .ssh/id_x .aws/credentials .gnupg/key .kube/config .config/gh/hosts.yml .netrc \
+		.password-store/s.gpg work/.env .env outside.txt; do
 		out="$(run_in "cat \"\$HOME/$p\"" || true)"
 		expect_lacks "sandbox hides \$HOME/$p" "SENTINEL-SECRET" "$out"
 	done
@@ -183,6 +253,55 @@ else
 	out="$(run_in 'ls /run/user/ 2>&1 | wc -l; test -s /run/docker.sock && echo DOCKER-VISIBLE || echo docker-hidden')"
 	expect_has "docker socket masked" "docker-hidden" "$out"
 
+	# (1) trusted agent-dir paths are read-only; host copies unchanged
+	for p in bin/prime-shell-guard.sh settings.json models.json AGENTS.md auth.json skills/s.md machines/m.json kernel-venv/pkg.py; do
+		before="$(cat "$FH/.prime/agent/$p" 2>/dev/null || true)"
+		run_in "printf 'ATTACK\\n' > \"\$HOME/.prime/agent/$p\" || true; command rm -f \"\$HOME/.prime/agent/$p\" || true" >/dev/null
+		after="$(cat "$FH/.prime/agent/$p" 2>/dev/null || true)"
+		[[ -n "$after" && "$before" == "$after" && "$after" != *ATTACK* ]] \
+			&& ok "agent-dir $p cannot be modified/removed" || bad "agent-dir $p cannot be modified/removed" "before=[$before] after=[$after]"
+	done
+	for d in bin skills machines kernel-venv; do
+		run_in "touch \"\$HOME/.prime/agent/$d/planted\" || true" >/dev/null
+		[[ ! -e "$FH/.prime/agent/$d/planted" ]] && ok "agent-dir $d/ cannot gain files" || bad "agent-dir $d/ cannot gain files"
+	done
+	run_in 'cp /dev/null "$HOME/.prime/agent/sessions/new-session"' >/dev/null
+	[[ -e "$FH/.prime/agent/sessions/new-session" ]] && ok "sessions/ stays writable" || bad "sessions/ stays writable"
+
+	# (2) guard reachable inside the sandbox through the dotfiles symlink + verified end to end
+	out="$(run_in 'test -r "$HOME/.prime/agent/bin/prime-shell-guard.sh" && echo readable')"
+	expect_has "guard symlink target readable inside" "readable" "$out"
+	out="$( (cd "$REPO"; export HOME="$FH"; pa_sandbox_build_argv "$REPO" 2>/dev/null; pa_sandbox_verify_guard) 2>&1 )" && rc=0 || rc=$?
+	expect_eq "verify_guard passes with symlinked guard" "0" "$rc"
+	mv "$DOT/agent/scripts/hooks/decide.py" "$DOT/agent/scripts/hooks/decide.py.off"
+	out="$( (cd "$REPO"; export HOME="$FH"; pa_sandbox_build_argv "$REPO" 2>/dev/null; pa_sandbox_verify_guard) 2>&1 )" && rc=0 || rc=$?
+	expect_eq "verify_guard fails closed when guard dependency missing" "1" "$rc"
+	mv "$DOT/agent/scripts/hooks/decide.py.off" "$DOT/agent/scripts/hooks/decide.py"
+	run_in 'echo X >> "$HOME/dotfiles/agent/security-rules.json" || true' >/dev/null
+	cmp -s "$DOT/agent/security-rules.json" "$REAL_ROOT/agent/security-rules.json" && ok "guard rules cannot be modified from inside" || bad "guard rules cannot be modified from inside"
+
+	# (4) sockets, /run/user, daemon socket
+	out="$(PA_SANDBOX_MASK_PATHS='' run_mut "test -S \"$T/socks/docker.sock\" && echo SOCK-VISIBLE || echo sock-hidden")"
+	expect_has "MUTATION (no mask) docker socket is a real socket" "SOCK-VISIBLE" "$out"
+	out="$(run_in "test -S \"$T/socks/docker.sock\" && echo SOCK-VISIBLE || echo sock-hidden")"
+	expect_has "masked docker socket is not a socket inside (test -S)" "sock-hidden" "$out"
+	if [[ -n "$(ls -A /run/user 2>/dev/null)" ]]; then
+		out="$(run_in 'ls -A /run/user | wc -l')"
+		expect_eq "/run/user emptied" "0" "$(printf '%s' "$out" | tail -n1)"
+	fi
+	out="$(run_in 'echo "$PRIME_AGENT_DAEMON_SOCKET"')"
+	expect_lacks "daemon socket differs from host default" "prime-agent-rust-" "$out"
+	out="$(run_in "test -S \"$HOSTTMP/daemon.sock\" && echo REACHABLE || echo unreachable")"
+	expect_has "host daemon socket (in /tmp) unreachable inside" "unreachable" "$out"
+
+	# (5) resolved interpreter of the kernel venv is bound ro; env handling
+	out="$(run_in '"$HOME/.prime/agent/kernel-venv/bin/python"')"
+	expect_has "kernel-venv python symlink target usable inside" "interp" "$out"
+	run_in 'echo X > "$HOME/.data/uv/python/cpy/bin/new" || true' >/dev/null
+	[[ ! -e "$FH/.data/uv/python/cpy/bin/new" ]] && ok "interpreter dir is read-only" || bad "interpreter dir is read-only"
+	out="$( (cd "$REPO"; export HOME="$FH" PRIME_AGENT_MULTI=$'a\nb=c' PA_SANDBOX_PASS_ENV='*'; pa_sandbox_build_argv "$REPO" 2>/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c 'printf "%s" "$PRIME_AGENT_MULTI"') 2>&1)"
+	expect_eq "multi-line PRIME_AGENT_* value survives" $'a\nb=c' "$out"
+
 	# repo == HOME must be refused (would expose everything read-write)
 	out="$( (HOME="$FH" pa_sandbox_build_argv "$FH") 2>&1 )" && rc=0 || rc=$?
 	expect_eq "refuse repo==HOME rc" "1" "$rc"
@@ -201,7 +320,7 @@ else
 	expect_has "missing guard msg" "prime-shell-guard.sh" "$out"
 	out="$( (HOME="$FH" PA_SANDBOX_ALLOW_NO_GUARD=1 pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
 	expect_eq "override allows missing guard" "0" "$rc"
-	printf 'guard\n' >"$FH/.prime/agent/bin/prime-shell-guard.sh"
+	ln -s "$DOT/agent/scripts/prime-shell-guard.sh" "$FH/.prime/agent/bin/prime-shell-guard.sh"
 
 	# missing bwrap fails closed (run as a real command)
 	out="$(PATH=/nonexistent-pa "$BASH" "$PA_SANDBOX" --help 2>&1)" && rc=0 || rc=$?

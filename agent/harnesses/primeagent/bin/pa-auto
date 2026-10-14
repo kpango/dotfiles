@@ -7,7 +7,7 @@
 #
 # Gate detection (first match wins, in the repo = git toplevel of $PWD or $PWD):
 #   1. Makefile / GNUmakefile / makefile: `make lint` and `make test`, each only
-#      if that target exists (`make -q <t>` exit code <= 1; 2 means no rule).
+#      if that target is defined (textual scan; make is never run, so $(shell ...) cannot execute).
 #      If at least one exists, the Makefile decides and no language default is
 #      added.
 #   2. Language defaults:
@@ -27,10 +27,22 @@ q() { # single-quote one word for display
 	printf "'%s'" "${1//\'/\'\\\'\'}"
 }
 
-make_has_target() {
-	local rc=0
-	make -q "$1" >/dev/null 2>&1 || rc=$?
-	[[ $rc -le 1 ]]
+# Textual target detection: the Makefile is NEVER executed (make -q would evaluate
+# $(shell ...) on the host). A target is a line `name[ name...]:` at column 0 that is
+# not an assignment (`:=` `::=`), a recipe (tab) or a comment. Included makefiles,
+# pattern rules and .PHONY-only declarations are not followed/counted.
+make_has_target() { # <makefile> <target>
+	local line names n
+	while IFS= read -r line || [[ -n "$line" ]]; do
+		if [[ "$line" =~ ^([A-Za-z0-9_./\ -]+):([^=]|$) ]]; then
+			names="${BASH_REMATCH[1]}"
+			[[ "$names" == .PHONY* ]] && continue
+			for n in $names; do
+				[[ "$n" == "$2" ]] && return 0
+			done
+		fi
+	done <"$1"
+	return 1
 }
 
 detect_gates() { # sets global GATES
@@ -38,8 +50,8 @@ detect_gates() { # sets global GATES
 	local f
 	for f in GNUmakefile makefile Makefile; do
 		if [[ -f $f ]]; then
-			make_has_target lint && GATES+=("make lint")
-			make_has_target test && GATES+=("make test")
+			make_has_target "$f" lint && GATES+=("make lint")
+			make_has_target "$f" test && GATES+=("make test")
 			[[ ${#GATES[@]} -gt 0 ]] && return 0
 			break
 		fi

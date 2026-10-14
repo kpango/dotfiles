@@ -22,6 +22,14 @@
 #     models.json (OLLAMA_API_KEY VLLM_API_KEY), plus PA_SANDBOX_PASS_ENV
 #     (space-separated extra names). SSH_AUTH_SOCK, cloud/GitHub tokens etc.
 #     are therefore not inherited.
+#   - ~/.prime/agent is rw EXCEPT bin/ kernel-venv/ settings.json models.json models/
+#     AGENTS.md skills/ machines/ agents/ themes/ prompts/ extensions/ auth.json,
+#     which are re-bound ro (an unsandboxed run later sources/executes them). The
+#     kernel-venv python's resolved install dir (e.g. ~/.data/uv/python/...) and
+#     the guard's dotfiles agent/ tree are ro-bound too. Only entries existing at
+#     launch are protected.
+#   - Before exec, the guard is proven inside the sandbox (probe: harmless command
+#     runs, a known-blocked one is refused with rc 126), else fail closed.
 #   - Its own daemon socket (/tmp/pa-sandbox/daemon.sock on a private tmpfs),
 #     so it never talks to an unsandboxed daemon.
 #   - PRIME_AGENT_BASH_COMMAND_PREFIX sources the shell guard; fails closed if
@@ -49,6 +57,11 @@
 # shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
 set -euo pipefail
 
+# Paths under ~/.prime/agent re-bound READ-ONLY (executed or trusted by unsandboxed
+# runs). auth.json is included: the sandbox cannot refresh OAuth tokens (set up
+# keys outside the sandbox). Left writable: sessions, session-*, logs, daemon-workers,
+# telemetry*, mcp-service-catalog* (known limit: a sandboxed run can write those).
+PA_SANDBOX_AGENT_RO=(bin kernel-venv settings.json models.json models AGENTS.md skills machines agents themes prompts extensions auth.json)
 PA_SANDBOX_ENV_ALLOW=(PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY)
 
 pa_sandbox_die() {
@@ -114,10 +127,39 @@ pa_sandbox_build_argv() {
 	for extra in /run/user /run/dbus; do
 		[[ -d "$extra" ]] && PA_BWRAP_ARGV+=(--tmpfs "$extra")
 	done
-	[[ -S /run/docker.sock ]] && PA_BWRAP_ARGV+=(--ro-bind /dev/null /run/docker.sock)
+	local -a masks=()
+	read -ra masks <<<"${PA_SANDBOX_MASK_PATHS:-/run/docker.sock /run/podman/podman.sock}"
+	for extra in "${masks[@]}"; do
+		[[ -S "$extra" ]] && PA_BWRAP_ARGV+=(--ro-bind /dev/null "$extra")
+	done
 	[[ -t 0 ]] || PA_BWRAP_ARGV+=(--new-session)
 
 	PA_BWRAP_ARGV+=(--bind "$agent_dir" "$agent_dir" --bind "$repo" "$repo")
+	# Everything an UNSANDBOXED run later executes or trusts is re-bound read-only
+	# on top of the rw agent dir, so a sandboxed run cannot plant code there.
+	# Only entries that exist at launch are protected (nothing is created).
+	for name in "${PA_SANDBOX_AGENT_RO[@]}"; do
+		[[ -e "$agent_dir/$name" ]] && PA_BWRAP_ARGV+=(--ro-bind "$agent_dir/$name" "$agent_dir/$name")
+	done
+	# The kernel venv's python is usually a symlink into another tree (uv); bind
+	# the resolved interpreter install (parent of its bin/) read-only.
+	local interp
+	if interp="$(readlink -f "$agent_dir/kernel-venv/bin/python" 2>/dev/null)" && [[ -n "$interp" ]]; then
+		interp="$(dirname "$(dirname "$interp")")"
+		if [[ -d "$interp" && "$interp" != / && "$interp" != /usr && "$interp" != "$agent_dir"* ]]; then
+			PA_BWRAP_ARGV+=(--ro-bind "$interp" "$interp")
+		fi
+	fi
+	# The guard is normally a symlink into the dotfiles checkout (under $HOME, which
+	# the tmpfs hides). Bind that checkout's agent/ tree (guard, decide.py,
+	# rule_engine.py, security-rules.json) read-only at the same path.
+	local guard groot
+	if guard="$(readlink -f "$agent_dir/bin/prime-shell-guard.sh" 2>/dev/null)" && [[ -f "$guard" ]]; then
+		groot="$(cd -P "$(dirname "$guard")/../.." 2>/dev/null && pwd)" || groot=""
+		if [[ -n "$groot" && -d "$groot/agent" ]]; then
+			PA_BWRAP_ARGV+=(--ro-bind "$groot/agent" "$groot/agent")
+		fi
+	fi
 	local gcd
 	if gcd="$(git -C "$repo" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" && [[ -d "$gcd" && "$gcd" != "$repo"/* ]]; then
 		PA_BWRAP_ARGV+=(--bind "$gcd" "$gcd")
@@ -133,15 +175,17 @@ pa_sandbox_build_argv() {
 	fi
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
-	local var
-	for name in "${PA_SANDBOX_ENV_ALLOW[@]}" ${PA_SANDBOX_PASS_ENV:-}; do
-		[[ -n "${!name+x}" ]] && PA_BWRAP_ARGV+=(--setenv "$name" "${!name}")
+	local -a pass=()
+	read -ra pass <<<"${PA_SANDBOX_PASS_ENV:-}" # no globbing: read -ra splits only on IFS
+	for name in "${PA_SANDBOX_ENV_ALLOW[@]}" "${pass[@]}"; do
+		[[ "$name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ && -n "${!name+x}" ]] && PA_BWRAP_ARGV+=(--setenv "$name" "${!name}")
 	done
-	while IFS='=' read -r var _; do
-		case "$var" in
-		LC_* | PRIME_AGENT_*) PA_BWRAP_ARGV+=(--setenv "$var" "${!var}") ;;
+	# compgen -e lists exported variable NAMES only, so multi-line values are safe.
+	while IFS= read -r name; do
+		case "$name" in
+		LC_* | PRIME_AGENT_*) PA_BWRAP_ARGV+=(--setenv "$name" "${!name}") ;;
 		esac
-	done < <(env)
+	done < <(compgen -e)
 	# Fixed values last (bwrap: later --setenv wins).
 	PA_BWRAP_ARGV+=(
 		--setenv PRIME_AGENT_CODING_AGENT_DIR "$agent_dir"
@@ -152,11 +196,37 @@ pa_sandbox_build_argv() {
 	)
 }
 
+# pa_sandbox_verify_guard: run the built profile (PA_BWRAP_ARGV) with the same
+# `bash -c` shape prime-agent uses and prove, INSIDE the sandbox, that the guard
+# loads, allows a harmless command, and refuses a known-blocked one with rc 126.
+# `. guard` failing is non-fatal in bash, so without this a hidden guard would
+# silently leave every command unguarded.
+pa_sandbox_verify_guard() {
+	[[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" == 1 ]] && return 0
+	local prefix='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"' script out rc
+	_probe() { # <command>
+		script=$'exec 9>&0 8>&1 0</dev/null\nread -r _g <&9 || exit 127\n{\n'"$prefix"$'\n'"$1"$'\n} 8>&- 9>&-\n__s=$?\nexit $__s'
+		out="$(echo go | "${PA_BWRAP_ARGV[@]}" bash -c "$script" 2>&1)" && rc=0 || rc=$?
+	}
+	_probe 'echo PA-PROBE-ALLOWED'
+	if [[ $rc -ne 0 || "$out" != *PA-PROBE-ALLOWED* ]]; then
+		pa_sandbox_die "guard probe failed inside the sandbox (allowed command did not run, rc=$rc): $out"
+		return 1
+	fi
+	_probe 'echo PA-PROBE-LEAK; r''m -rf ~'
+	if [[ $rc -ne 126 || "$out" == *PA-PROBE-LEAK* ]]; then
+		pa_sandbox_die "guard probe failed inside the sandbox (blocked command was not refused with rc 126, rc=$rc): $out"
+		return 1
+	fi
+	return 0
+}
+
 pa_sandbox_main() {
 	pa_sandbox_require_bwrap || return $?
 	local repo
 	repo="$(pa_sandbox_repo_root "$PWD")"
 	pa_sandbox_build_argv "$repo" || return $?
+	pa_sandbox_verify_guard || return $?
 	exec "${PA_BWRAP_ARGV[@]}" prime-agent "$@"
 }
 
