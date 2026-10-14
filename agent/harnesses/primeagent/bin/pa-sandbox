@@ -30,8 +30,15 @@
 #     operations (commit, branch, add, config) fail BY DESIGN; the human commits on
 #     the host after review. Nested gitfiles: each `gitdir:` target (and its commondir)
 #     is resolved and ro-bound if inside the workspace, else the run is refused unless
-#     it is already under a protected git dir. ALL nested `.git` entries (no depth limit; symlinks
+#     it is already under a protected git dir; a `gitdir:`/commondir path that goes
+#     through a symlink is refused. ALL nested `.git` entries (no depth limit; symlinks
 #     skipped) are bound; more than PA_SANDBOX_MAX_NESTED_GIT (500) FAILS CLOSED.
+#   - ANCESTORS: a mount point cannot be renamed, but its writable parent can (the
+#     mount moves along and the original path is free for an attacker-made git dir
+#     that the unchanged gitfile / a later host git run trusts). So for every protected
+#     git path below the workspace root, its TOP-LEVEL ancestor directory (the entry
+#     directly under the root) is ro-bound as well (a mount point itself, read-only
+#     inside). Paths are canonical (realpath); a non-directory/symlink ancestor refuses.
 #     A workspace without a `.git` is refused (an agent
 #     could plant one that a later unsandboxed git run would trust), override:
 #     PA_SANDBOX_ALLOW_NO_GIT=1 (UNSAFE).
@@ -84,6 +91,10 @@
 #   - A symlinked nested `.git` makes pa-sandbox refuse to start (override, UNSAFE:
 #     PA_SANDBOX_ALLOW_GIT_SYMLINKS=1); any error while scanning for nested `.git`
 #     (unreadable dir) also refuses.
+#   - TRADE-OFF: every top-level workspace directory that contains a protected git
+#     path (nested `.git`, a gitfile's gitdir, an in-workspace common dir), e.g. vendor/
+#     holding vendor/dep/.git, is ENTIRELY read-only inside the sandbox (listed on
+#     stderr every run). A `.git` directly under the root needs no extra bind.
 #   - mcp-service-catalog.v2.json and daemon-workers/ are ro (see PA_SANDBOX_AGENT_RW_*).
 #   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
 #   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
@@ -185,6 +196,15 @@ pa_sandbox_build_argv() {
 	if [[ -f "$repo/.git" ]]; then
 		if ! gcd="$(pa_sandbox_valid_gcd "$repo" "$home" "$agent_dir")"; then
 			pa_sandbox_die "workspace .git points to a git dir that is not a valid, safe common dir; refusing"
+			return 1
+		fi
+		# its gitdir path must not go through a symlink (one in the workspace could be re-pointed)
+		local tl tgd
+		tl="$(head -n1 "$repo/.git")"
+		tgd="${tl#gitdir: }"
+		[[ "$tgd" == /* ]] || tgd="$repo/$tgd"
+		if [[ "$tl" != "gitdir: "* || "$(realpath -s -m -- "$tgd" 2>/dev/null)" != "$(readlink -f -- "$tgd" 2>/dev/null)" ]]; then
+			pa_sandbox_die "workspace .git gitdir path '$tgd' is malformed or goes through a symlink; refusing"
 			return 1
 		fi
 	fi
@@ -320,10 +340,16 @@ pa_sandbox_build_argv() {
 	# may point elsewhere): resolve each target, make sure it is read-only (already
 	# under a protected path, or ro-bound if inside the workspace) or refuse to start.
 	_protect_dir() { # <dir> <label>
-		local q pp
+		local q pp lex
 		q="$(readlink -f "$1" 2>/dev/null)" || q=""
+		lex="$(realpath -s -m -- "$1" 2>/dev/null)" || lex=""
 		if [[ -z "$q" || ! -d "$q" ]]; then
 			pa_sandbox_die "$2 does not resolve to an existing directory; refusing"
+			return 1
+		fi
+		# a symlink on the way (e.g. in the rw workspace) could be re-pointed later
+		if [[ "$lex" != "$q" ]]; then
+			pa_sandbox_die "$2 path '$1' goes through a symlink (-> '$q'); refusing"
 			return 1
 		fi
 		for pp in "${prot[@]}"; do
@@ -354,6 +380,25 @@ pa_sandbox_build_argv() {
 			_protect_dir "$cdir" "commondir of $gf" || return 1
 		fi
 	done
+	# ANCESTORS (see header): ro-bind the top-level ancestor of every protected git path
+	# below the root, so no writable parent can be renamed to move the mount away.
+	local pg rel top
+	local -a anc=()
+	for pg in "${prot[@]}" "${gfiles[@]}"; do
+		pa_sandbox_within "$pg" "$repo" || continue
+		rel="${pg#"$repo"/}"
+		[[ "$rel" == */* ]] || continue # directly under the root: parent is the root mount
+		top="$repo/${rel%%/*}"
+		if [[ ! -d "$top" || -L "$top" ]]; then
+			pa_sandbox_die "cannot protect '$top' (ancestor of git path '$pg'): not a real directory; refusing"
+			return 1
+		fi
+		[[ -n "${seen[$top]:-}" ]] || anc+=("${rel%%/*}/")
+		_ro "$top"
+	done
+	if [[ ${#anc[@]} -gt 0 ]]; then
+		pa_sandbox_warn "read-only inside the sandbox (they contain protected git metadata; edits there fail by design): ${anc[*]}"
+	fi
 	unset -f _ro _protect_dir
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")

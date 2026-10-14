@@ -352,16 +352,21 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	[[ -f "$FH/.prime/agent/logs/x" ]] && ok "missing rw state dir created on host, writable inside" || bad "missing rw state dir created on host, writable inside"
 
 	# ---- git metadata is entirely read-only (Checker attacks A-D) -------------
-	# run_mut_drop: same profile with the ro bind of <path> turned rw (mutation)
+	# run_mut_drop: same profile with the ro bind of <path> turned rw (mutation); inside
+	# the workspace the bind of its top-level ancestor (see pa-sandbox ANCESTORS) goes too
 	run_mut_drop() { # <workspace> <ro-path> <sh-snippet>
 		(
 			cd "$1"
 			export HOME="$FH"
 			pa_sandbox_build_argv "$1" 2>/dev/null
 			local -a mut=()
-			local i=0
+			local i=0 mtop="$2" rel
+			if [[ "$2" == "$1"/* ]]; then
+				rel="${2#"$1"/}"
+				mtop="$1/${rel%%/*}"
+			fi
 			while [[ $i -lt ${#PA_BWRAP_ARGV[@]} ]]; do
-				if [[ "${PA_BWRAP_ARGV[$i]}" == --ro-bind && "${PA_BWRAP_ARGV[$((i + 1))]}" == "$2" ]]; then
+				if [[ "${PA_BWRAP_ARGV[$i]}" == --ro-bind && ("${PA_BWRAP_ARGV[$((i + 1))]}" == "$2" || "${PA_BWRAP_ARGV[$((i + 1))]}" == "$mtop") ]]; then
 					if [[ "$2" == "$1"/* ]]; then
 						i=$((i + 3)) # inside the rw workspace: drop the bind entirely
 					else
@@ -439,9 +444,15 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	# nested .git (e.g. a vendored clone) is read-only too; write ops fail by design
 	mkdir -p "$REPO/vendor"
 	git init -q "$REPO/vendor/dep"
-	run_ws "$REPO" 'echo x > vendor/dep/.git/config 2>/dev/null; mkdir vendor/dep/.git/hooks2 2>/dev/null; echo ok > vendor/dep/tree-file; true' >/dev/null || true
+	run_ws "$REPO" 'echo x > vendor/dep/.git/config 2>/dev/null; mkdir vendor/dep/.git/hooks2 2>/dev/null; echo ok > vendor/dep/tree-file 2>/dev/null; echo ok > root-file; true' >/dev/null || true
 	[[ ! -e "$REPO/vendor/dep/.git/hooks2" ]] && ok "nested .git is read-only" || bad "nested .git is read-only"
-	[[ -f "$REPO/vendor/dep/tree-file" ]] && ok "working-tree files under nested repo stay writable" || bad "working-tree files under nested repo stay writable"
+	# documented trade-off: the top-level dir holding a nested .git is read-only as a whole
+	[[ ! -e "$REPO/vendor/dep/tree-file" ]] && ok "TRADE-OFF: top-level dir holding a nested .git is read-only" || bad "TRADE-OFF: top-level dir holding a nested .git is read-only"
+	[[ -f "$REPO/root-file" ]] && ok "workspace files outside protected subtrees stay writable" || bad "workspace files outside protected subtrees stay writable"
+	command rm -f "$REPO/root-file"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" || true
+	expect_has "read-only top-level dirs are announced on stderr" "read-only inside the sandbox" "$out"
+	expect_has "announcement names the dir" "vendor/" "$out"
 	out="$(run_ws "$REPO" 'git -c commit.gpgsign=false commit --allow-empty -m x 2>&1; echo rc=$?')"
 	expect_has "git commit fails inside (by design)" "rc=128" "$out"
 	# workspace without .git is refused unless overridden
@@ -662,6 +673,62 @@ STUB
 	expect_eq "nested gitfile pointing outside the workspace refused rc" "1" "$rc"
 	expect_has "outside gitfile message" "outside the workspace" "$out"
 	command rm -rf "$REPO/vendor/gf" "$REPO/vendor/gitdata-custom"
+
+	# ---- rename-a-parent attacks (Checker attempt 9): a mount point cannot be renamed,
+	# but a writable parent could, freeing the original path for an attacker git dir with
+	# core.fsmonitor that a later HOST git run executes. Each case: MUTATION (ancestor bind
+	# dropped) shows the attack works; the real profile blocks it.
+	rename_case() { # <label> <workspace> <ro-path> <attack sh> <host git dir> <marker>
+		local lbl="$1" ws="$2" rp="$3" atk="$4" hg="$5" mk="$6"
+		command cp -a "$ws" "$ws.pristine"
+		run_mut_drop "$ws" "$rp" "$atk" >/dev/null 2>&1 || true
+		git -C "$hg" status >/dev/null 2>&1 || true
+		[[ -e "$mk" ]] && ok "MUTATION ($lbl, no ancestor bind): rename attack runs fsmonitor on host" || bad "MUTATION ($lbl, no ancestor bind): rename attack runs fsmonitor on host"
+		command rm -rf "$ws" "$mk"
+		command cp -a "$ws.pristine" "$ws"
+		run_ws "$ws" "$atk" >/dev/null 2>&1 || true
+		git -C "$hg" status >/dev/null 2>&1 || true
+		[[ ! -e "$mk" ]] && ok "$lbl: rename attack blocked (no host fsmonitor run)" || bad "$lbl: rename attack blocked (no host fsmonitor run)"
+		command rm -rf "$ws.pristine" "$mk"
+	}
+	plant='printf "[core]\n\tfsmonitor = touch %s\n" "$MK" >>'
+	# (a) nested gitfile vendor/gf/.git -> store/gd: rename store/, plant store/gd
+	RA="$FH/work/rename-a"
+	mkrepo "$RA"
+	mkdir -p "$RA/vendor" "$RA/store"
+	git init -q --separate-git-dir="$RA/store/gd" "$RA/vendor/gf"
+	rename_case "(a) gitfile target" "$RA" "$RA/store/gd" \
+		"MK=$T/PWNED-a; mv store store-old && mkdir store && cp -r store-old/gd store/gd && $plant store/gd/config" \
+		"$RA/vendor/gf" "$T/PWNED-a"
+	# (b) workspace .git -> separate git dir inside the workspace (meta/gs)
+	RB="$FH/work/rename-b"
+	mkdir -p "$RB/meta"
+	git init -q --separate-git-dir="$RB/meta/gs" "$RB"
+	rename_case "(b) in-workspace common dir" "$RB" "$RB/meta/gs" \
+		"MK=$T/PWNED-b; mv meta meta-old && mkdir meta && cp -r meta-old/gs meta/gs && $plant meta/gs/config" \
+		"$RB" "$T/PWNED-b"
+	# (c) plain nested .git: rename vendor/dep, recreate vendor/dep/.git
+	RC="$FH/work/rename-c"
+	mkrepo "$RC"
+	mkdir -p "$RC/vendor"
+	git init -q "$RC/vendor/dep"
+	rename_case "(c) nested .git" "$RC" "$RC/vendor/dep/.git" \
+		"MK=$T/PWNED-c; mv vendor/dep vendor/depX && mkdir -p vendor/dep && cp -r vendor/depX/.git vendor/dep/.git && $plant vendor/dep/.git/config" \
+		"$RC/vendor/dep" "$T/PWNED-c"
+	# a gitdir path through a symlink (re-pointable inside the workspace) is refused
+	mkdir -p "$RC/sub/gf"
+	ln -s vendor/dep "$RC/lnk"
+	printf 'gitdir: ../../lnk/.git\n' >"$RC/sub/gf/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$RC") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "gitdir path through a symlink refused rc" "1" "$rc"
+	expect_has "gitdir symlink message" "goes through a symlink" "$out"
+	# same for the workspace's own gitfile (lnk -> meta, in the rw root)
+	ln -s meta "$RB/lnk"
+	printf 'gitdir: %s\n' "$RB/lnk/gs" >"$RB/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$RB") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "workspace gitfile through a symlink refused rc" "1" "$rc"
+	expect_has "workspace gitfile symlink message" "goes through a symlink" "$out"
+	command rm -rf "$RA" "$RB" "$RC"
 
 	# interpreter dir and guard tree: the bind is what protects (mutation: rw bind -> writable)
 	run_mut_drop "$REPO" "$FH/.data/uv/python/cpy" 'echo X > "$HOME/.data/uv/python/cpy/bin/mut-new"' >/dev/null || true
