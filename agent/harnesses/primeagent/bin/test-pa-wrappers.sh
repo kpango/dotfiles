@@ -93,6 +93,17 @@ out="$(cd "$R" && "$PA_AUTO" -n 2>&1 || true)"
 [[ ! -e "$R/marker" ]] && ok "pa-auto -n does not execute the Makefile" || bad "pa-auto -n does not execute the Makefile" "marker created"
 expect_has "textual detection finds lint" "'make lint'" "$out"
 expect_lacks "var assignment lint2:=1 is not a target" "lint2" "$out"
+R="$T/r-make-assign"
+mkrepo "$R"
+printf 'lint::=1\ntest ::= x\nlint ?= 2\ntest += 3\nlint != echo\nbuild:\n\t@true\n' >"$R/Makefile"
+out="$(cd "$R" && "$PA_AUTO" -n 2>&1 || true)"
+expect_lacks "assignment forms (::= ?= += !=) are not targets: lint" "'make lint'" "$out"
+expect_lacks "assignment forms are not targets: test" "'make test'" "$out"
+R="$T/r-make-dcolon"
+mkrepo "$R"
+printf 'lint::\n\t@true\n' >"$R/Makefile"
+out="$(cd "$R" && "$PA_AUTO" -n 2>&1 || true)"
+expect_has "double-colon rule lint:: is a target" "'make lint'" "$out"
 R="$T/r-make-phony"
 mkrepo "$R"
 printf '.PHONY: lint test\nbuild:\n\t@true\nfoo test: dep\n\t@true\n' >"$R/Makefile"
@@ -149,9 +160,18 @@ else
 	command cp "$REAL_ROOT/agent/security-rules.json" "$DOT/agent/"
 	ln -s "$DOT/agent/scripts/prime-shell-guard.sh" "$FH/.prime/agent/bin/prime-shell-guard.sh"
 	# trusted files/dirs an unsandboxed run later executes or reads
-	mkdir -p "$FH/.prime/agent/skills" "$FH/.prime/agent/machines" "$FH/.prime/agent/kernel-venv/bin" \
-		"$FH/.prime/agent/sessions" "$FH/.data/uv/python/cpy/bin"
-	for f in settings.json models.json AGENTS.md auth.json skills/s.md machines/m.json kernel-venv/pkg.py; do
+	mkdir -p "$FH/.prime/agent/machines" "$FH/.prime/agent/kernel-venv/bin" \
+		"$FH/.prime/agent/sessions" "$FH/.data/uv/python/cpy/bin" "$DOT/agent/primeskills" "$DOT/agent/agents" "$DOT/agent/harnesses/primeagent"
+	# install.mk-like layout: skills/agents/AGENTS.md/models.json are symlinks into the checkout
+	printf 'TRUSTED\n' >"$DOT/agent/primeskills/s.md"
+	printf 'TRUSTED\n' >"$DOT/agent/agents/a.md"
+	printf 'TRUSTED\n' >"$DOT/agent/AGENTS.md"
+	printf 'TRUSTED\n' >"$DOT/agent/harnesses/primeagent/models.json"
+	ln -s "$DOT/agent/primeskills" "$FH/.prime/agent/skills"
+	ln -s "$DOT/agent/agents" "$FH/.prime/agent/agents"
+	ln -s "$DOT/agent/AGENTS.md" "$FH/.prime/agent/AGENTS.md"
+	ln -s "$DOT/agent/harnesses/primeagent/models.json" "$FH/.prime/agent/models.json"
+	for f in settings.json auth.json machines/m.json kernel-venv/pkg.py; do
 		printf 'TRUSTED\n' >"$FH/.prime/agent/$f"
 	done
 	printf '#!/bin/sh\necho interp\n' >"$FH/.data/uv/python/cpy/bin/python3.11"
@@ -235,8 +255,8 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	[[ ! -e "$FH/created-outside" && ! -e "$FH/.ssh/planted" ]] \
 		&& ok "write to \$HOME outside binds does not persist" || bad "write to \$HOME outside binds does not persist"
 
-	run_in 'echo state > "$HOME/.prime/agent/state-file"' >/dev/null
-	[[ -f "$FH/.prime/agent/state-file" ]] && ok "write to ~/.prime/agent persists" || bad "write to ~/.prime/agent persists"
+	run_in 'echo state > "$HOME/.prime/agent/sessions/state-file"; echo x > "$HOME/.prime/agent/root-file" 2>/dev/null; true' >/dev/null
+	[[ -f "$FH/.prime/agent/sessions/state-file" && ! -e "$FH/.prime/agent/root-file" ]] && ok "agent dir: state dirs writable, root read-only" || bad "agent dir: state dirs writable, root read-only"
 
 	run_in 'echo x > /usr/pa-test-write || true' >/dev/null
 	[[ ! -e /usr/pa-test-write ]] && ok "/usr is read-only" || bad "/usr is read-only"
@@ -254,7 +274,7 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	expect_has "docker socket masked" "docker-hidden" "$out"
 
 	# (1) trusted agent-dir paths are read-only; host copies unchanged
-	for p in bin/prime-shell-guard.sh settings.json models.json AGENTS.md auth.json skills/s.md machines/m.json kernel-venv/pkg.py; do
+	for p in bin/prime-shell-guard.sh settings.json models.json AGENTS.md auth.json skills/s.md agents/a.md machines/m.json kernel-venv/pkg.py; do
 		before="$(cat "$FH/.prime/agent/$p" 2>/dev/null || true)"
 		run_in "printf 'ATTACK\\n' > \"\$HOME/.prime/agent/$p\" || true; command rm -f \"\$HOME/.prime/agent/$p\" || true" >/dev/null
 		after="$(cat "$FH/.prime/agent/$p" 2>/dev/null || true)"
@@ -267,6 +287,73 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	done
 	run_in 'cp /dev/null "$HOME/.prime/agent/sessions/new-session"' >/dev/null
 	[[ -e "$FH/.prime/agent/sessions/new-session" ]] && ok "sessions/ stays writable" || bad "sessions/ stays writable"
+
+	# install-like symlinked entries are readable inside
+	out="$(run_in 'cat "$HOME/.prime/agent/skills/s.md" "$HOME/.prime/agent/AGENTS.md" "$HOME/.prime/agent/models.json" "$HOME/.prime/agent/agents/a.md"')"
+	expect_eq "symlinked skills/agents/AGENTS.md/models.json readable inside" "$(printf 'TRUSTED\nTRUSTED\nTRUSTED\nTRUSTED')" "$out"
+
+	# allowlist: NEW names (present or not) cannot be created in the agent dir
+	run_in 'for n in SYSTEM.md machines/evil.md extensions rules keybindings.json mcp.json model-routing.json newdir; do touch "$HOME/.prime/agent/$n" 2>/dev/null || mkdir "$HOME/.prime/agent/$n" 2>/dev/null || true; done' >/dev/null
+	for n in SYSTEM.md machines/evil.md extensions rules keybindings.json mcp.json model-routing.json newdir; do
+		[[ ! -e "$FH/.prime/agent/$n" ]] && ok "new agent-dir entry $n cannot be created" || bad "new agent-dir entry $n cannot be created"
+	done
+	# MUTATION: with the agent dir bound rw instead of ro, creation DOES succeed
+	run_mut_rw() {
+		(
+			cd "$REPO"
+			export HOME="$FH"
+			pa_sandbox_build_argv "$REPO" 2>/dev/null
+			local -a mut=()
+			local i=0
+			while [[ $i -lt ${#PA_BWRAP_ARGV[@]} ]]; do
+				if [[ "${PA_BWRAP_ARGV[$i]}" == --ro-bind && "${PA_BWRAP_ARGV[$((i + 1))]}" == "$FH/.prime/agent" ]]; then
+					mut+=(--bind)
+				else
+					mut+=("${PA_BWRAP_ARGV[$i]}")
+				fi
+				i=$((i + 1))
+			done
+			"${mut[@]}" sh -c "$1"
+		) 2>&1
+	}
+	run_mut_rw 'touch "$HOME/.prime/agent/SYSTEM.md"' >/dev/null
+	[[ -e "$FH/.prime/agent/SYSTEM.md" ]] && ok "MUTATION (agent dir rw) lets SYSTEM.md be created" || bad "MUTATION (agent dir rw) lets SYSTEM.md be created"
+	command rm -f "$FH/.prime/agent/SYSTEM.md"
+
+	# rw state dirs are created on the host before binding and stay writable
+	command rm -rf "$FH/.prime/agent/logs"
+	run_in 'echo l > "$HOME/.prime/agent/logs/x"' >/dev/null
+	[[ -f "$FH/.prime/agent/logs/x" ]] && ok "missing rw state dir created on host, writable inside" || bad "missing rw state dir created on host, writable inside"
+
+	# git: commondir / gitfile redirect attacks, hooks + config write-back
+	run_in 'echo "$HOME/.prime/agent" > .git/commondir' >/dev/null
+	out="$( (cd "$REPO"; export HOME="$FH"; pa_sandbox_build_argv "$REPO" 2>&1 >/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c 'touch "$HOME/.prime/agent/PLANTED" 2>&1; echo done') 2>&1 )" || true
+	[[ ! -e "$FH/.prime/agent/PLANTED" ]] && ok "commondir redirect: agent dir stays unwritable" || bad "commondir redirect: agent dir stays unwritable"
+	command rm -f "$REPO/.git/commondir"
+	GREPO="$FH/work/gitfile-repo"
+	mkdir -p "$GREPO"
+	printf 'gitdir: %s\n' "$FH/.prime/agent" >"$GREPO/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GREPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "gitfile redirect to agent dir refused rc" "1" "$rc"
+	[[ ! -e "$FH/.prime/agent/PLANTED" ]] && ok "gitfile redirect: nothing planted" || bad "gitfile redirect: nothing planted"
+	run_in 'echo "#!/bin/sh" > .git/hooks/pre-commit 2>/dev/null; echo "[core]" >> .git/config 2>/dev/null; true' >/dev/null
+	[[ ! -e "$REPO/.git/hooks/pre-commit" ]] && ok ".git/hooks is read-only inside" || bad ".git/hooks is read-only inside"
+	! grep -q '^\[core\]$' <<<"$(tail -n1 "$REPO/.git/config")" && ok ".git/config is read-only inside" || bad ".git/config is read-only inside"
+	# legit linked worktree: common dir bound rw (objects) but hooks/config ro
+	WT="$FH/work/wt"
+	git -C "$REPO" -c user.email=a@b -c user.name=n commit -q --allow-empty -m init
+	git -C "$REPO" worktree add -q "$WT" -b wtbranch
+	run_in_wt() { ( cd "$WT"; export HOME="$FH"; pa_sandbox_build_argv "$WT" 2>/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c "$1" ) 2>&1; }
+	run_in_wt 'touch "$HOME/work/repo/.git/objects/wt-ok"; echo x > "$HOME/work/repo/.git/hooks/h" 2>/dev/null; echo x >> "$HOME/work/repo/.git/config" 2>/dev/null; true' >/dev/null
+	[[ -e "$REPO/.git/objects/wt-ok" ]] && ok "worktree: common dir objects writable" || bad "worktree: common dir objects writable"
+	[[ ! -e "$REPO/.git/hooks/h" ]] && ok "worktree: common dir hooks read-only" || bad "worktree: common dir hooks read-only"
+	command rm -f "$REPO/.git/objects/wt-ok"
+
+	# (D) ancestors of HOME / agent dir are refused
+	for ws in "$T" "$(dirname "$FH")" "$FH" "$FH/.prime" "$FH/.prime/agent" "$FH/.prime/agent/sessions" /; do
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$ws") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "workspace $ws refused" "1" "$rc"
+	done
 
 	# (2) guard reachable inside the sandbox through the dotfiles symlink + verified end to end
 	out="$(run_in 'test -r "$HOME/.prime/agent/bin/prime-shell-guard.sh" && echo readable')"

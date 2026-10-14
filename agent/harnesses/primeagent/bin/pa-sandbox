@@ -5,63 +5,63 @@
 # layer 1 is the shell guard + env allowlist wired by default; this wrapper is
 # the whole-process jail for autonomous / untrusted runs.
 #
-# Profile
-#   - / is bound READ-ONLY (the Python kernel venv lives under ~/.prime/agent,
-#     the binary under ~/.local/share/prime-agent, system libs under /usr).
-#   - $HOME is replaced by an empty tmpfs; only these binds are re-added:
-#       rw  the repo (git toplevel of $PWD, else $PWD) and, for linked
-#           worktrees, the shared git common dir
-#       rw  ~/.prime/agent  (sessions, auth.json, kernel-venv, state)
-#       ro  ~/.local/bin and ~/.local/share/prime-agent (launcher + binary)
-#       ro  entries of PA_SANDBOX_RO_EXTRA (colon-separated extra paths)
-#     so ~/.ssh ~/.aws ~/.gnupg ~/.kube ~/.config/gh ~/.netrc ~/.password-store
-#     and .env files outside the repo do not exist inside.
-#   - /run/user and /run/dbus are emptied; /run/docker.sock is masked.
-#   - Environment is cleared to an allowlist: PATH HOME TERM COLORTERM LANG
-#     LC_* TZ USER LOGNAME, PRIME_AGENT_*, the provider key env names listed in
-#     models.json (OLLAMA_API_KEY VLLM_API_KEY), plus PA_SANDBOX_PASS_ENV
-#     (space-separated extra names). SSH_AUTH_SOCK, cloud/GitHub tokens etc.
-#     are therefore not inherited.
-#   - ~/.prime/agent is rw EXCEPT bin/ kernel-venv/ settings.json models.json models/
-#     AGENTS.md skills/ machines/ agents/ themes/ prompts/ extensions/ auth.json,
-#     which are re-bound ro (an unsandboxed run later sources/executes them). The
-#     kernel-venv python's resolved install dir (e.g. ~/.data/uv/python/...) and
-#     the guard's dotfiles agent/ tree are ro-bound too. Only entries existing at
-#     launch are protected.
-#   - Before exec, the guard is proven inside the sandbox (probe: harmless command
-#     runs, a known-blocked one is refused with rc 126), else fail closed.
-#   - Its own daemon socket (/tmp/pa-sandbox/daemon.sock on a private tmpfs),
-#     so it never talks to an unsandboxed daemon.
-#   - PRIME_AGENT_BASH_COMMAND_PREFIX sources the shell guard; fails closed if
-#     ~/.prime/agent/bin/prime-shell-guard.sh is missing
-#     (override: PA_SANDBOX_ALLOW_NO_GUARD=1).
-#   - --unshare-pid (+ private /proc; host-/proc fallback is opt-in via
-#     PA_SANDBOX_ALLOW_HOST_PROC=1) /ipc/uts, --die-with-parent, --new-session when stdin is
-#     not a tty (with a tty, new-session would break the TUI).
+# Design: ALLOWLIST. Everything is read-only unless explicitly listed rw.
+#   - / is bound READ-ONLY; /dev, /tmp and $HOME are empty tmpfs.
+#   - ~/.prime/agent is bound READ-ONLY as a whole (so anything an unsandboxed run
+#     later executes or trusts -- bin/ kernel-venv/ settings.json SYSTEM.md rules/
+#     extensions/ ... present or not -- cannot be created, replaced or removed).
+#     Symlinked entries (the installer links skills/agents/AGENTS.md/models.json
+#     into the dotfiles checkout) resolve because the checkout's agent/ tree is
+#     ro-bound at its real path too.
+#   - rw ONLY: the explicit state list PA_SANDBOX_AGENT_RW_DIRS (dirs are created
+#     on the host before binding) and PA_SANDBOX_AGENT_RW_FILES (bound only if
+#     they exist; atomic rename-over of a bind-mounted file fails with EBUSY),
+#     plus the workspace (git toplevel of $PWD, else $PWD) and, for a linked
+#     worktree, its validated git common dir.
+#   - BIND ORDER: tmpfs -> ro agent dir -> all rw binds -> all ro (re)binds last,
+#     so no rw bind can shadow a protection.
+#   - ro re-binds: ~/.local/bin, ~/.local/share/prime-agent, the kernel venv's
+#     resolved interpreter install, the guard checkout's agent/ tree, targets of
+#     symlinked agent-dir entries, PA_SANDBOX_RO_EXTRA (colon-separated), and the
+#     workspace's .git/hooks, .git/config (+ the common dir's hooks/config) so no
+#     hook/config can be planted for a later UNSANDBOXED git run.
+#   - The workspace may not be /, $HOME, any ancestor of $HOME or of ~/.prime/agent,
+#     or inside ~/.prime/agent (realpath comparison).
+#   - /run/user and /run/dbus are emptied; PA_SANDBOX_MASK_PATHS (default
+#     /run/docker.sock /run/podman/podman.sock) are masked.
+#   - Environment is cleared to an allowlist: PATH TERM COLORTERM LANG LC_* TZ USER
+#     LOGNAME, PRIME_AGENT_*, the provider key names from models.json
+#     (OLLAMA_API_KEY VLLM_API_KEY), plus PA_SANDBOX_PASS_ENV (space-separated).
+#   - Own daemon socket (/tmp/pa-sandbox/daemon.sock on a private tmpfs).
+#   - PRIME_AGENT_BASH_COMMAND_PREFIX sources the shell guard; before exec the guard
+#     is proven INSIDE the sandbox (harmless command runs, a blocked one gets rc 126)
+#     else fail closed (override: PA_SANDBOX_ALLOW_NO_GUARD=1).
+#   - --unshare-pid + private /proc; if the host refuses that mount, falling back to
+#     the host /proc is opt-in (PA_SANDBOX_ALLOW_HOST_PROC=1) and warns every run.
+#   - --unshare-ipc/uts, --die-with-parent, --new-session when stdin is not a tty.
 #
 # KNOWN LIMITS
 #   - Network stays ON (model APIs need it): there is NO egress allowlist, so
-#     anything readable inside (the repo, ~/.prime/agent/auth.json) can be
-#     exfiltrated over the network.
-#   - The repo is rw: a prompt-injected agent can modify it (and .git hooks).
-#   - ~/.prime/agent/auth.json (provider keys) is deliberately visible.
-#   - With a tty, TIOCSTI keystroke injection depends on the host kernel
-#     (disabled by default since Linux 6.2).
-#   - Outside HOME, host files are readable (ro) except the masked paths above.
-#   - Unix sockets elsewhere under /run and /tmp-less host paths remain
-#     connectable through the ro bind (connect() works on ro mounts).
+#     anything readable inside (the workspace, ~/.prime/agent/auth.json) can be
+#     exfiltrated.
+#   - The workspace is rw: a prompt-injected agent can modify its files.
+#   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
+#   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
+#   - Git config/hooks are ro inside, so git commands that write config fail.
+#   - With the host /proc fallback, same-uid /proc/<pid>/environ is readable.
+#   - Host files outside $HOME are readable (ro); other unix sockets under /run
+#     stay connectable (connect() works on ro mounts).
+#   - With a tty, TIOCSTI protection depends on the host kernel (off since 6.2).
 #
 # Usage: pa-sandbox [prime-agent args...]
-# Test hook: source this file; call pa_sandbox_build_argv <repo>; then run
+# Test hook: source this file; call pa_sandbox_build_argv <workspace>; then run
 # "${PA_BWRAP_ARGV[@]}" <command...>.
-# shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
 set -euo pipefail
 
-# Paths under ~/.prime/agent re-bound READ-ONLY (executed or trusted by unsandboxed
-# runs). auth.json is included: the sandbox cannot refresh OAuth tokens (set up
-# keys outside the sandbox). Left writable: sessions, session-*, logs, daemon-workers,
-# telemetry*, mcp-service-catalog* (known limit: a sandboxed run can write those).
-PA_SANDBOX_AGENT_RO=(bin kernel-venv settings.json models.json models AGENTS.md skills machines agents themes prompts extensions auth.json)
+PA_SANDBOX_AGENT_RW_DIRS=(sessions session-artifacts session-leases logs daemon-workers harness swarm)
+PA_SANDBOX_AGENT_RW_FILES=(telemetry.json telemetry.jsonl mcp-service-catalog.v2.json cron-jobs.json)
+# shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
+PA_SANDBOX_GUARD_PREFIX='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
 PA_SANDBOX_ENV_ALLOW=(PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY)
 
 pa_sandbox_die() {
@@ -84,23 +84,60 @@ pa_sandbox_repo_root() { # <dir> -> repo root (git toplevel or the dir itself)
 	printf '%s\n' "$top"
 }
 
-# pa_sandbox_build_argv <repo>: fills global array PA_BWRAP_ARGV (ends with "--").
+# <path> is <base> or inside <base> (both canonical absolute paths)
+pa_sandbox_within() { [[ "$1" == "$2" || "$1" == "$2"/* ]]; }
+
+# Validate a git common dir that lives outside the workspace; echo it if OK.
+pa_sandbox_valid_gcd() { # <repo> <home> <agent_dir>
+	local gcd
+	gcd="$(git -C "$1" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" || return 1
+	[[ "$gcd" == /* && -d "$gcd" ]] || return 1
+	gcd="$(cd -P "$gcd" && pwd)" || return 1
+	[[ -f "$gcd/HEAD" && -d "$gcd/objects" ]] || return 1
+	pa_sandbox_within "$gcd" "$2/.prime" && return 1
+	pa_sandbox_within "$2" "$gcd" && return 1  # gcd is $HOME or an ancestor of it
+	pa_sandbox_within "$3" "$gcd" && return 1  # ... or an ancestor of the agent dir
+	printf '%s\n' "$gcd"
+}
+
+# pa_sandbox_build_argv <workspace>: fills global array PA_BWRAP_ARGV (ends with "--").
 pa_sandbox_build_argv() {
 	local repo home agent_dir name extra
 	repo="$(cd -P "$1" && pwd)" || return 1
 	home="${HOME:?HOME unset}"
 	home="$(cd -P "$home" && pwd)" || return 1
 	agent_dir="$home/.prime/agent"
+	mkdir -p "$agent_dir"
+	agent_dir="$(cd -P "$agent_dir" && pwd)"
 
-	if [[ "$repo" == "/" || "$repo" == "$home" ]]; then
-		pa_sandbox_die "refusing to use '$repo' as the writable workspace; run from inside a project directory"
+	if [[ "$repo" == "/" ]] || pa_sandbox_within "$home" "$repo" || pa_sandbox_within "$agent_dir" "$repo" \
+		|| pa_sandbox_within "$repo" "$agent_dir"; then
+		pa_sandbox_die "refusing '$repo' as the workspace (it is / , \$HOME, an ancestor of \$HOME or ~/.prime/agent, or inside ~/.prime/agent); run from inside a project directory"
 		return 1
 	fi
 	if [[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" != 1 && ! -f "$agent_dir/bin/prime-shell-guard.sh" ]]; then
 		pa_sandbox_die "$agent_dir/bin/prime-shell-guard.sh not found (run the installer); set PA_SANDBOX_ALLOW_NO_GUARD=1 to override"
 		return 1
 	fi
-	mkdir -p "$agent_dir"
+
+	# Workspace common dir: a plain `.git` directory cannot be redirected; a `.git`
+	# FILE (linked worktree) points outside the workspace and is validated strictly.
+	local gcd=""
+	if [[ -f "$repo/.git" ]]; then
+		if ! gcd="$(pa_sandbox_valid_gcd "$repo" "$home" "$agent_dir")"; then
+			pa_sandbox_die "workspace .git points to a git dir that is not a valid, safe common dir; refusing"
+			return 1
+		fi
+	fi
+
+	# State dirs must exist on the host before binding (nothing new may appear later).
+	for name in "${PA_SANDBOX_AGENT_RW_DIRS[@]}"; do
+		[[ -L "$agent_dir/$name" ]] && {
+			pa_sandbox_die "$agent_dir/$name is a symlink; refusing to bind it rw"
+			return 1
+		}
+		mkdir -p "$agent_dir/$name"
+	done
 
 	PA_BWRAP_ARGV=(
 		bwrap
@@ -111,10 +148,8 @@ pa_sandbox_build_argv() {
 		--unshare-ipc --unshare-uts
 		--die-with-parent
 	)
-	# Private PID namespace + fresh /proc hides other processes' environ.
-	# Some hosts (nested userns / masked /proc) refuse that mount; falling back
-	# to the host /proc would leak same-uid process environments, so it is an
-	# explicit opt-in (PA_SANDBOX_ALLOW_HOST_PROC=1), never a silent downgrade.
+	# Private PID namespace + fresh /proc hides other processes' environ. Falling
+	# back to the host /proc leaks same-uid environments, so it is explicit opt-in.
 	if bwrap --ro-bind / / --unshare-pid --proc /proc true 2>/dev/null; then
 		PA_BWRAP_ARGV+=(--unshare-pid --proc /proc)
 	elif [[ "${PA_SANDBOX_ALLOW_HOST_PROC:-0}" == 1 ]]; then
@@ -134,45 +169,60 @@ pa_sandbox_build_argv() {
 	done
 	[[ -t 0 ]] || PA_BWRAP_ARGV+=(--new-session)
 
-	PA_BWRAP_ARGV+=(--bind "$agent_dir" "$agent_dir" --bind "$repo" "$repo")
-	# Everything an UNSANDBOXED run later executes or trusts is re-bound read-only
-	# on top of the rw agent dir, so a sandboxed run cannot plant code there.
-	# Only entries that exist at launch are protected (nothing is created).
-	for name in "${PA_SANDBOX_AGENT_RO[@]}"; do
-		[[ -e "$agent_dir/$name" ]] && PA_BWRAP_ARGV+=(--ro-bind "$agent_dir/$name" "$agent_dir/$name")
+	# 1) whole agent dir read-only
+	PA_BWRAP_ARGV+=(--ro-bind "$agent_dir" "$agent_dir")
+	# 2) all rw binds (state allowlist, workspace, validated common dir)
+	for name in "${PA_SANDBOX_AGENT_RW_DIRS[@]}"; do
+		PA_BWRAP_ARGV+=(--bind "$agent_dir/$name" "$agent_dir/$name")
 	done
-	# The kernel venv's python is usually a symlink into another tree (uv); bind
-	# the resolved interpreter install (parent of its bin/) read-only.
+	for name in "${PA_SANDBOX_AGENT_RW_FILES[@]}"; do
+		[[ -f "$agent_dir/$name" && ! -L "$agent_dir/$name" ]] && PA_BWRAP_ARGV+=(--bind "$agent_dir/$name" "$agent_dir/$name")
+	done
+	PA_BWRAP_ARGV+=(--bind "$repo" "$repo")
+	[[ -n "$gcd" ]] && PA_BWRAP_ARGV+=(--bind "$gcd" "$gcd")
+
+	# 3) all ro (re)binds LAST
+	local -A seen=()
+	_ro() { # <path>: ro-bind once, only if it exists
+		[[ -e "$1" && -z "${seen[$1]:-}" ]] || return 0
+		seen[$1]=1
+		PA_BWRAP_ARGV+=(--ro-bind "$1" "$1")
+	}
+	_ro "$home/.local/bin"
+	_ro "$home/.local/share/prime-agent"
 	local interp
 	if interp="$(readlink -f "$agent_dir/kernel-venv/bin/python" 2>/dev/null)" && [[ -n "$interp" ]]; then
 		interp="$(dirname "$(dirname "$interp")")"
 		if [[ -d "$interp" && "$interp" != / && "$interp" != /usr && "$interp" != "$agent_dir"* ]]; then
-			PA_BWRAP_ARGV+=(--ro-bind "$interp" "$interp")
+			_ro "$interp"
 		fi
 	fi
-	# The guard is normally a symlink into the dotfiles checkout (under $HOME, which
-	# the tmpfs hides). Bind that checkout's agent/ tree (guard, decide.py,
-	# rule_engine.py, security-rules.json) read-only at the same path.
-	local guard groot
+	# Guard + its dependencies: the guard checkout's agent/ tree, same path.
+	local guard groot="" tgt
 	if guard="$(readlink -f "$agent_dir/bin/prime-shell-guard.sh" 2>/dev/null)" && [[ -f "$guard" ]]; then
 		groot="$(cd -P "$(dirname "$guard")/../.." 2>/dev/null && pwd)" || groot=""
-		if [[ -n "$groot" && -d "$groot/agent" ]]; then
-			PA_BWRAP_ARGV+=(--ro-bind "$groot/agent" "$groot/agent")
-		fi
+		[[ -n "$groot" && -d "$groot/agent" ]] && _ro "$groot/agent"
 	fi
-	local gcd
-	if gcd="$(git -C "$repo" rev-parse --path-format=absolute --git-common-dir 2>/dev/null)" && [[ -d "$gcd" && "$gcd" != "$repo"/* ]]; then
-		PA_BWRAP_ARGV+=(--bind "$gcd" "$gcd")
-	fi
-	for extra in "$home/.local/bin" "$home/.local/share/prime-agent"; do
-		[[ -d "$extra" ]] && PA_BWRAP_ARGV+=(--ro-bind "$extra" "$extra")
-	done
+	# Symlinked agent-dir entries: their real targets must resolve inside (ro).
+	while IFS= read -r -d '' name; do
+		tgt="$(readlink -f "$name" 2>/dev/null)" || continue
+		pa_sandbox_within "$tgt" "$agent_dir" && continue
+		[[ -n "$groot" ]] && pa_sandbox_within "$tgt" "$groot/agent" && continue
+		_ro "$tgt"
+	done < <(find "$agent_dir" -maxdepth 1 -mindepth 1 -type l -print0)
 	if [[ -n "${PA_SANDBOX_RO_EXTRA:-}" ]]; then
-		local IFS=:
-		for extra in $PA_SANDBOX_RO_EXTRA; do
-			[[ -e "$extra" ]] && PA_BWRAP_ARGV+=(--ro-bind "$extra" "$extra")
-		done
+		local -a ex=()
+		IFS=: read -ra ex <<<"$PA_SANDBOX_RO_EXTRA"
+		for extra in "${ex[@]}"; do _ro "$extra"; done
 	fi
+	# git write-back: hooks and config run/apply on a later UNSANDBOXED git command.
+	local gd
+	for gd in "$repo/.git" "$gcd"; do
+		[[ -n "$gd" && -d "$gd" ]] || continue
+		_ro "$gd/hooks"
+		_ro "$gd/config"
+	done
+	unset -f _ro
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
 	local -a pass=()
@@ -190,7 +240,7 @@ pa_sandbox_build_argv() {
 	PA_BWRAP_ARGV+=(
 		--setenv PRIME_AGENT_CODING_AGENT_DIR "$agent_dir"
 		--setenv PRIME_AGENT_DAEMON_SOCKET /tmp/pa-sandbox/daemon.sock
-		--setenv PRIME_AGENT_BASH_COMMAND_PREFIX '. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
+		--setenv PRIME_AGENT_BASH_COMMAND_PREFIX "$PA_SANDBOX_GUARD_PREFIX"
 		--chdir "$repo"
 		--
 	)
@@ -203,9 +253,9 @@ pa_sandbox_build_argv() {
 # silently leave every command unguarded.
 pa_sandbox_verify_guard() {
 	[[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" == 1 ]] && return 0
-	local prefix='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"' script out rc
+	local script out rc
 	_probe() { # <command>
-		script=$'exec 9>&0 8>&1 0</dev/null\nread -r _g <&9 || exit 127\n{\n'"$prefix"$'\n'"$1"$'\n} 8>&- 9>&-\n__s=$?\nexit $__s'
+		script=$'exec 9>&0 8>&1 0</dev/null\nread -r _g <&9 || exit 127\n{\n'"$PA_SANDBOX_GUARD_PREFIX"$'\n'"$1"$'\n} 8>&- 9>&-\n__s=$?\nexit $__s'
 		out="$(echo go | "${PA_BWRAP_ARGV[@]}" bash -c "$script" 2>&1)" && rc=0 || rc=$?
 	}
 	_probe 'echo PA-PROBE-ALLOWED'
