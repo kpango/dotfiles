@@ -8,10 +8,11 @@ description: Final deterministic verification before anything is merged or relea
 Governance in `~/.prime/agent/SWARM.md`. Reference for which commands a gate normally runs:
 `agent/skills/swarm-release-gate/scripts/verify.sh` (read it; do not execute it, it is a Claude-side script).
 
-Human-only boundaries: this skill NEVER merges, pushes, deploys, tags, force-updates a ref or removes a
-worktree. Those happen only after the human's explicit approval, performed by the human or on their direct
-instruction. Tier B governance files (any `SKILL.md` under `agent/skills`, hooks, `SWARM.md`) are never edited by
-this skill; a diff touching them is flagged to the human as needing their own review.
+Human-only boundaries: this skill NEVER merges, pushes, deploys, tags, force-updates a ref or removes a worktree,
+and it never tells anyone it may. It only presents results and stops; the human performs any merge or push
+themselves. Tier B governance files are never edited by this skill. Protected paths come from
+`agent/write-scope-rules.json` (check procedure in `~/.prime/agent/skills/prime-swarm-loop/SKILL.md`); a diff
+that touches one is flagged to the human for their own review.
 
 ## Steps
 
@@ -25,5 +26,5 @@ this skill; a diff touching them is flagged to the human as needing their own re
    (must be clean apart from the intended change), and the `swarm-review` summary if one exists.
 4. Present: per-command `exit_code` with `output_tail` for any failure, the diff stat, open residual risks.
    Any failure: report it and stop; fixing goes back to `prime-swarm-loop` EXECUTE.
-5. STOP. Ask the human for explicit approval (merge/push/PR are theirs to run). Do not proceed on silence or
-   on an earlier "looks fine" for a different state of the tree.
+5. STOP. Report that the human decides and performs any merge/push/PR themselves. Take no further action on
+   silence, or on an earlier "looks fine" for a different state of the tree.

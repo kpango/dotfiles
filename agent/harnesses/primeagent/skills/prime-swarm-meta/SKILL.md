@@ -7,8 +7,9 @@ description: Chooses between prime-swarm-loop and prime-swarm-graph for a goal u
 
 A selector, not an executor. Governance is in `~/.prime/agent/SWARM.md`.
 
-Human-only boundaries: no merge, push or deploy without explicit human approval; Tier B governance files (any
-`SKILL.md` under `agent/skills`, hooks, `SWARM.md`) are never edited by this skill or the skills it selects.
+Human-only boundaries: no merge, push or deploy without explicit human approval; Tier B governance files are never edited by this skill or the skills it selects.
+Protected (Tier B) paths come from `agent/write-scope-rules.json`; apply the write-scope check in
+`~/.prime/agent/skills/prime-swarm-loop/SKILL.md` before ANY file edit (prompt contract, no write hook in prime).
 
 ## Steps
 

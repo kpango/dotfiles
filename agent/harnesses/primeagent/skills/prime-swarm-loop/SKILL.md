@@ -5,7 +5,7 @@ description: Linear swarm mission for Prime Agent - scale check, mission init in
 
 # prime-swarm-loop
 
-Governance (tiers, budgets, human gates, Tier B list) is defined in `~/.prime/agent/SWARM.md`; this file only
+Governance (tiers, budgets, human gates, Tier B rules) is defined in `~/.prime/agent/SWARM.md`; this file only
 sequences the prime-native pieces. Run everything from the Python REPL. Load `swarm-adapter` for the API
 (`swarm_adapter.*`); the three machines are `swarm-explore`, `swarm-implement`, `swarm-review` (each MACHINE.md
 has its input JSON, run recipe and residual risks - read it before the first run).
@@ -13,9 +13,21 @@ has its input JSON, run recipe and residual risks - read it before the first run
 ## Human-only boundaries (never crossed by this skill)
 
 - No merge, push, deploy, branch deletion or worktree removal without explicit human approval; the loop ends at GATE.
-- Tier B governance files are never edited: any `SKILL.md` under `agent/skills`, hooks, `SWARM.md`. If the task
-  needs one, stop and tell the human.
+- Tier B governance files are never edited (write-scope check below). If the task needs one, stop and tell the human.
 - Mission work happens only in the worktree from `swarm_adapter.worktree_alloc`, never in the main checkout.
+
+## Write-scope check (shared by all prime-swarm-* skills)
+
+Tier B = the paths in `agent/write-scope-rules.json` (repo path; installed copy `~/.prime/agent/write-scope-rules.json`
+if present). Before ANY file edit by you or in a task spec you write, resolve the target's absolute path and test it
+against `suffix_patterns` and `fixed_absolute_path_patterns` (fnmatch; `${HOME}` -> home dir, see its `$comment`).
+On a match: do not edit, refuse, and escalate to the human.
+
+    import json, os, fnmatch; r = json.load(open("<rules path>")); h = os.path.expanduser("~"); p = os.path.realpath("/abs/target")
+    print(any(fnmatch.fnmatch(p, g) for g in r["suffix_patterns"]) or any(fnmatch.fnmatch(p, g.replace("${HOME}", h)) for g in r["fixed_absolute_path_patterns"]))  # True = protected
+
+Residual risk: prime has no write hook, so this is a prompt contract, not an enforced gate. Include the list of
+protected targets you checked in the GATE report.
 
 ## Success rule for every machine run
 
@@ -36,7 +48,7 @@ status/exit codes, never on prose. Start runs of one machine one at a time (shar
    `{"question", "roots": [<worktree>]}`; the report is `<run_dir>/report.md`. Read the report, not raw shards.
 4. **PLAN** - write `@fix_plan.md` in the worktree: tasks with id, spec, deps, and the verification commands
    (the repo's own build/test/lint). If the design is ambiguous or touches a shared contract, grill the human
-   first (`Skill(grill-interview)` rules: one question at a time, 2-4 options with a `[Recommended]` badge) and
+   first (grill-interview rules (read `~/.prime/agent/skills/grill-interview/SKILL.md` if present, else ask the human directly): one question at a time, 2-4 options with a `[Recommended]` badge) and
    record decisions in `CONTEXT.md` before any edit. For an architectural dead end use `prime-swarm-architect`.
 5. **EXECUTE** - for each task in dependency order, run `swarm-implement` with
    `{"mission", "task_spec", "worktree", "commands", "test_commands"}`. Size `budget_ms` first if the gate takes
@@ -48,7 +60,7 @@ status/exit codes, never on prose. Start runs of one machine one at a time (shar
    and verdict are separate: read `summary.all_pass` and `summary.failed`. Failed lenses become new tasks (back to
    EXECUTE, max 2 review rounds), then stop and report.
 7. **GATE** - present: task outcomes, `git diff --stat`, review summary, residual risks. Then
-   `Skill(prime-swarm-release-gate)` for the deterministic gate. STOP and wait for the human.
+   read `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it (or ask the human to run `/skill:prime-swarm-release-gate`). STOP and wait for the human.
 
 ## Optional tools (only where they add value)
 
@@ -57,6 +69,6 @@ status/exit codes, never on prose. Start runs of one machine one at a time (shar
   `tiers.<Tier>.model` value from `~/.prime/agent/model-routing.json`: `tiers.Low` for bulk reading,
   `tiers.Medium` for summarising, `tiers.High` for edits (Maker), `tiers.XHigh` for independent checking,
   `tiers.Max` only for design (see `prime-swarm-architect`). Never hard-code a selector.
-- Spot Max-tier help on a stuck task: `swarm_adapter.fable_grant(task_id)` must allow it first (denied = no).
+- Spot Max-tier help on a stuck task: `swarm_adapter.fable_grant(task_id, mission=<mission slug>)` must allow it first (denied = no).
 - Shell guard: for any command not run through a machine, `swarm_adapter.decide_shell(cmd, cwd)`; `block` or
   `ask` means do not run it and ask the human.

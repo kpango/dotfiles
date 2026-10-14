@@ -8,8 +8,9 @@ description: Dedupe, structure and prioritise raw findings or sub-agent reports 
 Aggregation only. Governance in `~/.prime/agent/SWARM.md`. The `swarm-explore` machine already runs a
 secretary state; use this skill for hand-collected or ad-hoc `rlm.spawn` results.
 
-Human-only boundaries: no merge, push or deploy without explicit human approval; Tier B governance files (any
-`SKILL.md` under `agent/skills`, hooks, `SWARM.md`) are never edited by this skill. It writes no code and no
+Human-only boundaries: no merge, push or deploy without explicit human approval; Tier B governance files are never edited by this skill.
+Protected (Tier B) paths come from `agent/write-scope-rules.json`; apply the write-scope check in
+`~/.prime/agent/skills/prime-swarm-loop/SKILL.md` before ANY file edit (prompt contract, no write hook in prime). It writes no code and no
 repo files; its output is a message or a file the caller names.
 
 ## Rules

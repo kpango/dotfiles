@@ -10,6 +10,10 @@ adapter_init="$here/swarm-adapter/src/swarm_adapter/__init__.py"
 routing="$harness/model-routing.json"
 expected=(prime-swarm-loop prime-swarm-graph prime-swarm-meta prime-swarm-architect prime-swarm-release-gate prime-swarm-secretary)
 max_lines=150
+# --static-only <dir>: run only the static checks against <dir> (used by the negative self-test)
+static_only=0
+skills_dir="$here"
+if [ "${1:-}" = "--static-only" ]; then static_only=1; skills_dir="${2:?dir}"; fi
 fail=0
 bad() { echo "FAIL $*" >&2; fail=1; }
 
@@ -37,7 +41,7 @@ PY
 tiers="$(python3 -I -c 'import json,sys; print("\n".join(json.load(open(sys.argv[1]))["tiers"]))' "$routing")"
 
 for name in "${expected[@]}"; do
-	dir="$here/$name"
+	dir="$skills_dir/$name"
 	f="$dir/SKILL.md"
 	if [ ! -f "$f" ]; then bad "$name: SKILL.md missing"; continue; fi
 
@@ -66,12 +70,26 @@ for name in "${expected[@]}"; do
 		printf '%s\n' "$adapter_all" | grep -qx "$fn" || bad "$name: unknown swarm_adapter.$fn"
 	done < <(grep -oE 'swarm_adapter\.[a-z_]+' "$f" | sed 's/^swarm_adapter\.//' | sort -u)
 
-	# machine names
+	# machine names: factory.run("..."), machines/<x>, and every backticked/quoted swarm-<x> token
 	while read -r m; do
 		[ -n "$m" ] || continue
-		[ -f "$harness/machines/$m/MACHINE.md" ] || bad "$name: unknown machine '$m'"
-	done < <({ grep -oE 'rlm\.factory\.run\("[^"]+"\)' "$f" | sed 's/.*("\(.*\)")/\1/'
-		grep -oE 'machines/[a-z-]+' "$f" | sed 's|machines/||'; } | sort -u)
+		if [ ! -f "$harness/machines/$m/MACHINE.md" ] && [ ! -d "$here/$m" ] && [ ! -d "$here/prime-$m" ]; then bad "$name: unknown machine/skill '$m'"; fi
+	done < <({ grep -oE 'rlm\.factory\.run\("[^"]+"\)' "$f" | sed 's/.*("\(.*\)")/\1/' || true
+		grep -oE 'machines/[a-z-]+' "$f" | sed 's|machines/||' || true
+		# shellcheck disable=SC2016
+		grep -oE '[`"]swarm-[a-z-]+[`"]' "$f" | tr -d '`"' || true; } | sort -u)
+
+	# no Skill() tool calls (prime has no Skill tool)
+	if grep -q 'Skill(' "$f"; then bad "$name: contains Skill( call"; fi
+	# Tier B is defined by write-scope-rules.json (shared procedure lives in prime-swarm-loop)
+	grep -q 'write-scope-rules.json' "$f" || bad "$name: does not reference write-scope-rules.json"
+	# every fable_grant call carries mission=
+	while read -r call; do
+		[ -n "$call" ] || continue
+		case "$call" in *mission=*) ;; *) bad "$name: fable_grant without mission=: $call" ;; esac
+	done < <(grep -oE 'fable_grant\([^)]*\)' "$f")
+	# release-gate must not grant merge/push on instruction
+	if [ "$name" = prime-swarm-release-gate ] && grep -qi 'direct instruction' "$f"; then bad "$name: grants action on direct instruction"; fi
 
 	# script paths
 	while read -r p; do
@@ -91,6 +109,24 @@ for name in "${expected[@]}"; do
 
 	if [ "$fail" -eq 0 ]; then echo "ok   static $name ($lines lines)"; fi
 done
+
+if [ "$static_only" -eq 1 ]; then
+	if [ "$fail" -ne 0 ]; then echo "FAILED" >&2; exit 1; fi
+	echo "STATIC OK"; exit 0
+fi
+
+# negative self-test: a misspelled machine name must make the static checks FAIL
+neg="$(mktemp -d "${TMPDIR:-/tmp}/prime-skills-neg.XXXXXX")"
+command cp -r "$here"/prime-swarm-* "$neg"/
+# shellcheck disable=SC2016
+sed -i 's/`swarm-implement`/`swarm-implment`/' "$neg/prime-swarm-loop/SKILL.md"
+neg_out="$("$here/test-prime-skills.sh" --static-only "$neg" 2>&1 || true)"
+if printf '%s\n' "$neg_out" | grep -q "unknown machine/skill 'swarm-implment'"; then
+	echo "ok   negative self-test (misspelled machine rejected)"
+else
+	bad "negative self-test: misspelled machine name was NOT detected"
+fi
+find "$neg" -delete
 
 # sandboxed prime-agent: every skill appears in the skills-inventory
 sandbox="$(mktemp -d "${TMPDIR:-/tmp}/prime-skills.XXXXXX")"
