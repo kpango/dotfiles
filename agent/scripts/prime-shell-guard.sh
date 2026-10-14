@@ -46,7 +46,7 @@ _psg_check() { # $1 = command ; 0 = allow, 126 = refuse (message already printed
             exit 126
         fi
         # Request shape matches agent/hooks/claude/security-gate.sh (family security_shell).
-        out=$(_PSG_CMD="$1" python3 - "$decide" "$rules" "$PWD" <<'PY' 2>/dev/null
+        out=$(_PSG_CMD="$1" python3 -I - "$decide" "$rules" "$PWD" <<'PY' 2>/dev/null
 import json, os, subprocess, sys
 decide, rules, cwd = sys.argv[1:4]
 # decide.py fails OPEN on a missing/empty/invalid rules file; validate it here first.
@@ -57,8 +57,8 @@ if not (isinstance(rr, dict) and isinstance(rr.get("shell_command_rules"), list)
     print("block", "rules file invalid: needs non-empty shell_command_rules (fail-closed)", sep="\t")
     sys.exit(0)
 req = {"family": "security_shell", "command": os.environ["_PSG_CMD"], "cwd": cwd,
-       "rules_file": rules, "resolve_command_target": False, "harness": "claude"}
-r = subprocess.run([sys.executable, decide], input=json.dumps(req), capture_output=True,
+       "rules_file": rules, "resolve_command_target": False, "harness": "primeagent"}  # unknown harness: decide.py:174 skips the Laya advisory (guard_relax can relax ask->allow; no human confirm here)
+r = subprocess.run([sys.executable, "-I", decide], input=json.dumps(req), capture_output=True,
                    text=True, timeout=10, check=True)
 d = json.loads(r.stdout)
 reason = (d.get("reason") or "").replace("\n", " ")

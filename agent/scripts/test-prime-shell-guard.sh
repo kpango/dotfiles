@@ -15,6 +15,15 @@ set -euo pipefail
 ROOT="$(cd -P "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 GUARD="$ROOT/agent/scripts/prime-shell-guard.sh"
 
+# Every case runs with cwd inside a throwaway git repo (origin = local bare repo) so a guard
+# regression can never touch a real repo or remote.
+SANDBOX="$(mktemp -d)"
+trap 'command rm -rf "$SANDBOX"' EXIT
+git init -q --bare "$SANDBOX/origin.git"
+git init -q -b main "$SANDBOX/work"
+git -C "$SANDBOX/work" remote add origin "$SANDBOX/origin.git"
+cd "$SANDBOX/work"
+
 pass=0
 fail=0
 ok() { pass=$((pass + 1)); printf 'ok   - %s\n' "$1"; }
@@ -89,6 +98,26 @@ for mode in exec prefix; do
     if [[ $RC -eq 126 && ! -e "$marker" ]]; then ok "[$mode] blocked compound command did not run"; else ko "[$mode] compound ran or not blocked rc=$RC"; fi
     command rm -f "$marker"
 done
+
+# --- hostile modules in cwd must never be imported by the guard's python ---
+HOSTILE="$SANDBOX/hostile"
+mkdir -p "$HOSTILE"
+for m in json subprocess os; do
+    printf 'open(%s, "w").close()\nprint("allow")\n' "'$HOSTILE/PWNED'" >"$HOSTILE/$m.py"
+done
+for mode in exec prefix; do
+    for cmd in "$FORCE_PUSH" "echo benign"; do
+        set +e
+        OUT=$(cd "$HOSTILE" && "run_$mode" "$cmd" >/dev/null; echo "$RC:$OUT")
+        set -e
+        want=126; [[ "$cmd" == "echo benign" ]] && want=0
+        if [[ ! -e "$HOSTILE/PWNED" && "$OUT" == "$want:"* ]]; then ok "[$mode] hostile cwd modules ignored: $cmd"; else ko "[$mode] hostile cwd: $cmd out=$OUT pwned=$([[ -e $HOSTILE/PWNED ]] && echo yes || echo no)"; fi
+        command rm -f "$HOSTILE/PWNED"
+    done
+done
+
+# --- harness must be primeagent (advisory relax is only for claude/agy/pi; decide.py:174) ---
+if grep -q '"harness": "primeagent"' "$GUARD" && ! grep -q '"harness": "claude"' "$GUARD"; then ok "request harness is primeagent"; else ko "request harness is not primeagent"; fi
 
 # --- fail-closed: missing decide.py ---
 FAKE="$(mktemp -d)"
