@@ -12,6 +12,15 @@
 # receives the command as an argument. The `shellCommandPrefix` settings key had NO effect
 # on the model's ipython/bash() path in the spike; use the env var (set it in the launcher).
 #
+# Limits (known bypasses this guardrail does NOT stop; it pattern-matches the command text):
+#   - variable indirection:            x=git; $x <dangerous subcommand>
+#   - command substitution in strings: echo "$(<dangerous command>)"
+#   - REPL Python subprocess/os calls (never pass through bash()).
+#   - the REPL can unset/alter PRIME_AGENT_BASH_COMMAND_PREFIX via os.environ
+#     (bash.py reads it on every call), disabling the guard for later bash() calls.
+#   Not blocked on purpose: a leading `$var` command (too many legitimate uses, e.g. $EDITOR).
+#   For untrusted runs wrap the whole prime-agent process in a sandbox.
+#
 # Usage:
 #   PRIME_AGENT_BASH_COMMAND_PREFIX='. /path/to/prime-shell-guard.sh'   # sourced (prefix mode)
 #   prime-shell-guard.sh "<command>"                                    # exec mode
@@ -40,12 +49,23 @@ _psg_check() { # $1 = command ; 0 = allow, 126 = refuse (message already printed
         out=$(_PSG_CMD="$1" python3 - "$decide" "$rules" "$PWD" <<'PY' 2>/dev/null
 import json, os, subprocess, sys
 decide, rules, cwd = sys.argv[1:4]
+# decide.py fails OPEN on a missing/empty/invalid rules file; validate it here first.
+with open(rules, encoding="utf-8") as f:
+    rr = json.load(f)
+if not (isinstance(rr, dict) and isinstance(rr.get("shell_command_rules"), list)
+        and rr["shell_command_rules"]):
+    print("block", "rules file invalid: needs non-empty shell_command_rules (fail-closed)", sep="\t")
+    sys.exit(0)
 req = {"family": "security_shell", "command": os.environ["_PSG_CMD"], "cwd": cwd,
        "rules_file": rules, "resolve_command_target": False, "harness": "claude"}
 r = subprocess.run([sys.executable, decide], input=json.dumps(req), capture_output=True,
                    text=True, timeout=10, check=True)
 d = json.loads(r.stdout)
-print(d.get("decision", ""), (d.get("reason") or "").replace("\n", " "), sep="\t")
+reason = (d.get("reason") or "").replace("\n", " ")
+dec = d.get("decision", "")
+if "fail-open" in reason:  # decide.py degraded to allow: never trust that here
+    dec = "block"
+print(dec, reason, sep="\t")
 PY
         ) || {
             echo "prime-shell-guard: decide.py failed or timed out; refusing (fail-closed)" >&2

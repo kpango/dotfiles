@@ -101,6 +101,29 @@ set -e
 if [[ $RC -eq 126 && "$OUT" == *"decide.py"* ]]; then ok "fail-closed when decide.py missing"; else ko "fail-open when decide.py missing rc=$RC out=$OUT"; fi
 command rm -rf "$FAKE"
 
+# --- fail-closed on invalid rules (decide.py itself fails OPEN on these) ---
+# Temp repo layout: copied guard + decide.py/rule_engine.py + a deliberately broken rules file.
+for variant in empty object notjson norules emptyrules; do
+    BAD="$(mktemp -d)"
+    mkdir -p "$BAD/agent/scripts"
+    command cp "$GUARD" "$BAD/agent/scripts/prime-shell-guard.sh"
+    command cp -r "$ROOT/agent/scripts/hooks" "$BAD/agent/scripts/hooks"
+    case "$variant" in
+        empty) : >"$BAD/agent/security-rules.json" ;;
+        object) echo '{}' >"$BAD/agent/security-rules.json" ;;
+        notjson) echo 'not json' >"$BAD/agent/security-rules.json" ;;
+        norules) echo '{"sensitive_write_path_rules": []}' >"$BAD/agent/security-rules.json" ;;
+        emptyrules) echo '{"shell_command_rules": []}' >"$BAD/agent/security-rules.json" ;;
+    esac
+    marker="$BAD/marker"
+    set +e
+    OUT=$(bash "$BAD/agent/scripts/prime-shell-guard.sh" "touch '$marker'" 2>&1)
+    RC=$?
+    set -e
+    if [[ $RC -eq 126 && ! -e "$marker" ]]; then ok "fail-closed on invalid rules ($variant)"; else ko "fail-open on invalid rules ($variant) rc=$RC out=$OUT"; fi
+    command rm -rf "$BAD"
+done
+
 # --- symlinked invocation resolves repo root ---
 LNK_DIR="$(mktemp -d)"
 ln -s "$GUARD" "$LNK_DIR/prime-shell-guard.sh"
