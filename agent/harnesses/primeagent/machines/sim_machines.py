@@ -237,7 +237,52 @@ async def prompts_read_only_inside_run_dir():
 
 
 def worst(name, obj):
-    return fence({name: obj})
+    return json.dumps({name: obj}, separators=(",", ":"))
+
+
+def init_emit(basename, with_base=True):
+    """What a prompt-compliant init agent emits for a caller-chosen run_dir basename."""
+    if re.fullmatch(r"[0-9a-f]{12}", basename) is None:
+        return json.dumps({"init": {"ok": False}}, separators=(",", ":"))
+    body = {"ok": True, "run": basename}
+    if with_base:
+        body.update(sha="f" * 24, base="e" * 12)
+    return json.dumps({"init": body}, separators=(",", ":"))
+
+
+def variants(obj_text):
+    """Compact, spaced, fenced and indent=4 renderings of one emitted json object."""
+    obj = json.loads(obj_text)
+    return {"compact": obj_text, "spaced": json.dumps(obj), "fenced": "```json\n" + json.dumps(obj) + "\n```",
+            "indent4": json.dumps(obj, indent=4)}
+
+
+@scenario
+async def init_reject_emit_is_constant_and_fuzzed_inputs_fit():
+    import random
+    rng = random.Random(7)
+    alphabet = "abcdef0123456789 /\\\"'`{}[]$&;\u00e9\u3042\n\t-_."
+    constant = json.dumps({"init": {"ok": False}}, separators=(",", ":"))
+    names = ["0123456789ab", "0123456789AB", "", "a" * 11, "a" * 13, "../" * 20]
+    names += ["".join(rng.choice(alphabet) for _ in range(n)) for n in range(1, 201) for _ in range(2)]
+    for name in names:
+        for with_base in (True, False):
+            emit = init_emit(name, with_base)
+            if re.fullmatch(r"[0-9a-f]{12}", name) is None:
+                assert emit == constant, "reject must be the constant line"
+            assert len(emit) <= 120, f"{len(emit)} chars for basename {name!r}"
+            for kind, text in variants(emit).items():
+                assert len(text) <= 160, f"{kind} variant {len(text)} > 160"
+                value, err = factory._parse_json_output(text[:160], "init")
+                assert err is None and value["ok"] in (True, False), f"{kind}: {err}"
+    # the prompts instruct a constant reject and a compact one-line reply
+    for name in ("swarm-implement", "swarm-explore", "swarm-review"):
+        init_prompt = next(st for st in load(name).spec["states"] if st["id"] == "init")["subagent"]["prompt"]
+        assert '{"init": {"ok": false}}' in init_prompt and "never echoing" in init_prompt
+    for name in ("swarm-implement", "swarm-explore", "swarm-review"):
+        for st in load(name).spec["states"]:
+            if any(o["type"] == "json" for o in st.get("outputs", [])):
+                assert "one line of compact JSON" in st["subagent"]["prompt"], f"{name}.{st['id']}"
 
 
 @scenario
@@ -254,13 +299,13 @@ async def outputs_fit_under_cap():
         "swarm-explore": {
             "init": worst("init", {"ok": True, "run": "f" * 12}),
             "scope": worst("shards", [f"s{i}" for i in range(1, 9)]),
-            "secretary": worst("report", {"items": 99999, "missing": 8}),
-            "explorer": "s8|error|99999",
+            "secretary": worst("report", {"items": 999, "missing": 8}),
+            "explorer": "s8|error|99",
         },
         "swarm-review": {
             "init": worst("init", {"ok": True, "run": "f" * 12}),
-            "diff-source": worst("diff", {"changed_files": 999999}),
-            **{f"lens-{x}": worst("review", {"lens": x, "verdict": "FAIL", "findings": 99999})
+            "diff-source": worst("diff", {"changed_files": 999}),
+            **{f"lens-{x}": worst("review", {"lens": x, "verdict": "FAIL", "findings": 99})
                for x in ("architecture", "code-quality", "docs-comment", "infra-config", "perf-simd", "security", "shell-config", "systems-lang")},
             "aggregator": worst("summary", {"all_pass": False, "failed": 8}),
         },
@@ -269,6 +314,9 @@ async def outputs_fit_under_cap():
         states = {s["id"]: s for s in load(name).spec["states"]}
         for sid, text in cases.items():
             assert len(text) <= CAP, f"{name}.{sid} worst case {len(text)} > {CAP}"
+            if text.startswith("{"):
+                for kind, v in variants(text).items():
+                    assert len(v) <= 160, f"{name}.{sid} {kind} variant {len(v)} > 160"
             for out in states[sid]["outputs"]:
                 if out["type"] != "json":
                     continue
@@ -334,19 +382,31 @@ async def explore_staggered_settles_wait_for_every_shard():
 
 
 @scenario
-async def explore_explorers_never_fail_by_contract():
+async def explore_explorer_prompt_catches_errors():
     states = {st["id"]: st for st in load("swarm-explore").spec["states"]}
     prompt = states["explorer"]["subagent"]["prompt"]
-    assert "never fail" in prompt and "ALWAYS write" in prompt and '"status": "error"' in prompt
+    assert "Catch every error" in prompt and "ALWAYS write" in prompt and '"status": "error"' in prompt
     assert not states["secretary"]["inputs"][1].get("optional"), "secretary must require the joined input"
 
 
+@scenario
+async def explore_runtime_failure_ends_failed_without_report():
+    """A foreach instance that fails at runtime level (child error) fails the entry at once: the
+    secretary's required input cannot bind, no secretary child is ever spawned, the run ends failed."""
+    answers = explore_answers([6, 0, 3])
+    answers["swarm-explorer"] = lambda n: ("error", None, 0) if n == 2 else ("done", f"s{n}|ok|4", [6, 0, 3][n - 1])
+    s = await Sim(answers).run("swarm-explore")
+    assert s.state == "failed", s.state
+    assert ("spawn", "swarm-secretary") not in s.events, "secretary must not run without its required input"
+    assert s.run_obj.states["secretary"].entries[0].status == "error"
+
+
 async def main():
-    for fn in (impl_refused_run_dir_escalates, prompts_read_only_inside_run_dir, impl_pass_path,
+    for fn in (init_reject_emit_is_constant_and_fuzzed_inputs_fit, explore_runtime_failure_ends_failed_without_report, impl_refused_run_dir_escalates, prompts_read_only_inside_run_dir, impl_pass_path,
                impl_five_verify_failures_escalate, impl_five_checker_fails_escalate,
                impl_tamper_escalates_immediately, impl_checker_is_isolated_and_reverifies,
                outputs_fit_under_cap, review_runs_all_lenses_max_three_parallel, explore_all_ok,
-               explore_staggered_settles_wait_for_every_shard, explore_explorers_never_fail_by_contract):
+               explore_staggered_settles_wait_for_every_shard, explore_explorer_prompt_catches_errors):
         await fn()
     failed = 0
     for name, passed, why in RESULTS:

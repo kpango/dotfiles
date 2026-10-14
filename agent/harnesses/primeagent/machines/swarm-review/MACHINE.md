@@ -9,7 +9,15 @@ author: kpango
 
 ## What this machine does
 
-`init` validates the per-run directory and snapshots the input. `diff-source` (Medium) writes the diff against the merge-base of `base_ref` and HEAD to `change.diff`, appending the contents of untracked new files. Eight lens states (architecture, code-quality, docs-comment, infra-config, perf-simd, security, shell-config, systems-lang; XHigh, cross-family) each read their `~/.prime/agent/agents/<lens>-adversarial-reviewer.md` checklist (a read-only agent definition, the only file read outside the run directory) and judge only the diff file. They fan out from `diff-source`, bounded by `run.max_parallel: 3` (SWARM.md section 1). A join transition feeds `aggregator` (Medium) once all eight settled; it emits `{"summary": {"all_pass", "failed"}}` and writes the details to `<run_dir>/summary.md`. The machine gates nothing itself: the caller reads `summary.all_pass`; no `summary.md` means the review did not complete and must be treated as not passed.
+`init` validates the per-run directory and snapshots the input. `diff-source` (Medium) writes the diff against the merge-base of `base_ref` and HEAD to `change.diff`, appending the contents of untracked new files. Eight lens states (architecture, code-quality, docs-comment, infra-config, perf-simd, security, shell-config, systems-lang; XHigh, cross-family) each read their `<agent dir>/agents/<lens>-adversarial-reviewer.md` checklist (a read-only agent definition, the only file read outside the run directory) and judge only the diff file. They fan out from `diff-source`, bounded by `run.max_parallel: 3` (SWARM.md section 1). A join transition feeds `aggregator` (Medium) once all eight settled; it emits `{"summary": {"all_pass", "failed"}}` and writes the details to `<run_dir>/summary.md`. The machine gates nothing itself: the caller reads `summary.all_pass`; no `summary.md` means the review did not complete and must be treated as not passed.
+
+## Residual risks
+
+- Reading and writing only inside the run directory is a prompt contract: nothing in the runtime sandboxes the child agents, and all agents share one filesystem and one user.
+- The fixed pointer file `swarm/<machine>.input.json` limits concurrency: start runs of one machine one at a time and wait for `init` to settle.
+- Output size is bounded by prompt instructions (one line of compact JSON, fixed-length fields). A model that adds free text can push an answer over the preview cap; the json then fails to parse, no guard fires and the run ends without the expected result file.
+- Each lens verdict is an LLM judgement; the aggregator only counts them. `all_pass` is evidence for the human gate, not a replacement for it.
+
 
 ## How to run it
 
@@ -25,7 +33,7 @@ The run call takes only a spec name (no input argument). The caller therefore cr
 Start runs one at a time: wait until `init` has settled (`rlm.factory.status`) before rewriting the pointer for another run of the same machine. `init` refuses (`ok:false`) when `run_dir` is not directly under `<agent dir>/swarm/runs/`, its name is not 12 hex characters, or it holds anything except `input.json`. Every later state reads and writes only inside that run directory, so files of earlier runs are never read.
 
 Output ports are captured answer previews (the host caps them at 160
-characters), so every state emits one compact json block of at most 120
+characters), so every state emits one line of compact JSON of at most 120
 characters and writes everything else to files inside the per-run directory
 `${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run id>/`. Guards branch only on those json fields, never on
 prose. Machines are deployed by `make primeagent/install` (the T10 task adds
@@ -45,7 +53,7 @@ the primeagent settings.json).
       "id": "init",
       "entry": true,
       "subagent": {
-        "prompt": "Orchestrator setup, no judgement. Read the pointer file ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/review.input.json (json: run_dir). Let R = run_dir. Refuse (ok=false, change nothing) unless R is a directory directly under ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/, its basename matches ^[0-9a-f]{12}$, and it contains exactly one entry, input.json. Otherwise copy R/input.json to R/input.snapshot.json, chmod 444 the copy. Return only a fenced json block {\"init\": {\"ok\": <bool>, \"run\": \"<basename of R>\"}} and no other text.",
+        "prompt": "Orchestrator setup, no judgement. Read the pointer file ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/review.input.json (json: run_dir). Let R = run_dir. Accept only if R is a directory directly under ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/, its basename matches ^[0-9a-f]{12}$, and it contains exactly one entry, input.json. If not accepted, change nothing and reply with exactly this constant line, never echoing any part of the input: {\"init\": {\"ok\": false}}. If accepted, copy R/input.json to R/input.snapshot.json, chmod 444 the copy. Then reply with one line of compact JSON only (no fence, no other text): {\"init\": {\"ok\": true, \\\"run\\\": \\\"<basename of R>\\\"}}.",
         "name": "swarm-init",
         "model": "opencode-go/qwen3.8-flash"
       },
@@ -60,7 +68,7 @@ the primeagent settings.json).
     {
       "id": "diff-source",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read RUN/input.snapshot.json (json: worktree, base_ref). Compute `mb=$(git -C <worktree> merge-base <base_ref> HEAD)`. Write to RUN/change.diff the output of `git -C <worktree> diff $mb`, then for every file from `git -C <worktree> ls-files --others --exclude-standard` append a `=== new file: <path> ===` header and the file contents. Return only a fenced json block {\"diff\": {\"changed_files\": <number of changed plus untracked files>}} and no other text. init: {init}",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read RUN/input.snapshot.json (json: worktree, base_ref). Compute `mb=$(git -C <worktree> merge-base <base_ref> HEAD)`. Write to RUN/change.diff the output of `git -C <worktree> diff $mb`, then for every file from `git -C <worktree> ls-files --others --exclude-standard` append a `=== new file: <path> ===` header and the file contents. Reply with one line of compact JSON only (no fence, no other text): {\"diff\": {\"changed_files\": <number of changed plus untracked files, at most 999>}}. init: {init}",
         "name": "swarm-diff-source",
         "model": "opencode-go/kimi-k3"
       },
@@ -82,7 +90,7 @@ the primeagent settings.json).
     {
       "id": "lens-architecture",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ~/.prime/agent/agents/architecture-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"architecture\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/architecture.json (FAIL when there is at least one finding). Return only a fenced json block {\"review\": {\"lens\": \"architecture\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count>}} and no other text.",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/agents/architecture-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"architecture\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/architecture.json (FAIL when there is at least one finding). Reply with one line of compact JSON only (no fence, no other text): {\"review\": {\"lens\": \"architecture\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count, at most 99>}}.",
         "name": "swarm-lens-architecture",
         "model": "prime-inference/openai/gpt-6-astra"
       },
@@ -109,7 +117,7 @@ the primeagent settings.json).
     {
       "id": "lens-code-quality",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ~/.prime/agent/agents/code-quality-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"code-quality\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/code-quality.json (FAIL when there is at least one finding). Return only a fenced json block {\"review\": {\"lens\": \"code-quality\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count>}} and no other text.",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/agents/code-quality-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"code-quality\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/code-quality.json (FAIL when there is at least one finding). Reply with one line of compact JSON only (no fence, no other text): {\"review\": {\"lens\": \"code-quality\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count, at most 99>}}.",
         "name": "swarm-lens-code-quality",
         "model": "prime-inference/openai/gpt-6-astra"
       },
@@ -136,7 +144,7 @@ the primeagent settings.json).
     {
       "id": "lens-docs-comment",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ~/.prime/agent/agents/docs-comment-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"docs-comment\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/docs-comment.json (FAIL when there is at least one finding). Return only a fenced json block {\"review\": {\"lens\": \"docs-comment\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count>}} and no other text.",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/agents/docs-comment-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"docs-comment\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/docs-comment.json (FAIL when there is at least one finding). Reply with one line of compact JSON only (no fence, no other text): {\"review\": {\"lens\": \"docs-comment\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count, at most 99>}}.",
         "name": "swarm-lens-docs-comment",
         "model": "prime-inference/openai/gpt-6-astra"
       },
@@ -163,7 +171,7 @@ the primeagent settings.json).
     {
       "id": "lens-infra-config",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ~/.prime/agent/agents/infra-config-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"infra-config\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/infra-config.json (FAIL when there is at least one finding). Return only a fenced json block {\"review\": {\"lens\": \"infra-config\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count>}} and no other text.",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/agents/infra-config-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"infra-config\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/infra-config.json (FAIL when there is at least one finding). Reply with one line of compact JSON only (no fence, no other text): {\"review\": {\"lens\": \"infra-config\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count, at most 99>}}.",
         "name": "swarm-lens-infra-config",
         "model": "prime-inference/openai/gpt-6-astra"
       },
@@ -190,7 +198,7 @@ the primeagent settings.json).
     {
       "id": "lens-perf-simd",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ~/.prime/agent/agents/perf-simd-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"perf-simd\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/perf-simd.json (FAIL when there is at least one finding). Return only a fenced json block {\"review\": {\"lens\": \"perf-simd\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count>}} and no other text.",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/agents/perf-simd-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"perf-simd\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/perf-simd.json (FAIL when there is at least one finding). Reply with one line of compact JSON only (no fence, no other text): {\"review\": {\"lens\": \"perf-simd\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count, at most 99>}}.",
         "name": "swarm-lens-perf-simd",
         "model": "prime-inference/openai/gpt-6-astra"
       },
@@ -217,7 +225,7 @@ the primeagent settings.json).
     {
       "id": "lens-security",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ~/.prime/agent/agents/security-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"security\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/security.json (FAIL when there is at least one finding). Return only a fenced json block {\"review\": {\"lens\": \"security\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count>}} and no other text.",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/agents/security-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"security\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/security.json (FAIL when there is at least one finding). Reply with one line of compact JSON only (no fence, no other text): {\"review\": {\"lens\": \"security\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count, at most 99>}}.",
         "name": "swarm-lens-security",
         "model": "prime-inference/openai/gpt-6-astra"
       },
@@ -244,7 +252,7 @@ the primeagent settings.json).
     {
       "id": "lens-shell-config",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ~/.prime/agent/agents/shell-config-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"shell-config\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/shell-config.json (FAIL when there is at least one finding). Return only a fenced json block {\"review\": {\"lens\": \"shell-config\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count>}} and no other text.",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/agents/shell-config-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"shell-config\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/shell-config.json (FAIL when there is at least one finding). Reply with one line of compact JSON only (no fence, no other text): {\"review\": {\"lens\": \"shell-config\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count, at most 99>}}.",
         "name": "swarm-lens-shell-config",
         "model": "prime-inference/openai/gpt-6-astra"
       },
@@ -271,7 +279,7 @@ the primeagent settings.json).
     {
       "id": "lens-systems-lang",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ~/.prime/agent/agents/systems-lang-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"systems-lang\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/systems-lang.json (FAIL when there is at least one finding). Return only a fenced json block {\"review\": {\"lens\": \"systems-lang\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count>}} and no other text.",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Read ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/agents/systems-lang-adversarial-reviewer.md and apply it as your checklist. Judge ONLY the diff file RUN/change.diff (read repo files only when needed to verify a finding). Report every finding, not just severe ones. init: {init} diff: {diff}. Write the full result {\"lens\": \"systems-lang\", \"verdict\": \"PASS|FAIL\", \"findings\": [...]} to RUN/systems-lang.json (FAIL when there is at least one finding). Reply with one line of compact JSON only (no fence, no other text): {\"review\": {\"lens\": \"systems-lang\", \"verdict\": \"PASS\"|\"FAIL\", \"findings\": <count, at most 99>}}.",
         "name": "swarm-lens-systems-lang",
         "model": "prime-inference/openai/gpt-6-astra"
       },
@@ -298,7 +306,7 @@ the primeagent settings.json).
     {
       "id": "aggregator",
       "subagent": {
-        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Aggregate only; do not re-review. From the eight lens results below compute all_pass (true only when every verdict is PASS) and failed (number of lenses with verdict FAIL), then write the merged findings of the failing lenses (read RUN/<lens>.json) and the failing lens names to RUN/summary.md. Return only a fenced json block {\"summary\": {\"all_pass\": <true|false>, \"failed\": <number>}} and no other text.\n\ninit: {init}\narchitecture: {architecture}\ncode-quality: {code_quality}\ndocs-comment: {docs_comment}\ninfra-config: {infra_config}\nperf-simd: {perf_simd}\nsecurity: {security}\nshell-config: {shell_config}\nsystems-lang: {systems_lang}",
+        "prompt": "Run directory: RUN = ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run> where <run> is the `run` field of {init}. Read and write files only inside RUN (plus the repo you are told to review). Aggregate only; do not re-review. From the eight lens results below compute all_pass (true only when every verdict is PASS) and failed (number of lenses with verdict FAIL), then write the merged findings of the failing lenses (read RUN/<lens>.json) and the failing lens names to RUN/summary.md. Reply with one line of compact JSON only (no fence, no other text): {\"summary\": {\"all_pass\": <true|false>, \"failed\": <number>}}.\n\ninit: {init}\narchitecture: {architecture}\ncode-quality: {code_quality}\ndocs-comment: {docs_comment}\ninfra-config: {infra_config}\nperf-simd: {perf_simd}\nsecurity: {security}\nshell-config: {shell_config}\nsystems-lang: {systems_lang}",
         "name": "swarm-aggregator",
         "model": "opencode-go/kimi-k3"
       },
