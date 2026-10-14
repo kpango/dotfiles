@@ -2,6 +2,7 @@
 import asyncio
 import json
 import os
+import pwd
 import shutil
 import stat
 import subprocess
@@ -11,6 +12,7 @@ import pytest
 
 import swarm_adapter as sa
 
+REAL_HOME = pwd.getpwuid(os.getuid()).pw_dir  # captured at import, before any fixture touches HOME
 REPO_AGENT = Path(sa.__file__).resolve().parents[6]  # .../agent
 REAL_SKILLS = REPO_AGENT / "skills"
 
@@ -29,6 +31,15 @@ def _isolated_git(monkeypatch, tmp_path, tmp_path_factory):
         monkeypatch.delenv(k, raising=False)
     # Never let git discovery climb out of pytest's tmp root into an enclosing checkout (TMPDIR inside a repo):
     # a non-repo tmp dir must stay "not a git repository" instead of silently targeting the outer repo.
+    # The real scripts keep state under $HOME/.claude/session-data/swarm (budget counters etc.): every test gets a fresh
+    # HOME and explicit state dirs so nothing can ever touch the developer's real ones.
+    home = tmp_path / "home"
+    home.mkdir()
+    monkeypatch.setenv("HOME", str(home))
+    for k in ("XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME", "FABLE_BUDGET_CONF"):
+        monkeypatch.delenv(k, raising=False)
+    monkeypatch.setenv("SWARM_STATE_DIR", str(home / "swarm-state"))
+    monkeypatch.setenv("PASS_REPO_ROOT", str(home / "pass"))
     monkeypatch.setenv("GIT_CEILING_DIRECTORIES", str(Path(tmp_path_factory.getbasetemp()).resolve()))
     monkeypatch.setenv("GIT_CONFIG_GLOBAL", os.devnull)
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
@@ -36,6 +47,19 @@ def _isolated_git(monkeypatch, tmp_path, tmp_path_factory):
     monkeypatch.setenv("GIT_AUTHOR_EMAIL", "t@t")
     monkeypatch.setenv("GIT_COMMITTER_NAME", "t")
     monkeypatch.setenv("GIT_COMMITTER_EMAIL", "t@t")
+
+
+@pytest.fixture(autouse=True)
+def _never_real_home(_isolated_git):
+    """Fail the test (at setup and again at teardown) if HOME is, or became, the real home directory."""
+    assert os.environ["HOME"] != REAL_HOME, "test would run with the real HOME"
+    yield
+    assert os.environ["HOME"] != REAL_HOME, "a test switched HOME back to the real home"
+
+
+def test_home_and_state_dirs_are_isolated(tmp_path):
+    assert os.environ["HOME"] != REAL_HOME and Path(os.environ["HOME"]).is_relative_to(tmp_path)
+    assert Path(os.environ["SWARM_STATE_DIR"]).is_relative_to(tmp_path)
 
 
 def _script(root: Path, rel: str, body: str) -> None:
@@ -114,7 +138,7 @@ def test_missing_script_reports_127(tmp_path, monkeypatch):
 
 def test_scripts_root_default_finds_repo_skills(monkeypatch):
     monkeypatch.delenv("SWARM_SCRIPTS_ROOT", raising=False)
-    got = Path(sa.scripts_root("swarm-graph/scripts/graph-compile.sh"))
+    got = Path(sa._scripts_root("swarm-graph/scripts/graph-compile.sh"))
     assert got.resolve() == REAL_SKILLS.resolve()
 
 
@@ -746,3 +770,14 @@ def test_rules_effectiveness_parity_with_prime_shell_guard(name, repo, tmp_path,
     mine = run(sa.decide_shell("true", cwd=str(repo)))
     assert (guard.returncode == 126) == (name != "valid"), guard.stderr
     assert (mine["decision"] == "block") == (guard.returncode == 126), (mine, guard.stderr)
+
+
+# ======================= attempt 9 =======================================================
+def test_every_public_name_is_a_boundary_wrapped_coroutine_returning_a_dict():
+    import inspect
+    assert not hasattr(sa, "scripts_root") and "scripts_root" not in sa.__all__
+    for name in sa.__all__:
+        fn = getattr(sa, name)
+        assert inspect.iscoroutinefunction(fn) and hasattr(fn, "__wrapped__"), name
+        r = run(fn(__bogus_kwarg__=1))  # unbindable -> TypeError inside the boundary
+        assert isinstance(r, dict) and "TypeError" in r["error"], name

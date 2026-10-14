@@ -26,7 +26,7 @@ from typing import Any
 
 __all__ = [
     "budget_guard", "fable_grant", "fable_maker", "graph_compile", "graph_status", "mission_init",
-    "worktree_alloc", "verify", "decide_shell", "scripts_root",
+    "worktree_alloc", "verify", "decide_shell",
 ]
 
 _TAIL = 4000
@@ -49,7 +49,7 @@ def _repo_agent_dir() -> Path | None:
     return None
 
 
-def scripts_root(rel: str) -> str:
+def _scripts_root(rel: str) -> str:
     """Return the skills root that contains `rel` (or the best candidate if none does)."""
     agent = _repo_agent_dir()
     cands = ([agent / "skills"] if agent else []) + [Path.home() / ".claude" / "skills"]
@@ -89,7 +89,7 @@ def _sync_run(argv: list[str], cwd: str | None = None, stdin: str | None = None,
 
 
 def _script(rel: str, args: list[str], cwd: str | None = None) -> dict[str, Any]:
-    path = Path(scripts_root(rel)) / rel
+    path = Path(_scripts_root(rel)) / rel
     if not path.is_file():
         return {"exit_code": 127, "stdout": "", "stderr": f"script not found: {path}"}
     return _sync_run(["bash", str(path), *args], cwd=cwd)
