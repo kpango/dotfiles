@@ -146,13 +146,6 @@ def test_worktree_alloc_default_outside_repo(repo, monkeypatch):
     assert Path(r["path"]).parent == repo.parent / ".worktrees" / "myrepo"
 
 
-def test_worktree_release(repo, tmp_path, monkeypatch):
-    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
-    r = run(sa.worktree_alloc("s", cwd=str(repo)))
-    out = run(sa.worktree_release(r["path"]))
-    assert out["exit_code"] == 0 and not Path(r["path"]).exists()
-
-
 def test_worktree_alloc_not_a_repo(tmp_path):
     r = run(sa.worktree_alloc("s", cwd=str(tmp_path)))
     assert r.get("error") and "path" not in r
@@ -235,50 +228,6 @@ def test_real_graph_compile_no_tasks_and_unfit(tmp_path, monkeypatch):
 
 
 # ======================= attempt 2 (checker findings) ===========================
-def _alloc(repo, tmp_path, monkeypatch, slug="s"):
-    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
-    return run(sa.worktree_alloc(slug, cwd=str(repo)))
-
-
-def test_release_refuses_outside_root(repo, tmp_path, monkeypatch):
-    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
-    other = tmp_path / "elsewhere"
-    _git(repo, "worktree", "add", "-b", "swarm-prime/x", str(other))
-    r = run(sa.worktree_release(str(other)))
-    assert r["exit_code"] != 0 and r["error"] and other.exists()
-
-
-def test_release_refuses_non_swarm_branch(repo, tmp_path, monkeypatch):
-    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
-    inside = tmp_path / "wt" / "mine"
-    _git(repo, "worktree", "add", "-b", "feature/y", str(inside))
-    r = run(sa.worktree_release(str(inside)))
-    assert r["exit_code"] != 0 and r["error"] and inside.exists()
-
-
-def test_release_refuses_dirty(repo, tmp_path, monkeypatch):
-    r = _alloc(repo, tmp_path, monkeypatch)
-    (Path(r["path"]) / "unsaved.txt").write_text("work")
-    out = run(sa.worktree_release(r["path"]))
-    assert out["exit_code"] != 0 and "dirty" in out["error"] and Path(r["path"]).exists()
-
-
-def test_release_refuses_plain_dir(repo, tmp_path, monkeypatch):
-    monkeypatch.setenv("SWARM_WORKTREE_DIR", str(tmp_path / "wt"))
-    d = tmp_path / "wt" / "plain"
-    d.mkdir(parents=True)
-    r = run(sa.worktree_release(str(d)))
-    assert r["exit_code"] != 0 and d.exists()
-
-
-def test_release_resolves_symlink_and_relative(repo, tmp_path, monkeypatch):
-    r = _alloc(repo, tmp_path, monkeypatch)
-    link = tmp_path / "lnk"
-    link.symlink_to(r["path"])
-    out = run(sa.worktree_release(str(link)))
-    assert out["exit_code"] == 0 and not Path(r["path"]).exists()
-
-
 def test_alloc_relative_env_made_absolute(repo, tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("SWARM_WORKTREE_DIR", "rel-wt")
@@ -483,19 +432,19 @@ def test_leading_dash_rejected(stubs, call):
 import time  # noqa: E402
 
 PUBLIC = ["budget_guard", "fable_grant", "fable_maker", "graph_compile", "graph_status", "mission_init",
-          "worktree_alloc", "worktree_release", "verify", "decide_shell"]
+          "worktree_alloc", "verify", "decide_shell"]
 
 
 def test_boundary_on_every_public_async_function(monkeypatch):
     """By construction: any Exception inside any public function becomes an error dict."""
     def boom(*a, **k):
         raise RuntimeError("boom")
-    for name in ("_script", "_worktree_alloc", "_worktree_release", "_verify", "_decide_shell"):
+    for name in ("_script", "_worktree_alloc", "_verify", "_decide_shell"):
         monkeypatch.setattr(sa, name, boom)
     calls = {
         "budget_guard": ("t",), "fable_grant": ("t",), "fable_maker": ("t",), "graph_compile": (),
         "graph_status": (), "mission_init": ("s", "g"), "worktree_alloc": ("s",),
-        "worktree_release": ("/x",), "verify": (["true"], "/"), "decide_shell": ("ls",),
+        "verify": (["true"], "/"), "decide_shell": ("ls",),
     }
     assert sorted(calls) == sorted(PUBLIC)
     for name, args in calls.items():
@@ -584,7 +533,7 @@ def test_alloc_refuses_base_nested_in_callers_checkout(repo, tmp_path, monkeypat
     assert r["exit_code"] != 0 and "path" not in r and not (mp / "nested").exists()
 
 
-def test_alloc_and_release_unaffected_by_inherited_git_dir(repo, tmp_path, monkeypatch):
+def test_alloc_unaffected_by_inherited_git_dir(repo, tmp_path, monkeypatch):
     other = tmp_path / "other"
     other.mkdir()
     _git(other, "init", "-q", "-b", "main")
@@ -594,8 +543,6 @@ def test_alloc_and_release_unaffected_by_inherited_git_dir(repo, tmp_path, monke
         monkeypatch.setenv(k, v)
     r = run(sa.worktree_alloc("s", cwd=str(repo)))
     assert r["exit_code"] == 0, r
-    out = run(sa.worktree_release(r["path"]))
-    assert out["exit_code"] == 0 and not Path(r["path"]).exists()
     for k in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE"):
         monkeypatch.delenv(k)
     assert "swarm-prime" not in _git(other, "branch", "--list", "swarm-prime/*")  # outer repo untouched
@@ -650,3 +597,20 @@ def test_decide_shell_default_cwd_is_process_cwd(tmp_path, monkeypatch):
 def test_decide_shell_bad_cwd_blocks(tmp_path):
     r = run(sa.decide_shell("ls", cwd=str(tmp_path / "nope")))
     assert r["decision"] == "block" and r["error"]
+
+
+# ======================= attempt 6 =====================================================
+def test_no_destructive_public_function():
+    public = [n for n in dir(sa) if not n.startswith("_")] + list(sa.__all__)
+    assert not [n for n in public if "release" in n or "remove" in n or "delete" in n], public
+
+
+def test_alloc_refuses_separate_git_dir_named_dot_git(tmp_path, monkeypatch):
+    work, gd = tmp_path / "work", tmp_path / "elsewhere" / ".git"
+    work.mkdir()
+    gd.parent.mkdir()
+    _git(work, "init", "-q", "-b", "main", f"--separate-git-dir={gd}")
+    _git(work, "commit", "-q", "--allow-empty", "-m", "i")
+    r = run(sa.worktree_alloc("s", cwd=str(work)))
+    assert r["exit_code"] != 0 and "unsupported" in r["error"] and "path" not in r
+    assert not (tmp_path / ".worktrees").exists()

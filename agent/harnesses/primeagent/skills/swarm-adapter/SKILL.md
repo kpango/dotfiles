@@ -17,7 +17,6 @@ await swarm_adapter.mission_init("slug", "goal", "mission", targets=None)
 wt = await swarm_adapter.worktree_alloc("slug")          # {path, branch}
 await swarm_adapter.verify(["make test"], wt["path"])    # {passed, results[{command, exit_code, output_tail}]}
 await swarm_adapter.decide_shell("git status")           # {decision: allow|ask|block, reason}
-await swarm_adapter.worktree_release(wt["path"])
 ```
 
 ## Notes
@@ -28,8 +27,8 @@ await swarm_adapter.worktree_release(wt["path"])
   (found from this skill's real path), else `~/.claude/skills`. A missing script yields `exit_code` 127.
 - `worktree_alloc` places worktrees outside the repo: `${SWARM_WORKTREE_DIR:-<repo parent>/.worktrees/<repo>}/<slug>-<UTC ts>`,
   branch `swarm-prime/<slug>-<ts>`. A relative `SWARM_WORKTREE_DIR` is made absolute against the process cwd; a location inside the repo is refused.
-- `worktree_release` is guarded: it refuses (`exit_code` != 0 plus `error`) unless the real path is under the worktree root, the worktree's
-  branch is `swarm-prime/*`, and it is clean (no `--force`; uncommitted work is never destroyed). The branch is kept.
+- The adapter performs NO destructive operation, so there is no release/remove function. Worktree cleanup is done by the human or by
+  `agent/skills/swarm-implement/scripts/worktree-release.sh`, outside the agent.
 - `verify` runs every command (no short-circuit); a bare str is one command; `passed` is false for an empty list or a missing `cwd`
   (`error` set). `output_tail` is the last 4000 chars of stdout+stderr. A per-command failure to launch (OSError, null byte, non-str element,
   bad `timeout`) is that command's `exit_code` 126/127 and the others still run.
@@ -39,10 +38,11 @@ await swarm_adapter.worktree_release(wt["path"])
 - **Never raises, by construction:** every public function sits behind one `_boundary` wrapper that turns any Exception into
   `{exit_code: 1, stdout: "", stderr: "", error: "<Type>: <msg>"}` (verify: `{passed: false, results: [], error}`; decide_shell:
   `decision: "block"`, `error`). Inputs are therefore not type-checked individually (non-str task ids, `cwd` pointing at a file, ... yield `error`).
-- Repo layout: `worktree_alloc`/`worktree_release` support only a plain checkout (git common dir == `<toplevel>/.git`, which includes linked
+- Repo layout: `worktree_alloc` supports only a plain checkout (git common dir resolves to exactly `<toplevel>/.git`, which includes linked
   worktrees of it). A submodule or `--separate-git-dir` checkout is refused (`error` "unsupported repository layout"). The worktree dir may be
   neither inside the main checkout nor inside the caller's checkout. Inherited `GIT_DIR`/`GIT_WORK_TREE`/`GIT_INDEX_FILE`/... are
   stripped from every git call (e.g. when run from a git hook).
+  Known limit: a *linked* worktree of a `--separate-git-dir` repo is not detected (indistinguishable by layout).
 - `graph_compile`/`graph_status`/`mission_init` take `cwd` (default: process cwd).
 - `budget_guard(task, mission=, max_attempts=, mission_max=, reset=)` maps to the script's positional/`--mission`/`--mission-max`/`--reset`
   options; `fable_maker(base_task)` is `--fable-maker`. `mission_init(..., depth=, cwd=)` runs in the mission worktree `cwd`.

@@ -1,8 +1,9 @@
 """Thin async adapter over the existing swarm scripts for the prime-agent REPL.
 
 No budget/graph/decide logic lives here: every function shells out to the existing
-script and returns a plain dict. Only worktree_alloc/worktree_release and verify are
-new, and they are deliberately minimal prime-specific control.
+script and returns a plain dict. Only worktree_alloc and verify are
+new, and they are deliberately minimal prime-specific control. No destructive operation lives here:
+worktree cleanup is done by the human or agent/skills/swarm-implement/scripts/worktree-release.sh.
 
 Script lookup (per script, first hit wins):
   1. $SWARM_SCRIPTS_ROOT  (exclusive when set)
@@ -24,7 +25,7 @@ from typing import Any
 
 __all__ = [
     "budget_guard", "fable_grant", "fable_maker", "graph_compile", "graph_status", "mission_init",
-    "worktree_alloc", "worktree_release", "verify", "decide_shell", "scripts_root",
+    "worktree_alloc", "verify", "decide_shell", "scripts_root",
 ]
 
 _TAIL = 4000
@@ -200,17 +201,24 @@ def _git(cwd: str, *args: str) -> dict[str, Any]:
 def _repo_tops(cwd: str) -> tuple[tuple[Path, Path] | None, dict[str, Any] | None]:
     """((main checkout toplevel, caller toplevel), None) or (None, error dict).
 
-    Only the plain layout (common git dir == <main toplevel>/.git) is supported; a submodule,
-    --separate-git-dir is refused rather than guessed at."""
+    Only the plain layout (common git dir == <main toplevel>/.git) is supported; a submodule or
+    --separate-git-dir checkout is refused rather than guessed at."""
     top = _git(cwd, "rev-parse", "--show-toplevel")
     common = _git(cwd, "rev-parse", "--path-format=absolute", "--git-common-dir")
     if top["exit_code"] != 0 or common["exit_code"] != 0:
         return None, {"exit_code": 128, "error": f"not a git repository: {cwd}"}
-    cdir = Path(common["stdout"].strip())
-    if cdir.name != ".git":
+    cdir, caller_top = Path(common["stdout"].strip()), Path(top["stdout"].strip())
+    main = cdir.parent
+    gitdir = _git(cwd, "rev-parse", "--absolute-git-dir")["stdout"].strip()
+    # In the main checkout (git dir == common dir) the common dir must be exactly <toplevel>/.git; a
+    # --separate-git-dir checkout has a `.git` gitfile there instead (its gitdir may still be *named* .git).
+    # Limit: a linked worktree of a --separate-git-dir repo cannot be told apart from layout alone.
+    in_main = bool(gitdir) and Path(gitdir).resolve() == cdir.resolve()
+    if (cdir.name != ".git" or cdir.resolve() != (main / ".git").resolve()
+            or (in_main and (caller_top / ".git").resolve() != cdir.resolve())):
         return None, {"exit_code": 1, "error": f"unsupported repository layout: git common dir {cdir} is not "
                       "<toplevel>/.git (submodule or --separate-git-dir)"}
-    return (cdir.parent, Path(top["stdout"].strip())), None
+    return (main, caller_top), None
 
 
 def _worktree_base(main: Path, caller: Path) -> tuple[Path | None, str]:
@@ -258,44 +266,6 @@ async def worktree_alloc(slug: str, scale: str | None = None, cwd: str | None = 
     if (bad := _bad_dash(base_ref=base_ref)):
         return bad
     return await _a(_worktree_alloc, slug, scale, cwd, base_ref)
-
-
-def _worktree_branch(root: Path, path: Path) -> str | None:
-    out = _git(str(root), "worktree", "list", "--porcelain")["stdout"]
-    for block in out.split("\n\n"):
-        lines = block.strip().split("\n")
-        if lines and lines[0] == f"worktree {path}":
-            return next((l[7:] for l in lines if l.startswith("branch ")), None)
-    return None
-
-
-def _worktree_release(path: str) -> dict[str, Any]:
-    def refuse(msg: str) -> dict[str, Any]:
-        return {"exit_code": 1, "stdout": "", "stderr": "", "error": msg}
-
-    real = Path(path).resolve()
-    tops, tops_err = _repo_tops(str(real)) if real.is_dir() else (None, {"error": "not a directory"})
-    if tops is None:
-        return refuse(f"not a git worktree: {real} ({tops_err['error']})")
-    root, caller_top = tops
-    base, err = _worktree_base(root, caller_top)
-    if base is None:
-        return refuse(err)
-    if base not in real.parents:
-        return refuse(f"{real} is not under the swarm worktree root {base}")
-    branch = _worktree_branch(root, real)
-    if branch is None or not branch.startswith("refs/heads/swarm-prime/"):
-        return refuse(f"{real} is not a swarm-prime/* worktree (branch: {branch})")
-    if _git(str(real), "status", "--porcelain")["stdout"].strip():
-        return refuse(f"worktree {real} is dirty; commit or discard changes first")
-    return _git(str(root), "worktree", "remove", str(real))
-
-
-@_boundary()
-async def worktree_release(path: str) -> dict[str, Any]:
-    """Remove a swarm worktree. Refuses (exit_code != 0, `error`) unless the real path is under the worktree root,
-    its branch is swarm-prime/*, and it is clean. The branch is kept (it may hold unmerged work)."""
-    return await _a(_worktree_release, path)
 
 
 def _killpg(p: subprocess.Popen) -> None:
