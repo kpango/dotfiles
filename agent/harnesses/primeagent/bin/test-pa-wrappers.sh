@@ -909,6 +909,186 @@ STUB
 		"MK=$T/PWNED-n5; $fsmon shared/c/config" "git -C '$N5/vendor/dep' status" "$T/PWNED-n5"
 	command rm -rf "$N5"
 
+	# ---- symlinked git control files + every config value (Checker attempt 11, items 1-5).
+	# mut_case: a mutated pa-sandbox (the new check removed) lets the sandbox change code
+	# host git later runs; the real profile refuses to start.
+	mut_case() { # <label> <workspace> <mutated pa-sandbox> <attack sh> <host cmd> <marker> <refusal substring>
+		local lbl="$1" ws="$2" msb="$3" atk="$4" hc="$5" mk="$6" msg="$7"
+		command cp -a "$ws" "$ws.pristine"
+		# shellcheck source=/dev/null # mutated copy of pa-sandbox
+		( cd "$ws"; export HOME="$FH"; source "$msb"; pa_sandbox_build_argv "$ws" 2>/dev/null && "${PA_BWRAP_ARGV[@]}" sh -c "$atk" ) >/dev/null 2>&1 || true
+		(eval "$hc") >/dev/null 2>&1 || true
+		[[ -e "$mk" ]] && ok "MUTATION ($lbl, check removed): host git runs the attacker's code" || bad "MUTATION ($lbl, check removed): host git runs the attacker's code"
+		command rm -rf "$ws" "$mk"
+		command cp -a "$ws.pristine" "$ws"
+		command rm -rf "$ws.pristine"
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$ws") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "$lbl: refused rc" "1" "$rc"
+		expect_has "$lbl: refusal message" "$msg" "$out"
+	}
+	# M1: no symlink scan of git dirs / hooksPath dirs, config files not walked
+	MUT1="$T/pa-sandbox.mut-links"
+	sed -e 's|^\t_scan_links() {$|&\n\t\treturn 0|' -e 's|_protect_path "$f" "git config file" \&\& ||' "$PA_SANDBOX" >"$MUT1"
+	grep -A1 '^	_scan_links() {$' "$MUT1" | grep -q 'return 0' && ! grep -q '_protect_path "$f" "git config file"' "$MUT1" && ok "M1 mutation applied" || bad "M1 mutation applied"
+	# M2: no writable-symlink refusal in _walk, no outside-symlink-into-workspace refusal
+	MUT2="$T/pa-sandbox.mut-into"
+	sed -e 's|_rw "$cur/$c" \&\& return 2|: # MUTATION|' -e 's|^\t_into_ws() {$|&\n\t\treturn 1|' "$PA_SANDBOX" >"$MUT2"
+	grep -q ': # MUTATION' "$MUT2" && grep -A1 '_into_ws() {' "$MUT2" | grep -q 'return 1' && ok "M2 mutation applied" || bad "M2 mutation applied"
+	commit_cmd() { printf "git -C '%s' -c commit.gpgsign=false commit -q --allow-empty -m x" "$1"; }
+	# (6) item 1: .git/hooks/pre-commit -> ../../scripts/pre-commit (usual ln -s install)
+	L6="$FH/work/lnk-hookfile"
+	mkrepo "$L6"
+	mkdir -p "$L6/scripts"
+	printf '#!/bin/sh\nexit 0\n' >"$L6/scripts/pre-commit"
+	chmod +x "$L6/scripts/pre-commit"
+	ln -s ../../scripts/pre-commit "$L6/.git/hooks/pre-commit"
+	mut_case "(6) symlinked hook file" "$L6" "$MUT1" "MK=$T/PWNED-l6; $hook scripts/pre-commit" \
+		"$(commit_cmd "$L6")" "$T/PWNED-l6" "symlinked git control file"
+	command rm -rf "$L6"
+	# (7) item 2: .git/hooks itself -> ../githooks
+	L7="$FH/work/lnk-hookdir"
+	mkrepo "$L7"
+	mkdir -p "$L7/githooks"
+	printf '#!/bin/sh\nexit 0\n' >"$L7/githooks/post-commit"
+	chmod +x "$L7/githooks/post-commit"
+	command rm -rf "$L7/.git/hooks"
+	ln -s ../githooks "$L7/.git/hooks"
+	mut_case "(7) symlinked .git/hooks dir" "$L7" "$MUT1" "MK=$T/PWNED-l7; $hook githooks/post-commit" \
+		"$(commit_cmd "$L7")" "$T/PWNED-l7" "symlinked git control file"
+	command rm -rf "$L7"
+	# (8) item 3: .git/config -> ../conf/repo.gitconfig
+	L8="$FH/work/lnk-config"
+	mkrepo "$L8"
+	mkdir -p "$L8/conf"
+	mv "$L8/.git/config" "$L8/conf/repo.gitconfig"
+	ln -s ../conf/repo.gitconfig "$L8/.git/config"
+	git -C "$L8" status >/dev/null 2>&1 && ok "(8) fixture: host git accepts the layout" || bad "(8) fixture: host git accepts the layout"
+	mut_case "(8) symlinked .git/config" "$L8" "$MUT1" "MK=$T/PWNED-l8; $fsmon conf/repo.gitconfig" \
+		"git -C '$L8' status" "$T/PWNED-l8" "symlinked git control file"
+	command rm -rf "$L8"
+	# (9) item 3: .git/commondir -> ../cd.txt (a workspace file naming the common dir)
+	L9="$FH/work/lnk-commondir"
+	mkrepo "$L9"
+	git -C "$L9" -c commit.gpgsign=false commit -q --allow-empty -m i
+	printf '.\n' >"$L9/cd.txt"
+	ln -s ../cd.txt "$L9/.git/commondir"
+	git -C "$L9" status >/dev/null 2>&1 && ok "(9) fixture: host git accepts the layout" || bad "(9) fixture: host git accepts the layout"
+	mut_case "(9) symlinked commondir file" "$L9" "$MUT1" \
+		"MK=$T/PWNED-l9; mkdir -p evil/gcd && cp -r .git/objects .git/refs .git/HEAD evil/gcd/ && $fsmon evil/gcd/config && printf '%s\n' \"\$PWD/evil/gcd\" > cd.txt" \
+		"git -C '$L9' status" "$T/PWNED-l9" "symlinked git control file"
+	command rm -rf "$L9"
+	# (10) core.hooksPath dir whose entry is a symlink into the rw workspace
+	L10="$FH/work/lnk-hookspath"
+	mkrepo "$L10"
+	mkdir -p "$L10/.githooks" "$L10/scripts"
+	printf '#!/bin/sh\nexit 0\n' >"$L10/scripts/pc.sh"
+	chmod +x "$L10/scripts/pc.sh"
+	ln -s ../scripts/pc.sh "$L10/.githooks/pre-commit"
+	git -C "$L10" config core.hooksPath .githooks
+	mut_case "(10) hooksPath entry symlink" "$L10" "$MUT1" "MK=$T/PWNED-l10; $hook scripts/pc.sh" \
+		"$(commit_cmd "$L10")" "$T/PWNED-l10" "symlinked git control file"
+	command rm -rf "$L10"
+	# (11) include target is a symlink at the root (re-pointable from inside)
+	L11="$FH/work/lnk-include"
+	mkrepo "$L11"
+	mkdir -p "$L11/conf"
+	printf '[user]\n\tname = t\n' >"$L11/conf/real.cfg"
+	ln -s conf/real.cfg "$L11/inc.cfg"
+	git -C "$L11" config include.path ../inc.cfg
+	mut_case "(11) include target symlink" "$L11" "$MUT2" \
+		"MK=$T/PWNED-l11; $fsmon evil.cfg && rm inc.cfg && ln -s evil.cfg inc.cfg" \
+		"git -C '$L11' status" "$T/PWNED-l11" "goes through a symlink"
+	git -C "$L11" config --unset include.path
+	# a config file outside the workspace that is a symlink INTO it refuses (global config)
+	ln -s "$L11/conf/real.cfg" "$T/outcfg"
+	out="$( (HOME="$FH" GIT_CONFIG_GLOBAL="$T/outcfg" pa_sandbox_build_argv "$L11") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(11b) host config symlinked into the workspace refused rc" "1" "$rc"
+	expect_has "(11b) refusal message" "leads into the workspace" "$out"
+	# ... and one pointing elsewhere outside is followed and accepted
+	printf '[user]\n\tname = t\n' >"$T/realcfg"
+	ln -sf "$T/realcfg" "$T/outcfg"
+	(HOME="$FH" GIT_CONFIG_GLOBAL="$T/outcfg" pa_sandbox_build_argv "$L11") >/dev/null 2>&1 && ok "(11c) host config symlinked outside the workspace accepted" || bad "(11c) host config symlinked outside the workspace accepted"
+	# a hook symlink inside .git that points OUTSIDE the workspace is accepted
+	printf '#!/bin/sh\nexit 0\n' >"$T/outhook"
+	ln -s "$T/outhook" "$L11/.git/hooks/pre-push"
+	(HOME="$FH" pa_sandbox_build_argv "$L11") >/dev/null 2>&1 && ok "(11d) hook symlink to outside the workspace accepted" || bad "(11d) hook symlink to outside the workspace accepted"
+	command rm -rf "$L11" "$T/outcfg" "$T/realcfg" "$T/outhook"
+
+	# (12) item 4: keys that were missing from the old command-key list; every value word
+	# is now protected. MUTATION = run_mut_drop of the new ro bind (host_case).
+	V12="$FH/work/cfg-allvalues"
+	mkrepo "$V12"
+	git -C "$V12" -c commit.gpgsign=false commit -q --allow-empty -m i
+	mkdir -p "$V12/tools"
+	for s in trailer proxy dkc lfs sendmail; do printf '#!/bin/sh\nexit 1\n' >"$V12/tools/$s.sh"; done
+	chmod +x "$V12"/tools/*.sh
+	bad12='printf "#!/bin/sh\ntouch %s\nexit 1\n" "$MK" >'
+	git -C "$V12" config trailer.sob.command ./tools/trailer.sh
+	host_case "(12a) trailer.sob.command" "$V12" "$V12/tools/trailer.sh" "MK=$T/PWNED-v1; $bad12 tools/trailer.sh" \
+		"echo x | git -C '$V12' interpret-trailers --trailer sob=x" "$T/PWNED-v1"
+	git -C "$V12" config core.gitProxy tools/proxy.sh
+	host_case "(12b) core.gitProxy" "$V12" "$V12/tools/proxy.sh" "MK=$T/PWNED-v2; $bad12 tools/proxy.sh" \
+		"timeout 20 git -C '$V12' fetch -q git://pa.invalid/x" "$T/PWNED-v2"
+	git -C "$V12" config gpg.format ssh
+	git -C "$V12" config gpg.ssh.defaultKeyCommand tools/dkc.sh
+	host_case "(12c) gpg.ssh.defaultKeyCommand" "$V12" "$V12/tools/dkc.sh" "MK=$T/PWNED-v3; $bad12 tools/dkc.sh" \
+		"timeout 20 git -C '$V12' commit -q -S --allow-empty -m s" "$T/PWNED-v3"
+	# git-lfs and git-send-email are not installed here: assert the referenced script is
+	# read-only inside (mutation: writable without the bind)
+	git -C "$V12" config lfs.customtransfer.x.path tools/lfs.sh
+	git -C "$V12" config sendemail.sendmailCmd 'sh tools/sendmail.sh'
+	for s in lfs sendmail; do
+		run_mut_drop "$V12" "$V12/tools/$s.sh" "echo PWN >> tools/$s.sh" >/dev/null 2>&1 || true
+		grep -q PWN "$V12/tools/$s.sh" && ok "MUTATION ((12d) $s): script writable without its bind" || bad "MUTATION ((12d) $s): script writable without its bind"
+		printf '#!/bin/sh\nexit 1\n' >"$V12/tools/$s.sh"
+		run_ws "$V12" "echo PWN >> tools/$s.sh 2>/dev/null; true" >/dev/null 2>&1 || true
+		! grep -q PWN "$V12/tools/$s.sh" && ok "(12d) $s script named by its config value is read-only" || bad "(12d) $s script named by its config value is read-only"
+	done
+	command rm -rf "$V12"
+	# (13) item 5: a bare word (no `/`) that exists relative to the root: sh fsmon.sh
+	B13="$FH/work/cfg-bareword"
+	mkrepo "$B13"
+	printf 'exit 1\n' >"$B13/fsmon.sh"
+	git -C "$B13" config core.fsmonitor 'sh fsmon.sh'
+	host_case "(13) core.fsmonitor = sh fsmon.sh (bare word)" "$B13" "$B13/fsmon.sh" \
+		"MK=$T/PWNED-b13; printf 'touch %s\nexit 1\n' \"\$MK\" > fsmon.sh" "git -C '$B13' status" "$T/PWNED-b13"
+	# a word after $(...) is tried relative to the root as well
+	mkdir -p "$B13/tools"
+	printf 'exit 1\n' >"$B13/tools/x.sh"
+	git -C "$B13" config core.fsmonitor 'sh "$(git rev-parse --show-toplevel)/tools/x.sh"'
+	(HOME="$FH" pa_sandbox_build_argv "$B13") >/dev/null 2>&1 && ok "(13b) real profile builds (control)" || bad "(13b) real profile builds (control)"
+	run_ws "$B13" 'echo PWN >> tools/x.sh 2>/dev/null; true' >/dev/null 2>&1 || true
+	! grep -q PWN "$B13/tools/x.sh" && ok "(13b) \$(...)/tools/x.sh is read-only inside" || bad "(13b) \$(...)/tools/x.sh is read-only inside"
+	command rm -rf "$B13"
+	# (14) exclusion rules: obvious non-paths do not refuse and add no read-only entries
+	X14="$FH/work/cfg-nonpaths"
+	mkrepo "$X14"
+	mkdir -p "$X14/mirror"
+	git -C "$X14" config core.autocrlf false
+	git -C "$X14" config core.bigFileThreshold 512m
+	git -C "$X14" config pack.threads 4
+	git -C "$X14" config remote.origin.url https://example.invalid/o/r.git
+	git -C "$X14" config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+	git -C "$X14" config remote.up.url git@example.invalid:o/r.git
+	git -C "$X14" config branch.main.merge refs/heads/main
+	git -C "$X14" config alias.ahead '!git log origin/main..HEAD'
+	git -C "$X14" config alias.dm 'diff origin/main'
+	git -C "$X14" config user.signingkey 'key::ssh-ed25519 AAAAC3Nza/C1lZDI1+NTE5'
+	git -C "$X14" config safe.directory "$X14"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$X14") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(14) true/number/https/refspec/scp/range/key::/root/origin-ref values: builds rc" "0" "$rc"
+	expect_lacks "(14) no read-only entries announced" "read-only inside" "$out"
+	# file:// is a local path: protected
+	git -C "$X14" config remote.loc.url "file://$X14/mirror"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$X14") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(14b) file:// url builds rc" "0" "$rc"
+	expect_has "(14b) file:// target announced read-only" "mirror" "$out"
+	# a word with / whose top-level dir is missing refuses (accepted false refusal)
+	git -C "$X14" config alias.co '!git checkout upstream/main'
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$X14") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(14c) missing word with / (upstream/main, no such remote or dir) refuses rc" "1" "$rc"
+	command rm -rf "$X14"
+
 	# interpreter dir and guard tree: the bind is what protects (mutation: rw bind -> writable)
 	run_mut_drop "$REPO" "$FH/.data/uv/python/cpy" 'echo X > "$HOME/.data/uv/python/cpy/bin/mut-new"' >/dev/null || true
 	[[ -e "$FH/.data/uv/python/cpy/bin/mut-new" ]] && ok "MUTATION: interpreter dir writable when its bind is rw" || bad "MUTATION: interpreter dir writable when its bind is rw"

@@ -40,18 +40,47 @@
 #     and every include.path / includeIf.*.path file (followed recursively by
 #     pa-sandbox itself with `git config --file --no-includes`, which only parses; all
 #     includeIf targets regardless of their condition; plus the host global/system
-#     config from `git var`) are scanned. Every path host git later READS or RUNS
-#     because of them is protected the same way: the include files, core.hooksPath
-#     (relative: to the worktree root, githooks(5); core.worktree adds a root), and
-#     every word containing `/` in a command value (core.fsmonitor, core.sshCommand,
-#     core.editor/pager/askPass, sequence.editor, filter.*.clean/smudge/process,
-#     diff.*.command/textconv, diff.external, merge.*.driver, mergetool/difftool
-#     cmd/path, credential helpers, gpg programs, hook.*.command, `!` aliases, pager.*,
-#     remote.*.uploadpack/receivepack, ...). Inside the workspace an existing target is
-#     ro-bound; a missing one is covered by its ro top-level ancestor, and refuses if it
-#     would sit directly under the root. Includes deeper than 10 (loops) or more than
-#     1000 config files per repo, unparsable configs, `~user/` paths and targets in the
-#     rw state dirs refuse.
+#     config from `git var`) are scanned. There is NO list of "command" keys: EVERY value
+#     of EVERY key is split into words and each word that may name a path is protected
+#     (inside the workspace an existing target is ro-bound; a missing one is covered by
+#     its ro top-level ancestor, and refuses if it would sit directly under the root):
+#       * splitting: a leading `!` is dropped, quotes are removed, `$HOME`/`${HOME}` mean
+#         `~`, any other `$VAR`/`${...}`/`$(`/`)`/backquote ends a word, and
+#         ; & | < > ( ) { } = , and whitespace separate words. With unbalanced quotes the
+#         whole value is a word as well.
+#       * a word with `/` is a path: absolute, `~/` (host HOME), or relative to every base
+#         (each worktree root -- the repo root, a nested repo's root, core.worktree -- and
+#         the directory of the config file that set it). A word that followed a `$...`
+#         expansion (`$(git rev-parse --show-toplevel)/x`) is also tried relative to each
+#         base. A word WITHOUT `/` is protected when it names an existing file, directory
+#         or symlink relative to a base (`sh fsmon.sh` runs ./fsmon.sh from the root).
+#       * core.hooksPath is always a path (even without `/`, even missing); every
+#         include target is protected relative to its including file.
+#       * NOT treated as paths (exclusion rules): empty values, true/false/yes/no/on/off,
+#         numbers (optionally k/m/g), values starting `key::` (literal SSH signing key);
+#         words with a URL scheme `xxx://` (file:// is NOT excluded: its path part is
+#         protected like an absolute word; file://host/... with another host is skipped),
+#         words with a `:` before any `/` (scp-like remote `host:path`, refspec `a:b`,
+#         `format:`), words starting `refs/`, `+refs/` or `^refs/` (refnames/refspecs),
+#         words containing a revision range `a..b`, `<remote>/...` when <remote> is a
+#         remote configured for that repo (remote.<remote>.url) and no entry of that name
+#         exists in the base (a remote-tracking ref such as origin/main), and a word
+#         naming a worktree root itself (e.g. safe.directory; git never runs a directory).
+#         The values of include.path / includeIf.*.path / core.worktree are handled as
+#         described above instead.
+#     Words with `/` that do not exist and whose top-level directory does not exist either
+#     REFUSE (e.g. `alias.x = !git log upstream/main` without an `upstream` remote): false
+#     refusals are accepted.
+#     Includes deeper than 10 (loops) or more than 1000 config files per repo, unparsable
+#     configs, `~user/` paths and targets in the rw state dirs refuse.
+#   - SYMLINKED GIT CONTROL FILES refuse: every symlink inside each git dir and common dir
+#     (hooks/ and its entries, config, config.worktree, commondir, gitdir, info/*,
+#     worktrees/*/gitdir|commondir, ...: the whole dir is scanned) and inside each
+#     core.hooksPath directory is resolved; one that resolves into the workspace or an rw
+#     state dir (or goes through a writable symlink) refuses, one pointing elsewhere is
+#     followed (directories are scanned too, 4 levels). Config / include files are walked
+#     the same way: a symlink outside the workspace that leads into it refuses. Any find
+#     error refuses.
 #   - ANCESTORS: a mount point cannot be renamed, but its writable parent can (the
 #     mount moves along and the original path is free for an attacker-made git dir
 #     that the unchanged gitfile / a later host git run trusts). So for every protected
@@ -116,16 +145,26 @@
 #     vendor/dep/.git, is ENTIRELY read-only inside the sandbox, and so is a config
 #     reference directly under the root (.githooks, .gitconfig); all are listed on
 #     stderr every run. A `.git` directly under the root needs no extra bind.
-#   - CONFIG REFERENCES are heuristic for command values: only words containing `/`
-#     count as paths (quotes stripped, `--opt=` prefixes cut). A script found via PATH,
-#     a file another script reads, or a word without `/` is NOT followed. A word with
-#     `/` that is not a path (e.g. `textconv = sed s/a/b/`) can make pa-sandbox refuse.
-#   - Not protected on purpose: core.attributesFile / core.excludesFile targets
-#     (in-tree .gitattributes / .gitignore are writable anyway; they only select
-#     drivers defined in the ro config), .gitmodules (a worktree file; git ignores
-#     `update = !cmd` from it), objects/info/alternates targets (object data, never
-#     executed). A git repo CREATED inside the workspace by the sandbox is attacker
-#     controlled: do not run host git inside directories that were not repos before.
+#   - CONFIG REFERENCES are protected by value shape, not by key: what is NOT followed is
+#     (a) a program found via PATH (`sh`, `my-hook`): PATH is the host's, outside the
+#     workspace unless PATH itself names a workspace dir; (b) files a protected script or
+#     program reads INDIRECTLY (a hook that sources ./lib.sh, a Makefile it runs); (c) a
+#     relative path git resolves against the CURRENT directory of the host git call (e.g.
+#     core.pager run from a subdirectory) rather than a worktree root; (d) host-side
+#     config that pa-sandbox never sees: GIT_CONFIG_COUNT/KEY_*/VALUE_*,
+#     GIT_CONFIG_PARAMETERS, `git -c`, GIT_DIR/GIT_WORK_TREE and other env of the later
+#     host git run; (e) words removed by the exclusion rules above (a refspec-looking,
+#     `host:path` or `origin/...` word that really is a script path). In-tree
+#     .gitattributes / .gitignore stay writable (they only select drivers defined in
+#     the ro config), .gitmodules is a worktree file (git ignores `update = !cmd` from
+#     it), objects/info/alternates targets are object data. A git repo CREATED inside
+#     the workspace by the sandbox is attacker controlled: do not run host git inside
+#     directories that were not repos before.
+#   - FALSE REFUSALS are accepted: a config word with `/` that is no path (`textconv = sed
+#     s/a/b/`, `!git log upstream/main` without that remote), a missing path whose
+#     top-level directory is missing too, or a symlinked hook/config into the workspace
+#     makes pa-sandbox refuse. A word that happens to name an existing workspace entry (`core.editor = nvim` with
+#     an nvim/ directory at the root) makes that entry read-only (listed on stderr).
 #   - mcp-service-catalog.v2.json and daemon-workers/ are ro (see PA_SANDBOX_AGENT_RW_*).
 #   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
 #   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
@@ -374,7 +413,8 @@ pa_sandbox_build_argv() {
 	# (common config, config.worktree, every include/includeIf file, recursively, plus the
 	# host global/system config) names it -- core.hooksPath, includes, scripts named in
 	# command values -- is protected the same way (CONFIG REFERENCES in the header).
-	local -a rwp=("$repo") gk=() gv=() ek=() ev=()
+	local -a rwp=("$repo") gk=() gv=() gdd=() ek=() ev=() ed=() wl=()
+	local -A pdone=()
 	for name in "${PA_SANDBOX_AGENT_RW_DIRS[@]}" "${PA_SANDBOX_AGENT_RW_FILES[@]}"; do
 		rwp+=("$agent_dir/$name")
 	done
@@ -415,11 +455,21 @@ pa_sandbox_build_argv() {
 		done
 		printf '%s\n' "${cur:-/}"
 	}
+	# _into_ws <path> <resolved>: a symlink (outside the workspace) led <path> into it
+	_into_ws() {
+		local n
+		n="$(realpath -s -m -- "$1")" || return 0
+		pa_sandbox_within "$2" "$repo" && [[ "$n" != "$2" ]]
+	}
 	_protect_dir() { # <dir> <label>: an existing git dir
 		local q pp rc=0
 		q="$(_walk "$1")" || rc=$?
 		if [[ $rc -eq 2 ]]; then
 			pa_sandbox_die "$2 path '$1' goes through a symlink inside the writable workspace; refusing"
+			return 1
+		fi
+		if [[ $rc -eq 0 ]] && _into_ws "$1" "$q"; then
+			pa_sandbox_die "$2 path '$1' goes through a symlink that leads into the workspace; refusing"
 			return 1
 		fi
 		if [[ $rc -ne 0 || ! -d "$q" ]]; then
@@ -442,6 +492,10 @@ pa_sandbox_build_argv() {
 		q="$(_walk "$1")" || rc=$?
 		if [[ $rc -ne 0 ]]; then
 			pa_sandbox_die "$2: '$1' goes through a symlink inside the writable workspace or cannot be resolved; refusing"
+			return 1
+		fi
+		if _into_ws "$1" "$q"; then
+			pa_sandbox_die "$2: '$1' goes through a symlink that leads into the workspace; refusing"
 			return 1
 		fi
 		for pp in "${prot[@]}"; do
@@ -472,7 +526,8 @@ pa_sandbox_build_argv() {
 		case "$1" in
 		/*) printf '%s\n' "$1" ;;
 		\~/*) printf '%s\n' "$home/${1#\~/}" ;;
-		\~*) return 1 ;; # ~user: not supported, the caller refuses
+		\~) printf '%s\n' "$home" ;;
+	\~*) return 1 ;; # ~user: not supported, the caller refuses
 		*) printf '%s\n' "$2/$1" ;;
 		esac
 	}
@@ -507,6 +562,7 @@ pa_sandbox_build_argv() {
 			[[ "$ent" == *$'\n'* ]] && v="${ent#*$'\n'}"
 			ek+=("$k")
 			ev+=("$v")
+			ed+=("${f%/*}")
 			case "$k" in
 			include.path | includeif.*.path)
 				if ! inc="$(_abs "$v" "$(dirname "$f")")" || ! _protect_path "$inc" "include in $f"; then
@@ -529,29 +585,149 @@ pa_sandbox_build_argv() {
 	local hf
 	while IFS= read -r hf; do
 		[[ -f "$hf" ]] || continue # unset, missing or /dev/null
-		_cfg_read "$hf" 0 || return 1
+		_protect_path "$hf" "host git config" && _cfg_read "$hf" 0 || return 1
 	done < <(git var GIT_CONFIG_GLOBAL 2>/dev/null; git var GIT_CONFIG_SYSTEM 2>/dev/null)
 	gk=("${ek[@]}")
 	gv=("${ev[@]}")
+	gdd=("${ed[@]}")
+	# _scan_links <dir> <depth>: every symlink under a git control dir (hooks/, config,
+	# commondir, gitdir, info/, worktrees/*, ...) or a hooksPath dir must lead OUTSIDE the
+	# workspace and the rw state dirs (SYMLINKED GIT CONTROL FILES in the header).
+	_scan_links() {
+		local l t q rc lst err frc=0 bad=0
+		[[ -d "$1" ]] || return 0
+		if [[ $2 -gt 4 ]]; then
+			pa_sandbox_die "symlinked directories nested too deep under '$1'; refusing"
+			return 1
+		fi
+		lst="$(mktemp)"
+		err="$(mktemp)"
+		find -P "$1" -type l -print0 >"$lst" 2>"$err" || frc=$?
+		if [[ $frc -ne 0 || -s "$err" ]]; then
+			pa_sandbox_die "scan for symlinks under '$1' failed (rc=$frc): $(head -c 400 "$err"); refusing"
+			command rm -f "$lst" "$err"
+			return 1
+		fi
+		command rm -f "$err"
+		while IFS= read -r -d '' l; do
+			rc=0
+			t="$(readlink -- "$l")" || rc=1
+			[[ "$t" == /* ]] || t="${l%/*}/$t"
+			[[ $rc -eq 0 ]] && { q="$(_walk "$t")" || rc=$?; }
+			if [[ $rc -ne 0 ]] || pa_sandbox_within "$q" "$repo" || _rw "$q"; then
+				pa_sandbox_die "symlinked git control file '$l' leads into the writable workspace or state (it could be rewritten from inside), or cannot be resolved; refusing"
+				bad=1
+				break
+			fi
+			if [[ -d "$q" ]] && ! _scan_links "$q" $(($2 + 1)); then
+				bad=1
+				break
+			fi
+		done <"$lst"
+		command rm -f "$lst"
+		return "$bad"
+	}
+	# _words <value>: the words of a config value that may name a path -> wl ("a:word", or
+	# "v:word" for a word right after a $... expansion). Splitting/exclusions: header.
+	_words() {
+		local sep='[;&|<>(){}=,]' v="$1" w k p q1 q2 re='\$\{[^}]*\}|\$[A-Za-z_][A-Za-z0-9_]*|\$\(|`|\)'
+		local -a parts=()
+		wl=()
+		v="${v#!}"
+		q1="${v//[^\"]/}"
+		q2="${v//[^\']/}"
+		if [[ $((${#q1} % 2)) -ne 0 || $((${#q2} % 2)) -ne 0 ]]; then
+			wl+=("a:$v") # unbalanced quotes: cannot split, the whole value is a word too
+		fi
+		v="${v//[\"\']/}"
+		v="${v//\$\{HOME\}/\~}"
+		v="${v//\$HOME/\~}"
+		while [[ "$v" =~ $re ]]; do
+			v="${v/"${BASH_REMATCH[0]}"/ $'\001'}"
+		done
+		v="${v//$sep/ }"
+		read -ra parts -d '' <<<"$v" || true
+		for w in "${parts[@]}"; do
+			k=a
+			[[ "$w" == $'\001'* ]] && k=v
+			w="${w//$'\001'/}"
+			case "$w" in
+			"" | . | refs/* | +refs/* | ^refs/*) continue ;;
+			file://*)
+				p="${w#file://}"
+				p="${p#localhost}"
+				[[ "$p" == /* ]] || continue # file://otherhost/...: not local
+				w="$p"
+				;;
+			esac
+			[[ "$w" =~ ^[A-Za-z][A-Za-z0-9+.-]*:// ]] && continue # URL with a scheme
+			[[ "$w" =~ ^[^/]*: ]] && continue                     # host:path, a:b refspec, format:
+			[[ "$w" =~ [^/]\.\.|\.\.[^/] ]] && continue           # revision range a..b
+			wl+=("$k:$w")
+		done
+	}
+	# _pp <abs path> <key>: _protect_path once per path; a worktree root itself is skipped
+	# (e.g. safe.directory: git never runs a directory, and it cannot be made read-only)
+	_pp() {
+		local n r
+		n="$(realpath -s -m -- "$1")" || return 1
+		for r in "${roots[@]}" "$repo"; do [[ "$n" == "$r" ]] && return 0; done
+		[[ -z "${pdone[$n]:-}" ]] || return 0
+		pdone[$n]=1
+		_protect_path "$1" "$2 in the config of '$g'" || {
+			pa_sandbox_die "cannot protect '$1' named by $2 (config of '$g'); refusing" || true
+			return 1
+		}
+	}
+	# _cand <word> <kind> <key> <config dir>: protect what one config word may name (header)
+	_cand() {
+		local t="$1" b n rel=""
+		case "$t" in
+		/* | \~*)
+			if ! n="$(_abs "$t" /)"; then
+				pa_sandbox_die "unsupported path '$t' named by $3 (config of '$g'); refusing"
+				return 1
+			fi
+			_pp "$n" "$3" || return 1
+			[[ "$2" == v && "$t" == /* ]] || return 0
+			rel="$t" # right after a $... expansion: maybe relative to a base as well
+			while [[ "$rel" == /* ]]; do rel="${rel#/}"; done
+			[[ -n "$rel" ]] || return 0
+			;;
+		*) rel="$t" ;;
+		esac
+		for b in "${roots[@]}" "$4"; do
+			[[ "$rel" == */* || -e "$b/$rel" || -L "$b/$rel" ]] || continue
+			# <remote>/<x> with no <remote> entry in the base: a remote-tracking ref
+			[[ "$rel" == */* && -n "${rem[${rel%%/*}]:-}" && ! -e "$b/${rel%%/*}" && ! -L "$b/${rel%%/*}" ]] && continue
+			_pp "$b/$rel" "$3" || return 1
+		done
+	}
 	# _git_ctx <git dir> <worktree root>
 	_git_ctx() {
-		local g c f i r t v
-		local -a roots=("$2") toks=() files=()
+		local g c f i r t k v w
+		local -a roots=("$2") files=()
+		local -A rem=()
 		_protect_dir "$1" "git dir of '$2'" || return 1
 		g="$(_walk "$1")"
+		_scan_links "$g" 0 || return 1
 		c="$g"
 		if [[ -f "$g/commondir" ]]; then
 			c="$(head -n1 "$g/commondir")"
 			[[ "$c" == /* ]] || c="$g/$c"
 			_protect_dir "$c" "commondir of '$g'" || return 1
 			c="$(_walk "$c")"
+			[[ "$c" == "$g" ]] || _scan_links "$c" 0 || return 1
 		fi
 		ek=("${gk[@]}")
 		ev=("${gv[@]}")
+		ed=("${gdd[@]}")
 		ncfg=0
 		files=("$c/config" "$g/config.worktree")
 		[[ "$c" != "$g" ]] && files+=("$g/config" "$c/config.worktree")
-		for f in "${files[@]}"; do _cfg_read "$f" 0 || return 1; done
+		for f in "${files[@]}"; do
+			_protect_path "$f" "git config file" && _cfg_read "$f" 0 || return 1
+		done
 		# core.worktree (relative to the git dir) moves the worktree root
 		for i in "${!ek[@]}"; do
 			[[ "${ek[$i]}" == core.worktree && -n "${ev[$i]}" ]] || continue
@@ -561,30 +737,31 @@ pa_sandbox_build_argv() {
 			fi
 			roots+=("$r")
 		done
+		for k in "${ek[@]}"; do # configured remote names (see _cand)
+			[[ "$k" == remote.*.url ]] && k="${k#remote.}" && rem[${k%.url}]=1
+		done
+		# EVERY value of EVERY key (CONFIG REFERENCES in the header; no key list)
 		for i in "${!ek[@]}"; do
+			k="${ek[$i]}"
 			v="${ev[$i]}"
-			toks=()
-			case "${ek[$i]}" in
-			core.hookspath) toks=("$v") ;; # relative: to the worktree root (githooks(5))
-			alias.*) [[ "$v" != '!'* ]] || read -ra toks -d '' <<<"${v#!}" || true ;;
-			core.fsmonitor | core.sshcommand | core.editor | core.pager | core.askpass | sequence.editor | \
-				core.alternaterefscommand | diff.external | interactive.difffilter | uploadpack.packobjectshook | \
-				pager.* | gpg.program | gpg.*.program | credential.helper | credential.*.helper | hook.*.command | \
-				filter.*.clean | filter.*.smudge | filter.*.process | diff.*.command | diff.*.textconv | \
-				merge.*.driver | mergetool.*.cmd | mergetool.*.path | difftool.*.cmd | difftool.*.path | \
-				remote.*.uploadpack | remote.*.receivepack)
-				read -ra toks -d '' <<<"$v" || true ;; # command values: protect every word that is a path
-			esac
-			for t in "${toks[@]}"; do
-				t="${t//[\"\']/}"
-				[[ "${ek[$i]}" != core.hookspath ]] && t="${t##*=}"
-				[[ -n "$t" && ("${ek[$i]}" == core.hookspath || "$t" == */*) ]] || continue
+			case "$k" in
+			include.path | includeif.*.path | core.worktree) continue ;; # handled above
+			core.hookspath)                                             # relative: to the worktree root (githooks(5))
+				[[ -n "$v" ]] || continue
 				for r in "${roots[@]}"; do
-					if ! f="$(_abs "$t" "$r")" || ! _protect_path "$f" "${ek[$i]} in the config of '$g'"; then
-						pa_sandbox_die "cannot protect '$t' named by ${ek[$i]} (config of '$g'); refusing" || true
+					if ! f="$(_abs "$v" "$r")" || ! _protect_path "$f" "core.hooksPath in the config of '$g'"; then
+						pa_sandbox_die "cannot protect hooks dir '$v' named by core.hooksPath (config of '$g'); refusing" || true
 						return 1
 					fi
+					t="$(_walk "$f")" && _scan_links "$t" 0 || return 1
 				done
+				continue
+				;;
+			esac
+			[[ -z "$v" || "${v,,}" =~ ^(true|false|yes|no|on|off)$ || "$v" =~ ^-?[0-9]+(\.[0-9]+)?[kKmMgG]?$ || "$v" == key::* ]] && continue
+			_words "$v"
+			for w in "${wl[@]}"; do
+				_cand "${w#?:}" "${w%%:*}" "$k" "${ed[$i]}" || return 1
 			done
 		done
 	}
@@ -632,7 +809,7 @@ pa_sandbox_build_argv() {
 	if [[ ${#anc[@]} -gt 0 ]]; then
 		pa_sandbox_warn "read-only inside the sandbox (they contain protected git metadata; edits there fail by design): ${anc[*]}"
 	fi
-	unset -f _ro _rw _walk _protect_dir _protect_path _abs _cfg_read _git_ctx
+	unset -f _ro _rw _walk _into_ws _protect_dir _protect_path _abs _cfg_read _scan_links _words _pp _cand _git_ctx
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
 	local -a pass=()
