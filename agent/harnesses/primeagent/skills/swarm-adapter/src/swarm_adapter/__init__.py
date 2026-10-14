@@ -76,6 +76,8 @@ def _boundary(fail=_fail):
 
 def _sync_run(argv: list[str], cwd: str | None = None, stdin: str | None = None,
               timeout: float | None = None, env: dict[str, str] | None = None) -> dict[str, Any]:
+    # PYTHONSAFEPATH=1 (defense in depth): no python started by a script puts its cwd (the target repo) on sys.path.
+    env = {**(os.environ if env is None else env), "PYTHONSAFEPATH": "1"}
     try:
         p = subprocess.run(argv, cwd=cwd, input=stdin, capture_output=True, text=True,
                            timeout=timeout, errors="replace", env=env)
@@ -338,14 +340,21 @@ def _block(msg: str) -> dict[str, Any]:
     return {"decision": "block", "reason": "swarm-adapter: " + msg, "error": msg}
 
 
+_PATTERN_KEYS = ("all_of", "any_of", "any_of_with_branches")
+
+
 def _rules_ok(path: Path) -> bool:
-    """Same root cause decide.py fails open on: an unreadable/empty rules file. Validate before trusting it."""
+    """decide.py fails open on a rules file that does not actually block anything. Same criterion as
+    agent/scripts/prime-shell-guard.sh (pinned by a parity test): a JSON object whose shell_command_rules list holds at
+    least one block-tier rule with a non-empty pattern list."""
     try:
         data = json.loads(path.read_text())
     except (OSError, ValueError):
         return False
     rules = data.get("shell_command_rules") if isinstance(data, dict) else None
-    return isinstance(rules, list) and len(rules) > 0
+    return isinstance(rules, list) and any(
+        isinstance(r, dict) and r.get("tier") == "block"
+        and any(isinstance(r.get(k), list) and r[k] for k in _PATTERN_KEYS) for r in rules)
 
 
 def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
@@ -355,14 +364,14 @@ def _decide_shell(command: str, cwd: str | None) -> dict[str, Any]:
     if not (decide and decide.is_file() and rules and rules.is_file()):
         return _block("decide.py/security-rules.json unavailable (fail-closed: this adapter runs without hooks)")
     if not _rules_ok(rules):
-        return _block(f"{rules} is not a JSON object with a non-empty shell_command_rules list (fail-closed)")
+        return _block(f"{rules} is not a JSON object with >=1 block-tier shell_command_rules entry that has patterns (fail-closed)")
     # harness "primeagent": prime has no human confirm, so decide.py's advisory layer (which it runs, incl. guard_relax,
     # only for claude/agy/pi) must NOT be able to relax a deterministic decision here.
     req = {"family": "security_shell", "command": command, "cwd": cwd or os.getcwd(),
            "rules_file": str(rules), "resolve_command_target": False, "harness": "primeagent"}
     # decide.py resolves "." / relative `cd`/`-C` targets (e.g. the protected-branch rules) against ITS process cwd,
     # so it must run in the requested cwd; a missing dir surfaces as a failed run -> block (fail-closed).
-    r = _sync_run(["python3", str(decide)], cwd=req["cwd"], stdin=json.dumps(req), timeout=10)
+    r = _sync_run(["python3", "-I", str(decide)], cwd=req["cwd"], stdin=json.dumps(req), timeout=10)
     try:
         out = json.loads(r["stdout"])
     except ValueError:

@@ -52,7 +52,9 @@ await swarm_adapter.decide_shell("git status")           # {decision: allow|ask|
   It sends harness `"primeagent"`: prime has no human confirm, so decide.py's advisory layer (guard_relax; claude/agy/pi only) must not relax a decision.
 - `decide_shell` runs decide.py with its process cwd set to `cwd` (default: process cwd), because the protected-branch rules read the branch of that
   directory; a nonexistent `cwd` yields `block`.
-- `decide_shell` also validates `security-rules.json` itself (JSON object, non-empty `shell_command_rules`) and treats any decide.py reply whose
+- Every script subprocess gets `PYTHONSAFEPATH=1` and decide.py is launched `python3 -I <abs path>`, so a target repo's own `re.py`/`json.py`
+  is never imported.
+- `decide_shell` also validates `security-rules.json` itself (same criterion as `agent/scripts/prime-shell-guard.sh`, pinned by a parity test: JSON object whose `shell_command_rules` has >=1 `tier == "block"` rule with a non-empty `all_of`/`any_of`/`any_of_with_branches`) and treats any decide.py reply whose
   reason contains `fail-open` as `block`.
 - `worktree_alloc(..., base_ref="HEAD")` branches from `base_ref` resolved in the caller's `cwd` checkout (not the main repo HEAD); result has `base` (sha).
 - `plan_path` (graph_*) and `scale` (mission_init) are optional like the scripts'; task_id/slug/plan_path/stale/base_ref starting with `-` return an error dict.
