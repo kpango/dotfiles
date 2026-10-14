@@ -28,7 +28,9 @@
 #     nested `.git` under the workspace. Git metadata is therefore
 #     entirely READ-ONLY: edits to working-tree files work, but git write
 #     operations (commit, branch, add, config) fail BY DESIGN; the human commits on
-#     the host after review. ALL nested `.git` entries (no depth limit; symlinks
+#     the host after review. Nested gitfiles: each `gitdir:` target (and its commondir)
+#     is resolved and ro-bound if inside the workspace, else the run is refused unless
+#     it is already under a protected git dir. ALL nested `.git` entries (no depth limit; symlinks
 #     skipped) are bound; more than PA_SANDBOX_MAX_NESTED_GIT (500) FAILS CLOSED.
 #     A workspace without a `.git` is refused (an agent
 #     could plant one that a later unsandboxed git run would trust), override:
@@ -43,7 +45,7 @@
 #   - Own daemon socket (/tmp/pa-sandbox/daemon.sock on a private tmpfs).
 #   - PRIME_AGENT_BASH_COMMAND_PREFIX sources the shell guard; before exec the guard
 #     is proven INSIDE the sandbox (harmless command runs, a blocked one gets rc 126)
-#     else fail closed (override: PA_SANDBOX_ALLOW_NO_GUARD=1).
+#     else fail closed (UNSAFE override: PA_SANDBOX_ALLOW_NO_GUARD=1, warns every run).
 #   - --unshare-pid + private /proc; if the host refuses that mount, falling back to
 #     the host /proc is opt-in (PA_SANDBOX_ALLOW_HOST_PROC=1) and warns every run.
 #     The fallback has NO PID namespace (inside a pid ns the host /proc shows the
@@ -76,6 +78,9 @@
 #     launch and after the sandboxed process exits (also on INT/TERM; not on
 #     SIGKILL of pa-sandbox itself -- the next launch scrubs). Not a defence
 #     against races while the sandboxed process is still running.
+#   - If pa-sandbox itself is SIGKILLed, leftover sandbox processes are NOT swept: the
+#     sandbox identity only exists in the dead run's memory and nothing is guessed. The
+#     next launch scrubs state dirs, but a survivor could re-plant afterwards.
 #   - A symlinked nested `.git` makes pa-sandbox refuse to start (override, UNSAFE:
 #     PA_SANDBOX_ALLOW_GIT_SYMLINKS=1); any error while scanning for nested `.git`
 #     (unreadable dir) also refuses.
@@ -166,7 +171,7 @@ pa_sandbox_build_argv() {
 		return 1
 	fi
 	if [[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" != 1 && ! -f "$agent_dir/bin/prime-shell-guard.sh" ]]; then
-		pa_sandbox_die "$agent_dir/bin/prime-shell-guard.sh not found (run the installer); set PA_SANDBOX_ALLOW_NO_GUARD=1 to override"
+		pa_sandbox_die "$agent_dir/bin/prime-shell-guard.sh not found (run the installer); UNSAFE override: PA_SANDBOX_ALLOW_NO_GUARD=1"
 		return 1
 	fi
 
@@ -276,7 +281,8 @@ pa_sandbox_build_argv() {
 	[[ -n "$gcd" ]] && _ro "$gcd"
 	# Scan to files (not process substitution) so a find failure is seen: an
 	# unreadable directory could hide a nested .git, so ANY find error fails closed.
-	local ng nn=0 scan scanerr frc=0 links=()
+	local ng nn=0 scan scanerr frc=0 links=() gfiles=() prot=("$repo/.git")
+	[[ -n "$gcd" ]] && prot+=("$gcd")
 	scan="$(mktemp)"
 	scanerr="$(mktemp)"
 	find "$repo" -name .git -prune -print0 >"$scan" 2>"$scanerr" || frc=$?
@@ -293,6 +299,7 @@ pa_sandbox_build_argv() {
 			continue
 		fi
 		[[ "$ng" == "$repo/.git" ]] && continue
+		[[ -f "$ng" ]] && gfiles+=("$ng")
 		nn=$((nn + 1))
 		if [[ $nn -gt $PA_SANDBOX_MAX_NESTED_GIT ]]; then
 			pa_sandbox_die "more than $PA_SANDBOX_MAX_NESTED_GIT nested .git entries under '$repo'; refusing (raise PA_SANDBOX_MAX_NESTED_GIT to accept)"
@@ -300,6 +307,7 @@ pa_sandbox_build_argv() {
 			return 1
 		fi
 		_ro "$ng"
+		[[ -d "$ng" ]] && prot+=("$ng")
 	done <"$scan"
 	command rm -f "$scan"
 	# A symlinked .git cannot be bound read-only (bwrap would bind its target, and the
@@ -308,7 +316,45 @@ pa_sandbox_build_argv() {
 		pa_sandbox_die "symlinked .git entries cannot be protected, refusing: ${links[*]} (UNSAFE override: PA_SANDBOX_ALLOW_GIT_SYMLINKS=1)"
 		return 1
 	fi
-	unset -f _ro
+	# Nested gitfiles point at a gitdir that need not be named .git (and its commondir
+	# may point elsewhere): resolve each target, make sure it is read-only (already
+	# under a protected path, or ro-bound if inside the workspace) or refuse to start.
+	_protect_dir() { # <dir> <label>
+		local q pp
+		q="$(readlink -f "$1" 2>/dev/null)" || q=""
+		if [[ -z "$q" || ! -d "$q" ]]; then
+			pa_sandbox_die "$2 does not resolve to an existing directory; refusing"
+			return 1
+		fi
+		for pp in "${prot[@]}"; do
+			pa_sandbox_within "$q" "$pp" && return 0
+		done
+		if pa_sandbox_within "$q" "$repo"; then
+			_ro "$q"
+			prot+=("$q")
+			return 0
+		fi
+		pa_sandbox_die "$2 points to '$q' outside the workspace and outside protected git dirs; refusing"
+		return 1
+	}
+	local gf gline gd cdir
+	for gf in "${gfiles[@]}"; do
+		gline="$(head -n1 "$gf")"
+		if [[ "$gline" != "gitdir: "* ]]; then
+			pa_sandbox_die "nested gitfile '$gf' has an unexpected format; refusing"
+			return 1
+		fi
+		gd="${gline#gitdir: }"
+		[[ "$gd" == /* ]] || gd="$(dirname "$gf")/$gd"
+		_protect_dir "$gd" "gitfile $gf" || return 1
+		gd="$(readlink -f "$gd")"
+		if [[ -f "$gd/commondir" ]]; then
+			cdir="$(head -n1 "$gd/commondir")"
+			[[ "$cdir" == /* ]] || cdir="$gd/$cdir"
+			_protect_dir "$cdir" "commondir of $gf" || return 1
+		fi
+	done
+	unset -f _ro _protect_dir
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
 	local -a pass=()
@@ -361,13 +407,41 @@ pa_sandbox_verify_guard() {
 # The rw state dirs are later written by an UNSANDBOXED daemon, which would follow a
 # planted symlink (or open a planted FIFO/device) and write wherever it points.
 # Remove every non-regular, non-directory entry there, at launch and after exit.
+# Directories the sandbox made unreadable (0111/000) would hide planted entries from
+# find, so real directories are first normalised to u+rwx (never following symlinks;
+# chmod runs per directory BEFORE find descends into it). Every find error, in either
+# step, fails the scrub (rc 1): at launch pa-sandbox refuses to start, at exit the
+# run fails.
 pa_sandbox_scrub_state() { # <agent_dir>
-	local name n
+	local name d n pass errf frc clean
+	errf="$(mktemp)"
 	for name in "${PA_SANDBOX_AGENT_RW_DIRS[@]}"; do
-		[[ -d "$1/$name" && ! -L "$1/$name" ]] || continue
-		n="$(find "$1/$name" \( -type l -o -type p -o -type s -o -type b -o -type c \) -print -delete 2>/dev/null | wc -l)" || n=0
-		[[ "$n" -gt 0 ]] && pa_sandbox_warn "removed $n planted symlink/special entries under $1/$name"
+		d="$1/$name"
+		[[ -d "$d" && ! -L "$d" ]] || continue
+		clean=0
+		for pass in 1 2 3 4 5 6 7 8; do
+			frc=0
+			find -P "$d" -type d ! -perm -u=rwx -exec chmod u+rwx {} \; >/dev/null 2>"$errf" || frc=$?
+			if [[ $frc -eq 0 && ! -s "$errf" ]]; then
+				clean=1
+				break
+			fi
+		done
+		if [[ $clean -ne 1 ]]; then
+			pa_sandbox_warn "cannot normalise directory permissions under $d: $(head -c 400 "$errf")"
+			command rm -f "$errf"
+			return 1
+		fi
+		frc=0
+		n="$(find -P "$d" \( -type l -o -type p -o -type s -o -type b -o -type c \) -print -delete 2>"$errf" | wc -l)" || frc=$?
+		if [[ $frc -ne 0 || -s "$errf" ]]; then
+			pa_sandbox_warn "scrub of $d failed: $(head -c 400 "$errf")"
+			command rm -f "$errf"
+			return 1
+		fi
+		[[ "$n" -gt 0 ]] && pa_sandbox_warn "removed $n planted symlink/special entries under $d"
 	done
+	command rm -f "$errf"
 	return 0
 }
 
@@ -480,7 +554,7 @@ pa_sandbox_cleanup() {
 	[[ -n "${PA_SANDBOX_WATCHER:-}" ]] && kill "$PA_SANDBOX_WATCHER" 2>/dev/null || true
 	pa_sandbox_sweep_recorded || rc=70
 	[[ -n "${PA_SANDBOX_RUNDIR:-}" ]] && command rm -rf "$PA_SANDBOX_RUNDIR"
-	pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR"
+	pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR" || true # main already reported; this covers INT/TERM
 	return "$rc"
 }
 
@@ -490,7 +564,11 @@ pa_sandbox_main() {
 	repo="$(pa_sandbox_repo_root "$PWD")"
 	pa_sandbox_build_argv "$repo" || return $?
 	agent_dir="$(cd -P "$HOME/.prime/agent" && pwd)"
-	pa_sandbox_scrub_state "$agent_dir"
+	pa_sandbox_scrub_state "$agent_dir" || {
+		pa_sandbox_die "state scrub failed at launch; refusing to start"
+		return 1
+	}
+	[[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" == 1 ]] && pa_sandbox_warn "UNSAFE: PA_SANDBOX_ALLOW_NO_GUARD=1, guard verification skipped, commands run unguarded"
 	pa_sandbox_verify_guard || return $?
 	PA_SANDBOX_SCRUB_DIR="$agent_dir" # globals: locals are gone when the EXIT trap fires
 	PA_SANDBOX_SWEPT=0
@@ -507,6 +585,10 @@ pa_sandbox_main() {
 	if ! pa_sandbox_sweep_recorded; then
 		pa_sandbox_die "sandbox processes could not be cleaned up; state may be tainted" 70 || true
 		rc=70
+	fi
+	if ! pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR"; then
+		pa_sandbox_die "post-exit state scrub failed; planted entries may remain in the rw state dirs" 71 || true
+		[[ $rc -eq 0 ]] && rc=71
 	fi
 	return "$rc"
 }

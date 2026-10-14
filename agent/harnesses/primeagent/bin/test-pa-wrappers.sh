@@ -589,6 +589,80 @@ STUB
 	expect_eq "env PA_SANDBOX_MAX_NESTED_GIT=5000 is honoured" "0" "$rc"
 	command rm -rf "$CAPR"
 
+	# unreadable dirs (0111 / 000, nested) must not hide planted entries from the scrub
+	cat >"$STUBDIR/prime-agent" <<STUB
+#!/bin/sh
+d="\$HOME/.prime/agent"
+mkdir -p "\$d/sessions/s1/s2" && ln -s "$VICTIM" "\$d/sessions/s1/s2/evil.json"
+mkfifo "\$d/logs/plainfifo"
+chmod 000 "\$d/sessions/s1/s2"; chmod 0111 "\$d/sessions/s1"
+exit 0
+STUB
+	chmod +x "$STUBDIR/prime-agent"
+	# MUTATION: the old scrub (no permission normalisation) leaves the symlink behind
+	run_ws "$REPO" "mkdir -p \"\$HOME/.prime/agent/sessions/s1/s2\" && ln -s \"$VICTIM\" \"\$HOME/.prime/agent/sessions/s1/s2/evil.json\"; chmod 000 \"\$HOME/.prime/agent/sessions/s1/s2\"; chmod 0111 \"\$HOME/.prime/agent/sessions/s1\"" >/dev/null || true
+	find -P "$FH/.prime/agent/sessions" -type l -delete 2>/dev/null || true
+	chmod u+rwx "$FH/.prime/agent/sessions/s1" && ls -A "$FH/.prime/agent/sessions/s1/s2" >/dev/null 2>&1 || true
+	chmod u+rwx "$FH/.prime/agent/sessions/s1/s2"
+	[[ -L "$FH/.prime/agent/sessions/s1/s2/evil.json" ]] && ok "MUTATION (no permission normalisation): planted symlink survives the old scrub" || bad "MUTATION (no permission normalisation): planted symlink survives the old scrub"
+	command rm -rf "$FH/.prime/agent/sessions/s1"
+	( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; pa_sandbox_main ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
+	expect_eq "unreadable-dir repro: main rc" "0" "$rc"
+	[[ -r "$FH/.prime/agent/sessions/s1/s2" && ! -e "$FH/.prime/agent/sessions/s1/s2/evil.json" && ! -L "$FH/.prime/agent/sessions/s1/s2/evil.json" && ! -e "$FH/.prime/agent/logs/plainfifo" ]] \
+		&& ok "scrub removed planted symlink (nested 0111/000 dirs) and FIFO" || bad "scrub removed planted symlink (nested 0111/000 dirs) and FIFO"
+	expect_eq "unreadable-dir repro: victim untouched" "ORIG" "$(cat "$VICTIM")"
+	[[ -r "$FH/.prime/agent/sessions/s1/s2" ]] && ok "directories were normalised readable" || bad "directories were normalised readable"
+	command rm -rf "$FH/.prime/agent/sessions/s1"
+
+	# a scan error makes the scrub, and main, fail loudly (find shim fails on -delete)
+	SHIM="$T/shimbin"
+	mkdir -p "$SHIM"
+	REALFIND="$(command -v find)"
+	cat >"$SHIM/find" <<SHIMEOF
+#!/bin/sh
+case "\$*" in
+*-delete*)
+	n=\$(cat "$T/shim-count" 2>/dev/null || echo 0); n=\$((n + 1)); echo \$n >"$T/shim-count"
+	if [ "\$n" -gt "\$(cat "$T/shim-after")" ]; then echo "find: boom" >&2; exit 1; fi ;;
+esac
+exec "$REALFIND" "\$@"
+SHIMEOF
+	chmod +x "$SHIM/find"
+	# launch failure
+	echo 0 >"$T/shim-after"; echo 0 >"$T/shim-count"
+	cat >"$STUBDIR/prime-agent" <<'STUB'
+#!/bin/sh
+exit 0
+STUB
+	out="$( (cd "$REPO"; export HOME="$FH" PATH="$SHIM:$STUBDIR:$PATH"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+	expect_eq "scrub scan error at launch: main refuses rc" "1" "$rc"
+	expect_has "scrub scan error at launch: loud message" "refusing to start" "$out"
+	# post-exit failure: launch scrub (5 rw dirs) passes, exit scrub fails
+	echo "${#PA_SANDBOX_AGENT_RW_DIRS[@]}" >"$T/shim-after"; echo 0 >"$T/shim-count"
+	out="$( (cd "$REPO"; export HOME="$FH" PATH="$SHIM:$STUBDIR:$PATH"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+	expect_eq "scrub scan error after exit: main fails rc" "71" "$rc"
+	expect_has "scrub scan error after exit: loud message" "post-exit state scrub failed" "$out"
+
+	# UNSAFE no-guard override warns on every run
+	out="$( (cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH" PA_SANDBOX_ALLOW_NO_GUARD=1; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+	expect_has "PA_SANDBOX_ALLOW_NO_GUARD warns UNSAFE per run" "UNSAFE" "$out"
+
+	# nested gitfile -> gitdir not named .git, inside the workspace: ro-bound; outside: refused
+	mkdir -p "$REPO/vendor/gf" "$REPO/vendor/gitdata-custom"
+	printf 'gitdir: ../gitdata-custom\n' >"$REPO/vendor/gf/.git"
+	printf '[core]\n' >"$REPO/vendor/gitdata-custom/config"
+	run_mut_drop "$REPO" "$REPO/vendor/gitdata-custom" 'echo "[evil]" >> vendor/gitdata-custom/config' >/dev/null || true
+	grep -q '^\[evil\]' "$REPO/vendor/gitdata-custom/config" && ok "MUTATION: gitfile target writable without its ro bind" || bad "MUTATION: gitfile target writable without its ro bind"
+	printf '[core]\n' >"$REPO/vendor/gitdata-custom/config"
+	run_ws "$REPO" 'echo "[evil]" >> vendor/gitdata-custom/config 2>/dev/null; true' >/dev/null || true
+	! grep -q '^\[evil\]' "$REPO/vendor/gitdata-custom/config" && ok "nested gitfile's gitdir (not named .git) is read-only inside" || bad "nested gitfile's gitdir (not named .git) is read-only inside"
+	mkdir -p "$FH/outside-gitdir"
+	printf 'gitdir: %s\n' "$FH/outside-gitdir" >"$REPO/vendor/gf/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "nested gitfile pointing outside the workspace refused rc" "1" "$rc"
+	expect_has "outside gitfile message" "outside the workspace" "$out"
+	command rm -rf "$REPO/vendor/gf" "$REPO/vendor/gitdata-custom"
+
 	# interpreter dir and guard tree: the bind is what protects (mutation: rw bind -> writable)
 	run_mut_drop "$REPO" "$FH/.data/uv/python/cpy" 'echo X > "$HOME/.data/uv/python/cpy/bin/mut-new"' >/dev/null || true
 	[[ -e "$FH/.data/uv/python/cpy/bin/mut-new" ]] && ok "MUTATION: interpreter dir writable when its bind is rw" || bad "MUTATION: interpreter dir writable when its bind is rw"
