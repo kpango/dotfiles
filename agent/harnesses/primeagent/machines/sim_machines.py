@@ -48,6 +48,8 @@ class Sim:
         self.counter = 0
         self.polls = {}
         self.numbers = {}
+        self.t = 0.0
+        self.bump = {}
         self.events = []
 
     async def spawn(self, prompt, *, name=None, model=None, thinking=None):
@@ -79,6 +81,7 @@ class Sim:
                     tool_use_count=0, replied_since_task=None))
                 continue
             self.running.discard(cid)
+            self.t += self.bump.get(base, 0)
             self.events.append(("settle", base, n, status))
             out.append(
                 rlm.RLMChildResult(
@@ -95,7 +98,7 @@ class Sim:
             return {}
 
         rlm.spawn, rlm.collect, rlm.host_request = self.spawn, self.collect, host_request
-        ex = factory.FactoryExecutor(harness=object())
+        ex = factory.FactoryExecutor(harness=object(), now=lambda: self.t)
         res = await ex.run_machine(load(machine_name))
         run = ex._runs[res["run_id"]]
         for _ in range(5000):
@@ -514,8 +517,93 @@ async def implement_run_budget_covers_five_attempts():
     assert spec["run"]["budget_ms"] >= need, f"run budget {spec['run']['budget_ms']} < {need}"
 
 
+FREE_TEXT = lambda n: ("done", "All done, looks good to me!")  # noqa: E731
+
+
+def impl_ok():
+    return impl_answers(ok(verify("check", True)), ok(judge("PASS")))
+
+
+@scenario
+async def failure_test_maker_free_text_pauses():
+    a = impl_ok()
+    a["swarm-test-maker"] = FREE_TEXT
+    s = await Sim(a).run("swarm-implement")
+    assert s.state == "paused" and not s.entered("done") and not s.entered("escalate"), s.state
+    assert ("spawn", "swarm-maker") not in s.events and "tests" in (s.run_obj.pause_reason or ""), s.run_obj.pause_reason
+
+
+@scenario
+async def failure_maker_child_error_pauses():
+    a = impl_ok()
+    a["swarm-maker"] = lambda n: ("error", None)
+    s = await Sim(a).run("swarm-implement")
+    assert s.state == "paused" and not s.entered("escalate") and ("spawn", "swarm-checker") not in s.events, s.state
+
+
+@scenario
+async def failure_budget_overrun_pauses():
+    s0 = Sim(impl_ok())
+    s0.bump["swarm-test-maker"] = 601  # seconds; test-maker budget_ms is 600000
+    s = await s0.run("swarm-implement")
+    assert s.state == "paused" and "state budget_ms" in (s.run_obj.pause_reason or ""), (s.state, s.run_obj.pause_reason)
+    assert ("spawn", "swarm-maker") not in s.events and not s.entered("escalate")
+
+
+@scenario
+async def failure_unparseable_guard_reply_ends_done_without_outcome():
+    for who in ("swarm-maker", "swarm-init"):
+        a = impl_ok()
+        a[who] = FREE_TEXT
+        s = await Sim(a).run("swarm-implement")
+        assert s.state == "done" and not s.entered("done") and not s.entered("escalate"), (who, s.state)
+    a = impl_ok()
+    a["swarm-checker"] = FREE_TEXT
+    s = await Sim(a).run("swarm-implement")
+    assert s.state == "done" and not s.entered("done") and not s.entered("escalate"), s.state
+
+
+@scenario
+async def failure_review_free_text_pauses():
+    a = review_answers({})
+    a["swarm-diff-source"] = FREE_TEXT
+    s = await Sim(a).run("swarm-review")
+    assert s.state == "paused" and not any(e[0] == "spawn" and e[1].startswith("swarm-lens-") for e in s.events), "diff-source free text"
+    a = review_answers({})
+    a["swarm-lens-security"] = FREE_TEXT
+    s = await Sim(a).run("swarm-review")
+    assert s.state == "paused" and ("spawn", "swarm-aggregator") not in s.events, "lens free text"
+
+
+@scenario
+async def failure_explore_scope_free_text_fails():
+    a = explore_answers([0, 0, 0])
+    a["swarm-scope"] = FREE_TEXT
+    s = await Sim(a).run("swarm-explore")
+    assert s.state == "failed" and ("spawn", "swarm-explorer") not in s.events, s.state
+
+
+@scenario
+async def run_budgets_cover_critical_paths():
+    import math
+    for name, waves_of in (("swarm-explore", None), ("swarm-review", None)):
+        spec = load(name).spec
+        b = {st["id"]: st["budget_ms"] for st in spec["states"]}
+        par = spec["run"]["max_parallel"]
+        if name == "swarm-explore":
+            need = b["init"] + b["scope"] + math.ceil(8 / par) * b["explorer"] + b["secretary"]
+        else:
+            lens = max(v for k, v in b.items() if k.startswith("lens-"))
+            need = b["init"] + b["diff-source"] + math.ceil(8 / par) * lens + b["aggregator"]
+        assert spec["run"]["budget_ms"] >= need, f"{name}: run budget {spec['run']['budget_ms']} < {need}"
+    spec = load("swarm-implement").spec
+    assert [st["budget_ms"] for st in spec["states"] if st["id"] == "checker"] == [900000]
+
+
 async def main():
-    for fn in (every_prompt_template_is_parseable_json, prompt_templates_drive_pass_and_escalate_paths,
+    for fn in (failure_test_maker_free_text_pauses, failure_maker_child_error_pauses, failure_budget_overrun_pauses,
+               failure_unparseable_guard_reply_ends_done_without_outcome, failure_review_free_text_pauses,
+               failure_explore_scope_free_text_fails, run_budgets_cover_critical_paths, every_prompt_template_is_parseable_json, prompt_templates_drive_pass_and_escalate_paths,
                implement_run_budget_covers_five_attempts, init_reject_emit_is_constant_and_fuzzed_inputs_fit, explore_runtime_failure_ends_failed_without_report, impl_refused_run_dir_escalates, prompts_read_only_inside_run_dir, impl_pass_path,
                impl_five_verify_failures_escalate, impl_five_checker_fails_escalate,
                impl_tamper_escalates_immediately, impl_checker_is_isolated_and_reverifies,
