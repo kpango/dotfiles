@@ -401,8 +401,122 @@ async def explore_runtime_failure_ends_failed_without_report():
     assert s.run_obj.states["secretary"].entries[0].status == "error"
 
 
+MARKERS = ("Reply with one line of compact JSON only (no fence, no other text): ",
+           "reply with exactly this constant line, never echoing any part of the input: ")
+
+
+def templates(prompt):
+    """Every JSON reply template a prompt tells the agent to emit, in prompt order
+    (case-insensitive marker search, then a balanced-brace scan)."""
+    found, low = [], prompt.lower()
+    for marker in MARKERS:
+        pos = 0
+        while (i := low.find(marker.lower(), pos)) != -1:
+            start = i + len(marker)
+            assert prompt[start] == "{", f"no template after marker: {prompt[start:start + 30]!r}"
+            depth = 0
+            for j in range(start, len(prompt)):
+                depth += (prompt[j] == "{") - (prompt[j] == "}")
+                if depth == 0:
+                    break
+            found.append((start, prompt[start:j + 1]))
+            pos = j
+    return [t for _, t in sorted(found)]
+
+
+def fill(template, overrides=None):
+    """Substitute placeholders with worst-case fixed-length values; overrides picks an alternative by key."""
+    overrides = overrides or {}
+
+    def alt(m):
+        key, options = m.group(1), re.findall(r'"([^"]*)"', m.group(2))
+        return f'"{key}": "{overrides.get(key) or max(options, key=len)}"'
+
+    t = re.sub(r'"(\w+)": ("[^"]*"(?:\|"[^"]*")+)', alt, template)
+    t = re.sub(r"<[^<>]*at most (\d+)>", lambda m: m.group(1), t)
+    t = re.sub(r"<(?:number|count)[^<>]*>", "999", t)
+    t = re.sub(r"<true\|false>|<bool>", "false", t)
+    t = t.replace("<basename of R>", "f" * 12).replace("<24 hex>", "f" * 24).replace("<12 hex>", "e" * 12)
+    assert "<" not in t and ">" not in t, f"unfilled placeholder in {t!r}"
+    return t
+
+
+def reply_for(machine, state_id, overrides=None, index=-1):
+    st = next(x for x in load(machine).spec["states"] if x["id"] == state_id)
+    return fill(templates(st["subagent"]["prompt"])[index], overrides)
+
+
+@scenario
+async def every_prompt_template_is_parseable_json():
+    for name in ("swarm-implement", "swarm-explore", "swarm-review"):
+        for st in load(name).spec["states"]:
+            tpls = templates(st["subagent"]["prompt"])
+            json_outs = [o["name"] for o in st.get("outputs", []) if o["type"] == "json"]
+            if json_outs:
+                assert tpls, f"{name}.{st['id']} has no reply template"
+            if st["id"] == "init":
+                assert len(tpls) == 2, f"{name}.init must carry reject and accept templates, got {tpls}"
+            for tpl in tpls:
+                text = fill(tpl)
+                value, err = factory._parse_json_output(text, tuple(json.loads(text))[0])
+                assert err is None, f"{name}.{st['id']}: {err} in {text!r}"
+                assert len(json.dumps(json.loads(text), separators=(",", ":"))) <= 120, f"{name}.{st['id']} template too long"
+                if st["id"] != "init":
+                    assert tuple(json.loads(text))[0] in json_outs, f"{name}.{st['id']} template key not a declared output"
+
+
+def verbatim(machine, **choices):
+    """Answers for every state: its own prompt template, verbatim after placeholder fill."""
+    answers = {}
+    for st in load(machine).spec["states"]:
+        base = st["subagent"]["name"]
+        if st["id"] == "explorer":
+            answers[base] = lambda n: ("done", f"s{n}|ok|4")
+            continue
+        tpls = templates(st["subagent"]["prompt"])
+        ov = choices.get(st["id"])
+        if st["id"] == "init":
+            assert len(tpls) == 2, tpls
+            text = fill(tpls[1], None)  # the accepted-run reply (second template; the first is the constant reject)
+            answers[base] = ok(text)
+        else:
+            answers[base] = ok(fill(tpls[0], ov))
+    return answers
+
+
+@scenario
+async def prompt_templates_drive_pass_and_escalate_paths():
+    ph = {"maker": {"next": "check"}, "checker": {"verdict": "PASS"}}
+    s = await Sim(verbatim("swarm-implement", **ph)).run("swarm-implement")
+    assert s.entered("done") and not s.entered("escalate"), f"PASS path (run {s.state})"
+    assert s.run_obj.states["done"].entries[0].outputs["outcome"]["status"] == "pass"
+    s = await Sim(verbatim("swarm-implement", maker={"next": "escalate"})).run("swarm-implement")
+    assert s.entered("escalate") and not s.entered("done"), "maker escalate"
+    assert s.run_obj.states["escalate"].entries[0].outputs["outcome"]["status"] == "escalated"
+    s = await Sim(verbatim("swarm-implement", maker={"next": "check"}, checker={"verdict": "TAMPER"})).run("swarm-implement")
+    assert s.entered("escalate") and not s.entered("done"), "TAMPER"
+    answers = verbatim("swarm-implement", maker={"next": "check"}, checker={"verdict": "PASS"})
+    answers["swarm-init"] = ok(reply_for("swarm-implement", "init", index=0))  # constant reject line (first template)
+    s = await Sim(answers).run("swarm-implement")
+    assert s.entered("escalate") and not s.entered("done") and not s.entered("maker"), "init reject"
+    # review and explore: the verbatim templates carry the whole pipeline to the final state
+    s = await Sim(verbatim("swarm-review")).run("swarm-review")
+    assert s.entered("aggregator"), f"review (run {s.state})"
+    s = await Sim(verbatim("swarm-explore")).run("swarm-explore")
+    assert s.entered("secretary") and s.state == "done", f"explore (run {s.state})"
+
+
+@scenario
+async def implement_run_budget_covers_five_attempts():
+    spec = load("swarm-implement").spec
+    b = {st["id"]: st["budget_ms"] for st in spec["states"]}
+    need = b["init"] + b["test-maker"] + 5 * (b["maker"] + b["checker"]) + b["maker"] + b["escalate"]
+    assert spec["run"]["budget_ms"] >= need, f"run budget {spec['run']['budget_ms']} < {need}"
+
+
 async def main():
-    for fn in (init_reject_emit_is_constant_and_fuzzed_inputs_fit, explore_runtime_failure_ends_failed_without_report, impl_refused_run_dir_escalates, prompts_read_only_inside_run_dir, impl_pass_path,
+    for fn in (every_prompt_template_is_parseable_json, prompt_templates_drive_pass_and_escalate_paths,
+               implement_run_budget_covers_five_attempts, init_reject_emit_is_constant_and_fuzzed_inputs_fit, explore_runtime_failure_ends_failed_without_report, impl_refused_run_dir_escalates, prompts_read_only_inside_run_dir, impl_pass_path,
                impl_five_verify_failures_escalate, impl_five_checker_fails_escalate,
                impl_tamper_escalates_immediately, impl_checker_is_isolated_and_reverifies,
                outputs_fit_under_cap, review_runs_all_lenses_max_three_parallel, explore_all_ok,

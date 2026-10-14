@@ -11,7 +11,7 @@ author: kpango
 
 Runs one implementation task as a guarded loop with EXPLICIT terminal states. `init` validates the per-run directory, snapshots the input read-only inside it and returns `{ok, run, sha, base}` (24-hex sha256 prefix of the snapshot, 12-hex base commit); the runtime binds that json into later prompts, so the maker cannot change it. `ok:false` goes straight to `escalate`. `test-maker` (High) writes failing tests only. `maker` (High) first calls `swarm_adapter.budget_guard(<run>, mission=<mission>)`, then implements and runs `swarm_adapter.verify`; `verify.next` decides: `retry` returns to `maker`, `check` goes to `checker`, `escalate` goes to `escalate`. `checker` (XHigh, cross-family) gets no maker output: it verifies the snapshot sha256, re-runs `swarm_adapter.verify` itself from the snapshot's commands, and judges `git diff <base>` plus untracked file contents. `PASS` goes to `done`, `FAIL` back to `maker`, `TAMPER` to `escalate`. Attempt 6 is refused by the budget guard, so five maker attempts is a hard limit that ends in `escalate`. The budget task id is the run name: re-running means a new run directory and a fresh 5-attempt budget, while the mission budget (20) keeps accumulating.
 
-**The only success signal is `<run_dir>/outcome.json` with `status` equal to `pass`** (written by the `done` state). A missing file, any other status (`escalated`), or a run that ended without reaching `done` or `escalate` (for example a state emitted unparsable json, so no guard fired; the runtime then marks the run `done`) must be treated as failure. `max_entries: 8` and `max_transitions: 40` are only backstops above the explicit path.
+**The only success signal is `<run_dir>/outcome.json` with `status` equal to `pass`** (written by the `done` state). A missing file, any other status (`escalated`), or a run that ended without reaching `done` or `escalate` (for example a state emitted unparsable json, so no guard fired; the runtime then marks the run `done`) must be treated as failure. An `init` refusal (`ok:false`) deliberately writes no `outcome.json` at all, because `run_dir` may be invalid: it too is a failure by the missing-file rule. `max_entries: 8` and `max_transitions: 40` are only backstops above the explicit path. Run budget arithmetic (per-state `budget_ms`): init 120000 + test-maker 600000 + 5 x (maker 900000 + checker 600000) + the sixth maker entry that the budget guard refuses 900000 + escalate 60000 = 9180000 ms, so the run `budget_ms` of 10800000 leaves margin and the five-attempt escalation is reached before the run budget could pause the run.
 
 ## Residual risks
 
@@ -45,7 +45,7 @@ the primeagent settings.json).
 ```machine-spec
 {
   "run": {
-    "budget_ms": 3600000,
+    "budget_ms": 10800000,
     "failure_policy": "escalate",
     "max_parallel": 3,
     "max_transitions": 40
@@ -55,7 +55,7 @@ the primeagent settings.json).
       "id": "init",
       "entry": true,
       "subagent": {
-        "prompt": "Orchestrator setup, no judgement. Read the pointer file ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/implement.input.json (json: run_dir). Let R = run_dir. Accept only if R is a directory directly under ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/, its basename matches ^[0-9a-f]{12}$, and it contains exactly one entry, input.json. If not accepted, change nothing and reply with exactly this constant line, never echoing any part of the input: {\"init\": {\"ok\": false}}. If accepted, copy R/input.json to R/input.snapshot.json, chmod 444 the copy, compute the first 24 hex characters of `sha256sum R/input.snapshot.json` and `git -C <worktree> rev-parse --short=12 HEAD` (worktree from the snapshot). Then reply with one line of compact JSON only (no fence, no other text): {\"init\": {\"ok\": true, \\\"run\\\": \\\"<basename of R>\\\", \\\"sha\\\": \\\"<24 hex>\\\", \\\"base\\\": \\\"<12 hex>\\\"}}.",
+        "prompt": "Orchestrator setup, no judgement. Read the pointer file ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/implement.input.json (json: run_dir). Let R = run_dir. Accept only if R is a directory directly under ${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/, its basename matches ^[0-9a-f]{12}$, and it contains exactly one entry, input.json. If not accepted, change nothing and reply with exactly this constant line, never echoing any part of the input: {\"init\": {\"ok\": false}}. If accepted, copy R/input.json to R/input.snapshot.json, chmod 444 the copy, compute the first 24 hex characters of `sha256sum R/input.snapshot.json` and `git -C <worktree> rev-parse HEAD | cut -c1-12` (worktree from the snapshot). Then reply with one line of compact JSON only (no fence, no other text): {\"init\": {\"ok\": true, \"run\": \"<basename of R>\", \"sha\": \"<24 hex>\", \"base\": \"<12 hex>\"}}.",
         "name": "swarm-init",
         "model": "opencode-go/qwen3.8-flash"
       },
@@ -65,7 +65,7 @@ the primeagent settings.json).
           "type": "json"
         }
       ],
-      "budget_ms": 300000
+      "budget_ms": 120000
     },
     {
       "id": "test-maker",
@@ -87,7 +87,7 @@ the primeagent settings.json).
           "type": "json"
         }
       ],
-      "budget_ms": 900000
+      "budget_ms": 600000
     },
     {
       "id": "maker",
@@ -116,7 +116,7 @@ the primeagent settings.json).
         }
       ],
       "max_entries": 8,
-      "budget_ms": 1500000
+      "budget_ms": 900000
     },
     {
       "id": "checker",
@@ -139,7 +139,7 @@ the primeagent settings.json).
         }
       ],
       "max_entries": 8,
-      "budget_ms": 1200000
+      "budget_ms": 600000
     },
     {
       "id": "done",
@@ -161,7 +161,7 @@ the primeagent settings.json).
           "type": "json"
         }
       ],
-      "budget_ms": 120000
+      "budget_ms": 60000
     },
     {
       "id": "escalate",
@@ -183,7 +183,7 @@ the primeagent settings.json).
           "type": "json"
         }
       ],
-      "budget_ms": 120000
+      "budget_ms": 60000
     }
   ],
   "transitions": [
