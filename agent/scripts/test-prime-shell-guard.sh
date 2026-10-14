@@ -17,12 +17,25 @@ GUARD="$ROOT/agent/scripts/prime-shell-guard.sh"
 
 # Every case runs with cwd inside a throwaway git repo (origin = local bare repo) so a guard
 # regression can never touch a real repo or remote.
+unset GIT_DIR GIT_WORK_TREE GIT_INDEX_FILE GIT_OBJECT_DIRECTORY GIT_COMMON_DIR
 SANDBOX="$(mktemp -d)"
+export GIT_CEILING_DIRECTORIES="$SANDBOX"
 trap 'command rm -rf "$SANDBOX"' EXIT
 git init -q --bare "$SANDBOX/origin.git"
 git init -q -b main "$SANDBOX/work"
 git -C "$SANDBOX/work" remote add origin "$SANDBOX/origin.git"
 cd "$SANDBOX/work"
+HOSTILE="$SANDBOX/work/hostile"
+mkdir -p "$HOSTILE"
+
+# Self-check: every cwd this suite uses must resolve to the sandbox repo, else abort.
+for d in "$SANDBOX/work" "$HOSTILE"; do
+    top=$(git -C "$d" rev-parse --show-toplevel 2>/dev/null || true)
+    if [[ "$(cd -P "$top" 2>/dev/null && pwd)" != "$(cd -P "$SANDBOX/work" && pwd)" ]]; then
+        echo "ABORT: cwd $d is not inside the sandbox repo (toplevel='$top')" >&2
+        exit 1
+    fi
+done
 
 pass=0
 fail=0
@@ -100,8 +113,6 @@ for mode in exec prefix; do
 done
 
 # --- hostile modules in cwd must never be imported by the guard's python ---
-HOSTILE="$SANDBOX/hostile"
-mkdir -p "$HOSTILE"
 for m in json subprocess os; do
     printf 'open(%s, "w").close()\nprint("allow")\n' "'$HOSTILE/PWNED'" >"$HOSTILE/$m.py"
 done
@@ -132,7 +143,7 @@ command rm -rf "$FAKE"
 
 # --- fail-closed on invalid rules (decide.py itself fails OPEN on these) ---
 # Temp repo layout: copied guard + decide.py/rule_engine.py + a deliberately broken rules file.
-for variant in empty object notjson norules emptyrules; do
+for variant in empty object notjson norules emptyrules noeffect askonly nopattern; do
     BAD="$(mktemp -d)"
     mkdir -p "$BAD/agent/scripts"
     command cp "$GUARD" "$BAD/agent/scripts/prime-shell-guard.sh"
@@ -142,6 +153,9 @@ for variant in empty object notjson norules emptyrules; do
         object) echo '{}' >"$BAD/agent/security-rules.json" ;;
         notjson) echo 'not json' >"$BAD/agent/security-rules.json" ;;
         norules) echo '{"sensitive_write_path_rules": []}' >"$BAD/agent/security-rules.json" ;;
+        noeffect) echo '{"shell_command_rules":[{"id":"x"}]}' >"$BAD/agent/security-rules.json" ;;
+        askonly) echo '{"shell_command_rules":[{"id":"x","tier":"ask","any_of":["foo"]}]}' >"$BAD/agent/security-rules.json" ;;
+        nopattern) echo '{"shell_command_rules":[{"id":"x","tier":"block"}]}' >"$BAD/agent/security-rules.json" ;;
         emptyrules) echo '{"shell_command_rules": []}' >"$BAD/agent/security-rules.json" ;;
     esac
     marker="$BAD/marker"

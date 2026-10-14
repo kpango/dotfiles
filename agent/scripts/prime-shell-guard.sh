@@ -52,9 +52,13 @@ decide, rules, cwd = sys.argv[1:4]
 # decide.py fails OPEN on a missing/empty/invalid rules file; validate it here first.
 with open(rules, encoding="utf-8") as f:
     rr = json.load(f)
-if not (isinstance(rr, dict) and isinstance(rr.get("shell_command_rules"), list)
-        and rr["shell_command_rules"]):
-    print("block", "rules file invalid: needs non-empty shell_command_rules (fail-closed)", sep="\t")
+rules_list = rr.get("shell_command_rules") if isinstance(rr, dict) else None
+# Require >=1 effective rule: a block-tier object with a non-empty pattern list.
+PAT = ("all_of", "any_of", "any_of_with_branches")
+if not (isinstance(rules_list, list) and any(
+        isinstance(x, dict) and x.get("tier") == "block"
+        and any(isinstance(x.get(k), list) and x[k] for k in PAT) for x in rules_list)):
+    print("block", "rules file ineffective: needs >=1 block-tier shell_command_rules entry with patterns (fail-closed)", sep="\t")
     sys.exit(0)
 req = {"family": "security_shell", "command": os.environ["_PSG_CMD"], "cwd": cwd,
        "rules_file": rules, "resolve_command_target": False, "harness": "primeagent"}  # unknown harness: decide.py:174 skips the Laya advisory (guard_relax can relax ask->allow; no human confirm here)
