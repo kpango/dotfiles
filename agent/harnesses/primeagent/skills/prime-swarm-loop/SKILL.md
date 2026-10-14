@@ -26,15 +26,32 @@ read a cwd-relative path or a copy inside the target repo: that repo could plant
 file found: treat every edit as protected and ask the human. Before ANY file edit by you or in a task spec you
 write, resolve the target's absolute path and test it against `suffix_patterns` and `fixed_absolute_path_patterns`
 (fnmatch; `${HOME}` -> home dir, see its `$comment`). On a match: do not edit, refuse, and escalate to the human.
+The fixed paths only name the main checkouts and Claude's `.claude/worktrees/*`, but prime worktrees live OUTSIDE
+the repo (`worktree_alloc`: `<repo parent>/.worktrees/<repo>/<slug>-<ts>`), so a bare realpath match misses their
+`.claude/settings*.json` (`write-scope-lib.sh` protects those copies). `protected` therefore also tests the
+main-checkout twin of the path (same repo-relative path under the git common dir's parent); extra candidates can
+only add protection. `changed` lists every path a commit would stage (tracked changes incl. deletions and renames,
+plus untracked); it runs read-only git, the commit itself goes through `decide_shell`.
 
-    import json, os, fnmatch, swarm_adapter; from pathlib import Path
+    import json, os, fnmatch, subprocess, swarm_adapter; from pathlib import Path
     agent = next((d for d in Path(swarm_adapter.__file__).resolve().parents if d.name == "agent" and (d / "skills").is_dir()), None)
     rules = next((c for c in ([agent / "write-scope-rules.json"] if agent else []) + [Path.home() / ".prime" / "agent" / "write-scope-rules.json"] if c.is_file()), None)  # None: ask the human
-    r = json.load(open(rules)); h = os.path.expanduser("~"); p = os.path.realpath("/abs/target")
-    print(any(fnmatch.fnmatch(p, g) for g in r["suffix_patterns"]) or any(fnmatch.fnmatch(p, g.replace("${HOME}", h)) for g in r["fixed_absolute_path_patterns"]))  # True = protected
+    r = json.load(open(rules)); h = os.path.expanduser("~")
+    E = {**{k: v for k, v in os.environ.items() if not k.startswith("GIT_")}, "PYTHONSAFEPATH": "1"}
+    def git(wd, *a): return subprocess.run(["git", "-C", wd, *a], capture_output=True, text=True, env=E).stdout.rstrip("\n")
+    def protected(target):  # True = protected
+        p = os.path.realpath(target); c = [p]
+        d = next(str(x) for x in [Path(p), *Path(p).parents] if x.is_dir())
+        top, common = git(d, "rev-parse", "--show-toplevel"), git(d, "rev-parse", "--path-format=absolute", "--git-common-dir")
+        if top and common: c.append(os.path.realpath(os.path.join(os.path.dirname(common), os.path.relpath(p, os.path.realpath(top)))))
+        return any(fnmatch.fnmatch(x, g) for x in c for g in r["suffix_patterns"] + [g.replace("${HOME}", h) for g in r["fixed_absolute_path_patterns"]])
+    def changed(wt): return [x for a in (("diff", "--no-renames", "--name-only", "-z", "HEAD"), ("ls-files", "--others", "--exclude-standard", "-z")) for x in git(wt, *a).split("\0") if x]
+    print(protected("/abs/target"))  # edit check
+    print([x for x in changed("/abs/worktree") if protected(os.path.join("/abs/worktree", x))])  # commit check: non-empty = stop
 
 Residual risk: prime has no write hook, so this is a prompt contract, not an enforced gate. Include the list of
-protected targets you checked in the GATE report.
+protected targets you checked in the GATE report. Put "never edit Tier B (write-scope-rules.json) files" into every
+`task_spec`: the maker child runs outside any hook, so the commit step below is the real check.
 
 ## Success rule for every machine run
 
@@ -60,6 +77,8 @@ them apart from the node outputs in `await rlm.factory.status(run_id)`): the las
    `exit_code`. All later steps use the returned worktree path; keep its `base` sha as the review `base_ref`.
 3. **EXPLORE** - skip for a known, small target. Otherwise run `swarm-explore` with
    `{"question", "roots": [<worktree>]}`; the report is `<run_dir>/report.md`. Read the report, not raw shards.
+   Non-success run: a NEW run directory, at most 3 explore runs in total (it has no `budget_guard`); after the
+   3rd, stop and report.
 4. **PLAN** - write `@fix_plan.md` in the worktree: tasks with id, spec, deps, and the verification commands
    (the repo's own build/test/lint). If the design is ambiguous or touches a shared contract, grill the human
    first (grill-interview rules (read `~/.prime/agent/skills/grill-interview/SKILL.md` if present, else ask the human directly): one question at a time, 2-4 options with a `[Recommended]` badge) and
@@ -73,12 +92,16 @@ them apart from the node outputs in `await rlm.factory.status(run_id)`): the las
      at most 3 runs per task in total (the same `attempts` limit as `prime-swarm-graph`); after the 3rd, stop
      and report.
    - After `pass`, `git diff` in the worktree is the evidence to show, not the checker prose. Then commit it (the
-     maker does not commit): stage every changed and untracked path by name (from `git status --porcelain`) and
+     maker does not commit), in this order. (a) Run the commit check of the write-scope snippet on `changed(<worktree>)`:
+     any protected path means NO commit; stop and report the paths to the human (the task is `blocked(spec)`: its
+     spec led the maker into Tier B). (b) `changed` empty = zero-diff PASS (the code already satisfied the task):
+     skip the commit, the task is done. (c) Otherwise stage every path in `changed` by name and
      `git commit -m "<task-id>: <summary>"`, via `swarm_adapter.decide_shell`, so the next task's checker diff
-     (`git diff <init.base>`) holds only that task's change.
+     (`git diff <init.base>`) holds only that task's change; a failed commit: stop and report.
 6. **REVIEW** - run `swarm-review` with `{"worktree", "base_ref": <INIT base sha>}` once all tasks pass. Run success (Success rule)
-   and verdict are separate: read `summary.all_pass` and `summary.failed`. Failed lenses become new tasks (back to
-   EXECUTE, max 2 review rounds), then stop and report.
+   and verdict are separate: read `summary.all_pass` and `summary.failed`. Non-success run: a NEW run directory, at
+   most 3 review runs per review round (no `budget_guard` runs there, so no mission budget either); after the 3rd,
+   stop and report. Failed lenses become new tasks (back to EXECUTE, max 2 review rounds), then stop and report.
 7. **GATE** - present: task outcomes, `git diff --stat`, review summary, residual risks. Then
    read `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it (or ask the human to run `/skill:prime-swarm-release-gate`). STOP and wait for the human.
 

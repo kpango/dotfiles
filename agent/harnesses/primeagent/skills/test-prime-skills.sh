@@ -168,6 +168,15 @@ for name in "${expected[@]}"; do
 		case "$flat" in *'stale_closure'*) ;; *) bad "$name: no stale_closure handling" ;; esac
 		case "$flat" in *'back to `pending`'*) ;; *) bad "$name: no retry path back to pending" ;; esac
 		case "$flat" in *'git commit -m'*'git merge --no-ff'*'Set `done` only after that merge'*) ;; *) bad "$name: no commit before merge before done" ;; esac
+		# (2) Tier B check on every path to be committed, before commit and merge; hit = blocked(spec) + report
+		case "$flat" in *'`changed(<task worktree>)`: any protected (Tier B) path means NO commit and NO merge; set `blocked(spec)`'*'git commit -m'*) ;; *) bad "$name: no Tier B check before commit" ;; esac
+		# (3) zero-diff PASS is an explicit done branch (commit rc=1 / merge "Already up to date" create nothing)
+		case "$flat" in *'Zero-diff PASS'*'set `done` directly'*'merge commit exists, or after a zero-diff PASS'*) ;; *) bad "$name: no zero-diff PASS done branch" ;; esac
+		# (5) every escalated / failed-git outcome maps to a blocked(*) state, never left in_progress
+		case "$flat" in *'Any other `escalated` (neither kind identifiable): `blocked(design)`'*'so no task stays `in_progress`'*) ;; *) bad "$name: unclassified escalated stays in_progress" ;; esac
+		case "$flat" in *'A failed commit or a merge that fails for a reason other than a conflict'*'set `blocked(design)`, the error in `note`, and report. A merge conflict'*) ;; *) bad "$name: failed commit/merge stays in_progress" ;; esac
+		# (4) explore / review non-success runs are capped
+		case "$flat" in *'`swarm-explore`, at most 3 runs'*'at most 3 runs per review round'*) ;; *) bad "$name: explore/review retries unbounded" ;; esac
 		# (1) replan only on a true deadlock: an empty ready list is normal while a task is in_progress
 		case "$flat" in *'`ready` is empty AND no task is `in_progress` AND some task is not `done`'*) ;; *) bad "$name: replan trigger ignores in_progress" ;; esac
 		if printf '%s' "$flat" | grep -qiE 'empty `ready` list with tasks left'; then bad "$name: replan trigger ignores in_progress"; fi
@@ -188,6 +197,13 @@ for name in "${expected[@]}"; do
 		case "$flat" in *'A refused `init` (`init.ok` false) goes to `escalate`'*'never a spec block'*) ;; *) bad "$name: refused init not a non-success retry" ;; esac
 		case "$flat" in *'`judgement.verdict` is `"TAMPER"` = TAMPER'*'`verify.budget` is `"exceeded"` = budget exhausted'*) ;; *) bad "$name: TAMPER/budget escalation not told apart by output fields" ;; esac
 		case "$flat" in *'at most 3 runs per task in total'*) ;; *) bad "$name: non-success retries unbounded" ;; esac
+		# (1) prime worktrees live outside the repo: protected() also tests the main-checkout twin
+		case "$flat" in *'def protected(target)'*'if top and common: c.append('*) ;; *) bad "$name: write-scope check ignores prime worktree layout" ;; esac
+		# (2) commit check before the commit; (3) zero-diff PASS skips the commit
+		case "$flat" in *'Run the commit check of the write-scope snippet on `changed(<worktree>)`: any protected path means NO commit'*'`changed` empty = zero-diff PASS'*'git commit -m'*) ;; *) bad "$name: no Tier B check / zero-diff branch before commit" ;; esac
+		# (4) explore / review non-success runs are capped
+		case "$flat" in *'at most 3 explore runs in total'*) ;; *) bad "$name: explore retries unbounded" ;; esac
+		case "$flat" in *'at most 3 review runs per review round'*) ;; *) bad "$name: review retries unbounded" ;; esac
 		;;
 	prime-swarm-meta)
 		# (3) harness-select runs from an empty temp cwd with PYTHONSAFEPATH=1
@@ -292,6 +308,19 @@ neg_case prime-swarm-loop 's/never a spec block/or `blocked(spec)`/' "prime-swar
 neg_case prime-swarm-loop 's/`verify.budget` is `"exceeded"`/`outcome.reason` is `"exceeded"`/' "prime-swarm-loop: TAMPER/budget escalation not told apart"
 neg_case prime-swarm-loop 's/at most 3 runs per task in total/as often as needed/' "non-success retries unbounded"
 neg_case prime-swarm-meta 's/, "PYTHONSAFEPATH": "1"//' "harness-select run without empty cwd + PYTHONSAFEPATH"
+# T8 attempt 5 regressions (1-5)
+neg_case prime-swarm-loop 's/if top and common: c.append(/if top and common: pass; c.extend(/' "write-scope check ignores prime worktree layout"
+neg_case prime-swarm-loop 's/any protected path means NO commit/any protected path is noted/' "no Tier B check / zero-diff branch before commit"
+neg_case prime-swarm-loop 's/`changed` empty = zero-diff PASS/`changed` empty = commit anyway/' "no Tier B check / zero-diff branch before commit"
+neg_case prime-swarm-loop 's/at most 3 explore runs in total/as many explore runs as needed/' "explore retries unbounded"
+neg_case prime-swarm-loop 's/most 3 review runs per review round/many review runs as needed/' "review retries unbounded"
+neg_case prime-swarm-graph 's/means NO commit and NO merge/means log it/' "no Tier B check before commit"
+neg_case prime-swarm-graph 's/or after a zero-diff PASS/and nothing else/' "no zero-diff PASS done branch"
+neg_case prime-swarm-graph 's/set `done` directly/wait/' "no zero-diff PASS done branch"
+neg_case prime-swarm-graph 's/Any other `escalated` (neither kind identifiable): `blocked(design)`/Any other `escalated`: leave it/' "unclassified escalated stays in_progress"
+neg_case prime-swarm-graph 's/`blocked(design)`, the error in `note`, and report\. A merge/leave it, with the error in `note`. A merge/' "failed commit/merge stays in_progress"
+neg_case prime-swarm-graph 's/at most 3 runs per review round/any number of runs/' "explore/review retries unbounded"
+neg_case prime-swarm-graph 's/`swarm-explore`, at most 3 runs/`swarm-explore`/' "explore/review retries unbounded"
 }
 
 # behavioural checks (offline, sandboxed HOME, no model call)
@@ -333,20 +362,119 @@ PY
 else
 	bad "behaviour meta: skill snippet failed or imported the planted json.py"
 fi
-# (4) a target repo planting agent/write-scope-rules.json with no patterns must not empty Tier B
-mkdir -p "$beh/repo/agent"
-printf '{"suffix_patterns": [], "fixed_absolute_path_patterns": []}\n' >"$beh/repo/agent/write-scope-rules.json"
-command rm -f "$beh/repo/json.py"
-wsnip="$(python3 -I - "$here/prime-swarm-loop/SKILL.md" <<'PY'
+# (4) the write-scope snippet's definitions (up to its first print), extracted from the skill itself into a file
+wdefs="$beh/ws_defs.py"
+python3 -I - "$here/prime-swarm-loop/SKILL.md" "$wdefs" <<'PY'
 import sys, textwrap
 lines = open(sys.argv[1]).read().splitlines()
 i = next(k for k, l in enumerate(lines) if l.strip().startswith("import json, os, fnmatch"))
-j = next(k for k in range(i, len(lines)) if lines[k].strip().startswith("print(any("))
-print(textwrap.dedent("\n".join(lines[i:j + 1])).replace("/abs/target", "/x/agent/hooks/claude/gate.sh"))
+j = next(k for k in range(i, len(lines)) if lines[k].strip().startswith("print("))
+open(sys.argv[2], "w").write(textwrap.dedent("\n".join(lines[i:j])) + "\n")
+PY
+cat >"$beh/ws_driver.py" <<'PY'
+import json, os, sys
+exec(open(sys.argv[1]).read())
+if sys.argv[2] == "protected":
+    for label, path, want in json.loads(sys.argv[3]):
+        got = protected(path)
+        print("ok" if got == want else "FAIL", label, "->", got)
+else:
+    wt = sys.argv[3]
+    ch = changed(wt)
+    print(json.dumps({"changed": sorted(ch), "bad": sorted(x for x in ch if protected(os.path.join(wt, x)))}))
+PY
+# (4a) a target repo planting agent/write-scope-rules.json with no patterns must not empty Tier B
+mkdir -p "$beh/repo/agent"
+printf '{"suffix_patterns": [], "fixed_absolute_path_patterns": []}\n' >"$beh/repo/agent/write-scope-rules.json"
+command rm -f "$beh/repo/json.py"
+out="$(cd "$beh/repo" && PYTHONPATH="$here/swarm-adapter/src" HOME="$beh/home" python3 "$beh/ws_driver.py" "$wdefs" protected '[["planted rules","/x/agent/hooks/claude/gate.sh",true]]' 2>&1 || true)"
+case "$out" in "ok planted rules -> True") echo "ok   behaviour loop: planted repo write-scope-rules.json ignored (hook path protected)" ;; *) bad "behaviour loop: Tier B check returned '$out'" ;; esac
+# (4b) prime worktree layout (worktree_alloc: <repo parent>/.worktrees/<repo>/<slug>-<ts>) in a sandboxed HOME:
+# fixed paths only name the main checkouts, so the worktree copies of .claude/settings*.json need the main-checkout twin
+wsb="$(realpath "$beh")/ws"
+whome="$wsb/home"
+mkdir -p "$whome"
+gitq() { env -u SWARM_WORKTREE_DIR -u GIT_DIR -u GIT_WORK_TREE HOME="$whome" GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null git -c commit.gpgsign=false -c user.name=t -c user.email=t@t "$@"; }
+mkrepo() { # <org> <repo>
+	local d="$whome/go/src/github.com/$1/$2"
+	mkdir -p "$d/.claude" "$d/agent/hooks/claude" "$d/src"
+	printf '{}\n' >"$d/.claude/settings.json"; printf '{}\n' >"$d/.claude/settings.local.json"; printf 'o\n' >"$d/.claude/other.json"
+	printf 'a\n' >"$d/a.txt"; printf 'd\n' >"$d/del.txt"; printf 'x\n' >"$d/agent/hooks/claude/x.sh"; printf 'm\n' >"$d/src/main.go"
+	gitq -C "$d" init -q && gitq -C "$d" add -A && gitq -C "$d" commit -qm init
+	printf '%s\n' "$d"
+}
+mkwt() { # <repo dir> <slug>: a worktree exactly as swarm_adapter.worktree_alloc lays it out
+	env -u SWARM_WORKTREE_DIR HOME="$whome" PYTHONPATH="$here/swarm-adapter/src" python3 -c \
+		'import asyncio, sys, swarm_adapter as s; r = asyncio.run(s.worktree_alloc(sys.argv[2], "mission", cwd=sys.argv[1])); print(r["path"] if r["exit_code"] == 0 else "ERR " + str(r))' "$1" "$2"
+}
+dot="$(mkrepo kpango dotfiles)"; vald="$(mkrepo vdaas vald)"; oth="$(mkrepo other proj)"
+wdot="$(mkwt "$dot" m-1)"; wvald="$(mkwt "$vald" m-1)"; woth="$(mkwt "$oth" m-1)"
+case "$wdot$wvald$woth" in *ERR*) bad "behaviour loop: worktree_alloc failed: $wdot $wvald $woth" ;; esac
+case "$wdot" in "$whome/go/src/github.com/kpango/.worktrees/dotfiles/m-1-"*) ;; *) bad "behaviour loop: unexpected worktree layout $wdot" ;; esac
+cases="$(python3 -I - "$dot" "$wdot" "$wvald" "$woth" <<'PY'
+import json, sys
+dot, wdot, wvald, woth = sys.argv[1:5]
+print(json.dumps([
+    ["main checkout settings.json", dot + "/.claude/settings.json", True],
+    ["prime dotfiles worktree settings.json", wdot + "/.claude/settings.json", True],
+    ["prime dotfiles worktree settings.local.json", wdot + "/.claude/settings.local.json", True],
+    ["prime vald worktree settings.local.json", wvald + "/.claude/settings.local.json", True],
+    ["prime dotfiles worktree hooks shim (suffix rule)", wdot + "/agent/hooks/claude/x.sh", True],
+    ["prime dotfiles worktree ordinary source", wdot + "/src/main.go", False],
+    ["prime dotfiles worktree other .claude file", wdot + "/.claude/other.json", False],
+    ["unrelated repo worktree settings.json", woth + "/.claude/settings.json", False],
+]))
 PY
 )"
-out="$(cd "$beh/repo" && PYTHONPATH="$here/swarm-adapter/src" HOME="$beh/home" python3 -c "$wsnip" 2>&1 || true)"
-if [ "$out" = "True" ]; then echo "ok   behaviour loop: planted repo write-scope-rules.json ignored (hook path protected)"; else bad "behaviour loop: Tier B check returned '$out'"; fi
+run_ws() { (cd "$beh" && env -u SWARM_WORKTREE_DIR HOME="$whome" PYTHONPATH="$here/swarm-adapter/src" python3 "$beh/ws_driver.py" "$@"); }
+n_bad=0
+while read -r line; do
+	case "$line" in ok*) ;; *) bad "behaviour loop: prime worktree Tier B: $line"; n_bad=1 ;; esac
+done < <(run_ws "$wdefs" protected "$cases" 2>&1)
+if [ "$n_bad" -eq 0 ]; then echo "ok   behaviour loop: protected() on prime worktree layout (8 cases, incl. ordinary-file and unrelated-repo negatives)"; fi
+# repro/negative: the old bare-realpath match misses the prime worktree copy, and protected() without the twin line fails the same cases
+old="$(cd "$beh" && HOME="$whome" PYTHONPATH="$here/swarm-adapter/src" python3 - "$wdefs" "$wdot/.claude/settings.json" <<'PY'
+import sys
+exec(open(sys.argv[1]).read())
+p = os.path.realpath(sys.argv[2])
+print(any(fnmatch.fnmatch(p, g) for g in r["suffix_patterns"]) or any(fnmatch.fnmatch(p, g.replace("${HOME}", h)) for g in r["fixed_absolute_path_patterns"]))
+PY
+)"
+if [ "$old" = "False" ]; then echo "ok   behaviour loop: bare realpath match misses the prime worktree settings.json (repro)"; else bad "behaviour loop: repro failed ('$old'), test would pass vacuously"; fi
+sed '/if top and common/d' "$wdefs" >"$beh/ws_defs_notwin.py"
+if run_ws "$beh/ws_defs_notwin.py" protected "$cases" 2>&1 | grep -q '^FAIL'; then
+	echo "ok   behaviour loop: protected() without the main-checkout twin is detected (negative)"
+else
+	bad "behaviour loop: removing the twin lookup went undetected"
+fi
+# changed(): what a commit would stage, and the Tier B subset of it
+chk() { # <label> <expected json>; worktree in $wt
+	local got; got="$(run_ws "$wdefs" changed "$wt" 2>&1)"
+	if [ "$got" = "$2" ]; then echo "ok   behaviour loop: $1"; else bad "behaviour loop: $1: got $got, want $2"; fi
+}
+wt="$wdot"
+chk "clean worktree: changed() empty (zero-diff PASS has nothing to commit)" '{"changed": [], "bad": []}'
+printf 'new\n' >"$wt/src/new.go"; command rm -f "$wt/del.txt"; printf 'a2\n' >>"$wt/a.txt"
+chk "untracked + deleted + modified, no Tier B: all listed, none protected" '{"changed": ["a.txt", "del.txt", "src/new.go"], "bad": []}'
+printf '{"x":1}\n' >"$wt/.claude/settings.json"
+chk "modified .claude/settings.json in a prime worktree is caught" '{"changed": [".claude/settings.json", "a.txt", "del.txt", "src/new.go"], "bad": [".claude/settings.json"]}'
+gitq -C "$wt" checkout -q -- .claude/settings.json
+gitq -C "$wt" mv .claude/settings.local.json .claude/renamed.json
+chk "rename away from a protected path: the old path is listed and caught" '{"changed": [".claude/renamed.json", ".claude/settings.local.json", "a.txt", "del.txt", "src/new.go"], "bad": [".claude/settings.local.json"]}'
+printf 'hook\n' >"$wt/agent/hooks/claude/new-hook.sh"
+chk "untracked file under agent/hooks/claude is caught by the suffix rule" '{"changed": [".claude/renamed.json", ".claude/settings.local.json", "a.txt", "agent/hooks/claude/new-hook.sh", "del.txt", "src/new.go"], "bad": [".claude/settings.local.json", "agent/hooks/claude/new-hook.sh"]}'
+# the zero-diff facts the skills rely on: commit exits non-zero and a no-op merge creates no commit
+zt="$(mkwt "$dot" zero)"
+zb="$(gitq -C "$zt" rev-parse --abbrev-ref HEAD)"
+if gitq -C "$zt" commit -q -m x >/dev/null 2>&1; then bad "behaviour zero-diff: commit unexpectedly succeeded"; else echo "ok   behaviour zero-diff: git commit with nothing staged exits non-zero"; fi
+before="$(gitq -C "$dot" rev-parse HEAD)"
+nm="$(gitq -C "$dot" merge --no-ff "$zb" 2>&1 || true)"
+if [ "$(gitq -C "$dot" rev-parse HEAD)" = "$before" ] && printf '%s' "$nm" | grep -q 'Already up to date'; then
+	echo "ok   behaviour zero-diff: no-op merge --no-ff creates no merge commit (Already up to date)"
+else
+	bad "behaviour zero-diff: merge facts changed: $nm"
+fi
+if [ "$(gitq -C "$dot" rev-list --count "HEAD..$zb")" = "0" ]; then echo "ok   behaviour zero-diff: rev-list --count HEAD..<task branch> is 0"; else bad "behaviour zero-diff: rev-list count not 0"; fi
 command rm -rf "$beh"
 
 # sandboxed prime-agent: every skill appears in the skills-inventory

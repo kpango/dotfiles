@@ -18,7 +18,7 @@ before ANY file edit (prompt contract, no write hook in prime).
 ## Steps
 
 1. **INIT / EXPLORE / PLAN** - exactly as in `prime-swarm-loop` (mission worktree via `swarm_adapter.worktree_alloc`,
-   `swarm_adapter.mission_init`, optional `swarm-explore`). Keep the INIT result's `base` sha: it is the review
+   `swarm_adapter.mission_init`, optional `swarm-explore`, at most 3 runs). Keep the INIT result's `base` sha: it is the review
    `base_ref`. Plan format: `@fix_plan.md` has a `## Tasks` table with header
    `| task-id | summary | depends | worktree | status | attempts | domain | note |` (as written by
    `agent/skills/swarm-loop/scripts/mission-init.sh`). `graph_compile` reads `depends` and `status`.
@@ -39,12 +39,19 @@ before ANY file edit (prompt contract, no write hook in prime).
      and never removed or deleted by you (human-only cleanup; its path stays in `note`). Set `in_progress` and the
      `worktree` cell; NEVER start a task that is `in_progress`. The machines share a pointer file: start one run,
      wait until its `init` settles (`rlm.factory.status`), then the next.
-   - **Success** (the machine's Success rule holds): the maker does not commit. In the TASK worktree stage every
-     changed and untracked path by name (from `git status --porcelain`) and `git commit -m "<task-id>: <summary>"`;
-     that is exactly what the checker judged (`git diff <init.base>` plus untracked files). Then, one merge at a
+   - **Success** (the machine's Success rule holds): the maker does not commit. In the TASK worktree first run the
+     commit check of the loop's write-scope snippet on `changed(<task worktree>)`: any protected (Tier B) path
+     means NO commit and NO merge; set `blocked(spec)` (the spec led the maker into Tier B), the paths in `note`,
+     and stop and report to the human. Then stage every path in `changed` by name and
+     `git commit -m "<task-id>: <summary>"`; that is exactly what the checker judged (`git diff <init.base>` plus
+     untracked files). Zero-diff PASS (`changed` empty and `git rev-list --count HEAD..<task branch>` in the MISSION
+     worktree is 0; the mission HEAD already satisfies the task): no commit (it would exit 1) and no merge (it
+     would report "Already up to date" and create nothing), set `done` directly. Otherwise, one merge at a
      time, in the MISSION worktree:
-     `git merge --no-ff <task branch>`. Set `done` only after that merge commit exists, so a downstream worktree
-     cut later contains the upstream result. A merge conflict: `git merge --abort` (the mission worktree is back
+     `git merge --no-ff <task branch>`. Set `done` only after that merge commit exists, or after a zero-diff PASS,
+     so a downstream worktree cut later contains the upstream result. A failed commit or a merge that fails for a
+     reason other than a conflict (or a `decide_shell` `block`/`ask`): `git merge --abort` if one is open, set
+     `blocked(design)`, the error in `note`, and report. A merge conflict: `git merge --abort` (the mission worktree is back
      at its pre-merge HEAD), increment `attempts`, put the conflict and the old task worktree path in `note`, and
      set the task back to `pending` while `attempts` < 3 (at 3: `blocked(budget)`). Its next start cuts a NEW
      worktree from the mission HEAD, which now holds the conflicting upstream change, and re-runs the task in a
@@ -57,7 +64,8 @@ before ANY file edit (prompt contract, no write hook in prime).
      "Kinds of `escalated`"): checker `judgement.verdict` `"TAMPER"`: stop the mission and report to the human;
      maker `verify.budget` `"exceeded"` (attempt or mission limit): `blocked(budget)`. The plan's `task_spec` is
      found wrong (by you or the checker's `checker.md`): `blocked(spec)`; the checker or a spot diagnosis says the
-     approach is wrong: `blocked(design)`. Reason in `note`.
+     approach is wrong: `blocked(design)`. Any other `escalated` (neither kind identifiable): `blocked(design)`.
+     Reason in `note`; for TAMPER also set `blocked(design)` before stopping, so no task stays `in_progress`.
    - **blocked -> pending**: `blocked(spec)`/`blocked(design)` go back to `pending` only through a replan that
      fixes the spec or design (step 4). `blocked(budget)` goes back to `pending` only after the human raises or
      resets the budget; never reset counters yourself.
@@ -68,11 +76,12 @@ before ANY file edit (prompt contract, no write hook in prime).
 4. **REPLAN (max 2)** - triggers: a `blocked(spec)`/`blocked(design)` task, a cycle/missing-dep compile error, a
    true deadlock, or a plan found wrong. True deadlock = `ready` is empty AND no task is `in_progress` AND some
    task is not `done` (every remaining task is blocked or waits on a blocked one). An empty `ready` while a task is
-   `in_progress` is NOT a trigger: wait for that run to settle. Update `@fix_plan.md`, recompile, continue. A third
+   `in_progress` is NOT a trigger: wait for that run to settle. If the remaining blockers are only `blocked(budget)`, a replan cannot help: stop and report. Update `@fix_plan.md`, recompile, continue. A third
    replan: stop and report to the human.
 5. **REVIEW / GATE** - when every task is `done`: as `prime-swarm-loop` steps 6-7, running `swarm-review` with
    `{"worktree": <mission worktree>, "base_ref": <INIT base sha>}` (the merged task commits are the diff), read
-   `summary.all_pass`, then read `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it, then
+   `summary.all_pass` (a non-success review run: NEW run directory, at most 3 runs per review round, then stop
+   and report; `swarm-review` calls no `budget_guard`), then read `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it, then
    STOP for the human.
 
 ## Budgets
