@@ -7,16 +7,18 @@ description: Read-only architecture design proposal or spot diagnosis by the top
 
 Output only; implementation goes to `prime-swarm-loop`/`prime-swarm-graph`. Governance in `~/.prime/agent/SWARM.md`.
 
-Human-only boundaries: no merge, push or deploy without explicit human approval; Tier B governance files are never edited by this skill.
+Human-only boundaries: merging into or pushing to the user's main branch or any remote, and any deploy, are
+human-only; Tier B governance files are never edited by this skill.
 Protected (Tier B) paths come from `agent/write-scope-rules.json`; apply the write-scope check in
 `~/.prime/agent/skills/prime-swarm-loop/SKILL.md` before ANY file edit (prompt contract, no write hook in prime). This skill makes NO edits and
 runs no state-changing command at all, in the main checkout or in any worktree.
 
 ## Steps
 
-1. **Spot diagnosis only** (stuck task, contradicting evidence): `swarm_adapter.fable_grant(task_id, mission=<mission slug>)` first (the per-mission cap needs `mission`);
-   `exit_code` 1 = denied, then stop and escalate to the human instead. Full design proposals are started by the
-   human; do not self-start them.
+1. **Spot diagnosis only** (stuck task, contradicting evidence): `swarm_adapter.fable_grant(task_id, mission=<mission slug>)`
+   first (`task_id` gives the per-task cap, `mission` the per-mission cap; both apply). Allowed only when `exit_code`
+   is 0; any other value (1, 2, 127, ...) or an `error` key means denied: do not spawn, stop and escalate to the
+   human instead. Full design proposals are started by the human; do not self-start them.
 2. Gather the raw evidence yourself (failing output, plan, relevant files with paths). Do not summarise it
    away: the child sees only what you put in the prompt.
 3. Spawn one child, read-only by instruction:

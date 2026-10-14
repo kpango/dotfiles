@@ -8,7 +8,8 @@ description: Final deterministic verification before anything is merged or relea
 Governance in `~/.prime/agent/SWARM.md`. Reference for which commands a gate normally runs:
 `agent/skills/swarm-release-gate/scripts/verify.sh` (read it; do not execute it, it is a Claude-side script).
 
-Human-only boundaries: this skill NEVER merges, pushes, deploys, tags, force-updates a ref or removes a worktree,
+Human-only boundaries: merging into or pushing to the user's main branch or any remote, and any deploy, are
+human-only. This skill NEVER merges, pushes, deploys, tags, force-updates a ref or removes a worktree,
 and it never tells anyone it may. It only presents results and stops; the human performs any merge or push
 themselves. Tier B governance files are never edited by this skill. Protected paths come from
 `agent/write-scope-rules.json` (check procedure in `~/.prime/agent/skills/prime-swarm-loop/SKILL.md`); a diff

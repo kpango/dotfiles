@@ -12,7 +12,9 @@ has its input JSON, run recipe and residual risks - read it before the first run
 
 ## Human-only boundaries (never crossed by this skill)
 
-- No merge, push, deploy, branch deletion or worktree removal without explicit human approval; the loop ends at GATE.
+- Merging into or pushing to the user's main branch or any remote, any deploy, branch deletion and worktree removal
+  are human-only; the loop ends at GATE. Committing in the mission worktree, and merging a task worktree branch into
+  the mission worktree (`prime-swarm-graph`), is orchestrator work and allowed.
 - Tier B governance files are never edited (write-scope check below). If the task needs one, stop and tell the human.
 - Mission work happens only in the worktree from `swarm_adapter.worktree_alloc`, never in the main checkout.
 
@@ -43,7 +45,7 @@ status/exit codes, never on prose. Start runs of one machine one at a time (shar
    impact-C change per `agent/rules/impact-scope.md`). Unsure: `mission`.
 2. **INIT** - `swarm_adapter.worktree_alloc(slug, scale, cwd=<repo>)` then
    `swarm_adapter.mission_init(slug, goal, scale, cwd=<worktree>)`; stop if either result has `error`/non-zero
-   `exit_code`. All later steps use the returned worktree path.
+   `exit_code`. All later steps use the returned worktree path; keep its `base` sha as the review `base_ref`.
 3. **EXPLORE** - skip for a known, small target. Otherwise run `swarm-explore` with
    `{"question", "roots": [<worktree>]}`; the report is `<run_dir>/report.md`. Read the report, not raw shards.
 4. **PLAN** - write `@fix_plan.md` in the worktree: tasks with id, spec, deps, and the verification commands
@@ -55,8 +57,11 @@ status/exit codes, never on prose. Start runs of one machine one at a time (shar
    long (MACHINE.md Residual risks). One task = one run directory.
    - Budget: the machine already calls `swarm_adapter.budget_guard` (5 attempts per run, 20 per mission). If the
      mission budget is exhausted or `outcome.json` is `escalated`, stop and report; do not raise limits.
-   - After `pass`, `git diff` in the worktree is the evidence to show, not the checker prose.
-6. **REVIEW** - run `swarm-review` with `{"worktree", "base_ref"}` once all tasks pass. Run success (Success rule)
+   - After `pass`, `git diff` in the worktree is the evidence to show, not the checker prose. Then commit it (the
+     maker does not commit): stage every changed and untracked path by name (from `git status --porcelain`) and
+     `git commit -m "<task-id>: <summary>"`, via `swarm_adapter.decide_shell`, so the next task's checker diff
+     (`git diff <init.base>`) holds only that task's change.
+6. **REVIEW** - run `swarm-review` with `{"worktree", "base_ref": <INIT base sha>}` once all tasks pass. Run success (Success rule)
    and verdict are separate: read `summary.all_pass` and `summary.failed`. Failed lenses become new tasks (back to
    EXECUTE, max 2 review rounds), then stop and report.
 7. **GATE** - present: task outcomes, `git diff --stat`, review summary, residual risks. Then
@@ -69,6 +74,7 @@ status/exit codes, never on prose. Start runs of one machine one at a time (shar
   `tiers.<Tier>.model` value from `~/.prime/agent/model-routing.json`: `tiers.Low` for bulk reading,
   `tiers.Medium` for summarising, `tiers.High` for edits (Maker), `tiers.XHigh` for independent checking,
   `tiers.Max` only for design (see `prime-swarm-architect`). Never hard-code a selector.
-- Spot Max-tier help on a stuck task: `swarm_adapter.fable_grant(task_id, mission=<mission slug>)` must allow it first (denied = no).
+- Spot Max-tier help on a stuck task: `swarm_adapter.fable_grant(task_id, mission=<mission slug>)` first; allowed
+  only when `exit_code` is 0; any other value (1, 2, 127, ...) or an `error` key means denied.
 - Shell guard: for any command not run through a machine, `swarm_adapter.decide_shell(cmd, cwd)`; `block` or
   `ask` means do not run it and ask the human.
