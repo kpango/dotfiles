@@ -704,6 +704,18 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
 - **Q3 Python は薄いアダプタ**: Python スキルは REPL から使える型付き API を提供し、ロジックは既存スクリプト
   （将来は Go の agentctl）を subprocess で呼ぶ。budget-guard・graph-compile・decide.py 等を Python で再実装しない
   （agent-go-unification の決定と整合、pi の TS 薄アダプタ方針と対称）。
+- **Q3-a 書き込みフック代替は adapter の prime 固有制御（2026-10-14、T8 スポット診断 A1 を人間採択）**: prime は書き込み
+  hook を持たないため、Claude 側で hook が担う write-time ガードの代替（commit/merge 前の Tier B 照合・変更集合計算・
+  per-path stage）は `swarm_adapter` の prime 固有制御に含める（`worktree_alloc`/`verify` と同格、`change_set`/
+  `tier_b_hits`/`stage_task`/`incoming`）。`write-scope-rules.json` は cross-impl の fnmatch データなので照合は再実装禁止の
+  対象外（parity テストで pin）。budget-guard・graph-compile・decide.py の再実装禁止は不変。merge/commit 自体は skill 側が
+  `decide_shell` 経由で行い、adapter は破壊的操作を持たない。
+- **Q3-b（2026-10-15、T6c attempt 11 で人間採択「全 git を shadow で実行」）**: adapter の全 git 呼び出しは config/hooks/attributes を
+  持たない私用 shadow bare repo（`GIT_OBJECT_DIRECTORY`=実 objects、`GIT_CONFIG_NOSYSTEM`/`GLOBAL=/dev/null`、`GIT_NO_LAZY_FETCH`）で
+  実行し、所在・ref・repo format は Python で解析する。実 repo の config を git に読ませると maker が設定した外部コマンド
+  （filter・driver・hooks・promisor uploadpack 等）が次々に実行経路になるため。これに伴い Q3-a の「commit/merge は skill 側」を改め、
+  `commit_tree`（オブジェクト作成のみ）と `update_ref`（Python のロックファイル CAS、`refs/heads/swarm-prime/*` 限定・first-parent=old
+  限定で履歴は 1 commit ずつしか伸びない）を adapter が持つ。`git commit`/`git merge`/`git update-ref` を実 repo で呼ばない。
 - **Q4 モデル = 混成・別系統検証**: root=`prime-inference/anthropic/claude-opus-5.5`(high)、High(Maker)=
   `prime-inference/anthropic/claude-sonnet-5`、XHigh(Checker)=`prime-inference/openai/gpt-6-astra`（別系統）、
   Max=`prime-inference/anthropic/claude-fable-5.1`、Medium=`opencode-go/kimi-k3`、Low/auxiliary=`opencode-go/qwen3.8-flash`、
