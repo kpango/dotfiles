@@ -353,15 +353,36 @@ controller but ICMP/ARP to it work): check `conntrack -L | grep dport=8080` for 
 `SYN_RECV` — the controller's reply direction shows several retransmitted SYN-ACK packets that
 never get ACKed back, indicating an L2-adjacent (not routing) hangup rather than a controller
 software crash. Cross-check by fetching the same device's networkconf/device documents directly
-via mongo (below) to rule out a config-level cause (e.g. a WAN network object with the `enabled`
-field entirely absent — see "Direct MongoDB queries" below) before assuming it's purely transport-layer.
+via the database (below) to rule out a config-level cause (e.g. a WAN network object with the
+`enabled` field entirely absent — see "Direct database queries" below) before assuming it's purely
+transport-layer.
 
-**Direct MongoDB queries** (when the local controller API itself is unresponsive/crashing —
+**Direct database queries** (when the local controller API itself is unresponsive/crashing —
 `unifi-core`'s reverse proxy to the Java network app can wedge independently of udapi-server,
 returning `HTTP:000`/`502`/`503` on `/proxy/network/*` while still answering `401` for
 unauthenticated probes; a `systemctl restart unifi-core.service` often clears this, but get
 explicit confirmation first — it has been observed to cascade into UniFi's own self-healing full
-system reboot when the device's underlying state was already unhealthy, not the restart alone):
+system reboot when the device's underlying state was already unhealthy, not the restart alone).
+The backing database depends on the Network Application version. The UniFi Network Application
+11.0.83 release notes state "Migrated the application database to PostgreSQL." and "Existing
+statistics history is cleared and starts fresh after the update."
+([release notes](https://community.ui.com/releases/UniFi-Network-Application-11-0-83/d6940379-cd5a-4e61-8596-7e22d647a4ea)).
+Check the version first, then use the matching recipe.
+
+*Network >= 11.0.83 (PostgreSQL).* Observed on Network 11.0.89: no `mongod` process, port 27117
+refuses connections, and the Java app runs with `-Dunifi.active.db.mode=postgresql`. PostgreSQL
+listens on unix sockets in `/var/run/postgresql` on ports 5432 and 5434; database `unifi-network`
+is on 5434. These recipes were run as the `postgres` user with `LC_ALL=C` (without it, perl locale
+warnings are printed):
+
+```bash
+q() { su postgres -s /bin/sh -c "LC_ALL=C psql -h /var/run/postgresql -p 5434 -d unifi-network -Atc \"$1\""; }
+q "select name, purpose, coalesce(enabled::text,'NULL'), wan_type from config.network_conf where purpose='wan'"
+q "select name, to_timestamp(last_seen) from config.device order by name"
+q "select dynamic_part from config.setting where key='ips'"
+```
+
+*Network < 11.0.83 (MongoDB).*
 
 ```bash
 mongo --quiet --port 27117 --eval 'db.device.find({},{name:1,last_seen:1,_id:0}).toArray()' ace

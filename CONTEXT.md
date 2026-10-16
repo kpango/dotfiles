@@ -667,3 +667,14 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
 - **Non-Goal**: `format/zsh` の sed をコメント非適用にする改修。既存の全 zsh ファイルが
   sed 正規化後の形でコミットされており、規約そのものの変更は影響範囲が別物。
 - **前提**: 上記すべては `origin/main` へ push されて初めて CI に反映される。
+
+## unifi-ips-docfix (2026-10-16) — UniFi Network 11 の DB 移行と IPS 実機調査の反映
+
+- **起点**: amalance.jp/blog-unifi-03（UDM Pro IPS ルール統計記事）の実機ファクトチェック。統計値は
+  実機（Network 11.0.89）とほぼ一致、「カテゴリ単位でしか切替不可」は誤り（Signature Suppression あり）。
+- **決定 1**: UniFi Network ≥ 11.0.83 はアプリ DB が PostgreSQL（release notes "Migrated the application
+  database to PostgreSQL"）。`unifi-api` skill の DB 直接照会手順は版分岐で記述し、旧版の mongo 手順も残す
+  （未更新機器向け）。DB は読み取り専用で使い、修正は従来どおり Classic REST API 経由（DB 直書きしない）。
+- **決定 2**: IPS の機構（suricata `--pcap` 受動監視 → ipset `ips`/`ips6` → FORWARD で一定時間 DROP）を
+  skill に汎用知識として記載。世帯固有の有効カテゴリ・Tor 方針は auto-memory 側に置く（harness-design.md）。
+- **決定 3**: UDM 本体は変更しない。Tor 遮断は人間判断で現状維持、カテゴリ削減・シグネチャ抑制は便益なしで不採用。

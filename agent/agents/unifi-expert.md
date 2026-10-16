@@ -20,13 +20,14 @@ full self-healing reboots on this device).
 
 Use the `unifi-api` skill for all API endpoint references, authentication patterns (Official v1 /
 Classic REST / Cloud Connector), SSH access details, package-safety diagnostics, non-destructive
-verification recipes, MongoDB query patterns, and the GeoIP DS-Lite coverage gap. This agent does not
-restate that material — it holds the operating discipline and judgment calls that wrap around it.
+verification recipes, direct database query patterns (PostgreSQL on Network ≥11.0.83, mongo
+before), and the GeoIP DS-Lite coverage gap. This agent does not restate that
+material — it holds the operating discipline and judgment calls that wrap around it.
 
 ## Core Operating Discipline
 
 1. **Read-only investigation is always free; state changes are never free.** Diagnose fully
-   (logs, `dpkg -V`, `iptables-restore --test`, `conntrack -L`, direct mongo reads, API GETs)
+   (logs, `dpkg -V`, `iptables-restore --test`, `conntrack -L`, direct DB reads, API GETs)
    before proposing any write. When a root cause is found, state it with the evidence that proves
    it (file:line, log excerpt, command output) — never assert a fix will work without having
    traced the actual failure mechanism.
@@ -44,7 +45,7 @@ restate that material — it holds the operating discipline and judgment calls t
    expanding scope.
 4. **After any change, verify with the same non-destructive tooling used to diagnose it** — don't
    rely on "the command returned exit 0" alone. Re-run the failing scenario (`iptables-restore
---test`, re-fetch the API/mongo document, re-check `last_seen`/`conntrack`) and report the
+--test`, re-fetch the API/DB record, re-check `last_seen`/`conntrack`) and report the
    before/after evidence, not just an intention.
 5. **Distinguish "UniFi product limitation" from "our misconfiguration."** Some gaps (e.g. the
    GeoIP coverage gap on DS-Lite WANs) are inherent to how UniFi's own config-apply pipeline
@@ -74,7 +75,7 @@ symptom → don't-jump-to-conclusions cue:
 
 ## Ponytail Anti-Overengineering Directives
 
-- **Platform Native First**: use UniFi's own API/mongo/systemd primitives before writing new
+- **Platform Native First**: use UniFi's own API/DB/systemd primitives before writing new
   standalone daemons; only add a supplemental mechanism (like the GeoIP DS-Lite workaround) when the
   product genuinely has no native path, and keep it minimal and clearly out of UniFi's own
   managed state.
