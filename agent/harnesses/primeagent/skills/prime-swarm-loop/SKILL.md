@@ -10,67 +10,62 @@ sequences the prime-native pieces. Run everything from the Python REPL. Load `sw
 (`swarm_adapter.*`); the three machines are `swarm-explore`, `swarm-implement`, `swarm-review` (each MACHINE.md
 has its input JSON, run recipe and residual risks - read it before the first run).
 
-## Human-only boundaries (never crossed by this skill)
+## Human-only boundaries
 
-- Merging into or pushing to the user's main branch or any remote, any deploy, branch deletion and worktree removal
-  are human-only; the loop ends at GATE. Committing in the mission worktree, and merging a task worktree branch into
-  the mission worktree (`prime-swarm-graph`), is orchestrator work and allowed.
-- Tier B governance files are never edited (write-scope check below). If the task needs one, stop and tell the human.
-- Mission work happens only in the worktree from `swarm_adapter.worktree_alloc`, never in the main checkout.
+Only the human merges into or pushes to the user's main branch or any remote, deploys, removes a worktree,
+deletes a branch, approves a Tier B change and approves the GATE; no prime-swarm-* skill and no machine it starts
+does any of these. Tier B = what `swarm_adapter.tier_b_hits(<worktree>, [<repo-relative path>], expect_common_dir=<common_dir>)`
+reports from the dotfiles `agent/write-scope-rules.json` next to the adapter, never the target repo's copy:
+before any file edit pass the path to it and do not edit on a hit, an `error` or `exit_code` != 0. Commits and
+merges happen only through the "Commit and merge (caller side)" blocks of `swarm-adapter/SKILL.md`, on
+`swarm-prime/*` branches. The skill text itself runs no git command in the target repository, read-only ones
+included (its config and hooks are maker-writable), and reads it only through `swarm_adapter`. Residual risk: the
+adapter's seven primitives `change_set`, `tier_b_hits`, `stage_task`, `incoming`, `verify_merge`, `commit_tree` and
+`update_ref` are all that its "no git command runs in the target repository" guarantee covers. Steps outside them,
+`swarm_adapter.worktree_alloc`, `swarm_adapter.mission_init`, `harness-select.sh`, the `swarm-implement` init
+(`rev-parse HEAD`, MACHINE.md) and Checker (`diff <init.base>`, `ls-files`), `swarm-review` (`merge-base`, `diff`,
+`ls-files`) and `swarm-explore` (`log`, `show`), run git commands in the target repository, so its config and hooks
+can run there; the repo's own gate commands (release gate step 2) are maker-writable too. Maker-written config
+(`diff.external`, `textconv`, ...) can shape the output of those git commands, and the Checker verdict and the review
+summary rest on that output. A STOP hands the decision to the human; never resume on silence. Governance:
+`~/.prime/agent/SWARM.md`.
 
-## Write-scope check (shared by all prime-swarm-* skills)
+`<common_dir>` is always the `common_dir` that `worktree_alloc` returned (taken before any maker ran). Residual
+risk: prime has no write hook, so the edit check is a prompt contract; put "never edit Tier B
+(write-scope-rules.json) files" into every `task_spec`. The commit-time check below is the enforced one.
 
-Tier B = the paths in the dotfiles `agent/write-scope-rules.json`, located like `swarm-adapter` locates its scripts
-(absolute, from the adapter module's real path), else the installed `~/.prime/agent/write-scope-rules.json`. NEVER
-read a cwd-relative path or a copy inside the target repo: that repo could plant one that empties Tier B. Neither
-file found: treat every edit as protected and ask the human. Before ANY file edit by you or in a task spec you
-write, resolve the target's absolute path and test it against `suffix_patterns` and `fixed_absolute_path_patterns`
-(fnmatch; `${HOME}` -> home dir, see its `$comment`). On a match: do not edit, refuse, and escalate to the human.
-The fixed paths only name the main checkouts and Claude's `.claude/worktrees/*`, but prime worktrees live OUTSIDE
-the repo (`worktree_alloc`: `<repo parent>/.worktrees/<repo>/<slug>-<ts>`), so a bare realpath match misses their
-`.claude/settings*.json` (`write-scope-lib.sh` protects those copies). `protected` therefore also tests the
-main-checkout twin of the path (same repo-relative path under the git common dir's parent); extra candidates can
-only add protection. `changed(wt, base)` lists every path a commit or merge would carry, as the union of base..HEAD (the maker may
-commit; `base` = the run's `init.base` from `await rlm.factory.status(run_id)`), index vs base, working tree vs base
-(all incl. deletions), and untracked files: a path the maker committed but reverted in the working tree still shows.
-A rename lists old and new path. It runs read-only git; a failing git
-(missing worktree, bad base) raises = fail closed: no commit/merge, stop and report. The commit goes through `decide_shell`.
+## Commit rule (shared by all prime-swarm-* skills)
 
-    import json, os, fnmatch, subprocess, swarm_adapter; from pathlib import Path
-    agent = next((d for d in Path(swarm_adapter.__file__).resolve().parents if d.name == "agent" and (d / "skills").is_dir()), None)
-    rules = next((c for c in ([agent / "write-scope-rules.json"] if agent else []) + [Path.home() / ".prime" / "agent" / "write-scope-rules.json"] if c.is_file()), None)  # None: ask the human
-    if rules is None: raise RuntimeError("no write-scope-rules.json: every edit is protected; stop and ask the human")
-    r = json.load(open(rules)); h = os.path.expanduser("~")
-    E = {**{k: v for k, v in os.environ.items() if not k.startswith("GIT_")}, "PYTHONSAFEPATH": "1", "LC_ALL": "C"}
-    def git(wd, *a):  # a failing git raises: a missing worktree must not read as "no changes"
-        p = subprocess.run(["git", "-C", wd, *a], capture_output=True, text=True, env=E)
-        if p.returncode: raise RuntimeError("git %s failed in %s: %s" % (a[0], wd, p.stderr.strip()))
-        return p.stdout.rstrip("\n")
-    def protected(target):  # True = protected
-        p = os.path.realpath(target); c = [p]
-        d = next(str(x) for x in [Path(p), *Path(p).parents] if x.is_dir())
-        try: top, common = git(d, "rev-parse", "--show-toplevel"), git(d, "rev-parse", "--path-format=absolute", "--git-common-dir")
-        except RuntimeError as e:
-            if "not a git repository" not in str(e): raise
-            top = common = ""  # outside any repo: no twin
-        if top and common: c.append(os.path.realpath(os.path.join(os.path.dirname(common), os.path.relpath(p, os.path.realpath(top)))))
-        return any(fnmatch.fnmatch(x, g) for x in c for g in r["suffix_patterns"] + [g.replace("${HOME}", h) for g in r["fixed_absolute_path_patterns"]])
-    D = ("diff", "--no-renames", "--name-only", "-z")  # --no-renames: old AND new path of a rename
-    def changed(wt, base):  # base..HEAD + index + working tree + untracked
-        if not base.isalnum(): raise ValueError("bad base %r" % base)
-        qs = (D + (base, "HEAD", "--"), D + ("--cached", base, "--"), D + (base, "--"), ("ls-files", "--others", "--exclude-standard", "-z"))
-        return sorted({x for q in qs for x in git(wt, *q).split("\0") if x})
-    def incoming(mwt, branch):  # what `git merge <branch>` would bring into the mission worktree (graph)
-        if branch.startswith("-"): raise ValueError("bad branch %r" % branch)
-        return sorted(x for x in git(mwt, *D, "HEAD..." + branch, "--").split("\0") if x)
-    def commits(wt, base): return int(git(wt, "rev-list", "--count", base + "..HEAD"))  # > 0: HEAD moved (the maker committed)
-    def stageable(ch): return [x for x in ch if x != "@fix_plan.md"]  # mission-init.sh's plan file (name-exact, repo root)
-    print(protected("/abs/target"))  # edit check
-    print([x for x in changed("/abs/worktree", "<init.base>") if protected(os.path.join("/abs/worktree", x))])  # non-empty = stop
+Branch invariant: a task's work lives on the `swarm-prime/*` branch `worktree_alloc` created for it, and only the
+adapter's `update_ref` (inside the "Commit and merge (caller side)" blocks) moves it. `<tip>` = the commit that
+branch must be at: `worktree_alloc`'s `base`, then the `c["commit"]` each finished commit block wrote. Keep `<tip>`
+in the REPL next to `<common_dir>` for every run of that worktree, retry runs included; never take it from a run's
+`init.base`, the worktree or `@fix_plan.md` (a maker can move or write them). If `<tip>` or `<common_dir>` is
+unknown (REPL or kernel restart, resumed session, ...): STOP and ask the human; never re-derive it from HEAD, the
+commit history, a worktree or `@fix_plan.md`. To commit a finished task in worktree `<wt>`, call in this order, all with
+`expect_common_dir=<common_dir>`:
+`cs = await swarm_adapter.change_set(<wt>, <tip>, expect_common_dir=<common_dir>)` (fails unless
+`cs["commits"] == 0`; 0 does not prove HEAD is `<tip>`: a HEAD reset to an ancestor of `<tip>` also gives 0, and
+`stage_task` plus the `st["head"]` check below catch that),
+`await swarm_adapter.tier_b_hits(<wt>, list(cs["paths"]), expect_common_dir=<common_dir>)`,
+`st = await swarm_adapter.stage_task(<wt>, <tip>, expect_common_dir=<common_dir>)` (fails unless `st["head"]`
+equals `<tip>`), then, unless `st["zero_diff"]`, the adapter's commit block with `st` and msg
+`"<task-id>: <summary>"`, and set `<tip>` to its `c["commit"]`. Copy nothing of the blocks here; run them as
+written in `swarm-adapter/SKILL.md`.
 
-Residual risk: prime has no write hook, so this is a prompt contract, not an enforced gate. Include the list of
-protected targets you checked in the GATE report. Put "never edit Tier B (write-scope-rules.json) files" into every
-`task_spec`: the maker child runs outside any hook, so the commit step below is the real check.
+**HEAD check** (before REVIEW and before the GATE): `hv = await swarm_adapter.verify_merge(<wt>, <tip>,
+expect_common_dir=<common_dir>)` must succeed (Success rule) and `hv["head"]` must equal `<tip>`, then
+`hc = await swarm_adapter.change_set(<wt>, <tip>, expect_common_dir=<common_dir>)` must succeed with `hc["branch"]`
+equal to the allocated `branch` (HEAD attached to it, so that branch is at `<tip>`; a detached HEAD gives `""`). A
+commit after the last finished commit block (no Checker saw it), a HEAD reset below `<tip>`, or the branch moved
+while HEAD was detached at `<tip>` fails it: STOP and report the raw result.
+
+**Success rule** (one rule for every call above and for both adapter blocks): a step succeeds only when its result
+has `exit_code` 0, no `error` key, an empty `hits`/`tier_b`, `cs["branch"]` equal to the allocated `branch`, every
+condition the Commit rule attaches to it holds, and the block finished without raising. Anything else = nothing
+further is committed or merged: the task is `blocked(spec)` when a Tier B path was reported, else
+`blocked(design)` (a branch moved by anything but `update_ref` included); STOP and report the raw result to the
+human. On success, `st["zero_diff"]` true means the task is done with no change (the code already satisfied it).
 
 ## Success rule for every machine run
 
@@ -93,7 +88,8 @@ them apart from the node outputs in `await rlm.factory.status(run_id)`): the las
    impact-C change per `agent/rules/impact-scope.md`). Unsure: `mission`.
 2. **INIT** - `swarm_adapter.worktree_alloc(slug, scale, cwd=<repo>)` then
    `swarm_adapter.mission_init(slug, goal, scale, cwd=<worktree>)`; stop if either result has `error`/non-zero
-   `exit_code`. All later steps use the returned worktree path; keep its `base` sha as the review `base_ref`.
+   `exit_code`. All later steps use the returned worktree path; keep its `base` sha as the review `base_ref`,
+   its `branch` and its `common_dir`.
 3. **EXPLORE** - skip for a known, small target. Otherwise run `swarm-explore` with
    `{"question", "roots": [<worktree>]}`; the report is `<run_dir>/report.md`. Read the report, not raw shards.
    Non-success run: a NEW run directory, at most 3 explore runs in total (it has no `budget_guard`); after the
@@ -109,23 +105,19 @@ them apart from the node outputs in `await rlm.factory.status(run_id)`): the las
      `outcome.json` is `escalated`, branch on its kind (above), stop and report; do not raise limits.
    - Non-success run (Success rule fails, the maker may never have run): retry the task in a NEW run directory,
      at most 3 runs per task in total (the same `attempts` limit as `prime-swarm-graph`); after the 3rd, stop
-     and report.
-   - After `pass`, `git diff <init.base> HEAD` plus the working-tree diff is the evidence to show, not the checker prose. The maker
-     may or may not have committed, so in this order. (a) Run the commit check of the write-scope snippet on
-     `changed(<worktree>, <init.base>)`: any protected path (`@fix_plan.md` included) means NO commit; stop and report
-     the paths to the human (the task is `blocked(spec)`: its spec led the maker into Tier B). A git error
-     (exception) is fail closed: stop and report. (b) `stageable(changed)` empty AND `commits(...)` 0 = zero-diff
-     PASS (the code already satisfied the task, HEAD unmoved): skip the commit, the task is done. (c) Otherwise
-     `git add -- <path>` for each stageable path by name (`@fix_plan.md` is untracked in the worktree and may be
-     missing from `.git/info/exclude`: never stage it) and, if `git diff --cached --quiet` exits 1,
-     `git commit -m "<task-id>: <summary>"`, via `swarm_adapter.decide_shell` (a maker that committed everything
-     leaves nothing to commit), so the next task's `init.base` is past this task's change; a failed commit: stop and report.
-6. **REVIEW** - run `swarm-review` with `{"worktree", "base_ref": <INIT base sha>}` once all tasks pass. Run success (Success rule)
+     and report. A retry keeps the same `<tip>`.
+   - After `pass`: apply the **Commit rule** above to the mission worktree with `<tip>`. The evidence to show is
+     `cs["paths"]` and `st["staged"]`, not the checker prose.
+6. **REVIEW** - once all tasks pass, run the **HEAD check** on the mission worktree, then `swarm-review` with
+   `{"worktree", "base_ref": <INIT base sha>}`. Run success (Success rule)
    and verdict are separate: read `summary.all_pass` and `summary.failed`. Non-success run: a NEW run directory, at
    most 3 review runs per review round (no `budget_guard` runs there, so no mission budget either); after the 3rd,
    stop and report. Failed lenses become new tasks (back to EXECUTE, max 2 review rounds), then stop and report.
-7. **GATE** - present: task outcomes, `git diff --stat <INIT base> HEAD` and the working-tree diff, review summary, residual risks. Then
-   read `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it (or ask the human to run `/skill:prime-swarm-release-gate`). STOP and wait for the human.
+7. **GATE** - run the **HEAD check** again, then present: task outcomes, `change_set(<worktree>, <INIT base>,
+   expect_common_dir=<common_dir>)` paths with their `in` states, review summary, residual risks. Then read
+   `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it with this `<tip>` as its `<tip>` and the
+   INIT `branch` as its `<branch>` (or ask the human to run `/skill:prime-swarm-release-gate` and give them both).
+   STOP and wait for the human.
 
 ## Optional tools (only where they add value)
 

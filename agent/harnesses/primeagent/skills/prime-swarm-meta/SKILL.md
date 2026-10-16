@@ -7,10 +7,25 @@ description: Chooses between prime-swarm-loop and prime-swarm-graph for a goal u
 
 A selector, not an executor. Governance is in `~/.prime/agent/SWARM.md`.
 
-Human-only boundaries: merging into or pushing to the user's main branch or any remote, and any deploy, are
-human-only; Tier B governance files are never edited by this skill or the skills it selects.
-Protected (Tier B) paths come from the dotfiles `agent/write-scope-rules.json` (located as in prime-swarm-loop, never the target repo's copy); apply the write-scope check in
-`~/.prime/agent/skills/prime-swarm-loop/SKILL.md` before ANY file edit (prompt contract, no write hook in prime).
+## Human-only boundaries
+
+Only the human merges into or pushes to the user's main branch or any remote, deploys, removes a worktree,
+deletes a branch, approves a Tier B change and approves the GATE; no prime-swarm-* skill and no machine it starts
+does any of these. Tier B = what `swarm_adapter.tier_b_hits(<worktree>, [<repo-relative path>], expect_common_dir=<common_dir>)`
+reports from the dotfiles `agent/write-scope-rules.json` next to the adapter, never the target repo's copy:
+before any file edit pass the path to it and do not edit on a hit, an `error` or `exit_code` != 0. Commits and
+merges happen only through the "Commit and merge (caller side)" blocks of `swarm-adapter/SKILL.md`, on
+`swarm-prime/*` branches. The skill text itself runs no git command in the target repository, read-only ones
+included (its config and hooks are maker-writable), and reads it only through `swarm_adapter`. Residual risk: the
+adapter's seven primitives `change_set`, `tier_b_hits`, `stage_task`, `incoming`, `verify_merge`, `commit_tree` and
+`update_ref` are all that its "no git command runs in the target repository" guarantee covers. Steps outside them,
+`swarm_adapter.worktree_alloc`, `swarm_adapter.mission_init`, `harness-select.sh`, the `swarm-implement` init
+(`rev-parse HEAD`, MACHINE.md) and Checker (`diff <init.base>`, `ls-files`), `swarm-review` (`merge-base`, `diff`,
+`ls-files`) and `swarm-explore` (`log`, `show`), run git commands in the target repository, so its config and hooks
+can run there; the repo's own gate commands (release gate step 2) are maker-writable too. Maker-written config
+(`diff.external`, `textconv`, ...) can shape the output of those git commands, and the Checker verdict and the review
+summary rest on that output. A STOP hands the decision to the human; never resume on silence. Governance:
+`~/.prime/agent/SWARM.md`.
 
 ## Steps
 
