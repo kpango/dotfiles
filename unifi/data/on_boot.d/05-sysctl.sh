@@ -34,4 +34,4 @@ sysctl -w net.ipv4.neigh.default.gc_thresh1=2048
 sysctl -w net.ipv4.neigh.default.gc_thresh2=8192
 sysctl -w net.ipv4.neigh.default.gc_thresh3=16384
 
-echo "[10-sysctl] Applied UDM Pro performance sysctl"
+echo "[05-sysctl] Applied UDM Pro performance sysctl"

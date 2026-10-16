@@ -83,4 +83,6 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
 - `unifi-native-guard` は Ubiquiti 製パッケージを Debian trixie upgrade から保護する
   仕組み (詳細は `data/unifi-native-guard/guard.sh` ヘッダ参照)
 - `game-geo-bypass` は Region Block の例外として特定の Windows game サービス (codefusion / WNS)
-  を通過させる (詳細は `data/game-geo-bypass/apply.sh`)
+  を通過させる (詳細は `data/game-geo-bypass/apply.sh`)。UniFi 管理チェーン (`UBIOS_*`) には書き込まず、
+  専用チェーン `GAME_GEOBYPASS` を FORWARD の GeoIP 判定より前に挿入して ACCEPT する。自前ルールには
+  `-m comment` を付けない (udapi が未知の comment 付きルールを毎秒警告するため)
