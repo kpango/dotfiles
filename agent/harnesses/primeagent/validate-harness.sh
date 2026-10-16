@@ -47,5 +47,6 @@ echo
 echo "[ Shared Security & Governance Tests ]"
 harness_run_shared_test "security-rules.json (shared engine)" "$ROOT/agent/scripts/test-security-rules.sh"
 harness_run_shared_test "model-routing.json (shared engine)" "$ROOT/agent/scripts/test-model-routing.sh"
+harness_run_shared_test "AGENTS.md (generated, loaded by prompt --json)" "$SCRIPT_DIR/test-agents-md.sh"
 
 harness_summary "PrimeAgent"
