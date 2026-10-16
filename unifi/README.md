@@ -76,6 +76,10 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
 
 - UDM Pro のファームウェアアップデートで `/etc/` と `/usr/` は wipe される。`/data/on_boot.d/*.sh` が
   boot 時に `/etc/` 側を再構築する設計なので、install 後も自動復旧する
+- UniFi OS 自体には on_boot.d を実行する仕組みが無い。`make unifi/install` が
+  `data/on_boot.d/udm-boot.service` を `/etc/systemd/system/` に配置・enable して実行させる。
+  この unit 自体も `/etc` にあるため、firmware update で `/etc` が wipe された場合は
+  `make unifi/install` の再実行が必要 (2026-10-16 の UniFi OS 6.0.13 更新では `/etc` overlay は残った)
 - `unifi-native-guard` は Ubiquiti 製パッケージを Debian trixie upgrade から保護する
   仕組み (詳細は `data/unifi-native-guard/guard.sh` ヘッダ参照)
 - `game-geo-bypass` は Region Block の例外として特定の Windows game サービス (codefusion / WNS)

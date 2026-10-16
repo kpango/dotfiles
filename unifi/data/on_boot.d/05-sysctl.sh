@@ -1,6 +1,6 @@
 #!/bin/sh
 # UDM Pro performance sysctl tuning
-# Deploy: /data/on_boot.d/10-sysctl.sh (runs after each boot via unifi-os init)
+# Deploy: /data/on_boot.d/05-sysctl.sh (run at boot by udm-boot.service in this directory)
 # Note: /data/ persists across reboots; wiped only on factory reset / firmware reinstall.
 
 set -e

@@ -67,8 +67,13 @@ if [ -x /data/unifi-native-guard/guard.sh ]; then
     rc=\$?; echo \"[hook-fail] guard.sh units rc=\$rc\" >&2; fail=1
   fi
 fi
+echo '[post-install] udm-boot.service (runs /data/on_boot.d/*.sh at boot)'
+cp /data/on_boot.d/udm-boot.service /etc/systemd/system/udm-boot.service
 systemctl daemon-reload
 echo '[post-install] systemctl daemon-reload done'
+if ! systemctl enable udm-boot.service; then
+  echo '[hook-fail] systemctl enable udm-boot.service' >&2; fail=1
+fi
 exit \$fail"
 
 log install "done"
