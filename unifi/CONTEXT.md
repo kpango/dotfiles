@@ -209,6 +209,10 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
   default route `201.ip6tnl1` (WAN1 DS-Lite) に乗る設計。WAN1 停止時に UniFi が default
   route を書き換えると TCP timeout 後に nextdns が再接続して WAN2 に切り替わる想定だが、
   実機 failover テスト未実施。問題が出たら `/data/nextdns-healthcheck.sh` 側で検知される。
+  部分的な実地観測 (2026-10-16 23:25〜10-17 01:20): WAN1 の DS-Lite (IPv4) だけが落ち、IPv4 は
+  WAN2 へ failover、eth8 の native IPv6 は生存していた間、nextdns は IPv6 の DoH endpoint
+  (`[2a07:a8c1::]:443` 等) に接続したまま解決を継続し、healthcheck は一度も発火しなかった。
+  WAN1 の IPv6 まで落ちるケースは依然未観測。
 - **IPv4 DHCP DNS を "完全に空" にできない**: UniFi dnsmasq は `dhcpd_dns_enabled: true`
   - 全エントリ空にしてもゲートウェイ IP を自動補完する (本 CONTEXT 作成時に実機確認)。
     IPv4 クライアントは `10.0.x.1` 経由で UDM Pro dnsmasq → nextdns CLI → NextDNS DoH を
@@ -216,6 +220,12 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
 - **UDM Pro の `/etc/` は firmware update で wipe される**: 本構成は `/data/on_boot.d/*.sh`
   と `/data/<component>/install.sh` が boot 時 or 手動実行で `/etc/` を再構築する。
   dotfiles 側は `/data/` を authoritative とし、`unifi/etc-snapshot/` は参照のみ。
+  UniFi OS 自体は `/data/on_boot.d` を実行しないため、`make unifi/install` が配置する
+  `udm-boot.service` がその実行を担う (2026-10-17 以前は実行されておらず sysctl が再起動で消えていた)。
+  2026-10-16 の UniFi OS 6.0.13 更新では `/etc` overlay (upperdir `/mnt/.rwfs/data`) は残り、
+  `/usr/bin/nextdns` と `/etc/apt/preferences.d/30-unifi-native-protect` だけが消えた
+  (前者は nextdns.service の ExecStartPre が `/data/.nextdns-recover` から、後者は `update.sh` の
+  `guard.sh pins` が復元)。
 - **NixOS host の rebuild は本 commit 以降 user 手動**: `dotfiles/install` は Arch host で
   即反映されるが、NixOS host は user が `sudo nixos-rebuild switch --flake .#desk-threadripper`
   を実行するまで旧設定のまま。
