@@ -137,6 +137,8 @@ other-user 誤 advertise のリスクなし。
 | dotfiles `network/dns/*.conf`                | 非 Nix Arch host 用の raw conf (`FallbackDNS=` 空、NextDNS only)    | 旧 Cloudflare/Quad9 の復活禁止                     |
 | dotfiles `dockers/daemon.json`               | コンテナ DNS = Tailscale + NextDNS direct IPv6                      | public DNS の追加禁止                              |
 | dotfiles `unifi/`                            | UDM Pro SSoT (data/root/etc-snapshot、backup は 2026-10-14 撤去)    | secrets (tailscaled.state / profile-data) 混入禁止 |
+| UDM Pro `/data/nextdns-client-names/`        | UniFi クライアント名 → `/etc/hosts.dnsmasq` (5 分毎、Q19)           | `api-key` の git 取り込み禁止                      |
+| UniFi Content Filtering                      | **off** (3 policy とも disabled、Q18)                               | 再有効化は NextDNS の端末識別を壊す (Q18 参照)     |
 
 ### 3.2 データフロー不変
 
@@ -146,8 +148,13 @@ LAN client (IPv4) ─DHCP で配布─▶ gateway 10.0.x.1
       └─▶ nextdns CLI 127.0.0.1:5342
          └─▶ DoH https://dns.nextdns.io/21553f (over WAN1 default route)
 
-LAN client (IPv6) ─DHCPv6/RA─▶ 2a07:a8c0::21:553f (profile 埋込)
-   └─▶ NextDNS 直接 DoH
+LAN client (IPv6) ─DHCPv6/RA (dns auto = gateway 自身, Q20)─▶ UDM Pro dnsmasq :53
+   └─▶ IPv4 と同じ経路 (add-mac/add-subnet → nextdns CLI → DoH)
+   (2026-10-17 以前は 2a07:a8c0::21:553f を直接配布しており、IPv6 で問い合わせる端末は
+    NextDNS 上で無名だった)
+
+端末が自前で DoT する場合 (Android Private DNS 等) ─▶ NextDNS 直接 (UDM を通らない)
+   └─▶ 端末識別はホスト名 `<端末名>-21553f.dns.nextdns.io` を端末側で設定した場合のみ
 
 tailnet client ─MagicDNS 100.100.100.100─▶ Tailscale admin UI の NextDNS DoH
    (profile ID は Tailscale admin DNS で設定済、現状の DoH stamp は NextDNS-21553f)
@@ -193,6 +200,9 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
 | Q13     | Backup 永続化                        | A: dotfiles/unifi/ SSoT に移行 (user asset のみ、controller state は UniFi Cloud に任せる) | B (個人 persistent) / C (破棄) / D (UDM Pro 内保存)              | user 作成 script/config は git で、UniFi Cloud が shadow 済の controller state は dotfiles に含めない (2026-10-14 incident: controller JSON ダンプが WPA/SSH/SSO 秘密を平文で含み public GitHub に流出、`backup/` ディレクトリと `unifi-pull.sh` の API dump 機能を撤去して縮小した) |
 | Q14     | Tailscale 他ノード key expiry        | 検査結果: 23/24 で既に無効化済、残 1 (lymJNQKRXYFWR) は Q15/Q16 で削除                     | —                                                                | 検査により action 不要と確定                                                                                                                                                                                                                                                         |
 | Q15/Q16 | Tailscale offline ノード整理         | A: 1 年以上 offline + 不審 15 台一括削除                                                   | B (14 台) / C (1 台) / D (維持)                                  | tailnet admin UI 整理、戻ってきた際は再登録される                                                                                                                                                                                                                                    |
+| Q18     | UniFi Content Filtering (2026-10-17) | 3 policy とも disabled。SafeSearch と成人向けブロックは NextDNS (`safeSearch: true`、category `porn`) へ移管 | 維持 / IoT のみ維持 | CF は LAN の :53 を coredns(127.0.0.1:1053) へ DNAT し、coredns → dnsmasq → nextdns の順に転送するため、dnsmasq/nextdns から見た送信元が全て 127.0.0.1 になり `add-mac`/`report-client-info` が無効化されていた (tcpdump で確認)。広告ブロックは NextDNS の blocklist が上位互換 |
+| Q19     | UniFi クライアント名の NextDNS 連携  | `/data/nextdns-client-names/sync.sh` (5 分毎 timer) が Integration API から名前+IP(+同 MAC の IPv6) を取り `/etc/hosts.dnsmasq` を生成 | DHCP/mDNS 名のみ / 手書き hosts / `/usr/bin/mongo` シム | NextDNS CLI の UniFi 名取得は MongoDB 前提で Network 11.0.83+ (PostgreSQL) では無効。hosts ソースは IP で引かれ、DHCP リースに MAC 由来の名前がある端末はそちらが優先される (2026-10-17 時点 43 台中 17 台)。mongo シムは firmware 所有物を差し替えるため却下 |
+| Q20     | LAN の IPv6 DNS 配布先               | 3 LAN とも `dhcpdv6_dns_auto: true` (UDM 自身) | 現状維持 (NextDNS 直接) / IoT 先行 | NextDNS 直接配布では IPv6 優先の端末が UDM を通らず無名になる。UDM が単一経路になるのは IPv4 で既に同じ |
 | Q17     | Split DNS LAN domain                 | C: skip (現状維持、tailnet 内は MagicDNS で足りる)                                         | A (home.arpa 実装) / B (枠組みのみ) / D (不要判定)               | fix_plan 自体が条件付き保留、必要時 Option A で遅延展開可能                                                                                                                                                                                                                          |
 
 ---
@@ -240,8 +250,8 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
   単独 kpango tailnet 前提。他ユーザー共有が始まったら要再設計。
 - **IoT 機器の allowlist (DNS redirect 例外)**: Q3 で lockdown 済、壊れる機器が実際に
   出てから個別対応 (事前の予防的 allowlist は作らない)。
-- **NextDNS Parental Control / Category block**: 単独 kpango 利用で不要。family/guest WiFi
-  展開時に再検討。
+- **NextDNS Parental Control の追加カテゴリ**: Q18 で `porn` + SafeSearch のみ移管 (Q10 を更新)。
+  それ以上のカテゴリ/サービスブロックは family/guest WiFi 展開時に再検討。
 - **LAN hostname (home.arpa / Split DNS)**: tailnet 内は MagicDNS で代替、必要時に Q17
   Option A で遅延展開。
 - **Mongo 直編集での UniFi config 変更**: controller API で代替可能なため使わない

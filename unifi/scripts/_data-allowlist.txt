@@ -10,6 +10,10 @@ forget_ghosts.sh
 
 on_boot.d
 game-geo-bypass
+nextdns-client-names/sync.sh
+nextdns-client-names/install.sh
+nextdns-client-names/nextdns-client-names.service
+nextdns-client-names/nextdns-client-names.timer
 unifi-native-guard
 
 tailscale/manage.sh

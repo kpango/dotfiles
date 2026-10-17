@@ -20,6 +20,8 @@
 # under /data when linked IP is configured; it is a secret the way an API key
 # is).
 **/.nextdns-update-token*
+# Integration API key read by nextdns-client-names/sync.sh on the UDM Pro.
+**/api-key
 # Historical: unifi/backup/ was dropped on 2026-10-14 because UniFi Cloud
 # already backs up the controller state and the raw dumps carry WPA/SSH/SSO
 # secrets. Reject any accidental re-creation of that path.

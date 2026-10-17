@@ -13,6 +13,7 @@ DRY_RUN="${DRY_RUN:-0}"
 # Add new installers here when a new /data/<component>/install.sh is introduced.
 POST_INSTALL_HOOKS=(
   /data/game-geo-bypass/install.sh
+  /data/nextdns-client-names/install.sh
   /data/on_boot.d/30-nextdns-healthcheck-install.sh
 )
 # guard.sh is special — it takes an "units" argument rather than being a bare
