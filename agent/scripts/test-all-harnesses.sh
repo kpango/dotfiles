@@ -113,6 +113,9 @@ fi
 # Builds a throwaway git repo + linked worktree + fake $HOME under mktemp -d;
 # never touches the real $HOME or this repo's own live symlinks.
 run_suite "Sync Verify Live Root" "bash '$ROOT/agent/scripts/test-sync-verify-live-root.sh'"
+# sync-verify.sh's live-symlink-dir / live-regular-file modes and SYNC_VERIFY_ONLY (primeagent T11),
+# same isolation (throwaway repo copy + fake $HOME under mktemp -d).
+run_suite "Sync Verify Dir Modes" "bash '$ROOT/agent/scripts/test-sync-verify-dir-modes.sh'"
 
 # 19. Jev/Laya tier_advisor.py (T10 swarm-implement complexity-gate advisory CLI).
 # python3 stdlib-only, same MockLayaServer fixture as #11/#13.

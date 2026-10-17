@@ -421,7 +421,7 @@
 #     gitfile targets must already be valid common dirs.
 #   - Requires the installed layout: `make primeagent/install` must have put
 #     ~/.prime/agent/bin/prime-shell-guard.sh in place; without it pa-sandbox fails
-#     closed (T10 owns the installer wiring).
+#     closed (agent/harnesses/primeagent/install.sh links it).
 #   - With the host /proc fallback, same-uid /proc/<pid>/environ is readable.
 #   - Host files outside $HOME are readable (ro); other unix sockets under /run
 #     stay connectable (connect() works on ro mounts).

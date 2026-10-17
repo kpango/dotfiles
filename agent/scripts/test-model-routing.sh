@@ -85,5 +85,44 @@ check_fallback "pi" "XHigh" "rate_limit" "antigravity/gemini-3.8-flash-high"
 check_fallback "primeagent" "High" "token_exhaustion" "opencode-go/glm-5.3"
 
 echo
+echo "[ PrimeAgent: install.sh derivation vs resolver ]"
+# primeagent/install.sh derives subagentDefaultModel / auxiliaryModel / allowedModels from model-routing.json
+# with its own jq (CONTEXT C-2). Run it against a throwaway HOME and require every model the resolver can
+# return for primeagent (each tier, and each tier's fallback through its trigger) to be allowed there.
+prime_home="$(mktemp -d)"
+trap 'rm -rf "$prime_home"' EXIT
+if ! ROOTDIR="$ROOT" HOME="$prime_home" bash "$ROOT/agent/harnesses/primeagent/install.sh" >"$prime_home/install.log" 2>&1; then
+    echo "FAIL: primeagent install.sh into a throwaway HOME: $(tail -n 3 "$prime_home/install.log")" >&2
+    exit 1
+fi
+prime_settings="$prime_home/.prime/agent/settings.json"
+prime_routing="$ROOT/agent/harnesses/primeagent/model-routing.json"
+prime_allowed() { # <model>: in the installed allowedModels?
+    jq -e --arg m "$1" '.allowedModels | index($m) != null' "$prime_settings" >/dev/null
+}
+for key_tier in subagentDefaultModel:High auxiliaryModel:Low; do
+    key="${key_tier%%:*}" tier="${key_tier#*:}"
+    expected="$("$RESOLVER" primeagent "$tier" --format model)"
+    actual="$(jq -r --arg k "$key" '.[$k]' "$prime_settings")"
+    if [ "$actual" = "$expected" ]; then
+        echo "PASS: primeagent installed $key = resolver $tier ($actual)"
+    else
+        echo "FAIL: primeagent installed $key = '$actual', resolver $tier = '$expected'" >&2
+        exit 1
+    fi
+done
+for tier in Low Medium High XHigh Max; do
+    model="$("$RESOLVER" primeagent "$tier" --format model)"
+    prime_allowed "$model" || { echo "FAIL: primeagent tier $tier -> $model is not in the installed allowedModels" >&2; exit 1; }
+    echo "PASS: primeagent tier $tier -> $model is allowed"
+    while IFS= read -r trigger; do
+        [ -n "$trigger" ] || continue
+        model="$("$RESOLVER" primeagent "$tier" --trigger "$trigger" --format model)"
+        prime_allowed "$model" || { echo "FAIL: primeagent fallback ($tier, $trigger) -> $model is not in the installed allowedModels" >&2; exit 1; }
+        echo "PASS: primeagent fallback ($tier, trigger: $trigger) -> $model is allowed"
+    done < <(jq -r --arg t "$tier" '[.tiers[$t].fallbacks // [] | .[].trigger] | unique | .[]' "$prime_routing")
+done
+
+echo
 echo "test-model-routing: 全テストPASS"
 exit 0

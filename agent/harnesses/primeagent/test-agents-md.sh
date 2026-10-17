@@ -6,8 +6,8 @@
 #   guard words (GUARD_WORDS) outside the guard table only in ALLOWED_SENTENCES, async
 #   rlm/swarm_adapter/bundled-skill calls awaited, model= selectors authenticated (each + negative
 #   controls), tier table == model-routing.json, referenced paths
-#   exist in the repo (~/.prime/agent/* through the expected install mapping; the live install.mk
-#   wiring is T10's and is not checked), unknown path-like tokens fail, no SYSTEM.md, and
+#   exist in the repo (~/.prime/agent/* through the install mapping; the live wiring is checked by
+#   sync-verify.sh and validate-harness.sh, not here), unknown path-like tokens fail, no SYSTEM.md, and
 #   `prime-agent prompt --json` (offline: it only assembles the system prompt, run without network)
 #   loads the file from a sandbox HOME. Never touches the real ~/.prime/agent.
 # exit: 0 = all pass, 1 = at least one [FAIL]. [SKIP] = prerequisite missing (not a failure).
@@ -360,8 +360,10 @@ NOT_REPO_FILES = {
     "AGENTS.md": "generic context file name",
     "auth.json": "prime-agent's own credential file name",
 }
-# ~/.prime/agent/<rel> -> repo source. This is the mapping install (T10) is expected to wire; the
-# live install.mk wiring is NOT checked here (until T10 it still installs pi's AGENTS.md).
+# ~/.prime/agent/<rel> -> repo source, as `make primeagent/install` wires it (AGENTS.md and
+# model-routing.json are DOTFILES_MAP symlinks; settings.json is install.sh's merged regular file whose
+# repo-owned keys come from this source). The live wiring is NOT checked here: agent/scripts/sync-verify.sh
+# (SYNC_VERIFY_ONLY=primeagent) and validate-harness.sh check it.
 INSTALL_MAP = {"model-routing.json": "agent/harnesses/primeagent/model-routing.json",
                "AGENTS.md": "agent/harnesses/primeagent/AGENTS.md",
                "settings.json": "agent/harnesses/primeagent/settings.json"}
@@ -421,7 +423,7 @@ if errors:
     sys.exit("\n".join(errors))
 print(f"{len(got)} tiers, {counts['checked']} referenced paths/selectors checked, "
       f"{counts['excluded']} listed exclusions, {counts['pattern']} patterns; "
-      "~/.prime/agent/* resolved via the repo mapping, live install wiring is T10's (not checked)")
+      "~/.prime/agent/* resolved via the repo mapping (live wiring: sync-verify.sh, not checked here)")
 PY
 )"; then ok "tier table and referenced paths: $msg"; else ng "$msg"; fi
 
