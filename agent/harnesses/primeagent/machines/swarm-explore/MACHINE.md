@@ -41,8 +41,8 @@ Output ports are captured answer previews (the host caps them at 160
 characters), so every state emits one line of compact JSON of at most 120
 characters and writes everything else to files inside the per-run directory
 `${PRIME_AGENT_CODING_AGENT_DIR:-$HOME/.prime/agent}/swarm/runs/<run id>/`. Guards branch only on those json fields, never on
-prose. Machines are deployed by `make primeagent/install` (the T10 task adds
-that wiring) and need the factory enabled (`factory.enabled` is already true in
+prose. Machines are deployed by `make primeagent/install` (one symlink per
+machine under `~/.prime/agent/machines/`) and need the factory enabled (`factory.enabled` is already true in
 the primeagent settings.json).
 
 ```machine-spec

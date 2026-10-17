@@ -6,7 +6,9 @@ set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 routing="$here/../model-routing.json"
-runtime_src="${PRIME_RUNTIME_SRC:-$HOME/.local/share/prime-agent/prime-agent-runtime/src}"
+# The installed runtime lives under the passwd home (as in test-agents-md.sh), so a caller's fake HOME
+# (validate-harness.sh run with HOME=<throwaway>) still finds it. Read only.
+runtime_src="${PRIME_RUNTIME_SRC:-$(python3 -I -c 'import os, pwd; print(pwd.getpwuid(os.getuid()).pw_dir)')/.local/share/prime-agent/prime-agent-runtime/src}"
 sandbox="$(mktemp -d)"
 trap 'command rm -r -- "$sandbox"' EXIT
 

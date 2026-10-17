@@ -16,7 +16,7 @@
 #     current list"; prime's supplement has no such list (it has its own "Agent Definitions").
 #   - "Security": claims writes to credential paths "are blocked" and that "a root session shares
 #     this configuration via symlink". On prime-agent there is no write hook (CONTEXT Q3-a: edit.run
-#     and Python open() pass no guard) and settings.json is copied, not symlinked (CONTEXT P-2/Q7).
+#     and Python open() pass no guard) and settings.json is a merged regular file, not a symlink (CONTEXT P-2/Q7).
 #     The supplement carries a prime-true "Security" section instead.
 # The kept part must match neither TOOL_SPECIFIC_RE (tool names/paths) nor ENFORCEMENT_CLAIM_RE
 # (enforcement or wiring claims that hold only where hooks/symlinks exist); a new such line in

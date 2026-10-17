@@ -1,5 +1,5 @@
 {
-  "$comment": "claude/pi/agy 共通設定の SSoT 同期マニフェスト。agent/scripts/sync-verify.sh がこれを読み、各entryのmodeに応じた検証を行う。新しい共通化対象を追加する際はまずここに宣言する(agent/README.md 運用規範参照)。2026-09-03: リポジトリ内のclaude/pi/agy側symlink(claude/rules・claude/agents・claude/RTK.md・pi/rules・pi/RTK.md・agy/rules・agy/agents・agy/RTK.md・skills配下のfile-level symlink群)を全廃し、Makefile.d/install.mkがagent/から直接$HOME側へsymlinkする設計に一本化した(ユーザー指示:「dotfiles内部にsymbolic linkは不要、Makefile/nixだけが配置先を知っていればいい」)。これに伴い旧`symlink`/`symlink-per-entry`/`live-copy-or-symlink`の3modeは廃止し、`live-symlink`(常に$HOME側のみを検証)と`generate`(リポジトリ側の生成物の鮮度)の2modeへ統合した(当日中の後続ミッションagent-hooks-and-pi-agents-unificationで、当初例外だったpi/agentsもgenerate方式からlive-symlink方式へ移行済み、下記agents entry参照)。",
+  "$comment": "claude/pi/agy 共通設定の SSoT 同期マニフェスト。agent/scripts/sync-verify.sh がこれを読み、各entryのmodeに応じた検証を行う。新しい共通化対象を追加する際はまずここに宣言する(agent/README.md 運用規範参照)。2026-09-03: リポジトリ内のclaude/pi/agy側symlink(claude/rules・claude/agents・claude/RTK.md・pi/rules・pi/RTK.md・agy/rules・agy/agents・agy/RTK.md・skills配下のfile-level symlink群)を全廃し、Makefile.d/install.mkがagent/から直接$HOME側へsymlinkする設計に一本化した(ユーザー指示:「dotfiles内部にsymbolic linkは不要、Makefile/nixだけが配置先を知っていればいい」)。これに伴い旧`symlink`/`symlink-per-entry`/`live-copy-or-symlink`の3modeは廃止し、`live-symlink`(常に$HOME側のみを検証)と`generate`(リポジトリ側の生成物の鮮度)の2modeへ統合した(当日中の後続ミッションagent-hooks-and-pi-agents-unificationで、当初例外だったpi/agentsもgenerate方式からlive-symlink方式へ移行済み、下記agents entry参照)。2026-10-17(primeagent-max-customize T11): primeagent の live 配置(prime-agent 0.10.0、agent/harnesses/primeagent/install.sh)を宣言するため、実ディレクトリ内の per-entry symlink 群を表す `live-symlink-dir` と、symlink であってはならない通常ファイルを表す `live-regular-file` の2modeを追加した(既存2modeは不変)。",
   "entries": [
     {
       "name": "rules",
@@ -18,7 +18,8 @@
         "claude": { "path": "$HOME/.claude/agents", "mode": "live-symlink" },
         "agy": { "path": "$HOME/.agy/agents", "mode": "live-symlink" },
         "gemini": { "path": "$HOME/.gemini/agents", "mode": "live-symlink" },
-        "pi": { "path": "$HOME/.pi/agent/agents", "mode": "live-symlink" }
+        "pi": { "path": "$HOME/.pi/agent/agents", "mode": "live-symlink" },
+        "primeagent": { "path": "$HOME/.prime/agent/agents", "mode": "live-symlink" }
       },
       "note": "2026-09-03(agent-hooks-and-pi-agents-unificationミッション)以前はpi分のみagent/agents直結ではなくpi/agents(gen-pi-agents.shによる生成物、tools: frontmatterがpi-coding-agent形式に変換済みの実ファイル)を経由するgenerate modeだったが、この変換をpi/extensions/subagents.tsの実行時変換(mapToolNames)へ移植したため、claude/agyと同型のlive-symlink modeへ統一した。"
     },
@@ -40,7 +41,8 @@
         "claude": { "path": "$HOME/.claude/RTK.md", "mode": "live-symlink" },
         "pi": { "path": "$HOME/.pi/agent/RTK.md", "mode": "live-symlink" },
         "agy": { "path": "$HOME/.agy/RTK.md", "mode": "live-symlink" },
-        "gemini": { "path": "$HOME/.gemini/RTK.md", "mode": "live-symlink" }
+        "gemini": { "path": "$HOME/.gemini/RTK.md", "mode": "live-symlink" },
+        "primeagent": { "path": "$HOME/.prime/agent/RTK.md", "mode": "live-symlink" }
       }
     },
     {
@@ -50,7 +52,8 @@
         "claude": { "path": "$HOME/.claude/SWARM.md", "mode": "live-symlink" },
         "pi": { "path": "$HOME/.pi/agent/SWARM.md", "mode": "live-symlink" },
         "agy": { "path": "$HOME/.agy/SWARM.md", "mode": "live-symlink" },
-        "gemini": { "path": "$HOME/.gemini/SWARM.md", "mode": "live-symlink" }
+        "gemini": { "path": "$HOME/.gemini/SWARM.md", "mode": "live-symlink" },
+        "primeagent": { "path": "$HOME/.prime/agent/SWARM.md", "mode": "live-symlink" }
       }
     },
     {
@@ -77,6 +80,12 @@
           "mode": "generate",
           "script": "agent/scripts/gen-agents-md-for-agy.sh",
           "live_path": "$HOME/.gemini/AGENTS.md"
+        },
+        "primeagent": {
+          "path": "agent/harnesses/primeagent/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/harnesses/primeagent/gen-agents-md.sh",
+          "live_path": "$HOME/.prime/agent/AGENTS.md"
         }
       }
     },
@@ -135,14 +144,94 @@
         "gemini": {
           "path": "$HOME/.gemini/SWARM_REFERENCES.md",
           "mode": "live-symlink"
+        },
+        "primeagent": {
+          "path": "$HOME/.prime/agent/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
         }
+      }
+    },
+    {
+      "name": "themes",
+      "canonical": "agent/harnesses/pi/themes",
+      "note": "2026-10-17(T11): agent/harnesses/primeagent/install.sh は pi のテーマディレクトリを ~/.prime/agent/themes へ張る。pi 自身の ~/.pi/agent/themes も同じ canonical を指すが、本entryの追加で pi の検証結果を変えないよう primeagent target のみ宣言する。",
+      "targets": {
+        "primeagent": { "path": "$HOME/.prime/agent/themes", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "primeagent/models.json",
+      "canonical": "agent/harnesses/primeagent/models.json",
+      "targets": {
+        "primeagent": { "path": "$HOME/.prime/agent/models.json", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "primeagent/model-routing.json",
+      "canonical": "agent/harnesses/primeagent/model-routing.json",
+      "targets": {
+        "primeagent": { "path": "$HOME/.prime/agent/model-routing.json", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "prime-shell-guard.sh",
+      "canonical": "agent/scripts/prime-shell-guard.sh",
+      "note": "CONTEXT C-1: ガードは自分の実パスからチェックアウトを辿るため symlink でなければならない。",
+      "targets": {
+        "primeagent": { "path": "$HOME/.prime/agent/bin/prime-shell-guard.sh", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "pa-sandbox",
+      "canonical": "agent/harnesses/primeagent/bin/pa-sandbox",
+      "targets": {
+        "primeagent": { "path": "$HOME/.local/bin/pa-sandbox", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "pa-auto",
+      "canonical": "agent/harnesses/primeagent/bin/pa-auto",
+      "targets": {
+        "primeagent": { "path": "$HOME/.local/bin/pa-auto", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "primeagent/skills",
+      "note": "CONTEXT P-5/C-1: ~/.prime/agent/skills は実ディレクトリで、許可スキル(skills.list の共有スキル + primeagent/skills の prime 専用スキル)を1件ずつ symlink する。live-symlink-dir mode が期待集合を sources から算出し、各エントリを live-symlink として照合し、古いエントリの残存を検出する。",
+      "targets": {
+        "primeagent": {
+          "path": "$HOME/.prime/agent/skills",
+          "mode": "live-symlink-dir",
+          "sources": [
+            { "dir": "agent/skills", "list": "agent/harnesses/primeagent/skills.list" },
+            { "dir": "agent/harnesses/primeagent/skills", "marker": "SKILL.md" }
+          ]
+        }
+      }
+    },
+    {
+      "name": "primeagent/machines",
+      "note": "CONTEXT P-7: factory machine(MACHINE.md を持つディレクトリ)を1件ずつ symlink する実ディレクトリ。",
+      "targets": {
+        "primeagent": {
+          "path": "$HOME/.prime/agent/machines",
+          "mode": "live-symlink-dir",
+          "sources": [{ "dir": "agent/harnesses/primeagent/machines", "marker": "MACHINE.md" }]
+        }
+      }
+    },
+    {
+      "name": "primeagent/settings.json",
+      "note": "CONTEXT P-2/Q7: CLI が一時ファイル+rename で書き換えるため symlink にできず、install が live と repo 所有キーを合成した 0600 の通常ファイルになる。内容(live 所有キーを含む)は照合せず形だけを live-regular-file mode で検証する。repo 所有キーとのずれ・prime スキーマ外のキーは agent/harnesses/primeagent/validate-harness.sh が検査する。settings.json 自体がツール間で共有できない点は not_shareable の settings.json 参照。",
+      "targets": {
+        "primeagent": { "path": "$HOME/.prime/agent/settings.json", "mode": "live-regular-file", "perm": "600" }
       }
     }
   ],
   "not_shareable": [
     {
       "pattern": "settings.json",
-      "reason": "キー体系がツールごとに根本的に別物(claude/pi/agyでtop-level keysが完全に不一致)であり、ファイル全体のテンプレート化・生成は引き続き対象外。ただし値まで完全一致していた少数のキー(worktree.symlinkDirectories・subagentPromptCacheTtl)とmodel選択のnamed profile抽象化のみを agent/settings-common.json へ切り出し済み(検証は agent/scripts/test-settings-common.sh、反映は agent/scripts/apply-settings-common.sh、いずれも各ツールの実settings.jsonを正典としたdrift検出/明示適用であり自動生成ではない)。sync-manifest の entries に載せていないのは、settings.jsonがcanonicalを鏡映するtargetではなく各ツール独自にhand-authoredされた実ファイルであり、settings-common.jsonはその中の一部キーを横断検証する補助データに過ぎないため(hooks/*.shの3系統JSONと同じ理由)。"
+      "reason": "キー体系がツールごとに根本的に別物(claude/pi/agyでtop-level keysが完全に不一致)であり、ファイル全体のテンプレート化・生成は引き続き対象外。ただし値まで完全一致していた少数のキー(worktree.symlinkDirectories・subagentPromptCacheTtl)とmodel選択のnamed profile抽象化のみを agent/settings-common.json へ切り出し済み(検証は agent/scripts/test-settings-common.sh、反映は agent/scripts/apply-settings-common.sh、いずれも各ツールの実settings.jsonを正典としたdrift検出/明示適用であり自動生成ではない)。sync-manifest の entries で内容を鏡映・生成の対象にしていないのは、settings.jsonがcanonicalを鏡映するtargetではなく各ツール独自にhand-authoredされた実ファイルであり、settings-common.jsonはその中の一部キーを横断検証する補助データに過ぎないため(hooks/*.shの3系統JSONと同じ理由)。唯一 entries に載る primeagent/settings.json(2026-10-17、live-regular-file)も、live 側が通常ファイル・perm 600 であることだけを検証し内容は照合しない(内容の検査は agent/harnesses/primeagent/validate-harness.sh)ので、この判断の例外ではない。"
     },
     {
       "pattern": "hooks/*.sh",
