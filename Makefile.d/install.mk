@@ -118,12 +118,9 @@ agent/harnesses/agy/model-routing.json .gemini/config/model-routing.json
 agent/AGENTS.md .codex/AGENTS.md
 agent/harnesses/codex/config.toml .codex/config.toml
 agent/harnesses/codex/model-routing.json .codex/model-routing.json
-agent/harnesses/pi/AGENTS.md .prime/agent/AGENTS.md
-agent/harnesses/primeagent/settings.json .prime/agent/settings.json
+agent/harnesses/primeagent/AGENTS.md .prime/agent/AGENTS.md
 agent/harnesses/primeagent/models.json .prime/agent/models.json
 agent/harnesses/primeagent/model-routing.json .prime/agent/model-routing.json
-agent/harnesses/pi/keybindings.json .prime/agent/keybindings.json
-agent/harnesses/pi/mcp.json .prime/agent/mcp.json
 ghostty.conf .config/ghostty/config
 ghostty/shaders .config/ghostty/shaders
 ghostty/themes .config/ghostty/themes
@@ -759,28 +756,12 @@ codex/install: dotfiles/install
 	mkdir -p "$(HOME)/.codex"
 	ln -sfvn "$(ROOTDIR)/agent/skills" "$(HOME)/.codex/skills"
 
-## symlink ~/.prime/agent config files and shared skills/rules
+## deploy ~/.prime/agent for prime-agent 0.10.0: merged 0600 settings.json, per-entry skills/machines
+## symlinks, shell guard, pa-sandbox/pa-auto on ~/.local/bin; removes the old pi-derived links.
+## The logic lives in agent/harnesses/primeagent/install.sh (header: rules; test-install.sh: tests).
+## AGENTS.md, models.json and model-routing.json are linked by dotfiles/install via DOTFILES_MAP.
 primeagent/install: dotfiles/install
-	mkdir -p "$(HOME)/.prime/agent/sessions"
-	ln -sfvn "$(ROOTDIR)/agent/agents"                 "$(HOME)/.prime/agent/agents"
-	ln -sfvn "$(ROOTDIR)/agent/skills"                 "$(HOME)/.prime/agent/skills"
-	ln -sfvn "$(ROOTDIR)/agent/rules"                  "$(HOME)/.prime/agent/rules"
-	ln -sfvn "$(ROOTDIR)/agent/harnesses/pi/prompts"   "$(HOME)/.prime/agent/prompts"
-	ln -sfvn "$(ROOTDIR)/agent/harnesses/pi/themes"    "$(HOME)/.prime/agent/themes"
-	ln -sfvn "$(ROOTDIR)/agent/SWARM.md"               "$(HOME)/.prime/agent/SWARM.md"
-	ln -sfvn "$(ROOTDIR)/agent/SWARM_REFERENCES.md"    "$(HOME)/.prime/agent/SWARM_REFERENCES.md"
-	ln -sfvn "$(ROOTDIR)/agent/RTK.md"                 "$(HOME)/.prime/agent/RTK.md"
-	ln -sfvn "$(ROOTDIR)/agent/harnesses/pi/SYSTEM.md" "$(HOME)/.prime/agent/SYSTEM.md"
-	@if [ -L "$(HOME)/.prime/agent/extensions" ]; then rm -f "$(HOME)/.prime/agent/extensions"; fi
-	@mkdir -p "$(HOME)/.prime/agent/extensions/lib"
-	@find "$(ROOTDIR)/agent/harnesses/pi/extensions" -maxdepth 1 -type f \
-		-exec ln -sfvn {} "$(HOME)/.prime/agent/extensions/" \;
-	@find "$(ROOTDIR)/agent/hooks/pi" -maxdepth 1 -type f \
-		-exec ln -sfvn {} "$(HOME)/.prime/agent/extensions/" \;
-	@find "$(ROOTDIR)/agent/harnesses/pi/extensions/lib" -maxdepth 1 -type f \
-		-exec ln -sfvn {} "$(HOME)/.prime/agent/extensions/lib/" \;
-	@find "$(ROOTDIR)/agent/hooks/pi/lib" -maxdepth 1 -type f \
-		-exec ln -sfvn {} "$(HOME)/.prime/agent/extensions/lib/" \;
+	@ROOTDIR='$(ROOTDIR)' HOME='$(HOME)' bash '$(ROOTDIR)/agent/harnesses/primeagent/install.sh'
 
 ## remove all dotfile symlinks/copies from $HOME and clean generated config files
 dotfiles/clean: dotfiles/perm
