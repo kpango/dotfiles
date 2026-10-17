@@ -1,5 +1,5 @@
 [Unit]
-Description=Region Block exception for Windows game PCs (codefusion / WNS)
+Description=Region Block exception for Windows game PCs (WNS)
 After=network-online.target
 
 [Service]

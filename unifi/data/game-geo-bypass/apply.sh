@@ -1,5 +1,6 @@
 #!/bin/bash
-# Region Block の例外: Windowsゲーム機 SFP+ 01/02 から指定ホスト(wns / codefusion)を名前解決した IP 宛てのみ素通し
+# Region Block の例外: Windowsゲーム機 SFP+ 01/02 から WNS を名前解決した IP 宛てのみ素通し
+# (WNS は IN = ブロック対象国の Azure に解決される。codefusion は IE の AWS で Region Block 対象外のため 2026-10-18 に除外)
 # UniFi 管理下のチェーン(UBIOS_OUT_GEOIP)には書き込まない — udapi が "Found unexpected rule" を毎秒数件
 # 出し続けるため(UniFi OS 6.0.13 で約 640 件/分)。代わりに専用チェーンを FORWARD の GeoIP 判定
 # (UNG_GEOIP_ETH8_* / UBIOS_FORWARD_JUMP)より前に挿入し、一致した通信を ACCEPT する。
@@ -7,16 +8,21 @@
 set -u
 exec 9>/run/game-geo-bypass.lock; flock 9           # タイマーと手動実行の同時実行を防ぐ
 PAIRS="10.0.3.22=00:1b:21:bd:94:e4 10.0.3.23=00:1b:21:bd:94:e6"  # kpango's Game Windows SFP+ 01 / 02
-HOSTS="wns.notify.trafficmanager.net support.codefusion.technology $(printf 'srv%02d.codefusion.technology ' $(seq 1 10))"
+HOSTS="wns.notify.trafficmanager.net"
 SET4=GAME_GEOBYPASS4; SET6=GAME_GEOBYPASS6; CHAIN=GAME_GEOBYPASS; TAG=game-geo-bypass; TTL=86400
+STAMP=/run/game-geo-bypass.resolved
 # ルールに -m comment を付けない: udapi は自分の知らない comment 付きルールをチェーンを問わず警告する
 
 ipset create -exist $SET4 hash:ip family inet  timeout $TTL
 ipset create -exist $SET6 hash:ip family inet6 timeout $TTL
-for h in $HOSTS; do
-  for ip in $(dig +short +time=2 +tries=1 A "$h" | grep -E '^[0-9.]+$'); do ipset add -exist $SET4 "$ip" timeout $TTL; done
-  for ip in $(dig +short +time=2 +tries=1 AAAA "$h" | grep -E '^[0-9a-fA-F:]+:[0-9a-fA-F:]*$'); do ipset add -exist $SET6 "$ip" timeout $TTL; done
-done
+# 名前解決は 1 時間に 1 回(ipset TTL は 24h)。タイマーの 60 秒周期はルール再挿入のためだけに使う
+if [ -z "$(find $STAMP -mmin -60 2>/dev/null)" ]; then
+  for h in $HOSTS; do
+    for ip in $(dig +short +time=2 +tries=1 A "$h" | grep -E '^[0-9.]+$'); do ipset add -exist $SET4 "$ip" timeout $TTL; done
+    for ip in $(dig +short +time=2 +tries=1 AAAA "$h" | grep -E '^[0-9a-fA-F:]+:[0-9a-fA-F:]*$'); do ipset add -exist $SET6 "$ip" timeout $TTL; done
+  done
+  touch $STAMP
+fi
 
 # 旧方式の comment 付きルール(UBIOS_OUT_GEOIP への RETURN 挿入・初版の専用チェーン)を削除
 for ipt in iptables ip6tables; do
