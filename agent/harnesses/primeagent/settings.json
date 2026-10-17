@@ -1,4 +1,7 @@
 {
+  "defaultProvider": "prime-inference",
+  "defaultModel": "anthropic/claude-opus-5.5",
+  "providerBackupModel": "opencode-go/glm-5.3",
   "defaultThinkingLevel": "high",
   "rlmMaxDepth": 1,
   "transport": "auto",
