@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2015,SC2016,SC2030,SC2031  # A&&B||C is the ok/bad reporter idiom; single quotes defer expansion to the sandbox shell
 # Tests for pa-auto (gate detection) and pa-sandbox (bwrap profile).
-# No network, no paid calls, never touches the real HOME: every case uses a
+# No network, no paid calls, never writes the real HOME (pa-sandbox only reads the
+# passwd home's symlinks / mounts, HOME SYMLINKS): every case uses a
 # fake HOME under a fresh mktemp dir. Sandbox cases run harmless shell commands
 # inside the exact bwrap argv that pa-sandbox builds (pa_sandbox_build_argv).
 set -euo pipefail
@@ -162,6 +163,15 @@ expect_has "resolved command printed to stderr first" "pa-auto: stub-sandbox --a
 if ! command -v bwrap >/dev/null 2>&1; then
 	bad "bwrap available for sandbox tests" "bwrap missing"
 else
+	# hermetic HOME SYMLINKS / git config scan: no launch env from the caller's own shell setup
+	# (XDG_CONFIG_HOME / XDG_DATA_HOME / ZDOTDIR are HOME SYMLINKS scan roots, git reads XDG_CONFIG_HOME)
+	unset DOTFILES_DIR ZCACHE_DIR ZDOTDIR XDG_CONFIG_HOME XDG_DATA_HOME XDG_STATE_HOME XDG_CACHE_HOME XDG_CONFIG_DIRS XDG_DATA_DIRS ENV BASH_ENV
+	# ... and no symlinks of the caller's passwd home (pa-sandbox scans every home, `getent passwd
+	# <uid>` too): a stub getent names $HOME as the passwd home
+	mkdir -p "$T/stub-bin"
+	printf '#!/bin/sh\nprintf "u:x:%%s:%%s::%%s:/bin/sh\\n" "$(id -u)" "$(id -g)" "$HOME"\n' >"$T/stub-bin/getent"
+	chmod +x "$T/stub-bin/getent"
+	export PATH="$T/stub-bin:$PATH"
 	FH="$T/home"
 	mkdir -p "$FH/.ssh" "$FH/.aws" "$FH/.gnupg" "$FH/.kube" "$FH/.config/gh" \
 		"$FH/.password-store" "$FH/.prime/agent/bin" "$FH/.local/bin" "$FH/.local/share/prime-agent" "$FH/work"
@@ -479,16 +489,19 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	expect_has "nested .git cap message" "nested .git" "$out"
 
 	# symlinked nested .git: refuse to start (cannot be bound safely)
-	mkdir -p "$REPO/store/dep.git" "$REPO/vendor/dep2"
+	mkdir -p "$REPO/store/dep.git" "$REPO/lnkd/dep2"
 	git init -q --bare "$REPO/store/dep.git"
-	ln -s ../../store/dep.git "$REPO/vendor/dep2/.git"
+	ln -s ../../store/dep.git "$REPO/lnkd/dep2/.git"
 	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
 	expect_eq "symlinked nested .git refused rc" "1" "$rc"
-	expect_has "symlinked nested .git listed" "vendor/dep2/.git" "$out"
-	# MUTATION: with the (UNSAFE) override the sandbox starts and the symlink target is writable
-	( cd "$REPO"; export HOME="$FH" PA_SANDBOX_ALLOW_GIT_SYMLINKS=1; pa_sandbox_build_argv "$REPO" 2>/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c 'echo "[evil]" >> store/dep.git/config' ) >/dev/null 2>&1 || true
-	grep -q '^\[evil\]' "$REPO/store/dep.git/config" && ok "MUTATION (symlink override): linked git dir config is writable" || bad "MUTATION (symlink override): linked git dir config is writable"
-	command rm -rf "$REPO/vendor/dep2" "$REPO/store"
+	expect_has "symlinked nested .git listed" "lnkd/dep2/.git" "$out"
+	# MUTATION: with the (UNSAFE) override the sandbox starts and the symlink itself can be
+	# re-pointed (its target, a bare repo in the workspace, is protected on its own)
+	( cd "$REPO"; export HOME="$FH" PA_SANDBOX_ALLOW_GIT_SYMLINKS=1; pa_sandbox_build_argv "$REPO" 2>/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c 'echo "[evil]" >> store/dep.git/config 2>/dev/null; mkdir -p evil && ln -sfn ../../evil lnkd/dep2/.git' ) >/dev/null 2>&1 || true
+	[[ "$(readlink "$REPO/lnkd/dep2/.git")" == ../../evil ]] && ok "MUTATION (symlink override): symlinked .git can be re-pointed" || bad "MUTATION (symlink override): symlinked .git can be re-pointed"
+	! grep -q '^\[evil\]' "$REPO/store/dep.git/config" && ok "bare repo in the workspace (symlink target) stays read-only" || bad "bare repo in the workspace (symlink target) stays read-only"
+	command rm -rf "$REPO/evil"
+	command rm -rf "$REPO/lnkd" "$REPO/store"
 
 	# find errors fail closed: an unreadable directory could hide a nested .git
 	mkdir -p "$REPO/locked/x"
@@ -848,8 +861,9 @@ STUB
 	[[ "$(realpath -s -m -- "$S3/lnk/../meta/gs")" == "$(readlink -f -- "$S3/lnk/../meta/gs")" ]] && ok "(3) fixture: the old symlink comparison does not see lnk/.." || bad "(3) fixture: the old symlink comparison does not see lnk/.."
 	atk3="MK=$T/PWNED-s3; rm lnk && mkdir -p evil/sub evil/meta && ln -s evil/sub lnk && cp -r meta/gs evil/meta/gs && $fsmon evil/meta/gs/config"
 	MUTSB="$T/pa-sandbox.mut-walk"
-	sed 's|_rw "$cur/$c" \&\& return 2|: # MUTATION|' "$PA_SANDBOX" >"$MUTSB"
-	grep -q ': # MUTATION' "$MUTSB" && ok "(3) mutation applied (writable-symlink refusal removed)" || bad "(3) mutation applied (writable-symlink refusal removed)"
+	# (the `..` check is removed as well: lnk/.. now also leaves the writable src/, `..` IN GIT PATHS)
+	sed -e 's|_rw "$cur/$c" \&\& return 2|: # MUTATION|' -e 's|^\t_hdot() { # <dir>.*$|&\n\t\treturn 0|' "$PA_SANDBOX" >"$MUTSB"
+	grep -q ': # MUTATION' "$MUTSB" && grep -A1 '^	_hdot() {' "$MUTSB" | grep -q 'return 0' && ok "(3) mutation applied (writable-symlink refusal removed)" || bad "(3) mutation applied (writable-symlink refusal removed)"
 	command cp -a "$S3" "$S3.pristine"
 	# shellcheck source=/dev/null # mutated copy of pa-sandbox
 	( cd "$S3"; export HOME="$FH"; source "$MUTSB"; pa_sandbox_build_argv "$S3" 2>/dev/null && "${PA_BWRAP_ARGV[@]}" sh -c "$atk3" ) >/dev/null 2>&1 || true
@@ -867,7 +881,13 @@ STUB
 	printf 'gitdir: ../../lnk/../store/gd\n' >"$S3/vendor/gf/.git"
 	out="$( (HOME="$FH" pa_sandbox_build_argv "$S3") 2>&1 )" && rc=0 || rc=$?
 	expect_eq "(3) nested gitfile lnk/.. refused rc" "1" "$rc"
+	# attempt 32: `../../src/../store/gd` leaves the WRITABLE src/ through `..` (src could be
+	# replaced by a symlink, so the gitdir would name an attacker's repo): refused now
 	printf 'gitdir: ../../src/../store/gd\n' >"$S3/vendor/gf/.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$S3") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(3) .. leaving the writable src/ in a gitdir path refused rc" "1" "$rc"
+	expect_has "(3) message" "goes through '$S3/src', which the sandbox can write" "$out"
+	printf 'gitdir: ../../store/gd\n' >"$S3/vendor/gf/.git"
 	out="$( (HOME="$FH" pa_sandbox_build_argv "$S3") 2>&1 )" && rc=0 || rc=$?
 	expect_eq "legitimate .. in a gitdir path (no symlink) accepted rc" "0" "$rc"
 	# a symlink OUTSIDE the workspace whose target goes through the workspace's lnk
@@ -1089,6 +1109,722 @@ STUB
 	expect_eq "(14c) missing word with / (upstream/main, no such remote or dir) refuses rc" "1" "$rc"
 	command rm -rf "$X14"
 
+	# ---- Checker attempt 12, items 1-3.
+	# (15) item 1: a MISSING bare word a shell/interpreter opens relative to the current
+	# directory (`sh fsmon.sh`) is handled like ./fsmon.sh. M3: that rule removed.
+	MUT3="$T/pa-sandbox.mut-interp"
+	sed 's/ || "\$2" == i \]\] || continue/ ]] || continue/' "$PA_SANDBOX" >"$MUT3"
+	! grep -q '"\$2" == i \]\]' "$MUT3" && ok "M3 mutation applied" || bad "M3 mutation applied"
+	P15="$FH/work/cfg-missing-bare"
+	mkrepo "$P15"
+	git -C "$P15" config core.fsmonitor 'sh fsmon.sh'
+	mut_case "(15) core.fsmonitor = sh fsmon.sh, fsmon.sh missing" "$P15" "$MUT3" \
+		"MK=$T/PWNED-p15; printf 'touch %s\nexit 1\n' \"\$MK\" > fsmon.sh" "git -C '$P15' status" "$T/PWNED-p15" "does not exist and sits directly under"
+	# in a nested repo the missing word is covered by its top-level ancestor (like ./x)
+	git -C "$P15" config --unset core.fsmonitor
+	mkdir -p "$P15/vendor"
+	git init -q "$P15/vendor/dep"
+	git -C "$P15/vendor/dep" config core.fsmonitor 'sh hook.sh'
+	host_case "(15b) nested repo: core.fsmonitor = sh hook.sh, hook.sh missing" "$P15" "$P15/vendor/dep/hook.sh" \
+		"MK=$T/PWNED-p15b; printf 'touch %s\nexit 1\n' \"\$MK\" > vendor/dep/hook.sh" "git -C '$P15/vendor/dep' status" "$T/PWNED-p15b"
+	command rm -rf "$P15/vendor"
+	# other interpreter positions refuse too; an expansion as the file refuses
+	for v in 'python3 -m fsmon' 'sh < fsmon.sh' 'env FOO=1 bash fsmon.sh' 'timeout 5 sh fsmon.sh' 'sh $HOOK'; do
+		git -C "$P15" config core.fsmonitor "$v"
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$P15") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "(15c) core.fsmonitor = $v (missing) refused rc" "1" "$rc"
+	done
+	expect_has "(15c) expansion message" "cannot tell which file" "$out"
+	git -C "$P15" config --unset core.fsmonitor
+	# command names and arguments of other programs: missing is fine (PATH / not opened as code)
+	mkdir -p "$P15/tools"
+	printf 'exit 0\n' >"$P15/tools/clean.sh"
+	git -C "$P15" config core.editor vim
+	git -C "$P15" config core.pager 'less -R'
+	git -C "$P15" config pager.diff 'lumen diff'
+	git -C "$P15" config user.name 'Yusuke Kato'
+	git -C "$P15" config credential.helper '!gh auth git-credential'
+	git -C "$P15" config alias.la 'log --pretty="format:%an <%ae> (%h)" --date=short'
+	git -C "$P15" config alias.eu '!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`'
+	git -C "$P15" config filter.x.clean 'sh tools/clean.sh %f'
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$P15") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(15d) missing command names / non-interpreter arguments build rc" "0" "$rc"
+	command rm -rf "$P15"
+
+	# (16) item 2: a bare repo already in the workspace (not named .git) is protected like
+	# .git. Host `git push` from a repo OUTSIDE the workspace runs its post-receive hook.
+	B16="$FH/work/bare-in-ws"
+	mkrepo "$B16"
+	git init -q --bare "$B16/mirror.git"
+	O16="$T/outside-16"
+	mkrepo "$O16"
+	git -C "$O16" -c commit.gpgsign=false commit -q --allow-empty -m i
+	git -C "$O16" remote add loc "$B16/mirror.git"
+	host_case "(16) bare repo ws/mirror.git, host push runs post-receive" "$B16" "$B16/mirror.git" \
+		"MK=$T/PWNED-b16; $hook mirror.git/hooks/post-receive && chmod +x mirror.git/hooks/post-receive" \
+		"git -C '$O16' push -q loc HEAD:refs/heads/x" "$T/PWNED-b16"
+	# nested bare repo: its top-level ancestor is read-only too; its config is scanned
+	mkdir -p "$B16/sub"
+	git init -q --bare "$B16/sub/m.git"
+	run_mut_drop "$B16" "$B16/sub/m.git" 'echo "[evil]" >> sub/m.git/config' >/dev/null 2>&1 || true
+	grep -q '^\[evil\]' "$B16/sub/m.git/config" && ok "MUTATION: nested bare repo config writable without its bind" || bad "MUTATION: nested bare repo config writable without its bind"
+	sed -i '/^\[evil\]/d' "$B16/sub/m.git/config"
+	out="$(run_ws "$B16" 'echo "[evil]" >> sub/m.git/config 2>/dev/null; true')"
+	! grep -q '^\[evil\]' "$B16/sub/m.git/config" && ok "(16b) nested bare repo config is read-only inside" || bad "(16b) nested bare repo config is read-only inside" "$out"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$B16") 2>&1 )" || true
+	expect_has "(16b) nested bare repo ancestor announced" "sub/" "$out"
+	git -C "$B16/sub/m.git" config core.hooksPath .missing-hooks
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$B16") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(16c) bare repo config is scanned (missing hooksPath inside it is under the ro repo) rc" "0" "$rc"
+	git -C "$B16/sub/m.git" config core.fsmonitor 'sh ../../fsmon.sh'
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$B16") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(16c) bare repo config naming a missing root file refuses rc" "1" "$rc"
+	command rm -rf "$B16/sub"
+	# a stray HEAD file without objects/ refs/ commondir is not a git dir
+	mkdir -p "$B16/docs"
+	printf 'x\n' >"$B16/docs/HEAD"
+	command rm -rf "$B16/mirror.git"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$B16") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(16d) stray HEAD file builds rc" "0" "$rc"
+	expect_lacks "(16d) stray HEAD file adds no read-only entries" "read-only inside" "$out"
+	command rm -rf "$B16" "$O16"
+
+	# (17) item 3: a hard-linked git control file whose other name stays writable inside.
+	# M4: the hard-link check removed.
+	MUT4="$T/pa-sandbox.mut-hardlink"
+	sed 's/^\tif \[\[ \${#hl\[@\]} -gt 0 \]\]; then$/\tif false; then/' "$PA_SANDBOX" >"$MUT4"
+	grep -q '^	if false; then$' "$MUT4" && ok "M4 mutation applied" || bad "M4 mutation applied"
+	H17="$FH/work/hardlink-hook"
+	mkrepo "$H17"
+	mkdir -p "$H17/scripts"
+	printf '#!/bin/sh\nexit 0\n' >"$H17/scripts/pre-commit"
+	chmod +x "$H17/scripts/pre-commit"
+	ln "$H17/scripts/pre-commit" "$H17/.git/hooks/pre-commit"
+	mut_case "(17) hard-linked .git/hooks/pre-commit" "$H17" "$MUT4" "MK=$T/PWNED-h17; $hook scripts/pre-commit" \
+		"$(commit_cmd "$H17")" "$T/PWNED-h17" "hard-linked git control file"
+	command rm -f "$H17/.git/hooks/pre-commit"
+	# a config-referenced script and an include file, hard-linked to a writable name
+	mkdir -p "$H17/tools"
+	printf 'exit 1\n' >"$H17/tools/fsmon.sh"
+	ln "$H17/tools/fsmon.sh" "$H17/scripts/f.sh"
+	git -C "$H17" config core.fsmonitor 'sh tools/fsmon.sh'
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$H17") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(17b) hard-linked config-referenced script refused rc" "1" "$rc"
+	git -C "$H17" config --unset core.fsmonitor
+	printf '[user]\n\tname = t\n' >"$H17/.gitconfig"
+	ln "$H17/.gitconfig" "$H17/scripts/copy.cfg"
+	git -C "$H17" config include.path ../.gitconfig
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$H17") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(17c) hard-linked include file refused rc" "1" "$rc"
+	command rm -f "$H17/scripts/copy.cfg" "$H17/scripts/f.sh"
+	# the other name in an rw state dir refuses; outside every writable path is accepted
+	ln "$H17/.gitconfig" "$FH/.prime/agent/sessions/copy.cfg"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$H17") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(17d) hard link into an rw state dir refused rc" "1" "$rc"
+	command rm -f "$FH/.prime/agent/sessions/copy.cfg"
+	ln "$H17/.gitconfig" "$T/outside-17.cfg"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$H17") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(17e) hard link only outside writable paths accepted rc" "0" "$rc"
+	command rm -rf "$H17" "$T/outside-17.cfg"
+
+	# ---- Checker attempt 13, items 1-2.
+	# mut_host: a mutated pa-sandbox lets the sandbox plant what host git later runs/trusts;
+	# the real profile builds and the same attack is blocked.
+	mut_host() { # <label> <workspace> <mutated pa-sandbox> <attack sh> <host cmd> <marker>
+		local lbl="$1" ws="$2" msb="$3" atk="$4" hc="$5" mk="$6"
+		command cp -a "$ws" "$ws.pristine"
+		# shellcheck source=/dev/null # mutated copy of pa-sandbox
+		( cd "$ws"; export HOME="$FH"; source "$msb"; pa_sandbox_build_argv "$ws" 2>/dev/null && "${PA_BWRAP_ARGV[@]}" sh -c "$atk" ) >/dev/null 2>&1 || true
+		(eval "$hc") >/dev/null 2>&1 || true
+		[[ -e "$mk" ]] && ok "MUTATION ($lbl, check removed): host git runs/trusts the attacker's file" || bad "MUTATION ($lbl, check removed): host git runs/trusts the attacker's file"
+		command rm -rf "$ws" "$mk"
+		command cp -a "$ws.pristine" "$ws"
+		command rm -rf "$ws.pristine"
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$ws") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "$lbl: real profile builds rc" "0" "$rc"
+		run_ws "$ws" "$atk" >/dev/null 2>&1 || true
+		(eval "$hc") >/dev/null 2>&1 || true
+		[[ ! -e "$mk" ]] && ok "$lbl: blocked" || bad "$lbl: blocked"
+		command rm -f "$mk"
+	}
+	# M5: git dirs under modules/ and worktrees/* not enumerated
+	MUT5="$T/pa-sandbox.mut-subctx"
+	sed 's|^\t\t_sub_ctx "\$g" "\$c" "\$2"$|\t\t: # MUTATION|' "$PA_SANDBOX" >"$MUT5"
+	grep -q ': # MUTATION' "$MUT5" && ok "M5 mutation applied" || bad "M5 mutation applied"
+	GS="git -c protocol.file.allow=always -c commit.gpgsign=false"
+	SRC18="$T/subsrc-18"
+	mkrepo "$SRC18"
+	git -C "$SRC18" -c commit.gpgsign=false commit -q --allow-empty -m s
+	# (18) item 1: deinitialised submodule; its git dir .git/modules/sub has a relative
+	# core.hooksPath; host `git submodule update --init` runs post-checkout from sub/.githooks
+	S18="$FH/work/deinit-sub"
+	mkrepo "$S18"
+	git -C "$S18" -c commit.gpgsign=false commit -q --allow-empty -m i
+	$GS -C "$S18" submodule add -q "$SRC18" sub
+	$GS -C "$S18" commit -q -m sub
+	git -C "$S18/sub" config core.hooksPath .githooks
+	$GS -C "$S18" submodule deinit -q -f sub
+	[[ -d "$S18/.git/modules/sub" && ! -e "$S18/sub/.git" ]] && ok "(18) fixture: deinitialised submodule keeps .git/modules/sub" || bad "(18) fixture: deinitialised submodule keeps .git/modules/sub"
+	mut_host "(18) deinit'ed submodule core.hooksPath" "$S18" "$MUT5" \
+		"MK=$T/PWNED-s18; mkdir -p sub/.githooks && $hook sub/.githooks/post-checkout && chmod +x sub/.githooks/post-checkout" \
+		"$GS -C '$S18' submodule update -q --init" "$T/PWNED-s18"
+	# (18b) name != path: .gitmodules maps the name libx to vendor/x
+	$GS -C "$S18" submodule add -q --name libx "$SRC18" vendor/x
+	$GS -C "$S18" commit -q -m libx
+	git -C "$S18/vendor/x" config core.hooksPath .githooks
+	$GS -C "$S18" submodule deinit -q -f vendor/x
+	mut_host "(18b) submodule name libx -> path vendor/x (.gitmodules)" "$S18" "$MUT5" \
+		"MK=$T/PWNED-s18b; mkdir -p vendor/x/.githooks && $hook vendor/x/.githooks/post-checkout && chmod +x vendor/x/.githooks/post-checkout" \
+		"$GS -C '$S18' submodule update -q --init vendor/x" "$T/PWNED-s18b"
+	# (18c) nested submodule git dir modules/sub/modules/inner (recursion; root sub/inner).
+	# The host runs above re-initialised sub and vendor/x: deinit them again.
+	$GS -C "$S18" submodule deinit -q -f --all
+	[[ ! -e "$S18/sub/.git" && ! -e "$S18/vendor/x/.git" ]] && ok "(18c) fixture: submodules deinitialised again" || bad "(18c) fixture: submodules deinitialised again"
+	git -C "$S18/.git/modules/sub" config --unset core.hooksPath
+	git -C "$S18/.git/modules/libx" config --unset core.hooksPath
+	git init -q --bare "$S18/.git/modules/sub/modules/inner"
+	git -C "$S18/.git/modules/sub/modules/inner" config core.hooksPath .h
+	out="$(run_mut_drop "$S18" "$S18/sub" 'mkdir -p sub/inner/.h' 2>&1)" || true
+	[[ -d "$S18/sub/inner/.h" ]] && ok "MUTATION ((18c) nested module, sub/ bind dropped): hooks dir creatable" || bad "MUTATION ((18c) nested module, sub/ bind dropped): hooks dir creatable" "$out"
+	command rm -rf "$S18/sub/inner"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$S18") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(18c) nested submodule git dir: builds rc" "0" "$rc"
+	expect_has "(18c) its root's top-level ancestor announced read-only" "sub/" "$out"
+	run_ws "$S18" 'mkdir -p sub/inner/.h 2>/dev/null; true' >/dev/null 2>&1 || true
+	[[ ! -e "$S18/sub/inner/.h" ]] && ok "(18c) nested submodule hooksPath cannot be created" || bad "(18c) nested submodule hooksPath cannot be created"
+	command rm -rf "$S18/.git/modules/sub/modules"
+	# (18d) refusals: a .gitmodules path leaving the root, a symlinked dir under modules/
+	git -C "$S18" config --file .gitmodules submodule.libx.path ../out
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$S18") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(18d) submodule path ../out refused rc" "1" "$rc"
+	expect_has "(18d) refusal message" "cannot tell the worktree" "$out"
+	git -C "$S18" config --file .gitmodules submodule.libx.path vendor/x
+	mkdir -p "$T/outmod-18"
+	ln -s "$T/outmod-18" "$S18/.git/modules/lnk"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$S18") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(18d) symlinked dir under modules/ refused rc" "1" "$rc"
+	command rm -rf "$S18" "$T/outmod-18" "$SRC18"
+	# (18e) worktrees/*: a linked worktree inside the workspace whose .git gitfile is gone;
+	# its config.worktree sets a relative core.hooksPath. The sandbox re-creates the gitfile
+	# and the hooks; host git in that worktree runs them.
+	W18="$FH/work/wt-gone"
+	mkrepo "$W18"
+	git -C "$W18" -c commit.gpgsign=false commit -q --allow-empty -m i
+	git -C "$W18" config extensions.worktreeConfig true
+	git -C "$W18" worktree add -q --detach "$W18/wt/a"
+	git -C "$W18/wt/a" config --worktree core.hooksPath .githooks
+	command rm -f "$W18/wt/a/.git"
+	mut_host "(18e) worktree admin dir .git/worktrees/a (gitfile gone)" "$W18" "$MUT5" \
+		"MK=$T/PWNED-w18; printf 'gitdir: %s\n' \"\$PWD/.git/worktrees/a\" > wt/a/.git && mkdir -p wt/a/.githooks && $hook wt/a/.githooks/pre-commit && chmod +x wt/a/.githooks/pre-commit" \
+		"$(commit_cmd "$W18/wt/a")" "$T/PWNED-w18"
+	# an admin dir without a gitdir file: its worktree is unknown -> refuse
+	command rm -f "$W18/.git/worktrees/a/gitdir"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$W18") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(18e) worktree admin dir without gitdir refused rc" "1" "$rc"
+	command rm -rf "$W18"
+
+	# (19) item 2: a ONE-WORD config value is a path even when missing (no key list of path
+	# keys). M6: that rule removed.
+	MUT6="$T/pa-sandbox.mut-oneword"
+	sed 's|\[\[ \$sw -eq 1 && |[[ 0 -eq 1 \&\& |' "$PA_SANDBOX" >"$MUT6"
+	grep -q '\[\[ 0 -eq 1 && "\$w" == w:' "$MUT6" && ok "M6 mutation applied" || bad "M6 mutation applied"
+	# (19a) gpg.ssh.allowedSignersFile = allowed_signers (missing): host trusts the attacker key
+	A19="$FH/work/allowed-signers"
+	mkrepo "$A19"
+	git -C "$A19" config gpg.format ssh
+	git -C "$A19" config gpg.ssh.allowedSignersFile allowed_signers
+	ssh-keygen -q -t ed25519 -N '' -f "$T/atk19" -C atk
+	mut_case "(19a) gpg.ssh.allowedSignersFile = allowed_signers" "$A19" "$MUT6" \
+		"echo 't@example.invalid $(cat "$T/atk19.pub")' > allowed_signers" \
+		"git -C '$A19' -c user.signingkey='$T/atk19' commit -q -S --allow-empty -m s && [ \"\$(git -C '$A19' log -1 --format=%G?)\" = G ] && touch '$T/PWNED-a19'" \
+		"$T/PWNED-a19" "does not exist and sits directly under"
+	command rm -f "$T/PWNED-a19"
+	command rm -rf "$A19"
+	# (19b) http.sslCAInfo = ca.pem (missing): host git trusts the attacker CA (local TLS server)
+	C19="$FH/work/ssl-cainfo"
+	mkrepo "$C19"
+	git -C "$C19" config http.sslCAInfo ca.pem
+	openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes -keyout "$T/tls19.key" -out "$T/tls19.pem" \
+		-days 2 -subj /CN=127.0.0.1 -addext subjectAltName=IP:127.0.0.1 >/dev/null 2>&1
+	python3 -I -c 'import http.server,ssl,sys
+s=http.server.HTTPServer(("127.0.0.1",0),http.server.BaseHTTPRequestHandler)
+c=ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER); c.load_cert_chain(sys.argv[1],sys.argv[2])
+s.socket=c.wrap_socket(s.socket,server_side=True); s.timeout=60
+open(sys.argv[3]+".tmp","w").write(str(s.server_address[1])); __import__("os").rename(sys.argv[3]+".tmp",sys.argv[3])
+for _ in range(6): s.handle_request()' "$T/tls19.pem" "$T/tls19.key" "$T/tls19.port" >/dev/null 2>&1 &
+	TLSPID=$!
+	for _ in 1 2 3 4 5 6 7 8 9 10; do [[ -s "$T/tls19.port" ]] && break; sleep 0.3; done
+	TLSURL="https://127.0.0.1:$(cat "$T/tls19.port" 2>/dev/null)/x"
+	lsr19="(GIT_TERMINAL_PROMPT=0 timeout 10 git -C '$C19' ls-remote '$TLSURL' 2>&1 || true) | grep -q 'returned error' && touch '$T/PWNED-c19'"
+	(eval "$lsr19") >/dev/null 2>&1 || true
+	[[ ! -e "$T/PWNED-c19" ]] && ok "(19b) fixture: without ca.pem the TLS server is not trusted" || bad "(19b) fixture: without ca.pem the TLS server is not trusted"
+	command rm -f "$T/PWNED-c19"
+	mut_case "(19b) http.sslCAInfo = ca.pem" "$C19" "$MUT6" "cat '$T/tls19.pem' > ca.pem" "$lsr19" "$T/PWNED-c19" \
+		"does not exist and sits directly under"
+	kill "$TLSPID" 2>/dev/null || true
+	command rm -rf "$C19" "$T/PWNED-c19" "$T"/tls19.*
+	# (19c) init.templateDir = tmpl in the host GLOBAL config (missing): host `git init` run
+	# in the workspace root (re-init) copies the attacker's hooks into .git/hooks
+	I19="$FH/work/templatedir"
+	mkrepo "$I19"
+	printf '[init]\n\ttemplateDir = tmpl\n' >"$T/global-19.cfg"
+	GIT_CONFIG_GLOBAL="$T/global-19.cfg" mut_case "(19c) global init.templateDir = tmpl" "$I19" "$MUT6" \
+		"MK=$T/PWNED-i19; mkdir -p tmpl/hooks && $hook tmpl/hooks/pre-commit && chmod +x tmpl/hooks/pre-commit" \
+		"cd '$I19' && git init -q && $(commit_cmd "$I19")" \
+		"$T/PWNED-i19" "does not exist and sits directly under"
+	command rm -rf "$I19" "$T/PWNED-i19" "$T/global-19.cfg"
+	# (19d) legitimate one-word / command values still build: command names, person names,
+	# e-mail, enums, remote/branch names, GPG key id, insteadOf, aliases
+	P19="$FH/work/oneword-ok"
+	mkrepo "$P19"
+	git -C "$P19" config core.editor vim
+	git -C "$P19" config gpg.program gpg
+	git -C "$P19" config user.name kpango
+	git -C "$P19" config user.email kpango@example.invalid
+	git -C "$P19" config --add user.name 'Yusuke Kato'
+	git -C "$P19" config credential.helper '!gh auth git-credential'
+	git -C "$P19" config credential.username kpango
+	git -C "$P19" config user.signingkey 89013853239E4E9A
+	git -C "$P19" config push.default tracking
+	git -C "$P19" config pull.ff only
+	git -C "$P19" config color.ui auto
+	git -C "$P19" config diff.colorMoved default
+	git -C "$P19" config init.defaultBranch main
+	git -C "$P19" config remote.origin.url https://example.invalid/x.git
+	git -C "$P19" config branch.main.remote origin
+	git -C "$P19" config url.https://example.invalid/.insteadOf git@example.invalid
+	git -C "$P19" config alias.st status
+	git -C "$P19" config alias.rbm 'rebase main'
+	git -C "$P19" config merge.graphify.name 'graphify graph.json union merge'
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$P19") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(19d) command names / names / enums / key id / insteadOf build rc" "0" "$rc"
+	expect_lacks "(19d) no read-only entries announced" "read-only inside" "$out"
+	# an unknown key with a one-word value is a path (fail closed): refused when missing
+	git -C "$P19" config tool.x.cfg conf
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$P19") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(19d) unknown key, missing one-word value refused rc" "1" "$rc"
+	command rm -rf "$P19"
+
+	# ---- Checker attempt 14, items 1-3, the hex rule; url.<base>.insteadOf, :(optional).
+	# (20a) item 1: branch.<b>.remote naming no configured remote is a path for git push.
+	# M7: a remote name is never a path and no URL host git resolves it to counts as local.
+	# M14 (the protection of every remote name's local URL / path, (20a4)); M7 and M12 include it
+	# because that loop also covers their cases
+	m14=(-e "s/_cand \"\\\$t\" i \"URL of remote '\\\$n'\" \"\\\$2\" || return 1/:/"
+		-e "s/_cand \"\\\$n\" i \"remote name '\\\$n' (host git uses it as a path)\" \"\\\$2\" || return 1/:/")
+	MUT7="$T/pa-sandbox.mut-remote"
+	sed "${m14[@]}" -e 's/^\t\t\(branch\.\*\.remote | .* | extensions\.partialclone\)) return 1 ;;$/\t\t\1) return 0 ;;/' \
+		-e 's/_rurl "\$u" && rq/false \&\& rq/' "$PA_SANDBOX" >"$MUT7"
+	grep -q 'extensions.partialclone) return 0 ;;' "$MUT7" && grep -q 'false && rq\[' "$MUT7" && ! grep -q "URL of remote '\$n'" "$MUT7" && ok "M7 mutation applied" || bad "M7 mutation applied"
+	G20="$FH/work/branch-remote"
+	mkrepo "$G20"
+	git -C "$G20" symbolic-ref HEAD refs/heads/main
+	git -C "$G20" -c commit.gpgsign=false commit -q --allow-empty -m i
+	git -C "$G20" config branch.main.remote backup
+	git -C "$G20" config branch.main.merge refs/heads/main
+	mut_case "(20a) branch.main.remote = backup (no such remote)" "$G20" "$MUT7" \
+		"MK=$T/PWNED-g20; git init -q --bare backup && $hook backup/hooks/pre-receive && chmod +x backup/hooks/pre-receive" \
+		"git -C '$G20' push -q" "$T/PWNED-g20" "does not exist and sits directly under"
+	command rm -rf "$G20/backup" "$T/PWNED-g20"
+	# a remote with only remote.<name>.fetch is still a path for git; with a url it is a name
+	git -C "$G20" config remote.backup.fetch '+refs/heads/*:refs/remotes/backup/*'
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20a) remote name with only remote.<name>.fetch refused rc" "1" "$rc"
+	git -C "$G20" config remote.backup.url https://example.invalid/x.git
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20a) configured remote name builds rc" "0" "$rc"
+	git -C "$G20" config --remove-section remote.backup
+	git -C "$G20" config --unset branch.main.remote
+	for kv in branch.main.pushRemote remote.pushDefault checkout.defaultRemote extensions.partialClone; do
+		git -C "$G20" config "$kv" backup
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "(20a) $kv = backup (no such remote) refused rc" "1" "$rc"
+		git -C "$G20" config --unset "$kv"
+	done
+	command rm -rf "$G20"
+	# (20a2) a remote.<name>.url KEY that host git does not apply or that resets the list:
+	# git still uses the name as the URL ./backup (Checker attempt 15). M7 as above.
+	for md in empty reset incif wt; do
+		mkrepo "$G20"
+		git -C "$G20" symbolic-ref HEAD refs/heads/main
+		git -C "$G20" -c commit.gpgsign=false commit -q --allow-empty -m i
+		case "$md" in
+		empty) git -C "$G20" config remote.backup.url '' ;;
+		reset)
+			git -C "$G20" config remote.backup.url /nonexistent/elsewhere.git
+			git -C "$G20" config --add remote.backup.url ''
+			;;
+		incif)
+			git -C "$G20" config --file "$G20/.git/other.inc" remote.backup.url /nonexistent/elsewhere.git
+			git -C "$G20" config 'includeIf.gitdir:/nonexistent/.path' other.inc
+			;;
+		wt) git -C "$G20" config --file "$G20/.git/config.worktree" remote.backup.url /nonexistent/elsewhere.git ;;
+		esac
+		git -C "$G20" config branch.main.remote backup
+		git -C "$G20" config branch.main.merge refs/heads/main
+		mut_case "(20a2) remote.backup.url $md, branch.main.remote = backup" "$G20" "$MUT7" \
+			"MK=$T/PWNED-g20; git init -q --bare backup && $hook backup/hooks/pre-receive && chmod +x backup/hooks/pre-receive" \
+			"git -C '$G20' push -q" "$T/PWNED-g20" "does not exist and sits directly under"
+		command rm -rf "$G20" "$T/PWNED-g20"
+	done
+	# legitimate: a real remote, one rewritten to https by insteadOf, one rewritten to a local
+	# path outside the workspace (protected as that path) all build
+	mkrepo "$G20"
+	git -C "$G20" config remote.origin.url https://example.invalid/x.git
+	git -C "$G20" config remote.gh.url gh:o/r
+	git -C "$G20" config url.https://example.invalid/.insteadOf gh:
+	git -C "$G20" config remote.mir.url https://pa-mirror.invalid/r
+	git -C "$G20" config url./srv/pa-mirror/.insteadOf https://pa-mirror.invalid/
+	[[ "$(git -C "$G20" remote get-url gh)|$(git -C "$G20" remote get-url mir)" == "https://example.invalid/o/r|/srv/pa-mirror/r" ]] &&
+		ok "(20a2) fixture: insteadOf rewrites as expected" || bad "(20a2) fixture: insteadOf rewrites as expected"
+	for rn in origin gh mir; do
+		git -C "$G20" config branch.main.remote "$rn"
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "(20a2) branch.main.remote = $rn (resolved by host git) builds rc" "0" "$rc"
+	done
+	command rm -rf "$G20"
+	# a remote that only git knows (legacy .git/remotes/<name>, no config key) with a missing
+	# local URL in the workspace: that URL is protected (its ancestor ro), M7 leaves it writable
+	mkrepo "$G20"
+	git -C "$G20" symbolic-ref HEAD refs/heads/main
+	git -C "$G20" -c commit.gpgsign=false commit -q --allow-empty -m i
+	mkdir -p "$G20/.git/remotes" "$G20/mirror"
+	printf 'URL: mirror/r\n' >"$G20/.git/remotes/mir"
+	git -C "$G20" config branch.main.remote mir
+	for sb in "$MUT7" "$PA_SANDBOX"; do
+		# shellcheck source=/dev/null # pa-sandbox or its mutated copy
+		( cd "$G20"; export HOME="$FH"; source "$sb"; pa_sandbox_build_argv "$G20" 2>/dev/null && "${PA_BWRAP_ARGV[@]}" sh -c \
+			"MK=$T/PWNED-l20; git init -q --bare mirror/r && $hook mirror/r/hooks/pre-receive && chmod +x mirror/r/hooks/pre-receive" ) >/dev/null 2>&1 || true
+		git -C "$G20" push -q mir main >/dev/null 2>&1 || true
+		if [[ "$sb" == "$MUT7" ]]; then
+			[[ -e "$T/PWNED-l20" ]] && ok "MUTATION ((20a2) legacy remotes/ file, local URL unprotected): host git runs the attacker's code" ||
+				bad "MUTATION ((20a2) legacy remotes/ file, local URL unprotected): host git runs the attacker's code"
+		else
+			[[ ! -e "$T/PWNED-l20" ]] && ok "(20a2) legacy remotes/ file: local URL in the workspace is read-only" ||
+				bad "(20a2) legacy remotes/ file: local URL in the workspace is read-only"
+		fi
+		command rm -rf "$G20/mirror/r" "$T/PWNED-l20"
+	done
+	command rm -rf "$G20"
+	# (20a4) a remote name no remote-name KEY names, used by an explicit `git push <name>` or by
+	# a legacy remotes/ file for a plain `git push` (Checker attempt 16): every name host git
+	# may know (remote.<n>.* sections, remotes/*, branches/*) is resolved and its local URL /
+	# the name as a path protected. M14: that protection removed.
+	MUT14="$T/pa-sandbox.mut-rnames"
+	sed "${m14[@]}" "$PA_SANDBOX" >"$MUT14"
+	! grep -q "URL of remote '\$n'\|remote name '\$n'" "$MUT14" && grep -q "URL of remote '\$n'" "$PA_SANDBOX" && ok "M14 mutation applied" || bad "M14 mutation applied"
+	for md in fetchonly empty reset incif wt remotes-default branches-explicit; do
+		mkrepo "$G20"
+		git -C "$G20" symbolic-ref HEAD refs/heads/main
+		git -C "$G20" -c commit.gpgsign=false commit -q --allow-empty -m i
+		hc="git -C '$G20' push -q backup HEAD:refs/heads/main"
+		case "$md" in
+		empty) git -C "$G20" config remote.backup.url '' ;;
+		reset)
+			git -C "$G20" config remote.backup.url /nonexistent/elsewhere.git
+			git -C "$G20" config --add remote.backup.url ''
+			;;
+		incif)
+			git -C "$G20" config --file "$G20/.git/other.inc" remote.backup.url /nonexistent/elsewhere.git
+			git -C "$G20" config 'includeIf.gitdir:/nonexistent/.path' other.inc
+			;;
+		wt) git -C "$G20" config --file "$G20/.git/config.worktree" remote.backup.url /nonexistent/elsewhere.git ;;
+		remotes-default)
+			mkdir -p "$G20/.git/remotes"
+			printf 'URL: backup\nPush: refs/heads/main:refs/heads/main\n' >"$G20/.git/remotes/origin"
+			hc="git -C '$G20' push -q"
+			;;
+		branches-explicit)
+			mkdir -p "$G20/.git/branches"
+			printf 'backup#main\n' >"$G20/.git/branches/backup"
+			hc="git -C '$G20' push -q backup"
+			;;
+		esac
+		[[ "$md" == remotes-* || "$md" == branches-* ]] || git -C "$G20" config remote.backup.fetch '+refs/heads/*:refs/remotes/backup/*'
+		mut_case "(20a4) remote name without a remote-name key: $md" "$G20" "$MUT14" \
+			"MK=$T/PWNED-g20; git init -q --bare backup && $hook backup/hooks/pre-receive && chmod +x backup/hooks/pre-receive" \
+			"$hc" "$T/PWNED-g20" "does not exist and sits directly under"
+		command rm -rf "$G20" "$T/PWNED-g20"
+	done
+	# legitimate: remotes that resolve to remote URLs (https, insteadOf to https, a legacy
+	# remotes/ file with an https URL) and no remote-name key build
+	mkrepo "$G20"
+	git -C "$G20" config remote.origin.url https://example.invalid/x.git
+	git -C "$G20" config remote.gh.url gh:o/r
+	git -C "$G20" config url.https://example.invalid/.insteadOf gh:
+	mkdir -p "$G20/.git/remotes"
+	printf 'URL: https://example.invalid/y.git\n' >"$G20/.git/remotes/up"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20a4) https / insteadOf-to-https / legacy https remotes build rc" "0" "$rc"
+	# remotes/ and branches/ sit in the read-only git dir: the sandbox cannot add a remote file
+	# shellcheck source=/dev/null
+	out="$( cd "$G20"; export HOME="$FH"; source "$PA_SANDBOX"; pa_sandbox_build_argv "$G20" 2>/dev/null && "${PA_BWRAP_ARGV[@]}" sh -c \
+		"printf 'URL: backup\n' > .git/remotes/origin && echo WROTE-R; mkdir .git/branches && echo WROTE-B" 2>&1 )" || true
+	expect_lacks "(20a4) sandbox cannot add a legacy remotes/ file" "WROTE-R" "$out"
+	expect_lacks "(20a4) sandbox cannot create branches/" "WROTE-B" "$out"
+	# enumeration fails closed: a symlink inside / as remotes/ refuses
+	# (targets outside the workspace: only the legacy-dir scan refuses them)
+	printf 'URL: https://example.invalid/z.git\n' >"$T/outside-remote"
+	mkdir -p "$T/outside-branches"
+	ln -s "$T/outside-remote" "$G20/.git/remotes/lnk"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20a4) symlink in .git/remotes refused rc" "1" "$rc"
+	expect_has "(20a4) symlink in .git/remotes refusal message" "legacy remote dir" "$out"
+	command rm -f "$G20/.git/remotes/lnk"
+	command rm -rf "$G20/.git/branches"
+	ln -s "$T/outside-branches" "$G20/.git/branches"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20a4) symlinked .git/branches refused rc" "1" "$rc"
+	expect_has "(20a4) symlinked .git/branches refusal message" "legacy remote dir" "$out"
+	command rm -rf "$T/outside-remote" "$T/outside-branches"
+	command rm -rf "$G20"
+	# (20a5) remote groups (Checker attempt 17): every word of a remotes.<group> value is a
+	# remote name `git fetch <group>` / `git remote update [<group>]` resolves (./backup when
+	# no such remote), and a group with fewer than 2 members makes `git fetch <group>` use
+	# the group name itself. The attacker's repo planted there is fetched by host git.
+	# M15: group members / names not collected; M16: a 1-member group name treated as expanded.
+	MUT15="$T/pa-sandbox.mut-groups"
+	sed -e 's/^\(\t*\)rn\[\$w\]="\${rn\[\$w\]:-3}"$/\1:/' -e 's/^\(\t*\)rn\[\$n\]="\${rn\[\$n\]:-3}"$/\1:/' "$PA_SANDBOX" >"$MUT15"
+	! grep -q ':-3}"$' "$MUT15" && grep -q 'rn\[\$w\]="\${rn\[\$w\]:-3}"' "$PA_SANDBOX" && ok "M15 mutation applied" || bad "M15 mutation applied"
+	MUT16="$T/pa-sandbox.mut-grpcount"
+	sed 's/\[\[ \$gm -ge 2 \]\] && continue/[[ $gm -ge 1 ]] \&\& continue/' "$PA_SANDBOX" >"$MUT16"
+	grep -q '\[\[ \$gm -ge 1 \]\] && continue' "$MUT16" && ok "M16 mutation applied" || bad "M16 mutation applied"
+	git init -q --bare "$T/origin-g.git"
+	atk_repo() { printf "git init -q %s && git -C %s -c user.name=a -c user.email=a@b -c commit.gpgsign=false commit -q --allow-empty -m ATTACKER-G" "$1" "$1"; }
+	got_atk() { printf "%s; cut -f1 '%s/.git/FETCH_HEAD' | xargs git -C '%s' log --no-walk --format=%%s | grep -q ATTACKER-G && touch '%s'" "$1" "$2" "$2" "$T/PWNED-g5"; }
+	for md in two one-update one-fetch default tabs multi; do
+		mkrepo "$G20"
+		git -C "$G20" -c commit.gpgsign=false commit -q --allow-empty -m i
+		git -C "$G20" remote add origin "$T/origin-g.git"
+		gmut="$MUT15" dir=backup hc="git -C '$G20' fetch -q grp" msg="remote name 'backup'"
+		case "$md" in
+		two) git -C "$G20" config remotes.grp "origin backup" ;;
+		one-update)
+			git -C "$G20" config remotes.grp backup
+			hc="git -C '$G20' remote update grp" msg="(host git uses it as a path)"
+			;;
+		one-fetch)
+			git -C "$G20" config remotes.grp origin
+			gmut="$MUT16" dir=grp msg="remote name 'grp'"
+			;;
+		default)
+			git -C "$G20" config remotes.default "backup"
+			hc="git -C '$G20' remote update" msg="(host git uses it as a path)"
+			;;
+		tabs) git -C "$G20" config remotes.grp "$(printf 'origin\n\tbackup')" ;;
+		multi)
+			git -C "$G20" config --add remotes.grp origin
+			git -C "$G20" config --add remotes.grp backup
+			;;
+		esac
+		mut_case "(20a5) remote group: $md" "$G20" "$gmut" "$(atk_repo "$dir")" \
+			"$(got_atk "$hc" "$G20")" "$T/PWNED-g5" "$msg"
+		command rm -rf "$G20" "$T/PWNED-g5"
+	done
+	# the group is only in an includeIf whose condition is false now: host git sees no member,
+	# so `git fetch grp` uses ./grp (the union still protects the member names)
+	mkrepo "$G20"
+	git -C "$G20" remote add origin https://example.invalid/x.git
+	git -C "$G20" config remote.up.url https://example.invalid/y.git
+	git -C "$G20" config --file "$G20/.git/grp.inc" remotes.grp "origin up"
+	git -C "$G20" config 'includeIf.gitdir:/nonexistent/.path' grp.inc
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20a5) group only in an inactive includeIf: name refused rc" "1" "$rc"
+	expect_has "(20a5) group only in an inactive includeIf: refusal message" "remote name 'grp'" "$out"
+	command rm -rf "$G20"
+	# legitimate: groups of https remotes only (named, default, nested group of 2+) build
+	mkrepo "$G20"
+	git -C "$G20" remote add origin https://example.invalid/x.git
+	git -C "$G20" config remote.up.url https://example.invalid/y.git
+	git -C "$G20" config remotes.all "origin up"
+	git -C "$G20" config remotes.default "origin	up"
+	git -C "$G20" config remotes.outer "all origin"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$G20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20a5) groups of https remotes build rc" "0" "$rc"
+	expect_lacks "(20a5) groups of https remotes: nothing read-only" "read-only inside" "$out"
+	command rm -rf "$G20" "$T/origin-g.git"
+	# (20a3) `sh origin/x` is an interpreter argument even when origin is a real remote (the
+	# remote-tracking exemption is for git's own words). M13: the exemption applies.
+	MUT13="$T/pa-sandbox.mut-remref"
+	sed 's/\[\[ "\$2" != i && "\$rel" == \*\/\* && -n "\${rem/[[ "$rel" == *\/* \&\& -n "${rem/' "$PA_SANDBOX" >"$MUT13"
+	! grep -q '"\$2" != i && "\$rel"' "$MUT13" && ok "M13 mutation applied" || bad "M13 mutation applied"
+	mkrepo "$G20"
+	git -C "$G20" config remote.origin.url https://example.invalid/x.git
+	git -C "$G20" config alias.rr '!sh origin/run.sh'
+	mut_case "(20a3) alias.rr = !sh origin/run.sh with a real origin remote" "$G20" "$MUT13" \
+		"mkdir -p origin && printf 'touch $T/PWNED-r20\n' > origin/run.sh" \
+		"git -C '$G20' rr" "$T/PWNED-r20" "origin/run.sh"
+	command rm -rf "$G20" "$T/PWNED-r20"
+	# (20b) item 2: an EXISTING path value whose name contains , or = ; a missing one refuses.
+	# M8: neither the whole value nor the word with its = , kept is a candidate.
+	MUT8="$T/pa-sandbox.mut-whole"
+	sed -e 's|_wx "\$t" && wl+=("w:\$wx")|:|' -e 's#\[\[ "\$p" == "\$t" \]\] || _wadd "\$p" e#:#' "$PA_SANDBOX" >"$MUT8"
+	! grep -q 'wl+=("w:' "$MUT8" && ! grep -q '_wadd "\$p" e' "$MUT8" && ok "M8 mutation applied" || bad "M8 mutation applied"
+	ssh-keygen -q -t ed25519 -N '' -f "$T/atk20" -C atk
+	ssh-keygen -q -t ed25519 -N '' -f "$T/own20" -C own
+	sv="git -c user.signingkey='$T/atk20' commit -q -S --allow-empty -m s && [ \"\$(git log -1 --format=%G?)\" = G ]"
+	for sf in 'signers,v2' 'signers=v2'; do
+		C20="$FH/work/signers-sep"
+		mkrepo "$C20"
+		git -C "$C20" config gpg.format ssh
+		git -C "$C20" config gpg.ssh.allowedSignersFile "$sf"
+		echo "t@example.invalid $(cat "$T/own20.pub")" >"$C20/$sf"
+		mut_host "(20b) existing allowedSignersFile '$sf'" "$C20" "$MUT8" \
+			"echo 't@example.invalid $(cat "$T/atk20.pub")' >> '$sf'" \
+			"cd '$C20' && $sv && touch '$T/PWNED-c20'" "$T/PWNED-c20"
+		command rm -f "$C20/$sf"
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$C20") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "(20b) missing one-word allowedSignersFile '$sf' refused rc" "1" "$rc"
+		command rm -rf "$C20"
+	done
+	# (20c) item 3: an attached option value (ssh -Fsshconf, existing). M9: no -Xvalue candidate.
+	MUT9="$T/pa-sandbox.mut-optval"
+	sed 's|\[\[ "\$w" =~ ^-\[A-Za-z0-9\]\[^=\] \]\] && _wx|false \&\& _wx|' "$PA_SANDBOX" >"$MUT9"
+	grep -q 'false && _wx "\${w:2}"' "$MUT9" && ok "M9 mutation applied" || bad "M9 mutation applied"
+	F20="$FH/work/ssh-attached"
+	mkrepo "$F20"
+	printf 'Host *\n  User git\n' >"$F20/sshconf"
+	git -C "$F20" config core.sshCommand 'ssh -Fsshconf'
+	git -C "$F20" remote add origin ssh://pa.invalid/x.git
+	mut_host "(20c) core.sshCommand = ssh -Fsshconf (existing)" "$F20" "$MUT9" \
+		"printf 'Host *\n  ProxyCommand sh -c \"touch $T/PWNED-f20; exit 1\"\n' > sshconf" \
+		"cd '$F20' && HOME='$FH' timeout 20 git fetch -q" "$T/PWNED-f20"
+	command rm -rf "$F20"
+	# (20d) the option / key-id exemption does not apply to path-type keys. M10: it does.
+	MUT10="$T/pa-sandbox.mut-hexpath"
+	sed 's/^\t\tgc.repackfilterto | \*file | \*path | \*dir | \*.ssl\* | \*.template) return 1 ;;$/\t\tgc.repackfilterto) return 1 ;;/' "$PA_SANDBOX" >"$MUT10"
+	! grep -q '\*.template) return 1' "$MUT10" && ok "M10 mutation applied" || bad "M10 mutation applied"
+	X20="$FH/work/hex-signers"
+	mkrepo "$X20"
+	git -C "$X20" config gpg.format ssh
+	git -C "$X20" config gpg.ssh.allowedSignersFile deadbeef
+	mut_case "(20d) gpg.ssh.allowedSignersFile = deadbeef" "$X20" "$MUT10" \
+		"echo 't@example.invalid $(cat "$T/atk20.pub")' > deadbeef" \
+		"cd '$X20' && $sv && touch '$T/PWNED-x20'" "$T/PWNED-x20" "does not exist and sits directly under"
+	command rm -f "$T/PWNED-x20"
+	# (20e) git-config(1) `:(optional)path`. M11: the prefix is not dropped.
+	MUT11="$T/pa-sandbox.mut-optional"
+	sed 's|t="\${t#:(optional)}"|:|' "$PA_SANDBOX" >"$MUT11"
+	! grep -q '#:(optional)' "$MUT11" && ok "M11 mutation applied" || bad "M11 mutation applied"
+	git -C "$X20" config gpg.ssh.allowedSignersFile ':(optional)signers'
+	mut_case "(20e) gpg.ssh.allowedSignersFile = :(optional)signers" "$X20" "$MUT11" \
+		"echo 't@example.invalid $(cat "$T/atk20.pub")' > signers" \
+		"cd '$X20' && $sv && touch '$T/PWNED-o20'" "$T/PWNED-o20" "does not exist and sits directly under"
+	command rm -rf "$X20" "$T/PWNED-o20"
+	# (20f) url.<base>.insteadOf with a relative base (the path is in the KEY).
+	# M12: the base is not checked.
+	MUT12="$T/pa-sandbox.mut-insteadof"
+	sed "${m14[@]}" -e 's/\[\[ -z "\$n" || (/[[ 1 || (/' "$PA_SANDBOX" >"$MUT12"
+	grep -q '\[\[ 1 || (' "$MUT12" && ! grep -q "URL of remote '\$n'" "$MUT12" && ok "M12 mutation applied" || bad "M12 mutation applied"
+	U20="$FH/work/insteadof"
+	mkrepo "$U20"
+	git -C "$U20" symbolic-ref HEAD refs/heads/main
+	git -C "$U20" -c commit.gpgsign=false commit -q --allow-empty -m i
+	git -C "$U20" config remote.origin.url https://pa.invalid/x
+	git -C "$U20" config url.backup.insteadOf https://pa.invalid/
+	mut_case "(20f) url.backup.insteadOf (relative base)" "$U20" "$MUT12" \
+		"MK=$T/PWNED-u20; git init -q --bare backupx && $hook backupx/hooks/pre-receive && chmod +x backupx/hooks/pre-receive" \
+		"git -C '$U20' push -q origin main" "$T/PWNED-u20" "url.<base>.insteadOf"
+	command rm -rf "$U20/backupx" "$T/PWNED-u20"
+	git -C "$U20" config --unset url.backup.insteadOf
+	git -C "$U20" config url./srv/pa-mirror/.insteadOf https://pa.invalid/
+	git -C "$U20" config url.git@example.invalid:.insteadOf https://example.invalid/
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$U20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20f) absolute outside base / URL base build rc" "0" "$rc"
+	git -C "$U20" config "url.$T/.insteadOf" https://pa.invalid/y
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$U20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20f) base that is a prefix of the workspace refused rc" "1" "$rc"
+	command rm -rf "$U20"
+	# (20g) Checker attempt 33: an absolute insteadOf / pushInsteadOf base whose `..` leaves a
+	# writable workspace directory (<ws>/sub/../../b/ normalises to outside the workspace, but
+	# inside, sub can become a symlink and the base then names <ws>/b). No remote uses the
+	# rewritten prefix: the host types `foo:bar` itself. M19: the base's `..` hops are not queued.
+	MUT19="$T/pa-sandbox.mut-insteadof-dots"
+	sed "s/for d in \"\\\${wdot\\[@\\]}\"; do gdot+=(\"\\\$d\"\\\$'\\\\t'\"\\\$k in the config of/: # MUTATION &/" "$PA_SANDBOX" >"$MUT19"
+	grep -q ': # MUTATION for d in' "$MUT19" && ok "M19 mutation applied" || bad "M19 mutation applied"
+	V20="$FH/work/insteadof-dots"
+	mkrepo "$V20"
+	git -C "$V20" symbolic-ref HEAD refs/heads/main
+	git -C "$V20" -c commit.gpgsign=false commit -q --allow-empty -m i
+	mkdir -p "$V20/sub"
+	vatk="MK=$T/PWNED-v20; rmdir sub && mkdir -p evil/x && ln -s evil/x sub && git init -q --bare b/bar && $hook b/bar/hooks/pre-receive && chmod +x b/bar/hooks/pre-receive"
+	vmsg="goes through '$V20/sub', which the sandbox can write"
+	git -C "$V20" config "url.$V20/sub/../../b/.insteadOf" foo:
+	mut_case "(20g) url.<ws>/sub/../../b/.insteadOf" "$V20" "$MUT19" "$vatk" \
+		"git -C '$V20' push -q foo:bar HEAD:refs/heads/x" "$T/PWNED-v20" "$vmsg"
+	git -C "$V20" config --unset "url.$V20/sub/../../b/.insteadOf"
+	git -C "$V20" config "url.$V20/sub/../../b/.pushInsteadOf" foo:
+	mut_case "(20g) url.<ws>/sub/../../b/.pushInsteadOf" "$V20" "$MUT19" "$vatk" \
+		"git -C '$V20' push -q foo:bar HEAD:refs/heads/x" "$T/PWNED-v20" "$vmsg"
+	git -C "$V20" config --unset "url.$V20/sub/../../b/.pushInsteadOf"
+	git -C "$V20" config "url.file://$V20/sub/../../b/.insteadOf" foo:
+	mut_case "(20g) url.file://<ws>/sub/../../b/.insteadOf" "$V20" "$MUT19" "$vatk" \
+		"git -C '$V20' push -q foo:bar HEAD:refs/heads/x" "$T/PWNED-v20" "$vmsg"
+	git -C "$V20" config --unset "url.file://$V20/sub/../../b/.insteadOf"
+	# several `..`: sub/x is the first writable directory left
+	mkdir -p "$V20/sub/x"
+	git -C "$V20" config "url.$V20/sub/x/../../../b/.insteadOf" foo:
+	mut_case "(20g) url.<ws>/sub/x/../../../b/.insteadOf" "$V20" "$MUT19" \
+		"MK=$T/PWNED-v20; command rm -r sub && mkdir -p evil/p/q/x && ln -s evil/p/q sub && git init -q --bare evil/b/bar && $hook evil/b/bar/hooks/pre-receive && chmod +x evil/b/bar/hooks/pre-receive" \
+		"git -C '$V20' push -q foo:bar HEAD:refs/heads/x" "$T/PWNED-v20" "goes through '$V20/sub/x', which the sandbox can write"
+	git -C "$V20" config --unset "url.$V20/sub/x/../../../b/.insteadOf"
+	# legitimate: `..` only outside the workspace, or leaving a protected (ro) directory
+	git -C "$V20" config "url.$FH/work/nowhere/../b/.insteadOf" foo:
+	git -C "$V20" config "url.file://$FH/work/nowhere/../b/.pushInsteadOf" foo:
+	git -C "$V20" config "url.$V20/.git/../../b/.insteadOf" bar:
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$V20") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20g) insteadOf bases with \`..\` outside the workspace / leaving .git build rc" "0" "$rc"
+	command rm -rf "$V20"
+	# (20h) survey of the same branch: an EMPTY base leaves the typed suffix, a path relative to
+	# the current directory (M20: an empty base is skipped); an absolute base with `a..b` in a
+	# component is a local path too (M21: the old revision-range exclusion of _wx skips it)
+	MUT20="$T/pa-sandbox.mut-insteadof-empty"
+	sed 's/if \[\[ -z "\$t" \]\] || _rurl "\$t"; then/if _rurl "$t"; then/' "$PA_SANDBOX" >"$MUT20"
+	grep -q '^				if _rurl "\$t"; then$' "$MUT20" && ok "M20 mutation applied" || bad "M20 mutation applied"
+	MUT21="$T/pa-sandbox.mut-insteadof-range"
+	sed 's/if \[\[ -z "\$t" \]\] || _rurl "\$t"; then/if [[ -z "$t" ]] || _wx "$t"; then/' "$PA_SANDBOX" >"$MUT21"
+	grep -q '|| _wx "\$t"; then$' "$MUT21" && ok "M21 mutation applied" || bad "M21 mutation applied"
+	V21="$FH/work/insteadof-empty"
+	mkrepo "$V21"
+	git -C "$V21" symbolic-ref HEAD refs/heads/main
+	git -C "$V21" -c commit.gpgsign=false commit -q --allow-empty -m i
+	git -C "$V21" config url..insteadOf foo:
+	mut_case "(20h) url..insteadOf (empty base)" "$V21" "$MUT20" \
+		"MK=$T/PWNED-v21; git init -q --bare bar && $hook bar/hooks/pre-receive && chmod +x bar/hooks/pre-receive" \
+		"git -C '$V21' push -q foo:bar HEAD:refs/heads/x" "$T/PWNED-v21" "url.<base>.insteadOf base ''"
+	git -C "$V21" config --unset url..insteadOf
+	git -C "$V21" config "url.$V21/a..b/.insteadOf" foo:
+	mut_case "(20h) url.<ws>/a..b/.insteadOf" "$V21" "$MUT21" \
+		"MK=$T/PWNED-v21; git init -q --bare a..b/bar && $hook a..b/bar/hooks/pre-receive && chmod +x a..b/bar/hooks/pre-receive" \
+		"git -C '$V21' push -q foo:bar HEAD:refs/heads/x" "$T/PWNED-v21" "url.<base>.insteadOf base '$V21/a..b/'"
+	git -C "$V21" config --unset "url.$V21/a..b/.insteadOf"
+	git -C "$V21" config url./srv/a..b/.insteadOf foo:
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$V21") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20h) absolute outside base with a..b build rc" "0" "$rc"
+	command rm -rf "$V21"
+	# (20i) survey: core.worktree was only a base, never walked itself. A nested repo whose
+	# core.worktree <ws>/sub/../../<outside> leaves the writable sub/: inside, sub becomes a
+	# symlink, the worktree turns into <ws>/outwt and a planted submodule .git file there (the
+	# nested index has a gitlink m) makes host `git status` run its fsmonitor. M22: not queued.
+	MUT22="$T/pa-sandbox.mut-worktree-dots"
+	sed "s/for d in \"\\\${wdot\\[@\\]}\"; do gdot+=(\"\\\$d\"\\\$'\\\\t'\"core.worktree in the config of/: # MUTATION &/" "$PA_SANDBOX" >"$MUT22"
+	grep -q ': # MUTATION for d in' "$MUT22" && ok "M22 mutation applied" || bad "M22 mutation applied"
+	V22="$FH/work/worktree-dots"
+	mkrepo "$V22"
+	git -C "$V22" -c commit.gpgsign=false commit -q --allow-empty -m i
+	mkdir -p "$V22/sub" "$V22/vendor" "$FH/work/outwt-v22"
+	git init -q "$V22/vendor/dep"
+	git -C "$V22/vendor/dep" config core.worktree "$V22/sub/../../outwt-v22"
+	git -C "$V22/vendor/dep" update-index --add --cacheinfo "160000,$(git -C "$V22" rev-parse HEAD),m"
+	mut_case "(20i) core.worktree <ws>/sub/../../outside" "$V22" "$MUT22" \
+		"MK=$T/PWNED-v22; rmdir sub && mkdir -p evil/x outwt-v22/m && ln -s evil/x sub && git init -q --bare evilgd && $fsmon evilgd/config && git -C evilgd config core.bare false && printf 'gitdir: %s/evilgd\n' \"\$PWD\" > outwt-v22/m/.git" \
+		"git -C '$V22/vendor/dep' status" "$T/PWNED-v22" "core.worktree in the config of '$V22/vendor/dep/.git': '$V22/sub/../../outwt-v22' goes through '$V22/sub'"
+	# legitimate: `..` only outside the workspace
+	git -C "$V22/vendor/dep" config core.worktree "$FH/work/nowhere/../outwt-v22"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$V22") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(20i) core.worktree with \`..\` outside the workspace build rc" "0" "$rc"
+	command rm -rf "$V22" "$FH/work/outwt-v22"
+
 	# interpreter dir and guard tree: the bind is what protects (mutation: rw bind -> writable)
 	run_mut_drop "$REPO" "$FH/.data/uv/python/cpy" 'echo X > "$HOME/.data/uv/python/cpy/bin/mut-new"' >/dev/null || true
 	[[ -e "$FH/.data/uv/python/cpy/bin/mut-new" ]] && ok "MUTATION: interpreter dir writable when its bind is rw" || bad "MUTATION: interpreter dir writable when its bind is rw"
@@ -1125,6 +1861,376 @@ STUB
 		&& ok "MUTATION (agent dir rw): harness+cron writable" || bad "MUTATION (agent dir rw): harness+cron writable"
 	printf '[]\n' >"$FH/.prime/agent/cron-jobs.json"
 	printf '{}\n' >"$FH/.prime/agent/harness/harness_state.json"
+
+	# ---- Checker attempt 18, item 1: HOME SYMLINKS. The host runs / reads files that the
+	# user's HOME links into the workspace (a dotfiles checkout: ~/.toolrc -> <ws>/toolrc).
+	MUTH="$T/pa-sandbox.mut-homelinks"
+	sed 's|^\t_hprot() { # <path>.*$|&\n\t\treturn 0|' "$PA_SANDBOX" >"$MUTH"
+	grep -A1 '^	_hprot() {' "$MUTH" | grep -q 'return 0' && ok "MH mutation applied" || bad "MH mutation applied"
+	HW="$FH/work/home-links"
+	mkrepo "$HW"
+	git -C "$HW" -c commit.gpgsign=false commit -q --allow-empty -m i
+	mkdir -p "$HW/conf.d" "$HW/systemd/user" "$HW/deep/lnk" "$HW/deep/real" "$HW/free" "$T/hl-ext" "$FH/.config/systemd/user"
+	printf ': rc\n' >"$HW/toolrc"
+	printf ': init\n' >"$HW/conf.d/init.sh"
+	printf ': multi\n' >"$HW/deep/real/multi.sh"
+	printf ': mid\n' >"$HW/deep/real/mid.sh"
+	printf ': evil-target\n' >"$HW/free/evil.sh"
+	printf '[Service]\nExecStart=/bin/true\n' >"$HW/systemd/user/pa.service"
+	printf 'outside\n' >"$T/hl-ext/outside.txt"
+	ln -s ../real/mid.sh "$HW/deep/lnk/mid.sh"           # a symlink INSIDE the workspace on the way
+	ln -s "$HW/toolrc" "$FH/.toolrc"                       # file symlink
+	ln -s "$HW/conf.d" "$FH/.config/foo"                   # directory symlink
+	ln -s "$HW/deep/real/multi.sh" "$T/hl-ext/multi.sh"    # outside symlink ...
+	ln -s "$T/hl-ext/multi.sh" "$FH/.multi.sh"             # ... reached from HOME (2 hops)
+	ln -s "$HW/deep/lnk/mid.sh" "$FH/.mid.sh"              # through the in-workspace symlink
+	ln -s "$HW/systemd/user/pa.service" "$FH/.config/systemd/user/pa.service"
+	ln -s "$T/hl-ext/outside.txt" "$FH/.outside.txt"       # outside the workspace: no effect
+	hostunit() { sh -c "$(sed -n 's/^ExecStart=//p' "$FH/.config/systemd/user/pa.service")"; }
+	mut_host "(H1) ~/.toolrc -> <ws>/toolrc" "$HW" "$MUTH" "echo 'touch $T/PWNED-h1' >> toolrc" \
+		"sh '$FH/.toolrc'" "$T/PWNED-h1"
+	mut_host "(H2) ~/.config/foo -> <ws>/conf.d (directory)" "$HW" "$MUTH" "echo 'touch $T/PWNED-h2' > conf.d/init.sh" \
+		"sh '$FH/.config/foo/init.sh'" "$T/PWNED-h2"
+	mut_host "(H3) ~/.multi.sh -> outside symlink -> <ws>/deep/real/multi.sh" "$HW" "$MUTH" "echo 'touch $T/PWNED-h3' > deep/real/multi.sh" \
+		"sh '$FH/.multi.sh'" "$T/PWNED-h3"
+	mut_host "(H4) ~/.mid.sh -> <ws>/deep/lnk/mid.sh (an in-workspace symlink) re-pointed" "$HW" "$MUTH" \
+		"echo 'touch $T/PWNED-h4' > free/evil.sh && ln -sfn ../../free/evil.sh deep/lnk/mid.sh" \
+		"sh '$FH/.mid.sh'" "$T/PWNED-h4"
+	mut_host "(H5) systemd user unit symlink" "$HW" "$MUTH" \
+		"printf '[Service]\\nExecStart=touch $T/PWNED-h5\\n' > systemd/user/pa.service" "hostunit" "$T/PWNED-h5"
+	out="$(run_ws "$HW" 'for f in toolrc conf.d/init.sh conf.d/new.sh deep/real/multi.sh systemd/user/pa.service; do echo x >> "$f" || echo "DENIED $f"; done; ln -sfn x deep/lnk/mid.sh || echo "DENIED lnk"' 2>&1)" || true
+	for f in toolrc conf.d/init.sh conf.d/new.sh deep/real/multi.sh systemd/user/pa.service lnk; do
+		expect_has "(H) real profile: $f not writable" "DENIED $f" "$out"
+	done
+	expect_has "(H) real profile: refused with EROFS" "Read-only file system" "$out"
+	out="$(run_ws "$HW" "echo w >> free/evil.sh && echo w >> '$T/hl-ext/outside.txt'; echo done" 2>&1)" || true
+	[[ "$(tail -n1 "$HW/free/evil.sh")" == w ]] && ok "(H) unreferenced workspace file stays writable" || bad "(H) unreferenced workspace file stays writable" "$out"
+	grep -q '^w$' "$T/hl-ext/outside.txt" && bad "(H) HOME link outside the workspace: target not exposed rw" || ok "(H) HOME link outside the workspace: target not exposed rw"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$HW"; printf '%s\n' "${PA_BWRAP_ARGV[@]}") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(H) build rc" "0" "$rc"
+	expect_lacks "(H) outside target not bound" "$T/hl-ext" "$out"
+	expect_has "(H) stderr names the HOME links" "host file(s) reached through HOME" "$out"
+	expect_has "(H) stderr example" "$FH/.toolrc -> toolrc" "$out"
+	# refusals: a HOME link to the workspace root, to a missing entry directly under it
+	ln -s "$HW" "$FH/.whole"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$HW") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(H6) HOME link to the workspace root refused rc" "1" "$rc"
+	expect_has "(H6) message" "workspace root itself" "$out"
+	command rm -f "$FH/.whole"
+	ln -s "$HW/not-yet" "$FH/.notyet"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$HW") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(H7) dangling HOME link directly under the root refused rc" "1" "$rc"
+	expect_has "(H7) message" "missing directly under the workspace root" "$out"
+	command rm -f "$FH/.notyet"
+	ln -s "$HW/free/not-yet.sh" "$FH/.notyet2"
+	out="$(run_ws "$HW" 'echo x > free/not-yet.sh || echo DENIED' 2>&1)" || true
+	expect_has "(H8) dangling nested HOME link: its top-level dir is ro" "DENIED" "$out"
+	[[ ! -e "$HW/free/not-yet.sh" ]] && ok "(H8) dangling target not created" || bad "(H8) dangling target not created"
+	command rm -f "$FH/.notyet2"
+	out="$( (HOME="$FH" PA_SANDBOX_MAX_HOME_LINKS=2 pa_sandbox_build_argv "$HW") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(H9) too many HOME symlinks refused rc" "1" "$rc"
+	expect_has "(H9) message" "PA_SANDBOX_MAX_HOME_LINKS" "$out"
+	# bind mount of a workspace file on a HOME path (a container setup): needs a mount ns
+	if unshare --user --map-root-user --mount true 2>/dev/null; then
+		printf '[core]\n' >"$HW/gitconfig"
+		: >"$FH/.gitconfig-bm"
+		bmc='mount --bind "$2/gitconfig" "$3/.gitconfig-bm" && source "$1" && HOME="$3" PA_SANDBOX_ALLOW_HOST_PROC=1 pa_sandbox_build_argv "$2" && printf "%s\n" "${PA_BWRAP_ARGV[@]}"'
+		out="$(unshare --user --map-root-user --mount "$BASH" -c "$bmc" _ "$PA_SANDBOX" "$HW" "$FH" 2>&1)" && rc=0 || rc=$?
+		expect_eq "(H10) bind-mounted HOME file: build rc" "0" "$rc"
+		expect_has "(H10) bind mount source in the workspace is ro-bound" "$HW/gitconfig" "$out"
+		out="$(unshare --user --map-root-user --mount "$BASH" -c "$bmc" _ "$MUTH" "$HW" "$FH" 2>&1)" || true
+		expect_lacks "(H10) MUTATION: bind mount source not ro-bound" "$HW/gitconfig" "$out"
+		command rm -f "$HW/gitconfig" "$FH/.gitconfig-bm"
+	else
+		printf 'note: unshare unavailable; (H10) bind-mount case skipped\n'
+	fi
+	# ---- Checker attempt 30: a HOME link whose path enters a real workspace directory and leaves
+	# it again through `..` (resolved as text). Inside, the directory can be replaced by a symlink,
+	# so the host would read a file the sandbox wrote: refused (checked per hop, before `..`).
+	MUTD="$T/pa-sandbox.mut-homedot"
+	sed 's|^\t_hdot() { # <dir>.*$|&\n\t\treturn 0|' "$PA_SANDBOX" >"$MUTD"
+	grep -A1 '^	_hdot() {' "$MUTD" | grep -q 'return 0' && ok "MD mutation applied" || bad "MD mutation applied"
+	mkdir -p "$HW/sub/sub2" "$T/hl-ext"
+	command rm -rf "$FH/work/c39-out"
+	dotatk="rm -rf sub && mkdir -p d1/d2/sub2 c39-out && ln -s d1/d2 sub" # sub/.. is now d1
+	dotref() { # <label> <home link name> <link target> <attack sh> <host cmd> <marker>: refused, and with
+		# the check removed (mutation) the attack reaches the host
+		local lbl="$1" ln="$FH/$2"
+		ln -sfn "$3" "$ln"
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$HW") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "$lbl: refused rc" "1" "$rc"
+		expect_has "$lbl: message" "goes through '$HW/sub" "$out"
+		expect_has "$lbl: message names the cause" "which the sandbox can write (a directory there could be replaced by a symlink" "$out"
+		command cp -a "$HW" "$HW.pristine"
+		# shellcheck source=/dev/null # mutated copy of pa-sandbox
+		( cd "$HW"; export HOME="$FH"; source "$MUTD"; pa_sandbox_build_argv "$HW" 2>/dev/null && "${PA_BWRAP_ARGV[@]}" sh -c "$dotatk && $4" ) >/dev/null 2>&1 || true
+		(eval "$5") >/dev/null 2>&1 || true
+		[[ -e "$6" ]] && ok "MUTATION ($lbl, check removed): the host reads the sandbox's file" || bad "MUTATION ($lbl, check removed): the host reads the sandbox's file"
+		command rm -rf "$HW" "$6" "$FH/work/c39-out"
+		command cp -a "$HW.pristine" "$HW"
+		command rm -rf "$HW.pristine"
+		command rm -f "$ln"
+	}
+	dotref "(H11) ~/.toolrc -> <ws>/sub/../../c39-out/x" .toolrc "$HW/sub/../../c39-out/x" \
+		"echo 'touch $T/PWNED-h11' > c39-out/x" "sh '$FH/.toolrc'" "$T/PWNED-h11"
+	dotref "(H12) ~/.zshrc -> <ws>/sub/../../c39-out/x" .zshrc "$HW/sub/../../c39-out/x" \
+		"echo 'touch $T/PWNED-h12' > c39-out/x" "sh '$FH/.zshrc'" "$T/PWNED-h12"
+	dotref "(H13) ~/.toolrc -> <ws>/sub/sub2/../../../c39-out/x (several ..)" .toolrc "$HW/sub/sub2/../../../c39-out/x" \
+		"echo 'touch $T/PWNED-h13' > c39-out/x" "sh '$FH/.toolrc'" "$T/PWNED-h13"
+	ln -sfn "$HW/sub/../../c39-out/x" "$T/hl-ext/hop"
+	dotref "(H14) ~/.toolrc -> outside symlink -> <ws>/sub/../../c39-out/x (chain)" .toolrc "$T/hl-ext/hop" \
+		"echo 'touch $T/PWNED-h14' > c39-out/x" "sh '$FH/.toolrc'" "$T/PWNED-h14"
+	command rm -f "$T/hl-ext/hop"
+	dotref "(H15) ~/.cross -> <ws>/sub/../free/evil.sh (target in the workspace, other top-level dir)" .cross "$HW/sub/../free/evil.sh" \
+		"mkdir -p d1/free && echo 'touch $T/PWNED-h15' > d1/free/evil.sh" \
+		"sh '$FH/.cross'" "$T/PWNED-h15"
+	# accepted as before: `..` that stays inside the ro top-level dir of the target, `..` outside the
+	# workspace, and a relative in-workspace symlink climbing out (its top-level dir is ro-bound)
+	ln -s "$HW/deep/real/../real/mid.sh" "$FH/.same"
+	ln -s "$T/hl-ext/../hl-ext/outside.txt" "$FH/.outdot"
+	ln -s ../../../../hl-ext-up/x "$HW/deep/lnk/up"
+	ln -s "$HW/deep/lnk/up" "$FH/.up"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$HW") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(H16) .. within the target's ro top-level dir / outside the workspace / ro symlink climbing out: build rc" "0" "$rc"
+	expect_lacks "(H16) no refusal" "refusing" "$out"
+	out="$(run_ws "$HW" 'echo x >> deep/real/mid.sh || echo DENIED-mid; ln -sfn x deep/lnk/up || echo DENIED-up; echo w >> free/evil.sh && echo WROTE-free' 2>&1)" || true
+	expect_has "(H16) .. target inside its top-level dir is read-only" "DENIED-mid" "$out"
+	expect_has "(H16) climbing in-workspace symlink is read-only" "DENIED-up" "$out"
+	expect_has "(H16) unreferenced top-level dir stays writable" "WROTE-free" "$out"
+	command rm -f "$FH/.same" "$FH/.outdot" "$FH/.up" "$HW/deep/lnk/up"
+	command rm -f "$FH/.toolrc" "$FH/.config/foo" "$FH/.multi.sh" "$FH/.mid.sh" "$FH/.outside.txt" "$FH/.config/systemd/user/pa.service"
+	command rm -rf "$HW" "$T/hl-ext"
+
+	# ---- Checker attempt 31: `..` IN GIT PATHS. A git config path (core.hooksPath, include.path, ...)
+	# that enters a real workspace directory and leaves it again through `..` is refused like a HOME
+	# link (_hdot, shared); with the check removed (MD mutation) host git runs the sandbox's code.
+	GD="$FH/work/gitdot"
+	GX="$FH/work/gd-ext" # outside the workspace
+	mkrepo "$GD"
+	git -C "$GD" -c commit.gpgsign=false commit -q --allow-empty -m i
+	mkdir -p "$GD/tools" "$GD/hooks" "$GD/sub/x" "$GD/sub/hooks2" "$GD/free"
+	printf '#!/bin/sh\nexit 0\n' >"$GD/hooks/pre-commit"
+	chmod +x "$GD/hooks/pre-commit"
+	printf '[user]\n\tname = t\n' >"$GD/hooks/inc.cfg"
+	gdatk="rmdir tools && mkdir -p x/y x/hooks && ln -s x/y tools" # tools/.. is now x
+	# (GD1) Repro 1: core.hooksPath = tools/../hooks (relative to the worktree root)
+	git -C "$GD" config core.hooksPath tools/../hooks
+	mut_case "(GD1) core.hooksPath tools/../hooks" "$GD" "$MUTD" \
+		"MK=$T/PWNED-gd1; $gdatk && $hook x/hooks/pre-commit && chmod +x x/hooks/pre-commit" \
+		"$(commit_cmd "$GD")" "$T/PWNED-gd1" "goes through '$GD/tools', which the sandbox can write"
+	expect_has "(GD1) message names the key" "core.hooksPath in the config of" "$out"
+	git -C "$GD" config --unset core.hooksPath
+	# (GD2) Repro 2: include.path = <ws>/tools/../hooks/inc.cfg (absolute)
+	git -C "$GD" config include.path "$GD/tools/../hooks/inc.cfg"
+	mut_case "(GD2) include.path <ws>/tools/../hooks/inc.cfg" "$GD" "$MUTD" \
+		"MK=$T/PWNED-gd2; $gdatk && $fsmon x/hooks/inc.cfg" \
+		"git -C '$GD' status" "$T/PWNED-gd2" "goes through '$GD/tools', which the sandbox can write"
+	expect_has "(GD2) message names the include" "include in $GD/.git/config" "$out"
+	git -C "$GD" config --unset include.path
+	# (GD3) several `..`: core.hooksPath = sub/x/../../hooks
+	git -C "$GD" config core.hooksPath sub/x/../../hooks
+	mut_case "(GD3) core.hooksPath sub/x/../../hooks (several ..)" "$GD" "$MUTD" \
+		"MK=$T/PWNED-gd3; rmdir sub/x && mkdir -p sub/a/b/c sub/a/hooks && ln -s a/b/c sub/x && $hook sub/a/hooks/pre-commit && chmod +x sub/a/hooks/pre-commit" \
+		"$(commit_cmd "$GD")" "$T/PWNED-gd3" "goes through '$GD/sub/x', which the sandbox can write"
+	git -C "$GD" config --unset core.hooksPath
+	# (GD4) through an rw state path: include.path = <agent>/sessions/d/../../x.cfg (x.cfg itself is
+	# in the ro agent dir); the mutation accepts it
+	mkdir -p "$FH/.prime/agent/sessions/d"
+	git -C "$GD" config include.path "$FH/.prime/agent/sessions/d/../../x.cfg"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(GD4) .. leaving an rw state dir refused rc" "1" "$rc"
+	expect_has "(GD4) message" "goes through '$FH/.prime/agent/sessions/d', which the sandbox can write" "$out"
+	# shellcheck source=/dev/null # mutated copy of pa-sandbox
+	( export HOME="$FH"; source "$MUTD"; pa_sandbox_build_argv "$GD" ) >/dev/null 2>&1 && ok "(GD4) MUTATION: accepted without the check" || bad "(GD4) MUTATION: accepted without the check"
+	git -C "$GD" config --unset include.path
+	command rm -rf "$FH/.prime/agent/sessions/d"
+	# (GD5) a symlinked git control file whose target leaves a workspace dir through `..` (it then
+	# lands outside the workspace)
+	mkdir -p "$GX"
+	printf '#!/bin/sh\nexit 0\n' >"$GX/pc"
+	ln -s "$GD/tools/../../gd-ext/pc" "$GD/.git/hooks/pre-push"
+	[[ "$(realpath -m "$GD/tools/../../gd-ext/pc")" == "$GX/pc" ]] && ok "(GD5) fixture: target lands outside" || bad "(GD5) fixture: target lands outside"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(GD5) symlinked hook leaving a workspace dir through .. refused rc" "1" "$rc"
+	expect_has "(GD5) message" "symlinked git control file '$GD/.git/hooks/pre-push'" "$out"
+	command rm -f "$GD/.git/hooks/pre-push"
+	# accepted as before: `..` inside the target's ro top-level dir, from inside the ro .git, outside
+	# the workspace only
+	printf '[user]\n\tname = t\n' >"$GD/inc2.cfg"
+	mkdir -p "$GX/a"
+	printf '[user]\n\tname = t\n' >"$GX/inc.cfg"
+	git -C "$GD" config core.hooksPath sub/x/../hooks2
+	git -C "$GD" config --add include.path ../inc2.cfg
+	git -C "$GD" config --add include.path "$GX/a/../inc.cfg"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(GD6) .. within the ro top-level dir / from .git / outside the workspace: build rc" "0" "$rc"
+	expect_lacks "(GD6) no refusal" "refusing" "$out"
+	out="$(run_ws "$GD" 'touch sub/hooks2/x || echo DENIED-sub; echo w >> inc2.cfg || echo DENIED-inc2; touch free/w && echo WROTE-free' 2>&1)" || true
+	expect_has "(GD6) top-level dir of the hooks dir is read-only" "DENIED-sub" "$out"
+	expect_has "(GD6) include target is read-only" "DENIED-inc2" "$out"
+	expect_has "(GD6) unreferenced top-level dir stays writable" "WROTE-free" "$out"
+	git -C "$GD" config --unset core.hooksPath
+	git -C "$GD" config --unset-all include.path
+	# (GD7) accepted: a nested repo's core.hooksPath = ../../hooks leaves vendor/dep and vendor/,
+	# which are read-only because of ANOTHER protected path (vendor/dep/.git, ANCESTORS)
+	mkrepo "$GD/vendor/dep"
+	git -C "$GD/vendor/dep" config core.hooksPath ../../hooks
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(GD7) nested repo hooksPath climbing out of its ro top-level dir: build rc" "0" "$rc"
+	expect_lacks "(GD7) no refusal" "refusing" "$out"
+	out="$(run_ws "$GD" 'touch vendor/x || echo DENIED-vendor' 2>&1)" || true
+	expect_has "(GD7) vendor/ is read-only" "DENIED-vendor" "$out"
+	command rm -rf "$GD/vendor"
+	# ---- Checker attempt 32: _pp deduplicated config words on their NORMALISED path, so
+	# `tools/../hooks/x.sh` counted as done once `hooks/x.sh` was protected and its `..` was never
+	# walked. MP restores that normalised key; MR skips a `..` word that normalises to the root.
+	MUTP="$T/pa-sandbox.mut-pdone"
+	sed 's|pdone\[\$1\]|pdone[$(realpath -s -m -- "$1")]|g' "$PA_SANDBOX" >"$MUTP"
+	grep -q 'pdone\[$(realpath -s -m -- "$1")\]=1' "$MUTP" && ok "MP mutation applied" || bad "MP mutation applied"
+	MUTR="$T/pa-sandbox.mut-pproot"
+	sed 's@^\(\t*\)\[\[ "\$1/" == \*/\.\./\* \]\] || return 0$@\1return 0 # MUTATION@' "$PA_SANDBOX" >"$MUTR"
+	grep -q 'return 0 # MUTATION' "$MUTR" && ok "MR mutation applied" || bad "MR mutation applied"
+	printf 'exit 0\n' >"$GD/hooks/x.sh"
+	gpatk="MK=$T/PWNED-gp; $gdatk && printf 'touch %s\n' \"\$MK\" > x/hooks/x.sh"
+	# (GP1) the repro: alias.a names hooks/x.sh first, alias.b the same file through tools/..
+	git -C "$GD" config alias.a '!sh hooks/x.sh'
+	git -C "$GD" config alias.b '!sh tools/../hooks/x.sh'
+	mut_case "(GP1) alias.b tools/../hooks/x.sh after alias.a hooks/x.sh" "$GD" "$MUTP" \
+		"$gpatk" "git -C '$GD' b" "$T/PWNED-gp" "goes through '$GD/tools', which the sandbox can write"
+	expect_has "(GP1) message names the key and the spelling" "alias.b in the config of '$GD/.git': '$GD/tools/../hooks/x.sh'" "$out"
+	# (GP2) the same two words in the other order (alias.b first)
+	git -C "$GD" config --unset alias.a
+	git -C "$GD" config --unset alias.b
+	git -C "$GD" config alias.b '!sh tools/../hooks/x.sh'
+	git -C "$GD" config alias.a '!sh hooks/x.sh'
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(GP2) reversed order refused rc" "1" "$rc"
+	expect_has "(GP2) message" "goes through '$GD/tools', which the sandbox can write" "$out"
+	git -C "$GD" config --unset alias.a
+	git -C "$GD" config --unset alias.b
+	# control: alias.a alone is accepted
+	git -C "$GD" config alias.a '!sh hooks/x.sh'
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(GP) control: alias.a hooks/x.sh alone builds rc" "0" "$rc"
+	# (GP3) another git dir: the top repo (walked first) names <ws>/hooks/x.sh, a nested repo
+	# names <ws>/tools/../hooks/x.sh (pdone is shared across git dirs)
+	git -C "$GD" config alias.a "!sh $GD/hooks/x.sh"
+	mkrepo "$GD/vendor/dep"
+	git -C "$GD/vendor/dep" config alias.b "!sh $GD/tools/../hooks/x.sh"
+	mut_case "(GP3) nested repo alias.b <ws>/tools/../hooks/x.sh after the top repo's <ws>/hooks/x.sh" "$GD" "$MUTP" \
+		"$gpatk" "git -C '$GD/vendor/dep' b" "$T/PWNED-gp" "goes through '$GD/tools', which the sandbox can write"
+	expect_has "(GP3) message names the nested repo" "alias.b in the config of '$GD/vendor/dep/.git'" "$out"
+	command rm -rf "$GD/vendor"
+	git -C "$GD" config --unset alias.a
+	# (GP4) a word that reaches the worktree root through `..` (skipped as the root before):
+	# `cd -P tools/..` (physical) then runs hooks/x.sh relative to what tools/.. names
+	git -C "$GD" config alias.c '!cd -P tools/.. && sh hooks/x.sh'
+	mut_case "(GP4) alias.c cd -P tools/.. (normalises to the root)" "$GD" "$MUTR" \
+		"$gpatk" "git -C '$GD' c" "$T/PWNED-gp" "goes through '$GD/tools', which the sandbox can write"
+	git -C "$GD" config --unset alias.c
+	command rm -f "$GD/hooks/x.sh"
+	# (HN) a HOME link pa-sandbox cannot resolve refuses (it was silently accepted): a newline in
+	# the link target or in the link's own path, a loop
+	MUTN="$T/pa-sandbox.mut-homenl"
+	sed 's|^\(\t*\)if \[\[ \$hr -ne 0 \]\]; then$|\1if false; then # MUTATION|' "$PA_SANDBOX" >"$MUTN"
+	grep -q 'if false; then # MUTATION' "$MUTN" && ok "MN mutation applied" || bad "MN mutation applied"
+	ln -s "$GD/free/a"$'\n'"b" "$FH/.nlrc"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(HN1) HOME link with a newline in its target refused rc" "1" "$rc"
+	expect_has "(HN1) message" "$FH/.nlrc cannot be resolved" "$out"
+	mut_host_nl() { # the MN mutation accepts it and leaves free/ writable: the host runs the file
+		command cp -a "$GD" "$GD.pristine"
+		# shellcheck source=/dev/null # mutated copy of pa-sandbox
+		( cd "$GD"; export HOME="$FH"; source "$MUTN"; pa_sandbox_build_argv "$GD" 2>/dev/null && "${PA_BWRAP_ARGV[@]}" sh -c "printf 'touch %s\n' '$T/PWNED-hn1' > 'free/a
+b'" ) >/dev/null 2>&1 || true
+		sh "$FH/.nlrc" >/dev/null 2>&1 || true
+		[[ -e "$T/PWNED-hn1" ]] && ok "MUTATION (HN1, check removed): the host runs the sandbox's file" || bad "MUTATION (HN1, check removed): the host runs the sandbox's file"
+		command rm -rf "$GD" "$T/PWNED-hn1"
+		command cp -a "$GD.pristine" "$GD"
+		command rm -rf "$GD.pristine"
+	}
+	mut_host_nl
+	command rm -f "$FH/.nlrc"
+	ln -s "$GD/free/f" "$FH/.nl"$'\n'"rc"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(HN2) HOME link with a newline in its own path refused rc" "1" "$rc"
+	expect_has "(HN2) message" "cannot be resolved" "$out"
+	command rm -f "$FH/.nl"$'\n'"rc"
+	ln -s "$FH/.loop2" "$FH/.loop1"
+	ln -s "$FH/.loop1" "$FH/.loop2"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(HN3) HOME symlink loop refused (FALSE REFUSALS) rc" "1" "$rc"
+	expect_has "(HN3) message" "cannot be resolved" "$out"
+	command rm -f "$FH/.loop1" "$FH/.loop2"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GD") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(GD) clean fixture builds again rc" "0" "$rc"
+	command rm -rf "$GD" "$GX"
+
+	# ---- shell startup files are NOT checked (KNOWN LIMITS, human decision 2026-10-17): a host rc or
+	# launch environment that loads workspace files never makes the build refuse, and only a HOME
+	# symlink itself is protected (HOME SYMLINKS), not what the file it names loads.
+	NW="$FH/work/rc-free"
+	mkrepo "$NW"
+	git -C "$NW" -c commit.gpgsign=false commit -q --allow-empty -m i
+	mkdir -p "$NW/sub" "$NW/zfunc" "$NW/zdot" "$NW/bin"
+	printf 'echo ws-sourced\n' >"$NW/sub/x.zsh"
+	printf 'echo ws-zshrc\n' >"$NW/zshrc"
+	nwb() { # <label>: build for $NW with HOME=$FH must succeed (sets out)
+		out="$( (HOME="$FH" pa_sandbox_build_argv "$NW") 2>&1 )" && rc=0 || rc=$?
+		expect_eq "$1: build rc" "0" "$rc"
+		expect_lacks "$1: no refusal" "refusing" "$out"
+	}
+	# (N1) the user's own ~/.zshrc / ~/.bashrc (outside the workspace) source a workspace file and put
+	# workspace dirs on fpath / PATH: accepted, and the sourced file stays writable inside
+	printf 'source %s/sub/x.zsh\nfpath=(%s/zfunc $fpath)\npath=(%s/bin $path)\n' "$NW" "$NW" "$NW" >"$FH/.zshrc"
+	command cp "$FH/.zshrc" "$FH/.bashrc"
+	nwb "(N1) ~/.zshrc / ~/.bashrc sourcing a workspace file"
+	out="$(run_ws "$NW" 'echo w >> sub/x.zsh && echo WROTE' 2>&1)" || true
+	expect_has "(N1) the workspace file a host rc sources stays writable (not checked)" "WROTE" "$out"
+	# (N2) loads pa-sandbox cannot resolve (the removed analyser refused every workspace for them)
+	printf 'DOTFILES_DIR="$(ghq root)/github.com/x/dotfiles"\nsource "$DOTFILES_DIR/zshrc"\nfpath=(${ZCACHE_DIR}/zfunc $fpath)\nsource /dev/stdin <<<"$(fzf --zsh)"\n' >"$FH/.zshrc"
+	nwb "(N2) unresolvable loads in ~/.zshrc"
+	command rm -f "$FH/.zshrc" "$FH/.bashrc"
+	# (N3) launch environment naming workspace paths (ZDOTDIR, BASH_ENV, a relative ENV, INPUTRC, a
+	# PATH entry, a relative PATH entry): accepted; the PATH entry is not made read-only
+	out="$( (export ZDOTDIR="$NW/zdot" BASH_ENV="$NW/sub/x.zsh" ENV=.envrc INPUTRC="$NW/sub/irc" PATH="$NW/bin:$PATH:."
+		HOME="$FH" pa_sandbox_build_argv "$NW") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(N3) launch ZDOTDIR / BASH_ENV / ENV / INPUTRC / PATH naming the workspace: build rc" "0" "$rc"
+	out="$( (export PATH="$NW/bin:$PATH"; run_ws "$NW" 'touch bin/planted && echo WROTE') 2>&1 )" || true
+	expect_has "(N3) a launch PATH entry in the workspace stays writable (not checked)" "WROTE" "$out"
+	# (N4) ~/.zshrc that is itself a HOME symlink into the workspace: a HOME SYMLINKS target
+	# (read-only inside), not a refusal
+	ln -s "$NW/zshrc" "$FH/.zshrc"
+	nwb "(N4) ~/.zshrc -> <ws>/zshrc"
+	out="$(run_ws "$NW" 'echo w >> zshrc || echo DENIED' 2>&1)" || true
+	expect_has "(N4) the linked startup file is read-only inside (HOME SYMLINKS)" "DENIED" "$out"
+	command rm -f "$FH/.zshrc"
+	command rm -r -f -- "$NW"
+	MUTG="$T/pa-sandbox.mut-gitvar" # a missing git var path is skipped (attempt 19 behaviour)
+	sed '/_protect_path "\$hf" "host git config" || return 1/s/.*/\t\t[[ -f "$hf" ]] || continue # MUTATION/' "$PA_SANDBOX" >"$MUTG"
+	grep -q 'continue # MUTATION' "$MUTG" && ok "MG mutation applied" || bad "MG mutation applied"
+	# GIT_CONFIG_GLOBAL / $XDG_CONFIG_HOME/git/config MISSING at launch, inside the workspace
+	GV="$FH/work/gitvar"
+	mkrepo "$GV"
+	mkdir -p "$GV/conf" "$GV/cfg/git"
+	: >"$GV/conf/.keep"
+	git -C "$GV" add -A && git -C "$GV" -c commit.gpgsign=false commit -qm i
+	export GIT_CONFIG_GLOBAL="$GV/conf/gitconfig"
+	mut_host "(R16) GIT_CONFIG_GLOBAL missing at launch" "$GV" "$MUTG" "printf '[core]\\n\\tfsmonitor = touch $T/PWNED-r16; false\\n' > conf/gitconfig" \
+		"git -C '$GV' status" "$T/PWNED-r16"
+	export GIT_CONFIG_GLOBAL="$GV/gitconfig"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$GV") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(R17) GIT_CONFIG_GLOBAL missing directly under the root refused rc" "1" "$rc"
+	expect_has "(R17) message" "does not exist and sits directly under" "$out"
+	unset GIT_CONFIG_GLOBAL
+	# $XDG_CONFIG_HOME in the workspace: its git/config (missing) is a host global git config, so
+	# its top-level directory is read-only (shell startup files there are not checked)
+	export XDG_CONFIG_HOME="$GV/cfg"
+	mut_host "(R18) \$XDG_CONFIG_HOME/git/config missing at launch" "$GV" "$MUTG" "printf '[core]\\n\\tfsmonitor = touch $T/PWNED-r18; false\\n' > cfg/git/config" \
+		"git -C '$GV' status" "$T/PWNED-r18"
+	unset XDG_CONFIG_HOME
+	export GIT_CONFIG_GLOBAL=/dev/null
+	command rm -rf "$GV"
 
 	# (D) ancestors of HOME / agent dir are refused
 	for ws in "$T" "$(dirname "$FH")" "$FH" "$FH/.prime" "$FH/.prime/agent" "$FH/.prime/agent/sessions" /; do

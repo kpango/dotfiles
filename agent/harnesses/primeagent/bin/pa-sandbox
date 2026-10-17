@@ -24,48 +24,140 @@
 #     symlinked agent-dir entries, PA_SANDBOX_RO_EXTRA (colon-separated), and the
 #     workspace's whole `.git` path (the directory, or the gitfile of a linked
 #     worktree, as the mount point itself: it cannot be renamed, replaced or
-#     recreated), the linked worktree's validated common dir as a whole, and every
-#     nested `.git` under the workspace. Git metadata is therefore
+#     recreated), the linked worktree's validated common dir as a whole, every
+#     nested `.git` under the workspace, and every BARE REPO / git dir not named `.git`
+#     already in the workspace (a directory holding HEAD next to objects/, refs/ or
+#     commondir -- e.g. ws/mirror.git that an outside repo pushes to; found by the same
+#     scan, protected and config-scanned exactly like a nested `.git`, counted against
+#     the same cap; detected statically, host git is never run in it). Git metadata is therefore
 #     entirely READ-ONLY: edits to working-tree files work, but git write
 #     operations (commit, branch, add, config) fail BY DESIGN; the human commits on
-#     the host after review. Every git dir (the workspace gitfile's own gitdir, nested
-#     `.git` dirs, nested gitfile targets) AND the `commondir` of each is resolved and
+#     the host after review. Every git dir found this way (the workspace's `.git` or its
+#     gitfile's gitdir, nested `.git` dirs, nested gitfile targets, bare repos, and the git
+#     dirs below, recursively) AND the `commondir` of each is resolved and
 #     ro-bound if inside the workspace, else the run is refused unless it is already
-#     under a protected git dir. Paths are walked component by component BEFORE
+#     under a protected git dir.
+#   - SUBMODULE / WORKTREE GIT DIRS: inside each of those git dirs and its common dir, every
+#     git dir under `modules/` (submodule git dirs, also of deinitialised submodules; the
+#     outermost ones, nested `modules/` are reached through the recursion) and every
+#     `worktrees/*` admin dir is handled like a nested `.git` (config scan, symlink and
+#     hard-link checks, the same cap). Its worktree root (a base for the config words below)
+#     is core.worktree if set, plus: for `modules/<name>` the `submodule.<name>.path` of the
+#     superproject root's .gitmodules (read with `git config --file`), else <name>; for
+#     `worktrees/<id>` the directory of the path in its `gitdir` file. A path that is
+#     absolute or has `.`/`..` components, an unparsable .gitmodules, an admin dir without
+#     a gitdir file, a symlinked directory under `modules/` outside every submodule git dir,
+#     or any find error refuses. Paths are walked component by component BEFORE
 #     normalisation: a symlink inside the writable workspace anywhere on the way (also
-#     before a `..`, e.g. `lnk/../meta/gs`) refuses. ALL nested `.git` entries (no depth
-#     limit; symlinks skipped) are bound; more than PA_SANDBOX_MAX_NESTED_GIT (500)
-#     FAILS CLOSED.
+#     before a `..`, e.g. `lnk/../meta/gs`) refuses, and so does a `..` that leaves a
+#     writable directory (`..` IN GIT PATHS below). ALL nested `.git` entries (no depth
+#     limit; symlinks skipped) and bare repos are bound; more than
+#     PA_SANDBOX_MAX_NESTED_GIT (500) FAILS CLOSED.
 #   - CONFIG REFERENCES: for each of those repos, the common config, config.worktree,
 #     and every include.path / includeIf.*.path file (followed recursively by
 #     pa-sandbox itself with `git config --file --no-includes`, which only parses; all
 #     includeIf targets regardless of their condition; plus the host global/system
-#     config from `git var`) are scanned. There is NO list of "command" keys: EVERY value
+#     config files `git var` names -- each is protected like a config reference, a MISSING
+#     one too: GIT_CONFIG_GLOBAL=<ws>/conf/gitconfig or $XDG_CONFIG_HOME=<ws>/cfg would let
+#     the sandbox create a global config host git trusts) are scanned. There is NO list of path keys: EVERY value
 #     of EVERY key is split into words and each word that may name a path is protected
 #     (inside the workspace an existing target is ro-bound; a missing one is covered by
 #     its ro top-level ancestor, and refuses if it would sit directly under the root):
 #       * splitting: a leading `!` is dropped, quotes are removed, `$HOME`/`${HOME}` mean
 #         `~`, any other `$VAR`/`${...}`/`$(`/`)`/backquote ends a word, and
-#         ; & | < > ( ) { } = , and whitespace separate words. With unbalanced quotes the
-#         whole value is a word as well.
+#         ; & | < > ( ) { } and whitespace separate words, `=` and `,` split a word into
+#         pieces. With unbalanced quotes the whole value is a word as well.
+#       * VALUE CANDIDATES: besides each word/piece, the word with its `=` `,` kept, the value
+#         of an attached short option (`-Fsshconf` -> sshconf; `--opt=x` gives the piece x)
+#         and the whole value (trimmed, a leading `:(optional)` dropped) are candidates;
+#         these count only when they EXIST, except under SINGLE WORDS below.
 #       * a word with `/` is a path: absolute, `~/` (host HOME), or relative to every base
 #         (each worktree root -- the repo root, a nested repo's root, core.worktree -- and
 #         the directory of the config file that set it). A word that followed a `$...`
 #         expansion (`$(git rev-parse --show-toplevel)/x`) is also tried relative to each
 #         base. A word WITHOUT `/` is protected when it names an existing file, directory
-#         or symlink relative to a base (`sh fsmon.sh` runs ./fsmon.sh from the root).
+#         or symlink relative to a base. A MISSING word without `/` counts as well (like
+#         `./word`: refused directly under a root, else its top-level ancestor is ro) when a
+#         shell/interpreter would open it relative to the current directory: every word
+#         after a command named sh/bash/zsh/python*/perl*/ruby*/node/awk/sed/source/`.`/go/
+#         uv/npx/... (the ireg list), after a wrapper (env/exec/timeout/xargs/... -- the wreg
+#         list; options, numbers, VAR=x and interpreter names skipped), after a command that
+#         is itself an expansion (`$EDITOR x`), or a redirection before the command (`<x sh`).
+#         Commands are split at ; & | newline $( ` ( { and nested ones are tracked. Such a
+#         word that is an expansion (`sh $HOOK`, `sh "$1"`) cannot be resolved and refuses.
+#         Options (-x) and git placeholders (%f) are skipped.
+#       * SINGLE WORDS: a value that is exactly ONE word (no whitespace, no leading `!`, not
+#         `%(prefix)/...`; `,` `=` inside are part of it) is a path even when missing, like
+#         `./word` above (gpg.ssh.allowedSignersFile = allowed_signers, http.sslCAInfo =
+#         ca.pem, init.templateDir = tmpl; git resolves them against the current directory).
+#         This holds for every key, including keys unknown to pa-sandbox, EXCEPT (_nonpath;
+#         the reason per key class is under KNOWN LIMITS (a)): an option word (-x) or a GPG
+#         key id (8-40 hex digits), but not for a path-type key name (*file, *path, *dir,
+#         *.ssl*, *.template, gc.repackFilterTo: git opens such a value as a file); a key
+#         whose value is a COMMAND name (alias.*, *.editor, core.pager, pager.*, *.program,
+#         *.cmd, *.textconv, ...); a name, e-mail, enum or ref/branch name (user.name,
+#         *.name, credential.*, url.*, branch.* other than the remote keys, color.*, push.*,
+#         gc.*, ...; the full list is _nonpath). A key missing from those lists fails
+#         closed (a false refusal names the key).
+#       * PRINCIPLE: what is PROTECTED is the union of every config file read (includeIf
+#         targets whatever their condition, config.worktree with or without
+#         extensions.worktreeConfig); what is EXCLUDED because of other config (remote
+#         names) is decided by host git itself, never by that union.
+#       * REMOTE NAMES: every name host git may know for a git dir -- the values of
+#         branch.*.remote, branch.*.pushRemote, remote.pushDefault, checkout.defaultRemote,
+#         extensions.partialClone; the names `git remote` lists; the <name> of every
+#         remote.<name>.* key in the union of config files read; every file under the
+#         legacy remotes/ and branches/ dirs of the git dir and of its common dir (a
+#         symlink, special file or scan error there refuses; both dirs sit inside the
+#         read-only git dir, so the sandbox cannot add one); every word of every
+#         remotes.<group> value in that union (split like git: space, tab, newline; `git
+#         fetch <group>` and `git remote update [<group>]` -- remotes.default -- fetch each)
+#         and every <group> itself -- host git resolves the name,
+#         read-only, per git dir (_gq: `git --git-dir=<dir> -c core.fsmonitor=false remote
+#         get-url [--push] --all -- <name>` run from /, with the caller's HOME and
+#         GIT_CONFIG_* and no GIT_DIR/GIT_WORK_TREE/GIT_COMMON_DIR; these commands only
+#         parse config, no hook/pager/fsmonitor/filter runs). Exit 2 (no such remote): the
+#         name is a path itself, like a SINGLE WORD, except a <group> (or a word that is
+#         one) for which host git (`git config --get-all remotes.<group>`, same _gq) reads 2
+#         or more members: fetch expands it (with 0 or 1 member `git fetch <group>` uses the
+#         name itself as the remote / URL). Otherwise every fetch/push URL git
+#         returns (after insteadOf; an empty or reset url makes git return the name
+#         itself) that is LOCAL (file:// with an empty or `localhost` host -- see KNOWN
+#         LIMITS FILE URLS WITH A HOST --, or no `<scheme>://` / `<helper>::` and no `:`
+#         before the first `/`) is protected like an interpreter argument (missing too);
+#         a remote URL is no path. A git dir for which `git remote` fails (host git does
+#         not accept it, e.g. an empty nested .git) has no remotes: every name is a path
+#         and nothing is excluded; any other `get-url` error refuses. remotes.* values are
+#         handled only here (not as CONFIG REFERENCES / SINGLE WORDS). The other keys
+#         git-config(1) lists with a remote name as value (git 2.54, master 2026-10) name a
+#         remote git CREATES, not one it resolves: clone.defaultRemoteName, the `name=`
+#         prefix of promisor.acceptFromServerUrl.
+#       * url.<base>.insteadOf / pushInsteadOf: a <base> (in the KEY) that is a local path
+#         (the REMOTE NAMES rule: file:// with an empty or `localhost` host, or no
+#         `<scheme>://` / `<helper>::` and no `:`
+#         before the first `/`; `a..b` inside does not make it a revision range here) turns a
+#         remote into the string base+suffix; a relative or EMPTY one (git then uses the typed
+#         suffix itself, relative to the current directory), or one that is a prefix of /
+#         inside the workspace or an rw state path, refuses. An absolute one (file:// path
+#         part, `~/` = host HOME) is walked as written for `..` IN GIT PATHS (label
+#         "url.<base>.insteadof in the config of '<git dir>': '<base>'"): <ws>/sub/../../b/
+#         refuses although it normalises to outside the workspace.
 #       * core.hooksPath is always a path (even without `/`, even missing); every
 #         include target is protected relative to its including file.
 #       * NOT treated as paths (exclusion rules): empty values, true/false/yes/no/on/off,
 #         numbers (optionally k/m/g), values starting `key::` (literal SSH signing key);
 #         words with a URL scheme `xxx://` (file:// is NOT excluded: its path part is
-#         protected like an absolute word; file://host/... with another host is skipped),
+#         protected like an absolute word; file://host/... with another host is skipped
+#         although git opens its path -- KNOWN LIMITS FILE URLS WITH A HOST),
 #         words with a `:` before any `/` (scp-like remote `host:path`, refspec `a:b`,
 #         `format:`), words starting `refs/`, `+refs/` or `^refs/` (refnames/refspecs),
-#         words containing a revision range `a..b`, `<remote>/...` when <remote> is a
-#         remote configured for that repo (remote.<remote>.url) and no entry of that name
+#         words containing a revision range `a..b`, `<remote>/...` (not as an interpreter
+#         argument) when <remote> is listed by host git (`git remote`) for that git dir and
+#         every URL git resolves it to is remote (REMOTE NAMES) and no entry of that name
 #         exists in the base (a remote-tracking ref such as origin/main), and a word
-#         naming a worktree root itself (e.g. safe.directory; git never runs a directory).
+#         naming the worktree root itself (from the layout, not core.worktree; e.g.
+#         safe.directory; git never runs a directory; one that reaches it through `..` is
+#         still walked for `..` IN GIT PATHS).
 #         The values of include.path / includeIf.*.path / core.worktree are handled as
 #         described above instead.
 #     Words with `/` that do not exist and whose top-level directory does not exist either
@@ -73,6 +165,26 @@
 #     refusals are accepted.
 #     Includes deeper than 10 (loops) or more than 1000 config files per repo, unparsable
 #     configs, `~user/` paths and targets in the rw state dirs refuse.
+#   - `..` IN GIT PATHS: every path pa-sandbox walks for the above (git dirs, commondirs,
+#     config / include files, config words, core.hooksPath, core.worktree (host git chdirs
+#     into it and opens submodule .git files below it; also through a symlink inside the
+#     workspace refuses), absolute url.<base>.insteadOf / pushInsteadOf bases, the targets of
+#     symlinked git control files) is checked per hop BEFORE `..` is applied to the text, as for HOME
+#     SYMLINKS: a path that enters a directory inside the workspace or an rw state path and
+#     leaves it again through `..` (core.hooksPath = tools/../hooks, include.path =
+#     <ws>/tools/../hooks/inc.cfg, also several `..`) refuses ("<key / file / git dir /
+#     link>: '<path>' goes through '<dir>', which the sandbox can write"): inside, that
+#     directory could be replaced by a symlink and host git would read what it then names.
+#     Every spelling is walked: a config word is skipped as done only when written exactly
+#     the same, never because it normalises to a path already protected (`tools/../hooks/x`
+#     after `hooks/x`, in any git dir). Checked once every
+#     protection is known: exempt is a directory inside an existing protected (ro) path
+#     (`../x` relative to .git/config, a submodule's core.worktree = ../../../sub) or inside
+#     a top-level workspace directory that ANCESTORS ro-binds (that of ANY protected path,
+#     gitfile or missing reference: sub/x/../hooks, a submodule gitfile sub/.git ->
+#     ../.git/modules/sub, a nested repo's commondir ../../../shared/c). The workspace root
+#     and an rw state dir themselves are mount points and never count; as for HOME SYMLINKS,
+#     both are recognised by their canonical names only.
 #   - SYMLINKED GIT CONTROL FILES refuse: every symlink inside each git dir and common dir
 #     (hooks/ and its entries, config, config.worktree, commondir, gitdir, info/*,
 #     worktrees/*/gitdir|commondir, ...: the whole dir is scanned) and inside each
@@ -81,6 +193,44 @@
 #     followed (directories are scanned too, 4 levels). Config / include files are walked
 #     the same way: a symlink outside the workspace that leads into it refuses. Any find
 #     error refuses.
+#   - HARD LINKS refuse: a regular file with more than one link in those same scanned dirs
+#     (git dirs, common dirs, hooksPath dirs, symlinked-dir targets), a config / include
+#     file, a file a symlink there resolves to, or an existing file named by a config value
+#     is looked up (device+inode) among the multi-link files of the workspace and the rw
+#     state paths; a match outside every ro bind (it could be rewritten through that name,
+#     e.g. `ln scripts/pre-commit .git/hooks/pre-commit`) refuses. Any find error refuses.
+#     Other names outside the workspace/state are not writable inside and are accepted.
+#   - HOME SYMLINKS / BIND MOUNTS: files the host later reads or runs through the user's
+#     HOME (~/.config/nvim -> <ws>/nvim, a systemd user unit link, a container bind mount of
+#     <ws>/gitconfig on ~/.gitconfig) are read-only inside, or pa-sandbox refuses to start when
+#     they cannot be protected (below).
+#     At launch every symlink under each home -- $HOME and, if different, the passwd home
+#     (getent) -- is listed with `find -H <home>/ -maxdepth PA_SANDBOX_HOME_DEPTH` (6; not
+#     descending into .git, node_modules, ~/.cache, ~/go/src, ~/go/pkg or the workspace),
+#     plus the same scan of $XDG_CONFIG_HOME, $XDG_DATA_HOME, $ZDOTDIR, of ~/.config,
+#     ~/.config/systemd/user, ~/.local/share, ~/.local/bin, ~/.ssh and ~/.gnupg when they
+#     are symlinks themselves, and of every $PATH entry under a home. Each link is
+#     resolved hop by hop (also through symlinks outside the workspace); every symlink
+#     inside the workspace on the way and the final target, when inside the workspace, is
+#     protected: an existing target is ro-bound (a directory as a whole); a symlink on the
+#     way or a missing target is covered by its ro top-level ancestor (ANCESTORS) and
+#     refuses when it sits directly under the root; a link to the workspace root itself or
+#     into an rw state path refuses. Each path component is checked per hop BEFORE `..` is
+#     applied to the text: a link whose path enters a real directory inside the workspace
+#     or an rw state path and leaves it again through `..` (~/.toolrc -> <ws>/sub/../../x,
+#     also several `..` or a later link in the chain) refuses ("goes through '<dir>', which
+#     the sandbox can write"): inside, that directory could be replaced by a symlink and the
+#     host would read what it then names. Exempt is a directory inside a protected (ro)
+#     path or inside the top-level directory ro-bound for that same link (that of its
+#     workspace target or of a workspace symlink on its way). A link pa-sandbox cannot
+#     resolve (a newline in its path or a link target, more than 40 links / a loop, a link
+#     that cannot be read) refuses as well. A bind mount below a home (/proc/self/mountinfo) is
+#     mapped to where its source is visible (another mount of the same filesystem: target
+#     + root difference) and handled the same way. The count and up to 5 examples go to
+#     stderr every run. More than PA_SANDBOX_MAX_HOME_LINKS (20000) symlinks REFUSES (the
+#     scan would be cut short; raise it to accept). Unreadable directories are skipped
+#     with a warning instead (this uid cannot read through them either; refusing would
+#     make pa-sandbox unusable wherever HOME holds root-owned or container-storage dirs).
 #   - ANCESTORS: a mount point cannot be renamed, but its writable parent can (the
 #     mount moves along and the original path is free for an attacker-made git dir
 #     that the unchanged gitfile / a later host git run trusts). So for every protected
@@ -145,26 +295,125 @@
 #     vendor/dep/.git, is ENTIRELY read-only inside the sandbox, and so is a config
 #     reference directly under the root (.githooks, .gitconfig); all are listed on
 #     stderr every run. A `.git` directly under the root needs no extra bind.
-#   - CONFIG REFERENCES are protected by value shape, not by key: what is NOT followed is
-#     (a) a program found via PATH (`sh`, `my-hook`): PATH is the host's, outside the
-#     workspace unless PATH itself names a workspace dir; (b) files a protected script or
-#     program reads INDIRECTLY (a hook that sources ./lib.sh, a Makefile it runs); (c) a
+#   - CONFIG REFERENCES are protected by value shape (plus the _nonpath key exclusions for
+#     one-word values): what is NOT followed is
+#     (a) a missing word without `/` in a value of TWO OR MORE words that is not in an
+#     interpreter/wrapper position: the first word of a command (`hx`, `gh auth ...`) is
+#     looked up in the host PATH, outside the workspace unless PATH itself has a relative,
+#     empty or workspace entry; any other word (`lumen diff`, `log HEAD`, a person's name,
+#     `ssh -F sshconf`, `ssh -Fsshconf`, `ssh -i key`) is an argument of a program not on
+#     the ireg/wreg lists: such a program that opens or runs it relative to the current
+#     directory (`just x`, `npm run x`, ssh's -F/-i, a workspace script that sources "$1")
+#     is not covered while the file is MISSING -- the lists are fixed names -- and neither
+#     is a missing path value that contains spaces (remotes.<group> values are not
+#     in (a): their words are REMOTE NAMES, resolved and protected). A missing ONE-word value of a _nonpath
+#     key is not followed because git never opens it relative to the current directory:
+#     a COMMAND key's value goes to the shell or execvp, which look a name without `/` up
+#     in PATH (same PATH caveat as above), alias.* runs `git <value>`, credential.helper
+#     `git credential-<value>`, remote.*.vcs `git remote-<value>`, *.tool / *.guitool /
+#     web.browser / merge.<driver>.recursive / pull.twohead|octopus name a tool, driver or
+#     merge strategy that git maps to its own config or to git-<name> on exec-path/PATH;
+#     names, e-mails and descriptions (user.*, author.*, committer.*, *.name, *.username,
+#     branch.*.description) are only printed or sent; enums, booleans, numbers, dates,
+#     colors, formats and patterns (color.*, column.*, push.*, pull.*, merge.*, rebase.*,
+#     log.*, status.*, gc.* except gc.repackFilterTo, protocol.*, extensions.* except
+#     partialClone, core.autocrlf, ...) are parsed as keywords; refs, branch names and
+#     refspecs (branch.*.merge, init.defaultBranch, submodule.*.branch, remote.*.fetch|push)
+#     name refs inside the ro git dir (or on the remote), never workspace files; url.*
+#     values are URL prefixes compared as text. (b) files a
+#     protected script or program reads INDIRECTLY (a hook that sources ./lib.sh, a
+#     Makefile it runs, package.json), including an interpreter's MODULE SEARCH PATH:
+#     `python3 -m mod` / `python3 x.py` put the current / script directory first on
+#     sys.path, so with an existing `mod` only that entry is ro and a planted mod.py or
+#     json.py in the writable root still runs; node resolves ./node_modules the same way
+#     (a missing `mod` at the root refuses, see above); (c) a
 #     relative path git resolves against the CURRENT directory of the host git call (e.g.
 #     core.pager run from a subdirectory) rather than a worktree root; (d) host-side
 #     config that pa-sandbox never sees: GIT_CONFIG_COUNT/KEY_*/VALUE_*,
 #     GIT_CONFIG_PARAMETERS, `git -c`, GIT_DIR/GIT_WORK_TREE and other env of the later
-#     host git run; (e) words removed by the exclusion rules above (a refspec-looking,
+#     host git run -- REMOTE NAMES are resolved with pa-sandbox's own environment AT
+#     LAUNCH, so a later host git run whose env, global config or includeIf condition
+#     (onbranch:, hasconfig:) differs may resolve a remote name to a different URL;
+#     (e) words removed by the exclusion rules above (a refspec-looking,
 #     `host:path` or `origin/...` word that really is a script path). In-tree
 #     .gitattributes / .gitignore stay writable (they only select drivers defined in
 #     the ro config), .gitmodules is a worktree file (git ignores `update = !cmd` from
-#     it), objects/info/alternates targets are object data. A git repo CREATED inside
-#     the workspace by the sandbox is attacker controlled: do not run host git inside
-#     directories that were not repos before.
+#     it), objects/info/alternates targets are object data.
+#   - FILE URLS WITH A HOST: a `file://<host>/<path>` URL whose host is not empty or
+#     `localhost` (also `file://~/...`) is treated as remote and NOT checked -- in a remote
+#     url, an insteadOf / pushInsteadOf base or a config word. Host git (2.54) ignores the
+#     host part and opens <path> locally, so such a URL naming a workspace path lets a
+#     later host `git push` / `git fetch` run hooks or read objects the sandbox planted
+#     there. Do not use file:// URLs with a host part for workspace paths.
+#   - GIT REPOS THAT DID NOT EXIST AT LAUNCH are attacker controlled (a new `.git`, a new
+#     bare repo, a new `.git` in an uninitialised submodule directory): host git runs their
+#     hooks/config when it uses them -- run inside them (git -C there), through a repo
+#     OUTSIDE the workspace that names a path in it (remote url pushed/fetched to,
+#     alternates, a submodule url; outside repos' configs are never scanned), and through
+#     SUBMODULE RECURSION from the parent: `git status` at the root recurses into a
+#     registered submodule whose `.git` the sandbox created and runs e.g. its
+#     core.fsmonitor (an unregistered nested repo is only an untracked dir and is not
+#     entered). After a sandboxed run, look for new `.git` entries / bare repos before
+#     running host git, or use `--ignore-submodules=all`. The same holds for a remote
+#     name typed on a later host command line (`git push foo`) that no source listed
+#     under REMOTE NAMES knew at launch: git uses ./foo as a path the human chose. A
+#     remote GROUP name that host git expands (2+ members) is not protected as a path,
+#     but `git push <group>` does not expand groups (git 2.54) and uses ./<group> like
+#     such a typed name (`git pull <group>` expands it, through fetch); so does a group
+#     whose members host git counts differently later (includeIf onbranch:, env -- (d)).
+#   - HOME SYMLINKS cover what the scan sees AT LAUNCH only: symlinks deeper than
+#     PA_SANDBOX_HOME_DEPTH, under the pruned dirs (~/.cache, ~/go/src, ~/go/pkg, .git,
+#     node_modules), inside a symlinked directory that is not one of the listed roots, or
+#     created after launch are not followed. Neither are other ways the host reaches a
+#     workspace file: a HARD LINK in HOME to it, a workspace path written in a non-shell
+#     config (an editor, tmux or systemd file naming a workspace script: each tool has its
+#     own language and pa-sandbox only parses git config), files
+#     such a protected file reads INDIRECTLY (as CONFIG REFERENCES (b)), and a bind mount
+#     whose source is not visible anywhere in pa-sandbox's mount namespace. The workspace and
+#     the rw state paths are recognised by their canonical names only: a link that reaches
+#     them through ANOTHER name (a bind mount of the workspace or of a directory above it
+#     elsewhere) is treated as pointing outside -- neither made read-only nor refused.
+#   - SHELL STARTUP FILES ARE NOT CHECKED: pa-sandbox does not check whether a host shell's
+#     startup files (~/.zshrc, ~/.bashrc, $ZDOTDIR, fish / readline / completion files ...) or
+#     its launch environment (PATH, fpath, BASH_ENV, ENV, ZDOTDIR, XDG_*, LD_* ...) make a
+#     later host shell read or run files inside the workspace (source, autoload, fpath, PATH,
+#     globs ...): it does not read or parse them. If the host's rc loads a workspace file that
+#     the sandbox modified, code from inside the sandbox can run on the host. Avoiding that is
+#     up to the user: do not load workspace paths from your rc. (A startup file that is itself
+#     a HOME symlink into the workspace is handled like any HOME SYMLINKS target -- read-only
+#     inside, or refused when it cannot be protected; the files it loads are not.) This is a
+#     guardrail, not a security boundary.
+#   - SUBMODULE / WORKTREE ROOTS are only bases for the config words: the root directory
+#     itself is not made read-only (a missing root is not refused unless a config word
+#     relative to it is), and a `.git` gitfile the sandbox creates there is a new `.git`
+#     (above). The root is derived from the state at launch; .gitmodules is a writable
+#     worktree file, so a later host `git submodule update` may map a module name to a
+#     different gitlink path than the one protected (core.worktree, when set, is used as
+#     well). Other directories inside a scanned git dir are not searched for git dirs
+#     (git keeps submodule and worktree git dirs in `modules/` and `worktrees/`; a git dir
+#     another tool keeps elsewhere inside .git is not covered).
 #   - FALSE REFUSALS are accepted: a config word with `/` that is no path (`textconv = sed
 #     s/a/b/`, `!git log upstream/main` without that remote), a missing path whose
 #     top-level directory is missing too, or a symlinked hook/config into the workspace
-#     makes pa-sandbox refuse. A word that happens to name an existing workspace entry (`core.editor = nvim` with
-#     an nvim/ directory at the root) makes that entry read-only (listed on stderr).
+#     makes pa-sandbox refuse; so does any missing word in an interpreter/wrapper position
+#     that is no file (`sh -c "make lint"`, `timeout -s KILL 5 sh x`, `go run ./cmd`'s
+#     `run`, `sh "$1"`), a missing ONE-word value of a key not in _nonpath (an enum of a
+#     tool's own key, `tool.x.mode = fast`), a remote group of 0 or 1 member, or a member
+#     that is neither a remote nor a group of 2+ (when ./<name> is missing directly under
+#     the root), a submodule/worktree git dir whose root cannot
+#     be told, a hard link described above, and a HOME link that leaves a writable workspace
+#     directory through `..` (HOME SYMLINKS) even when nothing would replace it (~/.x ->
+#     <ws>/sub/../free/f, with sub and free different top-level dirs) -- also when sub/ is
+#     read-only only because of ANOTHER reference (for HOME links only the link's own target
+#     and the workspace symlinks on its way count); likewise a git path that leaves a writable
+#     workspace directory through `..` (`..` IN GIT PATHS) even when nothing would replace it
+#     (a gitfile `gitdir: ../../src/../store/gd` with an unprotected src/, an insteadOf
+#     base <ws>/sub/../../mirrors/ that names a directory outside the workspace); an empty
+#     url.<base> (`[url ""] insteadOf = x:`) or a relative one, also one that git would
+#     never be asked to rewrite; and a HOME
+#     symlink loop or a HOME link that vanished during the scan (HOME SYMLINKS). A word that happens to name an
+#     existing workspace entry (`core.editor = nvim` with an nvim/ directory at the root)
+#     makes that entry read-only (listed on stderr).
 #   - mcp-service-catalog.v2.json and daemon-workers/ are ro (see PA_SANDBOX_AGENT_RW_*).
 #   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
 #   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
@@ -196,6 +445,8 @@ set -euo pipefail
 PA_SANDBOX_AGENT_RW_DIRS=(sessions session-artifacts session-leases logs swarm)
 PA_SANDBOX_AGENT_RW_FILES=(telemetry.json telemetry.jsonl)
 : "${PA_SANDBOX_MAX_NESTED_GIT:=500}"
+: "${PA_SANDBOX_MAX_HOME_LINKS:=20000}"
+: "${PA_SANDBOX_HOME_DEPTH:=6}"
 # shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
 PA_SANDBOX_GUARD_PREFIX='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
 PA_SANDBOX_ENV_ALLOW=(PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY)
@@ -371,11 +622,12 @@ pa_sandbox_build_argv() {
 	[[ -n "$gcd" ]] && _ro "$gcd"
 	# Scan to files (not process substitution) so a find failure is seen: an
 	# unreadable directory could hide a nested .git, so ANY find error fails closed.
-	local ng nn=0 scan scanerr frc=0 links=() gfiles=() gdirs=() cfgp=() prot=("$repo/.git")
+	local ng nn=0 scan scanerr frc=0 links=() gfiles=() gdirs=() cfgp=() bares=() hl=() prot=("$repo/.git")
 	[[ -n "$gcd" ]] && prot+=("$gcd")
 	scan="$(mktemp)"
 	scanerr="$(mktemp)"
-	find "$repo" -name .git -prune -print0 >"$scan" 2>"$scanerr" || frc=$?
+	# `.git` entries, and HEAD entries (a bare repo / git dir not named .git, see below)
+	find "$repo" \( -name .git -prune -printf 'G%p\0' \) -o \( -name HEAD -printf 'H%p\0' \) >"$scan" 2>"$scanerr" || frc=$?
 	if [[ $frc -ne 0 || -s "$scanerr" ]]; then
 		pa_sandbox_die "scan for nested .git failed (rc=$frc): $(head -c 600 "$scanerr"); refusing"
 		command rm -f "$scan" "$scanerr"
@@ -384,6 +636,21 @@ pa_sandbox_build_argv() {
 	command rm -f "$scanerr"
 	# shellcheck disable=SC2094 # the rm in the cap branch runs right before `return`, not concurrently
 	while IFS= read -r -d '' ng; do
+		if [[ "$ng" == H* ]]; then
+			# git's is_git_directory(): HEAD plus objects/ and refs/, or a commondir. Any
+			# of the three next to a HEAD counts (safe side).
+			ng="${ng#H}"
+			ng="${ng%/*}"
+			[[ -e "$ng/objects" || -L "$ng/objects" || -e "$ng/refs" || -L "$ng/refs" || -e "$ng/commondir" || -L "$ng/commondir" ]] || continue
+			if [[ "$ng" == "$repo" ]]; then
+				pa_sandbox_die "the workspace root itself looks like a git dir (HEAD next to objects/, refs/ or commondir); refusing"
+				command rm -f "$scan"
+				return 1
+			fi
+			bares+=("$ng")
+			continue
+		fi
+		ng="${ng#G}"
 		if [[ -L "$ng" ]]; then
 			links+=("$ng")
 			continue
@@ -400,6 +667,23 @@ pa_sandbox_build_argv() {
 		[[ -d "$ng" ]] && prot+=("$ng") && gdirs+=("$ng")
 	done <"$scan"
 	command rm -f "$scan"
+	# bare repos / git dirs not named .git (outermost only): protected like a nested .git
+	local b2 bd
+	local -a bk=()
+	for bd in "${bares[@]}"; do
+		for b2 in "${bares[@]}"; do
+			[[ "$bd" == "$b2"/* ]] && continue 2
+		done
+		nn=$((nn + 1))
+		if [[ $nn -gt $PA_SANDBOX_MAX_NESTED_GIT ]]; then
+			pa_sandbox_die "more than $PA_SANDBOX_MAX_NESTED_GIT nested git dirs under '$repo'; refusing (raise PA_SANDBOX_MAX_NESTED_GIT to accept)"
+			return 1
+		fi
+		_ro "$bd"
+		prot+=("$bd")
+		bk+=("$bd")
+	done
+	bares=("${bk[@]}")
 	# A symlinked .git cannot be bound read-only (bwrap would bind its target, and the
 	# link itself, in the rw workspace, could be swapped), so refuse to start.
 	if [[ ${#links[@]} -gt 0 && "${PA_SANDBOX_ALLOW_GIT_SYMLINKS:-0}" != 1 ]]; then
@@ -423,13 +707,30 @@ pa_sandbox_build_argv() {
 		for p in "${rwp[@]}"; do pa_sandbox_within "$1" "$p" && return 0; done
 		return 1
 	}
+	_hl() { # <path>: remember a regular file with more than one hard link (HARD LINKS)
+		local s
+		[[ -f "$1" && ! -L "$1" ]] || return 0
+		if ! s="$(stat -c '%h %d:%i' -- "$1")"; then
+			pa_sandbox_die "cannot stat '$1'; refusing"
+			return 1
+		fi
+		[[ "${s%% *}" -le 1 ]] || hl+=("${s#* }"$'\t'"$1")
+	}
 	# _walk <abs path>: resolve component by component as the kernel does, BEFORE any
-	# normalisation (so `lnk/../x` is seen through lnk). rc 2 = a symlink inside a
-	# writable area (it could be re-pointed later); symlinks elsewhere are followed one
-	# level at a time (their target is walked the same way; at most 40).
+	# normalisation (so `lnk/../x` is seen through lnk); sets wq (the result) and wdot.
+	# rc 2 = a symlink inside a writable area (it could be re-pointed later); symlinks
+	# elsewhere are followed one level at a time (their target is walked the same way; at
+	# most 40); rc 1 = cannot be resolved (every caller refuses). A directory strictly inside
+	# a writable area that a `..` leaves again is recorded in wdot (checked per hop, before
+	# the `..` is applied to the text); the caller queues each in gdot, checked with _hdot once
+	# every protection is known (`..` IN GIT PATHS).
+	local wq=""
+	local -a wdot=() gdot=()
 	_walk() {
-		local cur="" c t n=0
+		local cur="" c t n=0 w
 		local -a parts=() tp=()
+		wq=""
+		wdot=()
 		[[ "$1" == /* && "$1" != *$'\n'* ]] || return 1
 		IFS=/ read -ra parts <<<"$1"
 		while [[ ${#parts[@]} -gt 0 ]]; do
@@ -438,6 +739,9 @@ pa_sandbox_build_argv() {
 			case "$c" in
 			"" | .) continue ;;
 			..)
+				for w in "${rwp[@]}"; do
+					[[ "$cur" == "$w"/* ]] && wdot+=("$cur") && break
+				done
 				cur="${cur%/*}"
 				continue
 				;;
@@ -453,7 +757,27 @@ pa_sandbox_build_argv() {
 			fi
 			cur="$cur/$c"
 		done
-		printf '%s\n' "${cur:-/}"
+		wq="${cur:-/}"
+	}
+	_hdot() { # <dir> <label> [<path>...]: a writable directory a reference leaves through `..` (wdot,
+		# hdot) is fine only when nothing inside can replace it: it lies in an existing ro-bound
+		# protected path, or in the top-level workspace directory that ANCESTORS ro-binds for one
+		# of <path> (HOME: the link's resolved target or a workspace symlink on its way; git paths:
+		# every protected path, gitfile or missing reference). Anything else refuses.
+		local d="$1" lab="$2" pp m
+		shift 2
+		for pp in "${prot[@]}"; do
+			[[ -e "$pp" ]] && pa_sandbox_within "$d" "$pp" && return 0
+		done
+		if [[ "$d" == "$repo"/* ]]; then
+			pp="${d#"$repo"/}"
+			pp="$repo/${pp%%/*}"
+			for m in "$@"; do
+				pa_sandbox_within "$m" "$pp" && return 0
+			done
+		fi
+		pa_sandbox_die "$lab goes through '$d', which the sandbox can write (a directory there could be replaced by a symlink; the host would read what it then names); refusing"
+		return 1
 	}
 	# _into_ws <path> <resolved>: a symlink (outside the workspace) led <path> into it
 	_into_ws() {
@@ -463,7 +787,8 @@ pa_sandbox_build_argv() {
 	}
 	_protect_dir() { # <dir> <label>: an existing git dir
 		local q pp rc=0
-		q="$(_walk "$1")" || rc=$?
+		_walk "$1" || rc=$?
+		q="$wq"
 		if [[ $rc -eq 2 ]]; then
 			pa_sandbox_die "$2 path '$1' goes through a symlink inside the writable workspace; refusing"
 			return 1
@@ -476,6 +801,7 @@ pa_sandbox_build_argv() {
 			pa_sandbox_die "$2 does not resolve to an existing directory; refusing"
 			return 1
 		fi
+		for pp in "${wdot[@]}"; do gdot+=("$pp"$'\t'"$2: '$1'"); done
 		for pp in "${prot[@]}"; do
 			pa_sandbox_within "$q" "$pp" && return 0
 		done
@@ -489,7 +815,8 @@ pa_sandbox_build_argv() {
 	}
 	_protect_path() { # <abs path> <label>: a file/dir host git reads or runs; may not exist yet
 		local q pp rc=0
-		q="$(_walk "$1")" || rc=$?
+		_walk "$1" || rc=$?
+		q="$wq"
 		if [[ $rc -ne 0 ]]; then
 			pa_sandbox_die "$2: '$1' goes through a symlink inside the writable workspace or cannot be resolved; refusing"
 			return 1
@@ -498,6 +825,8 @@ pa_sandbox_build_argv() {
 			pa_sandbox_die "$2: '$1' goes through a symlink that leads into the workspace; refusing"
 			return 1
 		fi
+		for pp in "${wdot[@]}"; do gdot+=("$pp"$'\t'"$2: '$1'"); done
+		_hl "$q" || return 1
 		for pp in "${prot[@]}"; do
 			pa_sandbox_within "$q" "$pp" && return 0
 		done
@@ -581,11 +910,14 @@ pa_sandbox_build_argv() {
 		return "$bad"
 	}
 	# host global + system config (outside the sandbox's reach, but a RELATIVE hooksPath
-	# or script path there resolves into each worktree)
+	# or script path there resolves into each worktree). Every path git var names is
+	# protected, a MISSING one too (GIT_CONFIG_GLOBAL=<ws>/conf/gitconfig,
+	# $XDG_CONFIG_HOME/git/config): host git trusts a file the sandbox creates there.
 	local hf
 	while IFS= read -r hf; do
-		[[ -f "$hf" ]] || continue # unset, missing or /dev/null
-		_protect_path "$hf" "host git config" && _cfg_read "$hf" 0 || return 1
+		[[ -n "$hf" && "$hf" != /dev/null ]] || continue # unset (GIT_CONFIG_NOSYSTEM) or /dev/null
+		_protect_path "$hf" "host git config" || return 1
+		[[ ! -f "$hf" ]] || _cfg_read "$hf" 0 || return 1
 	done < <(git var GIT_CONFIG_GLOBAL 2>/dev/null; git var GIT_CONFIG_SYSTEM 2>/dev/null)
 	gk=("${ek[@]}")
 	gv=("${ev[@]}")
@@ -594,7 +926,7 @@ pa_sandbox_build_argv() {
 	# commondir, gitdir, info/, worktrees/*, ...) or a hooksPath dir must lead OUTSIDE the
 	# workspace and the rw state dirs (SYMLINKED GIT CONTROL FILES in the header).
 	_scan_links() {
-		local l t q rc lst err frc=0 bad=0
+		local l t q d rc lst err frc=0 bad=0
 		[[ -d "$1" ]] || return 0
 		if [[ $2 -gt 4 ]]; then
 			pa_sandbox_die "symlinked directories nested too deep under '$1'; refusing"
@@ -602,7 +934,8 @@ pa_sandbox_build_argv() {
 		fi
 		lst="$(mktemp)"
 		err="$(mktemp)"
-		find -P "$1" -type l -print0 >"$lst" 2>"$err" || frc=$?
+		# symlinks, and regular files with more than one hard link (HARD LINKS)
+		find -P "$1" \( -type l -printf 'L%p\0' \) -o \( -type f -links +1 -printf 'F%D:%i\t%p\0' \) >"$lst" 2>"$err" || frc=$?
 		if [[ $frc -ne 0 || -s "$err" ]]; then
 			pa_sandbox_die "scan for symlinks under '$1' failed (rc=$frc): $(head -c 400 "$err"); refusing"
 			command rm -f "$lst" "$err"
@@ -610,16 +943,23 @@ pa_sandbox_build_argv() {
 		fi
 		command rm -f "$err"
 		while IFS= read -r -d '' l; do
+			if [[ "$l" == F* ]]; then
+				hl+=("${l#F}")
+				continue
+			fi
+			l="${l#L}"
 			rc=0
 			t="$(readlink -- "$l")" || rc=1
 			[[ "$t" == /* ]] || t="${l%/*}/$t"
-			[[ $rc -eq 0 ]] && { q="$(_walk "$t")" || rc=$?; }
+			[[ $rc -eq 0 ]] && { _walk "$t" || rc=$?; }
+			q="$wq"
 			if [[ $rc -ne 0 ]] || pa_sandbox_within "$q" "$repo" || _rw "$q"; then
 				pa_sandbox_die "symlinked git control file '$l' leads into the writable workspace or state (it could be rewritten from inside), or cannot be resolved; refusing"
 				bad=1
 				break
 			fi
-			if [[ -d "$q" ]] && ! _scan_links "$q" $(($2 + 1)); then
+			for d in "${wdot[@]}"; do gdot+=("$d"$'\t'"symlinked git control file '$l': '$t'"); done
+			if ! _hl "$q" || { [[ -d "$q" ]] && ! _scan_links "$q" $(($2 + 1)); }; then
 				bad=1
 				break
 			fi
@@ -627,11 +967,43 @@ pa_sandbox_build_argv() {
 		command rm -f "$lst"
 		return "$bad"
 	}
-	# _words <value>: the words of a config value that may name a path -> wl ("a:word", or
-	# "v:word" for a word right after a $... expansion). Splitting/exclusions: header.
+	# _words <value>: the words of a config value that may name a path -> wl ("a:word"; "v:word"
+	# for a word right after a $... expansion; "i:word" for a word a shell/interpreter opens
+	# relative to the CURRENT directory; "u:" for such a word that is an expansion; "e:" for a
+	# word with its = , kept, protected only when it exists).
+	# Splitting/exclusions/positions: header. ireg: commands whose arguments are scripts,
+	# modules or sourced files; wreg: wrappers that run their arguments as a command.
+	local ireg='sh|bash|dash|zsh|ksh|mksh|ash|yash|fish|csh|tcsh|busybox|python[0-9.]*|pypy[0-9.]*|perl[0-9.]*|ruby[0-9.]*|node|nodejs|deno|bun|bunx|tsx|ts-node|php[0-9.]*|lua[0-9.]*|luajit|tclsh[0-9.]*|wish[0-9.]*|Rscript|awk|gawk|mawk|nawk|sed|source|\.|go|uv|uvx|npx|java|pwsh'
+	local wreg='env|exec|command|builtin|eval|nice|nohup|timeout|xargs|stdbuf|time|setsid|ionice|chrt|flock|sudo|doas'
+	# _wsplit <shell text>: its words with the markers below -> parts (the caller's local)
+	_wsplit() {
+		local v="$1" nl=$'\n' re='\$\{[^}]*\}|\$[A-Za-z_][A-Za-z0-9_]*|\$[0-9@*#?!$-]'
+		v="${v//[\"\']/}"
+		v="${v//\$\{HOME\}/\~}"
+		v="${v//\$HOME/\~}"
+		while [[ "$v" == *'`'*'`'* ]]; do # `cmd` is $(cmd)
+			v="${v/\`/\$(}"
+			v="${v/\`/)}"
+		done
+		v="${v//\`/\$(}"
+		# markers: \002 opens a nested command ( $( ( { ), \004 closes it, \005 starts the
+		# next command ( ; & | newline ), \006 redirection, \007 `=`, \001 an expansion
+		v="${v//\$(/ $'\002' }"
+		while [[ "$v" =~ $re ]]; do
+			v="${v/"${BASH_REMATCH[0]}"/ $'\001'}"
+		done
+		v="${v//[(\{]/ $'\002' }"
+		v="${v//[)\}]/ $'\004' $'\001'}"
+		v="${v//[;&|]/ $'\005' }"
+		v="${v//"$nl"/ $'\005' }"
+		v="${v//[<>]/ $'\006' }"
+		v="${v//=/$'\007'}"
+		v="${v//,/$'\010'}"
+		read -ra parts -d '' <<<"$v" || true
+	}
 	_words() {
-		local sep='[;&|<>(){}=,]' v="$1" w k p q1 q2 re='\$\{[^}]*\}|\$[A-Za-z_][A-Za-z0-9_]*|\$\(|`|\)'
-		local -a parts=()
+		local v="$1" w t k p q1 q2 cls="" rd=0 ip
+		local -a parts=() st=() sub=()
 		wl=()
 		v="${v#!}"
 		q1="${v//[^\"]/}"
@@ -639,41 +1011,129 @@ pa_sandbox_build_argv() {
 		if [[ $((${#q1} % 2)) -ne 0 || $((${#q2} % 2)) -ne 0 ]]; then
 			wl+=("a:$v") # unbalanced quotes: cannot split, the whole value is a word too
 		fi
-		v="${v//[\"\']/}"
-		v="${v//\$\{HOME\}/\~}"
-		v="${v//\$HOME/\~}"
-		while [[ "$v" =~ $re ]]; do
-			v="${v/"${BASH_REMATCH[0]}"/ $'\001'}"
-		done
-		v="${v//$sep/ }"
-		read -ra parts -d '' <<<"$v" || true
-		for w in "${parts[@]}"; do
-			k=a
-			[[ "$w" == $'\001'* ]] && k=v
-			w="${w//$'\001'/}"
-			case "$w" in
-			"" | . | refs/* | +refs/* | ^refs/*) continue ;;
-			file://*)
-				p="${w#file://}"
-				p="${p#localhost}"
-				[[ "$p" == /* ]] || continue # file://otherhost/...: not local
-				w="$p"
+		_wsplit "$v"
+		for t in "${parts[@]}"; do
+			case "$t" in
+			$'\002')
+				st+=("$cls")
+				cls=""
+				rd=0
+				continue
+				;;
+			$'\004')
+				if [[ ${#st[@]} -gt 0 ]]; then
+					cls="${st[-1]}"
+					unset 'st[-1]'
+				else
+					cls=i # unbalanced: the enclosing command is unknown
+				fi
+				continue
+				;;
+			$'\005')
+				cls=""
+				rd=0
+				continue
+				;;
+			$'\006')
+				rd=1
+				continue
 				;;
 			esac
-			[[ "$w" =~ ^[A-Za-z][A-Za-z0-9+.-]*:// ]] && continue # URL with a scheme
-			[[ "$w" =~ ^[^/]*: ]] && continue                     # host:path, a:b refspec, format:
-			[[ "$w" =~ [^/]\.\.|\.\.[^/] ]] && continue           # revision range a..b
-			wl+=("$k:$w")
+			k=a
+			[[ "$t" == $'\001'* ]] && k=v
+			t="${t//$'\001'/}"
+			w="${t##*/}"
+			# cls: "" = next word is the command, i = interpreter, w = wrapper, o = other
+			ip=0
+			if [[ -z "$cls" ]]; then
+				if [[ $rd -eq 1 ]]; then
+					ip=1 # `<file cmd`: opened relative to the current directory
+				elif [[ "$t" == *$'\007'* ]]; then
+					: # VAR=value before the command
+				elif [[ $k == v || -z "$t" ]]; then
+					cls=i # the command comes from an expansion: unknown
+				elif [[ "$w" =~ ^($wreg)$ ]]; then
+					cls=w
+				elif [[ "$w" =~ ^($ireg)$ ]]; then
+					cls=i
+				else
+					cls=o
+				fi
+			elif [[ $cls == i ]]; then
+				ip=1
+			elif [[ $cls == w ]]; then
+				if [[ "$w" =~ ^($ireg)$ ]]; then
+					cls=i
+				elif [[ ! ("$w" =~ ^($wreg)$ || "$t" == -* || "$t" == *$'\007'* || "$t" =~ ^[0-9]+(\.[0-9]+)?[smhd]?$) ]]; then
+					ip=1
+				fi
+			fi
+			rd=0
+			if [[ $ip -eq 1 && $k == v && "$t" != */* ]]; then
+				wl+=("u:$t") # an expansion names the file: cannot tell which
+				continue
+			fi
+			sub=()
+			IFS=$'\007\010' read -ra sub <<<"$t" || true
+			for w in "${sub[@]}"; do
+				_wadd "$w" "$k"
+			done
+			p="${t//$'\007'/=}"
+			p="${p//$'\010'/,}"
+			[[ "$p" == "$t" ]] || _wadd "$p" e # the word with its = , kept (a name may contain them)
 		done
 	}
-	# _pp <abs path> <key>: _protect_path once per path; a worktree root itself is skipped
-	# (e.g. safe.directory: git never runs a directory, and it cannot be made read-only)
+	# _wx <word>: 1 when the exclusion rules (header) say it is no path; else wx = the word
+	_wx() {
+		wx="$1"
+		case "$wx" in
+		"" | . | refs/* | +refs/* | ^refs/*) return 1 ;;
+		file://*)
+			wx="${wx#file://}"
+			wx="${wx#localhost}"
+			[[ "$wx" == /* ]] || return 1 # file://otherhost/...: not local
+			;;
+		esac
+		[[ "$wx" =~ ^[A-Za-z][A-Za-z0-9+.-]*:// ]] && return 1 # URL with a scheme
+		[[ "$wx" =~ ^[^/]*: ]] && return 1                     # host:path, a:b refspec, format:
+		[[ "$wx" =~ [^/]\.\.|\.\.[^/] ]] && return 1           # revision range a..b
+		return 0
+	}
+	# _wadd <word> <kind>: add one word of _words (ip: its interpreter position) to wl, plus
+	# the value of an attached short option (-Xvalue -> value, same kind)
+	_wadd() {
+		local w
+		_wx "$1" || return 0
+		w="$wx"
+		if [[ $ip -eq 1 && $k == a && "$w" != -* && ! "$w" =~ ^%[A-Za-z]$ ]]; then
+			wl+=("i:$w")
+		else
+			wl+=("$2:$w")
+		fi
+		[[ "$w" =~ ^-[A-Za-z0-9][^=] ]] && _wx "${w:2}" && wl+=("$2:$wx")
+		return 0
+	}
+	# _pp <abs path> <key>: _protect_path once per path AS WRITTEN (pdone is keyed on the
+	# unnormalised path: `tools/../hooks/x` is walked for `..` even when `hooks/x` was done);
+	# a worktree root itself is skipped (e.g. safe.directory: git never runs a directory, and
+	# it cannot be made read-only) -- only the root found from the layout, not a core.worktree
+	# value (config union) -- but one reached through `..` is still walked for its hops
 	_pp() {
-		local n r
+		local n r pp rc=0
+		[[ -z "${pdone[$1]:-}" ]] || return 0
+		pdone[$1]=1
 		n="$(realpath -s -m -- "$1")" || return 1
-		for r in "${roots[@]}" "$repo"; do [[ "$n" == "$r" ]] && return 0; done
-		[[ -z "${pdone[$n]:-}" ]] || return 0
-		pdone[$n]=1
+		for r in "${roots[0]}" "$repo"; do
+			[[ "$n" == "$r" ]] || continue
+			[[ "$1/" == */../* ]] || return 0
+			_walk "$1" || rc=$?
+			if [[ $rc -ne 0 ]]; then
+				pa_sandbox_die "$2 in the config of '$g': '$1' goes through a symlink inside the writable workspace or cannot be resolved; refusing"
+				return 1
+			fi
+			for pp in "${wdot[@]}"; do gdot+=("$pp"$'\t'"$2 in the config of '$g': '$1'"); done
+			return 0
+		done
 		_protect_path "$1" "$2 in the config of '$g'" || {
 			pa_sandbox_die "cannot protect '$1' named by $2 (config of '$g'); refusing" || true
 			return 1
@@ -682,6 +1142,23 @@ pa_sandbox_build_argv() {
 	# _cand <word> <kind> <key> <config dir>: protect what one config word may name (header)
 	_cand() {
 		local t="$1" b n rel=""
+		if [[ "$2" == u ]]; then
+			pa_sandbox_die "an interpreter argument in $3 (config of '$g') is a variable/command expansion ('$t...'): cannot tell which file it names; refusing"
+			return 1
+		fi
+		if [[ "$2" == e ]]; then # only an EXISTING entry (VALUE CANDIDATES in the header)
+			case "$t" in
+			/* | \~*)
+				n="$(_abs "$t" /)" || return 0
+				[[ -e "$n" || -L "$n" ]] && { _pp "$n" "$3" || return 1; }
+				return 0
+				;;
+			esac
+			for b in "${roots[@]}" "$4"; do
+				[[ -e "$b/$t" || -L "$b/$t" ]] && { _pp "$b/$t" "$3" || return 1; }
+			done
+			return 0
+		fi
 		case "$t" in
 		/* | \~*)
 			if ! n="$(_abs "$t" /)"; then
@@ -697,26 +1174,133 @@ pa_sandbox_build_argv() {
 		*) rel="$t" ;;
 		esac
 		for b in "${roots[@]}" "$4"; do
-			[[ "$rel" == */* || -e "$b/$rel" || -L "$b/$rel" ]] || continue
-			# <remote>/<x> with no <remote> entry in the base: a remote-tracking ref
-			[[ "$rel" == */* && -n "${rem[${rel%%/*}]:-}" && ! -e "$b/${rel%%/*}" && ! -L "$b/${rel%%/*}" ]] && continue
+			# a word without / counts when it exists, or when an interpreter opens it (i)
+			[[ "$rel" == */* || -e "$b/$rel" || -L "$b/$rel" || "$2" == i ]] || continue
+			# <remote>/<x> with no <remote> entry in the base: a remote-tracking ref (rem: what
+			# host git resolves, REMOTE NAMES in the header; never for an interpreter argument)
+			[[ "$2" != i && "$rel" == */* && -n "${rem[${rel%%/*}]:-}" && ! -e "$b/${rel%%/*}" && ! -L "$b/${rel%%/*}" ]] && continue
 			_pp "$b/$rel" "$3" || return 1
 		done
 	}
+	# _nonpath <key> <word>: a ONE-WORD value that is no path (SINGLE WORDS in the header)
+	_nonpath() {
+		case "$1" in
+		# a remote name that host git does not resolve (_rname): git uses it as a URL, i.e. a
+		# path relative to the current directory
+		branch.*.remote | branch.*.pushremote | remote.pushdefault | checkout.defaultremote | extensions.partialclone) return 1 ;;
+		# path-type names: no option / key-id exemption (git opens `-x` or `deadbeef` as a file)
+		gc.repackfilterto | *file | *path | *dir | *.ssl* | *.template) return 1 ;;
+		esac
+		[[ "$2" == -* || "$2" =~ ^(0[xX])?[0-9A-Fa-f]{8,40}!?$ ]] && return 0 # option, GPG key id
+		case "$1" in
+		# a command name: git looks it up in PATH (or runs a git subcommand / helper)
+		alias.* | *.editor | core.pager | pager.* | *.program | *.cmd | *.command | *.helper | *.driver | \
+			*.textconv | *.clean | *.smudge | *.process | *.tool | *.guitool | core.sshcommand | core.askpass | \
+			core.fsmonitor | core.gitproxy | *.defaultkeycommand | *.receivepack | *.uploadpack | *.sendmailcmd | \
+			diff.external | web.browser) return 0 ;;
+		# names, e-mail addresses, enums, ref / remote / branch names
+		user.name | user.email | author.* | committer.* | *.name | *.username | credential.* | url.* | \
+			branch.* | remote.*.push | remote.*.fetch | remote.*.vcs | remote.*.tagopt | \
+			init.defaultbranch | color.* | column.* | push.* | pull.* | merge.* | rebase.* | \
+			log.* | status.* | gc.* | extensions.* | protocol.* | gpg.format | *.sort | diff.algorithm | \
+			diff.colormoved | diff.colormovedws | diff.submodule | diff.dirstat | diff.wserrorhighlight | diff.renames | \
+			fetch.recursesubmodules | fetch.negotiationalgorithm | submodule.recurse | submodule.*.update | \
+			submodule.*.ignore | submodule.*.branch | core.autocrlf | core.safecrlf | core.eol | core.whitespace | \
+			core.checkstat | core.abbrev | core.logallrefupdates | core.fsync | core.fsyncmethod | \
+			receive.denycurrentbranch | receive.denydeletecurrent | commit.cleanup | grep.patterntype | \
+			blame.coloring | blame.date | maintenance.strategy | format.pretty | help.autocorrect) return 0 ;;
+		esac
+		return 1
+	}
+	# _gq <git dir> <args>: host git itself, read-only, with the caller's config environment
+	# (HOME, GIT_CONFIG_GLOBAL/NOSYSTEM/COUNT/PARAMETERS) but no inherited repo selection;
+	# `git remote` / `git remote get-url` only parse config (REMOTE NAMES in the header)
+	_gq() {
+		local d="$1"
+		shift
+		(cd / && env -u GIT_DIR -u GIT_WORK_TREE -u GIT_COMMON_DIR -u GIT_INDEX_FILE \
+			-u GIT_OBJECT_DIRECTORY -u GIT_ALTERNATE_OBJECT_DIRECTORIES -u GIT_NAMESPACE \
+			GIT_PAGER=cat PAGER=cat GIT_TERMINAL_PROMPT=0 GIT_OPTIONAL_LOCKS=0 \
+			git --no-pager -c core.fsmonitor=false --git-dir="$d" "$@")
+	}
+	# _rurl <url>: 0 and wx = the path when host git uses <url> as a LOCAL path (transport.c:
+	# file://, else no <scheme>:// or <helper>:: and no `:` before the first `/`)
+	_rurl() {
+		wx="$1"
+		case "$wx" in
+		file://*)
+			wx="${wx#file://}"
+			wx="${wx#localhost}"
+			[[ "$wx" == /* ]]
+			return
+			;;
+		esac
+		[[ -n "$wx" && ! "$wx" =~ ^[A-Za-z][A-Za-z0-9+.-]*(://|::) && ! "$wx" =~ ^[^/]*: ]]
+	}
+	# _rname <name>: resolve a remote name with host git (fetch and push URLs, after
+	# insteadOf). rq[name] = 0: every URL is remote, 1: a URL is a local path (in rl[name]),
+	# 2: no such remote (git uses the name itself as the URL; also when `git remote` failed
+	# for this git dir). 1 on a git error.
+	_rname() {
+		local u o e rc p
+		[[ -z "${rq[$1]+x}" ]] || return 0
+		rq[$1]=0
+		rl[$1]=""
+		[[ $rok -eq 1 ]] || { rq[$1]=2 && return 0; }
+		e="$(mktemp)"
+		for p in "" --push; do
+			rc=0
+			o="$(_gq "$g" remote get-url $p --all -- "$1" 2>"$e")" || rc=$?
+			if [[ $rc -eq 2 ]]; then
+				rq[$1]=2
+				break
+			elif [[ $rc -ne 0 ]]; then
+				pa_sandbox_die "host git cannot resolve remote '$1' (config of '$g', rc=$rc): $(head -c 400 "$e"); refusing"
+				command rm -f "$e"
+				return 1
+			fi
+			while IFS= read -r u; do
+				_rurl "$u" && rq[$1]=1 && rl[$1]+="$wx"$'\n'
+			done <<<"$o"
+		done
+		command rm -f "$e"
+	}
+	# _gmem <group>: gm = the number of members host git reads for remotes.<group> (words
+	# split like git; 0 when unset or when `git remote` failed for this git dir). 1 on a
+	# git error.
+	_gmem() {
+		local o rc=0
+		local -a m=()
+		gm=0
+		[[ $rok -eq 1 ]] || return 0
+		o="$(_gq "$g" config --get-all "remotes.$1" 2>/dev/null)" || rc=$?
+		if [[ $rc -ne 0 && $rc -ne 1 ]]; then
+			pa_sandbox_die "host git cannot read remote group '$1' (config of '$g', rc=$rc); refusing"
+			return 1
+		fi
+		IFS=$' \t\n' read -r -d '' -a m <<<"$o" || true
+		gm=${#m[@]}
+	}
 	# _git_ctx <git dir> <worktree root>
+	local -A gdone=()
 	_git_ctx() {
-		local g c f i r t k v w
-		local -a roots=("$2") files=()
-		local -A rem=()
+		local g c f i n r t k v w sw wx d e lst err frc gm
+		local -a roots=("$2") files=() ws=()
+		local -A rem=() rq=() rl=() rn=() grp=()
+		local rok=0
 		_protect_dir "$1" "git dir of '$2'" || return 1
-		g="$(_walk "$1")"
+		_walk "$1" || return 1
+		g="$wq"
+		[[ -z "${gdone[$g|$2]:-}" ]] || return 0 # same git dir + root already done (worktrees/* loop)
+		gdone[$g|$2]=1
 		_scan_links "$g" 0 || return 1
 		c="$g"
 		if [[ -f "$g/commondir" ]]; then
 			c="$(head -n1 "$g/commondir")"
 			[[ "$c" == /* ]] || c="$g/$c"
 			_protect_dir "$c" "commondir of '$g'" || return 1
-			c="$(_walk "$c")"
+			_walk "$c" || return 1
+			c="$wq"
 			[[ "$c" == "$g" ]] || _scan_links "$c" 0 || return 1
 		fi
 		ek=("${gk[@]}")
@@ -735,17 +1319,80 @@ pa_sandbox_build_argv() {
 				pa_sandbox_die "unsupported core.worktree '${ev[$i]}' (config of '$g'); refusing"
 				return 1
 			fi
+			# host git chdirs into it (hooks, submodule .git files under it): walked as written
+			# for `..` IN GIT PATHS, like every other git path
+			frc=0
+			_walk "$r" || frc=$?
+			if [[ $frc -ne 0 ]]; then
+				pa_sandbox_die "core.worktree in the config of '$g': '$r' goes through a symlink inside the writable workspace or cannot be resolved; refusing"
+				return 1
+			fi
+			for d in "${wdot[@]}"; do gdot+=("$d"$'\t'"core.worktree in the config of '$g': '$r'"); done
 			roots+=("$r")
 		done
-		for k in "${ek[@]}"; do # configured remote names (see _cand)
-			[[ "$k" == remote.*.url ]] && k="${k#remote.}" && rem[${k%.url}]=1
+		# EVERY remote name host git may know (REMOTE NAMES in the header): `git remote`, the
+		# remote.<name>.* sections of every config file read, the legacy remotes/<name> and
+		# branches/<name> files of the git dir and common dir (rn: 2 = listed by `git remote`);
+		# each is resolved here and protected after the per-key loop below.
+		# A git dir host git does not accept (e.g. an empty nested .git): every name is a path.
+		rok=1
+		t="$(_gq "$g" remote 2>/dev/null)" || {
+			rok=0
+			t=""
+		}
+		while IFS= read -r n; do
+			[[ -n "$n" ]] && rn[$n]=2
+		done <<<"$t"
+		for k in "${ek[@]}"; do
+			[[ "$k" == remote.*.* ]] || continue
+			n="${k#remote.}"
+			n="${n%.*}"
+			[[ -n "$n" ]] && rn[$n]="${rn[$n]:-1}"
 		done
-		# EVERY value of EVERY key (CONFIG REFERENCES in the header; no key list)
+		for d in "$g/remotes" "$g/branches" "$c/remotes" "$c/branches"; do
+			[[ -e "$d" || -L "$d" ]] || continue
+			if [[ -L "$d" || ! -d "$d" ]]; then
+				pa_sandbox_die "legacy remote dir '$d' is a symlink or not a directory; refusing"
+				return 1
+			fi
+			lst="$(mktemp)"
+			err="$(mktemp)"
+			frc=0
+			find -P "$d" -mindepth 1 ! -type d \( -type f -printf 'F%P\0' -o -printf 'X%P\0' \) >"$lst" 2>"$err" || frc=$?
+			if [[ $frc -ne 0 || -s "$err" ]] || grep -qz '^X' "$lst"; then
+				pa_sandbox_die "scan of legacy remote dir '$d' failed or found a symlink / special file (rc=$frc): $(head -c 400 "$err"); refusing"
+				command rm -f "$lst" "$err"
+				return 1
+			fi
+			while IFS= read -r -d '' e; do
+				e="${e#F}"
+				[[ -n "$e" ]] && rn[$e]="${rn[$e]:-1}"
+			done <"$lst"
+			command rm -f "$lst" "$err"
+		done
+		# remote groups (REMOTE NAMES in the header): every word of every remotes.<group>
+		# value (split like git: space, tab, newline) and every <group> (rn 3 when known only
+		# from a group; grp: the group keys exactly as git compares them)
+		for i in "${!ek[@]}"; do
+			[[ "${ek[$i]}" == remotes.?* ]] || continue
+			n="${ek[$i]#remotes.}"
+			grp[$n]=1
+			rn[$n]="${rn[$n]:-3}"
+			IFS=$' \t\n' read -r -d '' -a ws <<<"${ev[$i]}" || true
+			for w in "${ws[@]}"; do
+				rn[$w]="${rn[$w]:-3}"
+			done
+		done
+		for n in "${!rn[@]}"; do
+			_rname "$n" || return 1
+			[[ ${rq[$n]} -eq 0 && ${rn[$n]} -eq 2 ]] && rem[$n]=1 # listed by `git remote` (see _cand)
+		done
+		# EVERY value of EVERY key (CONFIG REFERENCES in the header; no list of path keys)
 		for i in "${!ek[@]}"; do
 			k="${ek[$i]}"
 			v="${ev[$i]}"
 			case "$k" in
-			include.path | includeif.*.path | core.worktree) continue ;; # handled above
+			include.path | includeif.*.path | core.worktree | remotes.*) continue ;; # handled above
 			core.hookspath)                                             # relative: to the worktree root (githooks(5))
 				[[ -n "$v" ]] || continue
 				for r in "${roots[@]}"; do
@@ -753,16 +1400,204 @@ pa_sandbox_build_argv() {
 						pa_sandbox_die "cannot protect hooks dir '$v' named by core.hooksPath (config of '$g'); refusing" || true
 						return 1
 					fi
-					t="$(_walk "$f")" && _scan_links "$t" 0 || return 1
+					_walk "$f" && _scan_links "$wq" 0 || return 1
 				done
 				continue
+				;;
+			branch.*.remote | branch.*.pushremote | remote.pushdefault | checkout.defaultremote | extensions.partialclone)
+				# a remote name: protect the local URLs host git resolves it to; a name git does
+				# not resolve is a path itself (falls through, _nonpath)
+				if [[ -n "$v" ]]; then
+					_rname "$v" || return 1
+					if [[ ${rq[$v]} -ne 2 ]]; then
+						while IFS= read -r t; do
+							[[ -z "$t" ]] || _cand "$t" i "$k (URL of remote '$v')" "${ed[$i]}" || return 1
+						done <<<"${rl[$v]}"
+						continue
+					fi
+				fi
+				;;
+			url.*.insteadof | url.*.pushinsteadof)
+				# the <base> in the KEY replaces a URL prefix: a local base (_rurl; an empty one
+				# leaves the suffix, a relative path) turns the remote into the string base+suffix,
+				# a path that cannot be told in advance. An absolute base is walked as written
+				# (`..` IN GIT PATHS): host git applies its `..` hops to the directories it finds then.
+				t="${k#url.}"
+				t="${t%.*}"
+				n=""
+				wx=""
+				if [[ -z "$t" ]] || _rurl "$t"; then
+					n=-
+					if [[ "$wx" == [/~]* ]] && w="$(_abs "$wx" /)"; then
+						frc=0
+						_walk "$w" || frc=$?
+						if [[ $frc -ne 0 ]]; then
+							pa_sandbox_die "$k in the config of '$g': '$w' goes through a symlink inside the writable workspace or cannot be resolved; refusing"
+							return 1
+						fi
+						for d in "${wdot[@]}"; do gdot+=("$d"$'\t'"$k in the config of '$g': '$w'"); done
+						n="$wq"
+					fi
+				fi
+				for r in "${rwp[@]}"; do
+					[[ -z "$n" || ("$n" != - && "$n" != "$r" && "$n" != "$r"/* && "$r" != "$n"*) ]] && continue
+					pa_sandbox_die "url.<base>.insteadOf base '$t' (config of '$g') is a relative path or a prefix of / a path in the workspace or a state path: the remote it rewrites to cannot be protected; refusing"
+					return 1
+				done
 				;;
 			esac
 			[[ -z "$v" || "${v,,}" =~ ^(true|false|yes|no|on|off)$ || "$v" =~ ^-?[0-9]+(\.[0-9]+)?[kKmMgG]?$ || "$v" == key::* ]] && continue
 			_words "$v"
+			# the whole value (VALUE CANDIDATES in the header); ONE word (no whitespace, no `!`)
+			# names a path even when missing, unless _nonpath (SINGLE WORDS in the header)
+			t="${v#"${v%%[![:space:]]*}"}"
+			t="${t%"${t##*[![:space:]]}"}"
+			t="${t#:(optional)}" # git-config(1) pathname: ignored when missing
+			sw=0
+			[[ "$t" != *[[:space:]]* && "$t" != '!'* && "$t" != '%(prefix)/'* ]] && ! _nonpath "$k" "$t" && sw=1
+			_wx "$t" && wl+=("w:$wx")
 			for w in "${wl[@]}"; do
+				[[ $sw -eq 1 && "$w" == w:* ]] && w="i:${w#w:}"
+				[[ "$w" == w:* ]] && w="e:${w#w:}"
 				_cand "${w#?:}" "${w%%:*}" "$k" "${ed[$i]}" || return 1
 			done
+		done
+		# the local URLs of every remote name collected above, or the name itself when host git
+		# uses it as a path (after the per-key checks, whose refusals are more specific)
+		for n in "${!rn[@]}"; do
+			case "${rq[$n]}" in
+			0) ;;
+			1)
+				while IFS= read -r t; do
+					[[ -z "$t" ]] || _cand "$t" i "URL of remote '$n'" "$2" || return 1
+				done <<<"${rl[$n]}"
+				;;
+			*)
+				# a name known only from groups that host git reads as a group of 2+ members:
+				# fetch / remote update expand it, never a path (fewer: `git fetch <group>`
+				# uses the name itself)
+				if [[ ${rn[$n]} -eq 3 && -n "${grp[$n]:-}" ]]; then
+					_gmem "$n" || return 1
+					[[ $gm -ge 2 ]] && continue
+				fi
+				_cand "$n" i "remote name '$n' (host git uses it as a path)" "$2" || return 1
+				;;
+			esac
+		done
+		_sub_ctx "$g" "$c" "$2"
+	}
+	# _sub_ctx <git dir> <common dir> <worktree root>: the git dirs git keeps INSIDE a git dir
+	# -- submodule git dirs under modules/ (outermost; nested ones through the recursion) and
+	# linked-worktree admin dirs worktrees/* -- get _git_ctx with their own worktree root
+	# (SUBMODULE / WORKTREE GIT DIRS in the header). Any doubt refuses.
+	_sub_ctx() {
+		local d e n p r ent k v lst err frc tmp gmok=0
+		local -a found=() outer=() sl=() kids=() kroots=()
+		local -A gm=()
+		for d in "$1/modules" "$2/modules"; do
+			[[ -d "$d" ]] || continue
+			lst="$(mktemp)"
+			err="$(mktemp)"
+			frc=0
+			find -P "$d/" \( -type l -xtype d -printf 'L%p\0' \) -o \( -name HEAD -printf 'H%h\0' \) >"$lst" 2>"$err" || frc=$?
+			if [[ $frc -ne 0 || -s "$err" ]]; then
+				pa_sandbox_die "scan of '$d' for submodule git dirs failed (rc=$frc): $(head -c 400 "$err"); refusing"
+				command rm -f "$lst" "$err"
+				return 1
+			fi
+			command rm -f "$err"
+			while IFS= read -r -d '' e; do
+				if [[ "$e" == L* ]]; then
+					sl+=("${e#L}")
+					continue
+				fi
+				e="${e#H}"
+				e="${e%/}"
+				[[ -e "$e/objects" || -L "$e/objects" || -e "$e/refs" || -L "$e/refs" || -e "$e/commondir" || -L "$e/commondir" ]] || continue
+				found+=("$d"$'\t'"$e")
+			done <"$lst"
+			command rm -f "$lst"
+		done
+		for e in "${found[@]}"; do
+			for k in "${found[@]}"; do
+				[[ "${e#*$'\t'}" == "${k#*$'\t'}"/* ]] && continue 2
+			done
+			outer+=("$e")
+		done
+		for e in "${sl[@]}"; do # a symlinked dir outside every submodule git dir could hide one
+			for k in "${outer[@]}"; do
+				[[ "$e" == "${k#*$'\t'}"/* ]] && continue 2
+			done
+			pa_sandbox_die "symlinked directory '$e' under a modules/ dir (it could hold a submodule git dir that is not scanned); refusing"
+			return 1
+		done
+		for e in "${outer[@]}"; do
+			d="${e%%$'\t'*}"
+			e="${e#*$'\t'}"
+			n="${e#"$d"/}"
+			if [[ $gmok -eq 0 && (-e "$3/.gitmodules" || -L "$3/.gitmodules") ]]; then
+				tmp="$(mktemp)"
+				frc=0
+				(cd / && git config --file "$3/.gitmodules" --no-includes -z --list) >"$tmp" 2>/dev/null || frc=$?
+				if [[ $frc -ne 0 ]]; then
+					command rm -f "$tmp"
+					pa_sandbox_die "cannot parse '$3/.gitmodules' (needed to find the worktree of submodule git dirs under '$d'); refusing"
+					return 1
+				fi
+				while IFS= read -r -d '' ent; do
+					k="${ent%%$'\n'*}"
+					v=""
+					[[ "$ent" == *$'\n'* ]] && v="${ent#*$'\n'}"
+					[[ "$k" == submodule.*.path ]] || continue
+					k="${k#submodule.}"
+					gm[${k%.path}]="$v"
+				done <"$tmp"
+				command rm -f "$tmp"
+			fi
+			gmok=1
+			p="${gm[$n]:-$n}" # name -> path from .gitmodules, else the name is the path
+			if [[ -z "$n" || "$e" == "$d" || -z "$p" || "$p" == /* || "/$p/" == */../* || "/$p/" == */./* || "$p" == *$'\n'* ]]; then
+				pa_sandbox_die "cannot tell the worktree of submodule git dir '$e' (path '$p'); refusing"
+				return 1
+			fi
+			nn=$((nn + 1))
+			if [[ $nn -gt $PA_SANDBOX_MAX_NESTED_GIT ]]; then
+				pa_sandbox_die "more than $PA_SANDBOX_MAX_NESTED_GIT nested git dirs under '$repo'; refusing (raise PA_SANDBOX_MAX_NESTED_GIT to accept)"
+				return 1
+			fi
+			kids+=("$e")
+			kroots+=("$3/$p")
+		done
+		for d in "$2/worktrees" "$1/worktrees"; do
+			[[ -d "$d" ]] || continue
+			lst="$(mktemp)"
+			err="$(mktemp)"
+			frc=0
+			find "$d/" -mindepth 1 -maxdepth 1 -print0 >"$lst" 2>"$err" || frc=$?
+			if [[ $frc -ne 0 || -s "$err" ]]; then
+				pa_sandbox_die "listing of '$d' failed (rc=$frc): $(head -c 400 "$err"); refusing"
+				command rm -f "$lst" "$err"
+				return 1
+			fi
+			command rm -f "$err"
+			# shellcheck disable=SC2094 # the rm in the refusal branch runs right before `return`
+			while IFS= read -r -d '' e; do
+				[[ -d "$e" ]] || continue
+				r=""
+				[[ -f "$e/gitdir" ]] && r="$(head -n1 "$e/gitdir")"
+				if [[ -z "$r" ]]; then
+					pa_sandbox_die "worktree admin dir '$e' has no usable gitdir file: cannot tell its worktree; refusing"
+					command rm -f "$lst"
+					return 1
+				fi
+				[[ "$r" == /* ]] || r="$e/$r"
+				kids+=("$e")
+				kroots+=("${r%/*}")
+			done <"$lst"
+			command rm -f "$lst"
+		done
+		for e in "${!kids[@]}"; do
+			_git_ctx "${kids[$e]}" "${kroots[$e]}" || return 1
 		done
 	}
 	local gf gline gd
@@ -784,9 +1619,230 @@ pa_sandbox_build_argv() {
 		[[ "$gd" == /* ]] || gd="$(dirname "$gf")/$gd"
 		_git_ctx "$gd" "$(dirname "$gf")" || return 1
 	done
+	# a bare repo's hooks run in the git dir itself (githooks(5)): it is its own root
+	for gd in "${bares[@]}"; do
+		_git_ctx "$gd" "$gd" || return 1
+	done
+	# HOME SYMLINKS (see header): a host file reached through the user's HOME (a symlink,
+	# followed hop by hop, or a bind mount) that lands in the workspace is made read-only.
+	local -a hmid=() hdot=() hsr=() hxr=() hex=() hpe=() hneed=() hpend=() hnext=() hfiles=() hst=()
+	local hq="" hh hl2 hp ht hw herr2 hcnt=0 hnro=0 hr i j k mi mr
+	local -A hseen=() hrl=() hlab=()
+	_hwalk() { # <abs path>: like _walk, but a symlink inside a writable area is recorded in
+		# hmid (not refused), and link targets come from the hrl cache: an uncached link is
+		# queued in hneed and the walk returns 3 (walked again after one batch read). Sets hq. A
+		# directory strictly inside a writable area that a `..` leaves again is recorded in hdot
+		# (checked per hop, before the `..` is applied to the text): the sandbox could replace it
+		# by a symlink, so what the `..` names is not what pa-sandbox sees here.
+		local cur="" c t n=0 rest="$1" w
+		hq=""
+		hmid=()
+		hdot=()
+		[[ "$1" == /* && "$1" != *$'\n'* ]] || return 1
+		while [[ -n "$rest" ]]; do
+			c="${rest%%/*}"
+			[[ "$rest" == */* ]] && rest="${rest#*/}" || rest=""
+			case "$c" in
+			"" | .) continue ;;
+			..)
+				if [[ "$cur" == "$repo"/* ]]; then
+					hdot+=("$cur")
+				elif [[ "$cur" == "$agent_dir"/* ]]; then
+					for w in "${rwp[@]}"; do
+						[[ "$cur" == "$w"/* ]] && hdot+=("$cur") && break
+					done
+				fi
+				cur="${cur%/*}"
+				continue
+				;;
+			esac
+			if [[ -L "$cur/$c" ]]; then
+				if [[ "$cur/$c" == "$repo"/* || "$cur/$c" == "$agent_dir"/* ]] && _rw "$cur/$c"; then
+					hmid+=("$cur/$c")
+				fi
+				if [[ -z "${hrl[$cur/$c]+x}" ]]; then
+					hneed+=("$cur/$c")
+					return 3
+				fi
+				n=$((n + 1))
+				t="${hrl[$cur/$c]}"
+				[[ $n -le 40 && -n "$t" && "$t" != *$'\n'* ]] || return 1
+				[[ "$t" == /* ]] && cur=""
+				rest="$t/$rest"
+				continue
+			fi
+			cur="$cur/$c"
+		done
+		hq="${cur:-/}"
+	}
+	_hprot() { # <path> <is a symlink: 1|0> <label>: protect a resolved HOME reference
+		local pp
+		if [[ "$1" != "$repo" && "$1" != "$repo"/* ]]; then
+			if [[ "$1" == "$agent_dir"/* ]] && _rw "$1"; then
+				pa_sandbox_die "$3 resolves into the sandbox-writable state path '$1'; refusing"
+				return 1
+			fi
+			return 0
+		fi
+		for pp in "${prot[@]}"; do
+			[[ "$1" == "$pp" || "$1" == "$pp"/* ]] && return 0
+		done
+		if [[ "$1" == "$repo" ]]; then
+			pa_sandbox_die "$3 resolves to the workspace root itself (the host reads the whole workspace through it); refusing"
+			return 1
+		fi
+		hnro=$((hnro + 1))
+		[[ ${#hex[@]} -ge 5 ]] || hex+=("$3 -> ${1#"$repo"/}")
+		if [[ $2 -eq 0 && -e "$1" ]]; then
+			[[ -f "$1" ]] && hfiles+=("$1") # HARD LINKS, checked in one batch below
+			_ro "$1"
+			prot+=("$1")
+		elif [[ "${1#"$repo"/}" != */* ]]; then
+			pa_sandbox_die "$3 resolves to '$1', which is $([[ $2 -eq 1 ]] && echo "a symlink" || echo "missing") directly under the workspace root (the sandbox could re-point or create it); refusing"
+			return 1
+		else
+			cfgp+=("$1") # a symlink / missing: its top-level ancestor is ro-bound below (ANCESTORS)
+		fi
+	}
+	hpe=("$home")
+	if hh="$(getent passwd "$(id -u)" | cut -d: -f6)" && [[ -n "$hh" && -d "$hh" ]]; then
+		hh="$(cd -P "$hh" && pwd)" && [[ "$hh" != "$home" ]] && hpe+=("$hh")
+	fi
+	local -a hprune=() hrp=()
+	# -path takes a pattern: a path with glob characters is not pruned (that only costs time)
+	[[ "$repo" == *[][*?\\]* ]] || hrp=(-o -path "$repo")
+	for hh in "${hpe[@]}"; do
+		[[ "$hh" == / ]] && continue
+		hsr+=("$hh/")
+		[[ "$hh" == *[][*?\\]* ]] || hprune+=(-o -path "$hh/.cache" -o -path "$hh/go/src" -o -path "$hh/go/pkg")
+	done
+	for hh in "${XDG_CONFIG_HOME:-}" "${XDG_DATA_HOME:-}" "${ZDOTDIR:-}"; do
+		[[ "$hh" == /* && -d "$hh" ]] && hxr+=("$hh/")
+	done
+	for hh in "${hpe[@]}"; do
+		for hl2 in .config .config/systemd/user .local/share .local/bin .ssh .gnupg; do
+			[[ -L "$hh/$hl2" && -d "$hh/$hl2" ]] && hxr+=("$hh/$hl2/")
+		done
+	done
+	local -a hpath=()
+	IFS=: read -ra hpath <<<"${PATH:-}"
+	for hl2 in "${hpath[@]}"; do
+		for hh in "${hpe[@]}"; do
+			[[ "$hl2" == "$hh"/* && -d "$hl2" ]] && hxr+=("$hl2/")
+		done
+	done
+	hw="$(mktemp)"
+	herr2="$(mktemp)"
+	{
+		[[ ${#hsr[@]} -eq 0 ]] || find -H "${hsr[@]}" -maxdepth "$PA_SANDBOX_HOME_DEPTH" \( -name .git -o -name node_modules "${hrp[@]}" "${hprune[@]}" \) -prune -o -type l -printf '%p\0%l\0'
+		[[ ${#hxr[@]} -eq 0 ]] || find -H "${hxr[@]}" -maxdepth "$PA_SANDBOX_HOME_DEPTH" \( -name .git -o -name node_modules "${hrp[@]}" \) -prune -o -type l -printf '%p\0%l\0'
+	} >"$hw" 2>"$herr2" || true
+	if [[ -s "$herr2" ]]; then
+		pa_sandbox_warn "HOME symlink scan: some entries could not be read (skipped; this uid cannot read them either): $(head -c 300 "$herr2" | tr '\n' ' ')"
+	fi
+	command rm -f "$herr2"
+	while IFS= read -r -d '' hp && IFS= read -r -d '' ht; do
+		[[ -z "${hseen[$hp]:-}" ]] || continue
+		hseen[$hp]=1
+		hcnt=$((hcnt + 1))
+		_rw "$hp" && continue # a state-dir entry, scrubbed (not a host HOME entry)
+		hrl[$hp]="$ht"
+		hpend+=("$hp")
+	done <"$hw"
+	command rm -f "$hw"
+	if [[ $hcnt -gt $PA_SANDBOX_MAX_HOME_LINKS ]]; then
+		pa_sandbox_die "$hcnt symlinks under HOME, more than PA_SANDBOX_MAX_HOME_LINKS ($PA_SANDBOX_MAX_HOME_LINKS); refusing (raise it to accept)"
+		return 1
+	fi
+	# bind mounts below a home (e.g. a container mounting <checkout>/gitconfig on ~/.gitconfig):
+	# the source is visible at <mount point of the same fs> + (its root - that mount's root)
+	local -a mdev=() mroot=() mtgt=()
+	local f3 f4 f5
+	while read -r _ _ f3 f4 f5 _; do
+		f4="${f4//\\/\\0}"
+		f5="${f5//\\/\\0}"
+		printf -v f4 '%b' "$f4"
+		printf -v f5 '%b' "$f5"
+		mdev+=("$f3")
+		mroot+=("$f4")
+		mtgt+=("$f5")
+	done </proc/self/mountinfo
+	for i in "${!mtgt[@]}"; do
+		[[ "${mroot[$i]}" == *//deleted ]] && continue
+		mi=0
+		for hh in "${hpe[@]}"; do
+			[[ "${mtgt[$i]}" == "$hh"/* ]] && mi=1
+		done
+		[[ $mi -eq 1 ]] || continue
+		for j in "${!mtgt[@]}"; do
+			[[ $j -ne $i && "${mdev[$j]}" == "${mdev[$i]}" ]] || continue
+			mr="${mroot[$j]%/}"
+			[[ "${mroot[$i]}" == "$mr"/* || "${mroot[$i]}" == "${mroot[$j]}" ]] || continue
+			hp="${mtgt[$j]%/}${mroot[$i]#"$mr"}"
+			hp="${hp:-/}"
+			hlab[$hp]="bind mount ${mtgt[$i]}"
+			hpend+=("$hp")
+		done
+	done
+	# walk every entry; uncached link targets are read in one batch per round (no fork per hop)
+	for ((k = 0; k <= 41 && ${#hpend[@]} > 0; k++)); do
+		hneed=()
+		hnext=()
+		for hp in "${hpend[@]}"; do
+			hr=0
+			_hwalk "$hp" || hr=$?
+			if [[ $hr -eq 3 && $k -lt 41 ]]; then
+				hnext+=("$hp")
+				continue
+			fi
+			# the hops recorded so far are checked first (their refusals are more specific)
+			for hl2 in "${hmid[@]}"; do
+				_hprot "$hl2" 1 "${hlab[$hp]:-$hp}" || return 1
+			done
+			if [[ $hr -ne 0 ]]; then
+				# rc 1 (a newline in the path or a link target, more than 40 links, an unreadable or
+				# vanished link) or still unresolved after the last round: pa-sandbox cannot tell
+				# what the host reads through it, so it can neither protect nor accept it
+				pa_sandbox_die "${hlab[$hp]:-$hp} cannot be resolved (a newline in its path or a link target, a loop of more than 40 links, or a link that cannot be read): the host might read a workspace file through it that cannot be protected; refusing"
+				return 1
+			fi
+			_hprot "$hq" 0 "${hlab[$hp]:-$hp}" || return 1
+			for hl2 in "${hdot[@]}"; do
+				_hdot "$hl2" "${hlab[$hp]:-$hp}" "$hq" "${hmid[@]}" || return 1
+			done
+		done
+		hpend=("${hnext[@]}")
+		[[ ${#hneed[@]} -gt 0 ]] || continue
+		for hl2 in "${hneed[@]}"; do hrl[$hl2]=""; done # vanished meanwhile: unresolvable
+		hw="$(mktemp)"
+		find -P "${hneed[@]}" -maxdepth 0 -printf '%p\0%l\0' >"$hw" 2>/dev/null || true
+		while IFS= read -r -d '' hl2 && IFS= read -r -d '' ht; do
+			hrl[$hl2]="$ht"
+		done <"$hw"
+		command rm -f "$hw"
+	done
+	if [[ ${#hfiles[@]} -gt 0 ]]; then
+		if ! hw="$(stat -c '%h %d:%i' -- "${hfiles[@]}")"; then
+			pa_sandbox_die "cannot stat the HOME-referenced workspace files; refusing"
+			return 1
+		fi
+		mapfile -t hst <<<"$hw"
+		for i in "${!hfiles[@]}"; do
+			[[ "${hst[$i]%% *}" -le 1 ]] || hl+=("${hst[$i]#* }"$'\t'"${hfiles[$i]}")
+		done
+	fi
+	if [[ $hnro -gt 0 ]]; then
+		pa_sandbox_warn "$hnro host file(s) reached through HOME (symlinks / bind mounts) resolve into the workspace and are read-only inside the sandbox (with their top-level directory), e.g.: ${hex[*]}"
+	fi
+	# `..` IN GIT PATHS (see header): now that every protection is known, a directory a git path
+	# left through `..` must lie in a protected path or in a top-level directory that ANCESTORS
+	# ro-binds below (that of any protected path, gitfile or missing reference)
+	local pg rel top
+	for pg in "${gdot[@]}"; do
+		_hdot "${pg%%$'\t'*}" "${pg#*$'\t'}" "${prot[@]}" "${gfiles[@]}" "${cfgp[@]}" || return 1
+	done
 	# ANCESTORS (see header): ro-bind the top-level ancestor of every protected git path
 	# below the root, so no writable parent can be renamed to move the mount away.
-	local pg rel top
 	local -a anc=()
 	for pg in "${prot[@]}" "${gfiles[@]}" "${cfgp[@]}"; do
 		pa_sandbox_within "$pg" "$repo" || continue
@@ -807,9 +1863,45 @@ pa_sandbox_build_argv() {
 		_ro "$top"
 	done
 	if [[ ${#anc[@]} -gt 0 ]]; then
-		pa_sandbox_warn "read-only inside the sandbox (they contain protected git metadata; edits there fail by design): ${anc[*]}"
+		pa_sandbox_warn "read-only inside the sandbox (they contain protected git metadata or host files reached through HOME; edits there fail by design): ${anc[*]}"
 	fi
-	unset -f _ro _rw _walk _into_ws _protect_dir _protect_path _abs _cfg_read _scan_links _words _pp _cand _git_ctx
+	# HARD LINKS (see header): a protected file whose inode also has a name that stays
+	# writable inside (the workspace outside every ro bind, an rw state path) refuses.
+	if [[ ${#hl[@]} -gt 0 ]]; then
+		local e hp s okp hlst herr
+		local -A hid=()
+		local -a hroots=()
+		for e in "${hl[@]}"; do hid[${e%%$'\t'*}]="${e#*$'\t'}"; done
+		for e in "${rwp[@]}"; do [[ -e "$e" ]] && hroots+=("$e"); done
+		hlst="$(mktemp)"
+		herr="$(mktemp)"
+		frc=0
+		find -P "${hroots[@]}" -type f -links +1 -printf '%D:%i\t%p\0' >"$hlst" 2>"$herr" || frc=$?
+		if [[ $frc -ne 0 || -s "$herr" ]]; then
+			pa_sandbox_die "scan for hard links failed (rc=$frc): $(head -c 400 "$herr"); refusing"
+			command rm -f "$hlst" "$herr"
+			return 1
+		fi
+		command rm -f "$herr"
+		# shellcheck disable=SC2094 # the rm in the refusal branch runs right before `return`
+		while IFS= read -r -d '' e; do
+			[[ -n "${hid[${e%%$'\t'*}]:-}" ]] || continue
+			hp="${e#*$'\t'}"
+			okp=0
+			if pa_sandbox_within "$hp" "$repo"; then
+				for s in "${!seen[@]}"; do
+					[[ "$s" != */ ]] && pa_sandbox_within "$hp" "$s" && okp=1 && break
+				done
+			fi
+			if [[ $okp -ne 1 ]]; then
+				pa_sandbox_die "hard-linked git control file or HOME-referenced file '${hid[${e%%$'\t'*}]}' is the same file as '$hp', which is writable inside the sandbox; refusing"
+				command rm -f "$hlst"
+				return 1
+			fi
+		done <"$hlst"
+		command rm -f "$hlst"
+	fi
+	unset -f _ro _rw _hl _walk _into_ws _protect_dir _protect_path _abs _cfg_read _scan_links _wsplit _words _wx _wadd _pp _cand _nonpath _git_ctx _sub_ctx _gmem _hwalk _hprot _hdot
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
 	local -a pass=()
