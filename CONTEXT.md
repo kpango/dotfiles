@@ -748,6 +748,86 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
   `providerBackupModel` は settings.json の repo 所有キーとし、`subagentDefaultModel`(High)・`auxiliaryModel`(Low)・
   `allowedModels`（全 tier の主・fallback ＋ root/backup）は install 時に model-routing.json から導出する。
 
+### 実走結果（2026-10-18、T13、`agent/harnesses/primeagent/e2e/run-ollama-e2e.sh`）
+
+使い捨て HOME（`make -o dotfiles/install primeagent/install HOME=<tmp>`）＋ ollama `local-ollama/qwen3:4b-instruct`
+（Q9 の `qwen2.5-coder:32b` は未導入のため代替。pull はしていない）での結果。Checker が実走・コードで確認した事実を
+地の文で書き、ログの無い Maker の報告・所見はそう明記する。
+
+- **guard（C-1）**: 無改変の pa-sandbox 内 `-p` で、モデルが REPL から `bash('touch PA-E2E-ALLOW && git status --short')`
+  （exit 0、ファイル作成）と `bash('touch PA-E2E-LEAK && git add -A')`（exit 126、`prime-shell-guard: BLOCKED`、
+  PA-E2E-LEAK 未作成）を実行。env `PRIME_AGENT_BASH_COMMAND_PREFIX` 経由のガードが実カーネルの bash() で効く。
+- **allowedModels**: `-p`（非 daemon）では allowedModels 外の local モデルも弾かれない。daemon セッションでは
+  `is blocked by the daemon model allowlist` で拒否され、install 既定の allowedModels（local を含まない）では
+  local モデルは daemon で使えない。
+- **factory（P-7）**: `-p` では `rlm.spawn requires a daemon-backed session` で失敗する（`--autonomous`・`--mode rpc` は未確認）。
+  daemon セッションで 2 state の `pa-e2e-min` が ping→pong→`done` に到達する。ただし毎回ではない: attempt 1 の Checker の実走 1 回（t13-a1-checker.json）で、
+  factory が ping の子を回答なしで settle し（events は spawned/settled のみ、`answer_captured` なし）、遷移せずに
+  `done`（pong pending）で終わった。その子の transcript には正しい `{"ping": {"ok": true}}` があり、タスクメッセージは
+  spawn の約 60 秒後に届いていた。factory が子の spawn に渡すのは prompt と `name`/`model`/`thinking` だけで
+  （runtime `rlm/factory.py` `_admit`）、子の settle までの待ち時間を延ばす machine-spec の設定は見当たらない
+  （state の `budget_ms` は上限、`retries` は子が `done` 以外で settle したときだけ再 spawn する。同 `_apply_settlement`）。
+  E2E ではこれを INCONCLUSIVE とし、ollama のモデル事前ロード後に再試行する。原因（小モデルか daemon 側の settle
+  判定か）は特定していない。attempt 3 の Maker は、実走 3 回（2026-10-18 12:50–13:02、タイムゾーンの記録なし）がいずれも guard・allowlist・
+  machine とも PASS（exit 0）で machine は毎回 1 回目に PASS したと報告した（ログは見つからない）。再試行の経路は
+  attempt 4 の Checker の run 1 で実際に通った（下記）。
+- **pa-sandbox の制約（未修正、T9 への申し送り）**: (1) 読み取り専用の agent dir では daemon が起動しない
+  （`daemon-workers/<sha256(socket)[:12]>/supervisor-config.tmp-*` の作成が EROFS で失敗）。したがって pa-sandbox 内では
+  factory machine を実行できない。E2E は使い捨て agent dir を rw bind するラッパーで実行した。
+  (2) kernel venv の python と pyvenv.cfg `home` が uv の minor 版 symlink（`cpython-3.11-…`）を経由するが、
+  pa-sandbox は解決後のディレクトリ（`readlink -f` の結果）しか ro bind しない（pa-sandbox `pa_sandbox_build_argv`、
+  実 HOME の `~/.data/uv/python` も同じ構造）。その結果サンドボックス内で venv の再構築に入り EROFS でカーネルが
+  起動しない、というのは Maker の所見で、ログには残っていない（E2E は常に `PA_SANDBOX_RO_EXTRA=<uv python dir>` 付きで走る）。
+  (3) pa-sandbox は `/` を ro bind し、tmpfs を被せるのは `/tmp`・`$HOME`・（存在すれば）`/run/user`・`/run/dbus`
+  （`/dev` は `--dev`、docker/podman ソケットは `/dev/null` で mask。`pa_sandbox_build_argv`）。実 HOME はこの一覧に
+  含まれないので、HOME を差し替えて起動すると実 HOME がサンドボックス内から読める（`/` の ro bind により書けない）。
+  E2E のラッパーは実 HOME を tmpfs で隠し、この checkout と prime-agent の実行ファイルだけを ro で戻す。
+- **E2E のホスト側書き込み**: settings・models.json・machine など agent dir へのホスト書き込みは、すべてサンドボックスが
+  その dir を見る前に済ませる。フェーズ（guard / allowlist / machine の各試行）ごとに、ホスト専用テンプレート
+  （サンドボックス内では一時 HOME ごと tmpfs で見えない）を `cp -aT` で未存在の `~/.prime/agent` へ新規コピーし、
+  終了後は `mv -T` で退避するだけで再び書かない。サンドボックスが書けた dir の `*.jsonl` は通常ファイルだけを読む
+  （`find -type f`、python は `O_NOFOLLOW|O_NONBLOCK`＋`fstat`、`grep -D skip`）。読み込みはすべて `timeout` 付き。
+- **E2E の判定**: runtime は子の回答が空でも json ポートの parse に失敗しても子を `done` で settle し、run も `done` に
+  なる（`rlm/factory.py` `_apply_settlement`・`_capture_outputs`・`_finalize`）。したがって run `done` だけでは回答を
+  確かめたことにならない。machine の判定は次の順で行う。
+  1. FAIL: 画面に allowlist 拒否または `turn failed`（(a) より先に判定）。
+  2. INCONCLUSIVE (a): どの assistant tool call にも指示コードの全行が無い（モデルがコードを実行していない）。
+  3. FAIL: 指示コードの tool call（id）に対応する toolResult に status 行が無い（例外/タイムアウト）、run が `done`
+     でない、ノードが error/cancelled、error settle・`node_error`・`retry` がある、または capture された回答の
+     json ポート値が期待値と違う。
+  4. INCONCLUSIVE (b): `answer_captured` 無しで `done` settle したノードがあり、そのすべてについて子 transcript の text に
+     正しい回答（`{"ping": {"ok": true}}` / `{"pong": {"done": true}}`）がある。無ければ FAIL。
+  5. PASS: ping・pong とも `done`、`transition_fired` ping→pong、両ノードに `answer_captured` があり、status の
+     `answer_preview`（`_state_report` が返す最新 settle の回答）を runtime の `_parse_json_output` と同じ手順
+     （末尾の ```json フェンス優先、次に回答全体）で読んだポート値が ping `{"ok": true}`・pong `{"done": true}` に
+     JSON として厳密一致（`true` と `1` は別）。
+  6. それ以外は FAIL。
+  guard は指示コードの tool call に対応する toolResult の結果行だけを読む。allowlist フェーズは PASS か FAIL だけ
+  （拒否はモデル出力より前に起きる）。
+- **attempt 2/3 の PASS の扱い**: attempt 2/3 の PASS 判定は `answer_captured` も回答値も見ていなかった（INCONCLUSIVE (b) の
+  判定では attempt 2 が `answer_captured`、attempt 3 がさらに子 transcript の回答値を見ていた）。attempt 3 の
+  Checker の実走 1 回は PASS と判定されたが、events に `answer_captured:pong` が無く（子 transcript には
+  `{"pong": {"done": true}}` があった）、上の基準では INCONCLUSIVE に当たる。attempt 2/3 の Maker の実走（上記の
+  attempt 3 の Maker の報告を含む）も同じ理由で、上の基準では INCONCLUSIVE または FAIL だった可能性がある。attempt 2 の
+  Checker の実走 2 回（scratchpad/t13-a2-checker.json の証跡、t13a2/run1.out・run2.out）のログには
+  `answer_captured:ping`・`answer_captured:pong` の両方があるが、回答の値（`answer_preview`）は出力していないので
+  正誤は確かめられない。attempt 3 の Maker の実走 3 回のログは見つからず、確かめられない。
+- **attempt 4 の実走（上の判定）**:
+  - Checker の実走 2 回（2026-10-18 14:15–14:29 UTC 頃、scratchpad/t13-a4-checker.json の証跡、
+    t13a4/run1.out・run2.out）: 2 回とも EXIT 0（guard・allowlist・machine が PASS）。run 1 は machine の 1 試行目が
+    INCONCLUSIVE (a)（Checker が session を確認した記録では、モデルがクォートを崩して送ったコードが SyntaxError になり、
+    指示コードは実行されていない）、2 試行目で PASS。run 2 は 1 試行目で PASS。PASS した試行はいずれも
+    `answer_captured:ping`・`answer_captured:pong` があり、回答が `{"ping": {"ok": true}}`・`{"pong": {"done": true}}`
+    の正答だった。
+  - Maker の報告（ログは保存していない）: 実走 3 回（2026-10-18 13:53–14:06 UTC）がいずれも exit 0 で、2 回目は
+    1 試行目が INCONCLUSIVE (b)、2 試行目で PASS だったとしている。
+  - Checker の実走と同時に別タスク（T9b）が同じ ollama を使っていた（t13-a4-checker.json）が、INCONCLUSIVE との関係は確かめていない。
+- pty ごと終了した場合: attempt 1 の Checker（t13-a1-checker.json）が daemon と worker の動作中に `script` を SIGKILL した 2 回とも、
+  HOME=<tmp> のプロセスは残らなかった（pa-sandbox の sweep は EXIT trap にあり、非対話 bash は SIGHUP でも EXIT trap を
+  実行するので、sweep が走ったと推定される。sweep の実行自体は記録していない）。attempt 1 で報告したプロセス残存の原因は特定していない。
+- `-p` では settings の `defaultProvider`/`defaultModel` が反映されず amazon-bedrock の fixture モデルに落ちた。
+  `--provider`/`--model` を明示すれば local モデルが使われる。原因は未調査。
+
 ### システム不変条件
 
 - prime-agent に SYSTEM.md を置かない。settings.json を symlink しない。pi 専用キーを prime の settings に書かない。
