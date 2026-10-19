@@ -292,7 +292,7 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 		&& ok "write to \$HOME outside binds does not persist" || bad "write to \$HOME outside binds does not persist"
 
 	run_in 'echo state > "$HOME/.prime/agent/sessions/state-file"; echo x > "$HOME/.prime/agent/root-file" 2>/dev/null; true' >/dev/null
-	[[ -f "$FH/.prime/agent/sessions/state-file" && ! -e "$FH/.prime/agent/root-file" ]] && ok "agent dir: state dirs writable, root read-only" || bad "agent dir: state dirs writable, root read-only"
+	[[ -f "$FH/.prime/agent/sessions/state-file" && ! -e "$FH/.prime/agent/root-file" ]] && ok "agent dir: state dirs writable, root writes do not reach the host" || bad "agent dir: state dirs writable, root writes do not reach the host"
 
 	run_in 'echo x > /usr/pa-test-write || true' >/dev/null
 	[[ ! -e /usr/pa-test-write ]] && ok "/usr is read-only" || bad "/usr is read-only"
@@ -328,28 +328,39 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	out="$(run_in 'cat "$HOME/.prime/agent/skills/s.md" "$HOME/.prime/agent/AGENTS.md" "$HOME/.prime/agent/models.json" "$HOME/.prime/agent/agents/a.md"')"
 	expect_eq "symlinked skills/agents/AGENTS.md/models.json readable inside" "$(printf 'TRUSTED\nTRUSTED\nTRUSTED\nTRUSTED')" "$out"
 
-	# allowlist: NEW names (present or not) cannot be created in the agent dir
+	# NEW names may be created inside (the agent dir root is a sandbox-private tmpfs; machines/
+	# is a read-only host dir), but none of them reaches the host
 	run_in 'for n in SYSTEM.md machines/evil.md extensions rules keybindings.json mcp.json model-routing.json newdir; do touch "$HOME/.prime/agent/$n" 2>/dev/null || mkdir "$HOME/.prime/agent/$n" 2>/dev/null || true; done' >/dev/null
 	for n in SYSTEM.md machines/evil.md extensions rules keybindings.json mcp.json model-routing.json newdir; do
-		[[ ! -e "$FH/.prime/agent/$n" ]] && ok "new agent-dir entry $n cannot be created" || bad "new agent-dir entry $n cannot be created"
+		[[ ! -e "$FH/.prime/agent/$n" ]] && ok "new agent-dir entry $n does not reach the host" || bad "new agent-dir entry $n does not reach the host"
 	done
-	# MUTATION: with the agent dir bound rw instead of ro, creation DOES succeed
-	run_mut_rw() {
+	# MUTATION: with the agent dir bound rw instead of ro, creation DOES succeed (the private
+	# tmpfs root becomes a rw bind of the host dir; its per-entry ro binds and private tmpfs
+	# dirs go too). run_mut_root <op> <sh-snippet>: the same with the root bound by <op>.
+	run_mut_rw() { run_mut_root --bind "$1"; }
+	run_mut_root() {
 		(
 			cd "$REPO"
 			export HOME="$FH"
 			pa_sandbox_build_argv "$REPO" 2>/dev/null
 			local -a mut=()
-			local i=0
+			local i=0 a="$FH/.prime/agent" x y
 			while [[ $i -lt ${#PA_BWRAP_ARGV[@]} ]]; do
-				if [[ "${PA_BWRAP_ARGV[$i]}" == --ro-bind && "${PA_BWRAP_ARGV[$((i + 1))]}" == "$FH/.prime/agent" ]]; then
-					mut+=(--bind)
+				x="${PA_BWRAP_ARGV[$i]}"
+				y="${PA_BWRAP_ARGV[$((i + 1))]:-}"
+				if [[ "$x" == --tmpfs && "$y" == "$a" ]]; then
+					mut+=("$1" "$a" "$a")
+					i=$((i + 2))
+				elif [[ ("$x" == --ro-bind || "$x" == --ro-bind-try) && "$y" == "$a"/* && "$y" != "$a"/*/* ]]; then
+					i=$((i + 3))
+				elif [[ "$x" == --tmpfs && "$y" == "$a"/* ]]; then
+					i=$((i + 2))
 				else
-					mut+=("${PA_BWRAP_ARGV[$i]}")
+					mut+=("$x")
+					i=$((i + 1))
 				fi
-				i=$((i + 1))
 			done
-			"${mut[@]}" sh -c "$1"
+			"${mut[@]}" sh -c "$2"
 		) 2>&1
 	}
 	run_mut_rw 'touch "$HOME/.prime/agent/SYSTEM.md"' >/dev/null
@@ -1837,7 +1848,8 @@ for _ in range(6): s.handle_request()' "$T/tls19.pem" "$T/tls19.key" "$T/tls19.p
 	out="$(run_ws "$REPO" 'echo "$GIT_CONFIG_NOSYSTEM"')"
 	expect_eq "GIT_CONFIG_NOSYSTEM=1 inside the sandbox" "1" "$(printf '%s' "$out" | tail -n1)"
 
-	# mcp catalog + daemon-workers are read-only; telemetry stays writable
+	# the host mcp catalog + daemon-workers cannot be changed (catalog ro, daemon-workers a
+	# sandbox-private tmpfs); telemetry stays writable
 	for hp in mcp-service-catalog.v2.json daemon-workers/w1/supervisor-config daemon-workers/new-worker; do
 		run_ws "$REPO" "echo ATTACK > \"\$HOME/.prime/agent/$hp\" 2>/dev/null; true" >/dev/null || true
 		! grep -q ATTACK "$FH/.prime/agent/$hp" 2>/dev/null && ok "agent $hp cannot be written" || bad "agent $hp cannot be written"
@@ -1861,6 +1873,592 @@ for _ in range(6): s.handle_request()' "$T/tls19.pem" "$T/tls19.key" "$T/tls19.p
 		&& ok "MUTATION (agent dir rw): harness+cron writable" || bad "MUTATION (agent dir rw): harness+cron writable"
 	printf '[]\n' >"$FH/.prime/agent/cron-jobs.json"
 	printf '{}\n' >"$FH/.prime/agent/harness/harness_state.json"
+
+	# ---- T9b: the prime-agent daemon runs inside. The agent dir is a sandbox-private tmpfs
+	# holding every host entry ro-bound at its own path; daemon-workers/ and rlm-ledger/ are
+	# empty private tmpfs dirs.
+	run_mut_repl() { # <op> <path> <new op> <sh-snippet>: profile with `<op> <path>` turned into `<new op> <path> <path>`
+		(
+			cd "$REPO"
+			export HOME="$FH"
+			pa_sandbox_build_argv "$REPO" 2>/dev/null
+			local -a mut=()
+			local i=0
+			while [[ $i -lt ${#PA_BWRAP_ARGV[@]} ]]; do
+				if [[ "${PA_BWRAP_ARGV[$i]}" == "$1" && "${PA_BWRAP_ARGV[$((i + 1))]:-}" == "$2" ]]; then
+					mut+=("$3" "$2" "$2")
+					i=$((i + 2))
+					continue
+				fi
+				mut+=("${PA_BWRAP_ARGV[$i]}")
+				i=$((i + 1))
+			done
+			"${mut[@]}" sh -c "$4"
+		) 2>&1
+	}
+	A9="$FH/.prime/agent"
+	mkdir -p "$A9/rlm-ledger"
+	printf 'HOSTLEDGER\n' >"$A9/rlm-ledger/host.jsonl"
+	alist9() { find "$A9" -mindepth 1 \( -path "$A9/sessions" -o -path "$A9/session-artifacts" -o -path "$A9/session-leases" -o -path "$A9/logs" -o -path "$A9/swarm" \) -prune -o -printf '%P %y\n' | LC_ALL=C sort; }
+	sums9() { find -L "$A9" \( -path "$A9/sessions" -o -path "$A9/session-artifacts" -o -path "$A9/session-leases" -o -path "$A9/logs" -o -path "$A9/swarm" \) -prune -o -type f -print0 | LC_ALL=C sort -z | xargs -0 sha256sum; }
+	tree9="$(alist9)"
+	sum9="$(sums9)"
+	# (T9b a) what the daemon writes (measured with prime-agent 0.10.0: the mkdir locks
+	# settings.json.lock/ auth.json.lock/, the atomic-write temp of the mcp catalog, a new
+	# auth.json / catalog when the host has none, daemon-workers/<socket hash>/, rlm-ledger/)
+	# works inside
+	snip9='A="$HOME/.prime/agent"
+mkdir "$A/settings.json.lock" "$A/auth.json.lock" && rmdir "$A/settings.json.lock" "$A/auth.json.lock" && echo LOCKS-OK
+mkdir "$A/settings.json.lock" && echo LOCK-LEFT
+mkdir -p "$A/daemon-workers/1bd3a68af19a" && echo cfg > "$A/daemon-workers/1bd3a68af19a/supervisor-config" && echo r > "$A/rlm-ledger/x.jsonl" && echo DW-OK
+echo "LIST:$(ls -A "$A/daemon-workers" "$A/rlm-ledger" | tr "\n" " ")"
+cat "$A/daemon-workers/w1/supervisor-config" "$A/rlm-ledger/host.jsonl" 2>/dev/null | grep -q -e TRUSTED -e HOSTLEDGER && echo HOST-VISIBLE
+echo x > "$A/mcp-service-catalog.v2.42-0.tmp" && mkdir "$A/models-new" && echo NEW-OK'
+	out="$(run_ws "$REPO" "$snip9")"
+	expect_has "(T9b a) mkdir locks settings.json.lock/ auth.json.lock/ work inside" "LOCKS-OK" "$out"
+	expect_has "(T9b a) daemon-workers/ and rlm-ledger/ are writable inside" "DW-OK" "$out"
+	expect_has "(T9b a) new names (catalog temp, new dir) can be created inside" "NEW-OK" "$out"
+	expect_lacks "(T9b a) host daemon-workers/ and rlm-ledger/ entries are hidden inside" "HOST-VISIBLE" "$out"
+	expect_lacks "(T9b a) host daemon-workers/w1 not listed inside" "w1" "$out"
+	expect_eq "(T9b a) host agent dir tree unchanged (no lock, worker dir, ledger, temp, new name)" "$tree9" "$(alist9)"
+	expect_eq "(T9b a) host agent dir file contents unchanged" "$sum9" "$(sums9)"
+	# ... and it is gone with the sandbox: a second run starts empty, without the left-over lock
+	out="$(run_ws "$REPO" 'A="$HOME/.prime/agent"; echo "N:$(ls -A "$A/daemon-workers" | wc -l):$(ls -A "$A/rlm-ledger" | wc -l)"; test -e "$A/models-new" && echo LEFTOVER; test -e "$A/settings.json.lock" && echo LOCK-LEFTOVER; true')"
+	expect_has "(T9b a) private dirs start empty in the next run" "N:0:0" "$out"
+	expect_lacks "(T9b a) a new name of one run is gone in the next" "LEFTOVER" "$out"
+	# MUTATIONS: the private tmpfs is what keeps the daemon's writes off the host ...
+	run_mut_repl --tmpfs "$A9/daemon-workers" --bind 'mkdir -p "$HOME/.prime/agent/daemon-workers/1bd3a68af19a"' >/dev/null || true
+	[[ -d "$A9/daemon-workers/1bd3a68af19a" ]] && ok "MUTATION (daemon-workers bound rw): the worker dir reaches the host" || bad "MUTATION (daemon-workers bound rw): the worker dir reaches the host"
+	command rm -rf "$A9/daemon-workers/1bd3a68af19a"
+	run_mut_rw 'mkdir "$HOME/.prime/agent/settings.json.lock"' >/dev/null || true
+	[[ -d "$A9/settings.json.lock" ]] && ok "MUTATION (agent root bound rw): a lock dir reaches the host" || bad "MUTATION (agent root bound rw): a lock dir reaches the host"
+	command rm -rf "$A9/settings.json.lock"
+	# ... and with the old read-only root (T9) the daemon's lock cannot be taken (EROFS, the
+	# daemon then fails closed: "The daemon model allowlist could not be read")
+	out="$(run_mut_root --ro-bind 'mkdir "$HOME/.prime/agent/settings.json.lock" 2>&1 || echo LOCK-FAILED')" || true
+	expect_has "MUTATION (agent root read-only, as in T9): the settings lock fails" "LOCK-FAILED" "$out"
+	# (T9b b) the real files are not writable, removable, renamable or replaceable inside either
+	# (each is a read-only mount point); a planted link to them gives no write access
+	snip9b='A="$HOME/.prime/agent"
+for p in settings.json auth.json models.json AGENTS.md skills/s.md agents/a.md machines/m.json bin/prime-shell-guard.sh mcp-service-catalog.v2.json; do
+  (printf "ATTACK\n" >> "$A/$p") 2>/dev/null && echo "WROTE:$p"
+  mv "$A/$p" "$A/$p.moved" 2>/dev/null && echo "MOVED:$p"
+  rm -f "$A/$p" 2>/dev/null; test -e "$A/$p" || echo "REMOVED:$p"
+  ln -sfn /dev/null "$A/$p" 2>/dev/null; test "$(readlink "$A/$p")" = /dev/null && echo "RELINKED:$p"
+done
+for d in skills agents machines bin kernel-venv; do mv "$A/$d" "$A/$d.moved" 2>/dev/null && echo "MOVED:$d"; done
+ln -s settings.json "$A/via-link" && { (printf "ATTACK\n" >> "$A/via-link") 2>/dev/null && echo WROTE:via-link; }
+ln -s "$A/auth.json" "$A/auth.json.lock" && { (printf "ATTACK\n" >> "$A/auth.json.lock") 2>/dev/null && echo WROTE:lock-link; }
+(printf "ATTACK\n" >> "$A/settings.json") 2>&1 | grep -o -m1 -e "Read-only file system" -e "Device or resource busy"
+cat "$A/settings.json" "$A/auth.json" "$A/AGENTS.md" "$A/skills/s.md" "$A/models.json"'
+	out="$(run_ws "$REPO" "$snip9b")"
+	for w in WROTE: MOVED: REMOVED: RELINKED:; do
+		expect_lacks "(T9b b) inside: no real agent-dir file $w" "$w" "$out"
+	done
+	expect_has "(T9b b) inside: a write to settings.json fails with EROFS" "Read-only file system" "$out"
+	expect_has "(T9b b) inside: the real files still read TRUSTED" "$(printf 'TRUSTED\nTRUSTED\nTRUSTED\nTRUSTED\nTRUSTED')" "$out"
+	expect_eq "(T9b b) host agent dir tree unchanged" "$tree9" "$(alist9)"
+	expect_eq "(T9b b) host agent dir file contents unchanged" "$sum9" "$(sums9)"
+	# ---- The agent-dir entry list is taken when the profile is built and used by every later
+	# bwrap run of it (two guard probes, the real run). The host daemon creates and removes
+	# short-lived entries meanwhile.
+	run_ws_with() { # <pa-sandbox copy> <sh-snippet>: profile built by that copy
+		(
+			cd "$REPO"
+			export HOME="$FH"
+			# shellcheck source=/dev/null # pa-sandbox or a mutated copy
+			source "$1"
+			pa_sandbox_build_argv "$REPO" 2>/dev/null
+			"${PA_BWRAP_ARGV[@]}" sh -c "$2"
+		) 2>&1
+	}
+	race9() { # <pa-sandbox copy> <sh-snippet>: build, remove race-dir/ race-file on the host, probe the guard, run
+		(
+			cd "$REPO"
+			export HOME="$FH"
+			# shellcheck source=/dev/null # pa-sandbox or a mutated copy
+			source "$1"
+			pa_sandbox_build_argv "$REPO" 2>/dev/null || exit 90
+			rmdir "$A9/race-dir"
+			command rm -f "$A9/race-file"
+			pa_sandbox_verify_guard || {
+				r=$?
+				printf '%s\n' "${PA_SANDBOX_SETUP_ERR:-}"
+				exit $((90 + r))
+			}
+			"${PA_BWRAP_ARGV[@]}" sh -c "$2"
+		) 2>&1
+	}
+	# (T9b d) an entry listed at build time but removed on the host before bwrap runs is skipped
+	# (--ro-bind-try): the launch works, and inside the name is a tmpfs-only one
+	mkdir "$A9/race-dir"
+	: >"$A9/race-file"
+	snipr='A="$HOME/.prime/agent"
+test -e "$A/race-dir" || test -e "$A/race-file" || echo ABSENT
+mkdir "$A/race-dir" && echo IN >"$A/race-dir/f" && echo IN >"$A/race-file" && echo RECREATED'
+	out="$(race9 "$PA_SANDBOX" "$snipr")" && rc=0 || rc=$?
+	expect_eq "(T9b d) entry removed after listing: launch rc" "0" "$rc"
+	expect_has "(T9b d) entry removed after listing: absent inside" "ABSENT" "$out"
+	expect_has "(T9b d) entry removed after listing: its name can be created inside" "RECREATED" "$out"
+	[[ ! -e "$A9/race-dir" && ! -e "$A9/race-file" ]] && ok "(T9b d) a name created inside does not reach the host" || bad "(T9b d) a name created inside does not reach the host"
+	# MUTATION: with plain --ro-bind per entry bwrap aborts, reported as a bwrap setup error
+	MUT9R="$T/pa-sandbox.mut-robind"
+	sed 's|--ro-bind-try "\$agent_dir/\$name"|--ro-bind "$agent_dir/$name"|' "$PA_SANDBOX" >"$MUT9R"
+	! grep -q 'ro-bind-try "\$agent_dir/\$name"' "$MUT9R" && grep -q 'ro-bind-try "\$agent_dir/\$name"' "$PA_SANDBOX" && ok "(T9b d) mutation applied (per-entry --ro-bind)" || bad "(T9b d) mutation applied (per-entry --ro-bind)"
+	mkdir "$A9/race-dir"
+	: >"$A9/race-file"
+	out="$(race9 "$MUT9R" 'echo RAN')" && rc=0 || rc=$?
+	expect_eq "MUTATION (per-entry --ro-bind): entry removed after listing fails the guard probe as a setup error (rc 2)" "92" "$rc"
+	expect_has "MUTATION (per-entry --ro-bind): reason says the probe did not run" "the guard probe did not run" "$out"
+	expect_has "MUTATION (per-entry --ro-bind): reason carries bwrap's message" "Can't find source path" "$out"
+	expect_lacks "MUTATION (per-entry --ro-bind): not blamed on the guard" "guard probe failed" "$out"
+	rmdir "$A9/race-dir" 2>/dev/null || true
+	command rm -f "$A9/race-file"
+	# (T9b d) the host recreating such a name while the sandbox runs is not affected by the
+	# sandbox's own entry of that name
+	mkdir "$A9/race-dir"
+	: >"$A9/race-file"
+	command rm -f "$REPO/race9.started" "$REPO/race9.sig"
+	race9 "$PA_SANDBOX" 'A="$HOME/.prime/agent"; : > race9.started; i=0
+while [ ! -e race9.sig ] && [ $i -lt 400 ]; do sleep 0.05; i=$((i + 1)); done
+echo ATTACK >"$A/race-file"; mkdir -p "$A/race-dir" && echo ATTACK >"$A/race-dir/f"; ls -A "$A/race-dir"; echo DONE-INSIDE' >"$T/race9c.out" &
+	race9pid=$!
+	for _ in $(seq 1 200); do [[ -e "$REPO/race9.started" ]] && break; sleep 0.05; done
+	printf 'HOST\n' >"$A9/race-file"
+	mkdir "$A9/race-dir"
+	printf 'HOST\n' >"$A9/race-dir/f"
+	: >"$REPO/race9.sig"
+	wait "$race9pid" || true
+	expect_has "(T9b d) host recreates a removed name during the run: sandbox wrote its own" "DONE-INSIDE" "$(cat "$T/race9c.out")"
+	expect_eq "(T9b d) host recreates a removed name during the run: host copies unchanged" "HOST HOST" "$(cat "$A9/race-file" "$A9/race-dir/f" | tr '\n' ' ' | sed 's/ $//')"
+	command rm -rf "$A9/race-dir" "$A9/race-file" "$REPO/race9.started" "$REPO/race9.sig"
+	# (T9b e) lock names (*.lock, *.lock.*) the host has are not bound: the sandboxed daemon can take
+	# its own private lock; the host's lock entries are not visible inside and stay as they are
+	mkdir "$A9/settings.json.lock"
+	printf 'HOSTLOCK\n' >"$A9/kernel-venv.bootstrap.lock"
+	printf 'HOSTLOCK\n' >"$A9/kernel-venv.bootstrap.lock.candidate-1-x"
+	snipl='A="$HOME/.prime/agent"
+mkdir "$A/settings.json.lock" && rmdir "$A/settings.json.lock" && echo LOCK-TAKEN
+cat "$A/kernel-venv.bootstrap.lock" "$A/kernel-venv.bootstrap.lock.candidate-1-x" 2>/dev/null | grep -q HOSTLOCK && echo HOST-LOCK-VISIBLE
+echo mine >"$A/kernel-venv.bootstrap.lock" && echo FILE-LOCK-TAKEN'
+	out="$(run_ws "$REPO" "$snipl")"
+	expect_has "(T9b e) host's settings.json.lock/ not bound: the sandbox takes its own lock" "LOCK-TAKEN" "$out"
+	expect_lacks "(T9b e) host's lock files not visible inside" "HOST-LOCK-VISIBLE" "$out"
+	expect_has "(T9b e) host's kernel-venv.bootstrap.lock not bound: a private one can be written" "FILE-LOCK-TAKEN" "$out"
+	[[ -d "$A9/settings.json.lock" && "$(cat "$A9/kernel-venv.bootstrap.lock" "$A9/kernel-venv.bootstrap.lock.candidate-1-x")" == $'HOSTLOCK\nHOSTLOCK' ]] && ok "(T9b e) host lock entries unchanged" || bad "(T9b e) host lock entries unchanged"
+	# MUTATION: bound read-only like other entries, the host's lock is frozen inside
+	MUT9L="$T/pa-sandbox.mut-lockbind"
+	sed '/\[\[ "\$name" == \*\.lock || "\$name" == \*\.lock\.\* \]\] && continue/d' "$PA_SANDBOX" >"$MUT9L"
+	! grep -q '== \*\.lock\.\* \]\] && continue' "$MUT9L" && grep -q '== \*\.lock\.\* \]\] && continue' "$PA_SANDBOX" && ok "(T9b e) mutation applied (lock names bound)" || bad "(T9b e) mutation applied (lock names bound)"
+	out="$(run_ws_with "$MUT9L" "$snipl")" || true
+	expect_lacks "MUTATION (lock names bound): the sandbox cannot take the settings lock" "LOCK-TAKEN" "$out"
+	expect_has "MUTATION (lock names bound): the host's lock file is visible inside" "HOST-LOCK-VISIBLE" "$out"
+	command rm -rf "$A9/settings.json.lock" "$A9/kernel-venv.bootstrap.lock" "$A9/kernel-venv.bootstrap.lock.candidate-1-x"
+	# (T9b f) full launches (pa_sandbox_main: build, scrub, guard probes, run) while the host keeps
+	# creating and removing a lock dir, a catalog temp file and another short-lived dir
+	STUB9="$T/stub9b"
+	mkdir -p "$STUB9"
+	printf '#!/bin/sh\necho STUB-RAN\n' >"$STUB9/prime-agent"
+	chmod +x "$STUB9/prime-agent"
+	: >"$T/race9.on"
+	(
+		while [[ -e "$T/race9.on" ]]; do
+			mkdir "$A9/settings.json.lock" "$A9/race-loop-dir" 2>/dev/null || true
+			: >"$A9/mcp-service-catalog.v2.json.9.tmp"
+			rmdir "$A9/settings.json.lock" "$A9/race-loop-dir" 2>/dev/null || true
+			command rm -f "$A9/mcp-service-catalog.v2.json.9.tmp"
+		done
+	) &
+	loop9=$!
+	n9=0
+	for i9 in $(seq 1 20); do
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$STUB9:$PATH"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+		printf '%s\n' "$out" >>"$T/churn9.out"
+		if [[ $rc -eq 0 && "$out" == *STUB-RAN* ]]; then
+			n9=$((n9 + 1))
+		else
+			printf '     launch %s: rc=%s %s\n' "$i9" "$rc" "$(printf '%s' "$out" | tail -n 2)"
+		fi
+	done
+	command rm -f "$T/race9.on"
+	wait "$loop9" || true
+	rmdir "$A9/settings.json.lock" "$A9/race-loop-dir" 2>/dev/null || true
+	command rm -f "$A9/mcp-service-catalog.v2.json.9.tmp"
+	expect_eq "(T9b f) 20 launches while the host churns lock/temp entries: all succeed" "20" "$n9"
+	# an entry the churn removes while the HOME symlink scan walks it is gone, not unreadable
+	expect_lacks "(T9b f) churn: no 'could not be read' warning for vanished entries" "could not be read" "$(cat "$T/churn9.out")"
+	command rm -f "$T/churn9.out"
+	# a listing error (agent dir not readable) still refuses
+	chmod u-r "$A9"
+	out="$( (cd "$REPO"; export HOME="$FH"; pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	chmod u+r "$A9"
+	expect_eq "(T9b f) unreadable agent dir: refused" "1" "$rc"
+	expect_has "(T9b f) unreadable agent dir: message" "cannot list $A9" "$out"
+	# (T9b g) a bwrap setup failure (a bound path vanished between bwrap's check and its mount)
+	# is retried with a fresh profile, in a guard probe and in the real run; nothing inside ran
+	# before. A bwrap shim makes the chosen invocations fail exactly like that (a missing
+	# source path), then passes through.
+	BWSHIM="$T/bwshim"
+	mkdir -p "$BWSHIM"
+	REALBWRAP="$(command -v bwrap)"
+	cat >"$BWSHIM/bwrap" <<SHIMEOF
+#!/bin/bash
+case " \$* " in
+*" --info-fd "*) k=main ;;
+*" bash -c "*) k=probe ;;
+*) exec "$REALBWRAP" "\$@" ;;
+esac
+n=\$((\$(cat "$T/bw.\$k" 2>/dev/null || echo 0) + 1))
+echo "\$n" >"$T/bw.\$k"
+if [ "\$n" -le "\$(cat "$T/bw.fail.\$k" 2>/dev/null || echo 0)" ]; then
+	if [ "\$k" = main ] && [ -s "$T/bw.mode" ]; then exec "$T/bwfake" "\$(cat "$T/bw.mode")"; fi
+	exec "$REALBWRAP" --ro-bind "$T/bw-gone" "$T/bw-gone" "\$@"
+fi
+if [ "\$k" = main ] && [ -s "$T/bw.prevrun" ]; then
+	# what the previous (failed) attempt left when pa-sandbox starts over
+	{ [ -e "\$(cat "$T/bw.prevrun")" ] && printf 'RUNDIR-LEFT ' || printf 'RUNDIR-GONE '
+	kill -0 "\$(cat "$T/bw.helper")" 2>/dev/null && echo CHILD-ALIVE || echo CHILD-GONE; } >"$T/bw.prevcheck"
+fi
+exec "$REALBWRAP" "\$@"
+SHIMEOF
+	chmod +x "$BWSHIM/bwrap"
+	# bwfake <mode>: a real run whose bwrap setup fails AFTER the host-side watcher has recorded
+	# the child's namespace ids (the case churn hits when bwrap's mount loses its race): a child
+	# in its own user+ipc namespace is announced on --info-fd, the watcher records it and
+	# releases --block-fd, then the "setup" fails with bwrap's own message, nothing ran inside.
+	#   ids: the child is gone by then; ids-alive: it is still alive (the sweep must kill it);
+	#   survivor: a host-side respawner keeps entering that namespace for 8 s, so the sweep
+	#   cannot empty it (a member stays alive).
+	#   zombie:<s>: bwzombie instead announces a child that has exited but is not reaped (no
+	#   /proc/<pid>/ns/ipc, /proc/<pid> still there), keeps it so for <s> seconds without
+	#   touching --block-fd, then reaps it and fails like bwrap's setup (the exit window a
+	#   real setup failure has for about 0.6 ms, made long).
+	cat >"$T/bwfake" <<FAKEEOF
+#!/bin/bash
+run=\$(dirname "\$(readlink /proc/self/fd/4)")
+echo "\$run" >"$T/bw.prevrun"
+case "\$1" in zombie:*) exec python3 -I "$T/bwzombie" "\${1#zombie:}" "$T" ;; esac
+unshare -U --ipc sleep 30 </dev/null >/dev/null 2>&1 3>&- 4>&- 8>&- &
+hp=\$!
+echo "\$hp" >"$T/bw.helper"
+for _ in \$(seq 1 250); do
+	[ "\$(readlink /proc/\$hp/ns/user 2>/dev/null)" != "\$(readlink /proc/self/ns/user)" ] && break
+	sleep 0.02
+done
+printf '{\\n    "child-pid": %s\\n}\\n' "\$hp" >&7
+exec 7>&-
+read -r -N 1 -u 8 _
+tr '\\n' ' ' <"\$run/record" >"$T/bw.rec" 2>/dev/null
+case "\$1" in
+ids) kill -9 "\$hp"; wait "\$hp" 2>/dev/null ;;
+survivor)
+	(
+		exec 5</proc/\$hp/ns/user 6</proc/\$hp/ns/ipc
+		end=\$((SECONDS + 8))
+		while [ \$SECONDS -lt \$end ]; do
+			nsenter --user=/proc/self/fd/5 --ipc=/proc/self/fd/6 --preserve-credentials sleep 1 &
+			sleep 0.02
+		done
+		wait
+	) </dev/null >/dev/null 2>&1 3>&- 4>&- 8>&- &
+	echo \$! >"$T/bw.respawner"
+	;;
+esac
+echo "bwrap: Can't bind mount /oldroot$T/bw-gone on /newroot$T/bw-gone: No such file or directory" >&2
+exit 1
+FAKEEOF
+	chmod +x "$T/bwfake"
+	cat >"$T/bwzombie" <<'ZOMBIEEOF'
+import os, sys, time
+hold, out = float(sys.argv[1]), sys.argv[2]
+pid = os.fork()
+if pid == 0:
+    os._exit(0)
+with open(out + "/bw.helper", "w") as f:
+    f.write("%d\n" % pid)
+def state():
+    with open("/proc/%d/stat" % pid) as f:
+        return f.read().rsplit(")", 1)[1].split()[0]
+while state() != "Z":
+    time.sleep(0.005)
+os.write(7, b'{\n    "child-pid": %d\n}\n' % pid)
+os.close(7)
+time.sleep(hold)
+try:
+    os.readlink("/proc/%d/ns/ipc" % pid)
+    ns = "NS-READABLE"
+except OSError:
+    ns = "NS-GONE"
+with open(out + "/bw.zstate", "w") as f:
+    f.write("%s %s\n" % (state(), ns))
+os.waitpid(pid, 0)
+sys.stderr.write("bwrap: Can't bind mount /oldroot%s/bw-gone on /newroot%s/bw-gone: No such file or directory\n" % (out, out))
+sys.exit(1)
+ZOMBIEEOF
+	printf '#!/bin/sh\necho ran >>"$PWD/stub9g.count"\necho STUB-RAN\nexit 3\n' >"$STUB9/prime-agent"
+	main9g() { # <failing probe runs> <failing real runs>
+		command rm -f "$T"/bw.probe "$T"/bw.main "$REPO/stub9g.count"
+		echo "$1" >"$T/bw.fail.probe"
+		echo "$2" >"$T/bw.fail.main"
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$BWSHIM:$STUB9:$PATH"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+		runs9="$(wc -l 2>/dev/null <"$REPO/stub9g.count" || echo 0)"
+	}
+	main9g 1 0
+	expect_eq "(T9b g) setup failure in a guard probe: retried, prime-agent's rc" "3" "$rc"
+	expect_eq "(T9b g) setup failure in a guard probe: prime-agent ran once" "1" "$runs9"
+	expect_has "(T9b g) setup failure in a guard probe: retry announced" "retrying" "$out"
+	main9g 0 1
+	expect_eq "(T9b g) setup failure in the real run: retried, prime-agent's rc" "3" "$rc"
+	expect_eq "(T9b g) setup failure in the real run: prime-agent ran once" "1" "$runs9"
+	expect_has "(T9b g) setup failure in the real run: bwrap's message shown" "Can't find source path $T/bw-gone" "$out"
+	expect_eq "(T9b g) setup failure in the real run: 2 real runs" "2" "$(cat "$T/bw.main")"
+	main9g 0 9
+	expect_eq "(T9b g) setup failing every time: rc after 3 launches" "1" "$rc"
+	expect_eq "(T9b g) setup failing every time: 3 real runs, prime-agent never ran" "3 0" "$(cat "$T/bw.main") $runs9"
+	main9g 9 0
+	expect_eq "(T9b g) probe setup failing every time: rc" "1" "$rc"
+	expect_has "(T9b g) probe setup failing every time: message" "cannot start the sandbox (bwrap rc=1; the guard probe did not run" "$out"
+	expect_lacks "(T9b g) probe setup failing every time: not blamed on the guard" "guard probe failed" "$out"
+	# prime-agent itself failing with bwrap-like stderr is NOT retried (it ran: the shim marked it)
+	printf '#!/bin/sh\necho ran >>"$PWD/stub9g.count"\necho "bwrap: Can'"'"'t find source path /x" >&2\nexit 1\n' >"$STUB9/prime-agent"
+	main9g 0 0
+	expect_eq "(T9b g) prime-agent printing a bwrap-like error: not retried" "1 1" "$rc $runs9"
+	expect_lacks "(T9b g) prime-agent printing a bwrap-like error: no retry announced" "retrying" "$out"
+	# (T9b g) the setup failure of the real run comes AFTER the watcher recorded the child's
+	# namespace ids (bwfake above): those ids are swept, and only a clean sweep starts over
+	printf '#!/bin/sh\necho ran >>"$PWD/stub9g.count"\necho STUB-RAN\nexit 3\n' >"$STUB9/prime-agent"
+	main9k() { # <pa-sandbox copy> <bwfake mode> <failing real runs>
+		command rm -f "$T"/bw.probe "$T"/bw.main "$T"/bw.prevrun "$T"/bw.prevcheck "$T"/bw.helper "$T"/bw.rec "$T"/bw.respawner "$T"/bw.zstate "$REPO/stub9g.count"
+		echo 0 >"$T/bw.fail.probe"
+		echo "$3" >"$T/bw.fail.main"
+		echo "$2" >"$T/bw.mode"
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$BWSHIM:$STUB9:$PATH"
+			# shellcheck source=/dev/null # pa-sandbox or a mutated copy
+			source "$1"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+		runs9="$(wc -l 2>/dev/null <"$REPO/stub9g.count" || echo 0)"
+		bwmain9="$(cat "$T/bw.main" 2>/dev/null || echo 0)"
+	}
+	recre9='^ipc:\[[0-9]+\] user:\[[0-9]+\] $'
+	main9k "$PA_SANDBOX" ids 1
+	[[ "$(cat "$T/bw.rec" 2>/dev/null)" =~ $recre9 ]] && ok "(T9b g) ids recorded, then setup failure: the watcher had recorded valid ids" || bad "(T9b g) ids recorded, then setup failure: the watcher had recorded valid ids" "$(cat "$T/bw.rec" 2>/dev/null)"
+	expect_eq "(T9b g) ids recorded, then setup failure: swept and retried, prime-agent ran once, its rc, 2 real runs" "3 1 2" "$rc $runs9 $bwmain9"
+	expect_has "(T9b g) ids recorded, then setup failure: retry announced" "retrying" "$out"
+	expect_has "(T9b g) ids recorded, then setup failure: bwrap's message shown" "Can't bind mount /oldroot$T/bw-gone" "$out"
+	expect_eq "(T9b g) ids recorded, then setup failure: before the retry the previous run dir and child are gone" "RUNDIR-GONE CHILD-GONE" "$(cat "$T/bw.prevcheck" 2>/dev/null)"
+	main9k "$PA_SANDBOX" ids-alive 1
+	expect_eq "(T9b g) ids recorded, child still alive: swept and retried, prime-agent ran once, its rc, 2 real runs" "3 1 2" "$rc $runs9 $bwmain9"
+	expect_eq "(T9b g) ids recorded, child still alive: the sweep killed it before the retry" "RUNDIR-GONE CHILD-GONE" "$(cat "$T/bw.prevcheck" 2>/dev/null)"
+	main9k "$PA_SANDBOX" ids 9
+	expect_eq "(T9b g) ids recorded, setup failing every time: rc after 3 launches, prime-agent never ran" "1 0 3" "$rc $runs9 $bwmain9"
+	main9k "$PA_SANDBOX" survivor 1
+	expect_eq "(T9b g) ids recorded, a member survives the sweep: rc 70, no retry, prime-agent never ran" "70 0 1" "$rc $runs9 $bwmain9"
+	expect_lacks "(T9b g) ids recorded, a member survives the sweep: no retry announced" "retrying" "$out"
+	expect_has "(T9b g) ids recorded, a member survives the sweep: reported" "still alive in the sandbox" "$out"
+	rsp9="$(cat "$T/bw.respawner" 2>/dev/null || true)"
+	for _ in $(seq 1 200); do [[ -n "$rsp9" ]] && kill -0 "$rsp9" 2>/dev/null || break; sleep 0.1; done
+	read -ra rec9 <<<"$(cat "$T/bw.rec" 2>/dev/null)"
+	for _ in $(seq 1 60); do [[ -z "$(pa_sandbox_members "${rec9[0]:-x}" "${rec9[1]:-x}")" ]] && break; sleep 0.1; done
+	expect_eq "(T9b g) survivor case: no member left after the respawner stopped" "" "$(pa_sandbox_members "${rec9[0]:-x}" "${rec9[1]:-x}")"
+	# (T9b g) the watcher reads the child while it is exiting (exited, not reaped yet): it waits
+	# for the reap before releasing --block-fd, records `exited`, and the launch is retried
+	main9k "$PA_SANDBOX" zombie:2 1
+	expect_eq "(T9b g) child exiting when read: it was a zombie for the whole hold" "Z NS-GONE" "$(cat "$T/bw.zstate" 2>/dev/null)"
+	expect_eq "(T9b g) child exiting when read: waited, retried, prime-agent ran once, its rc, 2 real runs" "3 1 2" "$rc $runs9 $bwmain9"
+	expect_has "(T9b g) child exiting when read: retry announced" "retrying" "$out"
+	expect_lacks "(T9b g) child exiting when read: no identity warning" "was not recorded" "$out"
+	expect_eq "(T9b g) child exiting when read: before the retry the previous run dir and child are gone" "RUNDIR-GONE CHILD-GONE" "$(cat "$T/bw.prevcheck" 2>/dev/null)"
+	# not reaped within the watcher's bound (250 polls, >= 5 s): nothing recorded, rc 70, no retry
+	main9k "$PA_SANDBOX" zombie:15 1
+	expect_eq "(T9b g) child unreaped past the watcher's bound: it was a zombie for the whole hold" "Z NS-GONE" "$(cat "$T/bw.zstate" 2>/dev/null)"
+	expect_eq "(T9b g) child unreaped past the watcher's bound: rc 70, no retry, prime-agent never ran" "70 0 1" "$rc $runs9 $bwmain9"
+	expect_has "(T9b g) child unreaped past the watcher's bound: reported" "was not recorded" "$out"
+	expect_lacks "(T9b g) child unreaped past the watcher's bound: no retry announced" "retrying" "$out"
+	# MUTATION: no wait for the reap (attempt 4's code): rc 70, no retry
+	MUT9W="$T/pa-sandbox.mut-nowait"
+	sed 's|for ((i = 0; i < 250; i++)); do # exit wait|for ((i = 0; i < 1; i++)); do # MUTATION exit wait|' "$PA_SANDBOX" >"$MUT9W"
+	grep -q 'i < 1; i++)); do # MUTATION exit wait' "$MUT9W" && ! grep -q 'i < 250' "$MUT9W" && ok "(T9b g) mutation applied (no wait for the reap)" || bad "(T9b g) mutation applied (no wait for the reap)"
+	main9k "$MUT9W" zombie:2 1
+	expect_eq "MUTATION (no wait for the reap): rc 70, no retry, prime-agent never ran, 1 real run" "70 0 1" "$rc $runs9 $bwmain9"
+	expect_lacks "MUTATION (no wait for the reap): no retry announced" "retrying" "$out"
+	expect_has "MUTATION (no wait for the reap): reported" "was not recorded" "$out"
+	command rm -f "$MUT9W"
+	# MUTATION: the ids-recorded case not treated as a setup failure (attempt 3's code): rc 1, no retry
+	MUT9N="$T/pa-sandbox.mut-noidsretry"
+	sed 's|^\t\t\t\tsetupfail=2 # ids recorded.*|\t\t\t\t: # MUTATION|' "$PA_SANDBOX" >"$MUT9N"
+	grep -q ': # MUTATION' "$MUT9N" && ! grep -q 'setupfail=2' "$MUT9N" && ok "(T9b g) mutation applied (no retry when ids were recorded)" || bad "(T9b g) mutation applied (no retry when ids were recorded)"
+	main9k "$MUT9N" ids 1
+	expect_eq "MUTATION (no retry when ids were recorded): rc 1, prime-agent never ran, 1 real run" "1 0 1" "$rc $runs9 $bwmain9"
+	expect_lacks "MUTATION (no retry when ids were recorded): no retry announced" "retrying" "$out"
+	command rm -f "$MUT9N" "$T"/bw.mode "$T"/bw.prevrun "$T"/bw.prevcheck "$T"/bw.helper "$T"/bw.rec "$T"/bw.respawner "$T"/bw.zstate "$T"/bwzombie
+	# (T9b g) PA_SANDBOX_PASS_ENV=TMPDIR passes /tmp (usable inside), never pa-sandbox's private
+	# temp dir (absent inside); a caller's other TMPDIR is reported, not passed
+	printf '#!/bin/sh\necho "TD=[$TMPDIR]"\nf=$(mktemp) && echo MKTEMP-OK && rm -f "$f"\n' >"$STUB9/prime-agent"
+	mkdir -p "$REPO/.t9td"
+	main9td() { # <pa-sandbox copy> <PA_SANDBOX_PASS_ENV>
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$STUB9:$PATH" TMPDIR="$REPO/.t9td" PA_SANDBOX_PASS_ENV="$2"
+			# shellcheck source=/dev/null # pa-sandbox or a mutated copy
+			source "$1"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+	}
+	main9td "$PA_SANDBOX" "TERM TMPDIR"
+	expect_eq "(T9b g) PASS_ENV=TMPDIR: rc" "0" "$rc"
+	expect_has "(T9b g) PASS_ENV=TMPDIR: TMPDIR is /tmp inside" "TD=[/tmp]" "$out"
+	expect_has "(T9b g) PASS_ENV=TMPDIR: mktemp works inside" "MKTEMP-OK" "$out"
+	expect_has "(T9b g) PASS_ENV=TMPDIR: the caller's TMPDIR is reported as not passed" "TMPDIR is /tmp inside the sandbox (its own tmpfs), not '$REPO/.t9td'" "$out"
+	main9td "$PA_SANDBOX" ""
+	expect_has "(T9b g) no PASS_ENV: TMPDIR unset inside" "TD=[]" "$out"
+	expect_lacks "(T9b g) no PASS_ENV: no TMPDIR warning" "TMPDIR is /tmp inside" "$out"
+	MUT9D="$T/pa-sandbox.mut-passtmpdir"
+	grep -v 'PA_BWRAP_ARGV+=(--setenv TMPDIR /tmp) && continue' "$PA_SANDBOX" >"$MUT9D"
+	! grep -q 'setenv TMPDIR /tmp' "$MUT9D" && ok "(T9b g) mutation applied (TMPDIR passed as is)" || bad "(T9b g) mutation applied (TMPDIR passed as is)"
+	main9td "$MUT9D" "TERM TMPDIR"
+	expect_has "MUTATION (TMPDIR passed as is): the private temp dir's path is passed" "TD=[/tmp/pa-sandbox." "$out"
+	expect_lacks "MUTATION (TMPDIR passed as is): mktemp fails inside" "MKTEMP-OK" "$out"
+	command rm -rf "$MUT9D" "$REPO/.t9td"
+	# (T9b h) PRIVATE TEMP DIR: the run state pa-sandbox decides on (record, started, bwrap.err,
+	# info) never follows $TMPDIR into a path the sandbox can reach. TMPDIR is pointed at the
+	# workspace, an rw state dir and a ro-bound extra path; the stub (exit 1) forges a bwrap setup
+	# failure in every dir it can reach (started emptied, bwrap.err "bwrap: forged", record
+	# `exited`), also through any /proc/<pid>/fd it can open, and must still run only once.
+	TD9=("$REPO/.t9h" "$A9/sessions/.t9h" "$T/roex9/t")
+	mkstub9h() { # <stub path>
+		{
+			printf '#!/bin/sh\necho ran >>"$PWD/stub9h.count"\n'
+			printf 'for d in "%s" "%s" "%s"; do echo "LS:$d:[$(ls -A "$d" | tr "\\n" " ")]"; done\n' "${TD9[@]}"
+			printf 'for d in "%s"/* "%s"/*/* "%s"/* "%s"/*/* "%s"/* "%s"/*/* /tmp /tmp/* /tmp/*/*; do\n' "${TD9[0]}" "${TD9[0]}" "${TD9[1]}" "${TD9[1]}" "${TD9[2]}" "${TD9[2]}"
+			printf '  [ -d "$d" ] || continue\n'
+			printf '  : >"$d/started" 2>/dev/null; echo "bwrap: forged" >"$d/bwrap.err" 2>/dev/null; echo exited >"$d/record" 2>/dev/null\n'
+			printf 'done\n'
+			printf 'for f in /proc/[0-9]*/fd/*; do\n'
+			printf '  case "$(readlink "$f" 2>/dev/null)" in\n'
+			printf '  */started | */bwrap.err | */record | */info | */block) (echo "bwrap: forged" >"$f") 2>/dev/null && echo "FDWRITE:$f" ;;\n'
+			printf '  esac\ndone\nexit 1\n'
+		} >"$1"
+		chmod +x "$1"
+	}
+	mkstub9h "$STUB9/prime-agent"
+	main9h() { # <pa-sandbox copy> <TMPDIR> [RO_EXTRA]
+		command rm -rf "$REPO/stub9h.count" "${TD9[@]}"
+		mkdir -p "${TD9[@]}"
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$STUB9:$PATH" TMPDIR="$2" PA_SANDBOX_RO_EXTRA="${3:-}"
+			# shellcheck source=/dev/null # pa-sandbox or a mutated copy
+			source "$1"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+		runs9="$(wc -l 2>/dev/null <"$REPO/stub9h.count" || echo 0)"
+	}
+	for i9 in 0 1 2; do
+		main9h "$PA_SANDBOX" "${TD9[$i9]}" "$T/roex9"
+		expect_eq "(T9b h) TMPDIR=${TD9[$i9]}: forged setup failure, prime-agent ran once, its rc" "1 1" "$runs9 $rc"
+		expect_lacks "(T9b h) TMPDIR=${TD9[$i9]}: no retry" "retrying" "$out"
+		expect_has "(T9b h) TMPDIR=${TD9[$i9]}: no pa-sandbox file there" "LS:${TD9[$i9]}:[]" "$out"
+		expect_lacks "(T9b h) TMPDIR=${TD9[$i9]}: no run-state file reachable through /proc/<pid>/fd" "FDWRITE" "$out"
+	done
+	# MUTATION: run state back under $TMPDIR (and the check gone): the forged setup failure is
+	# believed, prime-agent runs 3 times
+	MUT9T="$T/pa-sandbox.mut-tmpdir"
+	sed -e 's|mktemp -d /tmp/pa-sandbox\.XXXXXXXXXX|mktemp -d|' -e 's@^\t\tpa_sandbox_tmp_hidden "\$PA_SANDBOX_TMP" || return 1$@\t\t: # MUTATION@' "$PA_SANDBOX" >"$MUT9T"
+	grep -q ': # MUTATION' "$MUT9T" && ! grep -q 'mktemp -d /tmp/pa-sandbox' "$MUT9T" && ok "(T9b h) mutation applied (run state under \$TMPDIR, no check)" || bad "(T9b h) mutation applied (run state under \$TMPDIR, no check)"
+	main9h "$MUT9T" "${TD9[0]}"
+	expect_eq "MUTATION (run state under \$TMPDIR=workspace): the sandbox forges a setup failure, prime-agent runs 3 times" "3" "$runs9"
+	expect_has "MUTATION (run state under \$TMPDIR=workspace): retry announced" "retrying" "$out"
+	# refusal: a profile that would show the private temp dir inside (/tmp or the root bound) refuses
+	for ex9 in /tmp /; do
+		main9h "$PA_SANDBOX" "${TD9[0]}" "$ex9"
+		expect_eq "(T9b h) PA_SANDBOX_RO_EXTRA=$ex9 (private temp dir visible inside): refused rc, prime-agent never ran" "1 0" "$rc $runs9"
+		expect_has "(T9b h) PA_SANDBOX_RO_EXTRA=$ex9: message" "private temp dir" "$out"
+	done
+	# the check on its own: with the private temp dir forced back under $TMPDIR (location
+	# mutated, check kept), a TMPDIR the sandbox can reach is refused before anything runs
+	MUT9L="$T/pa-sandbox.mut-location"
+	sed 's|mktemp -d /tmp/pa-sandbox\.XXXXXXXXXX|mktemp -d|' "$PA_SANDBOX" >"$MUT9L"
+	! grep -q 'mktemp -d /tmp/pa-sandbox' "$MUT9L" && ok "(T9b h) mutation applied (private temp dir under \$TMPDIR, check kept)" || bad "(T9b h) mutation applied (private temp dir under \$TMPDIR, check kept)"
+	printf '#!/bin/sh\necho ran >>"$PWD/stub9h.count"\nls -d "%s"/*/run.* >/dev/null 2>&1 && echo RUNDIR-VISIBLE\nexit 0\n' "${TD9[2]}" >"$STUB9/prime-agent"
+	for i9 in 0 1 2; do
+		main9h "$MUT9L" "${TD9[$i9]}" "$T/roex9"
+		expect_eq "(T9b h) check: private temp dir under TMPDIR=${TD9[$i9]} refused, prime-agent never ran" "1 0" "$rc $runs9"
+		expect_has "(T9b h) check: TMPDIR=${TD9[$i9]}: message" "private temp dir" "$out"
+	done
+	# MUTATION: location mutated AND the check gone: the run dir is visible inside
+	main9h "$MUT9T" "${TD9[2]}" "$T/roex9"
+	expect_eq "MUTATION (no visibility check, TMPDIR in a ro-bound path): starts" "0 1" "$rc $runs9"
+	expect_has "MUTATION (no visibility check, TMPDIR in a ro-bound path): run dir visible inside" "RUNDIR-VISIBLE" "$out"
+	main9h "$PA_SANDBOX" "${TD9[2]}" "$T/roex9"
+	expect_eq "(T9b h) TMPDIR in a ro-bound path: starts" "0 1" "$rc $runs9"
+	expect_lacks "(T9b h) TMPDIR in a ro-bound path: run dir not visible inside" "RUNDIR-VISIBLE" "$out"
+	command rm -f "$MUT9L"
+	ls -d /tmp/pa-sandbox.* >/dev/null 2>&1 && bad "(T9b h) no private temp dir left in /tmp" "$(ls -d /tmp/pa-sandbox.*)" || ok "(T9b h) no private temp dir left in /tmp"
+	command rm -rf "$REPO/stub9h.count" "${TD9[@]}" "$T/roex9"
+	# pa_sandbox_tmp_hidden on hand-made profiles
+	ln -s /tmp "$T/tmplink9"
+	hid9() { # <label> <want rc> <argv...>
+		local l="$1" w="$2" r=0
+		shift 2
+		PA_BWRAP_ARGV=(bwrap "$@" --)
+		pa_sandbox_tmp_hidden /tmp/pa-sandbox.abc >/dev/null 2>&1 || r=$?
+		expect_eq "(T9b h) tmp_hidden: $l" "$w" "$r"
+	}
+	hid9 "root ro + tmpfs /tmp: hidden" 0 --ro-bind / / --tmpfs /tmp --dir /tmp/pa-sandbox --bind /tmp/other /tmp/other
+	hid9 "root ro, no tmpfs over it: visible" 1 --ro-bind / /
+	hid9 "tmpfs before the root bind: visible" 1 --tmpfs /tmp --ro-bind / /
+	hid9 "bind source an ancestor: visible" 1 --ro-bind / / --tmpfs /tmp --bind /tmp /x
+	hid9 "bind dest inside: visible" 1 --ro-bind / / --tmpfs /tmp --ro-bind /var /tmp/pa-sandbox.abc/run
+	hid9 "bind source a symlink to /tmp: visible" 1 --ro-bind / / --tmpfs /tmp --ro-bind-try "$T/tmplink9" /y
+	hid9 "unknown option: refused" 1 --ro-bind / / --tmpfs /tmp --frob x
+	command rm -f "$T/tmplink9"
+	# (T9b i) a failed sweep is reported (rc 70), also when started is empty and when bwrap
+	# reports a setup error, unless the record says nothing started. A host-side bwrap shim
+	# tampers with the run dir after the real run (the sandbox itself cannot reach it, T9b h).
+	TSHIM9="$T/tshim9"
+	mkdir -p "$TSHIM9"
+	cat >"$TSHIM9/bwrap" <<SHIMEOF
+#!/bin/bash
+case " \$* " in
+*" --info-fd "*) ;;
+*) exec "$REALBWRAP" "\$@" ;;
+esac
+"$REALBWRAP" "\$@"
+rc=\$?
+d="\$(dirname "\$(readlink /proc/\$\$/fd/7)")"
+case "\$(cat "$T/tshim9.mode")" in
+junk) : >"\$d/started"; printf 'junk\njunk\n' >"\$d/record"; exit 0 ;;
+junkfail) : >"\$d/started"; printf 'junk\njunk\n' >"\$d/record"; echo "bwrap: forged" >"\$d/bwrap.err"; exit 1 ;;
+norecord) : >"\$d/started"; command rm -f "\$d/record"; exit 0 ;;
+esac
+exit \$rc
+SHIMEOF
+	chmod +x "$TSHIM9/bwrap"
+	printf '#!/bin/sh\necho ran >>"$PWD/stub9h.count"\nexit 0\n' >"$STUB9/prime-agent"
+	main9i() { # <pa-sandbox copy> <mode>
+		command rm -f "$REPO/stub9h.count"
+		echo "$2" >"$T/tshim9.mode"
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$TSHIM9:$STUB9:$PATH"
+			# shellcheck source=/dev/null # pa-sandbox or a mutated copy
+			source "$1"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+		runs9="$(wc -l 2>/dev/null <"$REPO/stub9h.count" || echo 0)"
+	}
+	main9i "$PA_SANDBOX" junk
+	expect_eq "(T9b i) record unreadable, started empty, exit 0: rc 70" "70" "$rc"
+	expect_has "(T9b i) record unreadable: identity warning" "sandbox namespace identity 'junk' 'junk' unusable" "$out"
+	expect_has "(T9b i) record unreadable: tainted message" "sandbox processes could not be cleaned up; state may be tainted" "$out"
+	main9i "$PA_SANDBOX" junkfail
+	expect_eq "(T9b i) record unreadable + bwrap-like setup error: rc 70, no retry, ran once" "70 1" "$rc $runs9"
+	expect_lacks "(T9b i) record unreadable + bwrap-like setup error: no retry announced" "retrying" "$out"
+	main9i "$PA_SANDBOX" norecord
+	expect_eq "(T9b i) record missing although a child was created: rc 70" "70" "$rc"
+	expect_has "(T9b i) record missing: message" "sandbox namespace identity was not recorded" "$out"
+	main9i "$PA_SANDBOX" none
+	expect_eq "(T9b i) untouched run: rc 0, quiet" "0 1" "$rc $runs9"
+	expect_lacks "(T9b i) untouched run: no sweep warning" "namespace identity" "$out"
+	expect_lacks "(T9b i) untouched run: not reported tainted" "tainted" "$out"
+	# MUTATION: the attempt-2 rule (no sweep failure reported while started is empty) hides it
+	MUT9S="$T/pa-sandbox.mut-quietsweep"
+	sed 's@^\t\tif \[\[ \$setupfail -eq 1 \]\]; then$@\t\tif [[ $setupfail -eq 1 || ! -s "$PA_SANDBOX_RUNDIR/started" ]]; then # MUTATION@' "$PA_SANDBOX" >"$MUT9S"
+	grep -q '# MUTATION' "$MUT9S" && ok "(T9b i) mutation applied (sweep skipped when started is empty)" || bad "(T9b i) mutation applied (sweep skipped when started is empty)"
+	main9i "$MUT9S" junk
+	expect_eq "MUTATION (sweep skipped when started is empty): the unreadable record goes unreported, rc 0" "0" "$rc"
+	command rm -rf "$TSHIM9" "$T/tshim9.mode" "$REPO/stub9h.count" "$MUT9T" "$MUT9S"
+	command rm -f "$REPO/stub9g.count"
+	expect_eq "(T9b d-f) host agent dir tree unchanged" "$tree9" "$(alist9)"
+	expect_eq "(T9b d-f) host agent dir file contents unchanged" "$sum9" "$(sums9)"
+	command rm -rf "$A9/rlm-ledger"
 
 	# ---- Checker attempt 18, item 1: HOME SYMLINKS. The host runs / reads files that the
 	# user's HOME links into the workspace (a dotfiles checkout: ~/.toolrc -> <ws>/toolrc).
@@ -2298,6 +2896,59 @@ b'" ) >/dev/null 2>&1 || true
 	expect_has "kernel-venv python symlink target usable inside" "interp" "$out"
 	run_in 'echo X > "$HOME/.data/uv/python/cpy/bin/new" || true' >/dev/null
 	[[ ! -e "$FH/.data/uv/python/cpy/bin/new" ]] && ok "interpreter dir is read-only" || bad "interpreter dir is read-only"
+	# (T9b c) uv layout: bin/python and pyvenv.cfg `home` go through uv's minor-version symlink
+	# (cpython-3.11-x -> cpython-3.11.17-x); the directory holding it is ro-bound, so the venv
+	# resolves inside exactly as on the host
+	UVP="$FH/.local/share/uv/python"
+	KV="$FH/.prime/agent/kernel-venv"
+	mkdir -p "$UVP/cpython-3.11.17-x/bin"
+	printf '#!/bin/sh\necho uvinterp\n' >"$UVP/cpython-3.11.17-x/bin/python3.11"
+	chmod +x "$UVP/cpython-3.11.17-x/bin/python3.11"
+	ln -s "$UVP/cpython-3.11.17-x" "$UVP/cpython-3.11-x"
+	mv "$KV/bin/python" "$KV/bin/python.t9b-orig"
+	ln -s "$UVP/cpython-3.11-x/bin/python3.11" "$KV/bin/python"
+	printf 'home = %s\nversion_info = 3.11\n' "$UVP/cpython-3.11-x/bin" >"$KV/pyvenv.cfg"
+	snipuv='"$HOME/.prime/agent/kernel-venv/bin/python"; h="$(sed -n "s/^home = //p" "$HOME/.prime/agent/kernel-venv/pyvenv.cfg")"; "$h/python3.11"
+echo "LINK:$(readlink "$HOME/.local/share/uv/python/cpython-3.11-x")"
+echo X > "$HOME/.local/share/uv/python/new" 2>/dev/null && echo UV-WRITABLE
+ln -sfn /tmp "$HOME/.local/share/uv/python/cpython-3.11-x" 2>/dev/null && echo UV-RELINKED
+cat "$HOME/.ssh/id_x" 2>/dev/null; true'
+	out="$(run_in "$snipuv")"
+	expect_eq "(T9b c) uv venv: bin/python and pyvenv.cfg home resolve inside" "uvinterp uvinterp" "$(printf '%s' "$out" | grep -x uvinterp | tr '\n' ' ' | sed 's/ $//')"
+	expect_has "(T9b c) uv minor-version symlink visible inside as on the host" "LINK:$UVP/cpython-3.11.17-x" "$out"
+	expect_lacks "(T9b c) uv python dir read-only inside" "UV-WRITABLE" "$out"
+	expect_lacks "(T9b c) uv minor-version symlink cannot be re-pointed inside" "UV-RELINKED" "$out"
+	expect_lacks "(T9b c) HOME stays hidden" "SENTINEL-SECRET" "$out"
+	# MUTATION: without the ro bind of the link's directory the venv is broken inside (T13's failure)
+	out="$(run_mut_args --ro-bind "$UVP" "$UVP" -- '"$HOME/.prime/agent/kernel-venv/bin/python" 2>/dev/null || echo VENV-BROKEN')" || true
+	expect_has "MUTATION (no ro bind of the uv python dir): venv interpreter does not resolve" "VENV-BROKEN" "$out"
+	# a link directly in HOME: the link itself is bound (its target at its path), not HOME
+	ln -s "$UVP/cpython-3.11.17-x" "$FH/pylink"
+	ln -sfn "$FH/pylink/bin/python3.11" "$KV/bin/python"
+	printf 'home = %s\n' "$FH/pylink/bin" >"$KV/pyvenv.cfg"
+	out="$(run_in "$snipuv")"
+	expect_has "(T9b c) link directly under HOME resolves inside" "uvinterp" "$out"
+	expect_lacks "(T9b c) link directly under HOME does not expose HOME" "SENTINEL-SECRET" "$out"
+	# a way through the writable workspace refuses (the sandbox could re-point it)
+	ln -s "$UVP/cpython-3.11.17-x" "$REPO/pylink"
+	ln -sfn "$REPO/pylink/bin/python3.11" "$KV/bin/python"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(T9b c) venv interpreter through a workspace symlink: build rc" "1" "$rc"
+	expect_has "(T9b c) venv interpreter through a workspace symlink: message" "kernel venv interpreter '$KV/bin/python' goes through the sandbox-writable" "$out"
+	command rm -f "$REPO/pylink"
+	mkdir -p "$REPO/py/bin"
+	command cp "$UVP/cpython-3.11.17-x/bin/python3.11" "$REPO/py/bin/python3.11"
+	ln -sfn "$REPO/py/bin/python3.11" "$KV/bin/python"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(T9b c) venv interpreter inside the workspace: build rc" "1" "$rc"
+	printf 'home = %s\n' "$REPO/py/bin" >"$KV/pyvenv.cfg"
+	ln -sfn "$UVP/cpython-3.11.17-x/bin/python3.11" "$KV/bin/python"
+	out="$( (HOME="$FH" pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(T9b c) pyvenv.cfg home inside the workspace: build rc" "1" "$rc"
+	expect_has "(T9b c) pyvenv.cfg home inside the workspace: message" "kernel venv pyvenv.cfg home '$REPO/py/bin'" "$out"
+	command rm -rf "$REPO/py" "$FH/pylink" "$UVP" "$KV/pyvenv.cfg"
+	command rm -f "$KV/bin/python"
+	mv "$KV/bin/python.t9b-orig" "$KV/bin/python"
 	out="$( (cd "$REPO"; export HOME="$FH" PRIME_AGENT_MULTI=$'a\nb=c' PA_SANDBOX_PASS_ENV='*'; pa_sandbox_build_argv "$REPO" 2>/dev/null; "${PA_BWRAP_ARGV[@]}" sh -c 'printf "%s" "$PRIME_AGENT_MULTI"') 2>&1)"
 	expect_eq "multi-line PRIME_AGENT_* value survives" $'a\nb=c' "$out"
 

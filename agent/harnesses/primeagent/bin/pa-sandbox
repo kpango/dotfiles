@@ -7,20 +7,45 @@
 #
 # Design: ALLOWLIST. Everything is read-only unless explicitly listed rw.
 #   - / is bound READ-ONLY; /dev, /tmp and $HOME are empty tmpfs.
-#   - ~/.prime/agent is bound READ-ONLY as a whole (so anything an unsandboxed run
-#     later executes or trusts -- bin/ kernel-venv/ settings.json SYSTEM.md rules/
-#     extensions/ ... present or not -- cannot be created, replaced or removed).
+#   - ~/.prime/agent: inside, its path is a SANDBOX-PRIVATE tmpfs in which every entry
+#     the host has WHEN PA-SANDBOX LISTS IT (once, while building the profile, about a
+#     second before the sandbox starts) is bound READ-ONLY at its own path, so nothing an
+#     unsandboxed run later executes or trusts -- bin/ kernel-venv/ settings.json
+#     auth.json models.json AGENTS.md skills/ machines/ ... -- can be written, removed,
+#     renamed or replaced, on the host or inside (a mount point cannot be unlinked or
+#     renamed: EBUSY). An entry the host removes between listing and bwrap is skipped
+#     (--ro-bind-try), not fatal; one removed in the instant between bwrap's check and its
+#     mount fails bwrap's setup before anything runs inside. pa-sandbox then starts over
+#     (PA_SANDBOX_SETUP_TRIES launches, default 3). A failed guard probe is retried
+#     directly (it runs only fixed commands); a failed real run is retried only when the
+#     host-side watcher shows nothing of that launch is left: bwrap created no child, the
+#     child was gone before the watcher released it (`exited`), or its recorded namespaces
+#     were swept and nothing in them is alive. If no identity could be recorded (e.g. the
+#     exited child stayed unreaped past the watcher's bound) the real run ends with rc 70,
+#     not retried; see
+#     pa_sandbox_watch and pa_sandbox_main. LOCK NAMES (*.lock, *.lock.*) are never bound (see
+#     NEW NAMES). Names that are not bound can be created in that tmpfs only:
+#     they never reach the host and vanish with the sandbox. prime-agent 0.10.0 needs
+#     this (measured): its daemon takes the mkdir locks settings.json.lock/ and
+#     auth.json.lock/ even to READ settings (with a read-only root it fails closed:
+#     "The daemon model allowlist could not be read"), writes the mcp catalog through a
+#     temp file, and creates auth.json / the catalog / models/ when the host has none.
 #     Symlinked entries (the installer links skills/agents/AGENTS.md/models.json
-#     into the dotfiles checkout) resolve because the checkout's agent/ tree is
-#     ro-bound at its real path too.
+#     into the dotfiles checkout) are bound with their target's content (the
+#     checkout's agent/ tree is ro-bound at its real path too); a dangling one is
+#     absent inside, as it is for the host.
 #   - rw ONLY: the explicit state list PA_SANDBOX_AGENT_RW_DIRS (dirs are created
 #     on the host before binding) and PA_SANDBOX_AGENT_RW_FILES (bound only if
 #     they exist; atomic rename-over of a bind-mounted file fails with EBUSY),
 #     plus the workspace (git toplevel of $PWD).
-#   - BIND ORDER: tmpfs -> ro agent dir -> all rw binds -> all ro (re)binds last,
-#     so no rw bind can shadow a protection.
+#   - SANDBOX-PRIVATE dirs PA_SANDBOX_AGENT_TMP_DIRS (daemon-workers/, rlm-ledger/): an
+#     empty tmpfs each, hiding the host's copy. The sandboxed daemon's supervisor-config
+#     and worker state (daemon-workers/<sha256(socket)[:12]>/) and the rlm.spawn /
+#     rlm.factory spawn ledger live there and are discarded at exit.
+#   - BIND ORDER: tmpfs -> agent tmpfs + its ro entries -> all rw binds and private
+#     tmpfs dirs -> all ro (re)binds last, so no rw bind can shadow a protection.
 #   - ro re-binds: ~/.local/bin, ~/.local/share/prime-agent, the kernel venv's
-#     resolved interpreter install, the guard checkout's agent/ tree, targets of
+#     interpreter (KERNEL VENV INTERPRETER), the guard checkout's agent/ tree, targets of
 #     symlinked agent-dir entries, PA_SANDBOX_RO_EXTRA (colon-separated), and the
 #     workspace's whole `.git` path (the directory, or the gitfile of a linked
 #     worktree, as the mount point itself: it cannot be renamed, replaced or
@@ -240,6 +265,15 @@
 #     A workspace without a `.git` is refused (an agent
 #     could plant one that a later unsandboxed git run would trust), override:
 #     PA_SANDBOX_ALLOW_NO_GIT=1 (UNSAFE).
+#   - KERNEL VENV INTERPRETER: kernel-venv/bin/python and the pyvenv.cfg `home` are walked
+#     component by component; for every symlink on the way that the sandbox would hide
+#     (under $HOME or /tmp, outside the agent dir) the directory holding it is ro-bound
+#     (uv: ~/.local/share/uv/python, which holds cpython-3.11-linux-x86_64-gnu ->
+#     cpython-3.11.17-linux-x86_64-gnu), or the link itself (bwrap mounts its target at the
+#     link's path) when that directory is $HOME or holds the workspace or the agent dir; the
+#     resolved install (the interpreter's ../..) is ro-bound too. A way through the
+#     workspace or an rw state path (a symlink there, the interpreter or `home` inside, a
+#     `..` leaving such a directory) refuses: the sandbox could re-point it.
 #   - The workspace may not be /, $HOME, any ancestor of $HOME or of ~/.prime/agent,
 #     or inside ~/.prime/agent (realpath comparison).
 #   - /run/user and /run/dbus are emptied; PA_SANDBOX_MASK_PATHS (default
@@ -247,6 +281,10 @@
 #   - Environment is cleared to an allowlist: PATH TERM COLORTERM LANG LC_* TZ USER
 #     LOGNAME, PRIME_AGENT_*, the provider key names from models.json
 #     (OLLAMA_API_KEY VLLM_API_KEY), plus PA_SANDBOX_PASS_ENV (space-separated).
+#     TMPDIR named there is passed as /tmp (the sandbox's own tmpfs), never the caller's
+#     value: pa-sandbox points its own TMPDIR at its PRIVATE TEMP DIR, which does not exist
+#     inside, and a caller's dir outside the workspace is not there either; a caller's
+#     TMPDIR other than /tmp is reported (warning) and not passed.
 #   - Own daemon socket (/tmp/pa-sandbox/daemon.sock on a private tmpfs).
 #   - PRIME_AGENT_BASH_COMMAND_PREFIX sources the shell guard; before exec the guard
 #     is proven INSIDE the sandbox (harmless command runs, a blocked one gets rc 126)
@@ -411,12 +449,43 @@
 #     base <ws>/sub/../../mirrors/ that names a directory outside the workspace); an empty
 #     url.<base> (`[url ""] insteadOf = x:`) or a relative one, also one that git would
 #     never be asked to rewrite; and a HOME
-#     symlink loop or a HOME link that vanished during the scan (HOME SYMLINKS). A word that happens to name an
+#     symlink loop or a HOME link that vanished during the scan (HOME SYMLINKS); a kernel venv
+#     whose interpreter or pyvenv.cfg `home` goes through the workspace or an rw state path
+#     (KERNEL VENV INTERPRETER), even when nothing there would be re-pointed. A word that happens to name an
 #     existing workspace entry (`core.editor = nvim` with an nvim/ directory at the root)
 #     makes that entry read-only (listed on stderr).
-#   - mcp-service-catalog.v2.json and daemon-workers/ are ro (see PA_SANDBOX_AGENT_RW_*).
-#   - auth.json is ro: the sandbox cannot refresh OAuth tokens.
-#   - rw state dirs are writable by design (sessions, logs, daemon-workers, ...).
+#   - settings.json, mcp-service-catalog.v2.json and models/ are ro: the sandboxed daemon's
+#     settings writes (e.g. the onboarding answer: "could not be saved") and catalog
+#     refreshes fail; the host keeps its copies.
+#   - auth.json is ro: a token refreshed inside the sandbox cannot be saved (the daemon
+#     keeps it in memory at most). If the provider ROTATES refresh tokens, a refresh inside
+#     can invalidate the refresh token the host still holds (log in again on the host).
+#     Untested against a real OAuth provider. A login inside the sandbox when the host has
+#     no auth.json lands in the private tmpfs and is discarded.
+#   - NEW NAMES in the agent dir root are writable INSIDE (the private tmpfs): a SYSTEM.md,
+#     extensions/, mcp.json ... that the host lacks can be created there, and the sandboxed
+#     prime-agent may load it for the rest of that run (no more than code running inside
+#     can do anyway; the workspace's project-local config is writable too). The host never
+#     sees them. The agent dir is LISTED ONCE, when pa-sandbox builds the profile, not when
+#     the sandbox starts: a host entry created after that is not visible inside, and one
+#     removed after that (the host daemon's short-lived locks and temp files) is absent
+#     inside, so its name is a NEW NAME too -- what the sandbox creates under it stays in the
+#     tmpfs, and the host's own entry of that name, if recreated, is unaffected.
+#     LOCK NAMES (*.lock, *.lock.*: settings.json.lock/, auth.json.lock/,
+#     kernel-venv.bootstrap.lock, its .candidate-* files) are always NEW NAMES, also when the
+#     host has them: bound read-only, a lock the host held at listing time stays held inside
+#     for the whole run (the mount outlives the host's rmdir); measured with prime-agent
+#     0.10.0 and host settings.json.lock/ + auth.json.lock/ bound: a daemon session's turn
+#     failed ("The daemon model allowlist could not be read (Read-only file system (os
+#     error 30))"), and a `-p` settings write waited ~4 s, then "Failed to acquire settings
+#     lock: Lock file is already being held". Unbound, the
+#     sandboxed daemon takes a private lock, so it does not exclude the host's daemon: what
+#     those locks guard (settings.json, auth.json, kernel-venv/) is bound read-only, and the
+#     sandbox reads the copy bound at start (a host atomic rename-over is not seen inside).
+#   - daemon-workers/ and rlm-ledger/ are sandbox-private and discarded at exit: a session
+#     continued later on the host has no ledger records of spawns made inside.
+#   - rw state dirs are writable by design (sessions, session-artifacts, session-leases,
+#     logs, swarm); they persist on the host as before.
 #   - Git write operations inside fail by design (see above); linked-worktree
 #     gitfile targets must already be valid common dirs.
 #   - Requires the installed layout: `make primeagent/install` must have put
@@ -437,16 +506,22 @@ set -euo pipefail
 # NOT here: later unsandboxed sessions trust them, so sandboxed runs cannot
 # persist harness memory or schedules.
 # Also NOT rw: mcp-service-catalog.v2.json (MCP service definitions incl. stdio
-# commands that unsandboxed runs trust) and daemon-workers/ (holds supervisor-config
-# the daemon reads back; it cannot be shown that a host daemon never reads it).
-# Consequence: the sandboxed daemon cannot persist worker state or refresh the MCP
-# catalog; prime-agent may degrade or report errors for those (documented, untested
-# against the real binary).
+# commands that unsandboxed runs trust; the sandboxed daemon's refresh fails and is
+# logged), models/ (provider catalog cache) and kernel-venv/ (code the host runs).
 PA_SANDBOX_AGENT_RW_DIRS=(sessions session-artifacts session-leases logs swarm)
 PA_SANDBOX_AGENT_RW_FILES=(telemetry.json telemetry.jsonl)
+# SANDBOX-PRIVATE (disposable) dirs: an empty tmpfs inside, so the sandboxed daemon can
+# write there, but nothing reaches the host and it is gone when the sandbox exits; the
+# host's own entries there are hidden inside. daemon-workers/ (supervisor-config and
+# per-worker state of the sandbox's daemon, keyed by its socket) and rlm-ledger/
+# (rlm.spawn / factory spawn ledger) are the daemon's own writes below the agent dir
+# (measured, prime-agent 0.10.0) outside the rw state dirs; listed here so that a host
+# copy (a host daemon's daemon-workers/<socket hash>/) is hidden rather than read-only.
+PA_SANDBOX_AGENT_TMP_DIRS=(daemon-workers rlm-ledger)
 : "${PA_SANDBOX_MAX_NESTED_GIT:=500}"
 : "${PA_SANDBOX_MAX_HOME_LINKS:=20000}"
 : "${PA_SANDBOX_HOME_DEPTH:=6}"
+: "${PA_SANDBOX_SETUP_TRIES:=3}"
 # shellcheck disable=SC2016  # guard prefix is intentionally unexpanded (the kernel expands $HOME)
 PA_SANDBOX_GUARD_PREFIX='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'
 PA_SANDBOX_ENV_ALLOW=(PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY)
@@ -570,14 +645,60 @@ pa_sandbox_build_argv() {
 	done
 	[[ -t 0 ]] || PA_BWRAP_ARGV+=(--new-session)
 
-	# 1) whole agent dir read-only
-	PA_BWRAP_ARGV+=(--ro-bind "$agent_dir" "$agent_dir")
+	# 1) agent dir: a sandbox-private tmpfs at its path in which every host entry LISTED HERE
+	#    is bound read-only at its own path (a mount point cannot be written, removed, renamed
+	#    or replaced from inside). Only names that are not bound (not listed, vanished before
+	#    bwrap ran, or a lock name below) can be created, in that tmpfs: they never reach the
+	#    host and vanish with the sandbox.
+	#    --ro-bind-try: the list is used by every later bwrap run of this profile (the guard
+	#    probes and the real run, ~1 s later); a host entry removed meanwhile (the host daemon's
+	#    short-lived locks and temp files) is skipped instead of aborting bwrap ("Can't find
+	#    source path") and is then a tmpfs-only name like any name the host lacks. (bwrap
+	#    checks a -try source and mounts it a moment later; a removal in between still fails
+	#    the setup: pa_sandbox_main retries that.)
+	#    LOCK NAMES (*.lock, *.lock.*: prime-agent's mkdir locks settings.json.lock/ and
+	#    auth.json.lock/, taken even to read settings, and kernel-venv.bootstrap.lock with its
+	#    .candidate-* files) are never bound: a bound one is the host's lock frozen for the whole
+	#    run (the mount outlives the host's rmdir), and the sandboxed daemon fails closed
+	#    ("The daemon model allowlist could not be read", measured; NEW NAMES). Unbound, it
+	#    takes a private lock in the tmpfs; what the locks guard is bound read-only either way.
+	PA_BWRAP_ARGV+=(--tmpfs "$agent_dir")
+	local -A aown=() # entries bound below instead (rw state, sandbox-private tmpfs)
+	local alist aerr arc=0
+	for name in "${PA_SANDBOX_AGENT_RW_DIRS[@]}" "${PA_SANDBOX_AGENT_TMP_DIRS[@]}"; do aown[$name]=1; done
+	for name in "${PA_SANDBOX_AGENT_RW_FILES[@]}"; do
+		[[ -f "$agent_dir/$name" && ! -L "$agent_dir/$name" ]] && aown[$name]=1
+	done
+	alist="$(mktemp)"
+	aerr="$(mktemp)"
+	# names only (readdir, no stat): an entry the host removes while it is listed is no error
+	# (it is skipped or bound with --ro-bind-try below); any listing error still refuses.
+	# Not find: GNU find 4.10 -ignore_readdir_race still reports ENOENT for a directory
+	# removed right after readdir (measured, 9 of 1500 listings under churn)
+	python3 -I -c 'import os, sys
+sys.stdout.buffer.write(b"".join(n + b"\0" for n in os.listdir(os.fsencode(sys.argv[1]))))' "$agent_dir" >"$alist" 2>"$aerr" || arc=$?
+	if [[ $arc -ne 0 || -s "$aerr" ]]; then
+		pa_sandbox_die "cannot list $agent_dir (rc=$arc): $(head -c 400 "$aerr"); refusing"
+		command rm -f "$alist" "$aerr"
+		return 1
+	fi
+	command rm -f "$aerr"
+	while IFS= read -r -d '' name; do
+		[[ -n "${aown[$name]:-}" ]] && continue
+		[[ "$name" == *.lock || "$name" == *.lock.* ]] && continue
+		# a dangling symlink is absent inside, as it is for the host
+		[[ -e "$agent_dir/$name" ]] && PA_BWRAP_ARGV+=(--ro-bind-try "$agent_dir/$name" "$agent_dir/$name")
+	done <"$alist"
+	command rm -f "$alist"
 	# 2) all rw binds (state allowlist, workspace, validated common dir)
 	for name in "${PA_SANDBOX_AGENT_RW_DIRS[@]}"; do
 		PA_BWRAP_ARGV+=(--bind "$agent_dir/$name" "$agent_dir/$name")
 	done
 	for name in "${PA_SANDBOX_AGENT_RW_FILES[@]}"; do
 		[[ -f "$agent_dir/$name" && ! -L "$agent_dir/$name" ]] && PA_BWRAP_ARGV+=(--bind "$agent_dir/$name" "$agent_dir/$name")
+	done
+	for name in "${PA_SANDBOX_AGENT_TMP_DIRS[@]}"; do
+		PA_BWRAP_ARGV+=(--tmpfs "$agent_dir/$name")
 	done
 	PA_BWRAP_ARGV+=(--bind "$repo" "$repo")
 
@@ -590,13 +711,7 @@ pa_sandbox_build_argv() {
 	}
 	_ro "$home/.local/bin"
 	_ro "$home/.local/share/prime-agent"
-	local interp
-	if interp="$(readlink -f "$agent_dir/kernel-venv/bin/python" 2>/dev/null)" && [[ -n "$interp" ]]; then
-		interp="$(dirname "$(dirname "$interp")")"
-		if [[ -d "$interp" && "$interp" != / && "$interp" != /usr && "$interp" != "$agent_dir"* ]]; then
-			_ro "$interp"
-		fi
-	fi
+	# (the kernel venv's interpreter is exposed below, once _walk and _rw exist)
 	# Guard + its dependencies: the guard checkout's agent/ tree, same path.
 	local guard groot="" tgt
 	if guard="$(readlink -f "$agent_dir/bin/prime-shell-guard.sh" 2>/dev/null)" && [[ -f "$guard" ]]; then
@@ -725,12 +840,13 @@ pa_sandbox_build_argv() {
 	# the `..` is applied to the text); the caller queues each in gdot, checked with _hdot once
 	# every protection is known (`..` IN GIT PATHS).
 	local wq=""
-	local -a wdot=() gdot=()
+	local -a wdot=() gdot=() whops=()
 	_walk() {
 		local cur="" c t n=0 w
 		local -a parts=() tp=()
 		wq=""
 		wdot=()
+		whops=() # every symlink followed, as the path it was met at
 		[[ "$1" == /* && "$1" != *$'\n'* ]] || return 1
 		IFS=/ read -ra parts <<<"$1"
 		while [[ ${#parts[@]} -gt 0 ]]; do
@@ -748,6 +864,7 @@ pa_sandbox_build_argv() {
 			esac
 			if [[ -L "$cur/$c" ]]; then
 				_rw "$cur/$c" && return 2
+				whops+=("$cur/$c")
 				n=$((n + 1))
 				t="$(readlink -- "$cur/$c")" && [[ $n -le 40 && -n "$t" && "$t" != *$'\n'* ]] || return 1
 				[[ "$t" == /* ]] && cur=""
@@ -759,6 +876,54 @@ pa_sandbox_build_argv() {
 		done
 		wq="${cur:-/}"
 	}
+	# KERNEL VENV INTERPRETER (see header): the venv's bin/python and the pyvenv.cfg `home`
+	# reach the interpreter through symlinks (uv: python/cpython-3.11-linux-x86_64-gnu ->
+	# cpython-3.11.17-...) that must resolve inside exactly as on the host.
+	_vexpose() { # <dir>: ro-bind it when the sandbox hides it ($HOME, /tmp are tmpfs inside)
+		local r
+		for r in "$home" /tmp; do
+			[[ "$1" == "$r"/* ]] || continue
+			# never a directory that holds the workspace or the agent dir (the ro bind, made last,
+			# would cover their binds)
+			pa_sandbox_within "$repo" "$1" || pa_sandbox_within "$agent_dir" "$1" || _ro "$1"
+			return 0
+		done
+	}
+	_vpath() { # <abs path> <label>: sets vq (resolved), "" when it does not resolve
+		local rc=0 h d r
+		vq=""
+		_walk "$1" || rc=$?
+		if [[ $rc -eq 2 ]] || { [[ $rc -eq 0 ]] && { _rw "$wq" || [[ ${#wdot[@]} -gt 0 ]]; }; }; then
+			pa_sandbox_die "$2 '$1' goes through the sandbox-writable workspace or an rw state path (the sandbox could re-point it); refusing"
+			return 1
+		fi
+		[[ $rc -eq 0 ]] || return 0 # unresolvable: the venv is broken on the host as well
+		for h in "${whops[@]}"; do
+			d="${h%/*}"
+			d="${d:-/}"
+			pa_sandbox_within "$d" "$agent_dir" && continue # inside the ro agent dir already
+			for r in "$home" /tmp; do
+				pa_sandbox_within "$h" "$r" || continue
+				if [[ "$d" == "$r"/* ]] && ! pa_sandbox_within "$repo" "$d" && ! pa_sandbox_within "$agent_dir" "$d"; then
+					_ro "$d" # the directory holding the link (with the link and its siblings)
+				else
+					_ro "$h" # $HOME itself (or above the workspace): bwrap mounts the target at the link
+				fi
+				break
+			done
+		done
+		vq="$wq"
+	}
+	local vq vh
+	_vpath "$agent_dir/kernel-venv/bin/python" "kernel venv interpreter" || return 1
+	[[ -n "$vq" && "$vq" != "$agent_dir"/* ]] && _vexpose "$(dirname "$(dirname "$vq")")"
+	if [[ -f "$agent_dir/kernel-venv/pyvenv.cfg" ]]; then
+		vh="$(sed -n 's/^home[[:space:]]*=[[:space:]]*//; T; s/[[:space:]]*$//; p' "$agent_dir/kernel-venv/pyvenv.cfg" | head -n1)"
+		if [[ "$vh" == /* ]]; then
+			_vpath "$vh" "kernel venv pyvenv.cfg home" || return 1
+			[[ -n "$vq" && "$vq" != "$agent_dir"/* ]] && _vexpose "$(dirname "$vq")"
+		fi
+	fi
 	_hdot() { # <dir> <label> [<path>...]: a writable directory a reference leaves through `..` (wdot,
 		# hdot) is fine only when nothing inside can replace it: it lies in an existing ro-bound
 		# protected path, or in the top-level workspace directory that ANCESTORS ro-binds for one
@@ -1626,7 +1791,7 @@ pa_sandbox_build_argv() {
 	# HOME SYMLINKS (see header): a host file reached through the user's HOME (a symlink,
 	# followed hop by hop, or a bind mount) that lands in the workspace is made read-only.
 	local -a hmid=() hdot=() hsr=() hxr=() hex=() hpe=() hneed=() hpend=() hnext=() hfiles=() hst=()
-	local hq="" hh hl2 hp ht hw herr2 hcnt=0 hnro=0 hr i j k mi mr
+	local hq="" hh hl2 hp ht hw herr2 herrs hcnt=0 hnro=0 hr i j k mi mr
 	local -A hseen=() hrl=() hlab=()
 	_hwalk() { # <abs path>: like _walk, but a symlink inside a writable area is recorded in
 		# hmid (not refused), and link targets come from the hrl cache: an uncached link is
@@ -1734,11 +1899,14 @@ pa_sandbox_build_argv() {
 	hw="$(mktemp)"
 	herr2="$(mktemp)"
 	{
-		[[ ${#hsr[@]} -eq 0 ]] || find -H "${hsr[@]}" -maxdepth "$PA_SANDBOX_HOME_DEPTH" \( -name .git -o -name node_modules "${hrp[@]}" "${hprune[@]}" \) -prune -o -type l -printf '%p\0%l\0'
-		[[ ${#hxr[@]} -eq 0 ]] || find -H "${hxr[@]}" -maxdepth "$PA_SANDBOX_HOME_DEPTH" \( -name .git -o -name node_modules "${hrp[@]}" \) -prune -o -type l -printf '%p\0%l\0'
+		[[ ${#hsr[@]} -eq 0 ]] || LC_ALL=C find -H "${hsr[@]}" -ignore_readdir_race -maxdepth "$PA_SANDBOX_HOME_DEPTH" \( -name .git -o -name node_modules "${hrp[@]}" "${hprune[@]}" \) -prune -o -type l -printf '%p\0%l\0'
+		[[ ${#hxr[@]} -eq 0 ]] || LC_ALL=C find -H "${hxr[@]}" -ignore_readdir_race -maxdepth "$PA_SANDBOX_HOME_DEPTH" \( -name .git -o -name node_modules "${hrp[@]}" \) -prune -o -type l -printf '%p\0%l\0'
 	} >"$hw" 2>"$herr2" || true
-	if [[ -s "$herr2" ]]; then
-		pa_sandbox_warn "HOME symlink scan: some entries could not be read (skipped; this uid cannot read them either): $(head -c 300 "$herr2" | tr '\n' ' ')"
+	# an entry removed while it is scanned (ENOENT; LC_ALL=C above keeps the message fixed) is
+	# simply gone, not unreadable: not reported
+	herrs="$(grep -v 'No such file or directory' "$herr2" | head -c 300 | tr '\n' ' ' || true)"
+	if [[ -n "$herrs" ]]; then
+		pa_sandbox_warn "HOME symlink scan: some entries could not be read (skipped; this uid cannot read them either): $herrs"
 	fi
 	command rm -f "$herr2"
 	while IFS= read -r -d '' hp && IFS= read -r -d '' ht; do
@@ -1901,12 +2069,13 @@ pa_sandbox_build_argv() {
 		done <"$hlst"
 		command rm -f "$hlst"
 	fi
-	unset -f _ro _rw _hl _walk _into_ws _protect_dir _protect_path _abs _cfg_read _scan_links _wsplit _words _wx _wadd _pp _cand _nonpath _git_ctx _sub_ctx _gmem _hwalk _hprot _hdot
+	unset -f _ro _rw _hl _walk _vexpose _vpath _into_ws _protect_dir _protect_path _abs _cfg_read _scan_links _wsplit _words _wx _wadd _pp _cand _nonpath _git_ctx _sub_ctx _gmem _hwalk _hprot _hdot
 
 	PA_BWRAP_ARGV+=(--dir /tmp/pa-sandbox --clearenv --setenv HOME "$home")
 	local -a pass=()
 	read -ra pass <<<"${PA_SANDBOX_PASS_ENV:-}" # no globbing: read -ra splits only on IFS
 	for name in "${PA_SANDBOX_ENV_ALLOW[@]}" "${pass[@]}"; do
+		[[ "$name" == TMPDIR ]] && PA_BWRAP_ARGV+=(--setenv TMPDIR /tmp) && continue # see the header (Environment)
 		[[ "$name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ && -n "${!name+x}" ]] && PA_BWRAP_ARGV+=(--setenv "$name" "${!name}")
 	done
 	# compgen -e lists exported variable NAMES only, so multi-line values are safe.
@@ -1937,13 +2106,21 @@ pa_sandbox_verify_guard() {
 	_probe() { # <command>
 		script=$'exec 9>&0 8>&1 0</dev/null\nread -r _g <&9 || exit 127\n{\n'"$PA_SANDBOX_GUARD_PREFIX"$'\n'"$1"$'\n} 8>&- 9>&-\n__s=$?\nexit $__s'
 		out="$(echo go | "${PA_BWRAP_ARGV[@]}" bash -c "$script" 2>&1)" && rc=0 || rc=$?
+		# bwrap's own setup errors ("bwrap: Can't find source path ...") mean the sandbox never
+		# started (e.g. a path the profile names vanished on the host meanwhile): say so instead
+		# of blaming the guard
+		# (rc 2: pa_sandbox_main retries the whole launch; PA_SANDBOX_SETUP_ERR says why)
+		if [[ $rc -ne 0 && "$out" == bwrap:* ]]; then
+			PA_SANDBOX_SETUP_ERR="bwrap rc=$rc; the guard probe did not run: $out"
+			return 2
+		fi
 	}
-	_probe 'echo PA-PROBE-ALLOWED'
+	_probe 'echo PA-PROBE-ALLOWED' || return $?
 	if [[ $rc -ne 0 || "$out" != *PA-PROBE-ALLOWED* ]]; then
 		pa_sandbox_die "guard probe failed inside the sandbox (allowed command did not run, rc=$rc): $out"
 		return 1
 	fi
-	_probe 'echo PA-PROBE-LEAK; r''m -rf ~'
+	_probe 'echo PA-PROBE-LEAK; r''m -rf ~' || return $?
 	if [[ $rc -ne 126 || "$out" == *PA-PROBE-LEAK* ]]; then
 		pa_sandbox_die "guard probe failed inside the sandbox (blocked command was not refused with rc 126, rc=$rc): $out"
 		return 1
@@ -2062,9 +2239,28 @@ pa_sandbox_sweep() { # <ipc id> <user ns id>
 }
 
 # Host-side watcher (background): learn the sandbox child's namespace ids from the
-# host while bwrap holds the child blocked, then release it.
+# host while bwrap holds the child blocked, then release it. bwrap's child reads --block-fd
+# only AFTER its own setup (measured, bubblewrap 0.12.0), and a child whose setup fails exits
+# without reading it, so until the watcher writes to block-fd nothing has run inside.
+# Ids that cannot be read come from a child that is exiting or gone: an exited child that
+# bwrap's monitor has not reaped yet (a zombie) has no /proc/<pid>/ns/ipc (ENOENT) while
+# /proc/<pid> itself remains (measured: about 0.6-0.7 ms after a real setup failure). The
+# watcher then keeps block-fd unreleased and polls until /proc/<pid> is gone, at most 250
+# polls 0.02 s apart (at least 5 s, the sweep's deadline; 6.5 s measured with the fork cost of
+# each poll): the monitor normally reaps within a millisecond, so the bound only matters
+# when the host stalls it, and a launch never hangs on it. Gone = the child died before it
+# was released, so nothing ran inside: recorded as `exited` (pa_sandbox_main retries without
+# a sweep). If ns/ipc becomes readable while waiting, or /proc/<pid> is still there at the
+# bound, nothing is recorded: block-fd is then released as before and pa_sandbox_main
+# reports the unrecorded identity with rc 70, no retry.
+# PID reuse: the kernel frees a pid only when its zombie is reaped, so /proc/<pid> cannot be
+# absent while the child exists (zombie or not) -- `exited` is never written for a live child.
+# After the reap the pid may be reused by another process: that can keep /proc/<pid> present
+# (up to the bound) or make its ns readable, and both end with no record; an `exited` written
+# once it is absent again is still true (our child was reaped before). The wait never reads
+# ids, so it adds no way to record another process's namespaces.
 pa_sandbox_watch() { # <rundir>
-	local d="$1" i line pid="" ipc usr
+	local d="$1" i line pid="" ipc="" usr=""
 	for ((i = 0; i < 400; i++)); do
 		line="$(cat "$d/info" 2>/dev/null || true)"
 		if [[ "$line" =~ \"child-pid\":[[:space:]]*([0-9]+)[,}[:space:]] ]]; then
@@ -2074,9 +2270,18 @@ pa_sandbox_watch() { # <rundir>
 		sleep 0.05
 	done
 	if [[ -n "$pid" ]]; then
-		ipc="$(readlink "/proc/$pid/ns/ipc" 2>/dev/null || true)"
-		usr="$(readlink "/proc/$pid/ns/user" 2>/dev/null || true)"
-		printf '%s\n%s\n' "$ipc" "$usr" >"$d/record.tmp" && mv "$d/record.tmp" "$d/record"
+		if ipc="$(readlink "/proc/$pid/ns/ipc" 2>/dev/null)" && usr="$(readlink "/proc/$pid/ns/user" 2>/dev/null)"; then
+			printf '%s\n%s\n' "$ipc" "$usr" >"$d/record.tmp" && mv "$d/record.tmp" "$d/record"
+		else
+			for ((i = 0; i < 250; i++)); do # exit wait (see above)
+				if [[ ! -e "/proc/$pid" ]]; then
+					printf 'exited\n' >"$d/record.tmp" && mv "$d/record.tmp" "$d/record"
+					break
+				fi
+				readlink "/proc/$pid/ns/ipc" >/dev/null 2>&1 && break
+				sleep 0.02
+			done
+		fi
 	fi
 	exec 9<>"$d/block"
 	printf x >&9
@@ -2095,44 +2300,191 @@ pa_sandbox_sweep_recorded() {
 	pa_sandbox_sweep "${ipc:-}" "${usr:-}"
 }
 
-# Final cleanup (EXIT trap): sweep if not done yet (INT/TERM), scrub state, drop rundir.
+# Final cleanup (EXIT trap): sweep if a launch is pending (INT/TERM), scrub state, drop the
+# private temp dir (it holds every run dir).
 pa_sandbox_cleanup() {
 	local rc=0
 	[[ -n "${PA_SANDBOX_WATCHER:-}" ]] && kill "$PA_SANDBOX_WATCHER" 2>/dev/null || true
-	pa_sandbox_sweep_recorded || rc=70
-	[[ -n "${PA_SANDBOX_RUNDIR:-}" ]] && command rm -rf "$PA_SANDBOX_RUNDIR"
-	pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR" || true # main already reported; this covers INT/TERM
+	if [[ -n "${PA_SANDBOX_RUNDIR:-}" ]]; then
+		pa_sandbox_sweep_recorded || rc=70
+	fi
+	if [[ -n "${PA_SANDBOX_SCRUB_DIR:-}" ]]; then
+		pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR" || true # main already reported; this covers INT/TERM
+	fi
+	[[ -n "${PA_SANDBOX_TMP:-}" ]] && command rm -rf "$PA_SANDBOX_TMP"
 	return "$rc"
 }
 
+# PRIVATE TEMP DIR: everything pa-sandbox decides on (the run dir's record, started, bwrap.err,
+# info; the profile scans' lists; the scrub's error file) lives in one dir created as
+# /tmp/pa-sandbox.XXXXXXXXXX, never under the caller's $TMPDIR, which may lie in the workspace
+# or another path the sandbox can write. Inside the sandbox /tmp is an empty tmpfs, so that dir
+# is not there. pa_sandbox_tmp_hidden checks this against the built profile (PA_BWRAP_ARGV):
+# no bind source or destination (canonical or as given) may be the dir, inside it or an ancestor
+# of it -- except the root `--ro-bind / /`, which must then be covered by a later --tmpfs that is
+# an ancestor of the dir. An option it does not know fails closed.
+pa_sandbox_tmp_hidden() { # <canonical dir>
+	local p="$1" i=1 n=${#PA_BWRAP_ARGV[@]} op a b c covered=0
+	[[ "${PA_BWRAP_ARGV[0]:-}" == bwrap ]] || return 1
+	while [[ $i -lt $n ]]; do
+		op="${PA_BWRAP_ARGV[$i]}"
+		case "$op" in
+		--) break ;;
+		--bind | --bind-try | --ro-bind | --ro-bind-try | --dev-bind | --dev-bind-try)
+			a="${PA_BWRAP_ARGV[$((i + 1))]:-}"
+			b="${PA_BWRAP_ARGV[$((i + 2))]:-}"
+			i=$((i + 3))
+			if [[ "$a" == / && "$b" == / ]]; then
+				covered=0
+				continue
+			fi
+			for c in "$a" "$b" "$(readlink -f -- "$a" 2>/dev/null)" "$(readlink -f -- "$b" 2>/dev/null)"; do
+				[[ -n "$c" ]] || continue
+				if pa_sandbox_within "$p" "$c" || pa_sandbox_within "$c" "$p"; then
+					pa_sandbox_die "the private temp dir $p would be visible inside the sandbox ($op $a $b); refusing"
+					return 1
+				fi
+			done
+			;;
+		--tmpfs | --dir | --dev | --proc | --chdir | --info-fd | --block-fd)
+			a="${PA_BWRAP_ARGV[$((i + 1))]:-}"
+			i=$((i + 2))
+			[[ "$op" == --tmpfs && "$a" != / ]] && pa_sandbox_within "$p" "$a" && covered=1
+			;;
+		--setenv)
+			i=$((i + 3))
+			;;
+		--unshare-user | --unshare-ipc | --unshare-uts | --unshare-pid | --disable-userns | \
+			--assert-userns-disabled | --die-with-parent | --new-session | --clearenv)
+			i=$((i + 1))
+			;;
+		*)
+			pa_sandbox_die "cannot tell whether bwrap option '$op' exposes the private temp dir; refusing"
+			return 1
+			;;
+		esac
+	done
+	if [[ $covered -ne 1 ]]; then
+		pa_sandbox_die "the private temp dir $p is not under a sandbox tmpfs (it would be visible inside); refusing"
+		return 1
+	fi
+}
+
+# A launch whose bwrap setup fails because a host path the profile names vanished in the
+# meantime (the agent dir is listed when the profile is built; bwrap checks a
+# --ro-bind-try source and mounts it a moment later) has run nothing inside: it is retried
+# with a freshly built profile, up to PA_SANDBOX_SETUP_TRIES (3) launches in all. The real
+# run tells this case apart through the sh shim below: bwrap's OWN stderr goes to
+# <rundir>/bwrap.err (shown afterwards), and the shim, before exec'ing prime-agent, marks
+# <rundir>/started and hands prime-agent the real stderr; fds 3 and 4 are closed before
+# prime-agent runs, and the run dir is in the PRIVATE TEMP DIR (not inside the sandbox,
+# pa_sandbox_tmp_hidden), so nothing inside can reach any file there.
+# A launch counts as a setup failure only if bwrap failed (rc != 0) with its own message
+# (bwrap.err starts with `bwrap:`) and started is empty. Then:
+#   - the record says nothing can be left: `exited` (the child was gone before the watcher
+#     released it) or no record because bwrap never created a child (no child-pid in info):
+#     the sweep is skipped and the launch is retried;
+#   - the record holds namespace ids (the watcher read them while the child was still in
+#     bwrap's setup, which then failed): those ids are swept first, and the launch is retried
+#     only if that sweep succeeds (no member left alive).
+# In every other case the recorded sandbox is swept and the launch is not retried. A failed
+# sweep (no record, an unusable identity, a member left alive) is reported with rc 70 and
+# ends the launch without a retry, in every case. Before a retry the previous run dir is
+# removed (a failure to remove it ends with rc 70); bwrap has exited and the sweep found no
+# member, so no process, and no mount (they live in the sandbox's own mount namespace), of
+# the previous attempt is left.
 pa_sandbox_main() {
 	pa_sandbox_require_bwrap || return $?
-	local repo agent_dir rc=0
-	repo="$(pa_sandbox_repo_root "$PWD")"
-	pa_sandbox_build_argv "$repo" || return $?
-	agent_dir="$(cd -P "$HOME/.prime/agent" && pwd)"
-	pa_sandbox_scrub_state "$agent_dir" || {
-		pa_sandbox_die "state scrub failed at launch; refusing to start"
-		return 1
-	}
-	[[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" == 1 ]] && pa_sandbox_warn "UNSAFE: PA_SANDBOX_ALLOW_NO_GUARD=1, guard verification skipped, commands run unguarded"
-	pa_sandbox_verify_guard || return $?
-	PA_SANDBOX_SCRUB_DIR="$agent_dir" # globals: locals are gone when the EXIT trap fires
-	PA_SANDBOX_SWEPT=0
-	PA_SANDBOX_RUNDIR="$(mktemp -d)"
-	mkfifo "$PA_SANDBOX_RUNDIR/block"
-	PA_BWRAP_ARGV=("${PA_BWRAP_ARGV[@]:0:${#PA_BWRAP_ARGV[@]}-1}" --info-fd 7 --block-fd 8 --)
-	pa_sandbox_watch "$PA_SANDBOX_RUNDIR" &
-	PA_SANDBOX_WATCHER=$!
+	local repo agent_dir rc=0 vrc try tries="$PA_SANDBOX_SETUP_TRIES" setupfail rec
+	PA_SANDBOX_RUNDIR="" PA_SANDBOX_SCRUB_DIR="" PA_SANDBOX_WATCHER="" PA_SANDBOX_TMP=""
 	trap 'pa_sandbox_cleanup' EXIT
 	trap 'exit 130' INT
 	trap 'exit 143' TERM
-	"${PA_BWRAP_ARGV[@]}" prime-agent "$@" 7>"$PA_SANDBOX_RUNDIR/info" 8<>"$PA_SANDBOX_RUNDIR/block" || rc=$?
-	# sweep now (not only in the trap) so a failure can change the return code
-	if ! pa_sandbox_sweep_recorded; then
-		pa_sandbox_die "sandbox processes could not be cleaned up; state may be tainted" 70 || true
-		rc=70
+	PA_SANDBOX_TMP="$(mktemp -d /tmp/pa-sandbox.XXXXXXXXXX)" || {
+		PA_SANDBOX_TMP=""
+		pa_sandbox_die "cannot create a private temp dir under /tmp; refusing"
+		return 1
+	}
+	if [[ "$(cd -P "$PA_SANDBOX_TMP" 2>/dev/null && pwd)" != "$PA_SANDBOX_TMP" ]]; then
+		pa_sandbox_die "$PA_SANDBOX_TMP resolves elsewhere (/tmp is not a plain directory); refusing"
+		return 1
 	fi
+	local -a passenv=()
+	read -ra passenv <<<"${PA_SANDBOX_PASS_ENV:-}"
+	if [[ " ${passenv[*]} " == *" TMPDIR "* && -n "${TMPDIR:-}" && "$TMPDIR" != /tmp ]]; then
+		pa_sandbox_warn "PA_SANDBOX_PASS_ENV: TMPDIR is /tmp inside the sandbox (its own tmpfs), not '$TMPDIR'"
+	fi
+	export TMPDIR="$PA_SANDBOX_TMP" # every mktemp below (profile scans, scrub) lands there
+	repo="$(pa_sandbox_repo_root "$PWD")"
+	[[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" == 1 ]] && pa_sandbox_warn "UNSAFE: PA_SANDBOX_ALLOW_NO_GUARD=1, guard verification skipped, commands run unguarded"
+	for ((try = 1; ; try++)); do
+		pa_sandbox_build_argv "$repo" || return $?
+		pa_sandbox_tmp_hidden "$PA_SANDBOX_TMP" || return 1
+		agent_dir="$(cd -P "$HOME/.prime/agent" && pwd)"
+		pa_sandbox_scrub_state "$agent_dir" || {
+			pa_sandbox_die "state scrub failed at launch; refusing to start"
+			return 1
+		}
+		vrc=0
+		pa_sandbox_verify_guard || vrc=$?
+		if [[ $vrc -eq 2 ]]; then
+			if [[ $try -lt $tries ]]; then
+				pa_sandbox_warn "sandbox setup failed (a host path changed while starting), retrying: $PA_SANDBOX_SETUP_ERR"
+				continue
+			fi
+			pa_sandbox_die "cannot start the sandbox ($PA_SANDBOX_SETUP_ERR)"
+			return 1
+		fi
+		[[ $vrc -eq 0 ]] || return "$vrc"
+		PA_SANDBOX_SCRUB_DIR="$agent_dir" # globals: locals are gone when the EXIT trap fires
+		PA_SANDBOX_SWEPT=0
+		PA_SANDBOX_RUNDIR="$(mktemp -d "$PA_SANDBOX_TMP/run.XXXXXX")"
+		mkfifo "$PA_SANDBOX_RUNDIR/block"
+		: >"$PA_SANDBOX_RUNDIR/started"
+		PA_BWRAP_ARGV=("${PA_BWRAP_ARGV[@]:0:${#PA_BWRAP_ARGV[@]}-1}" --info-fd 7 --block-fd 8 --)
+		pa_sandbox_watch "$PA_SANDBOX_RUNDIR" &
+		PA_SANDBOX_WATCHER=$!
+		rc=0
+		# shellcheck disable=SC2016 # expanded by the shim's sh inside
+		"${PA_BWRAP_ARGV[@]}" /bin/sh -c 'printf x >&4 || exit 125; exec 2>&3 3>&- 4>&-; exec prime-agent "$@"' prime-agent "$@" \
+			3>&2 4>"$PA_SANDBOX_RUNDIR/started" 2>"$PA_SANDBOX_RUNDIR/bwrap.err" \
+			7>"$PA_SANDBOX_RUNDIR/info" 8<>"$PA_SANDBOX_RUNDIR/block" || rc=$?
+		[[ -s "$PA_SANDBOX_RUNDIR/bwrap.err" ]] && cat "$PA_SANDBOX_RUNDIR/bwrap.err" >&2
+		# bwrap is gone, so info is final: without a child-pid the watcher has nothing to record
+		grep -q '"child-pid"' "$PA_SANDBOX_RUNDIR/info" 2>/dev/null || kill "$PA_SANDBOX_WATCHER" 2>/dev/null || true
+		wait "$PA_SANDBOX_WATCHER" 2>/dev/null || true
+		PA_SANDBOX_WATCHER=""
+		setupfail=0
+		if [[ $rc -ne 0 && ! -s "$PA_SANDBOX_RUNDIR/started" && "$(head -c 6 "$PA_SANDBOX_RUNDIR/bwrap.err")" == bwrap: ]]; then
+			rec="$(head -c 16 "$PA_SANDBOX_RUNDIR/record" 2>/dev/null || true)"
+			if [[ "$rec" == exited ]] || { [[ ! -e "$PA_SANDBOX_RUNDIR/record" ]] && ! grep -q '"child-pid"' "$PA_SANDBOX_RUNDIR/info" 2>/dev/null; }; then
+				setupfail=1
+			elif [[ -s "$PA_SANDBOX_RUNDIR/record" ]]; then
+				setupfail=2 # ids recorded: retried only if the sweep below succeeds
+			fi
+		fi
+		# sweep now (not only in the trap) so a failure can change the return code
+		if [[ $setupfail -eq 1 ]]; then
+			PA_SANDBOX_SWEPT=1 # nothing ran inside: no sandbox process to sweep
+		elif ! pa_sandbox_sweep_recorded; then
+			pa_sandbox_die "sandbox processes could not be cleaned up; state may be tainted" 70 || true
+			rc=70
+			break
+		fi
+		if [[ $setupfail -ne 0 && $try -lt $tries ]]; then
+			# drop this attempt's run state and start over
+			command rm -rf "$PA_SANDBOX_RUNDIR"
+			if [[ -e "$PA_SANDBOX_RUNDIR" ]]; then
+				pa_sandbox_die "cannot remove the previous run dir $PA_SANDBOX_RUNDIR; not retrying" 70 || true
+				rc=70
+				break
+			fi
+			PA_SANDBOX_RUNDIR=""
+			pa_sandbox_warn "sandbox setup failed (a host path changed while starting), retrying"
+			continue
+		fi
+		break
+	done
 	if ! pa_sandbox_scrub_state "$PA_SANDBOX_SCRUB_DIR"; then
 		pa_sandbox_die "post-exit state scrub failed; planted entries may remain in the rw state dirs" 71 || true
 		[[ $rc -eq 0 ]] && rc=71
