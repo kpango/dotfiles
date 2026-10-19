@@ -100,7 +100,8 @@
       "Bash(tests/*)",
       "Skill(*)",
       "Bash(executor call *)",
-      "Bash(executor resume *)"
+      "Bash(executor resume *)",
+      "Read(//tmp/**)"
     ],
     "additionalDirectories": [
       "/home/kpango/go/src/github.com/vdaas/vald"
