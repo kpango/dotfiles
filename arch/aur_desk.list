@@ -53,6 +53,7 @@ fwupd
 fwupd-efi
 gettext
 ggshield
+ghostty
 ghq
 git
 git-delta
@@ -72,6 +73,7 @@ htop
 hyprlang2lua
 imagemagick
 inetutils
+iperf3
 iptables
 irqbalance
 kanshi
@@ -141,6 +143,7 @@ sheldon
 slack-desktop
 slurp
 smartmontools
+speedtest-cli
 starship
 sudo
 swaybg-git
