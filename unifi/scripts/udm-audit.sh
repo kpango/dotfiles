@@ -25,7 +25,7 @@ for s in udm-sla-tune udm-nuro-v6-pbr udm-dns-hijack udm-dpinger-hijack udm-veri
 done
 
 echo "== DNS / resolver"
-chk "dnsmasq forwards to NextDNS CLI (nextdns.conf server=127.0.0.1#5342)" grep -q '^server=127\.0\.0\.1#5342$' /run/dnsmasq.dhcp.conf.d/nextdns.conf
+chk "dnsmasq forwards to NextDNS CLI (nextdns.conf server=127.0.0.1#5342)" /data/nextdns-dnsmasq-wire/check.sh --check-only
 chk "ip6tnl2 resolv = NextDNS only" sh -c 'grep -q "^nameserver 45.90.28.74" /run/resolv.conf.d/ip6tnl2 && grep -q "^nameserver 45.90.30.74" /run/resolv.conf.d/ip6tnl2 && ! grep -qE "^nameserver (1\.1\.1\.1|8\.8)" /run/resolv.conf.d/ip6tnl2'
 chk "v4 :53 DNAT chain (6 rules) hooked once" sh -c '[ "$(iptables -w 30 -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 6 ] && [ "$(iptables -w 30 -t nat -S PREROUTING | grep -c -- "-j UDM_DNS_HIJACK$")" = 1 ]'
 chk "v6 :53 DNAT chain (4 rules) hooked once" sh -c '[ "$(ip6tables -w 30 -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 4 ] && [ "$(ip6tables -w 30 -t nat -S PREROUTING | grep -c -- "-j UDM_DNS_HIJACK$")" = 1 ]'

@@ -4,8 +4,13 @@
 # 消すが CLI は書き直さないため、dnsmasq は resolv.conf.d/main の NextDNS IP へ平文 UDP で直接転送し、
 # UDM 自身 (127.0.0.1 発、CLI が host 名 UDM-Pro を付ける) も LAN 端末も NextDNS 上で名前が付かなくなる。
 # CLI を再起動すれば同じテンプレートで書き直される。
+#
+# 使い方: check.sh [--check-only]
+#   exit 0 = 配線あり / 1 = 配線なし (--check-only) または restart 失敗 / 2 = 配線なしを検出して restart した
 set -eu
 CONF=/run/dnsmasq.dhcp.conf.d/nextdns.conf
 grep -qs '^server=127\.0\.0\.1#5342$' "$CONF" && exit 0
+[ "${1:-}" = --check-only ] && exit 1
 logger -t nextdns-dnsmasq-wire "$CONF missing — restarting nextdns"
 systemctl restart nextdns
+exit 2

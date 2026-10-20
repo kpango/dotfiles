@@ -3,14 +3,15 @@
 #ALL_config="/etc/mkinitcpio.conf"
 ALL_kver="/boot/vmlinuz-linux-zen"
 
-PRESETS=('default' 'fallback')
+# Single preset only: /boot/loader/entries/arch.conf references just
+# /initramfs-linux-zen.img, and ARCH_DESK_POST (Makefile.d/install.mk)
+# deletes every non-arch.conf boot entry on each deploy. The fallback image
+# would therefore never boot — generating it only produced spurious
+# "Possibly missing firmware" warnings for SCSI/FC/USB adapters this host
+# does not have (aic94xx, bfa, qed, qla*, wd719x, xhci_pci_renesas).
+PRESETS=('default')
 
 #default_config="/etc/mkinitcpio.conf"
 default_image="/boot/initramfs-linux-zen.img"
 #default_uki="/efi/EFI/Linux/arch-linux-zen.efi"
 #default_options="--splash /usr/share/systemd/bootctl/splash-arch.bmp"
-
-#fallback_config="/etc/mkinitcpio.conf"
-fallback_image="/boot/initramfs-linux-zen-fallback.img"
-#fallback_uki="/efi/EFI/Linux/arch-linux-zen-fallback.efi"
-fallback_options="-S autodetect"
