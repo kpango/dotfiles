@@ -1,0 +1,8 @@
+[Unit]
+Description=Forget UniFi ghost clients (stale wired entries without IP/name/OUI)
+After=unifi.service
+Requires=unifi.service
+
+[Service]
+Type=oneshot
+ExecStart=/root/clean-clients.sh

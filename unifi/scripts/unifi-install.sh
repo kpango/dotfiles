@@ -21,6 +21,7 @@ POST_INSTALL_HOOKS=(
   /data/udm-ndp-proxy/install.sh
   /data/udm-dpinger-hijack/install.sh
   /data/udm-verifier-enforcer/install.sh
+  /data/clean-clients/install.sh
 )
 # guard.sh is special — it takes an "units" argument rather than being a bare
 # installer, so it is handled by its own line further down.
@@ -51,7 +52,7 @@ fi
 # in case anything was pushed with the wrong mode locally.
 ssh "$UDM" 'find /data -maxdepth 4 -name "*.sh" -exec chmod +x {} \;
 find /root -maxdepth 2 -name "*.sh" -exec chmod +x {} \;
-chmod 644 /data/nextdns.conf /data/nextdns.conf.bak-* 2>/dev/null || true'
+chmod 644 /data/nextdns.conf 2>/dev/null || true'
 
 # Post-install hooks + systemctl daemon-reload.
 # Build a shell-safe literal list of hook paths with printf %q so entries with

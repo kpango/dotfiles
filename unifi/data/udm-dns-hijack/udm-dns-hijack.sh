@@ -110,46 +110,61 @@ rebuild_set() {
     fi
 }
 
+# `-C` only answers "at least one"; drop extra copies so exactly one remains.
+# Duplicates were left behind by an earlier -C that ran without -w and lost
+# the xtables lock to UniFi, which made it look like the rule was missing.
+dedupe() {  # dedupe <iptables|ip6tables> <table> <chain> <grep-pattern> <rule...>
+    local ipt=$1 table=$2 chain=$3 pat=$4; shift 4
+    while [ "$($ipt -w 30 -t "$table" -S "$chain" | grep -c -- "$pat")" -gt 1 ]; do
+        $ipt -w 30 -t "$table" -D "$chain" "$@" || break
+        log "removed duplicate $chain rule ($pat)"
+    done
+}
+
 rebuild_set inet  "$NEXTDNS_SET_V4" "${NEXTDNS_V4[@]}"
 rebuild_set inet6 "$NEXTDNS_SET_V6" "${NEXTDNS_V6[@]}"
 
 # -------- :53 DNAT (v4) --------
-iptables -t nat -N "$CHAIN" 2>/dev/null || true
-iptables -t nat -F "$CHAIN"
+iptables -w 30 -t nat -N "$CHAIN" 2>/dev/null || true
+iptables -w 30 -t nat -F "$CHAIN"
 for row in "${VLANS[@]}"; do
     read -r iface gw4 _ <<<"$row"
     for proto in udp tcp; do
-        iptables -t nat -A "$CHAIN" -i "$iface" -p "$proto" --dport 53 \
+        iptables -w 30 -t nat -A "$CHAIN" -i "$iface" -p "$proto" --dport 53 \
             ! -d "$gw4" \
             -m set ! --match-set "$NEXTDNS_SET_V4" dst \
             -j DNAT --to-destination "$gw4:53"
     done
 done
-iptables -t nat -C PREROUTING -j "$CHAIN" 2>/dev/null \
-    || { iptables -t nat -I PREROUTING 1 -j "$CHAIN"; log "v4 PREROUTING hook added"; }
+iptables -w 30 -t nat -C PREROUTING -j "$CHAIN" 2>/dev/null \
+    || { iptables -w 30 -t nat -I PREROUTING 1 -j "$CHAIN"; log "v4 PREROUTING hook added"; }
+dedupe iptables nat PREROUTING "-j $CHAIN$" -j "$CHAIN"
 
 # -------- :53 DNAT (v6) --------
-ip6tables -t nat -N "$CHAIN" 2>/dev/null || true
-ip6tables -t nat -F "$CHAIN"
+ip6tables -w 30 -t nat -N "$CHAIN" 2>/dev/null || true
+ip6tables -w 30 -t nat -F "$CHAIN"
 for row in "${VLANS[@]}"; do
     read -r iface _ gw6 <<<"$row"
     [ "$gw6" = "NONE" ] && continue
     for proto in udp tcp; do
-        ip6tables -t nat -A "$CHAIN" -i "$iface" -p "$proto" --dport 53 \
+        ip6tables -w 30 -t nat -A "$CHAIN" -i "$iface" -p "$proto" --dport 53 \
             ! -d "$gw6" \
             -m set ! --match-set "$NEXTDNS_SET_V6" dst \
             -j DNAT --to-destination "[$gw6]:53"
     done
 done
-ip6tables -t nat -C PREROUTING -j "$CHAIN" 2>/dev/null \
-    || { ip6tables -t nat -I PREROUTING 1 -j "$CHAIN"; log "v6 PREROUTING hook added"; }
+ip6tables -w 30 -t nat -C PREROUTING -j "$CHAIN" 2>/dev/null \
+    || { ip6tables -w 30 -t nat -I PREROUTING 1 -j "$CHAIN"; log "v6 PREROUTING hook added"; }
+dedupe ip6tables nat PREROUTING "-j $CHAIN$" -j "$CHAIN"
 
 # -------- DoH :443 ipset (atomic swap) + FORWARD DROP --------
 rebuild_set inet "$DOH_SET" "${DOH_IPS[@]}"
-if ! iptables -C FORWARD -p tcp --dport 443 -m set --match-set "$DOH_SET" dst -j DROP 2>/dev/null; then
-    iptables -I FORWARD 1 -p tcp --dport 443 -m set --match-set "$DOH_SET" dst -j DROP
+if ! iptables -w 30 -C FORWARD -p tcp --dport 443 -m set --match-set "$DOH_SET" dst -j DROP 2>/dev/null; then
+    iptables -w 30 -I FORWARD 1 -p tcp --dport 443 -m set --match-set "$DOH_SET" dst -j DROP
     log "DoH FORWARD DROP rule added"
 fi
+dedupe iptables filter FORWARD "--match-set $DOH_SET dst -j DROP" \
+    -p tcp --dport 443 -m set --match-set "$DOH_SET" dst -j DROP
 
 # -------- Defensive UBIOS NextDNS DoT ipset repopulation --------
 # UniFi's "DoT: allow NextDNS 21553f" firewall rule matches destinations

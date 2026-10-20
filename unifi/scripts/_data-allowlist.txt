@@ -4,9 +4,7 @@
 # 意図的に含めない — それらは UniFi Cloud 側でバックアップされる。
 
 nextdns.conf
-nextdns.conf.bak-*
 nextdns-healthcheck.sh
-forget_ghosts.sh
 
 on_boot.d
 game-geo-bypass

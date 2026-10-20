@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# udm-verifier-enforcer.sh — hourly re-apply of the UniFi "usg" setting
-# fields that drive UDAPI's uptime-report probe, so a UI edit never leaves
-# it off NextDNS for longer than ~1 h.
+# udm-verifier-enforcer.sh — hourly re-apply of the UniFi "usg" echo_server,
+# which drives UDAPI's uptime-report probe, so a UI edit never leaves it off
+# NextDNS for longer than ~1 h.
 #
 # The failover health probes themselves are configured through UniFi's
 # official WAN SLA ("NextDNS", /v2/api/site/default/wan-slas, assigned to
@@ -10,15 +10,12 @@
 # control is the extra uptime-report monitor that UDAPI appends per WAN;
 # its target comes from /rest/setting/usg echo_server.
 #
-# Fields re-applied on /rest/setting/usg:
-#   echo_server                           → 45.90.28.0  (NextDNS Global)
-#   dns_verification.setting_preference   → "manual"
-#   dns_verification.primary_dns_server   → 45.90.28.74 (NextDNS A1)
-#   dns_verification.secondary_dns_server → 45.90.30.74 (NextDNS A2)
-#   dns_verification.domain               → "dns.nextdns.io"
+# Field re-applied on /rest/setting/usg:
+#   echo_server → 45.90.28.0 (NextDNS Global)
 #
-# (Until 2026-10-20 this also PUT wan_connectivity_test_* / wan_ping_* to
-# /rest/networkconf; UniFi 11.0.89 silently drops those, so it was removed.)
+# (Until 2026-10-20 this also set usg dns_verification — unused once the
+# WAN SLA replaced the DNS-type probes — and PUT wan_connectivity_test_* /
+# wan_ping_* to /rest/networkconf, which UniFi 11.0.89 silently drops.)
 #
 # API key is read from /data/nextdns-client-names/api-key (shared with
 # nextdns-client-names.service; already provisioned at 0600 root). If
@@ -35,11 +32,7 @@ API_KEY_FILE=/data/nextdns-client-names/api-key
 API_BASE=https://127.0.0.1/proxy/network/api/s/default
 LOCK=/run/udm-verifier-enforcer.lock
 
-# NextDNS endpoints — pair the Verifier primary/secondary with the two
-# profile-linked anycast IPs so a NextDNS edge outage can't flap both.
-NX_A1_V4=45.90.28.74
-NX_A2_V4=45.90.30.74
-NX_G1_V4=45.90.28.0
+NX_G1_V4=45.90.28.0   # NextDNS Global anycast
 
 log() { logger -t udm-verifier-enforcer "$*"; }
 
@@ -70,23 +63,5 @@ put_json() {
     echo "$code"
 }
 
-# ----------------------------------------------------------------------
-# /rest/setting/usg — the echo_server field DOES land and drives
-# sla/monitors eth10-3 / ip6tnl2-3 (uptime report). dns_verification
-# fields are accepted at the API layer; whether UDAPI uses them in
-# this version is unclear but setting them cleans up the API view.
-# ----------------------------------------------------------------------
-USG_BODY=$(cat <<EOF
-{
-  "echo_server": "$NX_G1_V4",
-  "dns_verification": {
-    "setting_preference": "manual",
-    "primary_dns_server": "$NX_A1_V4",
-    "secondary_dns_server": "$NX_A2_V4",
-    "domain": "dns.nextdns.io"
-  }
-}
-EOF
-)
-code=$(put_json "$API_BASE/rest/setting/usg" "$USG_BODY")
+code=$(put_json "$API_BASE/rest/setting/usg" "{\"echo_server\": \"$NX_G1_V4\"}")
 log "PUT /rest/setting/usg → HTTP $code"

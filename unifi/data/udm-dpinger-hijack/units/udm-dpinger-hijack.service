@@ -1,5 +1,5 @@
 [Unit]
-Description=Hijack UDM dpinger probes (CF/Google) to NextDNS endpoints
+Description=Redirect UDM informational dpinger probes (microsoft/google/1.1.1.1) to NextDNS
 Documentation=file:/data/udm-dpinger-hijack/udm-dpinger-hijack.sh
 After=network-online.target
 

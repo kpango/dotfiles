@@ -17,20 +17,20 @@ K=$(cat /data/nextdns-client-names/api-key 2>/dev/null) || { ng "api key /data/n
 api() { curl -ksS -H "X-API-KEY: $K" "https://127.0.0.1/proxy/network$1"; }
 
 echo "== units"
-for u in udm-sla-tune.timer udm-nuro-v6-pbr.timer udm-dns-hijack.timer udm-dpinger-hijack.timer udm-verifier-enforcer.timer ndppd.service; do
+for u in udm-sla-tune.timer udm-nuro-v6-pbr.timer udm-dns-hijack.timer udm-dpinger-hijack.timer udm-verifier-enforcer.timer clean-clients.timer ndppd.service; do
   chk "$u active+enabled" sh -c "systemctl is-active --quiet $u && systemctl is-enabled --quiet $u"
 done
-for s in udm-sla-tune udm-nuro-v6-pbr udm-dns-hijack udm-dpinger-hijack udm-verifier-enforcer; do
+for s in udm-sla-tune udm-nuro-v6-pbr udm-dns-hijack udm-dpinger-hijack udm-verifier-enforcer clean-clients; do
   chk "$s.service last run not failed" sh -c "! systemctl is-failed --quiet $s.service"
 done
 
 echo "== DNS / resolver"
 chk "ip6tnl2 resolv = NextDNS only" sh -c 'grep -q "^nameserver 45.90.28.74" /run/resolv.conf.d/ip6tnl2 && grep -q "^nameserver 45.90.30.74" /run/resolv.conf.d/ip6tnl2 && ! grep -qE "^nameserver (1\.1\.1\.1|8\.8)" /run/resolv.conf.d/ip6tnl2'
-chk "v4 :53 DNAT chain (6 rules) hooked" sh -c '[ "$(iptables -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 6 ] && iptables -t nat -C PREROUTING -j UDM_DNS_HIJACK'
-chk "v6 :53 DNAT chain (4 rules) hooked" sh -c '[ "$(ip6tables -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 4 ] && ip6tables -t nat -C PREROUTING -j UDM_DNS_HIJACK'
+chk "v4 :53 DNAT chain (6 rules) hooked once" sh -c '[ "$(iptables -w 30 -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 6 ] && [ "$(iptables -w 30 -t nat -S PREROUTING | grep -c -- "-j UDM_DNS_HIJACK$")" = 1 ]'
+chk "v6 :53 DNAT chain (4 rules) hooked once" sh -c '[ "$(ip6tables -w 30 -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 4 ] && [ "$(ip6tables -w 30 -t nat -S PREROUTING | grep -c -- "-j UDM_DNS_HIJACK$")" = 1 ]'
 chk "UDM_NEXTDNS_V4 = 4 entries" sh -c '[ "$(ipset list UDM_NEXTDNS_V4 | grep -cE "^45\.90")" = 4 ]'
 chk "UDM_NEXTDNS_V6 = 2 entries" sh -c '[ "$(ipset list UDM_NEXTDNS_V6 | grep -c "^2a07")" = 2 ]'
-chk "DoH block ipset 10 + FORWARD DROP" sh -c '[ "$(ipset list UDM_DOH_BLOCK | grep -cE "^[0-9]")" = 10 ] && iptables -C FORWARD -p tcp --dport 443 -m set --match-set UDM_DOH_BLOCK dst -j DROP'
+chk "DoH block ipset 10 + FORWARD DROP once" sh -c '[ "$(ipset list UDM_DOH_BLOCK | grep -cE "^[0-9]")" = 10 ] && [ "$(iptables -w 30 -S FORWARD | grep -c -- "--match-set UDM_DOH_BLOCK dst -j DROP")" = 1 ]'
 chk "UBIOS DoT allowlist v4 has NextDNS DoT" sh -c 'ipset list UBIOS4policy_dst_dn_75 | grep -q 103.170.232.254 && ipset list UBIOS4policy_dst_dn_75 | grep -q 167.179.109.118'
 chk "UBIOS DoT allowlist v6 has NextDNS DoT" sh -c 'ipset list UBIOS6policy_dst_dn_75 | grep -q 2a0b:4341:b02:166 && ipset list UBIOS6policy_dst_dn_75 | grep -q 2001:19f0:7001:5e19'
 
@@ -70,7 +70,6 @@ chk "WAN1/WAN2 availability 100" sh -c "echo '$H' | jq -e '[.data[] | select(.su
 echo "== usg / networkconf"
 U=$(api /api/s/default/rest/setting/usg)
 chk "usg echo_server = 45.90.28.0" sh -c "echo '$U' | jq -e '.data[0].echo_server == \"45.90.28.0\"'"
-chk "usg dns_verification manual NextDNS" sh -c "echo '$U' | jq -e '.data[0].dns_verification | .setting_preference==\"manual\" and .primary_dns_server==\"45.90.28.74\" and .secondary_dns_server==\"45.90.30.74\"'"
 NC=$(api /api/s/default/rest/networkconf)
 chk "both WAN dns1/2 + v6 dns = NextDNS" sh -c "echo '$NC' | jq -e '[.data[] | select(.purpose==\"wan\") | .wan_dns1==\"45.90.28.74\" and .wan_dns2==\"45.90.30.74\" and .wan_ipv6_dns1==\"2a07:a8c0::21:553f\" and .wan_ipv6_dns2==\"2a07:a8c1::21:553f\"] | (length==2 and all)'"
 chk "WAN2 AFTR manual feed:101" sh -c "echo '$NC' | jq -e '.data[] | select(.wan_networkgroup==\"WAN2\") | .wan_dslite_remote_host==\"2404:8e00::feed:101\" and .wan_dslite_remote_host_auto==false'"
@@ -96,8 +95,9 @@ V6=$(conntrack -L -f ipv6 2>/dev/null | grep ESTABLISHED | grep -E 'src=240d:f:f
 [ -n "$V6" ] && ok "LAN v6 flows established ($(echo "$V6" | grep -c .))" || ng "no established LAN v6 flows from :29f1/:29f2"
 
 echo "== dpinger-hijack (display-only monitors)"
-chk "UDM_DPINGER_HIJACK hooked + static rules" sh -c 'iptables -t nat -C OUTPUT -j UDM_DPINGER_HIJACK && [ "$(iptables -t nat -S UDM_DPINGER_HIJACK | grep -c DNAT)" -ge 4 ]'
-chk "/etc/hosts override block present" grep -q "BEGIN udm-dpinger-hijack" /etc/hosts
+chk "UDM_DPINGER_HIJACK hooked once + has rules" sh -c '[ "$(iptables -w 30 -t nat -S OUTPUT | grep -c -- "-j UDM_DPINGER_HIJACK$")" = 1 ] && [ "$(iptables -w 30 -t nat -S UDM_DPINGER_HIJACK | grep -c DNAT)" -ge 1 ]'
+chk "no probe-hostname override in /etc/hosts or hosts.dnsmasq" sh -c '! grep -qE "BEGIN udm-dpinger-hijack|^[0-9a-f.:]+ +(ping\.ui\.com|google\.com|www\.microsoft\.com)( |$)" /etc/hosts /etc/hosts.dnsmasq'
+chk "NextDNS CLI answers google.com with a non-NextDNS IP" sh -c 'a=$(dig +short +time=2 A google.com @127.0.0.1 -p 5342 | head -1); [ -n "$a" ] && ! echo "$a" | grep -q "^45\.90\."'
 LEAK=$(conntrack -L -n 2>/dev/null | grep -E "src=(10\.0\.1\.2|192\.0\.0\.3) " | grep -E "dst=(1\.1\.1\.1|8\.8\.8\.8|23\.|142\.251\.|192\.178\.)" | grep -vE "src=45\.90\." | grep -c .)
 [ "$LEAK" = 0 ] && ok "no UDM-local probe flow replying from non-NextDNS" || ng "UDM-local probe flows still answered by third party: $LEAK"
 
