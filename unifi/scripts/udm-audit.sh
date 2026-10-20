@@ -1,7 +1,7 @@
 #!/bin/bash
 # udm-audit.sh — read-only on-box audit of every out-of-band UDM Pro setting
 # managed by this repo (unifi/data/*) plus the controller-side values they
-# depend on (WAN SLA, usg, networkconf, traffic routes). Prints one PASS/FAIL
+# depend on (WAN SLA, usg, networkconf, QoS, traffic routes). Prints one PASS/FAIL
 # line per check and exits with the number of failures (0 = all good).
 #
 # Runs ON the UDM: streamed by unifi-audit.sh as `ssh udmpro bash -s`.
@@ -70,14 +70,21 @@ chk "WAN1/WAN2 availability 100" sh -c "echo '$H' | jq -e '[.data[] | select(.su
 echo "== usg / networkconf"
 U=$(api /api/s/default/rest/setting/usg)
 chk "usg echo_server = 45.90.28.0" sh -c "echo '$U' | jq -e '.data[0].echo_server == \"45.90.28.0\"'"
-Q=$(api /v2/api/site/default/qos-rules)
-chk "QoS rules all disabled (no WAN htb/ifb, CONTEXT Q36)" sh -c "echo '$Q' | jq -e 'all(.[]; .enabled==false)' && ! tc qdisc show dev eth10 | grep -q '^qdisc htb'"
 NC=$(api /api/s/default/rest/networkconf)
 chk "both WAN dns1/2 + v6 dns = NextDNS" sh -c "echo '$NC' | jq -e '[.data[] | select(.purpose==\"wan\") | .wan_dns1==\"45.90.28.74\" and .wan_dns2==\"45.90.30.74\" and .wan_ipv6_dns1==\"2a07:a8c0::21:553f\" and .wan_ipv6_dns2==\"2a07:a8c1::21:553f\"] | (length==2 and all)'"
 chk "WAN2 AFTR manual feed:101" sh -c "echo '$NC' | jq -e '.data[] | select(.wan_networkgroup==\"WAN2\") | .wan_dslite_remote_host==\"2404:8e00::feed:101\" and .wan_dslite_remote_host_auto==false'"
 chk "Default VLAN v6 static :29f1::1/64" sh -c "echo '$NC' | jq -e 'any(.data[]; .ipv6_interface_type==\"static\" and .ipv6_subnet==\"240d:f:fc4:29f1::1/64\")'"
 chk "Media VLAN v6 static :29f2::1/64" sh -c "echo '$NC' | jq -e 'any(.data[]; .ipv6_interface_type==\"static\" and .ipv6_subnet==\"240d:f:fc4:29f2::1/64\")'"
 chk "IoT VLAN v6 none" sh -c "echo '$NC' | jq -e 'any(.data[]; (.ip_subnet//\"\")==\"10.0.10.1/26\" and .ipv6_interface_type==\"none\")'"
+
+echo "== QoS (CONTEXT Q36)"
+# Data is passed as an argument, not spliced into the command string, and a
+# tc failure (missing device) must FAIL rather than read as "no htb".
+Q=$(api /v2/api/site/default/qos-rules)
+chk "QoS rules all disabled" bash -c 'printf %s "$1" | jq -e "all(.[]; .enabled==false)"' _ "$Q"
+for w in eth10 eth8 ip6tnl2; do
+  chk "$w: no htb root, no ingress redirect" bash -c 'o=$(tc qdisc show dev "$1") && [ -n "$o" ] && ! grep -q "^qdisc htb" <<<"$o" && ! tc filter show dev "$1" parent ffff: 2>/dev/null | grep -q mirred' _ "$w"
+done
 
 echo "== traffic routes (PBR)"
 ST=/data/udapi-config/ubios-udapi-server/ubios-udapi-server.state
