@@ -1,0 +1,8 @@
+[Unit]
+Description=Restore WAN2 (ip6tnl2) SLA monitors to NextDNS ICMP + lowered threshold
+Documentation=file:/data/udm-sla-tune/udm-sla-tune.sh
+After=ubios-udapi-server.service
+
+[Service]
+Type=oneshot
+ExecStart=/data/udm-sla-tune/udm-sla-tune.sh

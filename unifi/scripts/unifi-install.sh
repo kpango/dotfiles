@@ -15,6 +15,10 @@ POST_INSTALL_HOOKS=(
   /data/game-geo-bypass/install.sh
   /data/nextdns-client-names/install.sh
   /data/on_boot.d/30-nextdns-healthcheck-install.sh
+  /data/udm-sla-tune/install.sh
+  /data/udm-nuro-v6-pbr/install.sh
+  /data/udm-dns-hijack/install.sh
+  /data/udm-ndp-proxy/install.sh
 )
 # guard.sh is special — it takes an "units" argument rather than being a bare
 # installer, so it is handled by its own line further down.
