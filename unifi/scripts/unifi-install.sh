@@ -19,6 +19,7 @@ POST_INSTALL_HOOKS=(
   /data/udm-nuro-v6-pbr/install.sh
   /data/udm-dns-hijack/install.sh
   /data/udm-ndp-proxy/install.sh
+  /data/udm-dpinger-hijack/install.sh
 )
 # guard.sh is special — it takes an "units" argument rather than being a bare
 # installer, so it is handled by its own line further down.

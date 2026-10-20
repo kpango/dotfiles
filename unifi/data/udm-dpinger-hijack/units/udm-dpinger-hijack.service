@@ -1,0 +1,8 @@
+[Unit]
+Description=Hijack UDM dpinger probes (CF/Google) to NextDNS endpoints
+Documentation=file:/data/udm-dpinger-hijack/udm-dpinger-hijack.sh
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/udm-dpinger-hijack/udm-dpinger-hijack.sh
