@@ -70,6 +70,8 @@ chk "WAN1/WAN2 availability 100" sh -c "echo '$H' | jq -e '[.data[] | select(.su
 echo "== usg / networkconf"
 U=$(api /api/s/default/rest/setting/usg)
 chk "usg echo_server = 45.90.28.0" sh -c "echo '$U' | jq -e '.data[0].echo_server == \"45.90.28.0\"'"
+Q=$(api /v2/api/site/default/qos-rules)
+chk "QoS rules all disabled (no WAN htb/ifb, CONTEXT Q36)" sh -c "echo '$Q' | jq -e 'all(.[]; .enabled==false)' && ! tc qdisc show dev eth10 | grep -q '^qdisc htb'"
 NC=$(api /api/s/default/rest/networkconf)
 chk "both WAN dns1/2 + v6 dns = NextDNS" sh -c "echo '$NC' | jq -e '[.data[] | select(.purpose==\"wan\") | .wan_dns1==\"45.90.28.74\" and .wan_dns2==\"45.90.30.74\" and .wan_ipv6_dns1==\"2a07:a8c0::21:553f\" and .wan_ipv6_dns2==\"2a07:a8c1::21:553f\"] | (length==2 and all)'"
 chk "WAN2 AFTR manual feed:101" sh -c "echo '$NC' | jq -e '.data[] | select(.wan_networkgroup==\"WAN2\") | .wan_dslite_remote_host==\"2404:8e00::feed:101\" and .wan_dslite_remote_host_auto==false'"
