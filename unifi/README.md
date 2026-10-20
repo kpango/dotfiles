@@ -7,18 +7,22 @@ UniFi Dream Machine Pro (host `UDM-Pro`, tailnet `100.118.109.67`, LAN `10.0.0.1
 portforward 等) は UniFi Cloud が既にバックアップしているため dotfiles では shadow しない。
 これらの JSON は WPA2 PSK / SSH 資格 / SSO / API token を平文で含むため、git に取り込むと
 secret leak の原因になる (2026-10-14 事例、`CONTEXT.md` の §7 incident 参照)。
+例外は `controller/` で、FW policy・Traffic Matching List・mDNS mode だけを**手書きの宣言**として
+持ち、`unifictl` が API で適用する (ダンプはしない、`CONTEXT.md` Q25–Q31)。
 
 `make unifi/install` で `scp`+`ssh` 経由で UDM Pro に反映する。`make unifi/pull` で現在の
 UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは一切取らない)。
 
 ## レイアウト
 
-| ディレクトリ    | UDM Pro 配置先   | 役割                                                                                                                                                                                                                          |
-| --------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `data/`         | `/data/`         | 永続スクリプト・NextDNS CLI 設定・on_boot.d init・Tailscale / game-geo-bypass / unifi-native-guard / `udm-*` (DNS・IPv6・WAN probe の強制) / clean-clients のソース一式 |
-| `root/`         | `/root/`         | admin スクリプト (`update.sh` / `clean-clients.sh` / `debug.sh` 等) |
-| `etc-snapshot/` | — (参照のみ)     | `/etc/systemd/system/*.{service,timer,path}` と `/etc/cron.d/*` の生成後スナップショット。実際の `/etc/` 配置は `data/<component>/install.sh` と `data/on_boot.d/*.sh` が行うため、ここは**読み取り専用の参考**として追従する |
-| `scripts/`      | — (ローカル実行) | `unifi-pull.sh` / `unifi-install.sh` / `unifi-diff.sh` 本体と、それらが共有する `_lib.sh` / `_data-allowlist.txt`                                                                                                             |
+| ディレクトリ    | UDM Pro 配置先     | 役割                                                                                                                                                                                                                          |
+| --------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data/`         | `/data/`           | 永続スクリプト・NextDNS CLI 設定・on_boot.d init・Tailscale / game-geo-bypass / unifi-native-guard / `udm-*` (DNS・IPv6・WAN probe の強制) / clean-clients のソース一式                                                      |
+| `root/`         | `/root/`           | admin スクリプト (`update.sh` / `clean-clients.sh` / `debug.sh` 等)                                                                                                                                                           |
+| `etc-snapshot/` | — (参照のみ)       | `/etc/systemd/system/*.{service,timer,path}` と `/etc/cron.d/*` の生成後スナップショット。実際の `/etc/` 配置は `data/<component>/install.sh` と `data/on_boot.d/*.sh` が行うため、ここは**読み取り専用の参考**として追従する |
+| `controller/`   | — (controller API) | 秘密を含まない手書きの宣言。`firewall-policies.json` (USER_DEFINED の FW policy、zone 組ごとに配列の並び = 評価順)、`traffic-matching-lists.json`、`mdns.json`。zone / network / list は名前で書き、UUID は書かない           |
+| `unifictl/`     | — (ローカル実行)   | `controller/` を plan / apply する Go ツール (標準ライブラリのみ、`go run` で実行)                                                                                                                                            |
+| `scripts/`      | — (ローカル実行)   | `unifi-pull.sh` / `unifi-install.sh` / `unifi-diff.sh` 本体と、それらが共有する `_lib.sh` / `_data-allowlist.txt`                                                                                                             |
 
 ## scripts/ 内訳
 
@@ -53,19 +57,27 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
 
 ## Make ターゲット
 
-| ターゲット           | 動作                                                                                                                                          |
-| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `make unifi/help`    | この表と同じ内容を inline コメントから抽出して表示                                                                                            |
-| `make unifi/pull`    | UDM Pro `/data` と `/root` の **スクリプト類のみ** を `unifi/{data,root}/` へ上書き取り込み (controller API JSON は取得しない)                |
-| `make unifi/install` | `unifi/data/` を UDM Pro `/data/` に tar+ssh で push、`unifi/root/` を `/root/` に tar+ssh、各 `install.sh` を実行、`systemctl daemon-reload` |
-| `make unifi/diff`    | ローカル (`unifi/data`, `unifi/root`) と UDM Pro 実機の差分を md5sum ベースで表示                                                             |
-| `make unifi/dry-run` | install の tar+ssh を実行せず何が送られるかプレビュー                                                                                         |
-| `make unifi/status`  | 読み取り専用の実機状態スナップショット (nextdns / Tailscale / systemd / cron)                                                                 |
-| `make unifi/audit`   | 読み取り専用の設定監査。期待どおりの状態かを項目ごとに PASS/FAIL で表示し、FAIL があれば非 0 で終わる |
-| `make unifi/logs`    | 実機ログ (nextdns.service / healthcheck.log / tailscaled / dmesg) を一息に tail。`LINES=N` で行数                                             |
+| ターゲット                    | 動作                                                                                                                                                                                                                    |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `make unifi/help`             | この表と同じ内容を inline コメントから抽出して表示                                                                                                                                                                      |
+| `make unifi/pull`             | UDM Pro `/data` と `/root` の **スクリプト類のみ** を `unifi/{data,root}/` へ上書き取り込み (controller API JSON は取得しない)                                                                                          |
+| `make unifi/install`          | `unifi/data/` を UDM Pro `/data/` に tar+ssh で push、`unifi/root/` を `/root/` に tar+ssh、各 `install.sh` を実行、`systemctl daemon-reload`                                                                           |
+| `make unifi/diff`             | ローカル (`unifi/data`, `unifi/root`) と UDM Pro 実機の差分を md5sum ベースで表示                                                                                                                                       |
+| `make unifi/dry-run`          | install の tar+ssh を実行せず何が送られるかプレビュー                                                                                                                                                                   |
+| `make unifi/status`           | 読み取り専用の実機状態スナップショット (nextdns / Tailscale / systemd / cron)                                                                                                                                           |
+| `make unifi/audit`            | 読み取り専用の設定監査。期待どおりの状態かを項目ごとに PASS/FAIL で表示し、FAIL があれば非 0 で終わる                                                                                                                   |
+| `make unifi/logs`             | 実機ログ (nextdns.service / healthcheck.log / tailscaled / dmesg) を一息に tail。`LINES=N` で行数                                                                                                                       |
+| `make unifi/controller-plan`  | `controller/` と実機 controller の差分を表示 (読み取りのみ)。API キーは `pass show unifi-api`                                                                                                                           |
+| `make unifi/controller-apply` | plan を表示し、`yes` 入力で適用 (`YES=1` で確認省略)。変更前の object は `$XDG_STATE_HOME/unifictl/backup/<ts>/` (repo 外, 0600)。mDNS の対象ネットワークは API で変えられないので、ずれていれば UI 手順を出して exit 3 |
+| `make unifi/controller-test`  | `unifictl` の単体テスト (合成 fixture、controller に接続しない)                                                                                                                                                         |
 
 変数: `UDM=<host>` で SSH 先を上書き (既定 `udmpro`)。`DRY_RUN=1` は `unifi/install` に対して
 `unifi/dry-run` と同等 (CI などで直接呼ぶ場合用)。`LINES=N` で `unifi/logs` の行数 (既定 50)。
+`UNIFI_HOST` / `UNIFI_SITE` で `unifictl` の接続先 (既定 `10.0.0.1` / `default`)。
+
+`controller/` に新しい FW policy を足すときは、UI か API で作ったあとに宣言へ書き写し、
+`make unifi/controller-plan` が `No changes` になることを確かめる。宣言から消しても実機の
+policy は消えない (prune しない)。
 
 ## 絶対にコミットしないもの (secrets)
 

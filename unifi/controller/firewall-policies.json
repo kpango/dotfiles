@@ -1,0 +1,569 @@
+[
+  {
+    "name": "DoT/DoQ: allow NextDNS 21553f (all VLANs)",
+    "description": "Allow DoT/DoQ (853) only to NextDNS profile 21553f from all Internal networks",
+    "enabled": true,
+    "action": {
+      "type": "ALLOW",
+      "allowReturnTraffic": false
+    },
+    "source": {
+      "zone": "Internal"
+    },
+    "destination": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "DOMAIN",
+        "domainFilter": {
+          "type": "DOMAINS",
+          "domains": [
+            "21553f.dns.nextdns.io"
+          ]
+        },
+        "portFilter": {
+          "type": "PORTS",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "PORT_NUMBER",
+              "value": 853
+            }
+          ]
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4_AND_IPV6",
+      "protocolFilter": {
+        "type": "PRESET",
+        "preset": {
+          "name": "TCP_UDP"
+        }
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "DoT lockdown: block non-NextDNS TCP:853 (all VLANs)",
+    "description": "Block DoT/DoQ (853) to anything except NextDNS 21553f from all Internal networks",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "Internal"
+    },
+    "destination": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "PORT",
+        "portFilter": {
+          "type": "PORTS",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "PORT_NUMBER",
+              "value": 853
+            }
+          ]
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4_AND_IPV6",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "TCP"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "DoT lockdown: block non-NextDNS UDP (DoQ):853 (all VLANs)",
+    "description": "Block DoT/DoQ (853) to anything except NextDNS 21553f from all Internal networks",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "Internal"
+    },
+    "destination": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "PORT",
+        "portFilter": {
+          "type": "PORTS",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "PORT_NUMBER",
+              "value": 853
+            }
+          ]
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4_AND_IPV6",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "UDP"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "IoT lockdown: block DNS TCP:53 to external",
+    "description": "Enforce NextDNS profile 21553f on IoT: block all DNS not destined to 10.0.10.1",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "Internal",
+      "trafficFilter": {
+        "type": "NETWORK",
+        "networkFilter": {
+          "matchOpposite": false,
+          "networks": [
+            "IoT"
+          ]
+        }
+      }
+    },
+    "destination": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "IP_ADDRESSES",
+          "matchOpposite": true,
+          "items": [
+            {
+              "type": "IP_ADDRESS",
+              "value": "10.0.10.1"
+            }
+          ]
+        },
+        "portFilter": {
+          "type": "PORTS",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "PORT_NUMBER",
+              "value": 53
+            }
+          ]
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4_AND_IPV6",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "TCP"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "IoT lockdown: block DNS UDP:53 to external",
+    "description": "Enforce NextDNS profile 21553f on IoT: block all DNS not destined to 10.0.10.1",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "Internal",
+      "trafficFilter": {
+        "type": "NETWORK",
+        "networkFilter": {
+          "matchOpposite": false,
+          "networks": [
+            "IoT"
+          ]
+        }
+      }
+    },
+    "destination": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "IP_ADDRESSES",
+          "matchOpposite": true,
+          "items": [
+            {
+              "type": "IP_ADDRESS",
+              "value": "10.0.10.1"
+            }
+          ]
+        },
+        "portFilter": {
+          "type": "PORTS",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "PORT_NUMBER",
+              "value": 53
+            }
+          ]
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4_AND_IPV6",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "UDP"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Media -> Nanoleaf 4D (TCP 16021,6517,12566)",
+    "enabled": true,
+    "action": {
+      "type": "ALLOW",
+      "allowReturnTraffic": true
+    },
+    "source": {
+      "zone": "Internal",
+      "trafficFilter": {
+        "type": "NETWORK",
+        "networkFilter": {
+          "matchOpposite": false,
+          "networks": [
+            "Media"
+          ]
+        }
+      }
+    },
+    "destination": {
+      "zone": "Internal",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "IP_ADDRESSES",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "IP_ADDRESS",
+              "value": "10.0.10.22"
+            }
+          ]
+        },
+        "portFilter": {
+          "type": "PORTS",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "PORT_NUMBER",
+              "value": 6517
+            },
+            {
+              "type": "PORT_NUMBER",
+              "value": 16021
+            },
+            {
+              "type": "PORT_NUMBER",
+              "value": 12566
+            }
+          ]
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "TCP"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Block Scanner IPv4s from External",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "TRAFFIC_MATCHING_LIST",
+          "matchOpposite": false,
+          "trafficMatchingList": "WAN Scanner IPv4s"
+        }
+      }
+    },
+    "destination": {
+      "zone": "Gateway"
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4"
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Block Scanner IPv6s from External",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "TRAFFIC_MATCHING_LIST",
+          "matchOpposite": false,
+          "trafficMatchingList": "WAN Scanner IPv6s"
+        }
+      }
+    },
+    "destination": {
+      "zone": "Gateway"
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV6"
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Block Traffic from India",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "IP_ADDRESSES",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "IP_ADDRESS",
+              "value": "68.183.90.120"
+            },
+            {
+              "type": "IP_ADDRESS",
+              "value": "2400:6180:100:d0::982:d001"
+            }
+          ]
+        }
+      }
+    },
+    "destination": {
+      "zone": "Gateway"
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4_AND_IPV6"
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Block Scanner IPv4s from Gateway",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "Gateway"
+    },
+    "destination": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "TRAFFIC_MATCHING_LIST",
+          "matchOpposite": false,
+          "trafficMatchingList": "WAN Scanner IPv4s"
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4"
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Block Scanner IPv6s from Gateway",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "Gateway"
+    },
+    "destination": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "TRAFFIC_MATCHING_LIST",
+          "matchOpposite": false,
+          "trafficMatchingList": "WAN Scanner IPv6s"
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV6"
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Block Traffic to India",
+    "enabled": true,
+    "action": {
+      "type": "BLOCK"
+    },
+    "source": {
+      "zone": "Gateway"
+    },
+    "destination": {
+      "zone": "External",
+      "trafficFilter": {
+        "type": "IP_ADDRESS",
+        "ipAddressFilter": {
+          "type": "IP_ADDRESSES",
+          "matchOpposite": false,
+          "items": [
+            {
+              "type": "IP_ADDRESS",
+              "value": "68.183.90.120"
+            },
+            {
+              "type": "IP_ADDRESS",
+              "value": "2400:6180:100:d0::982:d001"
+            }
+          ]
+        }
+      }
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV4_AND_IPV6"
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Allow ICMPv6",
+    "enabled": true,
+    "action": {
+      "type": "ALLOW",
+      "allowReturnTraffic": true
+    },
+    "source": {
+      "zone": "External"
+    },
+    "destination": {
+      "zone": "Internal"
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV6",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "ICMPV6"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Allow ICMPv6",
+    "enabled": true,
+    "action": {
+      "type": "ALLOW",
+      "allowReturnTraffic": true
+    },
+    "source": {
+      "zone": "External"
+    },
+    "destination": {
+      "zone": "Vpn"
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV6",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "ICMPV6"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Allow ICMPv6",
+    "enabled": true,
+    "action": {
+      "type": "ALLOW",
+      "allowReturnTraffic": true
+    },
+    "source": {
+      "zone": "External"
+    },
+    "destination": {
+      "zone": "Hotspot"
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV6",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "ICMPV6"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  },
+  {
+    "name": "Allow ICMPv6",
+    "enabled": true,
+    "action": {
+      "type": "ALLOW",
+      "allowReturnTraffic": true
+    },
+    "source": {
+      "zone": "External"
+    },
+    "destination": {
+      "zone": "Dmz"
+    },
+    "ipProtocolScope": {
+      "ipVersion": "IPV6",
+      "protocolFilter": {
+        "type": "NAMED_PROTOCOL",
+        "protocol": {
+          "name": "ICMPV6"
+        },
+        "matchOpposite": false
+      }
+    },
+    "loggingEnabled": false
+  }
+]
