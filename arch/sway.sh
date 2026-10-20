@@ -153,13 +153,20 @@ if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
 		if [[ "${SWAY_DEBUG_MODE:-0}" == "1" ]]; then
 			log "Starting sway (DEBUG MODE)..."
 			# Add seconds to timestamp for uniqueness
-			exec env SWAY_DEBUG=1 SWAY_IGNORE_INPUT_GRAB=1 \
+			env SWAY_DEBUG=1 SWAY_IGNORE_INPUT_GRAB=1 \
 				sway --debug --verbose "${sway_args[@]}" \
 				>"/tmp/sway.debug.$(date +%Y%m%d%H%M%S).log" 2>&1
 		else
 			log "Starting sway..."
-			exec sway "${sway_args[@]}"
+			sway "${sway_args[@]}"
 		fi
+		# Not exec'd: if sway fails to start (e.g. missing shared library),
+		# fall back to the login shell instead of logging out instantly.
+		sway_rc=$?
+		if ((sway_rc == 0)); then
+			exit 0
+		fi
+		log "sway exited with status ${sway_rc}; staying in login shell."
 	else
 		log "Sway already running. Skipping launch."
 	fi
