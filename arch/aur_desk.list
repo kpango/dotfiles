@@ -80,6 +80,7 @@ kanshi
 kubectl
 kubectx
 less
+libliftoff
 libnm
 libva-nvidia-driver
 libva-utils
