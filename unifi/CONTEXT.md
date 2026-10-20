@@ -120,6 +120,23 @@ ACL (Access Controls) に以下が追加済:
 将来 LAN を追加した時の手動承認を省略する。`autogroup:admin` = kpango 単独の tailnet なので
 other-user 誤 advertise のリスクなし。
 
+### Inv-9 (必須): clean-clients が決して削除しないクライアント
+
+`clean-clients.timer` (毎日 09:00 JST) は `/root/clean-clients.sh` を引数なし = 実削除モードで
+走らせる。無人実行のうえ件数上限を設けない (Q38) ため、保護は以下の条件式だけが担保する。
+`unifi/root/clean-clients.sh` の `COND` を変更するときはこの表を同時に更新する。
+
+| 保護対象                           | 列                                                                                                       | 理由                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| 人間が手で付けた識別子             | `name`, `note`                                                                                           | 復元不能な人間の入力 (`hostname` は DHCP 申告なので対象外) |
+| 個別設定を持つクライアント         | `use_fixed_ip`, `blocked`, `noted`, `local_dns_record_enabled`, `fixed_ap_enabled`, `virtual_network_override_enabled` | 消すと設定喪失がそのままネットワーク挙動の変化になる     |
+| 現在接続中の MAC                   | API `GET /s/<site>/stat/sta` の `data[].mac`                                                             | DB の `last_seen` は接続中に更新されないため API で判定する |
+| オフライン経過が閾値未満           | `last_seen` (ゴースト: `MIN_AGE` 既定 3600s / 実機: `OFFLINE_AGE` 既定 604800s = 7 日)                   | 一時的に電源オフなだけの実機を消さない                   |
+
+削除前に対象行と対応する `config.guest_authorization` 行を
+`/data/clean-clients-backup/ghost-<timestamp>.jsonl` へ退避する。復元は
+`clean-clients.sh --restore <file>` (`systemctl stop unifi` を伴い 1〜3 分の停止)。
+
 ---
 
 ## 3. 責務境界と入出力規約 (Boundary & Contracts)
@@ -138,6 +155,7 @@ other-user 誤 advertise のリスクなし。
 | dotfiles `dockers/daemon.json`               | コンテナ DNS = Tailscale + NextDNS direct IPv6                      | public DNS の追加禁止                              |
 | dotfiles `unifi/`                            | UDM Pro SSoT (data/root/etc-snapshot、backup は 2026-10-14 撤去)    | secrets (tailscaled.state / profile-data) 混入禁止 |
 | UDM Pro `/data/nextdns-client-names/`        | UniFi クライアント名 → `/etc/hosts.dnsmasq` (5 分毎、Q19)           | `api-key` の git 取り込み禁止                      |
+| UDM Pro `/data/nextdns-dnsmasq-wire/`        | 消えた `/run/dnsmasq.dhcp.conf.d/nextdns.conf` を CLI 再起動で戻す (Q39) | conf を自前テンプレートで書かない          |
 | UniFi Content Filtering                      | **off** (3 policy とも disabled、Q18)                               | 再有効化は NextDNS の端末識別を壊す (Q18 参照)     |
 | UniFi WAN SLA "WAN Requirement" (API `v2/.../wan-slas`) | WAN1/WAN2 の failover 判定 probe (`eth10-0..7` / `ip6tnl2-0..7`、ICMP 4 + DNS 4) を NextDNS に (Q32) | state file の直接 patch・udapi-server SIGHUP 禁止 |
 | UDM Pro `/data/udm-dpinger-hijack/`          | WAN SLA で変えられない表示用 monitor (microsoft/google/1.1.1.1) の ICMP を NextDNS へ DNAT (60 秒毎、Q33) | `/etc/hosts` への probe ホスト名追記禁止 |
@@ -219,6 +237,8 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
 | Q36     | WAN の QoS ルール (2026-10-20) | 既定の "Critical Apps Prioritization" (PRIORITIZE, app 指定) を無効化。現行 API が app_id 28 / 262312 を `api.err.InvalidFirewallDestinationAppIds` で拒否したので、その 2 つを外して `enabled=false` を PUT した (2 つは API が受け付けないため復元していない)。戻すときは UI でこのルールを再び有効にする | 有効のまま (遅延優先) / 再検討を保留 | 2026-10-20 に `tc` で確認: ルール有効時は eth10・eth8・ip6tnl2 の root が htb (eth10 の class 1:1 は rate/ceil 10Gbit) で、ingress が ifb へ mirred リダイレクトされていた。無効化後は mq / noqueue でリダイレクトなし。Ookla (IPA CyberLab 400G 固定、ホスト PAUSE 無効の状態) で有効 3 回 → 無効 3 回の中央値が DL 1585→2426 Mbps・UL 5827→6902 Mbps (範囲は重ならない)、直後の on/off 1 組でも DL 2284→3077・UL 5910→6750。代わりに DL 飽和時の遅延が 6.6–9.9 ms → 34.6–154 ms に増える (有効時の 1 回は無負荷 RTT も 28.9 ms に跳ねた外乱で 108 ms。それ以外の無負荷 RTT は 5.0–5.6 ms で変わらず)。user 判断で速度を優先。ルール種別は PRIORITIZE で、DNS / NextDNS / Tailscale / IPS / FW の設定は変更していない |
 | Q37     | ホスト側の 802.3x フロー制御 (2026-10-20) | ThreadRipper の X710 (sfp0/sfp1) で PAUSE の受信・送信を無効化。`network/nm/99-coalesce-x710`、`network/nm/{,desk/}slave{0,1}.nmconnection` (`pause-rx/tx=false`)、`nix/hosts/tr/networking/x710-tuning.nix` に揃えた。スイッチ側の設定は変えない | UniFi の global_switch `flowctrl_enabled` を切る (全スイッチ再プロビジョン) | PAUSE はリンク単位なので、送ってくるのは直結の US-16-XG (UniFi Switch 16XG 01 の port 9/10)。PAUSE 有効時の受信数は Ookla 1 回あたり 49–5,521 個 (6 回、DL と UL の区別はしていない)。QoS 有効の状態で、有効 4 回 → 無効 3 回 → 有効/無効を 2 組交互の順に測り、UL 中央値は 5398 (6 回、5151–5946) → 5829 Mbps (5 回、5556–6403)。UL も範囲が重なり、根拠は弱い (示唆程度)。DL も範囲が重なり差は見えない (1365–2008 / 1358–2160)。QoS 無効と組み合わせた状態での PAUSE 単独の効果は測っていない。ホストだけの変更で戻しやすいので、悪化が見えないことを条件に残した |
 | Q17     | Split DNS LAN domain                 | C: skip (現状維持、tailnet 内は MagicDNS で足りる)                                         | A (home.arpa 実装) / B (枠組みのみ) / D (不要判定)               | fix_plan 自体が条件付き保留、必要時 Option A で遅延展開可能                                                                                                                                                                                                                          |
+| Q38     | clean-clients の対象拡大 (2026-10-21) | 既定条件を「`name`・`note` なし + 個別設定なし + 非接続中 + オフライン経過が閾値超」に広げ、`is_wired`・`hostname`・`last_ip`・`oui` のゲートを撤去。閾値は 2 段階にし、識別情報が全く無いゴーストは `MIN_AGE` (既定 3600s)、ホスト名・IP・OUI のいずれかが判明している実機は新設の `OFFLINE_AGE` (既定 604800s = 7 日) | 手動専用の新フラグ `--offline` / 単一閾値への統一 (30 日 or 7 日) / `MAX_DELETE` 上限で暴走を止める | user 判断で既定条件ごと広げ、毎日 09:00 の `clean-clients.timer` にも適用する。保護範囲は Inv-9 を参照 — `use_fixed_ip` だけでなく `blocked`・`noted`・`local_dns_record_enabled`・`fixed_ap_enabled`・`virtual_network_override_enabled` も維持し、`hostname` は DHCP 申告の自動値なので保護しない。上限は設けず jsonl バックアップ + `--restore` を担保とする。変更前の内訳 (全 69 件: 有線 21 / 無線 48、固定IP 55 / noted 58 / AP固定 39 / VLAN override 5 / blocked 0 / ローカルDNS 0) では個別設定なしが 11 件で全て有線・全て `name`/`note` なし。実機 `--dry-run` 検証 (2026-10-21): `OFFLINE_AGE=2592000` (30 日) では 0 件 (接続中 43 件を除外)、`OFFLINE_AGE=604800` では 7 日超の 4 件 (Cisco / Infohand / Nintendo / Ubiquiti、いずれも OUI のみ判明) が挙がり 2 段階分岐の動作を確認。30 日では当面削除が発生しないため user 判断で既定を 7 日に決めた |
+| Q39     | dnsmasq → NextDNS CLI 配線の維持 (2026-10-21) | `nextdns-dnsmasq-wire.path` が `/run/dnsmasq.dhcp.conf.d` の変更を監視し、`nextdns.conf` (`server=127.0.0.1#5342`) が無ければ `systemctl restart nextdns`。5 分毎の healthcheck と audit も同じ conf を見る | healthcheck に足すだけ (最大 5 分漏れる) / CLI のテンプレートを複製して自前で書く | CLI (1.47.3 `router/ubios/setup.go`) は起動時に一度だけ conf を書き dnsmasq を kill する。udapi-server が設定変更のたびにディレクトリを再生成して conf を消すと、dnsmasq は `resolv.conf.d/main` の NextDNS IP へ平文 UDP で直接転送し、healthcheck の dig も通るので気付けなかった。NextDNS logs では直近 24h の未識別 2971 件中 2766 件が UDM の eth8 IPv6 発。CLI 経由なら loopback 発は `host.Name()` = `UDM-Pro` で DoH 送信される (`run.go` `setupClientReporting`)。実機で conf 削除 → 約 5 秒で再生成・再起動 1 回のみを確認 |
 
 ---
 
