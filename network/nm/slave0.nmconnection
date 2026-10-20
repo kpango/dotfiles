@@ -23,5 +23,5 @@ feature-rx-gro-list=true
 feature-rx-udp-gro-forwarding=true
 ring-rx=8160
 ring-tx=8160
-pause-rx=true
-pause-tx=true
+pause-rx=false
+pause-tx=false

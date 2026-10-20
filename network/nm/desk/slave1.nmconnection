@@ -29,5 +29,5 @@ ring-rx=8160
 ring-tx=8160
 
 # flow control
-pause-rx=true
-pause-tx=true
+pause-rx=false
+pause-tx=false

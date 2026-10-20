@@ -11,7 +11,7 @@
 # History: this script used to also patch sla/monitors + sla/policies in
 # the UDAPI state file and SIGHUP ubios-udapi-server so the WAN health
 # probes pointed at NextDNS. That is now done by UniFi's own WAN SLA
-# feature (Settings > Internet > WAN SLA "NextDNS", assigned to WAN1 and
+# feature (Settings > Internet > WAN SLA "WAN Requirement", assigned to WAN1 and
 # WAN2 — API: /proxy/network/v2/api/site/default/wan-slas). The state
 # patch was retired on 2026-10-20 because it would fight the
 # controller-provisioned SLA monitors and needed a full udapi-server

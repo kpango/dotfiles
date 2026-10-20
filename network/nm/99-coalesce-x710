@@ -25,6 +25,10 @@ ethtool -K "$IFACE" hw-tc-offload on || true
 # 4. GRO list — coalesce out-of-order segments more aggressively
 ethtool -K "$IFACE" rx-gro-list on || true
 
+# 4b. Ignore 802.3x PAUSE from the switch, which sends them during speed tests
+#     (slave*.nmconnection also set pause off). See unifi/CONTEXT.md Q37.
+ethtool -A "$IFACE" rx off tx off || true
+
 # 5. Recreate root mq so fq leaves get the correct quantum for current MTU.
 #    quantum = 2 × (MTU + Ethernet header): 3028 for 1500-MTU, 18028 for 9000-MTU.
 MTU=$(cat /sys/class/net/"$IFACE"/mtu 2>/dev/null || echo 1500)

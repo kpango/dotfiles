@@ -1,7 +1,7 @@
 #!/bin/bash
 # udm-audit.sh — read-only on-box audit of every out-of-band UDM Pro setting
 # managed by this repo (unifi/data/*) plus the controller-side values they
-# depend on (WAN SLA, usg, networkconf, traffic routes). Prints one PASS/FAIL
+# depend on (WAN SLA, usg, networkconf, QoS, traffic routes). Prints one PASS/FAIL
 # line per check and exits with the number of failures (0 = all good).
 #
 # Runs ON the UDM: streamed by unifi-audit.sh as `ssh udmpro bash -s`.
@@ -49,22 +49,29 @@ echo "== WAN2 DS-Lite"
 chk "ip6tnl2 remote = 2404:8e00::feed:101" sh -c 'ip -d link show ip6tnl2 | grep -q "remote 2404:8e00::feed:101"'
 
 echo "== WAN SLA (official)"
-SLA=$(api /v2/api/site/default/wan-slas)
-chk "wan-slas has NextDNS w/ 4 ICMP NextDNS targets" sh -c "echo '$SLA' | jq -e '.[] | select(.name==\"NextDNS\") | [.monitors[] | select(.type==\"ICMP\") | .target] | sort == [\"45.90.28.0\",\"45.90.28.74\",\"45.90.30.0\",\"45.90.30.74\"]'"
-SLAID=$(echo "$SLA" | jq -r '.[] | select(.name=="NextDNS") | ._id')
+# The SLA is found through its WAN assignment, not its name (renamed in the
+# UI on 2026-10-20: "NextDNS" -> "WAN Requirement", + 4 DNS monitors).
+NX='["45.90.28.0","45.90.28.74","45.90.30.0","45.90.30.74"]'
 ENR=$(api /v2/api/site/default/wan/enriched-configuration)
-chk "NURO wan_sla = NextDNS" sh -c "echo '$ENR' | jq -e '.[] | select(.configuration.name==\"NURO 10G\") | .configuration.wan_sla == \"$SLAID\"'"
-chk "BB.excite wan_sla = NextDNS" sh -c "echo '$ENR' | jq -e '.[] | select(.configuration.wan_sla == \"$SLAID\" and (.configuration.name|startswith(\"BB.excite\")))'"
+SLAID=$(printf %s "$ENR" | jq -r '.[] | select(.configuration.name=="NURO 10G") | .configuration.wan_sla // empty')
+SLA=$(api /v2/api/site/default/wan-slas)
+chk "NURO has a WAN SLA" test -n "$SLAID"
+chk "BB.excite uses the same WAN SLA" bash -c 'printf %s "$1" | jq -e --arg id "$2" "any(.[]; .configuration.wan_sla == \$id and (.configuration.name|startswith(\"BB.excite\")))"' _ "$ENR" "$SLAID"
+for t in ICMP DNS; do
+  chk "WAN SLA $t monitors = 4 NextDNS targets" bash -c 'printf %s "$1" | jq -e --arg id "$2" --arg t "$3" --argjson nx "$4" ".[] | select(._id==\$id) | [.monitors[] | select(.type==\$t) | .target] | sort == \$nx"' _ "$SLA" "$SLAID" "$t" "$NX"
+done
+chk "WAN SLA has no non-NextDNS monitor" bash -c 'printf %s "$1" | jq -e --arg id "$2" ".[] | select(._id==\$id) | (.monitors|length) > 0 and all(.monitors[]; .target|startswith(\"45.90.\"))"' _ "$SLA" "$SLAID"
 N=$(ls -t /data/udapi-config/udapi-net-cfg-*.json | head -1)
 for w in eth10 ip6tnl2; do
-  chk "net-cfg $w-0..3 = NextDNS ICMP" sh -c "jq -e '[.\"sla/monitors\".monitors[] | select(.id|test(\"^$w-[0-3]\$\")) | select(.type==\"icmp\") | .target] | sort == [\"45.90.28.0\",\"45.90.28.74\",\"45.90.30.0\",\"45.90.30.74\"]' $N"
+  chk "net-cfg $w-0..3 = NextDNS ICMP" bash -c 'jq -e --arg w "$1" --argjson nx "$2" "[.\"sla/monitors\".monitors[] | select(.id|test(\"^\" + \$w + \"-[0-3]\$\")) | select(.type==\"icmp\") | .target] | sort == \$nx" "$3"' _ "$w" "$NX" "$N"
+  chk "net-cfg $w-4..7 = NextDNS DNS" bash -c 'jq -e --arg w "$1" --argjson nx "$2" "[.\"sla/monitors\".monitors[] | select(.id|test(\"^\" + \$w + \"-[4-7]\$\")) | select(.type==\"dns\") | .target] | sort == \$nx" "$3"' _ "$w" "$NX" "$N"
 done
-chk "policies wfg-0/1 use only -0..3" sh -c "jq -e '[.\"sla/policies\".policies[] | .probes[0].monitors | map(test(\"-[0-3]\$\")) | all] | all' $N"
+chk "policies wfg-0/1 use only -0..7" bash -c 'jq -e "[.\"sla/policies\".policies[] | .probes[0].monitors | map(test(\"-[0-7]\$\")) | all] | all" "$1"' _ "$N"
 for w in eth10 ip6tnl2; do
   chk "running dpinger $w-0..3 on NextDNS" sh -c "[ \"\$(ps -o args= -C dpinger | grep -oE 'dpinger-$w-[0-3]-45\.90\.[0-9.]+ ' | sort -u | wc -l)\" = 4 ]"
 done
 H=$(api /api/s/default/stat/health)
-chk "UI health: both WANs alerting monitors = NextDNS ICMP" sh -c "echo '$H' | jq -e '[.data[] | select(.subsystem==\"wan\") | .uptime_stats | to_entries[] | .value.alerting_monitors | map(.type==\"icmp\" and (.target|startswith(\"45.90.\"))) | all] | (length==2 and all)'"
+chk "UI health: both WANs alerting monitors = NextDNS ICMP/DNS" bash -c 'printf %s "$1" | jq -e "[.data[] | select(.subsystem==\"wan\") | .uptime_stats | to_entries[] | .value.alerting_monitors | map((.type==\"icmp\" or .type==\"dns\") and (.target|startswith(\"45.90.\"))) | all] | (length==2 and all)"' _ "$H"
 chk "WAN1/WAN2 availability 100" sh -c "echo '$H' | jq -e '[.data[] | select(.subsystem==\"wan\") | .uptime_stats | to_entries[] | .value.availability == 100] | all'"
 
 echo "== usg / networkconf"
@@ -76,6 +83,15 @@ chk "WAN2 AFTR manual feed:101" sh -c "echo '$NC' | jq -e '.data[] | select(.wan
 chk "Default VLAN v6 static :29f1::1/64" sh -c "echo '$NC' | jq -e 'any(.data[]; .ipv6_interface_type==\"static\" and .ipv6_subnet==\"240d:f:fc4:29f1::1/64\")'"
 chk "Media VLAN v6 static :29f2::1/64" sh -c "echo '$NC' | jq -e 'any(.data[]; .ipv6_interface_type==\"static\" and .ipv6_subnet==\"240d:f:fc4:29f2::1/64\")'"
 chk "IoT VLAN v6 none" sh -c "echo '$NC' | jq -e 'any(.data[]; (.ip_subnet//\"\")==\"10.0.10.1/26\" and .ipv6_interface_type==\"none\")'"
+
+echo "== QoS (CONTEXT Q36)"
+# Data is passed as an argument, not spliced into the command string, and a
+# tc failure (missing device) must FAIL rather than read as "no htb".
+Q=$(api /v2/api/site/default/qos-rules)
+chk "QoS rules all disabled" bash -c 'printf %s "$1" | jq -e "all(.[]; .enabled==false)"' _ "$Q"
+for w in eth10 eth8 ip6tnl2; do
+  chk "$w: no htb root, no ingress redirect" bash -c 'o=$(tc qdisc show dev "$1") && [ -n "$o" ] && ! grep -q "^qdisc htb" <<<"$o" && ! tc filter show dev "$1" parent ffff: 2>/dev/null | grep -q mirred' _ "$w"
+done
 
 echo "== traffic routes (PBR)"
 ST=/data/udapi-config/ubios-udapi-server/ubios-udapi-server.state
