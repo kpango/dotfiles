@@ -53,7 +53,6 @@ fwupd
 fwupd-efi
 gettext
 ggshield
-ghostty-x86_64-v3-git
 ghq
 git
 git-delta
@@ -171,9 +170,7 @@ which
 whois
 wireless-regdb
 wl-clipboard
-wlroots-hidpi-xprop-git
 wofi
-wpscan-git
 xdg-desktop-portal-wlr
 xfsprogs
 xorg-xwayland
