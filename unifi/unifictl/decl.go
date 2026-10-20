@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -91,7 +92,7 @@ func (d *Declarations) validate() error {
 	seen := map[string]bool{}
 	for i, p := range d.Policies {
 		name, _ := p["name"].(string)
-		src, dst := sideZone(p, "source"), sideZone(p, "destination")
+		src, dst := sideField(p, "source", "zone"), sideField(p, "destination", "zone")
 		if name == "" || src == "" || dst == "" {
 			return fmt.Errorf("firewall-policies.json[%d]: name, source.zone and destination.zone are required", i)
 		}
@@ -115,10 +116,12 @@ func (d *Declarations) validate() error {
 	return nil
 }
 
-func sideZone(p obj, side string) string {
+// sideField reads key ("zone" in declarations, "zoneId" in API objects) of a
+// policy's source or destination.
+func sideField(p obj, side, key string) string {
 	s, _ := p[side].(obj)
-	z, _ := s["zone"].(string)
-	return z
+	v, _ := s[key].(string)
+	return v
 }
 
 // policyKey identifies a policy by (name, source zone, destination zone);
@@ -144,12 +147,12 @@ func resolvePolicy(p obj, n Names) (obj, error) {
 	}
 	body := out.(obj)
 	for _, side := range []string{"source", "destination"} {
-		s, _ := body[side].(obj)
-		z, _ := s["zone"].(string)
+		z := sideField(body, side, "zone")
 		id, ok := n.Zones[z]
 		if !ok {
 			return nil, fmt.Errorf("%s: unknown zone %q", side, z)
 		}
+		s, _ := body[side].(obj)
 		delete(s, "zone")
 		s["zoneId"] = id
 	}
@@ -257,19 +260,9 @@ func walkDiff(a, b any, path string, out *[]string) {
 	ao, aok := a.(obj)
 	bo, bok := b.(obj)
 	if aok && bok {
-		keys := map[string]bool{}
-		for k := range ao {
-			keys[k] = true
-		}
-		for k := range bo {
-			keys[k] = true
-		}
-		sorted := make([]string, 0, len(keys))
-		for k := range keys {
-			sorted = append(sorted, k)
-		}
-		slices.Sort(sorted)
-		for _, k := range sorted {
+		keys := slices.AppendSeq(slices.Collect(maps.Keys(ao)), maps.Keys(bo))
+		slices.Sort(keys)
+		for _, k := range slices.Compact(keys) {
 			p := k
 			if path != "" {
 				p = path + "." + k

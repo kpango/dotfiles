@@ -38,8 +38,14 @@ type OrderChange struct {
 	names   map[string]string // policy ID -> display name
 }
 
+// Applicable reports whether the plan has changes the API can make; the mDNS
+// network list is the one change left to the UI.
+func (p *Plan) Applicable() bool {
+	return len(p.Lists) > 0 || len(p.Policies) > 0 || len(p.Orders) > 0 || p.MDNSMode != nil
+}
+
 func (p *Plan) Empty() bool {
-	return len(p.Lists) == 0 && len(p.Policies) == 0 && len(p.Orders) == 0 && p.MDNSMode == nil && p.MDNSNetworks == nil
+	return !p.Applicable() && p.MDNSNetworks == nil
 }
 
 // newPrefix marks the stand-in ID of an object the plan would create, so later
@@ -58,15 +64,16 @@ func buildPlan(d *Declarations, s *State) (*Plan, error) {
 	for _, want := range d.Lists {
 		name, _ := want["name"].(string)
 		body := listFields(want)
+		label := fmt.Sprintf("traffic matching list %q", name)
 		got, ok := live[name]
 		if !ok {
 			names.Lists[name] = newPrefix + name
-			p.Lists = append(p.Lists, Change{Label: fmt.Sprintf("traffic matching list %q", name), Body: body})
+			p.Lists = append(p.Lists, Change{Label: label, Body: body})
 			continue
 		}
 		if paths := diffPaths(listFields(got), body); len(paths) > 0 {
 			id, _ := got["id"].(string)
-			p.Lists = append(p.Lists, Change{Label: fmt.Sprintf("traffic matching list %q", name), ID: id, Body: body, Before: got, Paths: paths})
+			p.Lists = append(p.Lists, Change{Label: label, ID: id, Body: body, Before: got, Paths: paths})
 		}
 	}
 
@@ -89,23 +96,24 @@ func buildPlan(d *Declarations, s *State) (*Plan, error) {
 	declared := map[pair][]string{}
 	for _, want := range d.Policies {
 		name, _ := want["name"].(string)
-		key := policyKey(name, sideZone(want, "source"), sideZone(want, "destination"))
+		key := policyKey(name, sideField(want, "source", "zone"), sideField(want, "destination", "zone"))
 		body, err := resolvePolicy(want, names)
 		if err != nil {
 			return nil, fmt.Errorf("policy %s: %w", key, err)
 		}
-		pr := pair{zoneIDOf(body, "source"), zoneIDOf(body, "destination")}
+		pr := pair{sideField(body, "source", "zoneId"), sideField(body, "destination", "zoneId")}
 		if _, seen := declared[pr]; !seen {
 			pairs = append(pairs, pr)
 		}
 		id := newPrefix + key
+		label := "policy " + key
 		if got, ok := livePol[key]; ok {
 			id, _ = got["id"].(string)
 			if paths := diffPaths(projectPolicy(got), projectPolicy(body)); len(paths) > 0 {
-				p.Policies = append(p.Policies, Change{Label: "policy " + key, ID: id, Body: body, Before: got, Paths: paths})
+				p.Policies = append(p.Policies, Change{Label: label, ID: id, Body: body, Before: got, Paths: paths})
 			}
 		} else {
-			p.Policies = append(p.Policies, Change{Label: "policy " + key, Body: body})
+			p.Policies = append(p.Policies, Change{Label: label, Body: body})
 		}
 		display[id] = name
 		declared[pr] = append(declared[pr], id)
@@ -175,13 +183,7 @@ func desiredOrder(cur Ordering, declared []string) Ordering {
 
 func livePolicyKey(p obj, zoneName map[string]string) string {
 	name, _ := p["name"].(string)
-	return policyKey(name, zoneName[zoneIDOf(p, "source")], zoneName[zoneIDOf(p, "destination")])
-}
-
-func zoneIDOf(p obj, side string) string {
-	s, _ := p[side].(obj)
-	id, _ := s["zoneId"].(string)
-	return id
+	return policyKey(name, zoneName[sideField(p, "source", "zoneId")], zoneName[sideField(p, "destination", "zoneId")])
 }
 
 func invert(m map[string]string) map[string]string {

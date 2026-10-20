@@ -27,8 +27,8 @@ func load(ctx context.Context, c *Client, d *Declarations) (*State, *Plan, error
 		return nil, nil, err
 	}
 	for _, p := range d.Policies {
-		src, sok := s.Names.Zones[sideZone(p, "source")]
-		dst, dok := s.Names.Zones[sideZone(p, "destination")]
+		src, sok := s.Names.Zones[sideField(p, "source", "zone")]
+		dst, dok := s.Names.Zones[sideField(p, "destination", "zone")]
 		k := [2]string{src, dst}
 		if _, done := s.Orders[k]; !sok || !dok || done {
 			continue // unknown zones are reported by buildPlan
@@ -44,7 +44,7 @@ func load(ctx context.Context, c *Client, d *Declarations) (*State, *Plan, error
 }
 
 func apply(ctx context.Context, c *Client, d *Declarations, in io.Reader, out io.Writer, yes bool) error {
-	_, p, err := load(ctx, c, d)
+	s, p, err := load(ctx, c, d)
 	if err != nil {
 		return err
 	}
@@ -52,8 +52,7 @@ func apply(ctx context.Context, c *Client, d *Declarations, in io.Reader, out io
 	if p.Empty() {
 		return nil
 	}
-	onlyManual := len(p.Lists) == 0 && len(p.Policies) == 0 && len(p.Orders) == 0 && p.MDNSMode == nil
-	if onlyManual {
+	if !p.Applicable() {
 		return errManual
 	}
 	if !yes {
@@ -74,19 +73,23 @@ func apply(ctx context.Context, c *Client, d *Declarations, in io.Reader, out io
 
 	// Each step re-reads the controller so it sees the real IDs of objects
 	// created by the previous step.
-	steps := []func(*Plan) error{
-		func(p *Plan) error { return applyChanges(ctx, c, backup, "/traffic-matching-lists", p.Lists, out) },
-		func(p *Plan) error { return applyChanges(ctx, c, backup, "/firewall/policies", p.Policies, out) },
-		func(p *Plan) error { return applyOrders(ctx, c, backup, p.Orders, out) },
-		func(p *Plan) error { return applyMDNSMode(ctx, c, backup, p, out) },
+	steps := []func(*State, *Plan) error{
+		func(_ *State, p *Plan) error {
+			return applyChanges(ctx, c, backup, "/traffic-matching-lists", p.Lists, out)
+		},
+		func(_ *State, p *Plan) error {
+			return applyChanges(ctx, c, backup, "/firewall/policies", p.Policies, out)
+		},
+		func(_ *State, p *Plan) error { return applyOrders(ctx, c, backup, p.Orders, out) },
+		func(s *State, p *Plan) error { return applyMDNSMode(ctx, c, backup, s, p, out) },
 	}
 	for i, step := range steps {
 		if i > 0 {
-			if _, p, err = load(ctx, c, d); err != nil {
+			if s, p, err = load(ctx, c, d); err != nil {
 				return err
 			}
 		}
-		if err := step(p); err != nil {
+		if err := step(s, p); err != nil {
 			return err
 		}
 	}
@@ -100,7 +103,7 @@ func apply(ctx context.Context, c *Client, d *Declarations, in io.Reader, out io
 	switch {
 	case p.Empty():
 		return nil
-	case len(p.Lists) == 0 && len(p.Policies) == 0 && len(p.Orders) == 0 && p.MDNSMode == nil:
+	case !p.Applicable():
 		return errManual
 	default:
 		return errors.New("controller still differs after apply")
@@ -145,13 +148,9 @@ func applyOrders(ctx context.Context, c *Client, backup string, orders []OrderCh
 	return nil
 }
 
-func applyMDNSMode(ctx context.Context, c *Client, backup string, p *Plan, out io.Writer) error {
+func applyMDNSMode(ctx context.Context, c *Client, backup string, s *State, p *Plan, out io.Writer) error {
 	if p.MDNSMode == nil {
 		return nil
-	}
-	s, err := c.fetchState(ctx)
-	if err != nil {
-		return err
 	}
 	if err := writeBackup(backup, "mdns", s.MDNS); err != nil {
 		return err
@@ -166,7 +165,7 @@ func applyMDNSMode(ctx context.Context, c *Client, backup string, p *Plan, out i
 	}
 	id, _ := s.MDNS["_id"].(string)
 	fmt.Fprintf(out, "updating mdns mode -> %q\n", p.MDNSMode[1])
-	_, err = c.classicDo(ctx, http.MethodPut, "/rest/setting/mdns/"+id, body)
+	_, err := c.classicDo(ctx, http.MethodPut, "/rest/setting/mdns/"+id, body)
 	return err
 }
 

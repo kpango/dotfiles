@@ -88,7 +88,6 @@ func (c *Client) do(ctx context.Context, method, u string, body, out any) error 
 func (c *Client) list(ctx context.Context, u string, out *[]obj) error {
 	var page struct {
 		Data       []obj `json:"data"`
-		Count      int   `json:"count"`
 		TotalCount int   `json:"totalCount"`
 	}
 	if err := c.do(ctx, http.MethodGet, fmt.Sprintf("%s?limit=%d", u, pageLimit), nil, &page); err != nil {
