@@ -25,8 +25,8 @@ ethtool -K "$IFACE" hw-tc-offload on || true
 # 4. GRO list — coalesce out-of-order segments more aggressively
 ethtool -K "$IFACE" rx-gro-list on || true
 
-# 4b. Ignore 802.3x PAUSE from the switch (US-16-XG pauses the host during bulk
-#     uploads; slave*.nmconnection also set pause off). See unifi/CONTEXT.md Q37.
+# 4b. Ignore 802.3x PAUSE from the switch, which sends them during speed tests
+#     (slave*.nmconnection also set pause off). See unifi/CONTEXT.md Q37.
 ethtool -A "$IFACE" rx off tx off || true
 
 # 5. Recreate root mq so fq leaves get the correct quantum for current MTU.
