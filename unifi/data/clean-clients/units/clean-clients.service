@@ -1,5 +1,5 @@
 [Unit]
-Description=Forget UniFi ghost clients (stale wired entries without IP/name/OUI)
+Description=Forget unused UniFi clients (ghosts, and offline devices without per-client settings)
 After=unifi.service
 Requires=unifi.service
 
