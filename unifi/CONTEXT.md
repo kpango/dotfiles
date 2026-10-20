@@ -139,6 +139,11 @@ other-user 誤 advertise のリスクなし。
 | dotfiles `unifi/`                            | UDM Pro SSoT (data/root/etc-snapshot、backup は 2026-10-14 撤去)    | secrets (tailscaled.state / profile-data) 混入禁止 |
 | UDM Pro `/data/nextdns-client-names/`        | UniFi クライアント名 → `/etc/hosts.dnsmasq` (5 分毎、Q19)           | `api-key` の git 取り込み禁止                      |
 | UniFi Content Filtering                      | **off** (3 policy とも disabled、Q18)                               | 再有効化は NextDNS の端末識別を壊す (Q18 参照)     |
+| UniFi WAN SLA "NextDNS" (API `v2/.../wan-slas`) | WAN1/WAN2 の failover 判定 probe (`eth10-0..3` / `ip6tnl2-0..3`) を NextDNS ICMP に (Q32) | state file の直接 patch・udapi-server SIGHUP 禁止 |
+| UDM Pro `/data/udm-dpinger-hijack/`          | WAN SLA で変えられない表示用 monitor (microsoft/google/1.1.1.1) の ICMP を NextDNS へ DNAT (60 秒毎、Q33) | `/etc/hosts` への probe ホスト名追記禁止 |
+| UDM Pro `/data/udm-verifier-enforcer/`       | usg `echo_server` = 45.90.28.0 を 1 時間毎に書き戻す (Q34)          | `dns_verification` の上書き禁止 (UniFi 既定のまま) |
+| UDM Pro `/data/udm-sla-tune/`                | `/run/resolv.conf.d/ip6tnl2` を NextDNS に書き換え、その dnsmasq だけ SIGHUP | WAN health probe の設定 (Q32 で WAN SLA に移管) |
+| UDM Pro `/data/udm-dns-hijack/`              | LAN の非 NextDNS 宛 :53 を gateway へ DNAT、主要 DoH の :443 を DROP | 自前 iptables は `-w 30` 必須 (Q35)              |
 
 ### 3.2 データフロー不変
 
@@ -207,6 +212,10 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
 | Q22     | NextDNS TLD ブロック拡張 (2026-10-18) | UniFi Region Block 国の ccTLD 全部 + Freenom (tk ml ga cf gq) + 濫用 gTLD (zip mov top icu cyou cfd sbs bond rest buzz quest gdn loan men click country kim party science stream download racing review win bid date faith accountant cricket webcam) + su + ایران を追加 (150→287)。開発・日常利用の `io co so rs ly be in tv` は除外 (github.io/crates.io, huggingface.co/t.co, notion.so, docs.rs, bit.ly, youtu.be, lnkd.in, twitch.tv)。`bq` は NextDNS が invalid で拒否 | 制裁国+Freenom+濫用 gTLD のみ / 制裁国+Freenom のみ | Region Block は IP ベースなので、別国 IP でホストされた当該 ccTLD を DNS で補完する。除外を増やすときは `DELETE /profiles/21553f/security/tlds/<tld>` |
 | Q23     | UniFi DPI アプリブロックの NextDNS 二重化 (2026-10-18) | denylist に baidu.com sina.com.cn weibo.com 163.com 126.com alipay.com tmall.com cntv.cn pptv.com 6.cn joy.cn qq.com utorrent.com bittorrent.com を追加 | qq.com 除外 / 反映しない | DPI をすり抜けた通信も DNS で止める。qq.com は WeChat 不使用の前提で含めた。ゲーム用 allowlist の Alibaba CDN 系は入れていない |
 | Q22/23 検証 | 適用後の実機確認 (2026-10-18) | UDM の dnsmasq (127.0.0.1) 経由で yandex.kz / example.nl / weibo.com / utorrent.com が `NOERROR ANSWER: 0` になり、NextDNS ログの理由は `.kz (TLD)` / `.nl (TLD)` / `Denylist`。baidu.com と qq.com は 0.0.0.0 が返り、ログ上は Denylist。除外 8 TLD (github.io, crates.io, notion.so, docs.rs, bit.ly, youtu.be, huggingface.co, twitch.tv, lnkd.in) と google.com は通常どおり解決した。TLD/denylist 以外のプロファイル設定に差分なし (ブロックリストの自動更新メタデータだけ) | — | NextDNS のログは当日約 1 日分しかなく、"未使用 TLD" の根拠は 1 日分に限られる |
+| Q32     | WAN health probe の宛先 (2026-10-20) | UniFi 公式の WAN SLA "NextDNS" (ICMP 45.90.28.0 / 45.90.30.0 / 45.90.28.74 / 45.90.30.74、5 秒間隔、60 秒窓、loss 20%、latency 1500ms) を WAN1/WAN2 に割り当てる。UI の Test → Confirm と同じ `wan/load-balancing/configuration` の test-and-commit で適用 | udm-sla-tune による UDAPI state file の sla/monitors patch + udapi-server SIGHUP / Postgres `config.wan_sla` への直接 INSERT | 公式経路なら controller が monitor を再生成しても NextDNS のまま。state patch は SIGHUP で udapi-server が全面再起動し ipset・ip -6 rule が消える。直接 INSERT は何も provision されなかった。endpoint は推測でなく UI の通信を CDP で捕まえて特定した (推測 URL の 404 で「未実装」と誤判定した経緯あり) |
+| Q33     | WAN SLA で変えられない monitor (2026-10-20) | UDAPI が WAN ごとに足す表示用 monitor (`-5` www.microsoft.com、`-6` google.com、`-7` 1.1.1.1) は、dpinger の argv から IP を拾って UDM 発の ICMP だけ NextDNS A1 へ DNAT する。DNAT 前から続く conntrack は `conntrack -D -r <ip>` で消す | `/etc/hosts` で名前を NextDNS に向ける / 8.8.8.8・:53 の静的 DNAT | `/etc/hosts` は nextdns-client-names が `/etc/hosts.dnsmasq` に写し、NextDNS CLI (`use-hosts true`) が LAN 全体に google.com = 45.90.30.74 を返していた。UDAPI 自身は名前解決結果を argv に焼き込むので hosts は効いてもいなかった。2026-10-20 に撤去 |
+| Q34     | usg `dns_verification` (2026-10-20) | UniFi 既定 (auto / 1.1.1.1 / 8.8.8.8 / ui.com) に戻し、enforcer は `echo_server` だけを書き戻す | NextDNS (manual) を強制し続ける | DNS 型の probe は Q32 で不要になった。`echo_server` は WAN ごとの uptime monitor (`-4`) を決め、WAN SLA では変えられないので残す |
+| Q35     | 自前 iptables の冪等性 (2026-10-20) | 全呼び出しに `-w 30`。hook は `-C` で確かめて足したあと、`-S` で数えて 2 本目以降を消す (`dedupe`)。`make unifi/audit` が各 hook = 1 本を検査する | `-C` のみ | `-w` なしの `-C` は UniFi が xtables lock を持っている間に失敗し、「無い」と判断して hook を重複挿入していた (v4 PREROUTING が 7 本)。game-geo-bypass は元から `-w 30` で重複なし |
 | Q17     | Split DNS LAN domain                 | C: skip (現状維持、tailnet 内は MagicDNS で足りる)                                         | A (home.arpa 実装) / B (枠組みのみ) / D (不要判定)               | fix_plan 自体が条件付き保留、必要時 Option A で遅延展開可能                                                                                                                                                                                                                          |
 
 ---
@@ -240,6 +249,11 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
   `/usr/bin/nextdns` と `/etc/apt/preferences.d/30-unifi-native-protect` だけが消えた
   (前者は nextdns.service の ExecStartPre が `/data/.nextdns-recover` から、後者は `update.sh` の
   `guard.sh pins` が復元)。
+- **UDAPI の表示用 monitor は WAN SLA で変えられない** (UniFi Network 11.0.89 時点、2026-10-20
+  確認): WAN SLA が置き換えるのは failover 判定の `-0..3` だけで、`-4` (echo_server)・`-5..7`
+  (microsoft / google / 1.1.1.1) は残る。前者は usg `echo_server`、後者は udm-dpinger-hijack の
+  DNAT で NextDNS に向けている (Q33/Q34)。設定状態の確認は `make unifi/audit` (読み取りのみ、
+  1 項目ごとに PASS/FAIL)。
 - **NixOS host の rebuild は本 commit 以降 user 手動**: `dotfiles/install` は Arch host で
   即反映されるが、NixOS host は user が `sudo nixos-rebuild switch --flake .#desk-threadripper`
   を実行するまで旧設定のまま。

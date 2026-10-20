@@ -11,10 +11,9 @@
 # devices then stalls, and Android Strict Private DNS surfaces this as a
 # "no internet" / Wi-Fi join problem.
 #
-# The companion udm-sla-tune.sh SIGHUPs udapi-server when it rewrites the
-# sla/monitors state, and udapi-server flushes ip -6 rules in the process.
-# This script makes the two safe to coexist: a 60s timer re-adds the rules
-# whenever they go missing (udapi reconcile, UI change, boot, etc.).
+# udapi-server flushes ip -6 rules whenever it reconciles (UI change, WAN
+# SLA commit, restart, boot), so a 60s timer re-adds the rules whenever they
+# go missing. (Until 2026-10-20 udm-sla-tune.sh also SIGHUPed udapi-server.)
 #
 # Idempotent: if both expected rules are present, exits silently. Only when
 # a rule is missing does it add it (and log once).

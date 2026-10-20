@@ -15,8 +15,8 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
 
 | ディレクトリ    | UDM Pro 配置先   | 役割                                                                                                                                                                                                                          |
 | --------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `data/`         | `/data/`         | 永続スクリプト・NextDNS CLI 設定・on_boot.d init・Tailscale / game-geo-bypass / unifi-native-guard のソース一式                                                                                                               |
-| `root/`         | `/root/`         | admin スクリプト (`update.sh` / `clean-clients.sh` / `debug.sh` / `fix_plan.md` 等)                                                                                                                                           |
+| `data/`         | `/data/`         | 永続スクリプト・NextDNS CLI 設定・on_boot.d init・Tailscale / game-geo-bypass / unifi-native-guard / `udm-*` (DNS・IPv6・WAN probe の強制) / clean-clients のソース一式 |
+| `root/`         | `/root/`         | admin スクリプト (`update.sh` / `clean-clients.sh` / `debug.sh` 等) |
 | `etc-snapshot/` | — (参照のみ)     | `/etc/systemd/system/*.{service,timer,path}` と `/etc/cron.d/*` の生成後スナップショット。実際の `/etc/` 配置は `data/<component>/install.sh` と `data/on_boot.d/*.sh` が行うため、ここは**読み取り専用の参考**として追従する |
 | `scripts/`      | — (ローカル実行) | `unifi-pull.sh` / `unifi-install.sh` / `unifi-diff.sh` 本体と、それらが共有する `_lib.sh` / `_data-allowlist.txt`                                                                                                             |
 
@@ -30,6 +30,7 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
 | `unifi-install.sh`    | 逆方向。tar+ssh で push、chmod で実行権復元、`POST_INSTALL_HOOKS` と `guard.sh units` を再実行して `/etc` 配下を再構築、`systemctl daemon-reload`。Hook 失敗は `[hook-fail] <path> rc=<n>` を stderr に出して exit 非 0 で可視化する (silent failure 排除) |
 | `unifi-diff.sh`       | md5sum ベースで `unifi/{data,root}/` と UDM Pro 実機を比較、drift を報告。`remote_dir` は `/data` または `/root` の literal 固定 (injection 防御)                                                                                                          |
 | `unifi-status.sh`     | 読み取り専用 one-shot 診断: nextdns status + 設定ハイライト + healthcheck.log tail + Tailscale 状態 + dnsmasq upstream + systemd ユニット + cron。実機状態の "いま" を手早く知るためのダッシュボード                                                       |
+| `unifi-audit.sh`      | `udm-audit.sh` を `ssh "$UDM" 'bash -s'` で実機に流す。読み取りのみで、unit・DNS・IPv6・WAN SLA・iptables hook 本数などを 1 項目ずつ PASS/FAIL 表示し、FAIL 数を exit code で返す                                                                     |
 | `unifi-logs.sh`       | `journalctl -u nextdns` / `journalctl -u tailscaled` / `/var/log/nextdns-healthcheck.log` / `dmesg` を一息に tail。`LINES=N` で行数指定 (既定 50)                                                                                                          |
 
 ## /etc がどうやって同期されるか
@@ -42,6 +43,9 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
   (upstream Tailscale インストーラ) が設置
 - `/etc/cron.d/nextdns-healthcheck` ← `/data/on_boot.d/30-nextdns-healthcheck-install.sh` が
   boot 時に再生成
+- `udm-{sla-tune,nuro-v6-pbr,dns-hijack,dpinger-hijack}` (60 秒毎)・`udm-verifier-enforcer` (1 時間毎)・
+  `clean-clients` (毎日 09:00 JST) の `.service`/`.timer` と `ndppd.service` ← 各
+  `/data/<component>/install.sh` が `units/` から配置 (`unifi-install.sh` の `POST_INSTALL_HOOKS`)
 
 したがって dotfiles 側は `/data/` のみを正本として扱い、`/etc/` は boot 時 or install.sh
 実行時に自動再生成される。`etc-snapshot/` は「現状何が生成されているか」の読み取り専用
@@ -57,6 +61,7 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
 | `make unifi/diff`    | ローカル (`unifi/data`, `unifi/root`) と UDM Pro 実機の差分を md5sum ベースで表示                                                             |
 | `make unifi/dry-run` | install の tar+ssh を実行せず何が送られるかプレビュー                                                                                         |
 | `make unifi/status`  | 読み取り専用の実機状態スナップショット (nextdns / Tailscale / systemd / cron)                                                                 |
+| `make unifi/audit`   | 読み取り専用の設定監査。期待どおりの状態かを項目ごとに PASS/FAIL で表示し、FAIL があれば非 0 で終わる |
 | `make unifi/logs`    | 実機ログ (nextdns.service / healthcheck.log / tailscaled / dmesg) を一息に tail。`LINES=N` で行数                                             |
 
 変数: `UDM=<host>` で SSH 先を上書き (既定 `udmpro`)。`DRY_RUN=1` は `unifi/install` に対して
@@ -86,3 +91,8 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
   を通過させる (詳細は `data/game-geo-bypass/apply.sh`)。UniFi 管理チェーン (`UBIOS_*`) には書き込まず、
   専用チェーン `GAME_GEOBYPASS` を FORWARD の GeoIP 判定より前に挿入して ACCEPT する。自前ルールには
   `-m comment` を付けない (udapi が未知の comment 付きルールを毎秒警告するため)
+- 自前の iptables/ip6tables 呼び出しには必ず `-w 30` を付ける。付けないと UniFi が xtables lock を
+  持っている間の `-C` が失敗し、hook が重複挿入される (`CONTEXT.md` Q35)
+- WAN の failover probe は UniFi 公式の WAN SLA で NextDNS に向けている。WAN SLA で変えられない
+  表示用 monitor だけを `udm-dpinger-hijack` が DNAT する。probe のホスト名を `/etc/hosts` に書かない
+  (`/etc/hosts.dnsmasq` 経由で LAN 全体の名前解決が NextDNS IP に化ける、`CONTEXT.md` Q32–Q34)
