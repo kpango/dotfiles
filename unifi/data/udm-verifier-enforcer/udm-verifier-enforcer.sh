@@ -1,40 +1,24 @@
 #!/bin/bash
 #
-# udm-verifier-enforcer.sh — re-apply NextDNS values to every UniFi API
-# field related to WAN connectivity testing / probe targets. Runs hourly
-# so a UI operation that reverts them never persists longer than ~1 h.
+# udm-verifier-enforcer.sh — hourly re-apply of the UniFi "usg" setting
+# fields that drive UDAPI's uptime-report probe, so a UI edit never leaves
+# it off NextDNS for longer than ~1 h.
 #
-# Companion to udm-dpinger-hijack: that one DNATs the actual outbound
-# dpinger packets to NextDNS. This script keeps the UniFi *configuration*
-# honest at the API layer so (a) any field UniFi 11.0.89 silently drops
-# today lands correctly if a future version activates the WAN_SLA feature
-# flag, and (b) the informational monitor-3 (which /rest/setting/usg
-# echo_server does drive) stays on NextDNS even after a UI edit.
+# The failover health probes themselves are configured through UniFi's
+# official WAN SLA ("NextDNS", /v2/api/site/default/wan-slas, assigned to
+# WAN1 and WAN2) and need no enforcement here. What WAN SLA does not
+# control is the extra uptime-report monitor that UDAPI appends per WAN;
+# its target comes from /rest/setting/usg echo_server.
 #
-# Fields re-applied:
-#
-# /rest/setting/usg:
-#   echo_server                  → 45.90.28.0  (NextDNS Global anycast; drives
-#                                  sla/monitors eth10-3 / ip6tnl2-3)
-#   dns_verification.setting_preference → "manual"
+# Fields re-applied on /rest/setting/usg:
+#   echo_server                           → 45.90.28.0  (NextDNS Global)
+#   dns_verification.setting_preference   → "manual"
 #   dns_verification.primary_dns_server   → 45.90.28.74 (NextDNS A1)
 #   dns_verification.secondary_dns_server → 45.90.30.74 (NextDNS A2)
-#   dns_verification.domain      → "dns.nextdns.io"
+#   dns_verification.domain               → "dns.nextdns.io"
 #
-# /rest/networkconf/<NURO_ID> and /<BBE_ID>:
-#   wan_connectivity_test_target        → 45.90.28.74
-#   wan_connectivity_test_targetv6      → 2a07:a8c0::21:553f
-#   wan_connectivity_test_mode          → "custom"
-#   wan_internet_connectivity_test      → "custom"
-#   wan_ping_ip                         → 45.90.28.74
-#   wan_ping_ipv6                       → 2a07:a8c0::21:553f
-#
-#   These six fields are *silently dropped* by UniFi Network 11.0.89 — the
-#   PUT returns 200 OK but a re-GET shows them still null. Verified by
-#   round-trip test 2026-10-20. We send them anyway because (i) they are
-#   referenced in the UniFi JS bundle (WAN_SLA UI feature) and (ii) a UI
-#   or firmware upgrade may activate the server-side route; shipping the
-#   write defensively costs nothing and makes future rollout automatic.
+# (Until 2026-10-20 this also PUT wan_connectivity_test_* / wan_ping_* to
+# /rest/networkconf; UniFi 11.0.89 silently drops those, so it was removed.)
 #
 # API key is read from /data/nextdns-client-names/api-key (shared with
 # nextdns-client-names.service; already provisioned at 0600 root). If
@@ -56,12 +40,6 @@ LOCK=/run/udm-verifier-enforcer.lock
 NX_A1_V4=45.90.28.74
 NX_A2_V4=45.90.30.74
 NX_G1_V4=45.90.28.0
-NX_A1_V6=2a07:a8c0::21:553f
-
-# WAN network_conf _id values (stable UUIDs; written once by UniFi on
-# WAN creation and never regenerated).
-NURO_ID=224daefb-4bd7-4a8a-8c4e-ba5ad2edc876
-BBE_ID=718d4304-a385-48be-94e3-323f22570ef4
 
 log() { logger -t udm-verifier-enforcer "$*"; }
 
@@ -112,24 +90,3 @@ EOF
 )
 code=$(put_json "$API_BASE/rest/setting/usg" "$USG_BODY")
 log "PUT /rest/setting/usg → HTTP $code"
-
-# ----------------------------------------------------------------------
-# /rest/networkconf/<id> — defensive. These wan_connectivity_test_*
-# fields silent-drop on 11.0.89 but ship them so future UniFi versions
-# honor them without a dotfiles edit.
-# ----------------------------------------------------------------------
-NC_BODY=$(cat <<EOF
-{
-  "wan_connectivity_test_target": "$NX_A1_V4",
-  "wan_connectivity_test_targetv6": "$NX_A1_V6",
-  "wan_connectivity_test_mode": "custom",
-  "wan_internet_connectivity_test": "custom",
-  "wan_ping_ip": "$NX_A1_V4",
-  "wan_ping_ipv6": "$NX_A1_V6"
-}
-EOF
-)
-for id in "$NURO_ID" "$BBE_ID"; do
-    code=$(put_json "$API_BASE/rest/networkconf/$id" "$NC_BODY")
-    log "PUT /rest/networkconf/$id → HTTP $code (fields may silent-drop on 11.0.89)"
-done

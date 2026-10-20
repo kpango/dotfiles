@@ -1,5 +1,5 @@
 [Unit]
-Description=Restore WAN2 (ip6tnl2) SLA monitors to NextDNS ICMP + lowered threshold
+Description=Keep DS-Lite (ip6tnl2) dnsmasq upstream resolver on NextDNS
 Documentation=file:/data/udm-sla-tune/udm-sla-tune.sh
 After=ubios-udapi-server.service
 

@@ -1,71 +1,33 @@
 #!/bin/bash
 #
-# udm-dpinger-hijack.sh — rewrite UDM-local dpinger probes to NextDNS.
-# All 14 default sla/monitors (7 per WAN) end up pointing at NextDNS, spread
-# across three target classes: Global anycast, Account v4 (profile 21553f),
-# and Account v6 (defensive AAAA records for any future v6 probe).
+# udm-dpinger-hijack.sh — keep UDM's informational dpinger probes off
+# third-party anycast by redirecting them to NextDNS.
 #
-# Background: UniFi Network Application 11.0.89 spawns 14 dpinger processes
-# (7 per WAN) with hardcoded probe targets — ping.ui.com, 1.1.1.1 (dns+icmp),
-# 8.8.8.8 (dns), google.com, www.microsoft.com. The sla/policies feature
-# that would let the user override these (config.wan_sla + the WAN_SLA UI
-# flag) is defined in the schema but not activated on this version: the
-# UniFi API drops wan_connectivity_test_* fields silently, /rest/wan-sla*
-# endpoints return InvalidObject/404, and direct Postgres INSERTs into
-# config.wan_sla are ignored by UDAPI reconcile (verified 2026-10-20).
+# The failover health probes are configured through UniFi's official WAN
+# SLA ("NextDNS", /v2/api/site/default/wan-slas, assigned to WAN1 and
+# WAN2), so they already target NextDNS. UDAPI still appends extra
+# informational monitors per WAN that WAN SLA cannot change:
 #
-# Two layers of hijack combine to redirect every default probe to NextDNS:
+#   echo_server uptime monitor   -> 45.90.28.0 (set via usg by
+#                                   udm-verifier-enforcer; no hijack needed)
+#   www.microsoft.com  (icmp)    -> hijacked here
+#   google.com         (icmp)    -> hijacked here
+#   1.1.1.1            (icmp)    -> hijacked here
 #
-# (A) /etc/hosts override — forces UDAPI's getaddrinfo() of the hardcoded
-#     probe hostnames to return NextDNS IPs, so when UDAPI respawns dpinger
-#     on reconcile the processes bake NextDNS addresses into their argv.
+# Layers:
 #
-#       ping.ui.com         -> NextDNS Global 1 + 2 (45.90.28.0, 45.90.30.0)
-#       www.microsoft.com   -> NextDNS Account A1 (45.90.28.74)
-#       google.com          -> NextDNS Account A2 (45.90.30.74)
-#       All three           -> NextDNS v6 (2a07:a8c0::21:553f /
-#                                          2a07:a8c1::21:553f)
+# (A) /etc/hosts override — ping.ui.com / www.microsoft.com / google.com
+#     resolve to NextDNS (plus defensive AAAA) for UDM-local libc lookups,
+#     so a dpinger respawned after a fresh resolve targets NextDNS directly.
+#     Clients behind the gateway are unaffected (dnsmasq does not use
+#     /etc/hosts for recursion).
 #
-#     Scope note: /etc/hosts is read by libc getaddrinfo on this UDM, so
-#     any UDM-local process resolving these three names (including dpinger
-#     and anything else UniFi runs for its own purposes) sees the NextDNS
-#     IP. Clients behind the gateway are unaffected — their DNS goes
-#     through dnsmasq, which does not consult /etc/hosts for recursive
-#     lookups. The three overridden hostnames have no other legitimate
-#     UDM-local consumer we are aware of (verified: no UDM services or
-#     cron jobs reference them on this box).
+# (B) Static iptables OUTPUT DNAT (UDM_DPINGER_HIJACK) — UDM-originated
+#     1.1.1.1 / 8.8.8.8 (UDP:53 and ICMP) -> NextDNS A1 / A2.
 #
-# (B) iptables OUTPUT nat (UDM_DPINGER_HIJACK chain) — rewrites any
-#     already-resolved IP targets (sla/monitors eth10-{1,2,6} and
-#     ip6tnl2-{1,2,6} have 1.1.1.1 / 8.8.8.8 as raw IPs in the UDAPI
-#     defaults). Keeps the host-override and IP-override paths independent
-#     so the five IP-targeted monitors are safe even if /etc/hosts is
-#     wiped (firmware update, UDAPI regenerating the file, etc.).
-#
-#       1.1.1.1 UDP:53 -> NextDNS Account A1 (45.90.28.74)
-#       8.8.8.8 UDP:53 -> NextDNS Account A2 (45.90.30.74)
-#       1.1.1.1 ICMP   -> NextDNS Account A1
-#       8.8.8.8 ICMP   -> NextDNS Account A2
-#
-# Combined coverage of the 14 default monitors:
-#
-#   id            type   original target     effective destination
-#   ──────────────────────────────────────────────────────────────
-#   eth10-0       icmp   ping.ui.com         NextDNS Global 1 / 2 (A)
-#   eth10-1       dns    1.1.1.1             NextDNS Account A1   (B)*
-#   eth10-2       dns    8.8.8.8             NextDNS Account A2   (B)*
-#   eth10-3       icmp   ping.ui.com         NextDNS Global 1 / 2 (A)
-#   eth10-4       icmp   www.microsoft.com   NextDNS Account A1   (A)
-#   eth10-5       icmp   google.com          NextDNS Account A2   (A)
-#   eth10-6       icmp   1.1.1.1             NextDNS Account A1   (B)
-#   ip6tnl2-{0..6}  (same mapping, same NextDNS targets)
-#
-#   * -1 and -2 remain type=dns because dpinger's probe type is set in the
-#     UDAPI config (not editable in this UniFi version). The query payload
-#     stays "please resolve ui.com for me", but the recipient is NextDNS
-#     (via iptables DNAT), not Cloudflare / Google. NextDNS responds to
-#     those DNS queries normally so the probe stays healthy, and the leak
-#     to third-party anycast is closed.
+# (C) Dynamic DNAT — IPs scraped from running dpinger argv (UDAPI caches
+#     resolved addresses there) -> NextDNS A1, until a re-resolve picks up
+#     (A). RFC1918 / loopback / link-local / 192.0.0.0 / 45.90.0.0 skipped.
 #
 # Idempotent — the UDM_DPINGER_HIJACK chain is flushed and rebuilt per run,
 # OUTPUT hook is added only if missing, /etc/hosts block is maintained via
@@ -186,6 +148,21 @@ for ip in $DYNAMIC_IPS; do
         "$CF_V4"|"$GOOG_V4") continue ;;  # already handled above
     esac
     iptables -t nat -A "$CHAIN" -p icmp -d "$ip" -j DNAT --to-destination "$NEXTDNS_A1_V4"
+done
+
+# A dpinger that started pinging a freshly resolved IP before the rule
+# above existed keeps a conntrack entry that bypasses DNAT for as long as
+# it keeps pinging. Drop only entries whose reply still comes from the
+# original target (reply-src == dst means "never NATed"); entries already
+# rewritten to NextDNS are left alone, so steady state has no churn.
+for ip in $DYNAMIC_IPS; do
+    case "$ip" in
+        45.90.*|10.*|127.*|192.168.*|172.1[6-9].*|172.2[0-9].*|172.3[01].*|169.254.*|192.0.0.*) continue ;;
+    esac
+    for src in 10.0.1.2 192.0.0.3; do
+        conntrack -D -p icmp -s "$src" -d "$ip" -r "$ip" >/dev/null 2>&1 \
+            && log "dropped un-NATed conntrack $src -> $ip"
+    done
 done
 
 iptables -t nat -C OUTPUT -j "$CHAIN" 2>/dev/null \

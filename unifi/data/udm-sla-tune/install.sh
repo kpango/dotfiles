@@ -26,4 +26,4 @@ systemctl is-active --quiet udm-sla-tune.timer \
 # Run once immediately so the tune applies without waiting for the next tick.
 systemctl start udm-sla-tune.service
 
-echo "udm-sla-tune: timer active, state patched if drifted."
+echo "udm-sla-tune: timer active, ip6tnl2 resolver kept on NextDNS."

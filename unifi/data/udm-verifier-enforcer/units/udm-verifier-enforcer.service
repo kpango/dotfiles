@@ -1,5 +1,5 @@
 [Unit]
-Description=Enforce NextDNS Verifier settings via UniFi API (usg + networkconf)
+Description=Enforce NextDNS echo_server / dns_verification via UniFi API (usg)
 Documentation=file:/data/udm-verifier-enforcer/udm-verifier-enforcer.sh
 After=network-online.target
 
