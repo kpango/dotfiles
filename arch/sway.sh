@@ -42,7 +42,6 @@ if [[ -d /sys/module/nvidia_drm && ! -d /sys/module/nouveau && -e /dev/nvidiactl
 	(( $#card )) && export WLR_DRM_DEVICES="${WLR_DRM_DEVICES:-$card}"
 
 	# Set other NVIDIA-specific variables
-	export WLR_DRM_NO_ATOMIC=1
 	export WLR_NO_HARDWARE_CURSORS=1
 	export XWAYLAND_NO_GLAMOR=1
 	export __GLX_VENDOR_LIBRARY_NAME="nvidia"

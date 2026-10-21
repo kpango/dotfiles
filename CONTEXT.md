@@ -794,3 +794,25 @@ kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.s
   `sudo nvme --smart-log` 30s ポーリング（起動処理ではない）、旧資産の整理（`sway/config.d/`
   は Nix の `linux.nix` が配備するが `arch/sway.conf` が include しないため inert。include を足すと I2/I6 が崩れる。
   `arch/service/sway.service` は未配備）、保護対象 hook/verify.sh への `zprofile` 追加（swarm-evolve 提案で扱う）
+
+## login-render-speed (2026-10-21) — ログイン直後の表示モード切り替え削減
+
+sway デバッグログ実測（sway 起動 = 0s）: DRM/EGL 初期化 0.10s、コネクタ走査 0.17s、0.48s に初回 commit。Dell
+U4919DW 2 台は EDID の preferred が 3840x1080 のため、初回 commit と tty コンソール（nvidia-drm fbdev）が
+3840x1080 で、0.56〜0.78s に kanshi が 5120x1440 へ変更する。ghostty は 0.53s 起動・1.34s 初回描画。
+login → sway 起動は 1s 未満で、体感遅延の主因はモード変更に伴うパネルの再同期と判断。
+
+### 決定事項
+
+- Q1: tty コンソール（カーネル引数 `video=`）と sway 初回 commit（`output "<make> <model> <serial>" mode`）の
+  両方を最初から 5120x1440@59.977Hz にし、ログイン時のモード変更を無くす。配置・回転・scale は従来どおり
+  kanshi が単独で持つ（sway.conf にはモードのみ、Dell 2 台をシリアルで指定）
+- Q2: Arch の `arch/sway.sh` から `WLR_DRM_NO_ATOMIC=1` を外し atomic commit を使う（nvidia-beta 615.78）。
+  NixOS 側 `nix/modules/nixos/desktop/wayland.nix` は実機検証できないため Non-Goal
+- Q3: 2 段階で検証する。段階 1 = sway 側（mode 指定 + atomic）を再ログインで計測、段階 2 = ブートエントリ
+  （`/boot/loader/entries/arch.conf` と記録用の `arch/loader/entries/arch.conf`）に `video=` を追加して再起動
+
+### 不変条件
+
+- I1: sway.conf の output 指定はモードのみ。位置・transform・scale を書かない（kanshi のプロファイル切替と競合させない）
+- I2: sway が起動しない場合も zprofile の fallback で tty シェルに戻る（login-startup-optimize の I 系を維持）
