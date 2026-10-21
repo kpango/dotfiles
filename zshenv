@@ -45,6 +45,9 @@ if [[ -n "$ZSH_EXECUTION_STRING" ]]; then
 	# executable on PATH (~1.9ms, ~3400 entries); the caches below only need
 	# per-name lookups. Restored right after, so completion/correction keep it.
 	unsetopt HASH_LIST_ALL
+	# zsh 5.9 (e.g. the Ubuntu dev container) has no per-name fallback: every $commands
+	# lookup then misses. Probe and keep the full hash there.
+	(($+commands[zsh])) || setopt HASH_LIST_ALL
 	[[ -f "$ZCACHE_DIR/env.zsh" ]] && source "$ZCACHE_DIR/env.zsh"
 	[[ -f "$ZCACHE_DIR/combined.zsh" ]] && source "$ZCACHE_DIR/combined.zsh" 2>/dev/null
 	[[ -n "$_ZSH_OS" && -f "$ZCACHE_DIR/os-${_ZSH_OS}.zsh" ]] && source "$ZCACHE_DIR/os-${_ZSH_OS}.zsh" 2>/dev/null

@@ -91,6 +91,9 @@ fi
 # Both only change how lookups are cached; a per-name lookup finds the same command.
 # Restored at the end of this file, so the deferred tasks already run with them on.
 unsetopt HASH_LIST_ALL HASH_DIRS
+# zsh 5.9 (e.g. the Ubuntu dev container) has no per-name fallback: every $commands
+# lookup then misses. Probe and keep the full hash there (as in zshenv).
+(($+commands[zsh])) || setopt HASH_LIST_ALL
 
 if ! (($+functions[_zcache_eval])); then
 	fpath=("$DOTFILES_DIR/zfunc" $fpath)
