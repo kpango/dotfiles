@@ -137,3 +137,4 @@
 2026-10-21	unifi-ap-xg-flap	swarm-loop	neutral	claude-opus-5-5	quick=1
 2026-10-21	login-startup-optimize	swarm-loop	parallel	claude-opus-5-5	done=4 blocked=0 review_rounds=4 escalate=1 post_gate_fixes=1
 2026-10-21	sway-reload-kanshi	swarm-loop	neutral	claude-opus-5-5	quick=1 checker=PASS merged=54fca38 pushed=yes
+2026-10-21	zsh-startup-4x	swarm-loop	neutral	claude-opus-5-5	done=6 blocked=0 attempts=6 replans=0 scale=interactive adversarial_rounds=2(8/8PASS,8/8PASS) result=ready118.6->28.9ms(4.1x) zsh-c9.6->2.2ms(4.36x) merged=a99b0be
