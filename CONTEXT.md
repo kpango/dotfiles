@@ -817,3 +817,35 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
 
 - I1: sway.conf の output 指定はモードのみ。位置・transform・scale を書かない（kanshi のプロファイル切替と競合させない）
 - I2: sway が起動しない場合も zprofile の fallback で tty シェルに戻る（login-startup-optimize の I 系を維持）
+
+## login-autolock-boot (2026-10-21) — greetd 自動ログイン＋起動直後ロック、ghostty 常駐、起動時間
+
+### 用語
+
+- **自動ログイン経路**: greetd `initial_session`（起動後 1 回だけ、パスワードなし）。環境変数 `SWAY_AUTOLOGIN=1` を付けて `zsh -l` を起動する
+- **パスワード経路**: greetd `default_session`（tuigreet）。`SWAY_AUTOLOGIN` なしで `zsh -l` を起動する
+
+### 決定事項
+
+- Q1: getty 自動ログインではなく greetd の `initial_session`＋swaylock（ログアウト後はパスワード必須に戻る）
+- Q2: greetd は `zsh -l` を起動し、sway の起動は従来どおり `~/.zprofile` → `arch/sway.sh` の 1 経路に保つ
+  （login-startup-optimize の「zprofile が唯一の launcher」を維持。zprofile の tty1 ゲートが greetd の vt1 でも成立することを実機で確認する）
+- Q3: sway 失敗時、`SWAY_AUTOLOGIN=1` ならセッション終了（greetd のパスワード画面へ）、それ以外は従来どおり対話シェル（login-startup-optimize Q5）
+- Q4: `SWAY_AUTOLOGIN=1` のとき最初の端末は `swaylock -f` 成功後にだけ開く（-f はロック確立後に fork）。waybar・壁紙は並行のまま
+- Q5: ghostty 常駐は dotfiles 管理の unit。vendor と同名 `app-com.mitchellh.ghostty.service` を `~/.config/systemd/user` に置いて上書きし、D-Bus activation と整合させる
+- Q6: `/etc/modprobe.d` は symlink ではなく実ファイル copy（initramfs に dangling symlink を入れない）。編集後は再 install＋`mkinitcpio -P` が必要
+- Q7: `loader.conf` timeout 0、mkinitcpio `MODULES` から nvidia 4 件を外す（early KMS を手放す。video= は nvidia_drm の udev ロード時に適用）
+- Q8: 孤立 `/usr/lib/modules` 削除、sshd の tailscale IP bind 失敗、wait-online→docker を対象に含める
+- Q9: 段階 A（再起動不要: T1-T3）→ B（再起動: T4）→ C（再起動: T5 greetd）で反映し、段階ごとに止めて切り分ける
+- Q10: docker / NetworkManager-wait-online は変更せず、greetd と sway がそれらを待たないことを実測で確認するのみ
+
+### 不変条件
+
+- I1: 自動ログイン経路で、ロック確立前にユーザーの端末内容（tmux）を描画しない
+- I2: 自動ログイン経路で、認証なしの対話シェルを残さない（sway 失敗・終了時はセッション終了）
+- I3: greetd 失敗時の復旧手段を残す: SSH と tty2 の getty（パスワード）から `getty@tty1` を再有効化できる
+- I4: ghostty 常駐プロセスが落ちても端末の中身は tmux サーバー側に残る（tmux.service は独立）
+
+### 非目標
+
+- NixOS ホスト `tr`（greetd は既存）、nvidia.ko の strip / ファームウェア個別除外、docker の socket activation 化

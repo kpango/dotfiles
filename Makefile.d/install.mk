@@ -140,6 +140,7 @@ herdr/config.toml .config/herdr/config.toml
 lumen.json .config/lumen/lumen.config.json
 sheldon.toml .config/sheldon/plugins.toml
 systemd/environment.d/xdg.conf .config/environment.d/xdg.conf
+systemd/user/app-com.mitchellh.ghostty.service .config/systemd/user/app-com.mitchellh.ghostty.service
 systemd/user/atuin.service .config/systemd/user/atuin.service
 systemd/user/herdr.service .config/systemd/user/herdr.service
 systemd/user/kanshi.service .config/systemd/user/kanshi.service
@@ -280,6 +281,7 @@ define ARCH_POST
 	systemctl --user enable --now atuin.service
 	@# no --now: kanshi needs a Wayland session; sway-session.target starts it (ConditionEnvironment=WAYLAND_DISPLAY)
 	systemctl --user enable kanshi.service
+	systemctl --user enable app-com.mitchellh.ghostty.service
 	systemctl --user enable --now tmux.service
 	systemctl --user enable --now zsh-patina.service
 	sudo systemctl enable systemd-resolved
