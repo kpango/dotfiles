@@ -3,6 +3,7 @@ Description=Dynamic display configuration daemon (kanshi)
 Documentation=man:kanshi(1)
 PartOf=graphical-session.target
 After=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
 
 [Service]
 Type=simple
