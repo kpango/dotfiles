@@ -144,6 +144,7 @@ systemd/user/atuin.service .config/systemd/user/atuin.service
 systemd/user/herdr.service .config/systemd/user/herdr.service
 systemd/user/kanshi.service .config/systemd/user/kanshi.service
 systemd/user/supermemory.service .config/systemd/user/supermemory.service
+systemd/user/sway-session.target .config/systemd/user/sway-session.target
 systemd/user/tmux.service .config/systemd/user/tmux.service
 systemd/user/zsh-patina.service .config/systemd/user/zsh-patina.service
 tmux.conf.d .tmux.conf.d

@@ -40,11 +40,11 @@ export GIT_COMMITTER_EMAIL=\"${_git_committer_email:-kpango@vdaas.org}\""
 print "export TYPESAFE_API_URL=\"http://127.0.0.1:${LAYA_PORT:-18765}/v1/systemone\""
 
 if (($+commands[ghostty])); then
-	print "export TERMCMD=\"ghostty -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+	print "export TERMCMD=\"ghostty -e tmux -u -2 -S \$XDG_RUNTIME_DIR/tmux-main.sock new-session -A -s \$USER@#H\""
 elif (($+commands[alacritty])); then
-	print "export TERMCMD=\"alacritty -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+	print "export TERMCMD=\"alacritty -e tmux -u -2 -S \$XDG_RUNTIME_DIR/tmux-main.sock new-session -A -s \$USER@#H\""
 elif (($+commands[urxvtc])); then
-	print "export TERMCMD=\"urxvtc -e \$SHELL -c tmux -S /tmp/tmux.sock -q has-session && exec tmux -S /tmp/tmux.sock -2 attach-session -d || exec tmux -S /tmp/tmux.sock -2 new-session -n\$USER -s\$USER@\$HOST\""
+	print "export TERMCMD=\"urxvtc -e tmux -u -2 -S \$XDG_RUNTIME_DIR/tmux-main.sock new-session -A -s \$USER@#H\""
 fi
 
 # fpath + autoload: cached here so zshrc skips the check on every startup
