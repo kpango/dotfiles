@@ -697,41 +697,80 @@ kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.s
 
 ### Invariants this mission's decisions depend on
 
-- **I1 (Q1) launcher は 1 箇所**: sway を起動するのは `~/.zprofile` だけ。gate は tty1 かつ
-  `WAYLAND_DISPLAY` 未設定。root・他 tty・SSH のログインでは sway を起動しない（system-wide profile.d を使わない）
+- **I1 (Q1) launcher は 1 箇所**: sway を起動するのは `~/.zprofile` だけ。gate は対話シェル・tty1・
+  `WAYLAND_DISPLAY` 未設定・非 root（EUID≠0）・`sway` が存在。root（tty1 からの `su -`/`sudo -i` 含む）・
+  他 tty・SSH のログインでは sway を起動しない（system-wide profile.d を使わない）。既配備の
+  `/etc/profile.d/sway.sh` リンクは arch install prep が symlink の場合のみ削除し、加えて `arch/sway.sh`
+  先頭の POSIX ガード（zprofile が立てる `_SWAY_LAUNCH`）で zprofile 以外からの source を no-op にする
 - **I2 (Q2) env import は 1 回**: 値の持ち主は `arch/sway.sh`（sway に export）。systemd/D-Bus への
-  反映は sway.conf autostart の `dbus-update-activation-environment --systemd --all` 1 行のみ。
-  sway 起動前の import と、キー列挙による個別 import は持たない
+  反映は sway.conf autostart の 1 exec（`sh -c 'env -u … dbus-update-activation-environment --systemd --all;
+  systemctl --user start --no-block sway-session.target'`）のみ。sway の exec は非同期なので import と
+  target 起動は同一 exec 内で順序付けし、`;` で import 失敗時も target は起動する。sway 起動前の import と
+  キー列挙による個別 import は持たない。NVIDIA 用の `LIBVA_DRIVER_NAME`/`__GL_*` は
+  `systemd/environment.d/xdg.conf` から `arch/sway.sh` の NVIDIA 分岐へ移設（sway 外のセッションには付かない）
 - **I3 (Q3) GPU 判定は fork しない**: `/sys/module/nvidia_drm` あり・`/sys/module/nouveau` なし・
   `/dev/nvidiactl` あり、のファイル判定のみ。nvidia-smi / lsmod / lspci は呼ばない
-- **I4 (Q4) host tmux は 1 サーバー 1 ソケット**: sway の `$term` も SSH/対話シェルも
-  `tmux-main.sock` の同一セッションへ `new-session -A`（`-d` で他クライアントを切断しない）。
-  `$term` は `$SHELL -c` を経由せず tmux を直接実行する
+- **I4 (Q4) host tmux は 1 サーバー 1 ソケット（Linux/sway ホスト）**: sway の `$term`/`$xterm`、
+  `arch/hyprland.lua`、`zfunc/_gen_env` の `TERMCMD`、SSH/対話シェル（`zsh/01-tmux.zsh`）は
+  `$XDG_RUNTIME_DIR/tmux-main.sock`（= tmux.service の `/run/user/%U/tmux-main.sock`）の同一セッション
+  `$USER@#H`（= `%u@%H`）へ `new-session -A` で接続する。`-d` は付けないので他クライアント（SSH 等）を
+  切断しない。`$term` は `$SHELL -c` を経由せず tmux を直接実行する。darwin は `XDG_RUNTIME_DIR` の既定が
+  異なり本不変条件の対象外
 - **I5 (Q5) sway 失敗時は通常の対話シェル**: 非 0 終了ならログインシェルに留まり、以降は通常どおり
   zshrc → tmux 自動 attach まで進む（特別な抑止フラグは設けない — 人間判断）。正常終了ならログアウト
 - **I6 (Q6) kanshi の起動役は kanshi.service のみ**: sway.conf の `exec kanshi` は持たない。unit は
   `ConditionEnvironment=WAYLAND_DISPLAY` で sway 外（SSH からの make 等）では起動しない。
-  install.mk は `enable` のみ（`--now` しない）
-- **I7 (Q7) swaybg は reload ごとに張り替え、累積させない**: 新インスタンス起動後に旧インスタンスを終了
+  install.mk は `enable` のみ（`--now` しない）。`systemd/user/sway-session.target` も install.mk で配備
+  （従来ホストには手置きの同一内容ファイルのみ）。Nix は `nix/modules/home/services.nix` に kanshi unit
+  （`${pkgs.kanshi}`）と sway-session target を Linux 限定で持つ
+- **I7 (Q7) swaybg は reload ごとに張り替え、累積させない**: 壁紙が決まらなければ何もしない。新インスタンスを
+  先に起動し、1 秒後に新インスタンスの生存（`kill -0`）を確認してから旧インスタンス（起動前に `pgrep -u $USER`
+  で記録）だけを終了する
 - **I8 (Q9) zprofile の配線**: 共通 `DOTFILES_MAP`。Nix は `programs.zsh` が rc を生成するため、
-  zshenv と同じく `zsh.nix` から dotfiles の `zprofile` を source する形で揃える
+  zshenv と同じく `zsh.nix` の `profileExtra` から dotfiles の `zprofile` を source する形で揃える。
+  CI（`.github/workflows/zsh.yaml`）の `zsh -n` 対象にも `zprofile`・`arch/sway.sh` を含める
+- **I9 sway 終了時の後始末**: `arch/sway.sh` は sway が戻った後（全経路）に systemd user manager から
+  `WAYLAND_DISPLAY`/`SWAYSOCK`/`DISPLAY` を unset してから `sway-session.target` を `--no-block` で止める。
+  linger 下で stale な `WAYLAND_DISPLAY` が kanshi（`Restart=always`）の Condition を満たし続けるのを防ぐ。
+  失敗は握り潰さず `_sway_log` で報告。起動前経路は引き続き fork しない
+- **I10 `--all` import の除外**: `XDG_ACTIVATION_TOKEN`/`DESKTOP_STARTUP_ID`（sway が exec ごとに付与する
+  一回限りのトークン）と `XDG_SESSION_ID`/`XDG_VTNR`（ログインセッション固有）は import しない
+  （dbus-update-activation-environment(1) の推奨）。tmux の `update-environment` には `SWAYSOCK` を加え、
+  起動時から動く tmux.service のサーバーへ sway 端末から attach したペインでも現在の sway ソケットを得る
+- **I11 tmux.service は Type=oneshot + RemainAfterExit**: 端末が `new-session -A` で先にサーバー/セッションを
+  作りうるため、ExecStart は `has-session -t =%u@%H || new-session -d` で既存時も成功する。サーバー終了後も
+  unit は active のまま残るので、`zsh/01-tmux.zsh` はセッションが 1 つも無い時に `systemctl --user restart`
+  して unit にサーバーを所有し直させる（tmux は終了時に socket ファイルを残すため待機ループは即抜ける —
+  perf レビューで実測）。**デプロイ時に tmux.service を手動 restart しない**（ExecStop の kill-server で
+  attach 中の全端末が落ちる）。`daemon-reload` のみ行い、oneshot 化は次回起動から効く
+- **I12 zshrc の早期 tmux attach**: `zsh/01-tmux.zsh` は TTY 設定・`_apply_base_path`・sheldon より前に
+  source する（exec tmux するシェルはそれらを捨てるため）。早期の `_apply_base_path` は darwin・env キャッシュ
+  再生成直後（関数内 source で焼き込み PATH が失われる）・tmux 未解決時のみ実行し、その場合は後段の同期呼び出しを
+  同一プロセス内の非 export フラグで省く（継承した `_ZSH_PATH_LOADED` では絶対にゲートしない）。zshrc の
+  `-c` fast path は外部ツールが `zsh -c` 内で `~/.zshrc` を明示 source する経路（Claude Code の shell
+  snapshot）で到達するため残す
 
 ### 検討された選択肢と決定根拠
 
 - Q1: profile.d 維持 / systemd user unit (uwsm 型) を不採用。前者は root と全 tty に波及、後者は VT・
   logind セッション紐付けの変更量とリスクが最大
 - Q2: キー明示列挙は GPU 分岐や /etc/environment のキーを sway.conf 側でも保守する二重管理が再発するため不採用。
-  `--all` の代償（SHLVL/PWD 等の無害な変数が systemd user env に入る）は受容
+  `--all` の代償（SHLVL/PWD/PATH/TERM/ATUIN_SESSION 等が systemd user env と D-Bus activation env に入る）は
+  受容。今後 zshenv・zprofile・/etc/environment から秘密情報を export してはならない（そのまま全 user unit に渡る）
 - Q3: インストール時のホスト固定は GPU/ドライバ差替時の不整合リスクで不採用
 - Q4: セッション分離案は管理が 2 系統になるため不採用。01-tmux.zsh の既存設計意図（single shared session）に合わせた
 - Q5: 「素のシェル保証（tmux 抑止）」案を推薦したが、人間判断で通常シェルを選択
-- Q8: zsh 側は V8/V9/V13/V15 のみ（V11 = zshrc の `-c` fast path 削除は当初含めたが撤回: Claude Code の
-  shell snapshot が `zsh -l -c` 内で ~/.zshrc を明示 source するため到達可能。Checker が検出）。V12/V14（async-compile のバックグラウンド処理）は体感影響なし・
-  過去ミッションの意図的設計のため Non-Goal
+- Q8: zsh 側の対象は Explore で裏取りした V8（01-tmux.zsh の ~/.zcache コピーループを tmux 外シェル限定に）・
+  V9（tmux attach を sheldon 前へ）・V13（存在しない pinentry-tmux の zcompile 削除）・V15（未使用
+  `tmux.new-session` と配備リンクの削除）のみ。V11（zshrc の `-c` fast path 削除）は当初含めたが撤回
+  （I12 の理由で到達可能。Checker が検出）。V12（combined.zsh 鮮度判定の二重化）・V14（async-compile の毎シェル
+  再帰 glob）はバックグラウンド処理で体感影響なし・過去ミッションの意図的設計のため Non-Goal
 
 ### 既知の制約と非目標
 
 - **制約**: ログイン経路は SSH から実機再現できない（seat/DRM なし）。完了条件は自動検証に加え、人間による
   物理キーボードでの tty1 ログイン → sway → 端末で tmux が開くことの実機確認（Q10）
-- **Non-Goals**: zsh 起動本体の再最適化（過去 3 ミッションで実施済み、キーエコー最悪 2.1ms）、
-  V12/V14、`/etc/environment` の内容変更、waybar の `sudo nvme --smart-log` 30s ポーリング（起動処理ではない）
+- **Non-Goals**: zsh 起動本体の再最適化（過去 3 ミッションで実施済み。キーエコー最悪 2.1ms は 2026-08-05
+  zsh-host-verify ミッションの実測、軌跡ログ記録）、V12/V14、`/etc/environment` の内容変更、waybar の
+  `sudo nvme --smart-log` 30s ポーリング（起動処理ではない）、未配備の旧資産（`sway/config.d/`・
+  `arch/service/sway.service`）の整理、保護対象 hook/verify.sh への `zprofile` 追加（swarm-evolve 提案で扱う）
