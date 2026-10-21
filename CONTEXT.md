@@ -714,8 +714,9 @@ kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.s
   `arch/hyprland.lua`、`zfunc/_gen_env` の `TERMCMD`、SSH/対話シェル（`zsh/01-tmux.zsh`）は
   `$XDG_RUNTIME_DIR/tmux-main.sock`（= tmux.service の `/run/user/%U/tmux-main.sock`）の同一セッション
   `$USER@#H`（= `%u@%H`）へ `new-session -A` で接続する。`-d` は付けないので他クライアント（SSH 等）を
-  切断しない。`$term` は `$SHELL -c` を経由せず tmux を直接実行する。darwin は `XDG_RUNTIME_DIR` の既定が
-  異なり本不変条件の対象外
+  切断しない。`$term` は `$SHELL -c` を経由せず tmux を直接実行する。darwin は対象外: `_gen_env` の
+  `TERMCMD` は darwin にも焼かれるが、zshenv の `XDG_RUNTIME_DIR` 既定（`~/.local/run`）と 01-tmux.zsh の
+  ソケット選択（`/run/user/$UID` か `~/.tmux/`）が一致しない既知の差異として残す
 - **I5 (Q5) sway 失敗時は通常の対話シェル**: 非 0 終了ならログインシェルに留まり、以降は通常どおり
   zshrc → tmux 自動 attach まで進む（特別な抑止フラグは設けない — 人間判断）。正常終了ならログアウト
 - **I6 (Q6) kanshi の起動役は kanshi.service のみ**: sway.conf の `exec kanshi` は持たない。unit は
@@ -738,13 +739,20 @@ kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.s
   （dbus-update-activation-environment(1) の推奨）。tmux の `update-environment` には `SWAYSOCK` を加え、
   起動時から動く tmux.service のサーバーへ sway 端末から attach したペインでも現在の sway ソケットを得る
 - **I11 tmux.service は Type=oneshot + RemainAfterExit**: 端末が `new-session -A` で先にサーバー/セッションを
-  作りうるため、ExecStart は `has-session -t =%u@%H || new-session -d` で既存時も成功する。サーバー終了後も
-  unit は active のまま残るので、`zsh/01-tmux.zsh` はセッションが 1 つも無い時に `systemctl --user restart`
-  して unit にサーバーを所有し直させる（tmux は終了時に socket ファイルを残すため待機ループは即抜ける —
-  perf レビューで実測）。**デプロイ時に tmux.service を手動 restart しない**（ExecStop の kill-server で
+  作りうるため、ExecStart は `has-session -t =%u@%H: || new-session -d` で既存時も成功する（末尾 `:` は
+  ドット入りホスト名を window.pane と解釈させないため）。サーバー終了後も unit は active のまま残るので、
+  `zsh/01-tmux.zsh` は `has-session` の失敗理由がサーバー不在（`no server running` / `error connecting`）の
+  時だけ `systemctl --user restart` して unit にサーバーを所有し直させ、それ以外（tmux 更新直後のプロトコル
+  不一致等で生きたサーバーがある）では従来どおり `start`（active なら no-op）に留める（tmux は終了時に socket
+  ファイルを残すため待機ループは即抜ける — perf レビューで実測）。既知の残余: サーバー消滅直後に tmux 外の
+  シェルが 2 つ同時に起動すると後発の restart が先発のサーバーを止めうる（稀、受容）。sway の `$term` 等の
+  端末経路は zsh を通らないため unit への再所有は行わない。**デプロイ時に tmux.service を手動 restart しない**（ExecStop の kill-server で
   attach 中の全端末が落ちる）。`daemon-reload` のみ行い、oneshot 化は次回起動から効く
-- **I12 zshrc の早期 tmux attach**: `zsh/01-tmux.zsh` は TTY 設定・`_apply_base_path`・sheldon より前に
-  source する（exec tmux するシェルはそれらを捨てるため）。早期の `_apply_base_path` は darwin・env キャッシュ
+- **I12 zshrc の早期 tmux attach**: tmux の外のシェル（`$TMUX` 空）に限り、`zsh/01-tmux.zsh` を TTY 設定・
+  `_apply_base_path`・sheldon より前に source する（exec tmux するシェルはそれらを捨てるため）。tmux ペイン内の
+  シェル（`$TMUX` あり）は従来どおり sheldon の後で source する（前に置くと `$+commands` 参照で command hash を
+  継承 PATH から作った直後に `_apply_base_path` が PATH を差し替えて再構築させ、初回プロンプトが約 1.2ms 遅れる
+  — perf レビューで実測）。早期の `_apply_base_path` は darwin・env キャッシュ
   再生成直後（関数内 source で焼き込み PATH が失われる）・tmux 未解決時のみ実行し、その場合は後段の同期呼び出しを
   同一プロセス内の非 export フラグで省く（継承した `_ZSH_PATH_LOADED` では絶対にゲートしない）。zshrc の
   `-c` fast path は外部ツールが `zsh -c` 内で `~/.zshrc` を明示 source する経路（Claude Code の shell
