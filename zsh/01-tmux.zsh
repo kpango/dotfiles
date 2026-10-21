@@ -109,7 +109,7 @@ if (($+commands[tmux])); then
 					# Type=oneshot+RemainAfterExit, so after the server exits the unit stays "active"
 					# and start would be a no-op. has-session can also fail with a live server (e.g.
 					# a protocol-version mismatch right after a tmux upgrade), and restart's
-					# ExecStop + cgroup kill would destroy it, so only restart on the two messages
+					# ExecStop and the cgroup kill would destroy it, so only restart on the two messages
 					# tmux prints for a missing server; otherwise plain start (no-op if active).
 					# Residual: two shells racing right after server death can still collide; rare.
 					_tmux_err=$(tmux -S "$TMUX_SOCK" has-session 2>&1)
