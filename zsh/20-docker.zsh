@@ -640,7 +640,7 @@ devin() {
 		local _status
 		_status=$( (($+commands[container])) && container inspect "$container_name" 2>/dev/null | grep -o '"state"[^,}]*' | head -1)
 		if [[ "$_status" == *running* ]]; then
-			container exec -it ${TMUX:+-e TMUX="$TMUX"} $container_name $zsh_path
+			container exec -it $container_name $zsh_path
 		else
 			echo "ERROR: container '$container_name' is not running (status: ${_status:-not found})" >&2
 			echo "  run 'devres' to recreate, or 'devrun' if it was never created." >&2
@@ -658,7 +658,8 @@ devin() {
 			echo "  run 'devres' to recreate, or check: journalctl -u docker -n 20" >&2
 			return 1
 		fi
-		docker exec -it ${TMUX:+-e TMUX="$TMUX"} $container_name $zsh_path
+		# No -e TMUX: each exec starts its own tmux nested in the host's (zsh/01-tmux.zsh).
+		docker exec -it $container_name $zsh_path
 		;;
 	CYGWIN* | MINGW32* | MSYS*)
 		echo 'MS Windows Dev Environment is not ready for this environment'

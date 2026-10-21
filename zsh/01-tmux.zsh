@@ -72,20 +72,20 @@ if (($+commands[tmux])); then
 		SESSION_NAME="${USER}@${HOST}"
 
 		if [[ -f /.dockerenv ]]; then
-			# ── Docker: single shared server per container ─────────────────────
-			# /tmp is always writable; systemd-tmpfiles-clean does not run inside containers.
-			TMUX_SOCK="/tmp/tmux-main.sock"
+			# ── Docker: one server per exec, nested inside the host tmux ───────
+			# /tmp is bind-mounted from the host and shared by every container (whose hostname
+			# is the host's, too), so sockets live in /var/tmp, which is container-local.
+			# Each exec gets its own server ($$), which survives detach; reattach with
+			# `tmux -S /var/tmp/tmux-$UID/<pid>.sock attach`. Prefix is C-w via options.conf.
+			mkdir -p -m 700 "/var/tmp/tmux-$UID"
+			TMUX_SOCK="/var/tmp/tmux-$UID/$$.sock"
 			if [[ -S /var/run/docker.sock ]] && ! [ -w /var/run/docker.sock ]; then
 				sudo chown -R "$USER:$GID" /var/run/docker.sock ||
 					echo "warning: failed to chown docker.sock — docker commands may need sudo" >&2
 			fi
-			if ! tmux -S "$TMUX_SOCK" has-session 2>/dev/null; then
-				tmux -u -2 -S "$TMUX_SOCK" new-session -d -s "$SESSION_NAME"
-			fi
-			# exec replaces this shell process with tmux (auto-attach design):
-			# nothing after this line in .zshrc runs for this shell -- the tmux
-			# client takes over and a fresh zshrc runs inside each tmux pane instead.
-			exec tmux -u -2 -S "$TMUX_SOCK" new-session -A -s "$SESSION_NAME"
+			# exec replaces this shell process with tmux: nothing after this line in
+			# .zshrc runs for this shell -- a fresh zshrc runs inside each tmux pane.
+			exec tmux -u -2 -S "$TMUX_SOCK" new-session -A -s "$SESSION_NAME-$$"
 		else
 			# ── Host / SSH: single shared session via persistent socket ────────
 			# Socket: /run/user/$UID when systemd-logind is active; $HOME/.tmux/ otherwise.

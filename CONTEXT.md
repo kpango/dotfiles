@@ -900,3 +900,26 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   2.2ms の 2.5 倍に留まり、下限 0.95ms から 4 倍は届かない
 - tmux-xpanes は sheldon テンプレート（`xpanes-path`）で bin/補完パスを直接足す。従来の遅延 source は compinit の
   後に fpath を足していたため補完が登録されていなかったが、同期になり登録されるようになった（挙動差）
+
+## docker-nested-tmux (2026-10-21) — Docker 内は exec ごとに独立した tmux を host tmux の中に重ねる
+
+### 決定事項
+
+- Q1（セッション単位）: `docker exec` 1 回につき tmux server を 1 つ立てる。socket は
+  `/var/tmp/tmux-$UID/<exec の zsh の PID>.sock`。`/tmp` は host と全コンテナで共有の bind mount、hostname も host と
+  同じ（`archpango`）なので、どちらもコンテナの区別に使えない。`/var/tmp` はコンテナごとの overlay 上にある
+- Q2（終了時）: detach や端末を閉じても server は残し、`tmux -S /var/tmp/tmux-$UID/<pid>.sock attach` で
+  アタッチし直せる（destroy-unattached は使わない）
+- Q3（zsh 5.9）: 4d1d1ef の `unsetopt HASH_LIST_ALL` 後は、zsh 5.9（Ubuntu の dev コンテナ）だと `$commands[name]` が
+  名前ごとの検索をせず常に外れる（host の 5.9.2 は外れない）。zshenv と zshrc で `$+commands[zsh]` をプローブし、
+  外れたら HASH_LIST_ALL を戻す
+
+### 不変条件
+
+- I1: `devin` は `-e TMUX` を渡さない。渡すと、コンテナ内の zsh は host の tmux の中にいると判断して自前の tmux を
+  立てない。さらに `/run/user/$UID` と `/tmp` のマウント越しに host の server に届くため、prefix 設定が host 側を書き換え得る
+- I2: コンテナ内の prefix は `tmux.conf.d/options.conf` の `/.dockerenv` 判定で C-w になる（host は C-b のまま）
+
+### 補足
+
+- host 側の `docker exec` を kill しても、コンテナ内のプロセス（tmux client を含む）は終了しないことがある（docker の挙動）
