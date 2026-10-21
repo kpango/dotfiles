@@ -3,6 +3,13 @@
 # POSIX-parseable guard: a stale /etc/profile.d/sway.sh link (bash/sh/emulate sh) must be a no-op.
 [ -n "${_SWAY_LAUNCH-}" ] || return 0
 _sway_log() { printf '[sway-start] %s\n' "$*" >&2; }
+# Only place sway.sh forks systemctl (after sway returns): with linger the user manager outlives
+# sway, and kanshi (Restart=always, ConditionEnvironment=WAYLAND_DISPLAY) would crash-loop on stale vars.
+_sway_teardown() {
+	systemctl --user stop sway-session.target >/dev/null 2>&1
+	systemctl --user unset-environment WAYLAND_DISPLAY SWAYSOCK DISPLAY >/dev/null 2>&1
+	return 0
+}
 
 # 1) Environment variable setup
 export DESKTOP_SESSION=sway
@@ -78,6 +85,7 @@ if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
 	# Not exec'd: if sway fails to start (e.g. missing shared library),
 	# fall back to the login shell instead of logging out instantly.
 	sway_rc=$?
+	_sway_teardown
 	if ((sway_rc == 0)); then
 		exit 0
 	fi
@@ -86,4 +94,4 @@ else
 	_sway_log "Existing DISPLAY/WAYLAND_DISPLAY detected. Skipping launch."
 fi
 unset card sway_rc sway_args SWAY_GPU_OPTION
-unfunction _sway_log
+unfunction _sway_log _sway_teardown
