@@ -1,10 +1,12 @@
 emulate -L zsh
 # _apply_base_path — rebuild $PATH from _base_path (the canonical dir list) and
 # tie it to $path with -U (dedup). Single source for the call sites that each
-# need PATH rebuilt at a different point in shell startup — zshrc's synchronous
-# pre-sheldon setup (plus its darwin-only early call before 01-tmux.zsh), and
-# 00-env.zsh's zsh-defer-deferred darwin PATH="" recovery — see each call site
-# for why it has to run more than once.
+# need PATH rebuilt at a different point in shell startup — zshrc's `-c` fast
+# path, zshrc's synchronous pre-sheldon setup, and 00-env.zsh's zsh-defer-
+# deferred darwin PATH="" recovery — see each call site for why it has to run
+# more than once. zshrc also calls it once earlier, before 01-tmux.zsh, only on
+# darwin, after an env.zsh cache regeneration, or when tmux is not resolvable;
+# that call makes the pre-sheldon one skip itself in the same process.
 #
 # -g: without it, `typeset -U path PATH` declares a function-local path/PATH
 # tie instead of touching the global one. This isn't specific to any one call
