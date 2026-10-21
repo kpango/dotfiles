@@ -16,33 +16,37 @@ if (($+commands[kubectl])); then
 	alias knall="k get namespace -o wide"
 	alias kdall="k get deployment --all-namespaces -o wide"
 
-	deps=()
-	cmds=()
-	for cmd in kubectl kind k3d helm skaffold linkerd kustomize; do
-		if (($+commands[$cmd])); then
-			deps+=("$commands[$cmd]")
-			cmds+=("$cmd")
-		fi
-	done
+	# The completion cache is only ever sourced by interactive shells, so neither its
+	# freshness check (7 command lookups) nor its regeneration runs under `zsh -c`.
+	if [[ -z "$ZSH_EXECUTION_STRING" ]]; then
+		deps=()
+		cmds=()
+		for cmd in kubectl kind k3d helm skaffold linkerd kustomize; do
+			if (($+commands[$cmd])); then
+				deps+=("$commands[$cmd]")
+				cmds+=("$cmd")
+			fi
+		done
 
-	if ((${#cmds[@]} > 0)); then
-		cache_file="$ZCACHE_DIR/combined_completion.zsh"
-		need_eval=0
-		if [[ ! -f "$cache_file" ]]; then need_eval=1; fi
-		for cmd in ${deps[@]}; do if [[ "$cmd" -nt "$cache_file" ]]; then need_eval=1; fi; done
+		if ((${#cmds[@]} > 0)); then
+			cache_file="$ZCACHE_DIR/combined_completion.zsh"
+			need_eval=0
+			if [[ ! -f "$cache_file" ]]; then need_eval=1; fi
+			for cmd in ${deps[@]}; do if [[ "$cmd" -nt "$cache_file" ]]; then need_eval=1; fi; done
 
-		if ((need_eval)); then
-			(
-				for cmd in "${cmds[@]}"; do timeout 10 "$cmd" completion zsh 2>/dev/null; done \
-					>"${cache_file}.tmp.$$" &&
-					command mv -f "${cache_file}.tmp.$$" "$cache_file" &&
-					zcompile "$cache_file" 2>/dev/null
-				command rm -f "${cache_file}.tmp.$$" 2>/dev/null
-			) &|
-		fi
+			if ((need_eval)); then
+				(
+					for cmd in "${cmds[@]}"; do timeout 10 "$cmd" completion zsh 2>/dev/null; done \
+						>"${cache_file}.tmp.$$" &&
+						command mv -f "${cache_file}.tmp.$$" "$cache_file" &&
+						zcompile "$cache_file" 2>/dev/null
+					command rm -f "${cache_file}.tmp.$$" 2>/dev/null
+				) &|
+			fi
 
-		if [[ -z "$ZSH_EXECUTION_STRING" ]] && (($+functions[zsh-defer])); then
-			zsh-defer -m -p -r -c "[[ -f '$cache_file' ]] && source '$cache_file'"
+			if (($+functions[zsh-defer])); then
+				zsh-defer -m -p -r -c "[[ -f '$cache_file' ]] && source '$cache_file'"
+			fi
 		fi
 	fi
 fi

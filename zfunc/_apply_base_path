@@ -23,7 +23,9 @@ emulate -L zsh
 typeset -g -U path PATH
 
 autoload -Uz _base_path
-export PATH="$(_base_path):$PATH"
+local REPLY
+_base_path -v
+export PATH="$REPLY:$PATH"
 
 if (($+commands[deno])); then
 	export PATH="${commands[deno]:h}:$PATH"

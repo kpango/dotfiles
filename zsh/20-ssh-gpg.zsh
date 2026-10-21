@@ -18,7 +18,12 @@ if (($+commands[gpg])); then
 	# human-driven follow-up gpg invocation. This removes ~11ms of synchronous
 	# fork/wait from the zsh-defer deferred burst's critical path (measured
 	# deferred-block cost: sync 15.47ms -> async 4.88ms, median of 7 runs).
-	(($+commands[gpg-connect-agent])) && gpg-connect-agent updatestartuptty /bye &>/dev/null &|
+	# Only with a terminal: without one (a `zsh -c` from a tool runner) $TTY is empty,
+	# and the update could only point the agent at no tty while costing a fork. An `if`,
+	# because `&|` after an `&&` list backgrounds (forks for) the whole list, tests included.
+	if [[ -n $TTY ]] && (($+commands[gpg-connect-agent])); then
+		gpg-connect-agent updatestartuptty /bye &>/dev/null &|
+	fi
 # export PINENTRY_USER_DATA="USE_CURSES=1"
 fi
 if (($+commands[ssh-keygen])); then

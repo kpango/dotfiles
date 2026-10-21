@@ -42,7 +42,9 @@ zprecompile() {
 	# comments) and cleans up after itself on the normal paths, but a shell
 	# killed mid-write leaves that file behind with no other reaper -- *.zsh/
 	# *.zwc above don't match ".zsh.tmp.<pid>" since it doesn't end in those
-	# suffixes.
+	# suffixes. The autosuggest-bind and fzf-* caches are not regenerated below;
+	# the next interactive shell creates them (an orphaned autosuggest-bind
+	# *.<pid>.d dir from a killed writer is only removed by zclean).
 	setopt localoptions nullglob
 	command rm -f "$d"/*.{zsh,zwc}
 	command rm -f "$d"/*.tmp.*
@@ -102,7 +104,8 @@ zprecompile() {
 	# the same reason those already are. _source_deferred is called from zshrc
 	# itself (ahead of combined.zsh, for combined.zsh/os-cache/gui-cache) and from
 	# 3 zsh/*.zsh files bundled into combined.zsh -- same "runs on every startup"
-	# reasoning. pinentry-tmux is NOT a zsh function despite
+	# reasoning, as is _autosuggest_cached_bind (every sheldon-managed interactive start,
+	# see sheldon.toml). pinentry-tmux is NOT a zsh function despite
 	# living under tmux.conf.d/pinentry-tmux/ -- it's the Go GPG pinentry binary `make
 	# pinentry-tmux/build` installs to /usr/local/bin, so `zcompile` (which compiles
 	# zsh script source to .zwc bytecode) was never applicable to it; the stale
@@ -117,7 +120,8 @@ zprecompile() {
 		"$_df/zfunc/_gen_env" \
 		"$_df/zfunc/_base_path" \
 		"$_df/zfunc/_apply_base_path" \
-		"$_df/zfunc/_source_deferred"; do
+		"$_df/zfunc/_source_deferred" \
+		"$_df/zfunc/_autosuggest_cached_bind"; do
 		[[ -f "$f" ]] && zcompile "$f" 2>/dev/null
 	done
 

@@ -1,7 +1,9 @@
 emulate -L zsh
-# Generate the atuin zsh init script with two performance patches applied:
+# Generate the atuin zsh init script with three performance patches applied:
 #   1. Replace $(atuin uuid) session generation with a /proc read (avoids a subprocess)
 #   2. Replace add-zsh-hook calls with direct array appends (avoids autoloading add-zsh-hook)
+#   3. Background the search-index warmup with &| instead of `( ... &)`, which forked a
+#      subshell and waited for it (the job is still detached from the job table either way)
 # Behavioural fixes (ATUIN_TMUX_POPUP, sync precmd) live in zsh/30-atuin.zsh so they
 # survive .zcache clearing without depending on this patch running correctly.
 # Single awk pass — no sed subprocess.
@@ -21,5 +23,8 @@ atuin init zsh | awk '
 /autoload -U add-zsh-hook/  { next }
 /add-zsh-hook preexec /     { print "preexec_functions+=(" $NF ")"; next }
 /add-zsh-hook precmd /      { print "precmd_functions+=(" $NF ")";  next }
+/^\(ATUIN_SHELL=zsh atuin __internal prepare-search-index .*&\)$/ {
+	sub(/^\(/, ""); sub(/ &\)$/, " \\&|"); print; next
+}
 { print }
 '

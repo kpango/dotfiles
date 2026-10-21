@@ -78,7 +78,8 @@ bench/zsh/first-prompt: _bench_check
 ## (which overrides that temporary redirect for zprof's own fd) is what actually gets it out.
 ## No -t delay is needed: FIFO order alone already guarantees zprof runs after every task
 ## queued ahead of it, however long they take (confirmed empirically -- -t 0/0.01/0.3/0.45
-## all produce an identical table). A large enough delay is actively harmful, though: this
+## all produce an identical table). With upstream zsh-defer (sheldon.toml's [plugins.zsh-defer-yield]
+## turns every -t into an immediate yield) a large enough delay is actively harmful: this
 ## recipe's --quiet-ms 500 races it -- once 500ms of silence elapses the harness sends `exit`,
 ## which sets KEYS_QUEUED_COUNT and breaks _zsh-defer-resume's drain loop
 ## (`while (( $#_zsh_defer_tasks && !KEYS_QUEUED_COUNT && !PENDING ))`) before zprof's turn
