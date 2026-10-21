@@ -30,4 +30,11 @@ _bp+=(
 	/usr/lib/docker/cli-plugins/
 )
 
-print -r -- "${(j.:.)_bp}"
+# -v: assign to the caller's REPLY instead of printing, so a caller that only needs
+# the value (_apply_base_path: every interactive startup, and zshrc's `-c` path) avoids
+# a $(...) fork.
+if [[ $1 == -v ]]; then
+	REPLY="${(j.:.)_bp}"
+else
+	print -r -- "${(j.:.)_bp}"
+fi

@@ -65,8 +65,8 @@ if [[ -n "$ZSH_EXECUTION_STRING" ]]; then
 	# (an ancestor process ran this before), independent of whether *this*
 	# process's own PATH actually has _base_path's dirs. Skipping on an inherited
 	# guard risks silently keeping an incomplete PATH; always rebuilding is cheap
-	# (one _base_path fork, deduped by typeset -U) and correct regardless of
-	# ancestry — see zsh/00-env.zsh for the fuller version of this reasoning.
+	# (one _base_path call, no fork since `_base_path -v`; deduped by typeset -U)
+	# and correct regardless of ancestry — see zsh/00-env.zsh for the fuller version of this reasoning.
 	export _ZSH_PATH_LOADED=1
 	# _apply_base_path (zfunc/) holds the typeset -g -U / _base_path / export
 	# triplet shared with 00-env.zsh and the synchronous call below — see its
@@ -83,6 +83,14 @@ if [[ -n "$ZSH_EXECUTION_STRING" ]]; then
 	fi
 	return
 fi
+
+# Per-name $commands lookups only until the end of this file (see zshenv's fast path):
+# with HASH_LIST_ALL the first one hashes all of PATH (~1.9ms), and with HASH_DIRS
+# (on here; zsh itself leaves it off for `zsh -c`) each one after a PATH change hashes
+# every directory up to the match (~0.8ms for /usr/bin) -- all before the first prompt.
+# Both only change how lookups are cached; a per-name lookup finds the same command.
+# Restored at the end of this file, so the deferred tasks already run with them on.
+unsetopt HASH_LIST_ALL HASH_DIRS
 
 if ! (($+functions[_zcache_eval])); then
 	fpath=("$DOTFILES_DIR/zfunc" $fpath)
@@ -118,7 +126,7 @@ fi
 # (env.zsh never bakes PATH there), (b) env.zsh was just regenerated (_zsh_cold_env, see
 # above) or (c) tmux is not resolvable. Only then is _apply_base_path run here, ahead of
 # 01-tmux.zsh (and of any tmux server it starts, which inherits PATH); _zsh_early_base
-# makes the synchronous call further down skip its redundant second _base_path fork.
+# makes the synchronous call further down skip its redundant second _base_path call.
 # Both flags are plain, non-exported shell variables so they never leak to children, unlike
 # the exported _ZSH_PATH_LOADED guard (which is deliberately not trusted, see below).
 # EDITOR comes from the deferred zsh/10-editor.zsh both before and after this placement.
@@ -201,7 +209,7 @@ HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 # *this* process's own PATH has _base_path's dirs (confirmed 2026-08-19: this exact
 # guard-inherited-but-PATH-incomplete gap reproduced a PATH-loss bug on darwin one
 # process removed via tmux/nested-shell inheritance). Always rebuilding is cheap —
-# a single _base_path fork, deduped by typeset -U — and correct regardless of
+# a single _base_path call, deduped by typeset -U — and correct regardless of
 # ancestry. Downstream, 00-env.zsh's own guard still skips its redundant copy of
 # this on non-darwin once this has run; on darwin it always re-derives PATH from
 # scratch after its own PATH="" reset regardless, so this cannot go stale there.
@@ -297,7 +305,13 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 	fi
 fi
 
+setopt HASH_LIST_ALL HASH_DIRS
+
 # Appended by an installer writing through the ~/.zshrc -> repo symlink. Guarded
 # because the target does not exist on every machine, and an unguarded `.` of a
-# missing file prints an error on every interactive shell start.
-[ -f "$HOME/bin/env" ] && . "$HOME/bin/env"
+# missing file prints an error on every interactive shell start. An `if`, not
+# `[ -f ] && .`: as the last command its status 1 became $? for the first prompt,
+# which prmt then rendered as a failed command (red "✗ 1").
+if [ -f "$HOME/bin/env" ]; then
+	. "$HOME/bin/env"
+fi

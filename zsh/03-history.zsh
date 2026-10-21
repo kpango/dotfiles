@@ -15,5 +15,8 @@ fzf-z-search() {
 		zle redisplay
 	fi
 }
-zle -N fzf-z-search
-bindkey '^s' fzf-z-search
+# No line editor under `zsh -c`; `zle -N` there would only load zsh/zle for nothing.
+if [[ -z "$ZSH_EXECUTION_STRING" ]]; then
+	zle -N fzf-z-search
+	bindkey '^s' fzf-z-search
+fi

@@ -1,0 +1,106 @@
+# _autosuggest_cached_bind — make zsh-autosuggestions' one-time widget binding (~12ms at
+# the first precmd: ~200 widgets, each wrapped via function definitions and `zle -N`)
+# replayable from $ZCACHE_DIR. Called once, right after the plugin is sourced (see
+# sheldon.toml); it replaces _zsh_autosuggest_bind_widgets.
+#
+# The binding is a pure function of the widget table plus the plugin's widget-list
+# settings, so those are the cache key, compared in full: a hit sources the compiled
+# definitions recorded last time (~2ms); anything else (first run, a plugin adding or
+# rewrapping a widget, a settings change) generates them again, to the state upstream's
+# own binding produces.
+# The widget table, the _zsh_autosuggest_{bound,orig}_* functions and
+# _ZSH_AUTOSUGGEST_BIND_COUNTS come out identical to upstream's either way (compared
+# state-for-state).
+#
+# Only installed when the three upstream functions it re-implements have the exact body
+# lengths of zsh-autosuggestions main @85919cd (file header v0.7.1); an upstream change that alters those
+# lengths (or a zsh that prints function bodies differently) leaves the upstream binding
+# in place. A same-length edit would not be detected.
+emulate -L zsh
+((${#functions[_zsh_autosuggest_bind_widget]} == 959 &&
+	${#functions[_zsh_autosuggest_bind_widgets]} == 821 &&
+	${#functions[_zsh_autosuggest_incr_bind_count]} == 111)) || return 0
+
+_zsh_autosuggest_bind_widgets() {
+	emulate -L zsh
+	typeset -gA _ZSH_AUTOSUGGEST_BIND_COUNTS
+	local widget action qw prefix=$ZSH_AUTOSUGGEST_ORIGINAL_WIDGET_PREFIX
+	local cache=${ZCACHE_DIR:-$HOME/.zcache}/autosuggest-bind.zsh
+	local -i bind_count
+	local -a ignore_widgets code
+	# Every input the generated code depends on, plus a version of this generator (bump
+	# it when the code below changes). \x1f/\x1e are assumed absent from widget names.
+	local key=v1$'\x1e'${(pj:\x1f:)${(@kv)widgets}}$'\x1e'${(pj:\x1f:)ZSH_AUTOSUGGEST_CLEAR_WIDGETS}$'\x1e'${(pj:\x1f:)ZSH_AUTOSUGGEST_ACCEPT_WIDGETS}$'\x1e'${(pj:\x1f:)ZSH_AUTOSUGGEST_EXECUTE_WIDGETS}$'\x1e'${(pj:\x1f:)ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS}$'\x1e'${(pj:\x1f:)ZSH_AUTOSUGGEST_IGNORE_WIDGETS}$'\x1e'${(pj:\x1f:)_ZSH_AUTOSUGGEST_BUILTIN_ACTIONS}$'\x1e'$prefix$'\x1e'${(pj:\x1f:)${(@kv)_ZSH_AUTOSUGGEST_BIND_COUNTS}}
+	# The cache's first line returns 1 unless $1 is the key it was generated for, so a
+	# stale or concurrently replaced file (text or .zwc) is rejected before it defines anything.
+	[[ -f $cache ]] && source $cache "$key" && return
+
+	ignore_widgets=(
+		.\*
+		_\*
+		${_ZSH_AUTOSUGGEST_BUILTIN_ACTIONS/#/autosuggest-}
+		$prefix\*
+		$ZSH_AUTOSUGGEST_IGNORE_WIDGETS
+	)
+	# ${(k)widgets} is the same name set `zle -la` prints, without the fork.
+	for widget in ${${(k)widgets}:#${(j:|:)~ignore_widgets}}; do
+		# Upstream's bind_count is a fresh local per widget.
+		bind_count=0
+		if [[ -n ${ZSH_AUTOSUGGEST_CLEAR_WIDGETS[(r)$widget]} ]]; then
+			action=clear
+		elif [[ -n ${ZSH_AUTOSUGGEST_ACCEPT_WIDGETS[(r)$widget]} ]]; then
+			action=accept
+		elif [[ -n ${ZSH_AUTOSUGGEST_EXECUTE_WIDGETS[(r)$widget]} ]]; then
+			action=execute
+		elif [[ -n ${ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS[(r)$widget]} ]]; then
+			action=partial_accept
+		else
+			action=modify
+		fi
+		qw=${(q)widget}
+		# Same branches as upstream _zsh_autosuggest_bind_widget, emitted as code.
+		case $widgets[$widget] in
+		user:_zsh_autosuggest_(bound|orig)_*)
+			bind_count=$((_ZSH_AUTOSUGGEST_BIND_COUNTS[$widget]))
+			;;
+		user:*)
+			bind_count=$((_ZSH_AUTOSUGGEST_BIND_COUNTS[$widget] + 1))
+			_ZSH_AUTOSUGGEST_BIND_COUNTS[$widget]=$bind_count
+			code+=("zle -N $prefix$bind_count-$qw ${(q)${widgets[$widget]#*:}}")
+			;;
+		builtin)
+			bind_count=$((_ZSH_AUTOSUGGEST_BIND_COUNTS[$widget] + 1))
+			_ZSH_AUTOSUGGEST_BIND_COUNTS[$widget]=$bind_count
+			code+=("_zsh_autosuggest_orig_$qw() { zle .$qw }"
+				"zle -N $prefix$bind_count-$qw _zsh_autosuggest_orig_$qw")
+			;;
+		completion:*)
+			bind_count=$((_ZSH_AUTOSUGGEST_BIND_COUNTS[$widget] + 1))
+			_ZSH_AUTOSUGGEST_BIND_COUNTS[$widget]=$bind_count
+			code+=("zle -C $prefix$bind_count-$qw ${${(s.:.)widgets[$widget]}[2,3]}")
+			;;
+		esac
+		code+=("_zsh_autosuggest_bound_${bind_count}_$qw() {
+	_zsh_autosuggest_widget_$action $prefix$bind_count-$qw \$@
+}" "zle -N -- $qw _zsh_autosuggest_bound_${bind_count}_$qw")
+	done
+	code+=("_ZSH_AUTOSUGGEST_BIND_COUNTS=(${(@qkv)_ZSH_AUTOSUGGEST_BIND_COUNTS})")
+	eval "${(F)code}"
+
+	# Record for the next shell, in the background. Built and compiled in a private
+	# directory under the final basename (the name a .zwc is looked up by), then renamed
+	# into place text-first: the new text is newer than any old .zwc, so it is never
+	# paired with one.
+	# `command`: the aliases from zsh/04-aliases.zsh (mkdir -p, mv -i, rm -rf) must not apply.
+	local tmpd=$cache.$$.d
+	{
+		if command mkdir $tmpd; then
+			print -rl -- "[[ \$1 == ${(qq)key} ]] || return 1" $code >$tmpd/${cache:t} &&
+				zcompile $tmpd/${cache:t} &&
+				command mv -f $tmpd/${cache:t} $cache &&
+				command mv -f $tmpd/${cache:t}.zwc $cache.zwc
+			command rm -f $tmpd/${cache:t} $tmpd/${cache:t}.zwc
+			command rmdir $tmpd
+		fi
+	} 2>/dev/null &|
+}
