@@ -105,23 +105,13 @@ if (($+commands[tmux])); then
 			# Prefer systemd (which also creates the session), fall back to direct start.
 			if ! tmux -S "$TMUX_SOCK" has-session 2>/dev/null; then
 				if (($+commands[systemctl])) && systemctl --user is-enabled tmux.service &>/dev/null; then
-					# restart, not start, when the server is gone: tmux.service is
-					# Type=oneshot+RemainAfterExit, so after the server exits the unit stays "active"
-					# and start would be a no-op. has-session can also fail with a live server (e.g.
-					# a protocol-version mismatch right after a tmux upgrade), and restart's
-					# ExecStop and the cgroup kill would destroy it, so only restart on the two messages
-					# tmux prints for a missing server; otherwise plain start (no-op if active).
-					# Residual: two shells racing right after server death can still collide; rare.
-					_tmux_err=$(tmux -S "$TMUX_SOCK" has-session 2>&1)
-					case "$_tmux_err" in
-					*"no server running"* | *"error connecting to"*)
-						systemctl --user restart tmux.service 2>/dev/null
-						;;
-					*)
-						systemctl --user start tmux.service 2>/dev/null
-						;;
-					esac
-					unset _tmux_err
+					# tmux.service is Type=oneshot+RemainAfterExit: once the server has died the unit
+					# stays "active" and start would be a no-op, so reload (ExecReload re-runs the
+					# idempotent ExecStart) recreates it. Never restart here: its ExecStop and the
+					# cgroup kill would destroy a live server when has-session fails spuriously.
+					# start covers a unit that was never started. Two shells racing right after
+					# server death can still collide; rare.
+					systemctl --user reload tmux.service 2>/dev/null || systemctl --user start tmux.service 2>/dev/null
 					# Wait for the socket; tmux leaves a stale socket file behind after the server
 					# exits, so this can return at once, in which case the exec below still
 					# reaches a server via new-session -A. Bounded at ~3s (30 * 0.1s).

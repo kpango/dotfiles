@@ -69,6 +69,8 @@ in
       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
       __GL_GSYNC_ALLOWED = "0";
       __GL_VRR_ALLOWED = "0";
+      __GL_THREADED_OPTIMIZATIONS = "1";
+      __GL_SHADER_DISK_CACHE = "1";
       LIBVA_DRIVER_NAME = "nvidia";
       GBM_BACKEND = "nvidia-drm";
     })
