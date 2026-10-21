@@ -55,11 +55,9 @@
   # Swap — nvme1n1p1 partition
   # ────────────────────────────────────────────────
   swapDevices = [
-    { device = "/dev/nvme1n1p1"; }
+    # by UUID like arch/desk/fstab: NVMe numbering can swap between boots
+    { device = "/dev/disk/by-uuid/f9d5f646-0f05-4922-a666-19bcbe9c9269"; }
   ];
-
-  # Resume from this swap device (hibernate)
-  boot.resumeDevice = "/dev/nvme1n1p1";
 
   # ────────────────────────────────────────────────
   # Supported filesystems

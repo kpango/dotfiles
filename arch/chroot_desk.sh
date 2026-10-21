@@ -93,7 +93,7 @@ systemctl enable fstrim.timer
 sed -i -e "s/MODULES=()/MODULES=(battery lz4 lz4_compress i915 nvidia nvidia_modeset nvidia_uvm nvidia_drm bonding)/g" /etc/mkinitcpio.conf
 sed -i -e "s/BINARIES=()/BINARIES=(\"\/sbin\/mdmon\")/g" /etc/mkinitcpio.conf
 sed -i -e "s/FILES=()/FILES=(\"\/etc\/mdadm.conf\")/g" /etc/mkinitcpio.conf
-sed -i -e "s/block filesystems/block mdadm mdadm_udev resume filesystems/g" /etc/mkinitcpio.conf
+sed -i -e "s/block filesystems/block mdadm mdadm_udev filesystems/g" /etc/mkinitcpio.conf
 
 mkinitcpio -p linux-zen
 
@@ -108,7 +108,7 @@ title   Arch Linux
 linux   /vmlinuz-linux-zen
 initrd  /amd-ucode.img
 initrd  /initramfs-linux-zen.img
-options root=PARTUUID=${DEVICE_ID} resume=${SWAP_PART} rw quiet loglevel=1 nowatchdog acpi_backlight=none amd_iommu=on amd_pstate=active cgroup_no_v1=all i8042.nomux=1 i8042.reset=1 idle=nomwait nvidia_drm.fbdev=1 nvidia_drm.modeset=1 rd.systemd.show_status=auto rd.udev.log_priority=3 systemd.unified_cgroup_hierarchy=1 usbcore.autosuspend=-1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=10 zswap.zpool=z3fold rd.driver.blacklist=nouveau
+options root=PARTUUID=${DEVICE_ID} rw reboot=pci quiet loglevel=1 nowatchdog acpi_backlight=none amd_iommu=on amd_pstate=active cgroup_no_v1=all i8042.nomux=1 i8042.reset=1 idle=nomwait nvidia_drm.fbdev=1 nvidia_drm.modeset=1 rd.systemd.show_status=auto rd.udev.log_priority=3 systemd.unified_cgroup_hierarchy=1 usbcore.autosuspend=-1 vt.global_cursor_default=0 zswap.compressor=zstd zswap.enabled=1 zswap.max_pool_percent=10 zswap.zpool=z3fold rd.driver.blacklist=nouveau
 EOF
 
 rm -rf ${BOOT}/loader/loader.conf

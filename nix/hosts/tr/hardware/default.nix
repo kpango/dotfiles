@@ -88,6 +88,8 @@
     "quiet"
     "loglevel=1"
     "acpi_backlight=none"
+    # Warm reboot via ACPI or EFI hangs at a black screen on this board; the PCI (CF9) reset comes back
+    "reboot=pci"
   ];
 
   # nouveau blocked via rd.driver.blacklist kernel param

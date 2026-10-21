@@ -837,6 +837,12 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
 - Q7: `loader.conf` timeout 0、mkinitcpio `MODULES` から nvidia 4 件を外す（early KMS を手放す。video= は nvidia_drm の udev ロード時に適用）
 - Q8: 孤立 `/usr/lib/modules` 削除、sshd の tailscale IP bind 失敗、wait-online→docker を対象に含める
 - Q9: 段階 A（再起動不要: T1-T3）→ B（再起動: T4）→ C（再起動: T5 greetd）で反映し、段階ごとに止めて切り分ける
+- Q11（追加、人間要望）: warm reboot がブラックアウトで止まる（ASUS PRIME TRX40-PRO S、BIOS 1502）。実機で
+  `/sys/kernel/reboot/type` を acpi→efi（失敗）→pci（成功）と切り替えて確認し、`reboot=pci` を Arch の
+  ブートエントリと NixOS `tr` の kernelParams の両方に入れる
+- Q12（追加、人間判断: hibernate 不使用）: `resume=` と mkinitcpio の `resume` フック、NixOS の
+  `boot.resumeDevice` を削除する（毎起動の `Unable to resume ... offset 0` 表示の元）。NixOS の swap は Arch の
+  fstab と同じく UUID 指定にそろえる
 - Q10: docker / NetworkManager-wait-online は変更せず、greetd と sway がそれらを待たないことを実測で確認するのみ
 
 ### 不変条件
