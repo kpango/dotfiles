@@ -41,6 +41,28 @@ if (($+commands[tmux])); then
 	fi
 	alias tedit="$EDITOR $HOME/.tmux.conf"
 
+	if [[ -f /.dockerenv ]]; then
+		# Clean up the per-exec servers below: kill those with no client and drop dead
+		# sockets. -a kills every server but the current one, attached or not -- closing a
+		# docker exec on the host can leave its tmux client running inside the container.
+		tmuxgc() {
+			emulate -L zsh -o null_glob
+			local all=0 s n
+			[[ "$1" == -a ]] && all=1
+			for s in /var/tmp/tmux-$UID/*.sock; do
+				[[ "$s" == "${TMUX%%,*}" ]] && continue
+				if ! tmux -S "$s" has-session 2>/dev/null; then
+					command rm -f -- "$s" && echo "removed dead socket $s"
+					continue
+				fi
+				n=$(tmux -S "$s" list-clients 2>/dev/null | wc -l)
+				if ((all || n == 0)); then
+					tmux -S "$s" kill-server && command rm -f -- "$s" && echo "killed $s (clients: $n)"
+				fi
+			done
+		}
+	fi
+
 	# If not inside a tmux session
 	if [[ -z "$TMUX" && -o interactive ]]; then
 		USER=${USER:-$USERNAME}

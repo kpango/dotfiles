@@ -909,7 +909,8 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   `/var/tmp/tmux-$UID/<exec の zsh の PID>.sock`。`/tmp` は host と全コンテナで共有の bind mount、hostname も host と
   同じ（`archpango`）なので、どちらもコンテナの区別に使えない。`/var/tmp` はコンテナごとの overlay 上にある
 - Q2（終了時）: detach や端末を閉じても server は残し、`tmux -S /var/tmp/tmux-$UID/<pid>.sock attach` で
-  アタッチし直せる（destroy-unattached は使わない）
+  アタッチし直せる（destroy-unattached は使わない）。掃除はコンテナ内の `tmuxgc` で手動で行う（client の無い server と
+  死んだ socket が対象、`-a` を付けると現在の server 以外をすべて kill）
 - Q3（zsh 5.9）: 4d1d1ef の `unsetopt HASH_LIST_ALL` 後は、zsh 5.9（Ubuntu の dev コンテナ）だと `$commands[name]` が
   名前ごとの検索をせず常に外れる（host の 5.9.2 は外れない）。zshenv と zshrc で `$+commands[zsh]` をプローブし、
   外れたら HASH_LIST_ALL を戻す
