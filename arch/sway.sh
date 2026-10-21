@@ -6,8 +6,8 @@ _sway_log() { printf '[sway-start] %s\n' "$*" >&2; }
 # Only place sway.sh forks systemctl (after sway returns): with linger the user manager outlives
 # sway, and kanshi (Restart=always, ConditionEnvironment=WAYLAND_DISPLAY) would crash-loop on stale vars.
 _sway_teardown() {
-	systemctl --user stop sway-session.target >/dev/null 2>&1
 	systemctl --user unset-environment WAYLAND_DISPLAY SWAYSOCK DISPLAY >/dev/null 2>&1
+	systemctl --user stop sway-session.target >/dev/null 2>&1
 	return 0
 }
 
