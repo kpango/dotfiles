@@ -241,6 +241,7 @@ export ARCH_DESK_SUDO_CP_MAP
 
 define ARCH_PREP
 	@if [ ! -f /boot/vmlinuz-linux ]; then sudo rm -f /etc/mkinitcpio.d/linux.preset /etc/mkinitcpio.d/linux.preset.pacsave; fi
+	@if [ -L /etc/profile.d/sway.sh ]; then sudo rm -f /etc/profile.d/sway.sh; fi
 	sudo mkdir -p /etc/systemd/system/NetworkManager.service.d
 	sudo mkdir -p /etc/systemd/system/sshd.service.d
 	sudo mkdir -p /etc/acpi_override

@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
 # Sway launcher, sourced by zsh from ~/.zprofile (tty1 login only; the gate lives there).
-log() { printf '[sway-start] %s\n' "$*" >&2; }
+# POSIX-parseable guard: a stale /etc/profile.d/sway.sh link (bash/sh/emulate sh) must be a no-op.
+[ -n "${_SWAY_LAUNCH-}" ] || return 0
+_sway_log() { printf '[sway-start] %s\n' "$*" >&2; }
 
 # 1) Environment variable setup
 export DESKTOP_SESSION=sway
@@ -13,7 +15,7 @@ SWAY_GPU_OPTION=""
 
 # 3) GPU-specific additions
 if [[ -d /sys/module/nvidia_drm && ! -d /sys/module/nouveau && -e /dev/nvidiactl ]]; then
-	log "NVIDIA GPU detected. Applying NVIDIA-specific environment."
+	_sway_log "NVIDIA GPU detected. Applying NVIDIA-specific environment."
 	export LIBVA_DRIVER_NAME=nvidia
 	export GBM_BACKEND=nvidia-drm
 
@@ -28,7 +30,7 @@ if [[ -d /sys/module/nvidia_drm && ! -d /sys/module/nouveau && -e /dev/nvidiactl
 	card=(/dev/dri/card*(nN[-1]))
 
 	# Only set WLR_DRM_DEVICES if not already set by the user/environment
-	export WLR_DRM_DEVICES="${WLR_DRM_DEVICES:-$card}"
+	(( $#card )) && export WLR_DRM_DEVICES="${WLR_DRM_DEVICES:-$card}"
 
 	# Set other NVIDIA-specific variables
 	export WLR_DRM_NO_ATOMIC=1
@@ -47,12 +49,12 @@ if [[ -d /sys/module/nvidia_drm && ! -d /sys/module/nouveau && -e /dev/nvidiactl
 	SWAY_GPU_OPTION="--unsupported-gpu"
 
 else
-	log "Using generic GPU settings."
+	_sway_log "Using generic GPU settings."
 fi
 
 # 4) Limits (Apply to sway and its children)
-# Use `log` on failure instead of `|| true` for better feedback
-ulimit -n 500000 || log "Warning: Failed to set ulimit -n 500000 (non-fatal)"
+# Use `_sway_log` on failure instead of `|| true` for better feedback
+ulimit -n 500000 || _sway_log "Warning: Failed to set ulimit -n 500000 (non-fatal)"
 
 # 5) Start sway
 if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
@@ -64,13 +66,13 @@ if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
 	sway_args+=("$@") # Append any user-provided arguments
 
 	if [[ "${SWAY_DEBUG_MODE:-0}" == "1" ]]; then
-		log "Starting sway (DEBUG MODE)..."
+		_sway_log "Starting sway (DEBUG MODE)..."
 		# Add seconds to timestamp for uniqueness
 		env SWAY_DEBUG=1 SWAY_IGNORE_INPUT_GRAB=1 \
 			sway --debug --verbose "${sway_args[@]}" \
 			>"/tmp/sway.debug.$(date +%Y%m%d%H%M%S).log" 2>&1
 	else
-		log "Starting sway..."
+		_sway_log "Starting sway..."
 		sway "${sway_args[@]}"
 	fi
 	# Not exec'd: if sway fails to start (e.g. missing shared library),
@@ -79,9 +81,9 @@ if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
 	if ((sway_rc == 0)); then
 		exit 0
 	fi
-	log "sway exited with status ${sway_rc}; staying in login shell."
+	_sway_log "sway exited with status ${sway_rc}; staying in login shell."
 else
-	log "Existing DISPLAY/WAYLAND_DISPLAY detected. Skipping launch."
+	_sway_log "Existing DISPLAY/WAYLAND_DISPLAY detected. Skipping launch."
 fi
 unset card sway_rc sway_args SWAY_GPU_OPTION
-unfunction log
+unfunction _sway_log
