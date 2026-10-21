@@ -678,3 +678,60 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
 - **決定 2**: IPS の機構（suricata `--pcap` 受動監視 → ipset `ips`/`ips6` → FORWARD で一定時間 DROP）を
   skill に汎用知識として記載。世帯固有の有効カテゴリ・Tor 方針は auto-memory 側に置く（harness-design.md）。
 - **決定 3**: UDM 本体は変更しない。Tor 遮断は人間判断で現状維持、カテゴリ削減・シグネチャ抑制は便益なしで不採用。
+
+## login-startup-optimize (2026-10-21) — tty1 ログイン → sway / zsh / tmux 起動チェーンの整理
+
+起点: 同日朝、`libliftoff` の orphan 削除で sway が即死し、tty1 ログインが即ログアウトするループが発生した。
+kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.sh` の `exec sway` が原因
+（`ed1f382` の暫定修正は後者のみに効いていた）。**zshenv:9 の `unsetopt GLOBAL_RCS` により kpango の zsh
+ログインは /etc/zsh/zprofile・/etc/profile・profile.d を読まない**（実測 `zsh -l -c` で globalrcs=off）。
+本ミッションはその起動チェーン全体を計測に基づき一本化・高速化する。決定は grill-interview Q1〜Q10。
+
+### Terms
+
+- **launcher**: tty ログインシェルから sway を起動する唯一の箇所。本ミッション後は repo の `zprofile`
+  （`~/.zprofile`、共通 `DOTFILES_MAP`）が `arch/sway.sh` を呼ぶ。`/etc/profile.d/sway.sh` は撤去
+- **session env**: sway プロセスとその子（systemd user / D-Bus activation 経由のサービス含む）が見る環境変数
+- **host tmux server**: `/run/user/$UID/tmux-main.sock` 上の単一サーバー。起動役は `tmux.service`
+  （docker 分岐の `/tmp/tmux-main.sock` はコンテナ内用で別物）
+
+### Invariants this mission's decisions depend on
+
+- **I1 (Q1) launcher は 1 箇所**: sway を起動するのは `~/.zprofile` だけ。gate は tty1 かつ
+  `WAYLAND_DISPLAY` 未設定。root・他 tty・SSH のログインでは sway を起動しない（system-wide profile.d を使わない）
+- **I2 (Q2) env import は 1 回**: 値の持ち主は `arch/sway.sh`（sway に export）。systemd/D-Bus への
+  反映は sway.conf autostart の `dbus-update-activation-environment --systemd --all` 1 行のみ。
+  sway 起動前の import と、キー列挙による個別 import は持たない
+- **I3 (Q3) GPU 判定は fork しない**: `/sys/module/nvidia_drm` あり・`/sys/module/nouveau` なし・
+  `/dev/nvidiactl` あり、のファイル判定のみ。nvidia-smi / lsmod / lspci は呼ばない
+- **I4 (Q4) host tmux は 1 サーバー 1 ソケット**: sway の `$term` も SSH/対話シェルも
+  `tmux-main.sock` の同一セッションへ `new-session -A`（`-d` で他クライアントを切断しない）。
+  `$term` は `$SHELL -c` を経由せず tmux を直接実行する
+- **I5 (Q5) sway 失敗時は通常の対話シェル**: 非 0 終了ならログインシェルに留まり、以降は通常どおり
+  zshrc → tmux 自動 attach まで進む（特別な抑止フラグは設けない — 人間判断）。正常終了ならログアウト
+- **I6 (Q6) kanshi の起動役は kanshi.service のみ**: sway.conf の `exec kanshi` は持たない。unit は
+  `ConditionEnvironment=WAYLAND_DISPLAY` で sway 外（SSH からの make 等）では起動しない。
+  install.mk は `enable` のみ（`--now` しない）
+- **I7 (Q7) swaybg は reload ごとに張り替え、累積させない**: 新インスタンス起動後に旧インスタンスを終了
+- **I8 (Q9) zprofile の配線**: 共通 `DOTFILES_MAP`。Nix は `programs.zsh` が rc を生成するため、
+  zshenv と同じく `zsh.nix` から dotfiles の `zprofile` を source する形で揃える
+
+### 検討された選択肢と決定根拠
+
+- Q1: profile.d 維持 / systemd user unit (uwsm 型) を不採用。前者は root と全 tty に波及、後者は VT・
+  logind セッション紐付けの変更量とリスクが最大
+- Q2: キー明示列挙は GPU 分岐や /etc/environment のキーを sway.conf 側でも保守する二重管理が再発するため不採用。
+  `--all` の代償（SHLVL/PWD 等の無害な変数が systemd user env に入る）は受容
+- Q3: インストール時のホスト固定は GPU/ドライバ差替時の不整合リスクで不採用
+- Q4: セッション分離案は管理が 2 系統になるため不採用。01-tmux.zsh の既存設計意図（single shared session）に合わせた
+- Q5: 「素のシェル保証（tmux 抑止）」案を推薦したが、人間判断で通常シェルを選択
+- Q8: zsh 側は V8/V9/V13/V15 のみ（V11 = zshrc の `-c` fast path 削除は当初含めたが撤回: Claude Code の
+  shell snapshot が `zsh -l -c` 内で ~/.zshrc を明示 source するため到達可能。Checker が検出）。V12/V14（async-compile のバックグラウンド処理）は体感影響なし・
+  過去ミッションの意図的設計のため Non-Goal
+
+### 既知の制約と非目標
+
+- **制約**: ログイン経路は SSH から実機再現できない（seat/DRM なし）。完了条件は自動検証に加え、人間による
+  物理キーボードでの tty1 ログイン → sway → 端末で tmux が開くことの実機確認（Q10）
+- **Non-Goals**: zsh 起動本体の再最適化（過去 3 ミッションで実施済み、キーエコー最悪 2.1ms）、
+  V12/V14、`/etc/environment` の内容変更、waybar の `sudo nvme --smart-log` 30s ポーリング（起動処理ではない）
