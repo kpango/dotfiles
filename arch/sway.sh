@@ -9,7 +9,7 @@ _sway_teardown() {
 	systemctl --user unset-environment WAYLAND_DISPLAY SWAYSOCK DISPLAY >/dev/null 2>&1 ||
 		_sway_log "Warning: systemctl --user unset-environment failed"
 	# --no-block: don't delay logout/fallback shell on unit stop
-	systemctl --user stop sway-session.target --no-block >/dev/null 2>&1 ||
+	systemctl --user stop --no-block sway-session.target >/dev/null 2>&1 ||
 		_sway_log "Warning: systemctl --user stop sway-session.target failed"
 }
 
