@@ -36,8 +36,8 @@ bench/zsh/compare: _bench_check
 	  -n 'scripted (env-only, -t 0 is false)' 'zsh -i -c exit' \
 	  -n 'interactive (full, real pty)' '$(PTY_BENCH)'
 
-## Benchmark time-to-first-idle with no command run (EOF instead of `exit`, so
-## atuin's preexec never fires — isolates pure startup from per-command overhead)
+## Benchmark time-to-first-idle, ending the shell with EOF instead of the default SIGHUP
+## (neither runs a command, so atuin's preexec never fires)
 ##
 ## KNOWN BUG (found independently during zsh-startup-perf T-B1/T-B5, not fixed here):
 ## this zshrc sets `setopt ignore_eof` (see zshrc's TTY-only block), and `^D` is bound
@@ -50,7 +50,7 @@ bench/zsh/compare: _bench_check
 ## apply here is unconfirmed (possibly delete-char-or-list's list-and-redisplay path
 ## resets whatever consecutive-EOF counter zsh tracks). Net effect: `bench/zsh/startup`
 ## currently measures --max-wait-s's timeout, not real startup -- use `bench/zsh/first-prompt`
-## or `bench/zsh` (--send exit, the default) instead until this is fixed.
+## or `bench/zsh` (--send hup, the default) instead until this is fixed.
 bench/zsh/startup: _bench_check
 	hyperfine --warmup 3 --min-runs 20 '$(PTY_BENCH) --send eof'
 
@@ -80,10 +80,9 @@ bench/zsh/first-prompt: _bench_check
 ## queued ahead of it, however long they take (confirmed empirically -- -t 0/0.01/0.3/0.45
 ## all produce an identical table). With upstream zsh-defer (sheldon.toml's [plugins.zsh-defer-yield]
 ## turns every -t into an immediate yield) a large enough delay is actively harmful: this
-## recipe's --quiet-ms 500 races it -- once 500ms of silence elapses the harness sends `exit`,
-## which sets KEYS_QUEUED_COUNT and breaks _zsh-defer-resume's drain loop
-## (`while (( $#_zsh_defer_tasks && !KEYS_QUEUED_COUNT && !PENDING ))`) before zprof's turn
-## comes up, so it never runs (confirmed: -t 0.6 and -t 1.0 both leave zprof.out unwritten).
+## recipe's --quiet-ms 500 races it -- once 500ms of silence elapses the harness ends the
+## shell (it used to type `exit`, which set KEYS_QUEUED_COUNT and broke _zsh-defer-resume's
+## drain loop; it now sends SIGHUP) before zprof's turn comes up, so it never runs (confirmed: -t 0.6 and -t 1.0 both leave zprof.out unwritten).
 ##
 ## The throwaway $ZDOTDIR this target profiles under has no .zcompdump of its own, so
 ## sheldon.toml's compinit freshness check always takes the slow full-compinit path (visible
