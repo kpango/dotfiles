@@ -41,24 +41,24 @@ if (($+commands[tmux])); then
 	fi
 	alias tedit="$EDITOR $HOME/.tmux.conf"
 
-	# Refresh ~/.zcache/tmux-* from ~/.tmux.conf.d/ when missing or stale.
-	# Handles cold-start containers where ~/.zcache is empty but ~/.tmux.conf.d is mounted.
-	if [[ -d "$HOME/.tmux.conf.d" ]]; then
-		mkdir -p "$HOME/.zcache"
-		for _tmux_pair in "kube:tmux-kube" "status-left:tmux-status-left" "short-path:tmux-short-path"; do
-			_tmux_src="$HOME/.tmux.conf.d/${_tmux_pair%%:*}"
-			_tmux_dst="$HOME/.zcache/${_tmux_pair##*:}"
-			if [[ -f "$_tmux_src" ]] && { [[ ! -f "$_tmux_dst" ]] || [[ "$_tmux_src" -nt "$_tmux_dst" ]]; }; then
-				cp "$_tmux_src" "$_tmux_dst" && chmod +x "$_tmux_dst" && zcompile "$_tmux_dst" 2>/dev/null
-			fi
-		done
-		unset _tmux_pair _tmux_src _tmux_dst
-	fi
-
 	# If not inside a tmux session
 	if [[ -z "$TMUX" && -o interactive ]]; then
 		USER=${USER:-$USERNAME}
 		HOST=${HOST:-$HOSTNAME}
+
+		# Refresh ~/.zcache/tmux-* from ~/.tmux.conf.d/ when missing or stale.
+		# Handles cold-start containers where ~/.zcache is empty but ~/.tmux.conf.d is mounted.
+		if [[ -d "$HOME/.tmux.conf.d" ]]; then
+			[[ -d "$HOME/.zcache" ]] || mkdir -p "$HOME/.zcache"
+			for _tmux_pair in "kube:tmux-kube" "status-left:tmux-status-left" "short-path:tmux-short-path" "status-branch:tmux-status-branch"; do
+				_tmux_src="$HOME/.tmux.conf.d/${_tmux_pair%%:*}"
+				_tmux_dst="$HOME/.zcache/${_tmux_pair##*:}"
+				if [[ -f "$_tmux_src" ]] && { [[ ! -f "$_tmux_dst" ]] || [[ "$_tmux_src" -nt "$_tmux_dst" ]]; }; then
+					cp "$_tmux_src" "$_tmux_dst" && chmod +x "$_tmux_dst" && zcompile "$_tmux_dst" 2>/dev/null
+				fi
+			done
+			unset _tmux_pair _tmux_src _tmux_dst
+		fi
 
 		export TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins"
 		mkdir -p "$TMUX_PLUGIN_MANAGER_PATH"

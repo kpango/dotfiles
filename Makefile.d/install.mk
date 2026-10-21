@@ -149,7 +149,6 @@ systemd/user/tmux.service .config/systemd/user/tmux.service
 systemd/user/zsh-patina.service .config/systemd/user/zsh-patina.service
 tmux.conf.d .tmux.conf.d
 tmux.conf .tmux.conf
-tmux.new-session .tmux.new-session
 zfunc .zfunc
 zprofile .zprofile
 zshenv .zshenv
@@ -447,6 +446,7 @@ dotfiles/install:
 		fi; \
 		$(call DEPLOY_FUNC,$(ROOTDIR)/$$src,$(HOME)/$$dest,); \
 	done
+	@if [ -L "$(HOME)/.tmux.new-session" ]; then rm -f "$(HOME)/.tmux.new-session"; fi
 ifneq ($(UNAME_S),Darwin)
 	# Linux, non-NixOS only: NixOS manages /etc/docker declaratively
 	# (nix/modules/nixos/virtualization/docker.nix, nix/hosts/tr/virtualization/

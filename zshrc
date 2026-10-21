@@ -50,34 +50,6 @@ else
 	_zcache_eval env 0 "_gen_env" "$DOTFILES_DIR/zfunc/_base_path" "$DOTFILES_DIR/zfunc/_gen_env" "$HOME/.gitconfig"
 fi
 
-# Fast path for inline script execution (-c flag): env.zsh provides PATH and core env.
-# Skip all interactive-only setup (plugins, completions, prompt, ZLE bindings).
-# PATH fallback ensures commands work even if env.zsh cache is missing or stale.
-if [[ -n "$ZSH_EXECUTION_STRING" ]]; then
-	# Deliberately unconditional, not gated on _ZSH_PATH_LOADED: that guard is
-	# exported, so it can already read 1 here purely from environment inheritance
-	# (an ancestor process ran this before), independent of whether *this*
-	# process's own PATH actually has _base_path's dirs. Skipping on an inherited
-	# guard risks silently keeping an incomplete PATH; always rebuilding is cheap
-	# (one _base_path fork, deduped by typeset -U) and correct regardless of
-	# ancestry — see zsh/00-env.zsh for the fuller version of this reasoning.
-	export _ZSH_PATH_LOADED=1
-	# _apply_base_path (zfunc/) holds the typeset -g -U / _base_path / export
-	# triplet shared with 00-env.zsh and the synchronous call below — see its
-	# header for why -g matters even though this call site itself runs at the
-	# top level, not inside a function.
-	autoload -Uz _apply_base_path
-	_apply_base_path
-	# Load functions/aliases from zcache for non-interactive shells (e.g., Claude Code, scripts)
-	if [[ -z "$_ZSH_FUNCS_LOADED" ]]; then
-		export _ZSH_FUNCS_LOADED=1
-		_zc="${ZCACHE_DIR:-$HOME/.zcache}"
-		[[ -f "$_zc/combined.zsh" ]] && source "$_zc/combined.zsh" 2>/dev/null
-		[[ -n "$_ZSH_OS" && -f "$_zc/os-${_ZSH_OS}.zsh" ]] && source "$_zc/os-${_ZSH_OS}.zsh" 2>/dev/null
-	fi
-	return
-fi
-
 if ! (($+functions[_zcache_eval])); then
 	fpath=("$DOTFILES_DIR/zfunc" $fpath)
 	autoload -Uz _zcache_eval
@@ -99,6 +71,22 @@ if [[ -z "$_ZSH_OS" ]]; then
 	else
 		export _ZSH_OS=generic
 	fi
+fi
+
+# Source tmux auto-start synchronously to avoid a visible prompt flash before tmux launches.
+# Placed before the TTY-only setup, _apply_base_path and sheldon: a shell that ends in
+# `exec tmux` discards all of that work. 01-tmux.zsh only needs DOTFILES_DIR and a PATH
+# containing tmux/herdr/git/systemctl, which env.zsh bakes above (EDITOR comes from the
+# deferred zsh/10-editor.zsh both before and after this move). That bake is lost on the
+# regeneration run (_zcache_eval sources env.zsh inside a function, so its `typeset -U PATH`
+# is function-local) and darwin's env.zsh never bakes PATH, so build it here when tmux is
+# not yet resolvable.
+if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" ]]; then
+	if [[ "$_ZSH_OS" == brew ]] || ! (($+commands[tmux])); then
+		autoload -Uz _apply_base_path
+		_apply_base_path
+	fi
+	source "$DOTFILES_DIR/zsh/01-tmux.zsh"
 fi
 
 # TTY-only setup: these only matter when ZLE will actually run
@@ -172,7 +160,7 @@ HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 # scratch after its own PATH="" reset regardless, so this cannot go stale there.
 export _ZSH_PATH_LOADED=1
 # _apply_base_path (zfunc/) holds the typeset -g -U / _base_path / export
-# triplet shared with 00-env.zsh and the fast-path call above — see its header
+# triplet shared with 00-env.zsh — see its header
 # for why -g matters even though this call site itself runs at the top level,
 # not inside a function.
 autoload -Uz _apply_base_path
@@ -183,11 +171,6 @@ _apply_base_path
 if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]] && (($+commands[sheldon])); then
 	_zcache_eval sheldon 0 "sheldon source" \
 		"${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml"
-fi
-
-# Source tmux auto-start synchronously to avoid a visible prompt flash before tmux launches
-if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" ]]; then
-	source "$DOTFILES_DIR/zsh/01-tmux.zsh"
 fi
 
 # Fallback prompt when prmt is not installed (prmt sets _prmt_precmd when active)
