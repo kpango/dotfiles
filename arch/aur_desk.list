@@ -64,6 +64,8 @@ google-cloud-cli
 google-cloud-cli-gke-gcloud-auth-plugin
 gopreload-git
 graphviz
+greetd
+greetd-tuigreet
 grep
 grim
 gzip
@@ -149,6 +151,8 @@ starship
 sudo
 swaybg-git
 sway-git-wlroots-git
+swayidle
+swaylock
 sysbench
 sysfsutils
 systemd

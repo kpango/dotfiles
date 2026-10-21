@@ -235,6 +235,7 @@ arch/modprobe.d/thinkfan-desk.conf /etc/modprobe.d/thinkfan.conf
 arch/acpi/DSDT.aml /etc/acpi_override/DSDT.aml
 arch/acpi/SSDT7.aml /etc/acpi_override/SSDT7.aml
 arch/desk/fstab /etc/fstab
+arch/greetd/config.toml /etc/greetd/config.toml
 arch/loader/entries/arch.conf /boot/loader/entries/arch.conf
 arch/loader/loader.conf /boot/loader/loader.conf
 endef
@@ -250,6 +251,7 @@ define ARCH_PREP
 	sudo mkdir -p /etc/systemd/system/NetworkManager.service.d
 	sudo mkdir -p /etc/systemd/system/sshd.service.d
 	sudo mkdir -p /etc/acpi_override
+	sudo mkdir -p /etc/greetd
 	sudo mkdir -p /etc/initcpio/install
 	sudo mkdir -p /etc/pacman.d/hooks
 	sudo mkdir -p /var/cache/aur-src
@@ -321,6 +323,9 @@ define ARCH_DESK_POST
 	sudo nmcli connection reload
 	sudo systemctl daemon-reload
 	sudo systemctl enable nvidia-unload.service
+	@# greetd owns tty1 from the next boot (autologin once + tuigreet). Rollback from SSH/tty2:
+	@# systemctl disable greetd && systemctl enable getty@tty1
+	@if command -v greetd >/dev/null; then sudo systemctl disable getty@tty1.service; sudo systemctl enable greetd.service; fi
 	sudo systemctl restart NetworkManager
 	sudo systemd-tmpfiles --create /etc/tmpfiles.d/thp.conf
 	@sudo find /boot/loader/entries/ -name '*.conf' -not -name 'arch.conf' -delete && \
