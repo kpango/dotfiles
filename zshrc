@@ -252,9 +252,11 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 	# was checked), so combined.zsh kept sourcing stale code until a manual
 	# `zclean` — silently, indefinitely. (N.om[1]) is over-inclusive (also covers
 	# 20-os-*.zsh/01-tmux.zsh, which combined.zsh doesn't contain) but that only
-	# costs an occasional unnecessary rebuild, never a missed one.
-	_newest_zsh="$DOTFILES_DIR/zsh"/*.zsh(N.om[1])
-	if [[ -f "$combined_cache" && ( -z "$_newest_zsh" || ! "$_newest_zsh" -nt "$combined_cache" ) ]]; then
+	# costs an occasional unnecessary rebuild, never a missed one. An array assignment:
+	# a scalar one does not glob (GLOB_ASSIGN is off), so it used to hold the literal
+	# pattern, which is never -nt anything, and the check always passed.
+	_newest_zsh=("$DOTFILES_DIR/zsh"/*.zsh(N.om[1]))
+	if [[ -f "$combined_cache" && ( -z "$_newest_zsh[1]" || ! "$_newest_zsh[1]" -nt "$combined_cache" ) ]]; then
 		# -t 0.01 starts a new yield chunk (see sheldon.toml, above [plugins.colors]):
 		# sourcing this cache is the single most expensive deferred task, so it must not
 		# share a zle callback with the plugin tasks queued before it.
