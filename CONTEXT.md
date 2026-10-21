@@ -808,7 +808,8 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   両方を最初から 5120x1440@59.977Hz にし、ログイン時のモード変更を無くす。配置・回転・scale は従来どおり
   kanshi が単独で持つ（sway.conf にはモードのみ、Dell 2 台をシリアルで指定）
 - Q2: Arch の `arch/sway.sh` から `WLR_DRM_NO_ATOMIC=1` を外し atomic commit を使う（nvidia-beta 615.78）。
-  NixOS 側 `nix/modules/nixos/desktop/wayland.nix` は実機検証できないため Non-Goal
+  NixOS 側 `nix/modules/nixos/desktop/wayland.nix` も人間判断で同時に外した（`tr` は `nvidiaPackages.stable`、
+  実機未検証。sway が起動しない場合はここを戻す）
 - Q3: 2 段階で検証する。段階 1 = sway 側（mode 指定 + atomic）を再ログインで計測、段階 2 = ブートエントリ
   （`/boot/loader/entries/arch.conf` と記録用の `arch/loader/entries/arch.conf`）に `video=` を追加して再起動
 

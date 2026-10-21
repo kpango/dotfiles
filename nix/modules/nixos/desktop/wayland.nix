@@ -63,7 +63,6 @@ in
       # binaries are compiled without AVX2 guards and crash on glibc-optimised paths.
       GLIBC_TUNABLES = "glibc.cpu.hwcaps=-AVX2,-AVX512F";
       # NVIDIA Sway specific
-      WLR_DRM_NO_ATOMIC = "1";
       WLR_NO_HARDWARE_CURSORS = "1";
       XWAYLAND_NO_GLAMOR = "1";
       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
