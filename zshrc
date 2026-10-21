@@ -108,8 +108,12 @@ if [[ -z "$_ZSH_OS" ]]; then
 fi
 
 # Source tmux auto-start synchronously to avoid a visible prompt flash before tmux launches.
-# Placed before the TTY-only setup and sheldon: a shell that ends in `exec tmux` discards all
-# of that work. 01-tmux.zsh needs DOTFILES_DIR and a PATH with tmux/herdr/git/systemctl; a
+# Shells OUTSIDE tmux (-z "$TMUX") source 01-tmux.zsh here, before the TTY-only setup and
+# sheldon: such a shell normally ends in `exec tmux`, which discards all of that work.
+# Shells INSIDE tmux (-n "$TMUX") never exec, so they source it at its original position,
+# right after the sheldon block below; running it early there would fill zsh's command hash
+# from the inherited PATH only for the later _apply_base_path to flush it again.
+# 01-tmux.zsh needs DOTFILES_DIR and a PATH with tmux/herdr/git/systemctl; a
 # cache-hit env.zsh bakes that PATH (non-darwin), but it is missing when (a) this is darwin
 # (env.zsh never bakes PATH there), (b) env.zsh was just regenerated (_zsh_cold_env, see
 # above) or (c) tmux is not resolvable. Only then is _apply_base_path run here, ahead of
@@ -118,7 +122,7 @@ fi
 # Both flags are plain, non-exported shell variables so they never leak to children, unlike
 # the exported _ZSH_PATH_LOADED guard (which is deliberately not trusted, see below).
 # EDITOR comes from the deferred zsh/10-editor.zsh both before and after this placement.
-if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" ]]; then
+if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -z "$TMUX" ]]; then
 	if [[ "$_ZSH_OS" == brew || -n "$_zsh_cold_env" ]] || ! (($+commands[tmux])); then
 		autoload -Uz _apply_base_path
 		_apply_base_path
@@ -188,7 +192,8 @@ HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 # needs tools like prmt in PATH at load time here, synchronously, before that.
 #
 # Skipped only when the early call before 01-tmux.zsh already rebuilt PATH in this
-# same process (the non-exported _zsh_early_base flag); otherwise unconditional.
+# same process (the non-exported _zsh_early_base flag, set only in the early block for
+# shells outside tmux); otherwise unconditional.
 # Never gated on _ZSH_PATH_LOADED: an exported guard
 # already reading 1 here only means some ancestor process ran this before, not that
 # *this* process's own PATH has _base_path's dirs (confirmed 2026-08-19: this exact
@@ -212,6 +217,12 @@ unset _zsh_cold_env _zsh_early_base
 if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]] && (($+commands[sheldon])); then
 	_zcache_eval sheldon 0 "sheldon source" \
 		"${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml"
+fi
+
+# Shells inside tmux: 01-tmux.zsh at its original position (the early block above covers
+# shells outside tmux). It still unsets a stale $TMUX and may then exec tmux from here.
+if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -n "$TMUX" ]]; then
+	source "$DOTFILES_DIR/zsh/01-tmux.zsh"
 fi
 
 # Fallback prompt when prmt is not installed (prmt sets _prmt_precmd when active)
