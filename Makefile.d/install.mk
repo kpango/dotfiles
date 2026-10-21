@@ -150,6 +150,7 @@ tmux.conf.d .tmux.conf.d
 tmux.conf .tmux.conf
 tmux.new-session .tmux.new-session
 zfunc .zfunc
+zprofile .zprofile
 zshenv .zshenv
 zshrc .zshrc
 endef
@@ -188,7 +189,6 @@ arch/modules-load.d/erofs.conf /etc/modules-load.d/erofs.conf
 arch/modules-load.d/i2c_dev.conf /etc/modules-load.d/i2c_dev.conf
 arch/modprobe.d/nobeep.conf /etc/modprobe.d/nobeep.conf
 arch/pacman.conf /etc/pacman.conf
-arch/sway.sh /etc/profile.d/sway.sh
 arch/thinkfan.conf /etc/thinkfan.conf
 arch/tlp /etc/default/tlp
 arch/tlp /etc/tlp.conf
@@ -339,17 +339,17 @@ define MAC_PREP
 		$(HOME)/.tmux.conf \
 		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
 		$(HOME)/Library/LaunchAgents/ulimit.plist
-	# dotfiles/install (a prerequisite above) just symlinked .zshrc/.zshenv
+	# dotfiles/install (a prerequisite above) just symlinked .zshrc/.zshenv/.zprofile
 	# straight from the dotfiles repo. On macOS nix-darwin's home-manager
 	# activation (nix/setup below) is the final owner and generates its own
-	# .zshrc/.zshenv (nix/modules/home/programs/zsh.nix) that differs
+	# .zshrc/.zshenv/.zprofile (nix/modules/home/programs/zsh.nix) that differs
 	# byte-for-byte from the raw repo file — and unlike other home-manager
 	# entries, `force = true` can't rescue this one (see that module's
 	# comment: home-manager's own dotDirRel="." key shape makes force a
 	# no-op here). Removing dotfiles/install's copy lets home-manager place
 	# its own without a "would be clobbered" collision. Plain rm, no sudo:
 	# these are always just user-owned symlinks, never real file content.
-	rm -f $(HOME)/.zshrc $(HOME)/.zshenv
+	rm -f $(HOME)/.zshrc $(HOME)/.zshenv $(HOME)/.zprofile
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
 	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
@@ -429,7 +429,7 @@ dotfiles/compile: tmux/go/install pinentry/install
 
 ## symlink or copy all dotfiles to $HOME (see DEPLOY_FUNC for MODE=link|copy).
 ## NIX_MANAGED=1 skips destinations a home-manager module generates more
-## richly than a plain symlink (programs.zsh's .zshrc/.zshenv, programs.git's
+## richly than a plain symlink (programs.zsh's .zshrc/.zshenv/.zprofile, programs.git's
 ## .gitconfig, programs.tmux's .tmux.conf -- everywhere; darwin.nix's
 ## Nix-built .gnupg/gpg-agent.conf, Darwin only) -- set automatically by
 ## nix/modules/home/dotfiles/agent-tools.nix's home.activation call, so a
@@ -439,7 +439,7 @@ dotfiles/install:
 	@echo "$$DOTFILES_MAP" | while read -r src dest; do \
 		if [ -n "$(NIX_MANAGED)" ]; then \
 			case "$$dest" in \
-				.zshrc|.zshenv|.gitconfig|.tmux.conf) continue ;; \
+				.zshrc|.zshenv|.zprofile|.gitconfig|.tmux.conf) continue ;; \
 				.gnupg/gpg-agent.conf) [ "$(UNAME_S)" = Darwin ] && continue ;; \
 			esac; \
 		fi; \
@@ -812,7 +812,7 @@ dotfiles/perm:
 		  -name '*.py'  -o -name '*.nix'  -o -name '*.toml' -o \
 		  -name '*.yaml' -o -name '*.yml' -o -name '*.json' -o \
 		  -name '*.service' -o -name '*.rules' -o -name '*.desktop' -o \
-		  -name 'zshrc' -o -name 'zshenv' -o \
+		  -name 'zshrc' -o -name 'zshenv' -o -name 'zprofile' -o \
 		  -name 'gitconfig' -o -name 'gitattributes' -o \
 		  -name 'sshconfig' -o -name 'editorconfig' -o -name 'Makefile' \
 		\) -not -name 'tmux.conf' -exec nkf -Lu -w --overwrite {} +
