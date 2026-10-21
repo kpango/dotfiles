@@ -278,6 +278,7 @@ define ARCH_POST
 	loginctl enable-linger $(SYS_USER)
 	systemctl --user daemon-reload
 	systemctl --user enable --now atuin.service
+	@# no --now: kanshi needs a Wayland session; sway-session.target starts it (ConditionEnvironment=WAYLAND_DISPLAY)
 	systemctl --user enable kanshi.service
 	systemctl --user enable --now tmux.service
 	systemctl --user enable --now zsh-patina.service

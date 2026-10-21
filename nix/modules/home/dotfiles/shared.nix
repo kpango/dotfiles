@@ -22,7 +22,7 @@
   # Mirrors the `make dotfiles/compile` step.
   home.activation.compileTmuxScripts = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     $DRY_RUN_CMD mkdir -p "$HOME/.zcache"
-    for pair in "kube:tmux-kube" "status-left:tmux-status-left" "short-path:tmux-short-path"; do
+    for pair in "kube:tmux-kube" "status-left:tmux-status-left" "short-path:tmux-short-path" "status-branch:tmux-status-branch"; do
       src="''${pair%%:*}"
       dst="''${pair##*:}"
       # Delete before copying. Files in the nix store are mode r-xr-xr-x, and a
@@ -39,6 +39,7 @@
       zcompile "$HOME/.zcache/tmux-kube"
       zcompile "$HOME/.zcache/tmux-status-left"
       zcompile "$HOME/.zcache/tmux-short-path"
+      zcompile "$HOME/.zcache/tmux-status-branch"
     ' || true
   '';
 }

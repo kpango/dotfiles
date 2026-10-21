@@ -105,11 +105,13 @@ if (($+commands[tmux])); then
 			# Prefer systemd (which also creates the session), fall back to direct start.
 			if ! tmux -S "$TMUX_SOCK" has-session 2>/dev/null; then
 				if (($+commands[systemctl])) && systemctl --user is-enabled tmux.service &>/dev/null; then
-					systemctl --user start tmux.service 2>/dev/null
-					# Only reached when has-session above was false (no existing socket) --
-					# subsequent shells find the socket already there and skip this whole
-					# branch. Worst case here is a genuine one-time ~3s block (30 * 0.1s)
-					# waiting for the service to create its socket, not a per-shell cost.
+					# restart, not start: tmux.service is Type=oneshot+RemainAfterExit, so after
+					# the server exits the unit stays "active" and start would be a no-op. Safe
+					# here because has-session just found no session, so ExecStop kills nothing.
+					systemctl --user restart tmux.service 2>/dev/null
+					# Wait for the socket; tmux leaves a stale socket file behind after the server
+					# exits, so this can return at once, in which case the exec below still
+					# reaches a server via new-session -A. Bounded at ~3s (30 * 0.1s).
 					_tmux_wait=0
 					while [[ ! -S "$TMUX_SOCK" ]] && ((_tmux_wait++ < 30)); do sleep 0.1; done
 					unset _tmux_wait

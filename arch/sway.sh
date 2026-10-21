@@ -6,9 +6,11 @@ _sway_log() { printf '[sway-start] %s\n' "$*" >&2; }
 # Only place sway.sh forks systemctl (after sway returns): with linger the user manager outlives
 # sway, and kanshi (Restart=always, ConditionEnvironment=WAYLAND_DISPLAY) would crash-loop on stale vars.
 _sway_teardown() {
-	systemctl --user unset-environment WAYLAND_DISPLAY SWAYSOCK DISPLAY >/dev/null 2>&1
-	systemctl --user stop sway-session.target >/dev/null 2>&1
-	return 0
+	systemctl --user unset-environment WAYLAND_DISPLAY SWAYSOCK DISPLAY >/dev/null 2>&1 ||
+		_sway_log "Warning: systemctl --user unset-environment failed"
+	# --no-block: don't delay logout/fallback shell on unit stop
+	systemctl --user stop sway-session.target --no-block >/dev/null 2>&1 ||
+		_sway_log "Warning: systemctl --user stop sway-session.target failed"
 }
 
 # 1) Environment variable setup
@@ -17,7 +19,7 @@ export XDG_CURRENT_DESKTOP=$DESKTOP_SESSION
 export XDG_CURRENT_SESSION=$DESKTOP_SESSION
 export XDG_SESSION_DESKTOP=$DESKTOP_SESSION
 
-# 2) GPU detection (file tests only; no forks on the login path)
+# 2) GPU detection (the detection block below uses file tests only; no forks)
 SWAY_GPU_OPTION=""
 
 # 3) GPU-specific additions
@@ -70,7 +72,6 @@ if [[ -z "${DISPLAY:-}" && -z "${WAYLAND_DISPLAY:-}" ]]; then
 	if [[ -n "${SWAY_GPU_OPTION}" ]]; then
 		sway_args+=("${SWAY_GPU_OPTION}")
 	fi
-	sway_args+=("$@") # Append any user-provided arguments
 
 	if [[ "${SWAY_DEBUG_MODE:-0}" == "1" ]]; then
 		_sway_log "Starting sway (DEBUG MODE)..."
