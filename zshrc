@@ -110,7 +110,7 @@ fi
 # Source tmux auto-start synchronously to avoid a visible prompt flash before tmux launches.
 # Shells OUTSIDE tmux (-z "$TMUX") source 01-tmux.zsh here, before the TTY-only setup and
 # sheldon: such a shell normally ends in `exec tmux`, which discards all of that work.
-# Shells INSIDE tmux (-n "$TMUX") never exec, so they source it at its original position,
+# Shells INSIDE tmux (-n "$TMUX") normally do not exec (only a stale $TMUX does), so they source it at its original position,
 # right after the sheldon block below; running it early there would fill zsh's command hash
 # from the inherited PATH only for the later _apply_base_path to flush it again.
 # 01-tmux.zsh needs DOTFILES_DIR and a PATH with tmux/herdr/git/systemctl; a
