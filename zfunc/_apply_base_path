@@ -12,7 +12,7 @@ emulate -L zsh
 # tie instead of touching the global one. This isn't specific to any one call
 # site's surrounding context — autoload turns this file itself into a
 # function, so *every* call already opens a fresh scope, including zshrc's
-# two "top level" calls. It matters most visibly at 00-env.zsh's call site,
+# three "top level" calls. It matters most visibly at 00-env.zsh's call site,
 # where zsh-defer's task runner (_zsh-defer-apply) executes deferred `source`
 # calls inside an additional anonymous function `() { ... }`: a scope-less
 # typeset there breaks PATH doubly, and the export below would vanish the

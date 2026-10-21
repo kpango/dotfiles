@@ -187,7 +187,9 @@ HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 # PATH setup from 00-env.zsh normally runs deferred inside combined.zsh, but sheldon
 # needs tools like prmt in PATH at load time here, synchronously, before that.
 #
-# Deliberately unconditional, not gated on _ZSH_PATH_LOADED: an exported guard
+# Skipped only when the early call before 01-tmux.zsh already rebuilt PATH in this
+# same process (the non-exported _zsh_early_base flag); otherwise unconditional.
+# Never gated on _ZSH_PATH_LOADED: an exported guard
 # already reading 1 here only means some ancestor process ran this before, not that
 # *this* process's own PATH has _base_path's dirs (confirmed 2026-08-19: this exact
 # guard-inherited-but-PATH-incomplete gap reproduced a PATH-loss bug on darwin one
@@ -198,7 +200,7 @@ HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 # scratch after its own PATH="" reset regardless, so this cannot go stale there.
 export _ZSH_PATH_LOADED=1
 # _apply_base_path (zfunc/) holds the typeset -g -U / _base_path / export
-# triplet shared with 00-env.zsh and the fast-path call above — see its header
+# triplet shared with 00-env.zsh, the fast-path call and the early call above — see its header
 # for why -g matters even though this call site itself runs at the top level,
 # not inside a function.
 autoload -Uz _apply_base_path
