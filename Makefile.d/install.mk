@@ -188,7 +188,6 @@ arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 arch/modules-load.d/nf_conntrack.conf /etc/modules-load.d/nf_conntrack.conf
 arch/modules-load.d/erofs.conf /etc/modules-load.d/erofs.conf
 arch/modules-load.d/i2c_dev.conf /etc/modules-load.d/i2c_dev.conf
-arch/modprobe.d/nobeep.conf /etc/modprobe.d/nobeep.conf
 arch/pacman.conf /etc/pacman.conf
 arch/thinkfan.conf /etc/thinkfan.conf
 arch/tlp /etc/default/tlp
@@ -211,6 +210,7 @@ endef
 export ARCH_SUDO_LINK_MAP
 
 define ARCH_SUDO_CP_MAP
+arch/modprobe.d/nobeep.conf /etc/modprobe.d/nobeep.conf
 arch/chrony.conf /etc/chrony.conf
 arch/wireless-regdom /etc/conf.d/wireless-regdom
 arch/sudoers /etc/sudoers.d/$(SYS_USER)
@@ -222,16 +222,16 @@ endef
 export ARCH_SUDO_CP_MAP
 
 define ARCH_DESK_SUDO_LINK_MAP
-arch/modprobe.d/blacklist-nouveau.conf /etc/modprobe.d/blacklist-nouveau.conf
-arch/modprobe.d/blacklist-eeepc-wmi.conf /etc/modprobe.d/blacklist-eeepc-wmi.conf
-arch/modprobe.d/nowatchdog.conf /etc/modprobe.d/nowatchdog.conf
-arch/modprobe.d/thinkfan-desk.conf /etc/modprobe.d/thinkfan.conf
 arch/systemd/nvidia-unload.service /etc/systemd/system/nvidia-unload.service
 arch/tmpfiles.d/thp.conf /etc/tmpfiles.d/thp.conf
 endef
 export ARCH_DESK_SUDO_LINK_MAP
 
 define ARCH_DESK_SUDO_CP_MAP
+arch/modprobe.d/blacklist-nouveau.conf /etc/modprobe.d/blacklist-nouveau.conf
+arch/modprobe.d/blacklist-eeepc-wmi.conf /etc/modprobe.d/blacklist-eeepc-wmi.conf
+arch/modprobe.d/nowatchdog.conf /etc/modprobe.d/nowatchdog.conf
+arch/modprobe.d/thinkfan-desk.conf /etc/modprobe.d/thinkfan.conf
 arch/acpi/DSDT.aml /etc/acpi_override/DSDT.aml
 arch/acpi/SSDT7.aml /etc/acpi_override/SSDT7.aml
 arch/desk/fstab /etc/fstab
@@ -243,6 +243,10 @@ export ARCH_DESK_SUDO_CP_MAP
 define ARCH_PREP
 	@if [ ! -f /boot/vmlinuz-linux ]; then sudo rm -f /etc/mkinitcpio.d/linux.preset /etc/mkinitcpio.d/linux.preset.pacsave; fi
 	@if [ -L /etc/profile.d/sway.sh ] || grep -qs 'system-wide sway launcher' /etc/profile.d/sway.sh; then sudo rm -f /etc/profile.d/sway.sh; fi
+	@# modprobe.d is copied, not linked: the initramfs (modconf) would carry the links dangling (no /home there),
+	@# so libkmod errors out and options such as nvidia-tweaks never reach modules loaded early. Drop old links
+	@# first; `cp` onto them would write through into the repo file.
+	@for f in /etc/modprobe.d/*.conf; do [ -L "$$f" ] && case "$$(readlink "$$f")" in */dotfiles/*) sudo rm -f "$$f";; esac; done; true
 	sudo mkdir -p /etc/systemd/system/NetworkManager.service.d
 	sudo mkdir -p /etc/systemd/system/sshd.service.d
 	sudo mkdir -p /etc/acpi_override
@@ -376,7 +380,7 @@ cdi/update:
 # ── Shared Nvidia block (used by arch/p1/install and arch/desk/install) ────────
 
 define NVIDIA_INSTALL
-	@$(call DEPLOY_FUNC,$(ROOTDIR)/nvidia/nvidia-tweaks.conf,/etc/modprobe.d/nvidia-tweaks.conf,sudo)
+	sudo cp $(ROOTDIR)/nvidia/nvidia-tweaks.conf /etc/modprobe.d/nvidia-tweaks.conf
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/nvidia/nvidia-uvm.conf,/etc/modules-load.d/nvidia-uvm.conf,sudo)
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/nvidia/60-nvidia.rules,/etc/udev/rules.d/60-nvidia.rules,sudo)
 endef
