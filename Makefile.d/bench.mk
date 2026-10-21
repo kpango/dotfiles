@@ -1,4 +1,4 @@
-.PHONY: bench/zsh bench/zsh/cold bench/zsh/compare bench/zsh/profile bench/zsh/startup bench/zsh/first-prompt _bench_check
+.PHONY: bench/zsh bench/zsh/cold bench/zsh/compare bench/zsh/profile bench/zsh/first-prompt _bench_check
 
 _bench_check:
 	@command -v hyperfine >/dev/null 2>&1 || { printf 'Error: hyperfine not found\n' >&2; exit 1; }
@@ -36,26 +36,8 @@ bench/zsh/compare: _bench_check
 	  -n 'scripted (env-only, -t 0 is false)' 'zsh -i -c exit' \
 	  -n 'interactive (full, real pty)' '$(PTY_BENCH)'
 
-## Benchmark time-to-first-idle, ending the shell with EOF instead of the default SIGHUP
-## (neither runs a command, so atuin's preexec never fires)
-##
-## KNOWN BUG (found independently during zsh-startup-perf T-B1/T-B5, not fixed here):
-## this zshrc sets `setopt ignore_eof` (see zshrc's TTY-only block), and `^D` is bound
-## to `delete-char-or-list` (auto_list/auto_menu), so a single 0x04 byte is absorbed as
-## a (no-op, buffer-empty) list request rather than an exit signal. zsh's own semantics
-## say ten *consecutive* EOFs should force an exit regardless, but that was tested here
-## too (10x 0x04, both batched and individually spaced ~50ms apart) and neither made the
-## shell exit within a 10s window -- confirmed empirically, --send eof always times out
-## at --max-wait-s in this environment. Root cause of why the "ten EOFs" rule doesn't
-## apply here is unconfirmed (possibly delete-char-or-list's list-and-redisplay path
-## resets whatever consecutive-EOF counter zsh tracks). Net effect: `bench/zsh/startup`
-## currently measures --max-wait-s's timeout, not real startup -- use `bench/zsh/first-prompt`
-## or `bench/zsh` (--send hup, the default) instead until this is fixed.
-bench/zsh/startup: _bench_check
-	hyperfine --warmup 3 --min-runs 20 '$(PTY_BENCH) --send eof'
-
 ## Benchmark time-to-first-output — how long until the pty prints its first byte.
-## Returns on that first byte alone; unlike bench/zsh/startup it does NOT wait for
+## Returns on that first byte alone; unlike bench/zsh it does NOT wait for
 ## --quiet-ms of silence, so it excludes zsh-defer's deferred-load burst entirely.
 ## Closer to perceived "shell feels ready to type into" latency than time-to-idle.
 bench/zsh/first-prompt: _bench_check
