@@ -689,8 +689,8 @@ kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.s
 
 ### Terms
 
-- **launcher**: tty ログインシェルから sway を起動する唯一の箇所（Arch の tty1 ログインが対象。NixOS ホスト
-  `tr` は greetd が sway を直接起動し、この経路を通らない）。本ミッション後は repo の `zprofile`
+- **launcher**: tty ログインシェルから sway を起動する唯一の箇所（tty1 のログイン経路が対象で OS 非依存。
+  NixOS ホスト `tr` の greetd 起動はこの経路を通らない）。本ミッション後は repo の `zprofile`
   （`~/.zprofile`、共通 `DOTFILES_MAP`）が `arch/sway.sh` を呼ぶ。`/etc/profile.d/sway.sh` は I1 の条件で撤去
 - **session env**: sway プロセスとその子（systemd user / D-Bus activation 経由のサービス含む）が見る環境変数
 - **host tmux server**: `/run/user/$UID/tmux-main.sock` 上の単一サーバー。Arch（install.mk 配備）では起動役は
@@ -699,14 +699,16 @@ kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.s
 
 ### Invariants this mission's decisions depend on
 
-- **I1 (Q1) launcher は 1 箇所（Arch の tty ログイン）**: tty ログインから sway を起動するのは `~/.zprofile` だけ。gate は対話シェル・tty1・
+- **I1 (Q1) launcher は 1 箇所（tty ログイン経路）**: tty ログインから sway を起動するのは `~/.zprofile` だけ。gate は対話シェル・tty1・
   `WAYLAND_DISPLAY` 未設定・非 root（EUID≠0）・`sway` が存在。root（tty1 からの `su -`/`sudo -i` 含む）・
   他 tty・SSH のログインでは sway を起動しない（system-wide profile.d を使わない）。既配備の
-  `/etc/profile.d/sway.sh` は arch install prep が symlink の場合、または旧版の印（`sway-start`）を含む通常
-  ファイル（`MODE=copy` 配備の残骸）の場合に削除し、加えて `arch/sway.sh`
+  `/etc/profile.d/sway.sh` は arch install prep が symlink の場合、または旧版のヘッダにだけある印
+  （`system-wide sway launcher`）を含む通常ファイル（`MODE=copy` 配備の残骸）の場合に削除し、加えて `arch/sway.sh`
   先頭の POSIX ガード（zprofile が立てる `_SWAY_LAUNCH`）で zprofile 以外からの source を no-op にする。
   zprofile は自身の実パスから `arch/sway.sh` を解決し、見つからなければ（`MODE=copy` で `~/.zprofile` が実ファイル）
-  zshrc と同じ dotfiles 候補パス（`$DOTFILES_DIR`、`~/go/src/…`、`~/ghq/…`、`~/dotfiles`）を fork 無しで探す
+  zshrc の dotfiles 候補パスから fork する `ghq root` を除いたもの（`$DOTFILES_DIR`、`~/go/src/…`、`~/ghq/…`、
+  `~/dotfiles`）を探す。`dotfiles/install` は手書きの `~/.zprofile` を退避せず置き換える（`.zshrc`/`.zshenv` と
+  同じ既存挙動）。MAC_PREP は home-manager に場所を空けるため 3 ファイルとも無条件に削除する
 - **I2 (Q2) env import は 1 回**: 値の持ち主は `arch/sway.sh`（sway に export）。systemd/D-Bus への
   反映は sway.conf autostart の 1 exec（`sh -c 'env -u … dbus-update-activation-environment --systemd --all;
   systemctl --user start --no-block sway-session.target'`）のみ。sway の exec は非同期なので import と
@@ -756,7 +758,7 @@ kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.s
   ため待機ループは即抜ける（Phase 4.5 perf レビュー 2026-10-21、bwrap 隔離＋スタブで確認）。sway の `$term` 等
   の端末経路は zsh を通らないため unit への再所有は行わない。**デプロイ時に tmux.service を手動 restart しない**（ExecStop の kill-server で
   attach 中の全端末が落ちる）。`daemon-reload` のみ行い、oneshot 化は次回起動から効く
-- **I12 zshrc の早期 tmux attach**: tmux の外のシェル（`$TMUX` 空）に限り、`zsh/01-tmux.zsh` を TTY 設定・
+- **I12 zshrc の早期 tmux attach**: tmux の外のシェル（`$TMUX` 空かつ `_ZSH_TMUX_LOADED` 未継承）に限り、`zsh/01-tmux.zsh` を TTY 設定・
   `_apply_base_path`・sheldon より前に source する（exec tmux するシェルはそれらを捨てるため）。tmux ペイン内の
   シェル（`$TMUX` あり）は従来どおり sheldon の後で source する（前に置くと `$+commands` 参照で command hash を
   継承 PATH から作った直後に `_apply_base_path` が PATH を差し替えて再構築させ、初回プロンプトが約 1.2ms 遅れる

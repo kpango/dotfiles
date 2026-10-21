@@ -241,7 +241,7 @@ export ARCH_DESK_SUDO_CP_MAP
 
 define ARCH_PREP
 	@if [ ! -f /boot/vmlinuz-linux ]; then sudo rm -f /etc/mkinitcpio.d/linux.preset /etc/mkinitcpio.d/linux.preset.pacsave; fi
-	@if [ -L /etc/profile.d/sway.sh ] || grep -qs 'sway-start' /etc/profile.d/sway.sh; then sudo rm -f /etc/profile.d/sway.sh; fi
+	@if [ -L /etc/profile.d/sway.sh ] || grep -qs 'system-wide sway launcher' /etc/profile.d/sway.sh; then sudo rm -f /etc/profile.d/sway.sh; fi
 	sudo mkdir -p /etc/systemd/system/NetworkManager.service.d
 	sudo mkdir -p /etc/systemd/system/sshd.service.d
 	sudo mkdir -p /etc/acpi_override
@@ -350,10 +350,9 @@ define MAC_PREP
 	# comment: home-manager's own dotDirRel="." key shape makes force a
 	# no-op here). Removing dotfiles/install's copy lets home-manager place
 	# its own without a "would be clobbered" collision. Plain rm, no sudo:
-	# .zshrc/.zshenv are only ever dotfiles/install's own output; .zprofile may be
-	# a hand-written file (brew shellenv), so it is removed only when a symlink.
-	rm -f $(HOME)/.zshrc $(HOME)/.zshenv
-	@if [ -L $(HOME)/.zprofile ]; then rm -f $(HOME)/.zprofile; fi
+	# by this point all three are dotfiles/install's own output (its DEPLOY_FUNC
+	# already replaced any hand-written ~/.zprofile, e.g. one with brew shellenv).
+	rm -f $(HOME)/.zshrc $(HOME)/.zshenv $(HOME)/.zprofile
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
 	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf

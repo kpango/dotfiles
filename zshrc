@@ -122,7 +122,9 @@ fi
 # Both flags are plain, non-exported shell variables so they never leak to children, unlike
 # the exported _ZSH_PATH_LOADED guard (which is deliberately not trusted, see below).
 # EDITOR comes from the deferred zsh/10-editor.zsh both before and after this placement.
-if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -z "$TMUX" ]]; then
+# Also skipped when _ZSH_TMUX_LOADED is inherited: 01-tmux.zsh would return at once, and the
+# $+commands probe below would only build a command hash that _apply_base_path then discards.
+if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -z "$TMUX" && -z "$_ZSH_TMUX_LOADED" ]]; then
 	if [[ "$_ZSH_OS" == brew || -n "$_zsh_cold_env" ]] || ! (($+commands[tmux])); then
 		autoload -Uz _apply_base_path
 		_apply_base_path
