@@ -22,6 +22,7 @@ FROM tools-base AS tools-stage
 WORKDIR /tmp
 ARG CURL_RETRY=5
 ARG CURL_RETRY_DELAY=2
+ENV CXXFLAGS="-std=c++20"
 # pip runs ahead of the bun layer on purpose: its inputs change only when this
 # file does, so keeping it above the TOOLS_REFRESH-busted layer below leaves it
 # a cache hit on every rebuild instead of being invalidated along with it.
@@ -30,6 +31,12 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         mbake \
         beautysh \
         --prefix /usr/local
+
+# Node.js 24's V8 headers require C++20 for native addons (e.g. tree-sitter bindings).
+# Pre-installing node-gyp globally ensures native compilation has a reliable node-gyp
+# with all internal modules intact, avoiding flawed ad-hoc extraction via bunx.
+RUN --mount=type=cache,target=/root/.npm \
+    npm install -g node-gyp
 
 # TOOLS_REFRESH is a cache-bust token (Makefile.d/docker.mk passes the UTC date
 # as YYYYMMDD; `docker/build/tools` is the only caller that sets it). Every
@@ -43,7 +50,7 @@ ARG TOOLS_REFRESH=0
 ENV BUN_INSTALL=/usr/local
 RUN --mount=type=cache,id=bun-cache-${TARGETARCH},target=/root/.bun/install/cache,sharing=locked \
     echo "tools refresh token: ${TOOLS_REFRESH}" && \
-    BUN_INSTALL=${BUN_INSTALL} bun install -g \
+    CXXFLAGS="-std=c++20" BUN_INSTALL=${BUN_INSTALL} bun install -g \
         bash-language-server \
         dockerfile-language-server-nodejs \
         markdownlint-cli \
