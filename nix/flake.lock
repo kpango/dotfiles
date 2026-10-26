@@ -39,11 +39,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792896866,
-        "narHash": "sha256-/0tELNnhdSnP+bHSdWiEe6KpfSwi6WrTnT9cm/jNkjA=",
+        "lastModified": 1793033486,
+        "narHash": "sha256-fXVURa0+CSCgaxLt8tmPNJq2U+fGYOwbk5j2YUe7kSc=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "c216bf5a1f173b0481bd5c8c489ebe5595ecc68c",
+        "rev": "7db163b2aee7e410e396b48aed02f646d742b9b8",
         "type": "github"
       },
       "original": {
@@ -59,11 +59,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792588688,
-        "narHash": "sha256-0pWorR+SAWY8gPo0HGZI65gh3O7MbgNKe0N5iTFX9FY=",
+        "lastModified": 1793026594,
+        "narHash": "sha256-pudVvWYo9oMUclWf+VjEa6JjmuWbltSu4No81tjJkdw=",
         "owner": "halfwhey",
         "repo": "nix-apple-container",
-        "rev": "0424a41ce32d6e08ae050d520d2c16971ff3dfae",
+        "rev": "f952c917b99306d0718d36c3d5f835da37be525e",
         "type": "github"
       },
       "original": {
