@@ -45,6 +45,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -69,6 +73,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -93,6 +101,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -117,6 +129,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -152,6 +168,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -185,6 +205,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -222,6 +246,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       # magic-nix-cache-action@v13 crashes on macos-14 (ARM64) due to a libc++
       # ABI mismatch; skip it here and rely on Nix's own binary cache instead.
       - name: Build Darwin system for ${{ matrix.host }}
@@ -281,6 +309,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -362,6 +394,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:
           FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"

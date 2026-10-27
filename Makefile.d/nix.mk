@@ -35,6 +35,7 @@ NIX_RUN := DOTFILES_ROOT="$(ROOTDIR)" \
 
 # Flags for test/check targets: use pinned lock file, never update it accidentally
 NIX_FLAGS ?= --no-update-lock-file --show-trace \
+             --max-jobs auto --cores 0 \
              --extra-experimental-features 'nix-command flakes'
 
 # Flags for flake update: allow writing flake.lock
