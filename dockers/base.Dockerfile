@@ -27,8 +27,8 @@ ENV OS=${TARGETOS} \
     TZ=Asia/Tokyo \
     CC=/usr/bin/clang \
     CXX=/usr/bin/clang++ \
-    CFLAGS="-O3 -DNDEBUG -fomit-frame-pointer -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
-    CXXFLAGS="-O3 -DNDEBUG -std=c++23 -fomit-frame-pointer -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
+    CFLAGS="-O3 -DNDEBUG -pipe -fomit-frame-pointer -fno-semantic-interposition -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
+    CXXFLAGS="-O3 -DNDEBUG -std=c++23 -pipe -fomit-frame-pointer -fno-semantic-interposition -fvisibility-inlines-hidden -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
     LDFLAGS="-fuse-ld=lld -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--hash-style=gnu" \
     CLANG_PATH=/usr/local/clang \
     GOOGLE=https://storage.googleapis.com \
