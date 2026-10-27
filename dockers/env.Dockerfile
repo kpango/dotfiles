@@ -74,8 +74,8 @@ RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
     && chmod -R 755 ${HOME} \
     && make --no-print-directory -f /mk/download.mk install-tool \
         APP_NAME=bun REPO=oven-sh/bun EXT=.zip \
-        BIN_SUBDIR='bun-$(OS)-$(if $(filter amd64,$(ARCH)),x64-baseline,aarch64)' \
-        URL_TEMPLATE='$(GITHUB)/oven-sh/bun/$(RELEASE_DL)/$(VERSION)/bun-$(OS)-$(if $(filter amd64,$(ARCH)),x64-baseline,aarch64).zip' \
+        BIN_SUBDIR='bun-$(OS)-$(if $(filter amd64,$(ARCH)),x64,aarch64)' \
+        URL_TEMPLATE='$(GITHUB)/oven-sh/bun/$(RELEASE_DL)/$(VERSION)/bun-$(OS)-$(if $(filter amd64,$(ARCH)),x64,aarch64).zip' \
     && chmod a+x "${LOCAL}/bin/bun"
 
 FROM env-base AS env

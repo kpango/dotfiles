@@ -11,6 +11,7 @@ ENV GO111MODULE=on \
     GOPATH=/go \
     GOBIN=/go/bin \
     GOARCH=${ARCH} \
+    GOAMD64=v3 \
     GOOS=${OS} \
     GOPROXY="https://proxy.golang.org,direct" \
     GOFLAGS="-trimpath -ldflags=-s -buildvcs=false" \
