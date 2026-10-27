@@ -6,6 +6,11 @@
     fileMode = false
     precomposeunicode = true
     quotepath = false
+    preloadindex = true
+    fscache = true
+
+[index]
+    version = 4
 
 [color]
     ui = auto
