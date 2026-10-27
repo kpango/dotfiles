@@ -67,6 +67,7 @@ DOCKER_MEMORY_LIMIT ?= $(MEM_LIMIT_MB)m
 
 DOCKER_BUILDX_GC ?= false
 DOCKER_CACHE_MODE ?= max
+DOCKER_CACHE_TO_GHA ?= false
 DOCKER_BUILDX_WORKERS ?= 8
 DOCKER_ATTEST ?= 1
 DOCKER_PROVENANCE ?= min
@@ -76,6 +77,12 @@ ifeq ($(DOCKER_ATTEST),1)
 _ATTEST_FLAG := --attest type=sbom,generator=docker/buildkit-syft-scanner:edge
 else
 _ATTEST_FLAG :=
+endif
+
+ifeq ($(DOCKER_CACHE_TO_GHA),true)
+_GHA_CACHE_TO_FLAG = --cache-to type=gha,mode=$(DOCKER_CACHE_MODE),scope=$(NAME)-$(DOCKER_TAG_VERSION)
+else
+_GHA_CACHE_TO_FLAG =
 endif
 
 DOCKER_SNAPSHOTTER ?= overlayfs

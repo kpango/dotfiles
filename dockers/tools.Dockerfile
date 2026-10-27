@@ -22,9 +22,9 @@ FROM tools-base AS tools-stage
 WORKDIR /tmp
 ARG CURL_RETRY=5
 ARG CURL_RETRY_DELAY=2
-ENV CFLAGS="-O3 -DNDEBUG -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
-    CXXFLAGS="-O3 -DNDEBUG -std=c++23 -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
-    LDFLAGS="-fuse-ld=lld -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections"
+ENV CFLAGS="-O3 -DNDEBUG -fomit-frame-pointer -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
+    CXXFLAGS="-O3 -DNDEBUG -std=c++23 -fomit-frame-pointer -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
+    LDFLAGS="-fuse-ld=lld -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--hash-style=gnu"
 # pip runs ahead of the bun layer on purpose: its inputs change only when this
 # file does, so keeping it above the TOOLS_REFRESH-busted layer below leaves it
 # a cache hit on every rebuild instead of being invalidated along with it.

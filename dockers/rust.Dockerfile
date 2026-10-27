@@ -16,6 +16,7 @@ ENV BIN_PATH=${CARGO_HOME}/bin \
     CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
     CARGO_PROFILE_RELEASE_STRIP=symbols \
     CARGO_PROFILE_RELEASE_PANIC=abort \
+    CARGO_PROFILE_RELEASE_DEBUG=false \
     RUSTFLAGS="-C opt-level=3 -C codegen-units=1 -C strip=symbols -C link-arg=-fuse-ld=lld"
 
 RUN --mount=type=cache,id=rustup-downloads-${TARGETARCH},target=${RUSTUP_HOME}/downloads,sharing=locked \

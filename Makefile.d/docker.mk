@@ -56,7 +56,7 @@ docker/build/image:
 		--cache-from type=gha,scope=$(NAME)-$(DOCKER_TAG_VERSION) \
 		--cache-from type=registry,ref=ghcr.io/$(GHCR_USER)/$(NAME):$(DOCKER_TAG_VERSION)-cache \
 		--cache-from "ghcr.io/$(GHCR_USER)/$(NAME):$(DOCKER_TAG_VERSION)" \
-		--cache-to type=gha,mode=$(DOCKER_CACHE_MODE),scope=$(NAME)-$(DOCKER_TAG_VERSION) \
+		$(_GHA_CACHE_TO_FLAG) \
 		--cache-to type=registry,ref=ghcr.io/$(GHCR_USER)/$(NAME):$(DOCKER_TAG_VERSION)-cache,mode=$(DOCKER_CACHE_MODE) \
 		--label org.opencontainers.image.revision="$(GITHUB_SHA)" \
 		--label org.opencontainers.image.source="$(GITHUB_URL)" \
