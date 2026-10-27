@@ -1,3 +1,6 @@
+MAKEFLAGS += --no-builtin-rules --no-builtin-variables
+.SUFFIXES:
+
 include Makefile.d/variables.mk
 include Makefile.d/install.mk
 include Makefile.d/docker.mk

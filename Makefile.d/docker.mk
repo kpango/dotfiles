@@ -143,7 +143,7 @@ docker/builder/create:
 		--platform $(DOCKER_BUILDER_PLATFORM) \
 		--bootstrap
 	docker buildx ls
-	docker buildx inspect --bootstrap $(DOCKER_BUILDER_NAME)
+	docker buildx inspect $(DOCKER_BUILDER_NAME)
 
 ## append platform-specific nodes to the existing buildx builder
 docker/builder/add-nodes:

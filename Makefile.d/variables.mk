@@ -1,5 +1,5 @@
 ROOTDIR = $(eval ROOTDIR := $(or $(shell git rev-parse --show-toplevel 2>/dev/null),$(patsubst %/,%,$(dir $(abspath $(firstword $(MAKEFILE_LIST)))))))$(ROOTDIR)
-UNAME_S := $(shell uname -s)
+UNAME_S := $(eval UNAME_S := $(or $(UNAME_S),$(shell uname -s)))$(UNAME_S)
 # GNU sed (-i with no attached suffix = no backup) vs BSD/macOS sed (-i requires
 # a mandatory suffix argument; '' means no backup). Detect by actual sed binary
 # behavior, not $(UNAME_S) -- a GNU sed can shadow the BSD sed on macOS PATH
@@ -52,25 +52,16 @@ DOCKER_BUILDER_PLATFORM ?= linux/amd64,linux/arm64/v8
 DOCKER_BUILD_CACHE_DIR ?= $(HOME)/.docker/buildcache
 
 ifeq ($(UNAME_S),Darwin)
-# vm_stat has no direct "available" figure like Linux's free(1); approximate
-# it the same way Activity Monitor does (free + inactive pages are the ones
-# reclaimable without swapping).
-FREE_MEM_MB := $(shell vm_stat 2>/dev/null | awk '/page size of/{ps=$$8} /^Pages free/{f=$$3} /^Pages inactive/{i=$$3} END{gsub(/\./,"",f); gsub(/\./,"",i); if (ps>0) print int((f+i)*ps/1048576*0.8)}')
+FREE_MEM_MB := $(eval FREE_MEM_MB := $(or $(FREE_MEM_MB),$(shell vm_stat 2>/dev/null | awk '/page size of/{ps=$$8} /^Pages free/{f=$$3} /^Pages inactive/{i=$$3} END{gsub(/\./,"",f); gsub(/\./,"",i); if (ps>0) print int((f+i)*ps/1048576*0.8)}'),32768))$(FREE_MEM_MB)
 else
-FREE_MEM_MB := $(shell free -m 2>/dev/null | awk '/^Mem:/{print int($$7 * 0.8)}')
-endif
-ifeq ($(FREE_MEM_MB),)
-FREE_MEM_MB := 32768
+FREE_MEM_MB := $(eval FREE_MEM_MB := $(or $(FREE_MEM_MB),$(shell free -m 2>/dev/null | awk '/^Mem:/{print int($$7 * 0.8)}'),32768))$(FREE_MEM_MB)
 endif
 
-FREE_DISK_MB := $(shell df -m / 2>/dev/null | awk 'NR==2 {print int($$4 * 0.9)}')
-ifeq ($(FREE_DISK_MB),)
-FREE_DISK_MB := 32768
-endif
+FREE_DISK_MB := $(eval FREE_DISK_MB := $(or $(FREE_DISK_MB),$(shell df -m / 2>/dev/null | awk 'NR==2 {print int($$4 * 0.9)}'),32768))$(FREE_DISK_MB)
 
 DOCKER_BUILDX_KEEPSTORAGE ?= $(FREE_DISK_MB)
 
-MEM_LIMIT_MB := $(shell awk -v mem=$(FREE_MEM_MB) -v disk=$(DOCKER_BUILDX_KEEPSTORAGE) 'BEGIN {print (mem > disk ? disk : mem)}')
+MEM_LIMIT_MB := $(eval MEM_LIMIT_MB := $(or $(MEM_LIMIT_MB),$(shell awk -v mem=$(FREE_MEM_MB) -v disk=$(DOCKER_BUILDX_KEEPSTORAGE) 'BEGIN {print (mem > disk ? disk : mem)}'),32768))$(MEM_LIMIT_MB)
 
 DOCKER_MEMORY_LIMIT ?= $(MEM_LIMIT_MB)m
 
@@ -78,8 +69,8 @@ DOCKER_BUILDX_GC ?= false
 DOCKER_CACHE_MODE ?= max
 DOCKER_BUILDX_WORKERS ?= 8
 DOCKER_ATTEST ?= 1
-DOCKER_PROVENANCE ?= max
-DOCKER_COMPRESSION_LEVEL ?= 5
+DOCKER_PROVENANCE ?= min
+DOCKER_COMPRESSION_LEVEL ?= 3
 
 ifeq ($(DOCKER_ATTEST),1)
 _ATTEST_FLAG := --attest type=sbom,generator=docker/buildkit-syft-scanner:edge

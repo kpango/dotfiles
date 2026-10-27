@@ -25,7 +25,7 @@ LOCAL        ?= /usr/local
 # ── curl configuration ────────────────────────────────────────────────────────
 CURL_RETRY       ?= 5
 CURL_RETRY_DELAY ?= 3
-_CURL = curl --compressed --retry $(CURL_RETRY) --retry-connrefused \
+_CURL = curl --compressed --http2 --retry $(CURL_RETRY) --retry-connrefused \
              --retry-delay $(CURL_RETRY_DELAY) -fsSL
 
 # ── Root identity ─────────────────────────────────────────────────────────────
@@ -130,7 +130,7 @@ install-tool:
 	_dl_probe() { \
 	  _url="$$1"; _out="$$2"; \
 	  printf '[download.mk] probing %s\n' "$$_url"; \
-	  _META="$$(curl -fsS --head -L --max-time 10 \
+	  _META="$$(curl --http2 -fsS --head -L --max-time 5 \
 	              --retry 2 --retry-connrefused --retry-delay 1 \
 	              -D /dev/null -o /dev/null \
 	              -w '%{content_length}|%{url_effective}' \
