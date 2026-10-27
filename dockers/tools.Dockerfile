@@ -22,7 +22,9 @@ FROM tools-base AS tools-stage
 WORKDIR /tmp
 ARG CURL_RETRY=5
 ARG CURL_RETRY_DELAY=2
-ENV CXXFLAGS="-std=c++23"
+ENV CFLAGS="-O3 -DNDEBUG -fno-plt -fdata-sections -ffunction-sections" \
+    CXXFLAGS="-O3 -DNDEBUG -std=c++23 -fno-plt -fdata-sections -ffunction-sections" \
+    LDFLAGS="-Wl,-O3 -Wl,--as-needed -Wl,--gc-sections"
 # pip runs ahead of the bun layer on purpose: its inputs change only when this
 # file does, so keeping it above the TOOLS_REFRESH-busted layer below leaves it
 # a cache hit on every rebuild instead of being invalidated along with it.
@@ -50,7 +52,7 @@ ARG TOOLS_REFRESH=0
 ENV BUN_INSTALL=/usr/local
 RUN --mount=type=cache,id=bun-cache-${TARGETARCH},target=/root/.bun/install/cache,sharing=locked \
     echo "tools refresh token: ${TOOLS_REFRESH}" && \
-    CXXFLAGS="-std=c++23" BUN_INSTALL=${BUN_INSTALL} bun install -g \
+    CFLAGS="${CFLAGS}" CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}" BUN_INSTALL=${BUN_INSTALL} bun install -g \
         bash-language-server \
         dockerfile-language-server-nodejs \
         markdownlint-cli \
