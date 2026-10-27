@@ -4,7 +4,9 @@ FROM kpango/base:nightly AS vald-base
 ARG TARGETARCH
 
 FROM vald-base AS cmake-base
-ENV CMAKE_BUILD_TYPE=Release
+ENV CMAKE_BUILD_TYPE=Release \
+    CMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld" \
+    CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld"
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update -y \

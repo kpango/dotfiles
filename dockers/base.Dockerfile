@@ -29,7 +29,7 @@ ENV OS=${TARGETOS} \
     CXX=/usr/bin/clang++ \
     CFLAGS="-O3 -DNDEBUG -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
     CXXFLAGS="-O3 -DNDEBUG -std=c++23 -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
-    LDFLAGS="-Wl,-O3 -Wl,--as-needed -Wl,--gc-sections" \
+    LDFLAGS="-fuse-ld=lld -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections" \
     CLANG_PATH=/usr/local/clang \
     GOOGLE=https://storage.googleapis.com \
     RELEASE_DL=releases/download \

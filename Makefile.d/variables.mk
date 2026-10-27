@@ -78,10 +78,12 @@ else
 _ATTEST_FLAG :=
 endif
 
+DOCKER_SNAPSHOTTER ?= overlayfs
+
 ifeq ($(DOCKER_BUILDX_GC),true)
-	BUILDKITD_FLAGS ?= "--oci-worker-gc=true --oci-worker-gc-keepstorage=$(DOCKER_BUILDX_KEEPSTORAGE) --oci-worker-snapshotter=stargz --oci-max-parallelism=$(DOCKER_BUILDX_WORKERS)"
+	BUILDKITD_FLAGS ?= "--oci-worker-gc=true --oci-worker-gc-keepstorage=$(DOCKER_BUILDX_KEEPSTORAGE) --oci-worker-snapshotter=$(DOCKER_SNAPSHOTTER) --oci-max-parallelism=$(DOCKER_BUILDX_WORKERS)"
 else
-	BUILDKITD_FLAGS ?= "--oci-worker-gc=false --oci-worker-snapshotter=stargz --oci-max-parallelism=$(DOCKER_BUILDX_WORKERS)"
+	BUILDKITD_FLAGS ?= "--oci-worker-gc=false --oci-worker-snapshotter=$(DOCKER_SNAPSHOTTER) --oci-max-parallelism=$(DOCKER_BUILDX_WORKERS)"
 endif
 
 VERSION ?= nightly
