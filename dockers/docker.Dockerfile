@@ -6,7 +6,7 @@ ARG TARGETARCH
 
 FROM aquasec/trivy:latest AS trivy-uncompressed
 RUN apt-get update -qq && apt-get install -y --no-install-recommends upx-ucl \
-    && upx --best /usr/local/bin/trivy || true
+    && upx -9 -q /usr/local/bin/trivy || true
 
 FROM aquasec/trivy:latest AS trivy
 COPY --from=trivy-uncompressed /usr/local/bin/trivy /usr/local/bin/trivy
@@ -14,7 +14,7 @@ COPY --from=trivy-uncompressed /usr/local/bin/trivy /usr/local/bin/trivy
 FROM wagoodman/dive:latest AS dive-base
 FROM docker-base AS dive
 COPY --link --from=dive-base /usr/local/bin/dive ${BIN_PATH}/dive
-RUN (upx --best "${BIN_PATH}/dive" || true)
+RUN (upx -9 -q "${BIN_PATH}/dive" || true)
 
 FROM docker-base AS slim
 RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
@@ -89,7 +89,7 @@ RUN printf "%s\\n" \
     "${BIN_PATH}/docker-init" \
     "${BIN_PATH}/dockerd" \
     "${BIN_PATH}/runc" \
-    | xargs -P $(nproc) -n 1 sh -c 'upx --best "$1" 2>/dev/null || upx -t "$1" 2>/dev/null || true' -- \
+    | xargs -P $(nproc) -n 1 sh -c 'upx -9 -q "$1" 2>/dev/null || upx -t "$1" 2>/dev/null || true' -- \
     && chmod a+x ${BIN_PATH}/docker-entrypoint.sh \
     && chmod a+x ${BIN_PATH}/dockerd-entrypoint.sh
 

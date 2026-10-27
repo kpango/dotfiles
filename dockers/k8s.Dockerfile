@@ -56,7 +56,7 @@ RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
     && BIN_NAME="kubectl-krew" \
     && "/root/.krew/bin/${BIN_NAME}" update \
     && mv "/root/.krew/bin/${BIN_NAME}" "${BIN_PATH}/${BIN_NAME}" \
-    && (upx --best ${BIN_PATH}/kubectl-krew 2>/dev/null || true)
+    && (upx -9 -q ${BIN_PATH}/kubectl-krew 2>/dev/null || true)
 
 FROM k8s-base AS kubebox
 RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \

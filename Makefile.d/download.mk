@@ -165,7 +165,7 @@ install-tool:
 	        || { printf '[download.mk] Error: %s not found\n' "$$_BIN" >&2; exit 1; }; \
 	    fi; \
 	    install -m 755 "$$_SRC" '$(DEST)'/; \
-	    $(if $(filter 1,$(UPX)),upx --best '$(DEST)'/$$_BIN 2>/dev/null || true;) \
+	    $(if $(filter 1,$(UPX)),upx -9 -q '$(DEST)'/$$_BIN 2>/dev/null || true;) \
 	    printf '[download.mk] installed: %s -> $(DEST)\n' "$$_BIN"; \
 	  done; \
 	  $(if $(EXTRA_GLOB),mkdir -p '$(EXTRA_DEST)' && cp -r $(EXTRA_GLOB) '$(EXTRA_DEST)'/;) \
@@ -190,7 +190,7 @@ install-tool:
 	        _dl_probe "$$_URL_ITER" "$$_BIN.gz"; \
 	        gzip -dc "$$_BIN.gz" > "$$_BIN"; \
 	        install -m 755 "$$_BIN" '$(DEST)'/; \
-	        $(if $(filter 1,$(UPX)),upx --best '$(DEST)'/$$_BIN 2>/dev/null || true;) \
+	        $(if $(filter 1,$(UPX)),upx -9 -q '$(DEST)'/$$_BIN 2>/dev/null || true;) \
 	        printf '[download.mk] installed: %s -> $(DEST)\n' "$$_BIN"; \
 	        ;; \
 	      .tar.gz|.tgz|.tar.xz|.zip) \
@@ -206,7 +206,7 @@ install-tool:
 	      *) \
 	        _dl_probe "$$_URL_ITER" '$(DEST)'/$$_BIN; \
 	        chmod 755 '$(DEST)'/$$_BIN; \
-	        $(if $(filter 1,$(UPX)),upx --best '$(DEST)'/$$_BIN 2>/dev/null || true;) \
+	        $(if $(filter 1,$(UPX)),upx -9 -q '$(DEST)'/$$_BIN 2>/dev/null || true;) \
 	        printf '[download.mk] installed: %s -> $(DEST)\n' "$$_BIN"; \
 	        ;; \
 	    esac; \
