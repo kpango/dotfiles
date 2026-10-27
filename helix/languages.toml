@@ -71,8 +71,8 @@ language-servers = [ "gopls", "golangci-lint-lsp", "copilot", "ai", "hx-lsp", "t
 # ==========================================
 [language-server.clangd]
 command = "clangd"
-# enable background indexing, parallelism, and header completion
-args = ["--background-index", "--clang-tidy", "--completion-style=detailed", "--header-insertion=iwyu", "-j=4"]
+# enable background indexing, parallelism, in-memory PCH storage, and header completion
+args = ["--background-index", "--clang-tidy", "--completion-style=detailed", "--header-insertion=iwyu", "--pch-storage=memory", "-j=0"]
 
 [[language]]
 name = "cpp"
