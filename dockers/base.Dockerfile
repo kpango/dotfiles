@@ -45,7 +45,9 @@ ENV PATH=${PATH}:${CLANG_PATH}/bin \
 
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
-    && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
+    && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends \
+    && echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/no-languages \
+    && echo 'Acquire::http::Pipeline-Depth "10";' > /etc/apt/apt.conf.d/pipeline
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
