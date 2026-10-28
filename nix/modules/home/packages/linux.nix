@@ -25,6 +25,7 @@
     [
       alsa-utils
       brightnessctl
+      ccache
       discord
       ghostty
       crosspipe
