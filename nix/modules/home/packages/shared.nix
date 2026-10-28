@@ -177,7 +177,8 @@
     kubebuilder
     kubecolor
     kubectl
-    kubectl-gadget
+    # kubectl-gadget depends on elfutils/eBPF, which is Linux-only and fails on aarch64-darwin.
+    # It has been moved to modules/home/packages/linux.nix.
     kubectl-tree
     kubectx
     kubefwd

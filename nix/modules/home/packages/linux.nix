@@ -28,6 +28,8 @@
       discord
       ghostty
       crosspipe
+      # Inspektor Gadget: eBPF/Linux-only (depends on elfutils)
+      kubectl-gadget
       # arch/pkg.list and arch/pkg_p1.list both install this; kept Linux-only
       # (rather than shared.nix) since it has no confirmed darwin use here.
       mpv

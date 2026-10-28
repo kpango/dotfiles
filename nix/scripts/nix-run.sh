@@ -32,7 +32,7 @@ NIX_WRITABLE="${NIX_WRITABLE:-0}"
 . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || true
 
 # ── Prefer native nix binary ──────────────────────────────────────────────
-if command -v nix >/dev/null 2>&1; then
+if command -v nix >/dev/null 2>&1 && [ "${FORCE_NIX_DOCKER:-0}" != "1" ]; then
     cd "${DOTFILES_ROOT}/nix"
     exec nix "$@"
 fi
