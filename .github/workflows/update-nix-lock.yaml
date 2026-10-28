@@ -54,6 +54,10 @@ jobs:
             extra-experimental-features = nix-command flakes
             accept-flake-config = true
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            download-buffer-size = 134217728
+            eval-cache = true
+            cores = 0
+            max-jobs = auto
 
       - uses: DeterminateSystems/magic-nix-cache-action@565684385bcd71bad329742eefe8d12f2e765b39 # v13
         env:

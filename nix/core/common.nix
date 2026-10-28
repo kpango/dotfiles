@@ -29,8 +29,6 @@
       ];
       download-buffer-size = lib.mkDefault 134217728;
       eval-cache = lib.mkDefault true;
-      cores = lib.mkDefault 0;
-      max-jobs = lib.mkDefault "auto";
     };
 
     # Store deduplication. Uses the optimise timer rather than
