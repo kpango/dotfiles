@@ -67,6 +67,12 @@ DOTFILES_MOUNT_MODE="ro"
 # Nix reads GITHUB_TOKEN from NIX_CONFIG access-tokens, not from env directly.
 _NIX_CONFIG="extra-experimental-features = nix-command flakes
 trusted-users = root
+download-buffer-size = 134217728
+eval-cache = true
+http-connections = 50
+max-substitution-jobs = 32
+fsync-metadata = false
+builders-use-substitutes = true
 substituters = https://cache.nixos.org/
 trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
 if [ -n "${GITHUB_TOKEN:-}" ]; then

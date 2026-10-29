@@ -29,6 +29,11 @@
       ];
       download-buffer-size = lib.mkDefault 134217728;
       eval-cache = lib.mkDefault true;
+      http-connections = lib.mkDefault 50;
+      max-substitution-jobs = lib.mkDefault 32;
+      fsync-metadata = lib.mkDefault false;
+      builders-use-substitutes = lib.mkDefault true;
+      tarball-ttl = lib.mkDefault 604800;
     };
 
     # Store deduplication. Uses the optimise timer rather than
