@@ -8,9 +8,24 @@
     quotepath = false
     preloadindex = true
     fscache = true
+    untrackedCache = true
+    commitGraph = true
+
+[feature]
+    manyFiles = true
 
 [index]
     version = 4
+
+[checkout]
+    workers = 0
+
+[fetch]
+    parallel = 0
+    writeCommitGraph = true
+
+[gc]
+    writeCommitGraph = true
 
 [color]
     ui = auto

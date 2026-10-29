@@ -56,6 +56,9 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
             download-buffer-size = 134217728
             eval-cache = true
+            http-connections = 50
+            max-substitution-jobs = 32
+            fsync-metadata = false
             cores = 0
             max-jobs = auto
 
