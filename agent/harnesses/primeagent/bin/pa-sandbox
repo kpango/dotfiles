@@ -2,8 +2,10 @@
 # pa-sandbox -- run `prime-agent "$@"` inside a bubblewrap (bwrap) sandbox.
 #
 # Layer 2 of the two-layer model (CONTEXT.md, primeagent-max-customize Q5):
-# layer 1 is the shell guard + env allowlist wired by default; this wrapper is
-# the whole-process jail for autonomous / untrusted runs.
+# layer 1, wired by default, is only the shell guard (zsh/20-dev.zsh exports
+# PRIME_AGENT_BASH_COMMAND_PREFIX); the launch-time env allowlist exists only in
+# this wrapper (Environment, below). This wrapper is the whole-process jail for
+# autonomous / untrusted runs.
 #
 # Design: ALLOWLIST. Everything is read-only unless explicitly listed rw.
 #   - / is bound READ-ONLY; /dev, /tmp and $HOME are empty tmpfs.
