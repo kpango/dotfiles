@@ -149,8 +149,14 @@ if [[ -t 0 ]]; then
 	# Plugin env vars must be set before sheldon loads zsh-autosuggestions
 	export ZSH_AUTOSUGGEST_USE_ASYNC=1
 	export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+	export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=60
 	bindkey -e
 	export KEYTIMEOUT=1
+
+	# Completion caching for instantaneous Tab responsiveness
+	zstyle ':completion:*' use-cache on
+	zstyle ':completion:*' cache-path "${ZCACHE_DIR:-$HOME/.zcache}/zcompcache"
+
 	# These options used to live in the deferred zsh/03-history.zsh, but zsh-defer's
 	# _zsh-defer-resume wraps every deferred task in `emulate -L zsh` for its own
 	# duration, which resets options to the zsh baseline and discards any setopt/
@@ -163,6 +169,7 @@ if [[ -t 0 ]]; then
 		auto_cd auto_list auto_menu auto_param_keys auto_param_slash auto_pushd correct extended_glob ignore_eof \
 		interactive_comments list_packed list_types magic_equal_subst no_beep no_flow_control noautoremoveslash \
 		nonomatch notify print_eight_bit prompt_subst pushd_ignore_dups
+	unsetopt auto_name_dirs
 	# stty -ixon -ixoff disables the terminal driver's own ^S/^Q flow control. This is
 	# NOT the same thing as no_flow_control set above: no_flow_control only tells zsh's
 	# own line editor to not treat ^S/^Q specially while ZLE is active — it does not
