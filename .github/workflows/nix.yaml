@@ -421,7 +421,7 @@ jobs:
           VM_PID=$!
 
           echo "Waiting for NixOS login prompt (up to 3 min)..."
-          for i in $(seq 1 60); do
+          for _ in $(seq 1 60); do
             if grep -qE "login:|<<< NixOS" /tmp/vm.log 2>/dev/null; then
               echo "VM booted successfully"
               kill "$VM_PID" 2>/dev/null || true
