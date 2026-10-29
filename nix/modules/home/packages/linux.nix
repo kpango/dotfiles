@@ -26,6 +26,7 @@
       alsa-utils
       brightnessctl
       ccache
+      mold
       discord
       ghostty
       crosspipe

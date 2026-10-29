@@ -5,8 +5,8 @@ ARG TARGETARCH
 
 FROM vald-base AS cmake-base
 ENV CMAKE_BUILD_TYPE=Release \
-    CMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--hash-style=gnu -Wl,-z,now" \
-    CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=lld -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--hash-style=gnu -Wl,-z,now" \
+    CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--hash-style=gnu -Wl,-z,now" \
+    CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--hash-style=gnu -Wl,-z,now" \
     MAKEFLAGS="-j"
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \

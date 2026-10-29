@@ -18,7 +18,7 @@ ENV BIN_PATH=${CARGO_HOME}/bin \
     CARGO_PROFILE_RELEASE_STRIP=symbols \
     CARGO_PROFILE_RELEASE_PANIC=abort \
     CARGO_PROFILE_RELEASE_DEBUG=false \
-    RUSTFLAGS="-C opt-level=3 -C codegen-units=1 -C strip=symbols -C link-arg=-fuse-ld=lld -C link-arg=-Wl,--hash-style=gnu -C link-arg=-Wl,-z,now"
+    RUSTFLAGS="-C opt-level=3 -C codegen-units=1 -C strip=symbols -C link-arg=-fuse-ld=mold -C link-arg=-Wl,--hash-style=gnu -C link-arg=-Wl,-z,now"
 
 RUN --mount=type=cache,id=rustup-downloads-${TARGETARCH},target=${RUSTUP_HOME}/downloads,sharing=locked \
     curl --retry ${CURL_RETRY} --retry-all-errors --retry-delay ${CURL_RETRY_DELAY} -fsSL --proto '=https' --tlsv1.2 https://sh.rustup.rs \

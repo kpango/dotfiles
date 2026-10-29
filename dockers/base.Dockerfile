@@ -29,7 +29,7 @@ ENV OS=${TARGETOS} \
     CXX=/usr/bin/clang++ \
     CFLAGS="-O3 -DNDEBUG -pipe -fno-ident -fomit-frame-pointer -fno-semantic-interposition -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
     CXXFLAGS="-O3 -DNDEBUG -std=c++23 -pipe -fno-ident -fomit-frame-pointer -fno-semantic-interposition -fvisibility-inlines-hidden -fno-plt -fdata-sections -ffunction-sections -fno-math-errno -fno-trapping-math" \
-    LDFLAGS="-fuse-ld=lld -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--hash-style=gnu -Wl,-z,now" \
+    LDFLAGS="-fuse-ld=mold -Wl,-O3 -Wl,--as-needed -Wl,--gc-sections -Wl,--hash-style=gnu -Wl,-z,now" \
     CLANG_PATH=/usr/local/clang \
     GOOGLE=https://storage.googleapis.com \
     RELEASE_DL=releases/download \
@@ -88,6 +88,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
         lld \
         llvm \
         locales \
+        mold \
         lua5.4 \
         luajit \
         luarocks \
@@ -123,6 +124,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
        url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/" \
     && update-alternatives --set cc "$(which clang)" \
     && update-alternatives --set c++ "$(which clang++)" \
+    && ln -sf /usr/bin/mold /usr/local/bin/ld \
     && echo "${LANG} UTF-8" > /etc/locale.gen \
     && ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
     && locale-gen \
