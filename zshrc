@@ -150,8 +150,9 @@ if [[ -t 0 ]]; then
 	export ZSH_AUTOSUGGEST_USE_ASYNC=1
 	export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 	export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=60
-	export ZSH_AUTOSUGGEST_STRATEGY=(history)
-	export ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
+	typeset -ga ZSH_AUTOSUGGEST_STRATEGY=(history)
+	typeset -ga ZSH_AUTOSUGGEST_IGNORE_WIDGETS
+	ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
 		forward-char backward-char forward-word backward-word
 		vi-forward-char vi-backward-char vi-forward-word vi-backward-word
 		beginning-of-line end-of-line
