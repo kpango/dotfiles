@@ -1012,6 +1012,16 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   `LC_*`・`PRIME_AGENT_*` だけをホストから渡す（`pa_sandbox_build_argv`）。それ以外に中で設定されるのは固定値だけで、
   `HOME`（サンドボックスの HOME）、名前が挙がった `TMPDIR` は `/tmp`、最後に `GIT_CONFIG_NOSYSTEM`・
   `PRIME_AGENT_CODING_AGENT_DIR`・`PRIME_AGENT_DAEMON_SOCKET`・`PRIME_AGENT_BASH_COMMAND_PREFIX` を上書きする。この export を経ずに起動した prime-agent / daemon には guard の prefix も入らない（C-1 の env 継承）。
+  **bwrap 自身の環境も空（T9c、2026-10-29）**: pid ns モード（`--unshare-pid --proc /proc`）ではサンドボックスの pid 1 が bwrap の
+  init で、サンドボックスと同じ user ns にいるため、中から `/proc/1/environ` を読むと bwrap 自身の環境（呼び出し元の全環境変数）が
+  見える（`--clearenv` が変えるのは子の環境だけ）。実測（2026-10-29 の 1 回、この端末の環境）: `HOSTSECRET=x` を付けて
+  `pa_sandbox_main` を起動すると、環境を継承する版では `/proc/1/environ` に `HOSTSECRET` を含む 179 変数が見え（変数の数は環境で変わる）、
+  `env -i` 付きでは 0 変数だった。そのため `pa_sandbox_build_argv` の private /proc probe、guard probe、本番起動の 3 箇所の
+  bwrap 呼び出しはすべて `env -i "$bw" ...` で起動する。`$bw` は `pa_sandbox_bwrap_bin` が解決する絶対パスで、相対パス
+  （PATH に空・相対エントリがあると `command -v` は `./bwrap` を返す）なら起動を拒否する。この関数は解決だけを行い、
+  起動は外部コマンドのままにする: シェル関数呼び出しに付けたリダイレクト（`2>bwrap.err` 等）は呼び出し中の pa-sandbox 本体の
+  シェルに適用され、INT/TERM の trap が出す警告（scrub の `removed N planted ...`）が bwrap.err に流れて失われる
+  （T9c の SIGTERM 再現: 修正前は 0 件、修正後は 1 件。テスト (T9c C)）。中で必要な変数は従来どおり `--setenv` で渡る。
 
 ### 実走結果（2026-10-18、T13、`agent/harnesses/primeagent/e2e/run-ollama-e2e.sh`）
 
@@ -1064,6 +1074,24 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   rw bind し `PA_SANDBOX_RO_EXTRA=<uv python dir>` を付けている（ヘッダの Deviations は T9b 以前の pa-sandbox についての記述）。
   したがって「無改変の pa-sandbox 内で daemon と factory machine が動く」ことは E2E では確かめていない。T9b 自身の
   実測・テストは T9b の報告と `bin/test-pa-wrappers.sh` による。
+- **T9c: pid ns モードでの 2 点（2026-10-29、カーネル更新後にホストが private /proc を mount できるようになったことで顕在化）**:
+  (A) 上記のとおり bwrap を空環境で起動する（修正済み）。(B) **修正せず文書化**: pid ns モードでは bwrap の init が pid 1 で、その
+  fd 2 が `$PA_SANDBOX_RUNDIR/bwrap.err` なので、中のコードは `/proc/1/fd/2` から bwrap.err へ任意のバイト列を書ける
+  （`--as-pid-1` は付けない判断）。`started`（fd 4、prime-agent の exec 前に閉じる）・`info`・`block`・`record` には
+  `/proc/<pid>/fd` 経由でも届かないことをテストが確かめる。再起動判定は `started` が空であることも条件にするため、bwrap.err
+  を偽造しても再起動は起きない（T9b h のテストが偽造 `bwrap: forged` で確認）。端末への出力は代わりに無害化する: bwrap.err を
+  表示するとき、先頭 64 KiB（`head -c 65536`）だけを出し、`\n`・`\t` 以外の C0 制御バイト（ESC・CR を含む）・DEL・
+  0x80-0x9f（C1）を `?` に置き換える（一部の UTF-8 文字の継続バイトも 0x80-0x9f に当たるので `?` になりうる。UTF-8 表現の C1
+  `\302\233` は `\302?` になり CSI としては働かない）。pid ns モードでは `/proc/1/cmdline` から bwrap の argv 全体（後の
+  `--setenv` で上書きされるホスト側の値、例 `PRIME_AGENT_DAEMON_SOCKET`、を含む）も読める。これは T9c 以前からで、修正せず
+  `bin/pa-sandbox` の KNOWN LIMITS に書いただけ。degraded（host /proc）モードでは bwrap.err へ届く
+  fd は見つからなかった（同テストの `FDWRITE-ERR` が 0 件）。
+  テスト（`bin/test-pa-wrappers.sh`）: pid ns モードでは bwrap が作った namespace が pid 1 の終了で破棄されるため setsid の孫も死に、
+  「sweep 無し」の mutation は何も示さない。そこで sweep の mutation と再現は bwrap shim（private /proc の probe だけを失敗させる）で
+  degraded モードに落として実行し、pid ns モードには「孫が namespace と一緒に死ぬ」アサーションを足した。
+  `PATH` 先頭にその shim を置いて全スイートを走らせると degraded モードでも通る（2026-10-29 の実走: pid ns 859 passed / 0 failed、
+  shim 付き 840 passed / 0 failed。ok の名前の差分を取ると、pid ns だけで走るケースが 24 件、degraded だけで走るケースが 5 件
+  （degraded の「bwrap.err に届かない」3 件と「no private /proc」系 2 件））。
 - **E2E のホスト側書き込み**: settings・models.json・machine など agent dir へのホスト書き込みは、すべてサンドボックスが
   その dir を見る前に済ませる。フェーズ（guard / allowlist / machine の各試行）ごとに、ホスト専用テンプレート
   （サンドボックス内では一時 HOME ごと tmpfs で見えない）を `cp -aT` で未存在の `~/.prime/agent` へ新規コピーし、
