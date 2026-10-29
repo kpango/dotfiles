@@ -1391,7 +1391,8 @@ live 配線の宣言は `agent/sync-manifest.json` の `primeagent` target（`li
   ro なので中での commit/branch/add は失敗する（人間がホストで commit する）。環境変数は allowlist、daemon socket は
   `/tmp/pa-sandbox/daemon.sock`（ホストの daemon には繋がない）。起動前に中で guard が効くことを確かめ、効かなければ起動しない。
   `.git` の無いワークスペース、`$HOME` やその祖先は拒否する。private `/proc` を mount できないホストでは
-  `PA_SANDBOX_ALLOW_HOST_PROC=1` が要る（`zsh/20-dev.zsh` が guard と一緒に export する）。
+  `PA_SANDBOX_ALLOW_HOST_PROC=1` が要る（`zsh/20-dev.zsh` が guard と一緒に export する）。bwrap 自身は空の環境（`env -i`）で
+  起動する: pid ns モードでは中の pid 1 が bwrap の init なので、継承すると中から `/proc/1/environ` で呼び出し元の環境が読める。
 - **既知の制限**（全文は `bin/pa-sandbox` ヘッダの `KNOWN LIMITS`）: network は ON で egress 制限が無い（`auth.json` や
   ワークスペースを持ち出せる）。ワークスペースは rw なので、後の非サンドボックス実行が読む project-local 設定
   （`.prime/agent/settings.json`・`AGENTS.md`・`.agents/skills` 等）を置かれうる → 実行後に `git status` で untracked を確認する。
@@ -1399,7 +1400,9 @@ live 配線の宣言は `agent/sync-manifest.json` の `primeagent` target（`li
   `--ignore-submodules=all`。`settings.json`・`auth.json`・MCP catalog・`models/` は ro で、中での設定保存や token 更新は残らない
   （provider が refresh token をローテーションする場合はホストで再ログインが要りうる）。`daemon-workers/`・`rlm-ledger/` は破棄
   されるので、中で spawn した記録はホストで続けたセッションに残らない。シェルの起動ファイルは検査しない。pa-sandbox 自身が
-  SIGKILL されると中のプロセスは掃除されない。
+  SIGKILL されると中のプロセスは掃除されない。pid ns モードでは bwrap の stderr（`bwrap.err`）に中から
+  `/proc/1/fd/2` 経由で書ける。同じモードでは `/proc/1/cmdline` から bwrap の argv 全体も読める（どちらも修正せず文書化。
+  `started` 等の他の run 状態には届かず、端末へは先頭 64 KiB だけを、制御文字を `?` に置き換えて出す。`CONTEXT.md` の T9c）。
 - **pa-auto**: リポジトリ（git toplevel）の gate を決め（Makefile の `lint`/`test` target をテキスト走査、無ければ `go.mod`・
   `Cargo.toml`・`package.json` の test script・pytest 設定の既定）、`pa-sandbox --autonomous --autonomous-gate <cmd>...` を exec する。
   gate が見つからなければ exit 2（`--gate <cmd>` で明示）。`-n` は解決したコマンドを表示するだけ。pa-sandbox は自分の

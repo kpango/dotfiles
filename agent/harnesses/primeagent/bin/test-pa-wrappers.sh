@@ -239,6 +239,34 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 		HOST_PROC_DEGRADED=1
 		export PA_SANDBOX_ALLOW_HOST_PROC=1
 	fi
+	# bwrap shims (a dir to put in front of PATH). Modes: recording bwrap's own environment at
+	# exec (FIRST, so a call the shim then fails is recorded too); failing ONLY the private-/proc
+	# probe (pa-sandbox then builds its degraded host-/proc profile, as on a host that cannot
+	# mount one); writing forged control bytes to the stderr of the real (info-fd) launch, which
+	# pa-sandbox sends to bwrap.err.
+	REAL_BWRAP="$(command -v bwrap)"
+	mkbwshim() { # <dir> <failprobe:0|1> <record-env-file|-> <esc:0|1>
+		mkdir -p "$1"
+		{
+			printf '#!/bin/sh\n'
+			[[ "$3" != - ]] && printf 'echo called >>%s.calls; tr "\\0" "\\n" </proc/$$/environ >>%s\n' "$3" "$3"
+			[[ "$2" == 1 ]] && printf '[ "$*" = "--ro-bind / / --unshare-pid --proc /proc true" ] && exit 1\n'
+			[[ "$4" == 1 ]] && printf 'case "$*" in *--info-fd*) printf "\\033[31mESCSEQ\\033]0;title\\007\\rtab\\there\\nA\\233B\\nC\\302\\233D\\nE\\177F\\n" >&2 ;; esac\n'
+			printf 'exec %s "$@"\n' "$REAL_BWRAP"
+		} >"$1/bwrap"
+		chmod +x "$1/bwrap"
+	}
+	DEGR_BIN="$T/bwshim-degraded"
+	mkbwshim "$DEGR_BIN" 1 - 0
+	# main_mode <degraded|pidns> [pa-sandbox copy]: pa_sandbox_main in the real-bwrap (pidns) or the
+	# probe-failing shim (degraded) mode; the caller sets PATH (stub dir) and HOME before.
+	main_mode() {
+		if [[ "$1" == degraded ]]; then
+			PATH="$DEGR_BIN:$PATH" PA_SANDBOX_ALLOW_HOST_PROC=1 "$BASH" -c 'source "$1"; pa_sandbox_main' _ "${2:-$PA_SANDBOX}"
+		else
+			env -u PA_SANDBOX_ALLOW_HOST_PROC "$BASH" -c 'source "$1"; pa_sandbox_main' _ "${2:-$PA_SANDBOX}"
+		fi
+	}
 	run_in() { # run_in <sh-snippet>; runs in the real built profile
 		(
 			cd "$REPO"
@@ -542,7 +570,10 @@ s=socket.socket(socket.AF_UNIX); s.bind(sys.argv[1]); s.listen(1); time.sleep(12
 	[[ ! -L "$FH/.prime/agent/sessions/evil.window-cache.json" && ! -e "$FH/.prime/agent/logs/evil.fifo" ]] && ok "post-exit scrub removed symlink and FIFO planted during the run" || bad "post-exit scrub removed symlink and FIFO planted during the run"
 	expect_eq "scrub left the symlink target untouched" "ORIG" "$(cat "$VICTIM")"
 
-	# setsid grandchild outliving the command must not plant a symlink after the scrub
+	# setsid grandchild outliving the command must not plant a symlink after the scrub.
+	# Under --unshare-pid the kernel kills the whole pid namespace when its init exits, so the
+	# no-sweep mutation only proves anything in the degraded host-/proc mode (a bwrap shim that
+	# fails just the private-/proc probe); the pid-ns mode gets its own assertion further down.
 	cat >"$STUBDIR/prime-agent" <<'STUB'
 #!/bin/sh
 (setsid sh -c 'sleep 2; ln -s /etc/hostname "$HOME/.prime/agent/sessions/late-link"' >/dev/null 2>&1 &)
@@ -550,15 +581,30 @@ exit 0
 STUB
 	chmod +x "$STUBDIR/prime-agent"
 	# MUTATION: same background trick without the sweep -> the link appears
-	run_ws "$REPO" '(setsid sh -c "sleep 2; ln -s /etc/hostname \"$HOME/.prime/agent/sessions/late-link\"" >/dev/null 2>&1 &); exit 0' >/dev/null || true
+	PATH="$DEGR_BIN:$PATH" PA_SANDBOX_ALLOW_HOST_PROC=1 run_ws "$REPO" '(setsid sh -c "sleep 2; ln -s /etc/hostname \"$HOME/.prime/agent/sessions/late-link\"" >/dev/null 2>&1 &); exit 0' >/dev/null || true
 	sleep 3.5
-	[[ -L "$FH/.prime/agent/sessions/late-link" ]] && ok "MUTATION (no sweep): setsid grandchild plants late-link after exit" || bad "MUTATION (no sweep): setsid grandchild plants late-link after exit"
+	[[ -L "$FH/.prime/agent/sessions/late-link" ]] && ok "MUTATION (no sweep, degraded host-/proc mode): setsid grandchild plants late-link after exit" || bad "MUTATION (no sweep, degraded host-/proc mode): setsid grandchild plants late-link after exit"
 	command rm -f "$FH/.prime/agent/sessions/late-link"
-	( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; pa_sandbox_main ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
-	expect_eq "setsid case: pa_sandbox_main rc" "0" "$rc"
-	sleep 3.5
-	[[ ! -L "$FH/.prime/agent/sessions/late-link" ]] && ok "setsid grandchild swept: no late-link after main returns (waited 3.5s)" || bad "setsid grandchild swept: no late-link after main returns (waited 3.5s)"
-	command rm -f "$FH/.prime/agent/sessions/late-link"
+	for mode9c in degraded pidns; do
+		[[ "$mode9c" == pidns && "${HOST_PROC_DEGRADED:-0}" == 1 ]] && continue
+		( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; main_mode "$mode9c" ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
+		expect_eq "setsid case ($mode9c): pa_sandbox_main rc" "0" "$rc"
+		if [[ "$mode9c" == degraded ]]; then
+			expect_has "setsid case (degraded): positive control, the degraded host-/proc profile was used" "private /proc unavailable" "$(cat "$T/main.out")"
+		else
+			expect_lacks "setsid case (pidns): positive control, the private /proc profile was used" "private /proc unavailable" "$(cat "$T/main.out")"
+		fi
+		sleep 3.5
+		[[ ! -L "$FH/.prime/agent/sessions/late-link" ]] && ok "setsid grandchild swept ($mode9c): no late-link after main returns (waited 3.5s)" || bad "setsid grandchild swept ($mode9c): no late-link after main returns (waited 3.5s)"
+		command rm -f "$FH/.prime/agent/sessions/late-link"
+	done
+	if [[ "${HOST_PROC_DEGRADED:-0}" != 1 ]]; then
+		# pid-ns mode, no sweep (raw profile): the kernel kills the setsid grandchild with the namespace
+		run_ws "$REPO" '(setsid sh -c "sleep 2; ln -s /etc/hostname \"$HOME/.prime/agent/sessions/late-link-pidns\"" >/dev/null 2>&1 &); exit 0' >/dev/null || true
+		sleep 3.5
+		[[ ! -L "$FH/.prime/agent/sessions/late-link-pidns" ]] && ok "pid-ns mode: setsid grandchild dies with the namespace (no late-link without any sweep, waited 3.5s)" || bad "pid-ns mode: setsid grandchild dies with the namespace (no late-link without any sweep, waited 3.5s)"
+		command rm -f "$FH/.prime/agent/sessions/late-link-pidns"
+	fi
 	# sweep never targets pa-sandbox's own namespaces and needs BOTH ids to match
 	out="$( (pa_sandbox_sweep "$(readlink /proc/self/ns/ipc)" "$(readlink /proc/self/ns/user)") 2>&1 )" && rc=0 || rc=$?
 	expect_eq "sweep refuses pa-sandbox's own namespace pair" "1" "$rc"
@@ -608,11 +654,161 @@ STUB
 exit 0
 STUB
 	chmod +x "$STUBDIR/prime-agent"
-	( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; pa_sandbox_main ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
-	expect_eq "escape repro: main rc" "0" "$rc"
-	sleep 3.5
-	[[ ! -L "$FH/.prime/agent/sessions/late-link-userns" ]] && ok "escape repro blocked: no late-link-userns after main returns (waited 3.5s)" || bad "escape repro blocked: no late-link-userns after main returns (waited 3.5s)"
-	command rm -f "$FH/.prime/agent/sessions/late-link-userns"
+	for mode9c in degraded pidns; do
+		[[ "$mode9c" == pidns && "${HOST_PROC_DEGRADED:-0}" == 1 ]] && continue
+		( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"; main_mode "$mode9c" ) >"$T/main.out" 2>&1 && rc=0 || rc=$?
+		expect_eq "escape repro ($mode9c): main rc" "0" "$rc"
+		if [[ "$mode9c" == degraded ]]; then
+			expect_has "escape repro (degraded): positive control, the degraded host-/proc profile was used" "private /proc unavailable" "$(cat "$T/main.out")"
+		else
+			expect_lacks "escape repro (pidns): positive control, the private /proc profile was used" "private /proc unavailable" "$(cat "$T/main.out")"
+		fi
+		sleep 3.5
+		[[ ! -L "$FH/.prime/agent/sessions/late-link-userns" ]] && ok "escape repro blocked ($mode9c): no late-link-userns after main returns (waited 3.5s)" || bad "escape repro blocked ($mode9c): no late-link-userns after main returns (waited 3.5s)"
+		command rm -f "$FH/.prime/agent/sessions/late-link-userns"
+	done
+
+	# (T9c A) bwrap itself starts with an EMPTY environment. In the pid-ns mode the sandbox's pid 1
+	# is bwrap's init in the same user ns, so /proc/1/environ would show the caller's environment
+	# (--clearenv only changes the child's). Two checks: (1) what the sandbox reads in
+	# /proc/1/environ (pid-ns mode only: in the degraded mode /proc/1 is the host's init),
+	# (2) bwrap's environment at exec, recorded by a shim, in both modes.
+	cat >"$STUBDIR/prime-agent" <<'STUB'
+#!/bin/sh
+echo "P1ENV-MARKER=$(tr '\0' '\n' </proc/1/environ 2>/dev/null | grep -c '^PA_T9C_MARKER=')"
+echo "P1ENV-COUNT=$(tr '\0' '\n' </proc/1/environ 2>/dev/null | grep -c .)"
+exit 0
+STUB
+	chmod +x "$STUBDIR/prime-agent"
+	envleak() { # <mode> [pa-sandbox copy]
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH" PA_T9C_MARKER=host-secret-9c; main_mode "$1" "${2:-}") 2>&1 )" && rc=0 || rc=$?
+	}
+	if [[ "${HOST_PROC_DEGRADED:-0}" != 1 ]]; then
+		envleak pidns
+		expect_has "(T9c A) pid-ns: /proc/1/environ has no host marker variable" "P1ENV-MARKER=0" "$out"
+		expect_has "(T9c A) pid-ns: /proc/1/environ is empty" "P1ENV-COUNT=0" "$out"
+		MUT9A="$T/pa-sandbox.mut-envi"
+		sed -e 's|env -i "\$bw"|"$bw"|' "$PA_SANDBOX" >"$MUT9A"
+		! grep -q 'env -i "\$bw"' "$MUT9A" && ok "(T9c A) mutation applied (bwrap inherits the caller's environment)" || bad "(T9c A) mutation applied (bwrap inherits the caller's environment)"
+		envleak pidns "$MUT9A"
+		expect_has "MUTATION (bwrap inherits the environment): /proc/1/environ shows the host marker" "P1ENV-MARKER=1" "$out"
+		command rm -f "$MUT9A"
+	fi
+	for mode9c in degraded pidns; do
+		[[ "$mode9c" == pidns && "${HOST_PROC_DEGRADED:-0}" == 1 ]] && continue
+		BWENV="$T/bwshim-env.$mode9c"
+		command rm -f "$BWENV" "$BWENV.calls"
+		mkbwshim "$T/bwshim-env-bin.$mode9c" "$([[ $mode9c == degraded ]] && echo 1 || echo 0)" "$BWENV" 0
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$T/bwshim-env-bin.$mode9c:$STUBDIR:$PATH" PA_T9C_MARKER=host-secret-9c
+			[[ $mode9c == degraded ]] && export PA_SANDBOX_ALLOW_HOST_PROC=1
+			source "$PA_SANDBOX"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+		expect_eq "(T9c A) $mode9c: main rc" "0" "$rc"
+		# the shim records before it fails the probe: probe + 2 guard probes + real launch = 4 in both modes
+		expect_eq "(T9c A) $mode9c: shim saw exactly the probe, the 2 guard probes and the real launch" "4" "$(wc -l <"$BWENV.calls")"
+		if [[ "$mode9c" == degraded ]]; then
+			expect_has "(T9c A) degraded: positive control, the degraded host-/proc profile was used" "private /proc unavailable" "$out"
+		else
+			expect_lacks "(T9c A) pidns: positive control, the private /proc profile was used" "private /proc unavailable" "$out"
+		fi
+		expect_eq "(T9c A) $mode9c: every bwrap launch started with an empty environment (0 variables)" "0" "$(grep -c . "$BWENV" || true)"
+	done
+
+	# (T9c B) a forged ESC sequence in bwrap.err is not passed through to the terminal: \n and \t
+	# stay, every other control byte (ESC, BEL, CR, ...) becomes '?'. The shim writes the sequence
+	# to the stderr of the real launch, which is bwrap.err (in the pid-ns mode the sandbox can
+	# do the same through /proc/1/fd/2, see the T9b h test).
+	cat >"$STUBDIR/prime-agent" <<'STUB'
+#!/bin/sh
+exit 0
+STUB
+	chmod +x "$STUBDIR/prime-agent"
+	mkbwshim "$T/bwshim-esc" 0 - 1
+	MUT9E="$T/pa-sandbox.mut-nosanitize"
+	sed -e 's#head -c 65536 "\$PA_SANDBOX_RUNDIR/bwrap.err" | LC_ALL=C tr .* >&2$#cat "$PA_SANDBOX_RUNDIR/bwrap.err" >\&2#' "$PA_SANDBOX" >"$MUT9E"
+	! grep -q "LC_ALL=C tr '" "$MUT9E" && grep -q 'cat "\$PA_SANDBOX_RUNDIR/bwrap.err" >&2' "$MUT9E" && ok "(T9c B) mutation applied (bwrap.err passed through unfiltered)" || bad "(T9c B) mutation applied (bwrap.err passed through unfiltered)"
+	for cp9 in "$PA_SANDBOX" "$MUT9E"; do
+		out="$( (cd "$REPO"; export HOME="$FH" PATH="$T/bwshim-esc:$STUBDIR:$PATH"; source "$cp9"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+		nesc9="$(printf '%s' "$out" | LC_ALL=C grep -c $'\033' || true)"
+		if [[ "$cp9" == "$PA_SANDBOX" ]]; then
+			expect_eq "(T9c B) forged ESC sequence in bwrap.err: no ESC byte reaches the terminal" "0" "$nesc9"
+			expect_has "(T9c B) the text stays, ESC and BEL replaced" "?[31mESCSEQ?]0;title?" "$out"
+			expect_has "(T9c B) lone C1 byte \\233 becomes ?" "A?B" "$out"
+			expect_has "(T9c B) UTF-8 encoded C1 \\302\\233: the \\233 byte becomes ? (\\302? is no CSI)" "C$(printf '\302')?D" "$out"
+			expect_has "(T9c B) DEL \\177 becomes ?" "E?F" "$out"
+			expect_has "(T9c B) tab and newline kept" "$(printf 'tab\there')" "$out"
+			expect_lacks "(T9c B) CR neutralised" "$(printf '\r')" "$out"
+		else
+			[[ "$nesc9" -ge 1 ]] && ok "MUTATION (bwrap.err unfiltered): the ESC byte reaches the terminal" || bad "MUTATION (bwrap.err unfiltered): the ESC byte reaches the terminal" "$nesc9"
+		fi
+	done
+	# MUTATION: C1 range dropped from the tr set: the lone \233 and \302\233 pass, so the checks above would fail
+	MUT9C1="$T/pa-sandbox.mut-noc1"
+	sed -e "s|\\\\177\\\\200-\\\\237'|\\\\177'|" "$PA_SANDBOX" >"$MUT9C1"
+	! grep -q '200-' "$MUT9C1" && ok "(T9c B) mutation applied (no C1 range in the tr set)" || bad "(T9c B) mutation applied (no C1 range in the tr set)"
+	out="$( (cd "$REPO"; export HOME="$FH" PATH="$T/bwshim-esc:$STUBDIR:$PATH"; source "$MUT9C1"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+	expect_lacks "MUTATION (no C1 range): lone \\233 is not replaced (the A?B check would fail)" "A?B" "$out"
+	expect_lacks "MUTATION (no C1 range): \\302\\233 is not neutralised (the C\\302?D check would fail)" "C$(printf '\302')?D" "$out"
+	command rm -f "$MUT9E" "$MUT9C1"
+
+	# (T9c C) the bwrap launch is an external command: pa-sandbox's own shell must not keep the run
+	# dir's fds (2, 4, 7, 8) open while the sandbox runs. If it does (the launch redirected as a
+	# shell function call), the INT/TERM trap's warnings (the scrub's "removed N planted ...") go
+	# into bwrap.err and are lost. TERM is sent mid-run with a planted symlink.
+	cat >"$STUBDIR/prime-agent" <<'STUB'
+#!/bin/sh
+ln -s /etc/hostname "$HOME/.prime/agent/sessions/t9c-term-link"
+: >"$PWD/t9c.ready"
+sleep 5
+STUB
+	chmod +x "$STUBDIR/prime-agent"
+	term_case() { # <mode> <pa-sandbox copy>: sets fdhit (fds of the main shell into pa-sandbox's private temp dir), termout
+		local pidf="$T/t9c.pid" outf="$T/t9c.out" pid n i fl
+		command rm -f "$REPO/t9c.ready" "$pidf" "$outf"
+		( cd "$REPO"; export HOME="$FH" PATH="$STUBDIR:$PATH"
+			if [[ "$1" == degraded ]]; then export PATH="$DEGR_BIN:$PATH" PA_SANDBOX_ALLOW_HOST_PROC=1; else unset PA_SANDBOX_ALLOW_HOST_PROC; fi
+			exec "$BASH" -c 'echo $$ >"$2"; source "$1"; pa_sandbox_main' _ "$2" "$pidf" ) >"$outf" 2>&1 &
+		pid=$!
+		for i in $(seq 1 100); do [[ -e "$REPO/t9c.ready" ]] && break; sleep 0.1; done
+		fdhit="" n=0
+		for fl in /proc/$pid/fd/*; do
+			n=$((n + 1))
+			case "$(readlink "$fl" 2>/dev/null)" in */pa-sandbox.*) fdhit+=" $fl" ;; esac
+		done
+		fdn="$n"
+		kill -TERM "$pid" 2>/dev/null || true
+		wait "$pid" 2>/dev/null || true
+		termout="$(cat "$outf")"
+		command rm -f "$REPO/t9c.ready" "$FH/.prime/agent/sessions/t9c-term-link"
+	}
+	MUT9F="$T/pa-sandbox.mut-fnlaunch"
+	sed -e 's|^\t\tenv -i "\$bw" "\${PA_BWRAP_ARGV\[@\]:1}" /bin/sh -c|\t\tpa_t9c_fn "${PA_BWRAP_ARGV[@]:1}" /bin/sh -c|' "$PA_SANDBOX" >"$MUT9F"
+	printf 'pa_t9c_fn() { env -i "$bw" "$@"; }\n' >>"$MUT9F"
+	grep -q 'pa_t9c_fn "' "$MUT9F" && ok "(T9c C) mutation applied (bwrap launched as a shell function call)" || bad "(T9c C) mutation applied (bwrap launched as a shell function call)"
+	for mode9c in degraded pidns; do
+		[[ "$mode9c" == pidns && "${HOST_PROC_DEGRADED:-0}" == 1 ]] && continue
+		term_case "$mode9c" "$PA_SANDBOX"
+		[[ "$fdn" -ge 3 ]] && ok "(T9c C) $mode9c: positive control, the main shell's fds were listed ($fdn)" || bad "(T9c C) $mode9c: positive control, the main shell's fds were listed" "$fdn"
+		expect_eq "(T9c C) $mode9c: during the run the main shell holds no fd into the private temp dir" "" "$fdhit"
+		expect_has "(T9c C) $mode9c: TERM mid-run: the scrub's warning is printed" "removed 1 planted" "$termout"
+	done
+	term_case degraded "$MUT9F"
+	[[ -n "$fdhit" ]] && ok "MUTATION (function-call launch): the main shell holds fds into the private temp dir" || bad "MUTATION (function-call launch): the main shell holds fds into the private temp dir" "$fdhit"
+	expect_lacks "MUTATION (function-call launch): TERM mid-run: the scrub's warning is lost into bwrap.err" "removed 1 planted" "$termout"
+	command rm -f "$MUT9F"
+
+	# (T9c D) bwrap must be found at an ABSOLUTE path: with an empty PATH entry `command -v` gives
+	# ./bwrap, which env -i would resolve against the workspace; pa-sandbox refuses instead
+	command rm -f "$REPO/t9c.ran"
+	printf '#!/bin/sh\n: >"$PWD/t9c.ran"\n' >"$REPO/bwrap"
+	chmod +x "$REPO/bwrap"
+	out="$( (cd "$REPO"; export HOME="$FH" PATH=":/usr/bin:/bin"; source "$PA_SANDBOX"; pa_sandbox_main) 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(T9c D) PATH with an empty entry resolving bwrap to ./bwrap: pa_sandbox_main refuses rc" "1" "$rc"
+	expect_has "(T9c D) message" "relative path" "$out"
+	out="$( (cd "$REPO"; export HOME="$FH" PATH=":/usr/bin:/bin"; source "$PA_SANDBOX"; pa_sandbox_build_argv "$REPO") 2>&1 )" && rc=0 || rc=$?
+	expect_eq "(T9c D) pa_sandbox_build_argv refuses rc" "1" "$rc"
+	expect_has "(T9c D) pa_sandbox_build_argv: message" "relative path" "$out"
+	[[ ! -e "$REPO/t9c.ran" ]] && ok "(T9c D) the workspace's ./bwrap was never run" || bad "(T9c D) the workspace's ./bwrap was never run"
+	command rm -f "$REPO/bwrap" "$REPO/t9c.ran"
 
 	# PA_SANDBOX_MAX_NESTED_GIT is honoured from the environment at source time
 	CAPR="$FH/work/caprepo"
@@ -2330,7 +2526,8 @@ ZOMBIEEOF
 			printf 'done\n'
 			printf 'for f in /proc/[0-9]*/fd/*; do\n'
 			printf '  case "$(readlink "$f" 2>/dev/null)" in\n'
-			printf '  */started | */bwrap.err | */record | */info | */block) (echo "bwrap: forged" >"$f") 2>/dev/null && echo "FDWRITE:$f" ;;\n'
+			printf '  */bwrap.err) (echo "bwrap: forged" >"$f") 2>/dev/null && echo "FDWRITE-ERR:$f" ;;\n'
+			printf '  */started | */record | */info | */block) (echo "bwrap: forged" >"$f") 2>/dev/null && echo "FDWRITE:$f" ;;\n'
 			printf '  esac\ndone\nexit 1\n'
 		} >"$1"
 		chmod +x "$1"
@@ -2349,7 +2546,15 @@ ZOMBIEEOF
 		expect_eq "(T9b h) TMPDIR=${TD9[$i9]}: forged setup failure, prime-agent ran once, its rc" "1 1" "$runs9 $rc"
 		expect_lacks "(T9b h) TMPDIR=${TD9[$i9]}: no retry" "retrying" "$out"
 		expect_has "(T9b h) TMPDIR=${TD9[$i9]}: no pa-sandbox file there" "LS:${TD9[$i9]}:[]" "$out"
-		expect_lacks "(T9b h) TMPDIR=${TD9[$i9]}: no run-state file reachable through /proc/<pid>/fd" "FDWRITE" "$out"
+		expect_lacks "(T9b h) TMPDIR=${TD9[$i9]}: started/record/info/block not reachable through /proc/<pid>/fd" "FDWRITE:" "$out"
+		# bwrap.err: known and documented (pa-sandbox, pa_sandbox_main header): in the pid-ns mode
+		# bwrap's init is pid 1 and its fd 2 is bwrap.err; in the degraded mode nothing reaches it
+		if [[ "${HOST_PROC_DEGRADED:-0}" == 1 ]]; then
+			expect_lacks "(T9b h) TMPDIR=${TD9[$i9]}: degraded mode: bwrap.err not reachable either" "FDWRITE-ERR" "$out"
+		else
+			expect_has "(T9b h) TMPDIR=${TD9[$i9]}: pid-ns mode: bwrap.err is writable only through /proc/1/fd/2" "FDWRITE-ERR:/proc/1/fd/2" "$out"
+			expect_eq "(T9b h) TMPDIR=${TD9[$i9]}: pid-ns mode: no other fd reaches bwrap.err" "1" "$(printf '%s\n' "$out" | grep -c 'FDWRITE-ERR:')"
+		fi
 	done
 	# MUTATION: run state back under $TMPDIR (and the check gone): the forged setup failure is
 	# believed, prime-agent runs 3 times

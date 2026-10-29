@@ -293,6 +293,9 @@
 #     else fail closed (UNSAFE override: PA_SANDBOX_ALLOW_NO_GUARD=1, warns every run).
 #   - --unshare-pid + private /proc; if the host refuses that mount, falling back to
 #     the host /proc is opt-in (PA_SANDBOX_ALLOW_HOST_PROC=1) and warns every run.
+#     bwrap itself is started with an EMPTY environment (pa_sandbox_bwrap_bin, absolute path; env -i): in the
+#     private-/proc mode the sandbox's pid 1 is bwrap's own init, whose /proc/1/environ would
+#     otherwise show the caller's whole environment (--clearenv only changes the child's).
 #     The fallback has NO PID namespace (inside a pid ns the host /proc shows the
 #     wrong /proc/$$, which makes the guard fail closed). So survivors are swept
 #     instead, with an identity taken ON THE HOST: bwrap runs with --info-fd and
@@ -311,6 +314,14 @@
 #     namespaces inside (otherwise `unshare -U --ipc` leaves the swept namespace).
 #
 # KNOWN LIMITS
+#   - In the private-/proc (--unshare-pid) mode the sandbox's pid 1 is bwrap's own init:
+#     (1) its fd 2 is <rundir>/bwrap.err, so code inside can write arbitrary bytes there
+#     through /proc/1/fd/2 (started/info/block/record stay unreachable; the retry decision
+#     needs started empty; the replay to the terminal is capped at 64 KiB and control bytes
+#     become '?'); (2) /proc/1/cmdline shows bwrap's whole argv, including host-side values
+#     that a later --setenv overrides (e.g. PRIME_AGENT_DAEMON_SOCKET). (2) is not new in T9c.
+#     bwrap's environment is empty (pa_sandbox_bwrap_bin / env -i), so /proc/1/environ is not
+#     a leak.
 #   - Network stays ON (model APIs need it): there is NO egress allowlist, so
 #     anything readable inside (the workspace, ~/.prime/agent/auth.json) can be
 #     exfiltrated.
@@ -542,6 +553,30 @@ pa_sandbox_require_bwrap() {
 	}
 }
 
+# Every bwrap launch is `env -i "$(pa_sandbox_bwrap_bin)" ...`: an EMPTY environment and bwrap's
+# ABSOLUTE path. In the private-/proc (--unshare-pid) mode the sandbox's pid 1 is bwrap's own
+# init, which runs in the sandbox's user namespace, so /proc/1/environ inside shows bwrap's own
+# environment (the caller's, if it were inherited); --clearenv only changes the child's. The
+# sandbox gets what it needs through the --setenv pairs in PA_BWRAP_ARGV, not through bwrap's
+# environment.
+# This function only RESOLVES the binary. The launch stays an external command at the call site:
+# redirections on a shell FUNCTION call apply to pa-sandbox's own shell while it runs, so the
+# trap output of an INT/TERM (the scrub's warnings) would go into the run dir's bwrap.err.
+# An absolute path is required: `command -v bwrap` gives a relative one (./bwrap) when PATH has
+# an empty or relative entry, which env would then resolve against the workspace.
+pa_sandbox_bwrap_bin() {
+	local bw
+	bw="$(command -v bwrap)" || {
+		pa_sandbox_die "bwrap (bubblewrap) not found in PATH; refusing to run unsandboxed (install: pacman -S bubblewrap)" 127
+		return 127
+	}
+	[[ "$bw" == /* ]] || {
+		pa_sandbox_die "bwrap resolves to the relative path '$bw' (PATH has an empty or relative entry); refusing"
+		return 1
+	}
+	printf '%s\n' "$bw"
+}
+
 pa_sandbox_repo_root() { # <dir> -> repo root (git toplevel or the dir itself)
 	local top
 	top="$(git -C "$1" rev-parse --show-toplevel 2>/dev/null)" || top="$1"
@@ -628,7 +663,9 @@ pa_sandbox_build_argv() {
 	)
 	# Private PID namespace + fresh /proc hides other processes' environ. Falling
 	# back to the host /proc leaks same-uid environments, so it is explicit opt-in.
-	if bwrap --ro-bind / / --unshare-pid --proc /proc true 2>/dev/null; then
+	local bw
+	bw="$(pa_sandbox_bwrap_bin)" || return $?
+	if env -i "$bw" --ro-bind / / --unshare-pid --proc /proc true 2>/dev/null; then
 		PA_BWRAP_ARGV+=(--unshare-pid --proc /proc)
 	elif [[ "${PA_SANDBOX_ALLOW_HOST_PROC:-0}" == 1 ]]; then
 		pa_sandbox_warn "private /proc unavailable; using host /proc (same-uid process environments are readable)"
@@ -2104,10 +2141,11 @@ sys.stdout.buffer.write(b"".join(n + b"\0" for n in os.listdir(os.fsencode(sys.a
 # silently leave every command unguarded.
 pa_sandbox_verify_guard() {
 	[[ "${PA_SANDBOX_ALLOW_NO_GUARD:-0}" == 1 ]] && return 0
-	local script out rc
+	local script out rc bw
+	bw="$(pa_sandbox_bwrap_bin)" || return $?
 	_probe() { # <command>
 		script=$'exec 9>&0 8>&1 0</dev/null\nread -r _g <&9 || exit 127\n{\n'"$PA_SANDBOX_GUARD_PREFIX"$'\n'"$1"$'\n} 8>&- 9>&-\n__s=$?\nexit $__s'
-		out="$(echo go | "${PA_BWRAP_ARGV[@]}" bash -c "$script" 2>&1)" && rc=0 || rc=$?
+		out="$(echo go | env -i "$bw" "${PA_BWRAP_ARGV[@]:1}" bash -c "$script" 2>&1)" && rc=0 || rc=$?
 		# bwrap's own setup errors ("bwrap: Can't find source path ...") mean the sandbox never
 		# started (e.g. a path the profile names vanished on the host meanwhile): say so instead
 		# of blaming the guard
@@ -2321,7 +2359,8 @@ pa_sandbox_cleanup() {
 # info; the profile scans' lists; the scrub's error file) lives in one dir created as
 # /tmp/pa-sandbox.XXXXXXXXXX, never under the caller's $TMPDIR, which may lie in the workspace
 # or another path the sandbox can write. Inside the sandbox /tmp is an empty tmpfs, so that dir
-# is not there. pa_sandbox_tmp_hidden checks this against the built profile (PA_BWRAP_ARGV):
+# is not there (no path leads to it; the one open descriptor into it that the sandbox can reach
+# is bwrap.err through /proc/1/fd/2 in the private-/proc mode, see pa_sandbox_main). pa_sandbox_tmp_hidden checks this against the built profile (PA_BWRAP_ARGV):
 # no bind source or destination (canonical or as given) may be the dir, inside it or an ancestor
 # of it -- except the root `--ro-bind / /`, which must then be covered by a later --tmpfs that is
 # an ancestor of the dir. An option it does not know fails closed.
@@ -2379,8 +2418,17 @@ pa_sandbox_tmp_hidden() { # <canonical dir>
 # run tells this case apart through the sh shim below: bwrap's OWN stderr goes to
 # <rundir>/bwrap.err (shown afterwards), and the shim, before exec'ing prime-agent, marks
 # <rundir>/started and hands prime-agent the real stderr; fds 3 and 4 are closed before
-# prime-agent runs, and the run dir is in the PRIVATE TEMP DIR (not inside the sandbox,
-# pa_sandbox_tmp_hidden), so nothing inside can reach any file there.
+# prime-agent runs (so neither the shim nor prime-agent holds them), and the run dir is in the PRIVATE TEMP DIR (not inside the sandbox,
+# pa_sandbox_tmp_hidden), so no path inside the sandbox leads there. ONE exception, known and
+# not fixed: in the private-/proc (--unshare-pid) mode the sandbox's pid 1 is bwrap's own init,
+# in the sandbox's user namespace, and its fd 2 IS bwrap.err; code inside can write arbitrary
+# bytes there through /proc/1/fd/2. started, info, block and record are not reachable: the
+# only process of the sandbox that holds an fd into the run dir is that init, and it keeps just
+# fds 0-2 (2 = bwrap.err) and an eventfd -- bwrap does not carry the option fds 4/7/8 into it
+# (observed with `ls -l /proc/*/fd` inside a pid-ns run, T9c); record is written by the host
+# watcher. The consequences are bounded: the retry decision also
+# needs started to be empty, which the sandbox cannot make (it is written by the shim before
+# prime-agent runs), and the text is shown with control bytes neutralised (see below).
 # A launch counts as a setup failure only if bwrap failed (rc != 0) with its own message
 # (bwrap.err starts with `bwrap:`) and started is empty. Then:
 #   - the record says nothing can be left: `exited` (the child was gone before the watcher
@@ -2397,6 +2445,8 @@ pa_sandbox_tmp_hidden() { # <canonical dir>
 # the previous attempt is left.
 pa_sandbox_main() {
 	pa_sandbox_require_bwrap || return $?
+	local bw
+	bw="$(pa_sandbox_bwrap_bin)" || return $?
 	local repo agent_dir rc=0 vrc try tries="$PA_SANDBOX_SETUP_TRIES" setupfail rec
 	PA_SANDBOX_RUNDIR="" PA_SANDBOX_SCRUB_DIR="" PA_SANDBOX_WATCHER="" PA_SANDBOX_TMP=""
 	trap 'pa_sandbox_cleanup' EXIT
@@ -2448,10 +2498,13 @@ pa_sandbox_main() {
 		PA_SANDBOX_WATCHER=$!
 		rc=0
 		# shellcheck disable=SC2016 # expanded by the shim's sh inside
-		"${PA_BWRAP_ARGV[@]}" /bin/sh -c 'printf x >&4 || exit 125; exec 2>&3 3>&- 4>&-; exec prime-agent "$@"' prime-agent "$@" \
+		env -i "$bw" "${PA_BWRAP_ARGV[@]:1}" /bin/sh -c 'printf x >&4 || exit 125; exec 2>&3 3>&- 4>&-; exec prime-agent "$@"' prime-agent "$@" \
 			3>&2 4>"$PA_SANDBOX_RUNDIR/started" 2>"$PA_SANDBOX_RUNDIR/bwrap.err" \
 			7>"$PA_SANDBOX_RUNDIR/info" 8<>"$PA_SANDBOX_RUNDIR/block" || rc=$?
-		[[ -s "$PA_SANDBOX_RUNDIR/bwrap.err" ]] && cat "$PA_SANDBOX_RUNDIR/bwrap.err" >&2
+		# bwrap.err can hold bytes the sandboxed code wrote (header, "bwrap.err"): on the way to
+		# the terminal (at most 64 KiB of it, head -c 65536) every control byte but \n and \t (C0 incl. ESC and CR, DEL, 0x80-0x9f = C1,
+		# which also hits the continuation bytes of some UTF-8 characters) becomes '?'.
+		[[ -s "$PA_SANDBOX_RUNDIR/bwrap.err" ]] && head -c 65536 "$PA_SANDBOX_RUNDIR/bwrap.err" | LC_ALL=C tr '\000-\010\013-\037\177\200-\237' '?' >&2
 		# bwrap is gone, so info is final: without a child-pid the watcher has nothing to record
 		grep -q '"child-pid"' "$PA_SANDBOX_RUNDIR/info" 2>/dev/null || kill "$PA_SANDBOX_WATCHER" 2>/dev/null || true
 		wait "$PA_SANDBOX_WATCHER" 2>/dev/null || true
