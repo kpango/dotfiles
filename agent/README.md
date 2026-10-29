@@ -1284,6 +1284,7 @@ settings.json`・`agent/harnesses/pi/mcp.json`・`agent/harnesses/agy/mcp_config
 - `agent/harnesses/agy/`: Antigravity 設定（settings, policies, hooks, mcp_config, model-routing.json）
 - `agent/harnesses/codex/`: OpenAI Codex 設定（config.toml, model-routing.json, validate-harness.sh）
 - `agent/harnesses/primeagent/`: PrimeAgent 設定（settings, models, model-routing.json, validate-harness.sh）
+  （2026-10 の prime-agent 0.10.0 対応後の構成は下記「PrimeAgent ハーネス」節）
 
 ### 2. 抽象モデルルーティング（5 Tier + Fallback System）
 
@@ -1327,3 +1328,123 @@ settings.json`・`agent/harnesses/pi/mcp.json`・`agent/harnesses/agy/mcp_config
   5. 各種エンジン検証（security-rules, vald-law-rules, graphify-hint, memory-context, merged-dir-root）: 全 PASS
   6. Pi 拡張単体テスト: 全 17 スイート 146+ テスト 100% PASS
   7. 全 5 ハーネス自己診断（Claude, AGY, Pi, Codex, PrimeAgent）: 全て OPERATIONAL
+
+## PrimeAgent ハーネス（prime-agent 0.10.0、2026-10 primeagent-max-customize）
+
+決定事項・実測した前提・実装中の訂正・実走結果の正典は `CONTEXT.md` の「primeagent-max-customize (2026-10-14)」節
+（P-1〜P-7、Q1〜Q9、C-1 以降）。本節は構成と運用手順だけを書く。
+
+### 構成（`agent/harnesses/primeagent/`）
+
+| ファイル | 役割 | `$HOME` 側 |
+| --- | --- | --- |
+| `settings.json` | repo 所有キー（root モデル `defaultProvider`/`defaultModel`、`providerBackupModel`、autonomous・retry・telemetry 無効・`factory.enabled`・`mcpServers` 等） | `install.sh` が live とマージした 0600 の通常ファイル（symlink にしない、P-2） |
+| `model-routing.json` | Tier Low〜Max の SSoT（Q4）。`subagentDefaultModel`(High)・`auxiliaryModel`(Low)・`allowedModels` は install 時にここから導出（C-2） | `~/.prime/agent/model-routing.json`（symlink、DOTFILES_MAP） |
+| `models.json` | ローカル provider（`local-ollama` の `qwen3:4b-instruct`、`local-vllm`） | `~/.prime/agent/models.json`（symlink、DOTFILES_MAP） |
+| `AGENTS.md` | `gen-agents-md.sh` が `agent/AGENTS.md` の中立部分＋`AGENTS-supplement.md` から生成して commit したもの（手編集しない） | `~/.prime/agent/AGENTS.md`（symlink、DOTFILES_MAP） |
+| `skills.list` | `agent/skills/` の共有スキルのうち prime に張るもの（24 件） | `~/.prime/agent/skills/<name>`（per-entry symlink） |
+| `skills/` | prime 専用スキル 7 件（`prime-swarm-*` 6 件＋Python スキル `swarm-adapter`） | 同上 |
+| `machines/` | factory machine 3 件（`swarm-explore`/`swarm-implement`/`swarm-review`） | `~/.prime/agent/machines/<name>`（per-entry symlink） |
+| `bin/pa-sandbox`, `bin/pa-auto` | 第 2 層の隔離実行（下記） | `~/.local/bin/`（symlink） |
+| （`agent/scripts/prime-shell-guard.sh`） | 第 1 層の shell guard | `~/.prime/agent/bin/prime-shell-guard.sh`（symlink） |
+
+`agents`（→ `agent/agents`）・`themes`（→ `agent/harnesses/pi/themes`）・`SWARM.md`・`SWARM_REFERENCES.md`・`RTK.md` も
+`~/.prime/agent/` へ symlink される。`SYSTEM.md` は置かない（prime のコア prompt 層を置換するため、P-1）。
+live 配線の宣言は `agent/sync-manifest.json` の `primeagent` target（`live-symlink`・`live-symlink-dir`・`live-regular-file`・`generate`）。
+
+### install の流れ（`make primeagent/install` → `install.sh`）
+
+`dotfiles/install` の後に `ROOTDIR=<checkout> HOME=<home> bash agent/harnesses/primeagent/install.sh` を実行する。規則の全文は
+`install.sh` のヘッダ、テストは `test-install.sh`。
+
+1. **preflight（何も変えない）**: `HOME` の検証、この installer が張っていない `~/.prime/agent/SYSTEM.md` があれば中止、
+   `skills/`・`machines/`・`bin/`・`sessions/`・`~/.local/bin` がディレクトリ（または作成可能）か、`skills.list` の各名に
+   `agent/skills/<name>/SKILL.md` があり prime 専用スキルと重複しないか、`settings.json` のマージと差分計算。
+   ここで失敗すると非 0 で終了し、ファイルもリンクも変わらない。
+2. **変更**: 旧 pi 由来のレイアウト（`SYSTEM.md`・`extensions/`・`prompts`・`rules`・`keybindings.json`・`mcp.json`）は、
+   それ自体がこの checkout への symlink なら削除する。実ディレクトリなら中にあるこの checkout への symlink だけを削除し、
+   それで空になったディレクトリ（その名前自身を含む）を消す。ユーザーのファイル・外部への symlink・もとから空だった
+   ディレクトリは残る。ディレクトリが残ったとき、および symlink でもディレクトリでもないとき・外部への symlink のときは warning
+   （`install.sh` の `remove_owned`、P-3）。各 symlink を張り、`skills/`・`machines/`・`bin/` は実ディレクトリに
+   して per-entry symlink を張り、不要になった自前の link を prune する。ユーザーのファイルや外部への symlink は上書きせず warning。
+3. **`settings.json` は最後**: symlink・不在・jq の `==` で差がある場合だけ書く。変わる値を `path: old -> new` で表示し、
+   旧ファイルを `settings.json.bak.<timestamp>`（0600）に残し、一時ファイル＋`mv` で置換する（Q7）。導出キー
+   （`allowedModels` 等）は install のたびに model-routing.json から作り直されるので、live で手で足した値は次の install で消える。
+
+`~/.prime/agent/kernel-venv` は prime-agent が初回のカーネル起動時に作る（無ければ install が warning を出す）。
+
+### 第 1 層: shell guard
+
+- `zsh/20-dev.zsh` が guard の存在時だけ `PRIME_AGENT_BASH_COMMAND_PREFIX='. "$HOME/.prime/agent/bin/prime-shell-guard.sh"'`
+  を export する（settings の `shellCommandPrefix` は ipython の `bash()` に効かない、C-1）。guard は decide.py に
+  `agent/security-rules.json` で判定させ、`block`/`ask` なら exit 126。
+- env はカーネルを起動したプロセス（daemon）から継承される（C-1）ので、この export を経ずに起動した prime-agent / daemon
+  には prefix が無い。REPL の Python は guard を通らない。ガードレールであり境界ではない。
+- 起動時の環境変数 allowlist（Q5）は pa-sandbox の中にだけある（`CONTEXT.md` の C-3）。
+
+### 第 2 層: pa-sandbox / pa-auto
+
+- **pa-sandbox**: `prime-agent "$@"` を bwrap の中で動かす。`/` は ro、`/tmp`・`$HOME` は空の tmpfs。`~/.prime/agent` は
+  サンドボックス私有の tmpfs で、起動時に列挙したホストの各エントリを同じパスへ ro bind する（lock 名 `*.lock`・`*.lock.*` は bind せず
+  私有の lock を使う）。rw はワークスペース（`$PWD` の git toplevel）と `sessions`・`session-artifacts`・`session-leases`・
+  `logs`・`swarm`・`telemetry.json(l)` だけで、`daemon-workers/`・`rlm-ledger/` は私有 tmpfs（終了時に破棄）。git メタデータは
+  ro なので中での commit/branch/add は失敗する（人間がホストで commit する）。環境変数は allowlist、daemon socket は
+  `/tmp/pa-sandbox/daemon.sock`（ホストの daemon には繋がない）。起動前に中で guard が効くことを確かめ、効かなければ起動しない。
+  `.git` の無いワークスペース、`$HOME` やその祖先は拒否する。private `/proc` を mount できないホストでは
+  `PA_SANDBOX_ALLOW_HOST_PROC=1` が要る（`zsh/20-dev.zsh` が guard と一緒に export する）。
+- **既知の制限**（全文は `bin/pa-sandbox` ヘッダの `KNOWN LIMITS`）: network は ON で egress 制限が無い（`auth.json` や
+  ワークスペースを持ち出せる）。ワークスペースは rw なので、後の非サンドボックス実行が読む project-local 設定
+  （`.prime/agent/settings.json`・`AGENTS.md`・`.agents/skills` 等）を置かれうる → 実行後に `git status` で untracked を確認する。
+  起動時に無かった git repo（新しい `.git`・bare repo・submodule の `.git`）は攻撃者が制御しうる → ホストで git を使う前に確認するか
+  `--ignore-submodules=all`。`settings.json`・`auth.json`・MCP catalog・`models/` は ro で、中での設定保存や token 更新は残らない
+  （provider が refresh token をローテーションする場合はホストで再ログインが要りうる）。`daemon-workers/`・`rlm-ledger/` は破棄
+  されるので、中で spawn した記録はホストで続けたセッションに残らない。シェルの起動ファイルは検査しない。pa-sandbox 自身が
+  SIGKILL されると中のプロセスは掃除されない。
+- **pa-auto**: リポジトリ（git toplevel）の gate を決め（Makefile の `lint`/`test` target をテキスト走査、無ければ `go.mod`・
+  `Cargo.toml`・`package.json` の test script・pytest 設定の既定）、`pa-sandbox --autonomous --autonomous-gate <cmd>...` を exec する。
+  gate が見つからなければ exit 2（`--gate <cmd>` で明示）。`-n` は解決したコマンドを表示するだけ。pa-sandbox は自分の
+  （link の）パスの隣のものを使う（`PA_SANDBOX` で上書き可）。
+
+### daemon / factory machine の注意
+
+- factory machine（`rlm.factory`）と `rlm.spawn` は `-p` では動かない（`rlm.spawn requires a daemon-backed session`）。
+  確認できているのは、E2E が pty 上の対話 UI（daemon セッション）で `pa-e2e-min` を実行した場合だけ（agent dir を rw bind した
+  pa-sandbox 内。毎回 PASS ではない）。`--autonomous`・`--mode rpc` は未確認（`CONTEXT.md` の実走結果）。
+- daemon セッションは `allowedModels` 外のモデルを拒否する。install が導出する `allowedModels` に `models.json` の
+  ローカルモデルは入らないので、ローカルモデルは daemon では使えない（`-p` では弾かれない）。
+- pa-sandbox 内の daemon: T9b の私有 tmpfs 化で、読み取り専用の agent dir による EROFS（`daemon-workers/` への書き込み）
+  を避ける作りになった。ただし ollama E2E は T9b 以降に再実走していない（`CONTEXT.md` の実走結果）。
+- `-p` では settings の `defaultProvider`/`defaultModel` が反映されないことがある（原因未調査）。`--provider`/`--model` を明示する。
+- factory が子の回答が届く前に `done` で settle することがある（E2E の INCONCLUSIVE (b)、原因未特定）。
+
+### テストと実行方法
+
+どれも実 `~/.prime/agent` に書かない。`validate-harness.sh` と `sync-verify.sh` は実 `$HOME` の live 配線を読み取りのみで
+検査する（`validate-harness.sh` が prime-agent を動かすのはコピーした HOME）。`gen-agents-md.sh --check` は何も書かない。
+それ以外は `mktemp` の使い捨て HOME / 作業ディレクトリ（pytest は `tmp_path`）で動く。prime-agent・pytest が無いとき、
+`validate-harness.sh`・`test-agents-md.sh`・`test-install.sh` はその項目を SKIP / WARN にするが、`test-pa-wrappers.sh`
+（bwrap）・`test-machines.sh`・`test-prime-skills.sh`（prime-agent）を単体で実行すると FAIL になる。
+
+| コマンド | 内容 |
+| --- | --- |
+| `bash agent/harnesses/primeagent/validate-harness.sh` | repo の検査は常に、`$HOME/.prime/agent` があれば live を読み取りのみで検査（prime-agent はコピーした HOME でオフライン実行）。`PRIME_VALIDATE_FULL=1` で下の遅いスイートも流す。実 HOME を使わず新規 install を検証する手順はヘッダにある |
+| `bash agent/harnesses/primeagent/test-install.sh` | `make primeagent/install` を使い捨て HOME へ |
+| `bash agent/harnesses/primeagent/test-agents-md.sh` / `gen-agents-md.sh --check` | 生成 AGENTS.md の drift・行数・guard 表・パス参照など |
+| `bash agent/harnesses/primeagent/bin/test-pa-wrappers.sh` | pa-auto の gate 検出と pa-sandbox の bwrap プロファイル（fake HOME） |
+| `bash agent/harnesses/primeagent/skills/test-prime-skills.sh` | `prime-swarm-*` スキルの静的検査＋サンドボックス検査 |
+| `bash agent/harnesses/primeagent/machines/test-machines.sh` | MACHINE.md の parse・モデル selector・サンドボックスでの `prime-agent factory import` |
+| `cd agent/harnesses/primeagent/skills/swarm-adapter && python3 -m pytest -q` | swarm-adapter（pytest が無ければ `uv run --no-project --with pytest python -m pytest`） |
+| `bash agent/scripts/test-prime-shell-guard.sh` | shell guard |
+| `SYNC_VERIFY_ONLY=primeagent bash agent/scripts/sync-verify.sh` | live 配線（linked worktree では `SYNC_VERIFY_LIVE_ROOT=<main checkout>`） |
+
+### ollama E2E（`agent/harnesses/primeagent/e2e/run-ollama-e2e.sh`）
+
+`bash agent/harnesses/primeagent/e2e/run-ollama-e2e.sh`。ローカル ollama（`PA_E2E_OLLAMA_URL`、既定
+`http://127.0.0.1:11434`）に `qwen3:4b-instruct` が必要（pull はしない）。bwrap・jq・git・curl・script・python3・make・
+mkfifo・timeout・prime-agent のどれかが無い、ollama に繋がらない、モデルが無い場合は SKIP（exit 0）。使い捨て HOME と
+ワークスペースは `PA_E2E_TMP_PREFIX`（既定 `/var/tmp/pa-e2e`）に作り、終了時に消す（`PA_E2E_KEEP=1` で残す）。実 daemon・
+socket には接続しない。フェーズは guard（pa-sandbox `-p`）・allowlist（daemon がローカルモデルを拒否すること）・machine
+（daemon で `pa-e2e-min` が ping→pong→`done`、INCONCLUSIVE は `PA_E2E_MACHINE_TRIES` 回まで再試行）。exit は 0 PASS/SKIP、
+1 FAIL、2 setup error、3 INCONCLUSIVE、4 プロセス残存、5 一時ディレクトリを消せない。判定基準と実走結果は `CONTEXT.md`。
+スクリプトヘッダの Deviations（`PA_SANDBOX_RO_EXTRA=<uv python dir>` と daemon フェーズでの agent dir の rw bind）は
+T9b 以前の pa-sandbox に対するもので、T9b 後はそのまま残っている（外すかどうかは再実走で確かめる）。

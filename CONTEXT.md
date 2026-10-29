@@ -747,6 +747,14 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
   （`additionalProperties:false`）で Inherit を置けない。root（`defaultProvider`/`defaultModel`）と
   `providerBackupModel` は settings.json の repo 所有キーとし、`subagentDefaultModel`(High)・`auxiliaryModel`(Low)・
   `allowedModels`（全 tier の主・fallback ＋ root/backup）は install 時に model-routing.json から導出する。
+- **C-3 Q5 の配線の実際（2026-10-19 追記、T12 docs 確認）**: 既定経路（第 1 層）で配線されているのは guard の
+  `PRIME_AGENT_BASH_COMMAND_PREFIX` だけで、`zsh/20-dev.zsh` が `~/.prime/agent/bin/prime-shell-guard.sh` の存在時に export する
+  （同時に `PA_SANDBOX_ALLOW_HOST_PROC=1` も export）。Q5 の「起動時の環境変数ホワイトリスト」は pa-sandbox の中
+  にしか実装されておらず、サンドボックス外の起動では環境変数は絞られない。pa-sandbox は `--clearenv` の後、
+  `PA_SANDBOX_ENV_ALLOW`（PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY）・`PA_SANDBOX_PASS_ENV` の名前・
+  `LC_*`・`PRIME_AGENT_*` だけをホストから渡す（`pa_sandbox_build_argv`）。それ以外に中で設定されるのは固定値だけで、
+  `HOME`（サンドボックスの HOME）、名前が挙がった `TMPDIR` は `/tmp`、最後に `GIT_CONFIG_NOSYSTEM`・
+  `PRIME_AGENT_CODING_AGENT_DIR`・`PRIME_AGENT_DAEMON_SOCKET`・`PRIME_AGENT_BASH_COMMAND_PREFIX` を上書きする。この export を経ずに起動した prime-agent / daemon には guard の prefix も入らない（C-1 の env 継承）。
 
 ### 実走結果（2026-10-18、T13、`agent/harnesses/primeagent/e2e/run-ollama-e2e.sh`）
 
@@ -771,7 +779,7 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
   判定か）は特定していない。attempt 3 の Maker は、実走 3 回（2026-10-18 12:50–13:02、タイムゾーンの記録なし）がいずれも guard・allowlist・
   machine とも PASS（exit 0）で machine は毎回 1 回目に PASS したと報告した（ログは見つからない）。再試行の経路は
   attempt 4 の Checker の run 1 で実際に通った（下記）。
-- **pa-sandbox の制約（未修正、T9 への申し送り）**: (1) 読み取り専用の agent dir では daemon が起動しない
+- **pa-sandbox の制約（T13 時点、T9 への申し送り。(1)(2) は T9b で対応済み、次項）**: (1) 読み取り専用の agent dir では daemon が起動しない
   （`daemon-workers/<sha256(socket)[:12]>/supervisor-config.tmp-*` の作成が EROFS で失敗）。したがって pa-sandbox 内では
   factory machine を実行できない。E2E は使い捨て agent dir を rw bind するラッパーで実行した。
   (2) kernel venv の python と pyvenv.cfg `home` が uv の minor 版 symlink（`cpython-3.11-…`）を経由するが、
@@ -782,6 +790,23 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
   （`/dev` は `--dev`、docker/podman ソケットは `/dev/null` で mask。`pa_sandbox_build_argv`）。実 HOME はこの一覧に
   含まれないので、HOME を差し替えて起動すると実 HOME がサンドボックス内から読める（`/` の ro bind により書けない）。
   E2E のラッパーは実 HOME を tmpfs で隠し、この checkout と prime-agent の実行ファイルだけを ro で戻す。
+- **T9b での対応（2026-10-19 追記、T12）**: T9b の pa-sandbox（`pa_sandbox_build_argv`、ヘッダの設計節と KNOWN LIMITS）で
+  上の (1)(2) に対応した。(3) は T9b でも変わらない（tmpfs は `/tmp`・`$HOME`・`/run/user`・`/run/dbus`）。
+  (1) agent dir（`~/.prime/agent`）はサンドボックス私有の tmpfs になり、pa-sandbox がプロファイルを作るときに列挙した
+  ホストの各エントリを同じパスへ ro bind する（`--ro-bind-try`。lock 名 `*.lock`・`*.lock.*` は bind せず、tmpfs 内で私有の
+  lock になる）。`daemon-workers/`・`rlm-ledger/`（`PA_SANDBOX_AGENT_TMP_DIRS`）は空の tmpfs で、終了時に破棄される。
+  列挙後にホストが消したエントリで bwrap のセットアップが失敗したときは、`PA_SANDBOX_SETUP_TRIES`（既定 3）回まで起動をやり直す
+  （実走は、前回の起動の残りが無いとホスト側 watcher が確認できたときだけ。`pa_sandbox_watch`・`pa_sandbox_main`、ヘッダの設計節）。
+  rw は従来どおり `PA_SANDBOX_AGENT_RW_DIRS`（sessions session-artifacts session-leases logs swarm）・`telemetry.json(l)`・
+  ワークスペースだけ。ホストに無い名前（`SYSTEM.md` 等）は中で作れるがホストには届かない。
+  (2) kernel venv の `bin/python` と pyvenv.cfg `home` を 1 要素ずつ辿り、agent dir 内の hop を除き、`$HOME`・`/tmp` 配下の symlink
+  hop ごとにそれを含むディレクトリ（uv なら minor 版 symlink のある python ディレクトリ）を ro bind する（そのディレクトリが
+  `$HOME`・`/tmp` 自身か、ワークスペース・agent dir を含むときは link 自体）。解決後のインストール先も ro bind する（`_vpath`/`_vexpose`、
+  ヘッダの KERNEL VENV INTERPRETER）。経路がワークスペースや rw state を通る場合は起動を拒否する。
+  **未実走**: `e2e/run-ollama-e2e.sh` は T9b 以降に再実走しておらず、同スクリプトはまだ daemon フェーズで agent dir を
+  rw bind し `PA_SANDBOX_RO_EXTRA=<uv python dir>` を付けている（ヘッダの Deviations は T9b 以前の pa-sandbox についての記述）。
+  したがって「無改変の pa-sandbox 内で daemon と factory machine が動く」ことは E2E では確かめていない。T9b 自身の
+  実測・テストは T9b の報告と `bin/test-pa-wrappers.sh` による。
 - **E2E のホスト側書き込み**: settings・models.json・machine など agent dir へのホスト書き込みは、すべてサンドボックスが
   その dir を見る前に済ませる。フェーズ（guard / allowlist / machine の各試行）ごとに、ホスト専用テンプレート
   （サンドボックス内では一時 HOME ごと tmpfs で見えない）を `cp -aT` で未存在の `~/.prime/agent` へ新規コピーし、
