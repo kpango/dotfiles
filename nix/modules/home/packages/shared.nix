@@ -13,7 +13,8 @@
 {
   home.packages = with pkgs; [
     # C / C++
-    ccache
+    # ccache pulls elfutils via nativeBuildInputs on newer nixpkgs revisions,
+    # which is unsupported on aarch64-darwin. Moved to modules/home/packages/linux.nix.
     # dockers/base.Dockerfile apt-installs the plain `clang` compiler alongside
     # clang-tools/llvm; the bare compiler binary was missing here.
     clang
@@ -177,7 +178,8 @@
     kubebuilder
     kubecolor
     kubectl
-    kubectl-gadget
+    # kubectl-gadget depends on elfutils/eBPF, which is Linux-only and fails on aarch64-darwin.
+    # It has been moved to modules/home/packages/linux.nix.
     kubectl-tree
     kubectx
     kubefwd

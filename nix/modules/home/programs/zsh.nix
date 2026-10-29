@@ -19,6 +19,11 @@
       source ${dotfilesPath}/zshenv
     '';
 
+    # .zprofile is the sole sway launcher (tty1 login); home-manager owns the generated file.
+    profileExtra = ''
+      source ${dotfilesPath}/zprofile
+    '';
+
     initContent = ''
       # Source core monolithic zshrc script (bypassing Nix native strings to keep dotfiles source truth)
       # Sheldon is loaded with caching inside zsh/02-plugin.zsh
@@ -36,12 +41,13 @@
   };
 
   # No `home.file."./.zshrc".force = true` here: home-manager's zsh module
-  # keys these as "./.zshrc"/"./.zshenv" (dotDirRel defaults to "."), but
+  # keys these as "./.zshrc"/"./.zshenv"/"./.zprofile" (dotDirRel defaults to "."), but
   # checkLinkTargets' generated forcedPaths array keeps that literal "./"
   # while the runtime target path it's compared against is normalized to
   # ".zshrc" — the two strings never match, so force is a silent no-op for
-  # this specific key shape (confirmed by inspecting the built
-  # check-link-targets.sh derivation, 2026-08-22). See mac/install's
+  # this specific key shape (confirmed for .zshrc/.zshenv by inspecting the built
+  # check-link-targets.sh derivation, 2026-08-22; .zprofile has the same key shape
+  # but was not separately inspected). See mac/install's
   # MAC_PREP in Makefile.d/install.mk, which removes dotfiles/install's
-  # pre-existing .zshrc/.zshenv symlinks before nix/setup runs instead.
+  # pre-existing .zshrc/.zshenv/.zprofile symlinks before nix/setup runs instead.
 }

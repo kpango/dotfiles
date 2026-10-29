@@ -53,14 +53,14 @@
     # NIX_MANAGED=1 tells dotfiles/install (a prerequisite of every target
     # below) to skip DOTFILES_MAP destinations a home-manager module already
     # generates more richly than a plain symlink: programs.zsh's
-    # .zshrc/.zshenv (zsh.nix), programs.git's .gitconfig (git.nix),
+    # .zshrc/.zshenv/.zprofile (zsh.nix), programs.git's .gitconfig (git.nix),
     # programs.tmux's .tmux.conf (tmux.nix), and darwin.nix's Nix-built
     # .gnupg/gpg-agent.conf on Darwin. Without this, dotfiles/install
     # silently replaces those with a plain live-repo symlink on every
     # `nix/switch`, and the *next* activation's checkLinkTargets refuses to
     # put home-manager's own version back (force = true doesn't help for
-    # .zshrc/.zshenv specifically -- zsh.nix's own comment documents
-    # home-manager keying those two paths as "./.zshrc" internally, which
+    # .zshrc/.zshenv/.zprofile specifically -- zsh.nix's own comment documents
+    # home-manager keying those paths as "./.zshrc" internally, which
     # never matches checkLinkTargets' normalized ".zshrc").
     echo "==> make -C $rootDir claude/install pi/install agy/install codex/install primeagent/install" >&2
     $DRY_RUN_CMD make -C "$rootDir" NIX_MANAGED=1 \

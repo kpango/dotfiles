@@ -668,6 +668,263 @@ Grilling 設計面談（`agent/rules/grill-interview.md`）の決定事項。pri
   sed 正規化後の形でコミットされており、規約そのものの変更は影響範囲が別物。
 - **前提**: 上記すべては `origin/main` へ push されて初めて CI に反映される。
 
+## unifi-ips-docfix (2026-10-16) — UniFi Network 11 の DB 移行と IPS 実機調査の反映
+
+- **起点**: amalance.jp/blog-unifi-03（UDM Pro IPS ルール統計記事）の実機ファクトチェック。統計値は
+  実機（Network 11.0.89）とほぼ一致、「カテゴリ単位でしか切替不可」は誤り（Signature Suppression あり）。
+- **決定 1**: UniFi Network ≥ 11.0.83 はアプリ DB が PostgreSQL（release notes "Migrated the application
+  database to PostgreSQL"）。`unifi-api` skill の DB 直接照会手順は版分岐で記述し、旧版の mongo 手順も残す
+  （未更新機器向け）。DB は読み取り専用で使い、修正は従来どおり Classic REST API 経由（DB 直書きしない）。
+- **決定 2**: IPS の機構（suricata `--pcap` 受動監視 → ipset `ips`/`ips6` → FORWARD で一定時間 DROP）を
+  skill に汎用知識として記載。世帯固有の有効カテゴリ・Tor 方針は auto-memory 側に置く（harness-design.md）。
+- **決定 3**: UDM 本体は変更しない。Tor 遮断は人間判断で現状維持、カテゴリ削減・シグネチャ抑制は便益なしで不採用。
+
+## login-startup-optimize (2026-10-21) — tty1 ログイン → sway / zsh / tmux 起動チェーンの整理
+
+起点: 同日朝、`libliftoff` の orphan 削除で sway が即死し、tty1 ログインが即ログアウトするループが発生した。
+kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.sh` の `exec sway` が原因
+（`ed1f382` の暫定修正は後者のみに効いていた）。**zshenv:9 の `unsetopt GLOBAL_RCS` により kpango の zsh
+ログインは /etc/zsh/zprofile・/etc/profile・profile.d を読まない**（実測 `zsh -l -c` で globalrcs=off）。
+本ミッションはその起動チェーン全体を計測に基づき一本化・高速化する。決定は grill-interview Q1〜Q10。
+
+### Terms
+
+- **launcher**: tty ログインシェルから sway を起動する唯一の箇所（tty1 のログイン経路が対象で OS 非依存。
+  NixOS ホスト `tr` の greetd 起動はこの経路を通らない）。本ミッション後は repo の `zprofile`
+  （`~/.zprofile`、共通 `DOTFILES_MAP`）が `arch/sway.sh` を呼ぶ。`/etc/profile.d/sway.sh` は I1 の条件で撤去
+- **session env**: sway プロセスとその子（systemd user / D-Bus activation 経由のサービス含む）が見る環境変数
+- **host tmux server**: `/run/user/$UID/tmux-main.sock` 上の単一サーバー。Arch（install.mk 配備）では起動役は
+  `tmux.service`。Nix ホストには同 unit が無く、01-tmux.zsh の直接 `new-session -d` か端末の `new-session -A`
+  が作る（docker 分岐の `/tmp/tmux-main.sock` はコンテナ内用で別物）
+
+### Invariants this mission's decisions depend on
+
+- **I1 (Q1) launcher は 1 箇所（tty ログイン経路）**: tty ログインから sway を起動するのは `~/.zprofile` だけ。gate は対話シェル・tty1・
+  `WAYLAND_DISPLAY` 未設定・非 root（EUID≠0）・`sway` が存在。root（tty1 からの `su -`/`sudo -i` 含む）・
+  他 tty・SSH のログインでは sway を起動しない（system-wide profile.d を使わない）。既配備の
+  `/etc/profile.d/sway.sh` は arch install prep が symlink の場合、または旧版のヘッダにだけある印
+  （`system-wide sway launcher`）を含む通常ファイル（`MODE=copy` 配備の残骸）の場合に削除し、加えて `arch/sway.sh`
+  先頭の POSIX ガード（zprofile が立てる `_SWAY_LAUNCH`）で zprofile 以外からの source を no-op にする。
+  zprofile は自身の実パスから `arch/sway.sh` を解決し、見つからなければ（`MODE=copy` で `~/.zprofile` が実ファイル）
+  zshrc の dotfiles 候補パスから fork する `ghq root` を除いたもの（`$DOTFILES_DIR`、`~/go/src/…`、`~/ghq/…`、
+  `~/dotfiles`）を探す。`dotfiles/install` は手書きの `~/.zprofile` を退避せず置き換える（`.zshrc`/`.zshenv` と
+  同じ既存挙動）。MAC_PREP は home-manager に場所を空けるため 3 ファイルとも無条件に削除する
+- **I2 (Q2) env import は 1 回**: 値の持ち主は `arch/sway.sh`（sway に export）。systemd/D-Bus への
+  反映は sway.conf autostart の 1 exec（`sh -c 'env -u … dbus-update-activation-environment --systemd --all;
+  systemctl --user start --no-block sway-session.target'`）のみ。sway の exec は非同期なので import と
+  target 起動は同一 exec 内で順序付けし、`;` で import 失敗時も target は起動する。sway 起動前の import と
+  キー列挙による個別 import は持たない。NVIDIA 用の `LIBVA_DRIVER_NAME`/`__GL_*` は
+  `systemd/environment.d/xdg.conf` から `arch/sway.sh` の NVIDIA 分岐へ移設（sway 外のセッションには付かない）。
+  greetd 起動の NixOS では `nix/modules/nixos/desktop/wayland.nix` の NVIDIA ブロックが同じ値を持つ
+- **I3 (Q3) GPU 判定は fork しない**: `/sys/module/nvidia_drm` あり・`/sys/module/nouveau` なし・
+  `/dev/nvidiactl` あり、のファイル判定のみ。nvidia-smi / lsmod / lspci は呼ばない
+- **I4 (Q4) host tmux は 1 サーバー 1 ソケット（Linux/sway ホスト）**: sway の `$term`/`$xterm`、
+  `arch/hyprland.lua`、`zfunc/_gen_env` の `TERMCMD`、SSH/対話シェル（`zsh/01-tmux.zsh`）は
+  `$XDG_RUNTIME_DIR/tmux-main.sock`（= tmux.service の `/run/user/%U/tmux-main.sock`）の同一セッション
+  `$USER@#H`（= `%u@%H`）へ `new-session -A` で接続する。`-d` は付けないので他クライアント（SSH 等）を
+  切断しない。`$term` は `$SHELL -c` を経由せず tmux を直接実行する。darwin は対象外: `_gen_env` の
+  `TERMCMD` は darwin にも焼かれるが、zshenv の `XDG_RUNTIME_DIR` 既定（`~/.local/run`）と 01-tmux.zsh の
+  ソケット選択（`/run/user/$UID` か `~/.tmux/`）が一致しない既知の差異として残す
+- **I5 (Q5) sway 失敗時は通常の対話シェル**: 非 0 終了ならログインシェルに留まり、以降は通常どおり
+  zshrc → tmux 自動 attach まで進む（特別な抑止フラグは設けない — 人間判断）。正常終了ならログアウト
+- **I6 (Q6) kanshi の起動役は kanshi.service のみ**: sway.conf の `exec kanshi` は持たない。unit は
+  `ConditionEnvironment=WAYLAND_DISPLAY` で sway 外（SSH からの make 等）では起動しない。
+  install.mk は `enable` のみ（`--now` しない）。`systemd/user/sway-session.target` も install.mk で配備
+  （従来ホストには手置きの同一内容ファイルのみ）。Nix は `nix/modules/home/services.nix` に kanshi unit
+  （`${pkgs.kanshi}`）と sway-session target を Linux 限定で持つ
+- **I7 (Q7) swaybg は reload ごとに張り替え、累積させない**: 壁紙が決まらなければ何もしない。新インスタンスを
+  先に起動し、1 秒後に新インスタンスの生存（`kill -0`）を確認してから旧インスタンス（起動前に `pgrep -u $USER`
+  で記録）だけを終了する
+- **I8 (Q9) zprofile の配線**: 共通 `DOTFILES_MAP`。Nix は `programs.zsh` が rc を生成するため、
+  zshenv と同じく `zsh.nix` の `profileExtra` から dotfiles の `zprofile` を source する形で揃える。
+  CI（`.github/workflows/zsh.yaml`）の `zsh -n` 対象にも `zprofile`・`arch/sway.sh` を含める
+- **I9 sway 終了時の後始末**: `arch/sway.sh` は sway が戻った後（rc 0・非 0・debug の全経路。ログインシェル
+  自体が kill された場合は走らない）に systemd user manager から
+  `WAYLAND_DISPLAY`/`SWAYSOCK`/`DISPLAY` を unset してから `sway-session.target` を `--no-block` で止める。
+  linger 下で stale な `WAYLAND_DISPLAY` が kanshi（`Restart=always`）の Condition を満たし続けるのを防ぐ。
+  失敗は握り潰さず `_sway_log` で報告。通常の起動前経路は fork しない（`SWAY_DEBUG_MODE=1` のログ名生成のみ例外）
+- **I10 `--all` import の除外**: `XDG_ACTIVATION_TOKEN`/`DESKTOP_STARTUP_ID`（sway が exec ごとに付与する
+  一回限りのトークン）と `XDG_SESSION_ID`/`XDG_VTNR`（ログインセッション固有）は import しない
+  （dbus-update-activation-environment(1) の推奨）。tmux の `update-environment` には `SWAYSOCK` を加え、
+  起動時から動く tmux.service のサーバーへ sway 端末から attach した後に作る window/pane が現在の sway ソケットを
+  得る（既存ペインのシェル環境は変わらない）
+- **I11 tmux.service は Type=oneshot + RemainAfterExit**: 端末が `new-session -A` で先にサーバー/セッションを
+  作りうるため、ExecStart は `has-session -t =%u@%H: || new-session -d` で既存時も成功する（末尾 `:` は
+  ドット入りホスト名を window.pane と解釈させないため。tmux 3.8 の使い捨てソケットで `=kp@a.b.c:` の一致を確認）。
+  `ExecReload=` も同じ冪等コマンドで、unit の cgroup 内でサーバーを作り直すだけで何も止めない。サーバー終了後も
+  unit は active のまま残るので、`zsh/01-tmux.zsh` は `has-session` 失敗時に `systemctl --user reload`（active
+  時）→ 失敗なら `start`（未起動時）を呼ぶ。shell から `restart` は呼ばない（ExecStop の kill-server と cgroup
+  kill が生きたサーバーを壊しうるため。stderr 文言による判定もしない）。tmux は終了時に socket ファイルを残す
+  ため待機ループは即抜ける（Phase 4.5 perf レビュー 2026-10-21、bwrap 隔離＋スタブで確認）。sway の `$term` 等
+  の端末経路は zsh を通らないため unit への再所有は行わない。**デプロイ時に tmux.service を手動 restart しない**（ExecStop の kill-server で
+  attach 中の全端末が落ちる）。`daemon-reload` のみ行い、oneshot 化は次回起動から効く
+- **I12 zshrc の早期 tmux attach**: tmux の外のシェル（`$TMUX` 空かつ `_ZSH_TMUX_LOADED` 未継承）に限り、`zsh/01-tmux.zsh` を TTY 設定・
+  `_apply_base_path`・sheldon より前に source する（exec tmux するシェルはそれらを捨てるため）。tmux ペイン内の
+  シェル（`$TMUX` あり）は従来どおり sheldon の後で source する（前に置くと `$+commands` 参照で command hash を
+  継承 PATH から作った直後に `_apply_base_path` が PATH を差し替えて再構築させ、初回プロンプトが約 1.2ms 遅れる
+  — Phase 4.5 perf レビュー 2026-10-21、bwrap 隔離＋スタブ、n=150 交互計測）。早期の `_apply_base_path` は darwin・env キャッシュ
+  再生成直後（関数内 source で焼き込み PATH が失われる）・tmux 未解決時のみ実行し、その場合は後段の同期呼び出しを
+  同一プロセス内の非 export フラグで省く（継承した `_ZSH_PATH_LOADED` では絶対にゲートしない）。zshrc の
+  `-c` fast path は外部ツールが `zsh -c` 内で `~/.zshrc` を明示 source する経路（Claude Code の shell
+  snapshot）で到達するため残す
+
+### 検討された選択肢と決定根拠
+
+- Q1: profile.d 維持 / systemd user unit (uwsm 型) を不採用。前者は root と全 tty に波及、後者は VT・
+  logind セッション紐付けの変更量とリスクが最大
+- Q2: キー明示列挙は GPU 分岐や /etc/environment のキーを sway.conf 側でも保守する二重管理が再発するため不採用。
+  `--all` の代償（SHLVL/PWD/PATH/TERM/ATUIN_SESSION 等が systemd user env と D-Bus activation env に入る）は
+  受容。今後 zshenv・zprofile・/etc/environment から秘密情報を export してはならない（そのまま全 user unit に渡る）
+- Q3: インストール時のホスト固定は GPU/ドライバ差替時の不整合リスクで不採用
+- Q4: セッション分離案は管理が 2 系統になるため不採用。01-tmux.zsh の既存設計意図（single shared session）に合わせた
+- Q5: 「素のシェル保証（tmux 抑止）」案を推薦したが、人間判断で通常シェルを選択
+- Q8: zsh 側の対象は Explore で裏取りした V8（01-tmux.zsh の ~/.zcache コピーループを tmux 外シェル限定に）・
+  V9（tmux attach を sheldon 前へ）・V13（存在しない pinentry-tmux の zcompile 削除）・V15（未使用
+  `tmux.new-session` と配備リンクの削除）のみ。V11（zshrc の `-c` fast path 削除）は当初含めたが撤回
+  （I12 の理由で到達可能。Checker が検出）。V12（combined.zsh 鮮度判定の二重化）・V14（async-compile の毎シェル
+  再帰 glob）はバックグラウンド処理で体感影響なし・過去ミッションの意図的設計のため Non-Goal
+
+### 既知の制約と非目標
+
+- **制約**: ログイン経路は SSH から実機再現できない（seat/DRM なし）。完了条件は自動検証に加え、人間による
+  物理キーボードでの tty1 ログイン → sway → 端末で tmux が開くことの実機確認（Q10）
+- **Non-Goals**: zsh 起動本体の再最適化（過去 3 ミッションで実施済み。キーエコー最悪 2.1ms は 2026-08-05
+  zsh-host-verify ミッションの実測。出典は kpango/pass リポジトリの軌跡ログ
+  `claude/swarm-history/-home-kpango-go-src-github-com-kpango-dotfiles.md` の同日行）、V12/V14、`/etc/environment` の内容変更、waybar の
+  `sudo nvme --smart-log` 30s ポーリング（起動処理ではない）、旧資産の整理（`sway/config.d/`
+  は Nix の `linux.nix` が配備するが `arch/sway.conf` が include しないため inert。include を足すと I2/I6 が崩れる。
+  `arch/service/sway.service` は未配備）、保護対象 hook/verify.sh への `zprofile` 追加（swarm-evolve 提案で扱う）
+
+## login-render-speed (2026-10-21) — ログイン直後の表示モード切り替え削減
+
+sway デバッグログ実測（sway 起動 = 0s）: DRM/EGL 初期化 0.10s、コネクタ走査 0.17s、0.48s に初回 commit。Dell
+U4919DW 2 台は EDID の preferred が 3840x1080 のため、初回 commit と tty コンソール（nvidia-drm fbdev）が
+3840x1080 で、0.56〜0.78s に kanshi が 5120x1440 へ変更する。ghostty は 0.53s 起動・1.34s 初回描画。
+login → sway 起動は 1s 未満で、体感遅延の主因はモード変更に伴うパネルの再同期と判断。
+
+### 決定事項
+
+- Q1: tty コンソール（カーネル引数 `video=`）と sway 初回 commit（`output "<make> <model> <serial>" mode`）の
+  両方を最初から 5120x1440@59.977Hz にし、ログイン時のモード変更を無くす。配置・回転・scale は従来どおり
+  kanshi が単独で持つ（sway.conf にはモードのみ、Dell 2 台をシリアルで指定）
+- Q2: Arch の `arch/sway.sh` から `WLR_DRM_NO_ATOMIC=1` を外し atomic commit を使う（nvidia-beta 615.78）。
+  NixOS 側 `nix/modules/nixos/desktop/wayland.nix` も人間判断で同時に外した（`tr` は `nvidiaPackages.stable`、
+  実機未検証。sway が起動しない場合はここを戻す）
+- Q3: 2 段階で検証する。段階 1 = sway 側（mode 指定 + atomic）を再ログインで計測、段階 2 = ブートエントリ
+  （`/boot/loader/entries/arch.conf` と記録用の `arch/loader/entries/arch.conf`）に `video=` を追加して再起動
+
+### 不変条件
+
+- I1: sway.conf の output 指定はモードのみ。位置・transform・scale を書かない（kanshi のプロファイル切替と競合させない）
+- I2: sway が起動しない場合も zprofile の fallback で tty シェルに戻る（login-startup-optimize の I 系を維持）
+
+## login-autolock-boot (2026-10-21) — greetd 自動ログイン＋起動直後ロック、ghostty 常駐、起動時間
+
+### 用語
+
+- **自動ログイン経路**: greetd `initial_session`（起動後 1 回だけ、パスワードなし）。環境変数 `SWAY_AUTOLOGIN=1` を付けて `zsh -l` を起動する
+- **パスワード経路**: greetd `default_session`（tuigreet）。`SWAY_AUTOLOGIN` なしで `zsh -l` を起動する
+
+### 決定事項
+
+- Q1: getty 自動ログインではなく greetd の `initial_session`＋swaylock（ログアウト後はパスワード必須に戻る）
+- Q2: greetd は `zsh -l` を起動し、sway の起動は従来どおり `~/.zprofile` → `arch/sway.sh` の 1 経路に保つ
+  （login-startup-optimize の「zprofile が唯一の launcher」を維持。zprofile の tty1 ゲートが greetd の vt1 でも成立することを実機で確認する）
+- Q3: sway 失敗時、`SWAY_AUTOLOGIN=1` ならセッション終了（greetd のパスワード画面へ）、それ以外は従来どおり対話シェル（login-startup-optimize Q5）
+- Q4: `SWAY_AUTOLOGIN=1` のとき最初の端末は `swaylock -f` 成功後にだけ開く（-f はロック確立後に fork）。waybar・壁紙は並行のまま
+- Q5: ghostty 常駐は dotfiles 管理の unit。vendor と同名 `app-com.mitchellh.ghostty.service` を `~/.config/systemd/user` に置いて上書きし、D-Bus activation と整合させる
+- Q6: `/etc/modprobe.d` は symlink ではなく実ファイル copy（initramfs に dangling symlink を入れない）。編集後は再 install＋`mkinitcpio -P` が必要
+- Q7: `loader.conf` timeout 0、mkinitcpio `MODULES` から nvidia 4 件を外す（early KMS を手放す。video= は nvidia_drm の udev ロード時に適用）
+- Q8: 孤立 `/usr/lib/modules` 削除、sshd の tailscale IP bind 失敗、wait-online→docker を対象に含める
+- Q9: 段階 A（再起動不要: T1-T3）→ B（再起動: T4）→ C（再起動: T5 greetd）で反映し、段階ごとに止めて切り分ける
+- Q11（追加、人間要望）: warm reboot がブラックアウトで止まる（ASUS PRIME TRX40-PRO S、BIOS 1502）。実機で
+  `/sys/kernel/reboot/type` を acpi→efi（失敗）→pci（成功）と切り替えて確認し、`reboot=pci` を Arch の
+  ブートエントリと NixOS `tr` の kernelParams の両方に入れる
+- Q12（追加、人間判断: hibernate 不使用）: `resume=` と mkinitcpio の `resume` フック、NixOS の
+  `boot.resumeDevice` を削除する（毎起動の `Unable to resume ... offset 0` 表示の元）。NixOS の swap は Arch の
+  fstab と同じく UUID 指定にそろえる
+- Q10: docker / NetworkManager-wait-online は変更せず、greetd と sway がそれらを待たないことを実測で確認するのみ
+
+### 不変条件
+
+- I1: 自動ログイン経路で、ロック確立前にユーザーの端末内容（tmux）を描画しない
+- I2: 自動ログイン経路で、認証なしの対話シェルを残さない（sway 失敗・終了時はセッション終了）
+- I3: greetd 失敗時の復旧手段を残す: SSH と tty2 の getty（パスワード）から `getty@tty1` を再有効化できる
+- I4: ghostty 常駐プロセスが落ちても端末の中身は tmux サーバー側に残る（tmux.service は独立）
+
+### 非目標
+
+- NixOS ホスト `tr`（greetd は既存）、nvidia.ko の strip / ファームウェア個別除外、docker の socket activation 化
+
+## zsh-startup-4x (2026-10-21) — 対話起動の準備完了時間と `zsh -c` をそれぞれ 4 倍に
+
+計測（2026-10-21、pty 直下の `zsh -i`、変更前 = main ツリー / 変更後 = 本変更、同一構造のハーネスで交互計測。
+ハーネスは mission の scratchpad のみでリポジトリには無い）:
+準備完了（全 zsh-defer タスク完了かつ最終再描画）119.7ms → 28.8ms（4.16 倍。レビュー時の独立ハーネスでは
+121.7 → 31.2ms の 3.9 倍で、余裕はほぼ無い）、初回プロンプト 14.8 → 8.3ms、
+`zsh -c exit`（hyperfine 平均）9.6 → 2.2ms（未丸め値で 4.31〜4.34 倍、下限 `zsh --no-rcs` 0.95ms）。
+起動直後 0〜100ms に 1 打鍵送ったときのキーエコー遅延（190 サンプル）: p95 10.9 → 4.9ms、最大 11.8 → 6.1ms。
+読み込み完了後の定常状態は平均差 +0.025ms（95% CI [-0.010, 0.060]、有意差なし）。
+従来の「最終バイト」指標（94ms）は最終描画後に走る補完キャッシュ等のタスクを含まず過小評価だった。
+
+### 決定事項
+
+- Q1（指標）: 対話起動の準備完了時間と `zsh -c` の両方を 4 倍にする。初回プロンプト表示は対象外 — 本番相当の
+  計測で 13.1ms、4 倍の 3.3ms は素の `zsh -i`（3.5ms）を下回る。同期必須の `stty`（~1.7ms）だけでも届かない
+- Q2（lazy load）: 関数/コマンド単位の初回使用時ロードは許容、常用の対話機能は起動時ロードのまま。結果として
+  初回使用時ロードは導入しておらず、`zsh -c` 側で省いたのは I3 の項目だけ
+
+### 不変条件
+
+- I1: 起動中に一時的に変えるのはハッシュの作り方だけ。zshrc は HASH_LIST_ALL と HASH_DIRS を外して末尾で戻し、
+  zshenv の `-c` 分岐は HASH_LIST_ALL だけを外して直後に戻す（`zsh -c` の HASH_DIRS は zsh 既定で off）。全ハッシュ構築（~1.9ms）は起動中の遅延タスクで起こす — 起動から外すと
+  `correct` により初回コマンド実行時に移るため（実測確認済み）
+- I2: サードパーティ関数の差し替え（`_zsh-defer-schedule`、`_zsh_autosuggest_bind_widgets`）は上流の関数本体長が
+  既知の版と一致する時だけ行い、不一致なら上流実装のまま動く（長さが変わらない編集は検出できない。zsh の関数
+  表示形式が変わっても無効化されるが、その場合も無通知で上流実装になるだけ）。autosuggest のキャッシュは全入力（ウィジェット表 +
+  設定配列 + 束縛カウント）をキーとし、ファイル先頭で自己照合する（並行書き込みや .zwc との組み合わせ違いでも
+  誤適用しない）。キャッシュのヒット時・ミス時とも、ウィジェット表・`_zsh_autosuggest_{bound,orig}_*`・
+  `_ZSH_AUTOSUGGEST_BIND_COUNTS` を含むシェル状態全体が上流と同一になることを状態比較で確認。生成ロジックを
+  変えたらキー先頭の版（`v1`）を上げる
+- I3: `-c` 指定時（`$ZSH_EXECUTION_STRING` あり、`zsh -i -c` も含む）に省くのは行編集（ZLE）専用の設定・
+  ウィジェットと対話用の副作用（tmux 環境変数、atuin デーモン確認、k8s 補完キャッシュ）。別軸として `gpg-connect-agent updatestartuptty` は対話かどうかではなく
+  端末の有無（`$TTY` が空なら省く）で決める。関数（`select-word-style` 本体と、それが autoload する ZLE
+  ウィジェット用 `*-match` 8 件を除く）・alias・環境変数・PATH は変更前と同一（状態比較で確認済み）
+- I4: sheldon の inline プラグインもテンプレートとして解釈される — `{#` を書かない（`${#x}` は `$#x` と書く）。
+  sheldon が描画に失敗すると空の sheldon.zsh がキャッシュされ全プラグインが消えるため、sheldon.toml の変更は
+  `sheldon source` が成功することを確認してから入れる
+
+### 補足
+
+- `zsh -c` の 4 倍は tmux 内（`$TMUX` あり）での値。tmux 外では変更前が 5.5ms（tmux 環境変数設定が無い）で
+  2.2ms の 2.5 倍に留まり、下限 0.95ms から 4 倍は届かない
+- tmux-xpanes は sheldon テンプレート（`xpanes-path`）で bin/補完パスを直接足す。従来の遅延 source は compinit の
+  後に fpath を足していたため補完が登録されていなかったが、同期になり登録されるようになった（挙動差）
+
+## docker-nested-tmux (2026-10-21) — Docker 内は exec ごとに独立した tmux を host tmux の中に重ねる
+
+### 決定事項
+
+- Q1（セッション単位）: `docker exec` 1 回につき tmux server を 1 つ立てる。socket は
+  `/var/tmp/tmux-$UID/<exec の zsh の PID>.sock`。`/tmp` は host と全コンテナで共有の bind mount、hostname も host と
+  同じ（`archpango`）なので、どちらもコンテナの区別に使えない。`/var/tmp` はコンテナごとの overlay 上にある
+- Q2（終了時）: detach や端末を閉じても server は残し、`tmux -S /var/tmp/tmux-$UID/<pid>.sock attach` で
+  アタッチし直せる（destroy-unattached は使わない）。掃除はコンテナ内の `tmuxgc` で手動で行う（client の無い server と
+  死んだ socket が対象、`-a` を付けると現在の server 以外をすべて kill）
+- Q3（zsh 5.9）: 4d1d1ef の `unsetopt HASH_LIST_ALL` 後は、zsh 5.9（Ubuntu の dev コンテナ）だと `$commands[name]` が
+  名前ごとの検索をせず常に外れる（host の 5.9.2 は外れない）。zshenv と zshrc で `$+commands[zsh]` をプローブし、
+  外れたら HASH_LIST_ALL を戻す
+
+### 不変条件
+
+- I1: `devin` は `-e TMUX` を渡さない。渡すと、コンテナ内の zsh は host の tmux の中にいると判断して自前の tmux を
+  立てない。さらに `/run/user/$UID` と `/tmp` のマウント越しに host の server に届くため、prefix 設定が host 側を書き換え得る
+- I2: コンテナ内の prefix は `tmux.conf.d/options.conf` の `/.dockerenv` 判定で C-w になる（host は C-b のまま）
+
+### 補足
+
+- host 側の `docker exec` を kill しても、コンテナ内のプロセス（tmux client を含む）は終了しないことがある（docker の挙動）
+
 ## primeagent-max-customize (2026-10-14) — prime-agent 0.10.0 (Rust) ネイティブ化と swarm 移植
 
 `/swarm-meta` → `swarm-graph` ミッション。DeepResearch 6 shard（重複除去 687 URL、うち WebFetch で本文確認 130）

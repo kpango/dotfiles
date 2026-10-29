@@ -25,7 +25,7 @@ LOCAL        ?= /usr/local
 # ── curl configuration ────────────────────────────────────────────────────────
 CURL_RETRY       ?= 5
 CURL_RETRY_DELAY ?= 3
-_CURL = curl --compressed --retry $(CURL_RETRY) --retry-connrefused \
+_CURL = curl --compressed --http2 --retry $(CURL_RETRY) --retry-connrefused \
              --retry-delay $(CURL_RETRY_DELAY) -fsSL
 
 # ── Root identity ─────────────────────────────────────────────────────────────
@@ -130,7 +130,7 @@ install-tool:
 	_dl_probe() { \
 	  _url="$$1"; _out="$$2"; \
 	  printf '[download.mk] probing %s\n' "$$_url"; \
-	  _META="$$(curl -fsS --head -L --max-time 10 \
+	  _META="$$(curl --http2 -fsS --head -L --max-time 5 \
 	              --retry 2 --retry-connrefused --retry-delay 1 \
 	              -D /dev/null -o /dev/null \
 	              -w '%{content_length}|%{url_effective}' \
@@ -165,7 +165,7 @@ install-tool:
 	        || { printf '[download.mk] Error: %s not found\n' "$$_BIN" >&2; exit 1; }; \
 	    fi; \
 	    install -m 755 "$$_SRC" '$(DEST)'/; \
-	    $(if $(filter 1,$(UPX)),upx --best '$(DEST)'/$$_BIN 2>/dev/null || true;) \
+	    $(if $(filter 1,$(UPX)),upx -9 -q '$(DEST)'/$$_BIN 2>/dev/null || true;) \
 	    printf '[download.mk] installed: %s -> $(DEST)\n' "$$_BIN"; \
 	  done; \
 	  $(if $(EXTRA_GLOB),mkdir -p '$(EXTRA_DEST)' && cp -r $(EXTRA_GLOB) '$(EXTRA_DEST)'/;) \
@@ -190,7 +190,7 @@ install-tool:
 	        _dl_probe "$$_URL_ITER" "$$_BIN.gz"; \
 	        gzip -dc "$$_BIN.gz" > "$$_BIN"; \
 	        install -m 755 "$$_BIN" '$(DEST)'/; \
-	        $(if $(filter 1,$(UPX)),upx --best '$(DEST)'/$$_BIN 2>/dev/null || true;) \
+	        $(if $(filter 1,$(UPX)),upx -9 -q '$(DEST)'/$$_BIN 2>/dev/null || true;) \
 	        printf '[download.mk] installed: %s -> $(DEST)\n' "$$_BIN"; \
 	        ;; \
 	      .tar.gz|.tgz|.tar.xz|.zip) \
@@ -206,7 +206,7 @@ install-tool:
 	      *) \
 	        _dl_probe "$$_URL_ITER" '$(DEST)'/$$_BIN; \
 	        chmod 755 '$(DEST)'/$$_BIN; \
-	        $(if $(filter 1,$(UPX)),upx --best '$(DEST)'/$$_BIN 2>/dev/null || true;) \
+	        $(if $(filter 1,$(UPX)),upx -9 -q '$(DEST)'/$$_BIN 2>/dev/null || true;) \
 	        printf '[download.mk] installed: %s -> $(DEST)\n' "$$_BIN"; \
 	        ;; \
 	    esac; \

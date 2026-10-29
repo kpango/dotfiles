@@ -137,16 +137,18 @@ herdr/config.toml .config/herdr/config.toml
 lumen.json .config/lumen/lumen.config.json
 sheldon.toml .config/sheldon/plugins.toml
 systemd/environment.d/xdg.conf .config/environment.d/xdg.conf
+systemd/user/app-com.mitchellh.ghostty.service .config/systemd/user/app-com.mitchellh.ghostty.service
 systemd/user/atuin.service .config/systemd/user/atuin.service
 systemd/user/herdr.service .config/systemd/user/herdr.service
 systemd/user/kanshi.service .config/systemd/user/kanshi.service
 systemd/user/supermemory.service .config/systemd/user/supermemory.service
+systemd/user/sway-session.target .config/systemd/user/sway-session.target
 systemd/user/tmux.service .config/systemd/user/tmux.service
 systemd/user/zsh-patina.service .config/systemd/user/zsh-patina.service
 tmux.conf.d .tmux.conf.d
 tmux.conf .tmux.conf
-tmux.new-session .tmux.new-session
 zfunc .zfunc
+zprofile .zprofile
 zshenv .zshenv
 zshrc .zshrc
 endef
@@ -183,9 +185,7 @@ arch/modules-load.d/bbr.conf /etc/modules-load.d/bbr.conf
 arch/modules-load.d/nf_conntrack.conf /etc/modules-load.d/nf_conntrack.conf
 arch/modules-load.d/erofs.conf /etc/modules-load.d/erofs.conf
 arch/modules-load.d/i2c_dev.conf /etc/modules-load.d/i2c_dev.conf
-arch/modprobe.d/nobeep.conf /etc/modprobe.d/nobeep.conf
 arch/pacman.conf /etc/pacman.conf
-arch/sway.sh /etc/profile.d/sway.sh
 arch/thinkfan.conf /etc/thinkfan.conf
 arch/tlp /etc/default/tlp
 arch/tlp /etc/tlp.conf
@@ -207,6 +207,7 @@ endef
 export ARCH_SUDO_LINK_MAP
 
 define ARCH_SUDO_CP_MAP
+arch/modprobe.d/nobeep.conf /etc/modprobe.d/nobeep.conf
 arch/chrony.conf /etc/chrony.conf
 arch/wireless-regdom /etc/conf.d/wireless-regdom
 arch/sudoers /etc/sudoers.d/$(SYS_USER)
@@ -218,19 +219,20 @@ endef
 export ARCH_SUDO_CP_MAP
 
 define ARCH_DESK_SUDO_LINK_MAP
-arch/modprobe.d/blacklist-nouveau.conf /etc/modprobe.d/blacklist-nouveau.conf
-arch/modprobe.d/blacklist-eeepc-wmi.conf /etc/modprobe.d/blacklist-eeepc-wmi.conf
-arch/modprobe.d/nowatchdog.conf /etc/modprobe.d/nowatchdog.conf
-arch/modprobe.d/thinkfan-desk.conf /etc/modprobe.d/thinkfan.conf
 arch/systemd/nvidia-unload.service /etc/systemd/system/nvidia-unload.service
 arch/tmpfiles.d/thp.conf /etc/tmpfiles.d/thp.conf
 endef
 export ARCH_DESK_SUDO_LINK_MAP
 
 define ARCH_DESK_SUDO_CP_MAP
+arch/modprobe.d/blacklist-nouveau.conf /etc/modprobe.d/blacklist-nouveau.conf
+arch/modprobe.d/blacklist-eeepc-wmi.conf /etc/modprobe.d/blacklist-eeepc-wmi.conf
+arch/modprobe.d/nowatchdog.conf /etc/modprobe.d/nowatchdog.conf
+arch/modprobe.d/thinkfan-desk.conf /etc/modprobe.d/thinkfan.conf
 arch/acpi/DSDT.aml /etc/acpi_override/DSDT.aml
 arch/acpi/SSDT7.aml /etc/acpi_override/SSDT7.aml
 arch/desk/fstab /etc/fstab
+arch/greetd/config.toml /etc/greetd/config.toml
 arch/loader/entries/arch.conf /boot/loader/entries/arch.conf
 arch/loader/loader.conf /boot/loader/loader.conf
 endef
@@ -238,9 +240,15 @@ export ARCH_DESK_SUDO_CP_MAP
 
 define ARCH_PREP
 	@if [ ! -f /boot/vmlinuz-linux ]; then sudo rm -f /etc/mkinitcpio.d/linux.preset /etc/mkinitcpio.d/linux.preset.pacsave; fi
+	@if [ -L /etc/profile.d/sway.sh ] || grep -qs 'system-wide sway launcher' /etc/profile.d/sway.sh; then sudo rm -f /etc/profile.d/sway.sh; fi
+	@# modprobe.d is copied, not linked: the initramfs (modconf) would carry the links dangling (no /home there),
+	@# so libkmod errors out and options such as nvidia-tweaks never reach modules loaded early. Drop old links
+	@# first; `cp` onto them would write through into the repo file.
+	@for f in /etc/modprobe.d/*.conf; do [ -L "$$f" ] && case "$$(readlink "$$f")" in */dotfiles/*) sudo rm -f "$$f";; esac; done; true
 	sudo mkdir -p /etc/systemd/system/NetworkManager.service.d
 	sudo mkdir -p /etc/systemd/system/sshd.service.d
 	sudo mkdir -p /etc/acpi_override
+	sudo mkdir -p /etc/greetd
 	sudo mkdir -p /etc/initcpio/install
 	sudo mkdir -p /etc/pacman.d/hooks
 	sudo mkdir -p /var/cache/aur-src
@@ -274,7 +282,9 @@ define ARCH_POST
 	loginctl enable-linger $(SYS_USER)
 	systemctl --user daemon-reload
 	systemctl --user enable --now atuin.service
-	systemctl --user enable --now kanshi.service
+	@# no --now: kanshi needs a Wayland session; sway-session.target starts it (ConditionEnvironment=WAYLAND_DISPLAY)
+	systemctl --user enable kanshi.service
+	systemctl --user enable app-com.mitchellh.ghostty.service
 	systemctl --user enable --now tmux.service
 	systemctl --user enable --now zsh-patina.service
 	sudo systemctl enable systemd-resolved
@@ -310,6 +320,9 @@ define ARCH_DESK_POST
 	sudo nmcli connection reload
 	sudo systemctl daemon-reload
 	sudo systemctl enable nvidia-unload.service
+	@# greetd owns tty1 from the next boot (autologin once + tuigreet). Rollback from SSH/tty2:
+	@# systemctl disable greetd && systemctl enable getty@tty1
+	@if command -v greetd >/dev/null; then sudo systemctl disable getty@tty1.service; sudo systemctl enable greetd.service; fi
 	sudo systemctl restart NetworkManager
 	sudo systemd-tmpfiles --create /etc/tmpfiles.d/thp.conf
 	@sudo find /boot/loader/entries/ -name '*.conf' -not -name 'arch.conf' -delete && \
@@ -336,17 +349,18 @@ define MAC_PREP
 		$(HOME)/.tmux.conf \
 		$(HOME)/Library/LaunchAgents/localhost.homebrew-autoupdate.plist \
 		$(HOME)/Library/LaunchAgents/ulimit.plist
-	# dotfiles/install (a prerequisite above) just symlinked .zshrc/.zshenv
+	# dotfiles/install (a prerequisite above) just symlinked (or copied) .zshrc/.zshenv/.zprofile
 	# straight from the dotfiles repo. On macOS nix-darwin's home-manager
 	# activation (nix/setup below) is the final owner and generates its own
-	# .zshrc/.zshenv (nix/modules/home/programs/zsh.nix) that differs
+	# .zshrc/.zshenv/.zprofile (nix/modules/home/programs/zsh.nix) that differs
 	# byte-for-byte from the raw repo file — and unlike other home-manager
 	# entries, `force = true` can't rescue this one (see that module's
 	# comment: home-manager's own dotDirRel="." key shape makes force a
 	# no-op here). Removing dotfiles/install's copy lets home-manager place
 	# its own without a "would be clobbered" collision. Plain rm, no sudo:
-	# these are always just user-owned symlinks, never real file content.
-	rm -f $(HOME)/.zshrc $(HOME)/.zshenv
+	# by this point all three are dotfiles/install's own output (its DEPLOY_FUNC
+	# already replaced any hand-written ~/.zprofile, e.g. one with brew shellenv).
+	rm -f $(HOME)/.zshrc $(HOME)/.zshenv $(HOME)/.zprofile
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
 	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
@@ -368,7 +382,7 @@ cdi/update:
 # ── Shared Nvidia block (used by arch/p1/install and arch/desk/install) ────────
 
 define NVIDIA_INSTALL
-	@$(call DEPLOY_FUNC,$(ROOTDIR)/nvidia/nvidia-tweaks.conf,/etc/modprobe.d/nvidia-tweaks.conf,sudo)
+	sudo cp $(ROOTDIR)/nvidia/nvidia-tweaks.conf /etc/modprobe.d/nvidia-tweaks.conf
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/nvidia/nvidia-uvm.conf,/etc/modules-load.d/nvidia-uvm.conf,sudo)
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/nvidia/60-nvidia.rules,/etc/udev/rules.d/60-nvidia.rules,sudo)
 endef
@@ -426,7 +440,7 @@ dotfiles/compile: tmux/go/install pinentry/install
 
 ## symlink or copy all dotfiles to $HOME (see DEPLOY_FUNC for MODE=link|copy).
 ## NIX_MANAGED=1 skips destinations a home-manager module generates more
-## richly than a plain symlink (programs.zsh's .zshrc/.zshenv, programs.git's
+## richly than a plain symlink (programs.zsh's .zshrc/.zshenv/.zprofile, programs.git's
 ## .gitconfig, programs.tmux's .tmux.conf -- everywhere; darwin.nix's
 ## Nix-built .gnupg/gpg-agent.conf, Darwin only) -- set automatically by
 ## nix/modules/home/dotfiles/agent-tools.nix's home.activation call, so a
@@ -436,12 +450,13 @@ dotfiles/install:
 	@echo "$$DOTFILES_MAP" | while read -r src dest; do \
 		if [ -n "$(NIX_MANAGED)" ]; then \
 			case "$$dest" in \
-				.zshrc|.zshenv|.gitconfig|.tmux.conf) continue ;; \
+				.zshrc|.zshenv|.zprofile|.gitconfig|.tmux.conf) continue ;; \
 				.gnupg/gpg-agent.conf) [ "$(UNAME_S)" = Darwin ] && continue ;; \
 			esac; \
 		fi; \
 		$(call DEPLOY_FUNC,$(ROOTDIR)/$$src,$(HOME)/$$dest,); \
 	done
+	@if [ -L "$(HOME)/.tmux.new-session" ]; then rm -f "$(HOME)/.tmux.new-session"; fi
 ifneq ($(UNAME_S),Darwin)
 	# Linux, non-NixOS only: NixOS manages /etc/docker declaratively
 	# (nix/modules/nixos/virtualization/docker.nix, nix/hosts/tr/virtualization/
@@ -793,7 +808,7 @@ dotfiles/perm:
 		  -name '*.py'  -o -name '*.nix'  -o -name '*.toml' -o \
 		  -name '*.yaml' -o -name '*.yml' -o -name '*.json' -o \
 		  -name '*.service' -o -name '*.rules' -o -name '*.desktop' -o \
-		  -name 'zshrc' -o -name 'zshenv' -o \
+		  -name 'zshrc' -o -name 'zshenv' -o -name 'zprofile' -o \
 		  -name 'gitconfig' -o -name 'gitattributes' -o \
 		  -name 'sshconfig' -o -name 'editorconfig' -o -name 'Makefile' \
 		\) -not -name 'tmux.conf' -exec nkf -Lu -w --overwrite {} +

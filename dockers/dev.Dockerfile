@@ -126,6 +126,10 @@ RUN set -eux; \
     done; \
     chmod a+rwX "${BIN_PATH}"
 
+# Docker creates /.dockerenv at run time but apple/container (devrun on macOS) does not,
+# and every in-container check (zsh/01-tmux.zsh, tmux.conf.d/*.conf) keys on it.
+RUN touch /.dockerenv
+
 USER ${WHOAMI}
 WORKDIR ${HOME}
 

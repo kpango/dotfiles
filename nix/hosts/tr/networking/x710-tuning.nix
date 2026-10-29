@@ -46,6 +46,9 @@ let
       rx-usecs 100 tx-usecs 100 || true
     ${pkgs.ethtool}/bin/ethtool -C "$IFACE" adaptive-rx on adaptive-tx on || true
 
+    # 4b. Ignore 802.3x PAUSE from the switch (mirrors network/nm/99-coalesce-x710).
+    ${pkgs.ethtool}/bin/ethtool -A "$IFACE" rx off tx off || true
+
     # 5. Replace root qdisc with mq so fq children inherit the correct quantum
     #    for MTU 9000 (quantum ~ 18028 bytes, not the default 3028 for 1500-MTU).
     ${pkgs.iproute2}/bin/tc qdisc replace dev "$IFACE" root mq || true

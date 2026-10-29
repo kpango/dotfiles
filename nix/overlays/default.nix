@@ -58,6 +58,17 @@
 #     (verified via `nix eval …pkgs.go_1_27.version` — no `rc`/`beta` suffix),
 #     not the pre-release that existed at earlier nixpkgs revisions.
 #
+#     Caveat on Linux (`libcap`): `pkgs/by-name/li/libcap/package.nix` takes
+#     unversioned `go` (`nativeBuildInputs`) and `pkgsBuildHost.go` (`makeFlags`
+#     and `disallowedReferences`). Overriding top-level `go` alters
+#     `libcap.drvPath` (both `x86_64-linux` and `pkgsi686Linux`), invalidating
+#     `cache.nixos.org` substitution for `libcap` and cascading into ~230+
+#     source rebuilds across the Linux desktop stack (`libpulseaudio`,
+#     `libcanberra`, `pipewire`, `qtwebengine`, `sway`, etc.). Exposing
+#     `__origGo = prev.go` (resolved via `final.pkgsBuildHost.__origGo` so
+#     `pkgsi686Linux` and cross sets splice cleanly) keeps `libcap` on nixpkgs'
+#     default `go` without hardcoding a `go_1_NN` attribute name.
+#
 #   golangci-lint — Two independent overrides are layered here:
 #
 #       1. `override { buildGo127Module = prev.buildGoModule.override { go = final.go; }; }`
@@ -110,6 +121,9 @@
       golangciLintVersion = "2.13.2";
     in
     {
+      # Keep nixpkgs' un-overridden `go` reachable across splicing so `libcap`
+      # below preserves its upstream `cache.nixos.org` drvPath.
+      __origGo = prev.go;
       # See the file-header comment above for why `go_1_27` (not the default
       # top-level `go`) is selected here.
       go = final.go_1_27;
@@ -145,6 +159,14 @@
       prmt = prev.prmt.overrideAttrs (_old: {
         doCheck = false;
       });
+    }
+    // prev.lib.optionalAttrs prev.stdenv.hostPlatform.isLinux {
+      libcap = prev.libcap.override {
+        go = final.pkgsBuildHost.__origGo;
+        pkgsBuildHost = final.pkgsBuildHost // {
+          go = final.pkgsBuildHost.__origGo;
+        };
+      };
     }
   )
 ]

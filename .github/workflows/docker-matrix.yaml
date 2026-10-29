@@ -41,6 +41,22 @@ jobs:
       DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
       DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
 
+  foundation:
+    permissions:
+      contents: read
+      packages: write
+    needs: base
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [env, vald]
+    uses: ./.github/workflows/docker-reusable.yaml
+    with:
+      image_name: ${{ matrix.image }}
+    secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+
   images:
     permissions:
       contents: read
@@ -53,7 +69,6 @@ jobs:
           [
             dart,
             docker,
-            env,
             gcloud,
             go,
             k8s,
@@ -62,7 +77,6 @@ jobs:
             nix,
             ollama,
             rust,
-            vald,
             zig,
           ]
     uses: ./.github/workflows/docker-reusable.yaml
@@ -76,10 +90,11 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [base, images]
+    needs: [base, foundation]
     if: |
       always() &&
       needs.base.result == 'success' &&
+      needs.foundation.result == 'success' &&
       !cancelled()
     uses: ./.github/workflows/docker-reusable.yaml
     with:
@@ -92,10 +107,12 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: [base, images, tools]
+    needs: [base, foundation, images, tools]
     if: |
       always() &&
       needs.base.result == 'success' &&
+      needs.foundation.result == 'success' &&
+      needs.images.result == 'success' &&
       needs.tools.result == 'success' &&
       !cancelled()
     uses: ./.github/workflows/docker-reusable.yaml

@@ -1,0 +1,9 @@
+[Unit]
+Description=Run clean-clients daily at 09:00 JST (after nightly updates)
+
+[Timer]
+OnCalendar=*-*-* 09:00:00 Asia/Tokyo
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=Forget unused UniFi clients (ghosts, and offline devices without per-client settings)
+After=unifi.service
+Requires=unifi.service
+
+[Service]
+Type=oneshot
+ExecStart=/root/clean-clients.sh

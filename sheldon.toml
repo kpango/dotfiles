@@ -7,6 +7,24 @@ apply = ["defer"]
 github = 'romkatv/zsh-defer'
 apply = ['source']
 
+# Every `-t` call site in this config is a yield point, never a real delay (see
+# [plugins.colors]); this makes every `zsh-defer -t` in the session one. Upstream arms a
+# `<(zselect -t N)` timer for -t, which forks and then sleeps >=10ms per yield point --
+# ~55ms of pure idle across the queue. An always-readable fd returns control to zle's
+# main loop just the same, so a keypress queued meanwhile is still served before the
+# next chunk (with this whole change, keystroke echo while the queue drains measured
+# 2026-10-21 under a pty: max 6.1ms vs 11.8ms before), only without the sleep or fork.
+# Replaces upstream's function only while schedule and resume (whose contract it relies
+# on) are the 53a26e2 bodies, checked by length -- a same-length edit would slip
+# through; otherwise upstream's timer stays. Inline plugins are templates too, so
+# `${#...}` (whose `{#` opens a template comment) is spelled `$#...` here.
+[plugins.zsh-defer-yield]
+inline = '''
+if (($#functions[_zsh-defer-schedule] == 149 && $#functions[_zsh-defer-resume] == 428)); then
+  _zsh-defer-schedule() { local fd; exec {fd}</dev/null; zle -F $fd _zsh-defer-resume }
+fi
+'''
+
 # zsh-completions only adds to fpath (no completion function needs to exist yet), so it
 # must run before [plugins.compinit] scans fpath — it used to be registered after compinit
 # (queued later ⇒ runs later) and its ~242 completions were silently never picked up.
@@ -29,10 +47,10 @@ inline = 'zsh-defer -mpr -c "autoload -Uz compinit && () { setopt local_options 
 # inside a single `zle -F` callback, and the `!KEYS_QUEUED_COUNT && !PENDING` guard in
 # that loop cannot see a keypress that arrives *during* the callback (zsh only refreshes
 # those parameters while zle itself is reading), so the first keystroke after the prompt
-# is echoed only once every task has finished. A non-zero delay makes _zsh-defer-schedule
-# arm a zselect timer fd instead, which returns to zle's main loop for real. The cost is
-# a 10ms gap per yield point (zsh-defer floors -t at one centisecond: ceil(100*OPTARG)),
-# so yield points are placed to cap each chunk at ~20ms rather than on every task.
+# is echoed only once every task has finished. On a non-zero delay _zsh-defer-resume
+# instead schedules a fresh fd and returns to zle's main loop for real. Yield points are
+# placed to cap each chunk at ~20ms rather than on every task; [plugins.zsh-defer-yield]
+# makes each one an immediate return to zle rather than the upstream >=10ms timer.
 [plugins.colors]
 inline = 'autoload -Uz colors && zsh-defer -mpr -t 0.01 colors'
 
@@ -149,10 +167,13 @@ fi
 inline = '''
 if (($+commands[atuin])); then
   autoload -Uz _atuin_init
-  if [[ -f "$ZCACHE_DIR/atuin.zsh" && ! "$commands[atuin]" -nt "$ZCACHE_DIR/atuin.zsh" ]]; then
+  # _atuin_init is a dependency too: it patches atuin's output, so an edit to it must
+  # regenerate the cache just like a new atuin binary does.
+  if [[ -f "$ZCACHE_DIR/atuin.zsh" && ! "$commands[atuin]" -nt "$ZCACHE_DIR/atuin.zsh" &&
+    ! "$DOTFILES_DIR/zfunc/_atuin_init" -nt "$ZCACHE_DIR/atuin.zsh" ]]; then
     zsh-defer -mpr source "$ZCACHE_DIR/atuin.zsh"
   else
-    zsh-defer -mpr _zcache_eval atuin 0 "_atuin_init" "$commands[atuin]"
+    zsh-defer -mpr _zcache_eval atuin 0 "_atuin_init" "$commands[atuin]" "$DOTFILES_DIR/zfunc/_atuin_init"
   fi
 fi
 '''
@@ -193,11 +214,19 @@ fi
 github = "zsh-users/zsh-autosuggestions"
 apply = ['defer']
 
+# Queued right after the plugin, before the precmd that does its widget binding; see
+# zfunc/_autosuggest_cached_bind.
+[plugins.autosuggest-cached-bind]
+inline = 'autoload -Uz _autosuggest_cached_bind && zsh-defer -mpr _autosuggest_cached_bind'
+
 [plugins.tmux-xpanes]
 github = "greymd/tmux-xpanes"
-# defer-t (not defer): starts a new yield chunk — tmux-xpanes is ~9ms and the
-# async-compile task right after it is ~17ms, too much to keep in one callback.
-apply = ['defer-t']
+# Its plugin file (activate.sh + completion.zsh as of 63991ae) only appends {{ dir }}/bin
+# to PATH when xpanes is not already found, and {{ dir }}/completion/zsh/ to fpath, but
+# finds {{ dir }} via several dirname/cd subshells; sheldon already knows it. Re-check
+# xpanes-path below if upstream's plugin file grows. Unlike the deferred source it
+# replaces, this runs before the deferred compinit, so xpanes' completions now register.
+apply = ['xpanes-path']
 
 # Intentionally the only deferred task without -m -p: being the last plugin in this file,
 # it is always the last zsh-defer task in the queue, so its default precmd+reset-prompt
@@ -213,11 +242,16 @@ inline = '''zsh-defer -r -t 0.01 -c "(
   [[ ! -f \$DOTFILES_DIR/zfunc/_zcache_eval.zwc || \$DOTFILES_DIR/zfunc/_zcache_eval -nt \$DOTFILES_DIR/zfunc/_zcache_eval.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_zcache_eval 2>/dev/null
   [[ ! -f \$DOTFILES_DIR/zfunc/_atuin_init.zwc || \$DOTFILES_DIR/zfunc/_atuin_init -nt \$DOTFILES_DIR/zfunc/_atuin_init.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_atuin_init 2>/dev/null
   [[ ! -f \$DOTFILES_DIR/zfunc/_gen_env.zwc || \$DOTFILES_DIR/zfunc/_gen_env -nt \$DOTFILES_DIR/zfunc/_gen_env.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_gen_env 2>/dev/null
-  [[ ! -f \$DOTFILES_DIR/zfunc/pinentry-tmux.zwc || \$DOTFILES_DIR/zfunc/pinentry-tmux -nt \$DOTFILES_DIR/zfunc/pinentry-tmux.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/pinentry-tmux 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_autosuggest_cached_bind.zwc || \$DOTFILES_DIR/zfunc/_autosuggest_cached_bind -nt \$DOTFILES_DIR/zfunc/_autosuggest_cached_bind.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_autosuggest_cached_bind 2>/dev/null
   for f in $XDG_DATA_HOME/sheldon/repos/**/*.zsh(N) $XDG_DATA_HOME/sheldon/downloads/**/*.zsh(N); do
       [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
   done
-  _zcache_eval combined 0 'for _f in \"\$DOTFILES_DIR/zsh\"/*.zsh(N); do [[ \"\${_f:t}\" = 20-os-*.zsh || \"\${_f:t}\" = 01-tmux.zsh ]] || cat \"\$_f\"; done' \"\$DOTFILES_DIR/zsh\"/*.zsh(N)
+  # -1 (regenerate, no source) and only when stale: with 0 this subshell sourced the whole
+  # combined.zsh on every startup, re-running its tmux/atuin/gpg side effects a second time.
+  _zn=(\"\$DOTFILES_DIR/zsh\"/*.zsh(N.om[1]))
+  if [[ -n \$_zn && \$_zn -nt \$ZCACHE_DIR/combined.zsh ]]; then
+      _zcache_eval combined -1 'for _f in \"\$DOTFILES_DIR/zsh\"/*.zsh(N); do [[ \"\${_f:t}\" = 20-os-*.zsh || \"\${_f:t}\" = 01-tmux.zsh ]] || cat \"\$_f\"; done'
+  fi
   if [[ \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\" -nt \"\$ZCACHE_DIR/sheldon.zsh\" ]]; then
       _zcache_eval sheldon 0 \"sheldon source\" \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\"
   fi
@@ -234,7 +268,9 @@ inline = '''zsh-defer -r -t 0.01 -c "(
 
 [templates]
 defer = "zsh-defer -mpr -c \"{% for file in files %}source '{{ file }}'\n{% endfor %}\""
-# Same as defer but opens a yield point first (see the comment above [plugins.colors]).
-defer-t = "zsh-defer -mpr -t 0.01 -c \"{% for file in files %}source '{{ file }}'\n{% endfor %}\""
 fzf-install = "[[ ! -x {{ dir }}/bin/fzf ]] && {{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\" && rehash\n"
-fzf-source = "zsh-defer -mpr -c \"{% for file in files %}source <(sed -e '/bindkey.*fzf-history-widget/d' '{{ file }}')\n{% endfor %}\""
+# The sed filter is cached via _zcache_eval instead of `source <(sed ...)`, which forked
+# sed once per file on every startup. Regenerated when the fzf file or this config (which
+# holds the filter) changes.
+fzf-source = "zsh-defer -mpr -c \"{% for file in files %}_zcache_eval fzf-\\${\\${:-'{{ file }}'}:t:r} 0 \\\"sed -e '/bindkey.*fzf-history-widget/d' '{{ file }}'\\\" '{{ file }}' \\\"\\${XDG_CONFIG_HOME:-\\$HOME/.config}/sheldon/plugins.toml\\\"\n{% endfor %}\""
+xpanes-path = "whence xpanes tmux-xpanes >/dev/null || path+=(\"{{ dir }}/bin\")\nfpath+=(\"{{ dir }}/completion/zsh/\")\n"

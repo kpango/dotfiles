@@ -1,0 +1,10 @@
+[Unit]
+Description=Periodic re-apply of udm-dpinger-hijack (drift repair for UDAPI firewall rebuilds)
+
+[Timer]
+OnBootSec=20s
+OnUnitActiveSec=60s
+Unit=udm-dpinger-hijack.service
+
+[Install]
+WantedBy=timers.target

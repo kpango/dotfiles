@@ -8,12 +8,15 @@ a real terminal actually pays. A pty makes `-t 0` true and keeps $ZSH_EXECUTION_
 unset, so the full interactive path (including zsh-defer's first-idle burst) runs.
 
 Idle is detected by watching the pty for a quiet period (no bytes for --quiet-ms),
-then "exit\n" is written and the process is waited on. hyperfine wraps this whole
+then the shell gets SIGHUP and is waited on. hyperfine wraps this whole
 script as one command and measures its wall time -- that wall time is what a user
 actually experiences between opening a shell and it being ready for input.
+No command is ever typed: the shell runs the user's real rc files, so a typed
+`exit` went through atuin's preexec and landed in the real history (once per
+run; ~425 `exit` entries from a single benchmarking session on 2026-10-21).
 
 --stop-at first-output switches to a different measurement: return as soon as the
-first byte hits the pty (no --send, no idle wait), for time-to-first-prompt-byte
+first byte hits the pty (no idle wait), for time-to-first-prompt-byte
 instead of time-to-idle. --print-output captures all pty bytes and dumps them to
 stdout at the end for ad-hoc inspection; it only runs when explicitly requested so
 it never perturbs the timing runs above. bench/zsh/profile does NOT use this flag:
@@ -42,13 +45,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--quiet-ms", type=int, default=300,
                      help="consider zsh idle after this many ms with no pty output")
 parser.add_argument("--max-wait-s", type=float, default=10.0)
-parser.add_argument("--send", choices=["exit", "eof"], default="exit",
-                     help="'exit' types the exit command (fires preexec/precmd like a real "
-                          "command would); 'eof' sends Ctrl-D so the shell exits without ever "
-                          "running a command -- use this to measure startup in isolation from "
-                          "atuin's per-command preexec cost")
 parser.add_argument("--stop-at", choices=["idle", "first-output"], default="idle",
-                     help="'idle' (default) waits for --quiet-ms of silence, then sends --send "
+                     help="'idle' (default) waits for --quiet-ms of silence, then sends SIGHUP "
                           "and waits for the shell to exit -- measures time-to-idle. "
                           "'first-output' returns as soon as the first byte arrives on the pty "
                           "and kills the shell without sending anything -- measures "
@@ -118,7 +116,12 @@ while True:
     except OSError:
         pass
     if args.stop_at == "idle" and not exit_sent and (now - last_activity) * 1000 >= args.quiet_ms:
-        os.write(fd, b"exit\n" if args.send == "exit" else b"\x04")
+        # SIGHUP rather than typed input: Ctrl-D never exits this zshrc (ignore_eof),
+        # and a typed `exit` would be recorded in the real history.
+        try:
+            os.kill(pid, signal.SIGHUP)
+        except ProcessLookupError:
+            pass
         exit_sent = True
     if now - start > args.max_wait_s:
         break
@@ -128,7 +131,7 @@ while True:
     time.sleep(0.01)
 
 if args.stop_at == "first-output":
-    # We never sent exit/EOF, so the shell is still running -- kill it so it
+    # We never sent SIGHUP, so the shell is still running -- kill it so it
     # doesn't leak as an orphaned zsh -i process. SIGTERM alone can be
     # ignored by this shell's job-control setup, and even SIGKILL followed
     # by a synchronous waitpid here can block for hundreds of ms on pty

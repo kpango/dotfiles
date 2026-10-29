@@ -7,6 +7,8 @@ on:
       - "zsh/**"
       - "zshrc"
       - "zshenv"
+      - "zprofile"
+      - "arch/sway.sh"
       - "zfunc/**"
       - "sheldon.toml"
       - ".github/workflows/zsh.yaml"
@@ -15,6 +17,8 @@ on:
       - "zsh/**"
       - "zshrc"
       - "zshenv"
+      - "zprofile"
+      - "arch/sway.sh"
       - "zfunc/**"
       - "sheldon.toml"
       - ".github/workflows/zsh.yaml"
@@ -53,7 +57,7 @@ jobs:
       - name: Syntax check (zsh -n)
         run: |
           failed=0
-          for f in zshrc zshenv $(find zsh zfunc -type f | sort); do
+          for f in zshrc zshenv zprofile arch/sway.sh $(find zsh zfunc -type f | sort); do
             if zsh -n "$f" 2>&1; then
               printf "  OK   %s\n" "$f"
             else
@@ -152,9 +156,11 @@ jobs:
           echo ""
           echo "  min=${min_ms} ms  max=${max_ms} ms  avg=${avg_ms} ms"
 
-          echo "WARM_MIN=$min_ms" >> "$GITHUB_ENV"
-          echo "WARM_MAX=$max_ms" >> "$GITHUB_ENV"
-          echo "WARM_AVG=$avg_ms" >> "$GITHUB_ENV"
+          {
+            echo "WARM_MIN=$min_ms"
+            echo "WARM_MAX=$max_ms"
+            echo "WARM_AVG=$avg_ms"
+          } >> "$GITHUB_ENV"
 
       - name: Publish benchmark summary
         run: |

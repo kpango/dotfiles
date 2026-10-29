@@ -11,6 +11,10 @@ ACTION=$2
 # 1. Threaded NAPI — reduces interrupt latency under heavy RX load
 echo 1 > /sys/class/net/$IFACE/threaded
 
+# 1b. NIC combined queue count — use all 128 available on i40e (default 119)
+#     Must run before step 7 XPS so new tx queues get CPU affinity written.
+ethtool -L "$IFACE" combined 128 2>/dev/null || true
+
 # 2. Coalescing: i40e rejects usecs changes while adaptive is on; disable first
 ethtool -C "$IFACE" adaptive-rx off adaptive-tx off rx-usecs 100 tx-usecs 100
 ethtool -C "$IFACE" adaptive-rx on adaptive-tx on
@@ -20,6 +24,10 @@ ethtool -K "$IFACE" hw-tc-offload on || true
 
 # 4. GRO list — coalesce out-of-order segments more aggressively
 ethtool -K "$IFACE" rx-gro-list on || true
+
+# 4b. Ignore 802.3x PAUSE from the switch, which sends them during speed tests
+#     (slave*.nmconnection also set pause off). See unifi/CONTEXT.md Q37.
+ethtool -A "$IFACE" rx off tx off || true
 
 # 5. Recreate root mq so fq leaves get the correct quantum for current MTU.
 #    quantum = 2 × (MTU + Ethernet header): 3028 for 1500-MTU, 18028 for 9000-MTU.

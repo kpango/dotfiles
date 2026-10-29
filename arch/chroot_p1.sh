@@ -162,4 +162,4 @@ for f in ${DOTFILES}/network/nm/*.nmconnection; do
 done
 
 # Network: dispatcher script
-install -Dm755 ${DOTFILES}/network/scripts/99-coalesce-x710 /etc/NetworkManager/dispatcher.d/99-coalesce-x710
+install -Dm755 ${DOTFILES}/network/nm/99-coalesce-x710 /etc/NetworkManager/dispatcher.d/99-coalesce-x710

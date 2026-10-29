@@ -30,13 +30,17 @@ alias 777='chmod -R 777'
 
 setopt no_global_rcs
 
-zstyle ':zle:*' word-chars " /=;@:{},|"
-zstyle ':zle:*' word-style unspecified
-if (($+functions[zsh-defer])); then
-	zsh-defer -m -p -r -c "autoload -Uz select-word-style && select-word-style default"
-else
-	autoload -Uz select-word-style
-	select-word-style default
+# Line-editor word motion only: nothing to configure under `zsh -c`, where the first
+# zstyle would just load zsh/zutil and select-word-style define unused widgets.
+if [[ -z "$ZSH_EXECUTION_STRING" ]]; then
+	zstyle ':zle:*' word-chars " /=;@:{},|"
+	zstyle ':zle:*' word-style unspecified
+	if (($+functions[zsh-defer])); then
+		zsh-defer -m -p -r -c "autoload -Uz select-word-style && select-word-style default"
+	else
+		autoload -Uz select-word-style
+		select-word-style default
+	fi
 fi
 
 case ${OSTYPE} in

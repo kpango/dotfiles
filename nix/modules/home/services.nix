@@ -46,6 +46,41 @@
         WantedBy = [ "default.target" ];
       };
     };
+
+    # Mirrors systemd/user/kanshi.service (which hardcodes /usr/bin/kanshi, absent
+    # on Nix hosts); arch/sway.conf no longer execs kanshi itself.
+    kanshi = {
+      Unit = {
+        Description = "Dynamic display configuration daemon (kanshi)";
+        Documentation = [ "man:kanshi(1)" ];
+        PartOf = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" ];
+        ConditionEnvironment = "WAYLAND_DISPLAY";
+      };
+      Service = {
+        Type = "simple";
+        ExecStart = "${pkgs.kanshi}/bin/kanshi";
+        ExecReload = "${pkgs.kanshi}/bin/kanshictl reload";
+        Restart = "always";
+        RestartSec = "3s";
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+    };
+  };
+
+  # Mirrors systemd/user/sway-session.target; started by arch/sway.conf's autostart.
+  systemd.user.targets = lib.optionalAttrs isLinux {
+    sway-session = {
+      Unit = {
+        Description = "sway compositor session";
+        Documentation = [ "man:systemd.special(7)" ];
+        BindsTo = [ "graphical-session.target" ];
+        Wants = [ "graphical-session-pre.target" ];
+        After = [ "graphical-session-pre.target" ];
+      };
+    };
   };
 
   # macOS launchd agents, mirroring the Linux systemd user services above.

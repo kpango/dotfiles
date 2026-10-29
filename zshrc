@@ -48,8 +48,14 @@ else
 	# edit to _gen_env's own code does, or the old identity would keep baking in
 	# indefinitely (same failure mode the comment above already names).
 	_zcache_eval env 0 "_gen_env" "$DOTFILES_DIR/zfunc/_base_path" "$DOTFILES_DIR/zfunc/_gen_env" "$HOME/.gitconfig"
+	# _zcache_eval sources the regenerated env.zsh inside a function, so its baked
+	# `typeset -U path PATH` is function-local and the PATH it exports is lost on return.
+	# Non-exported flag: makes the pre-01-tmux.zsh block below rebuild PATH itself.
+	_zsh_cold_env=1
 fi
 
+# Reached when a tool explicitly sources ~/.zshrc from a `zsh -c` (e.g. Claude Code's shell
+# snapshot), despite zshenv's unsetopt RCS -- do not remove as dead code.
 # Fast path for inline script execution (-c flag): env.zsh provides PATH and core env.
 # Skip all interactive-only setup (plugins, completions, prompt, ZLE bindings).
 # PATH fallback ensures commands work even if env.zsh cache is missing or stale.
@@ -59,8 +65,8 @@ if [[ -n "$ZSH_EXECUTION_STRING" ]]; then
 	# (an ancestor process ran this before), independent of whether *this*
 	# process's own PATH actually has _base_path's dirs. Skipping on an inherited
 	# guard risks silently keeping an incomplete PATH; always rebuilding is cheap
-	# (one _base_path fork, deduped by typeset -U) and correct regardless of
-	# ancestry — see zsh/00-env.zsh for the fuller version of this reasoning.
+	# (one _base_path call, no fork since `_base_path -v`; deduped by typeset -U)
+	# and correct regardless of ancestry — see zsh/00-env.zsh for the fuller version of this reasoning.
 	export _ZSH_PATH_LOADED=1
 	# _apply_base_path (zfunc/) holds the typeset -g -U / _base_path / export
 	# triplet shared with 00-env.zsh and the synchronous call below — see its
@@ -77,6 +83,17 @@ if [[ -n "$ZSH_EXECUTION_STRING" ]]; then
 	fi
 	return
 fi
+
+# Per-name $commands lookups only until the end of this file (see zshenv's fast path):
+# with HASH_LIST_ALL the first one hashes all of PATH (~1.9ms), and with HASH_DIRS
+# (on here; zsh itself leaves it off for `zsh -c`) each one after a PATH change hashes
+# every directory up to the match (~0.8ms for /usr/bin) -- all before the first prompt.
+# Both only change how lookups are cached; a per-name lookup finds the same command.
+# Restored at the end of this file, so the deferred tasks already run with them on.
+unsetopt HASH_LIST_ALL HASH_DIRS
+# zsh 5.9 (e.g. the Ubuntu dev container) has no per-name fallback: every $commands
+# lookup then misses. Probe and keep the full hash there (as in zshenv).
+(($+commands[zsh])) || setopt HASH_LIST_ALL
 
 if ! (($+functions[_zcache_eval])); then
 	fpath=("$DOTFILES_DIR/zfunc" $fpath)
@@ -101,13 +118,54 @@ if [[ -z "$_ZSH_OS" ]]; then
 	fi
 fi
 
+# Source tmux auto-start synchronously to avoid a visible prompt flash before tmux launches.
+# Shells OUTSIDE tmux (-z "$TMUX") source 01-tmux.zsh here, before the TTY-only setup and
+# sheldon: such a shell normally ends in `exec tmux`, which discards all of that work.
+# Shells INSIDE tmux (-n "$TMUX") normally do not exec (only a stale $TMUX does), so they source it at its original position,
+# right after the sheldon block below; running it early there would fill zsh's command hash
+# from the inherited PATH only for the later _apply_base_path to flush it again.
+# 01-tmux.zsh needs DOTFILES_DIR and a PATH with tmux/herdr/git/systemctl; a
+# cache-hit env.zsh bakes that PATH (non-darwin), but it is missing when (a) this is darwin
+# (env.zsh never bakes PATH there), (b) env.zsh was just regenerated (_zsh_cold_env, see
+# above) or (c) tmux is not resolvable. Only then is _apply_base_path run here, ahead of
+# 01-tmux.zsh (and of any tmux server it starts, which inherits PATH); _zsh_early_base
+# makes the synchronous call further down skip its redundant second _base_path call.
+# Both flags are plain, non-exported shell variables so they never leak to children, unlike
+# the exported _ZSH_PATH_LOADED guard (which is deliberately not trusted, see below).
+# EDITOR comes from the deferred zsh/10-editor.zsh both before and after this placement.
+# Also skipped when _ZSH_TMUX_LOADED is inherited: 01-tmux.zsh would return at once, and the
+# $+commands probe below would only build a command hash that _apply_base_path then discards.
+if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -z "$TMUX" && -z "$_ZSH_TMUX_LOADED" ]]; then
+	if [[ "$_ZSH_OS" == brew || -n "$_zsh_cold_env" ]] || ! (($+commands[tmux])); then
+		autoload -Uz _apply_base_path
+		_apply_base_path
+		_zsh_early_base=1
+	fi
+	source "$DOTFILES_DIR/zsh/01-tmux.zsh"
+fi
+
 # TTY-only setup: these only matter when ZLE will actually run
 if [[ -t 0 ]]; then
 	# Plugin env vars must be set before sheldon loads zsh-autosuggestions
 	export ZSH_AUTOSUGGEST_USE_ASYNC=1
 	export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+	export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=60
+	typeset -ga ZSH_AUTOSUGGEST_STRATEGY=(history)
+	typeset -ga ZSH_AUTOSUGGEST_IGNORE_WIDGETS
+	ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
+		forward-char backward-char forward-word backward-word
+		vi-forward-char vi-backward-char vi-forward-word vi-backward-word
+		beginning-of-line end-of-line
+	)
+	export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 	bindkey -e
 	export KEYTIMEOUT=1
+
+	# Completion caching and smart matching for instantaneous Tab responsiveness
+	zstyle ':completion:*' use-cache on
+	zstyle ':completion:*' cache-path "${ZCACHE_DIR:-$HOME/.zcache}/zcompcache"
+	zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*'
+
 	# These options used to live in the deferred zsh/03-history.zsh, but zsh-defer's
 	# _zsh-defer-resume wraps every deferred task in `emulate -L zsh` for its own
 	# duration, which resets options to the zsh baseline and discards any setopt/
@@ -120,6 +178,7 @@ if [[ -t 0 ]]; then
 		auto_cd auto_list auto_menu auto_param_keys auto_param_slash auto_pushd correct extended_glob ignore_eof \
 		interactive_comments list_packed list_types magic_equal_subst no_beep no_flow_control noautoremoveslash \
 		nonomatch notify print_eight_bit prompt_subst pushd_ignore_dups
+	unsetopt auto_name_dirs
 	# stty -ixon -ixoff disables the terminal driver's own ^S/^Q flow control. This is
 	# NOT the same thing as no_flow_control set above: no_flow_control only tells zsh's
 	# own line editor to not treat ^S/^Q specially while ZLE is active — it does not
@@ -161,22 +220,26 @@ HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 # PATH setup from 00-env.zsh normally runs deferred inside combined.zsh, but sheldon
 # needs tools like prmt in PATH at load time here, synchronously, before that.
 #
-# Deliberately unconditional, not gated on _ZSH_PATH_LOADED: an exported guard
+# Skipped only when the early call before 01-tmux.zsh already rebuilt PATH in this
+# same process (the non-exported _zsh_early_base flag, set only in the early block for
+# shells outside tmux); otherwise unconditional.
+# Never gated on _ZSH_PATH_LOADED: an exported guard
 # already reading 1 here only means some ancestor process ran this before, not that
 # *this* process's own PATH has _base_path's dirs (confirmed 2026-08-19: this exact
 # guard-inherited-but-PATH-incomplete gap reproduced a PATH-loss bug on darwin one
 # process removed via tmux/nested-shell inheritance). Always rebuilding is cheap —
-# a single _base_path fork, deduped by typeset -U — and correct regardless of
+# a single _base_path call, deduped by typeset -U — and correct regardless of
 # ancestry. Downstream, 00-env.zsh's own guard still skips its redundant copy of
 # this on non-darwin once this has run; on darwin it always re-derives PATH from
 # scratch after its own PATH="" reset regardless, so this cannot go stale there.
 export _ZSH_PATH_LOADED=1
 # _apply_base_path (zfunc/) holds the typeset -g -U / _base_path / export
-# triplet shared with 00-env.zsh and the fast-path call above — see its header
+# triplet shared with 00-env.zsh, the fast-path call and the early call above — see its header
 # for why -g matters even though this call site itself runs at the top level,
 # not inside a function.
 autoload -Uz _apply_base_path
-_apply_base_path
+[[ -n "$_zsh_early_base" ]] || _apply_base_path
+unset _zsh_cold_env _zsh_early_base
 
 # Load sheldon only when stdin is a TTY — all deferred tasks require ZLE-idle (never fires
 # for non-TTY), and prmt is independently guarded. Skipping for pipe/file stdin saves ~3ms.
@@ -185,8 +248,9 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]] && (($+commands[sheldon])); then
 		"${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml"
 fi
 
-# Source tmux auto-start synchronously to avoid a visible prompt flash before tmux launches
-if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" ]]; then
+# Shells inside tmux: 01-tmux.zsh at its original position (the early block above covers
+# shells outside tmux). It still unsets a stale $TMUX and may then exec tmux from here.
+if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -n "$TMUX" ]]; then
 	source "$DOTFILES_DIR/zsh/01-tmux.zsh"
 fi
 
@@ -207,9 +271,11 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 	# was checked), so combined.zsh kept sourcing stale code until a manual
 	# `zclean` — silently, indefinitely. (N.om[1]) is over-inclusive (also covers
 	# 20-os-*.zsh/01-tmux.zsh, which combined.zsh doesn't contain) but that only
-	# costs an occasional unnecessary rebuild, never a missed one.
-	_newest_zsh="$DOTFILES_DIR/zsh"/*.zsh(N.om[1])
-	if [[ -f "$combined_cache" && ( -z "$_newest_zsh" || ! "$_newest_zsh" -nt "$combined_cache" ) ]]; then
+	# costs an occasional unnecessary rebuild, never a missed one. An array assignment:
+	# a scalar one does not glob (GLOB_ASSIGN is off), so it used to hold the literal
+	# pattern, which is never -nt anything, and the check always passed.
+	_newest_zsh=("$DOTFILES_DIR/zsh"/*.zsh(N.om[1]))
+	if [[ -f "$combined_cache" && ( -z "$_newest_zsh[1]" || ! "$_newest_zsh[1]" -nt "$combined_cache" ) ]]; then
 		# -t 0.01 starts a new yield chunk (see sheldon.toml, above [plugins.colors]):
 		# sourcing this cache is the single most expensive deferred task, so it must not
 		# share a zle callback with the plugin tasks queued before it.
@@ -260,7 +326,13 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 	fi
 fi
 
+setopt HASH_LIST_ALL HASH_DIRS
+
 # Appended by an installer writing through the ~/.zshrc -> repo symlink. Guarded
 # because the target does not exist on every machine, and an unguarded `.` of a
-# missing file prints an error on every interactive shell start.
-[ -f "$HOME/bin/env" ] && . "$HOME/bin/env"
+# missing file prints an error on every interactive shell start. An `if`, not
+# `[ -f ] && .`: as the last command its status 1 became $? for the first prompt,
+# which prmt then rendered as a failed command (red "✗ 1").
+if [ -f "$HOME/bin/env" ]; then
+	. "$HOME/bin/env"
+fi

@@ -32,7 +32,7 @@ NIX_WRITABLE="${NIX_WRITABLE:-0}"
 . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh 2>/dev/null || true
 
 # ── Prefer native nix binary ──────────────────────────────────────────────
-if command -v nix >/dev/null 2>&1; then
+if command -v nix >/dev/null 2>&1 && [ "${FORCE_NIX_DOCKER:-0}" != "1" ]; then
     cd "${DOTFILES_ROOT}/nix"
     exec nix "$@"
 fi
@@ -67,6 +67,12 @@ DOTFILES_MOUNT_MODE="ro"
 # Nix reads GITHUB_TOKEN from NIX_CONFIG access-tokens, not from env directly.
 _NIX_CONFIG="extra-experimental-features = nix-command flakes
 trusted-users = root
+download-buffer-size = 134217728
+eval-cache = true
+http-connections = 50
+max-substitution-jobs = 32
+fsync-metadata = false
+builders-use-substitutes = true
 substituters = https://cache.nixos.org/
 trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
 if [ -n "${GITHUB_TOKEN:-}" ]; then

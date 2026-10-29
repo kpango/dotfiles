@@ -217,3 +217,6 @@ nix/run-*-vm
 # Claude Code's claude.ai skill sync writes here via the ~/.claude/skills -> agent/skills symlink;
 # machine-local generated content, not part of this repo's shared skills.
 /agent/skills/synced/
+
+# Local agent run caches and artifacts
+.agents/

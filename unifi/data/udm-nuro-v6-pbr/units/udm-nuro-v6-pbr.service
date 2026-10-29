@@ -1,0 +1,9 @@
+[Unit]
+Description=Re-apply IPv6 source-based PBR for NURO sub-/64 LAN prefixes
+Documentation=file:/data/udm-nuro-v6-pbr/udm-nuro-v6-pbr.sh
+After=network-online.target ndppd.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/udm-nuro-v6-pbr/udm-nuro-v6-pbr.sh

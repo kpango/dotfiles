@@ -121,9 +121,9 @@ local mainMod = "SUPER"
 local menu = "wofi --show drun --config " .. HOME .. "/.config/wofi/config -i"
 local chrome = "/usr/bin/google-chrome-beta"
 local term_float = "ghostty"
--- NOTE: $(hostname) は Hyprland 変数内では展開されないためセッション名を $USER のみとする。
-local term = "env GTK_IM_MODULE= LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8          ghostty -e " .. SHELL .. " -c          \"tmux -S /tmp/tmux.sock -q has-session &&           exec tmux -S /tmp/tmux.sock -2 attach-session -d ||           exec tmux -S /tmp/tmux.sock -2 new-session -n" .. USER .. " -s" .. USER .. "\""
-local xterm = "ghostty -o font.size=5.5 -e " .. SHELL .. " -c          \"tmux -S /tmp/tmux.sock -q has-session &&           exec tmux -S /tmp/tmux.sock -2 attach-session -d ||           exec tmux -S /tmp/tmux.sock -2 new-session -n" .. USER .. " -s" .. USER .. "\""
+-- tmux expands `#H` itself (hostname, = tmux.service's %H); $USER / $XDG_RUNTIME_DIR expand in exec_cmd's shell.
+local term = "env GTK_IM_MODULE= LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 ghostty -e tmux -u -2 -S $XDG_RUNTIME_DIR/tmux-main.sock new-session -A -s $USER@#H"
+local xterm = "ghostty -o font.size=5.5 -e tmux -u -2 -S $XDG_RUNTIME_DIR/tmux-main.sock new-session -A -s $USER@#H"
 
 -- ══════════════════════════════════════════════════════════════════════════════
 -- AUTOSTART

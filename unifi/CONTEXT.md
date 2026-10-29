@@ -120,6 +120,23 @@ ACL (Access Controls) に以下が追加済:
 将来 LAN を追加した時の手動承認を省略する。`autogroup:admin` = kpango 単独の tailnet なので
 other-user 誤 advertise のリスクなし。
 
+### Inv-9 (必須): clean-clients が決して削除しないクライアント
+
+`clean-clients.timer` (毎日 09:00 JST) は `/root/clean-clients.sh` を引数なし = 実削除モードで
+走らせる。無人実行のうえ件数上限を設けない (Q38) ため、保護は以下の条件式だけが担保する。
+`unifi/root/clean-clients.sh` の `COND` を変更するときはこの表を同時に更新する。
+
+| 保護対象                           | 列                                                                                                       | 理由                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| 人間が手で付けた識別子             | `name`, `note`                                                                                           | 復元不能な人間の入力 (`hostname` は DHCP 申告なので対象外) |
+| 個別設定を持つクライアント         | `use_fixed_ip`, `blocked`, `noted`, `local_dns_record_enabled`, `fixed_ap_enabled`, `virtual_network_override_enabled` | 消すと設定喪失がそのままネットワーク挙動の変化になる     |
+| 現在接続中の MAC                   | API `GET /s/<site>/stat/sta` の `data[].mac`                                                             | DB の `last_seen` は接続中に更新されないため API で判定する |
+| オフライン経過が閾値未満           | `last_seen` (ゴースト: `MIN_AGE` 既定 3600s / 実機: `OFFLINE_AGE` 既定 604800s = 7 日)                   | 一時的に電源オフなだけの実機を消さない                   |
+
+削除前に対象行と対応する `config.guest_authorization` 行を
+`/data/clean-clients-backup/ghost-<timestamp>.jsonl` へ退避する。復元は
+`clean-clients.sh --restore <file>` (`systemctl stop unifi` を伴い 1〜3 分の停止)。
+
 ---
 
 ## 3. 責務境界と入出力規約 (Boundary & Contracts)
@@ -132,11 +149,20 @@ other-user 誤 advertise のリスクなし。
 | UDM Pro `/run/dnsmasq.*` (udapi-server 生成) | LAN DHCP → gateway DNS → nextdns CLI の経路確立                     | 直接編集禁止 (再生成される)                        |
 | UniFi networkconf (API)                      | DHCP DNS 配布 (IPv4 Auto = gateway, IPv6 = NextDNS direct)          | public DNS 追加禁止                                |
 | UniFi firewall-policies (API)                | IoT VLAN の DNS 経路強制 (Inv-5 の 4 policies)                      | 他 VLAN に拡張時は要 Grill 再面談                  |
+| dotfiles `unifi/controller/` + `unifictl`    | USER_DEFINED FW policy・TML・mDNS mode の宣言と plan/apply (Q25–Q31) | API 応答の保存禁止、UUID の記述禁止、prune 禁止    |
 | UniFi setting/doh                            | **off** (dnscrypt-proxy 停止、CLI 一本化)                           | state=custom に戻す場合は Grill 面談               |
 | dotfiles `nix/core/settings.nix`             | NextDNS 定数の SSoT (profile ID / anycast / direct IPv6 / hostname) | public DNS 定数の復活禁止                          |
 | dotfiles `network/dns/*.conf`                | 非 Nix Arch host 用の raw conf (`FallbackDNS=` 空、NextDNS only)    | 旧 Cloudflare/Quad9 の復活禁止                     |
 | dotfiles `dockers/daemon.json`               | コンテナ DNS = Tailscale + NextDNS direct IPv6                      | public DNS の追加禁止                              |
 | dotfiles `unifi/`                            | UDM Pro SSoT (data/root/etc-snapshot、backup は 2026-10-14 撤去)    | secrets (tailscaled.state / profile-data) 混入禁止 |
+| UDM Pro `/data/nextdns-client-names/`        | UniFi クライアント名 → `/etc/hosts.dnsmasq` (5 分毎、Q19)           | `api-key` の git 取り込み禁止                      |
+| UDM Pro `/data/nextdns-dnsmasq-wire/`        | 消えた `/run/dnsmasq.dhcp.conf.d/nextdns.conf` を CLI 再起動で戻す (Q39) | conf を自前テンプレートで書かない          |
+| UniFi Content Filtering                      | **off** (3 policy とも disabled、Q18)                               | 再有効化は NextDNS の端末識別を壊す (Q18 参照)     |
+| UniFi WAN SLA "WAN Requirement" (API `v2/.../wan-slas`) | WAN1/WAN2 の failover 判定 probe (`eth10-0..7` / `ip6tnl2-0..7`、ICMP 4 + DNS 4) を NextDNS に (Q32) | state file の直接 patch・udapi-server SIGHUP 禁止 |
+| UDM Pro `/data/udm-dpinger-hijack/`          | WAN SLA で変えられない表示用 monitor (microsoft/google/1.1.1.1) の ICMP を NextDNS へ DNAT (60 秒毎、Q33) | `/etc/hosts` への probe ホスト名追記禁止 |
+| UDM Pro `/data/udm-verifier-enforcer/`       | usg `echo_server` = 45.90.28.0 を 1 時間毎に書き戻す (Q34)          | `dns_verification` の上書き禁止 (UniFi 既定のまま) |
+| UDM Pro `/data/udm-sla-tune/`                | `/run/resolv.conf.d/ip6tnl2` を NextDNS に書き換え、その dnsmasq だけ SIGHUP | WAN health probe の設定 (Q32 で WAN SLA に移管) |
+| UDM Pro `/data/udm-dns-hijack/`              | LAN の非 NextDNS 宛 :53 を gateway へ DNAT、主要 DoH の :443 を DROP | 自前 iptables は `-w 30` 必須 (Q35)              |
 
 ### 3.2 データフロー不変
 
@@ -146,8 +172,13 @@ LAN client (IPv4) ─DHCP で配布─▶ gateway 10.0.x.1
       └─▶ nextdns CLI 127.0.0.1:5342
          └─▶ DoH https://dns.nextdns.io/21553f (over WAN1 default route)
 
-LAN client (IPv6) ─DHCPv6/RA─▶ 2a07:a8c0::21:553f (profile 埋込)
-   └─▶ NextDNS 直接 DoH
+LAN client (IPv6) ─DHCPv6/RA (dns auto = gateway 自身, Q20)─▶ UDM Pro dnsmasq :53
+   └─▶ IPv4 と同じ経路 (add-mac/add-subnet → nextdns CLI → DoH)
+   (2026-10-17 以前は 2a07:a8c0::21:553f を直接配布しており、IPv6 で問い合わせる端末は
+    NextDNS 上で無名だった)
+
+端末が自前で DoT する場合 (Android Private DNS 等) ─▶ NextDNS 直接 (UDM を通らない)
+   └─▶ 端末識別はホスト名 `<端末名>-21553f.dns.nextdns.io` を端末側で設定した場合のみ
 
 tailnet client ─MagicDNS 100.100.100.100─▶ Tailscale admin UI の NextDNS DoH
    (profile ID は Tailscale admin DNS で設定済、現状の DoH stamp は NextDNS-21553f)
@@ -193,7 +224,30 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
 | Q13     | Backup 永続化                        | A: dotfiles/unifi/ SSoT に移行 (user asset のみ、controller state は UniFi Cloud に任せる) | B (個人 persistent) / C (破棄) / D (UDM Pro 内保存)              | user 作成 script/config は git で、UniFi Cloud が shadow 済の controller state は dotfiles に含めない (2026-10-14 incident: controller JSON ダンプが WPA/SSH/SSO 秘密を平文で含み public GitHub に流出、`backup/` ディレクトリと `unifi-pull.sh` の API dump 機能を撤去して縮小した) |
 | Q14     | Tailscale 他ノード key expiry        | 検査結果: 23/24 で既に無効化済、残 1 (lymJNQKRXYFWR) は Q15/Q16 で削除                     | —                                                                | 検査により action 不要と確定                                                                                                                                                                                                                                                         |
 | Q15/Q16 | Tailscale offline ノード整理         | A: 1 年以上 offline + 不審 15 台一括削除                                                   | B (14 台) / C (1 台) / D (維持)                                  | tailnet admin UI 整理、戻ってきた際は再登録される                                                                                                                                                                                                                                    |
+| Q18     | UniFi Content Filtering (2026-10-17) | 3 policy とも disabled。SafeSearch と成人向けブロックは NextDNS (`safeSearch: true`、category `porn`) へ移管 | 維持 / IoT のみ維持 | CF は LAN の :53 を coredns(127.0.0.1:1053) へ DNAT し、coredns → dnsmasq → nextdns の順に転送するため、dnsmasq/nextdns から見た送信元が全て 127.0.0.1 になり `add-mac`/`report-client-info` が無効化されていた (tcpdump で確認)。広告ブロックは NextDNS の blocklist が上位互換 |
+| Q19     | UniFi クライアント名の NextDNS 連携  | `/data/nextdns-client-names/sync.sh` (5 分毎 timer) が Integration API から名前+IP(+同 MAC の IPv6) を取り `/etc/hosts.dnsmasq` を生成 | DHCP/mDNS 名のみ / 手書き hosts / `/usr/bin/mongo` シム | NextDNS CLI の UniFi 名取得は MongoDB 前提で Network 11.0.83+ (PostgreSQL) では無効。hosts ソースは IP で引かれ、DHCP リースに MAC 由来の名前がある端末はそちらが優先される (2026-10-17 時点 43 台中 17 台)。mongo シムは firmware 所有物を差し替えるため却下 |
+| Q20     | LAN の IPv6 DNS 配布先               | 3 LAN とも `dhcpdv6_dns_auto: true` (UDM 自身) | 現状維持 (NextDNS 直接) / IoT 先行 | NextDNS 直接配布では IPv6 優先の端末が UDM を通らず無名になる。UDM が単一経路になるのは IPv4 で既に同じ |
+| Q21     | NextDNS Security 未有効項目 (2026-10-18) | 変更しない (`nrd`/`newlyActiveDomains`/`decentralizedWebGateways` は OFF のまま) | NRD+分散GW / 全 ON / 分散GW のみ | user 判断。誤ブロックの吸収コストを避け、TLD・denylist 側で強化する |
+| Q22     | NextDNS TLD ブロック拡張 (2026-10-18) | UniFi Region Block 国の ccTLD 全部 + Freenom (tk ml ga cf gq) + 濫用 gTLD (zip mov top icu cyou cfd sbs bond rest buzz quest gdn loan men click country kim party science stream download racing review win bid date faith accountant cricket webcam) + su + ایران を追加 (150→287)。開発・日常利用の `io co so rs ly be in tv` は除外 (github.io/crates.io, huggingface.co/t.co, notion.so, docs.rs, bit.ly, youtu.be, lnkd.in, twitch.tv)。`bq` は NextDNS が invalid で拒否 | 制裁国+Freenom+濫用 gTLD のみ / 制裁国+Freenom のみ | Region Block は IP ベースなので、別国 IP でホストされた当該 ccTLD を DNS で補完する。除外を増やすときは `DELETE /profiles/21553f/security/tlds/<tld>` |
+| Q23     | UniFi DPI アプリブロックの NextDNS 二重化 (2026-10-18) | denylist に baidu.com sina.com.cn weibo.com 163.com 126.com alipay.com tmall.com cntv.cn pptv.com 6.cn joy.cn qq.com utorrent.com bittorrent.com を追加 | qq.com 除外 / 反映しない | DPI をすり抜けた通信も DNS で止める。qq.com は WeChat 不使用の前提で含めた。ゲーム用 allowlist の Alibaba CDN 系は入れていない |
+| Q22/23 検証 | 適用後の実機確認 (2026-10-18) | UDM の dnsmasq (127.0.0.1) 経由で yandex.kz / example.nl / weibo.com / utorrent.com が `NOERROR ANSWER: 0` になり、NextDNS ログの理由は `.kz (TLD)` / `.nl (TLD)` / `Denylist`。baidu.com と qq.com は 0.0.0.0 が返り、ログ上は Denylist。除外 8 TLD (github.io, crates.io, notion.so, docs.rs, bit.ly, youtu.be, huggingface.co, twitch.tv, lnkd.in) と google.com は通常どおり解決した。TLD/denylist 以外のプロファイル設定に差分なし (ブロックリストの自動更新メタデータだけ) | — | NextDNS のログは当日約 1 日分しかなく、"未使用 TLD" の根拠は 1 日分に限られる |
+| Q24     | Media → IoT の機器発見 (2026-10-18) | mDNS reflector は Default/Media/IoT・mode `all`。FW policy `Media -> Nanoleaf 4D (TCP 16021,6517,12566)` で Media → 10.0.10.22 の 3 ポートだけ許可 | `_nanoleafapi` だけ中継 (custom) / IoT 全体を Media に開放 | Nanoleaf 4D は `_hap._tcp` (6517) と `_ltpdu._tcp` (12566) を広告し、iOS アプリは 12566 が要る。UI で IoT を足すと mode が `custom` (7 サービス) に変わって Nanoleaf が消える。TX70 は UDP 8766 ブロードキャストで探すので VLAN を越えられず、クラウド操作で使う |
+| Q25     | controller 設定の再現 (2026-10-18) | 秘密を含まない手書きの宣言 (`unifi/controller/*.json`) と冪等な plan/apply。API 応答のダンプはしない | CONTEXT.md の手順書のみ / 宣言+検証のみ (適用は手動) | 「いつでも再現」を満たしつつ、2026-10-14 の流出原因 (API 応答の丸ごと保存) は作らない。§5 非目標を「ダンプはしない、宣言した部分は管理する」に改めた |
+| Q26     | 管理範囲 | USER_DEFINED の FW policy 16 本全部 (2026-10-18 時点)と、それらが参照する Traffic Matching List。宣言にないものは触らない (prune なし) | 今回の 2 件のみ / + kpango-iot wlanconf | DERIVED (`(Return)`) は controller が自動生成するので宣言しない。wlanconf は PSK と同じ object なので対象外 |
+| Q27     | 宣言と実機の同定 | 宣言に UUID を書かない。zone / network / TML は名前で書き、apply 時に ID へ解決する。policy は (name, 送信元 zone, 宛先 zone) で同定 | UUID 保持 / 実機側を一意名に改名 | 名前が `Allow ICMPv6` の policy が 4 本あるので、名前だけでは同定できない。controller を作り直しても使える |
+| Q28     | 評価順 | ゾーン組ごとに、宣言の並びを `beforeSystemDefined` の先頭に置く。宣言外の USER_DEFINED は今の相対順のまま後ろに続ける | 管理しない / ずれの警告のみ | 新規作成は末尾に足されるので、管理しないと DoT の allow が block の後ろに来る恐れがある |
+| Q29     | 実装 | Go の独立モジュール `unifi/unifictl/` (標準ライブラリのみ)。make が `go run` で動かし、API キーは `pass show unifi-api` から環境変数 `UNIFI_API_KEY` で渡す | bash+jq / agent/go (agentctl) に統合 / go install | user 判断。tmux-pane-info と同じ「ツールごとの独立モジュール」構成。agentctl はまだ main に無い |
+| Q30     | apply の安全策 | plan を表示し、`yes` と入力したときだけ書き込む (`-yes` で省略可)。変更前の object は repo の外 (`$XDG_STATE_HOME/unifictl/backup/<ts>/`, 0600) に保存する。宣言に秘密らしいキー (`x_*`, passphrase, password, psk, token, private_key) があれば読み込みを拒否する | 確認なしの自動適用 / バックアップなし | 本番 controller への書き込みなので、確認とロールバック材料を必須にした。受け入れ条件は実機に対する plan の差分 0 |
+| Q31     | mDNS の対象ネットワーク | `mode` は API で適用し、対象ネットワーク一覧は照合だけする。ずれていたら UI の操作手順を出して非 0 で終わる | 照合しない | `enabled_for_network_ids` と networkconf `mdns_enabled` は classic API では読み取り専用 (PUT は `rc: ok` を返すが黙って捨てる)。`mode=all` は `predefined_services=[]` と一緒に送らないと `MdnsSettingInvalidServicesListException` になる |
+| Q32     | WAN health probe の宛先 (2026-10-20) | UniFi 公式の WAN SLA "NextDNS" (ICMP 45.90.28.0 / 45.90.30.0 / 45.90.28.74 / 45.90.30.74、5 秒間隔、60 秒窓、loss 20%、latency 1500ms) を WAN1/WAN2 に割り当てる。UI の Test → Confirm と同じ `wan/load-balancing/configuration` の test-and-commit で適用 | udm-sla-tune による UDAPI state file の sla/monitors patch + udapi-server SIGHUP / Postgres `config.wan_sla` への直接 INSERT | 公式経路なら controller が monitor を再生成しても NextDNS のまま。state patch は SIGHUP で udapi-server が全面再起動し ipset・ip -6 rule が消える。直接 INSERT は何も provision されなかった。endpoint は推測でなく UI の通信を CDP で捕まえて特定した (推測 URL の 404 で「未実装」と誤判定した経緯あり)。同日夕方に user が UI で SLA 名を "NextDNS" → "WAN Requirement" に変え、DNS 型 monitor 4 本 (同じ NextDNS 4 IP 宛て) を足した。audit は名前ではなく WAN への割当で SLA を引く |
+| Q33     | WAN SLA で変えられない monitor (2026-10-20) | UDAPI が WAN ごとに足す表示用 monitor (DNS monitor 追加後は `-9` www.microsoft.com、`-10` google.com、`-11` 1.1.1.1。番号は SLA の monitor 数で変わる) は、dpinger の argv から IP を拾って UDM 発の ICMP だけ NextDNS A1 へ DNAT する。DNAT 前から続く conntrack は `conntrack -D -r <ip>` で消す | `/etc/hosts` で名前を NextDNS に向ける / 8.8.8.8・:53 の静的 DNAT | `/etc/hosts` は nextdns-client-names が `/etc/hosts.dnsmasq` に写し、NextDNS CLI (`use-hosts true`) が LAN 全体に google.com = 45.90.30.74 を返していた。UDAPI 自身は名前解決結果を argv に焼き込むので hosts は効いてもいなかった。2026-10-20 に撤去 |
+| Q34     | usg `dns_verification` (2026-10-20) | UniFi 既定 (auto / 1.1.1.1 / 8.8.8.8 / ui.com) に戻し、enforcer は `echo_server` だけを書き戻す | NextDNS (manual) を強制し続ける | DNS 型の probe は Q32 で不要になった。`echo_server` は WAN ごとの uptime monitor (DNS monitor 追加後は `-8`) を決め、WAN SLA では変えられないので残す |
+| Q35     | 自前 iptables の冪等性 (2026-10-20) | 全呼び出しに `-w 30`。hook は `-C` で確かめて足したあと、`-S` で数えて 2 本目以降を消す (`dedupe`)。`make unifi/audit` が各 hook = 1 本を検査する | `-C` のみ | `-w` なしの `-C` は UniFi が xtables lock を持っている間に失敗し、「無い」と判断して hook を重複挿入していた (v4 PREROUTING が 7 本)。game-geo-bypass は元から `-w 30` で重複なし |
+| Q36     | WAN の QoS ルール (2026-10-20) | 既定の "Critical Apps Prioritization" (PRIORITIZE, app 指定) を無効化。現行 API が app_id 28 / 262312 を `api.err.InvalidFirewallDestinationAppIds` で拒否したので、その 2 つを外して `enabled=false` を PUT した (2 つは API が受け付けないため復元していない)。戻すときは UI でこのルールを再び有効にする | 有効のまま (遅延優先) / 再検討を保留 | 2026-10-20 に `tc` で確認: ルール有効時は eth10・eth8・ip6tnl2 の root が htb (eth10 の class 1:1 は rate/ceil 10Gbit) で、ingress が ifb へ mirred リダイレクトされていた。無効化後は mq / noqueue でリダイレクトなし。Ookla (IPA CyberLab 400G 固定、ホスト PAUSE 無効の状態) で有効 3 回 → 無効 3 回の中央値が DL 1585→2426 Mbps・UL 5827→6902 Mbps (範囲は重ならない)、直後の on/off 1 組でも DL 2284→3077・UL 5910→6750。代わりに DL 飽和時の遅延が 6.6–9.9 ms → 34.6–154 ms に増える (有効時の 1 回は無負荷 RTT も 28.9 ms に跳ねた外乱で 108 ms。それ以外の無負荷 RTT は 5.0–5.6 ms で変わらず)。user 判断で速度を優先。ルール種別は PRIORITIZE で、DNS / NextDNS / Tailscale / IPS / FW の設定は変更していない |
+| Q37     | ホスト側の 802.3x フロー制御 (2026-10-20) | ThreadRipper の X710 (sfp0/sfp1) で PAUSE の受信・送信を無効化。`network/nm/99-coalesce-x710`、`network/nm/{,desk/}slave{0,1}.nmconnection` (`pause-rx/tx=false`)、`nix/hosts/tr/networking/x710-tuning.nix` に揃えた。スイッチ側の設定は変えない | UniFi の global_switch `flowctrl_enabled` を切る (全スイッチ再プロビジョン) | PAUSE はリンク単位なので、送ってくるのは直結の US-16-XG (UniFi Switch 16XG 01 の port 9/10)。PAUSE 有効時の受信数は Ookla 1 回あたり 49–5,521 個 (6 回、DL と UL の区別はしていない)。QoS 有効の状態で、有効 4 回 → 無効 3 回 → 有効/無効を 2 組交互の順に測り、UL 中央値は 5398 (6 回、5151–5946) → 5829 Mbps (5 回、5556–6403)。UL も範囲が重なり、根拠は弱い (示唆程度)。DL も範囲が重なり差は見えない (1365–2008 / 1358–2160)。QoS 無効と組み合わせた状態での PAUSE 単独の効果は測っていない。ホストだけの変更で戻しやすいので、悪化が見えないことを条件に残した |
 | Q17     | Split DNS LAN domain                 | C: skip (現状維持、tailnet 内は MagicDNS で足りる)                                         | A (home.arpa 実装) / B (枠組みのみ) / D (不要判定)               | fix_plan 自体が条件付き保留、必要時 Option A で遅延展開可能                                                                                                                                                                                                                          |
+| Q38     | clean-clients の対象拡大 (2026-10-21) | 既定条件を「`name`・`note` なし + 個別設定なし + 非接続中 + オフライン経過が閾値超」に広げ、`is_wired`・`hostname`・`last_ip`・`oui` のゲートを撤去。閾値は 2 段階にし、識別情報が全く無いゴーストは `MIN_AGE` (既定 3600s)、ホスト名・IP・OUI のいずれかが判明している実機は新設の `OFFLINE_AGE` (既定 604800s = 7 日) | 手動専用の新フラグ `--offline` / 単一閾値への統一 (30 日 or 7 日) / `MAX_DELETE` 上限で暴走を止める | user 判断で既定条件ごと広げ、毎日 09:00 の `clean-clients.timer` にも適用する。保護範囲は Inv-9 を参照 — `use_fixed_ip` だけでなく `blocked`・`noted`・`local_dns_record_enabled`・`fixed_ap_enabled`・`virtual_network_override_enabled` も維持し、`hostname` は DHCP 申告の自動値なので保護しない。上限は設けず jsonl バックアップ + `--restore` を担保とする。変更前の内訳 (全 69 件: 有線 21 / 無線 48、固定IP 55 / noted 58 / AP固定 39 / VLAN override 5 / blocked 0 / ローカルDNS 0) では個別設定なしが 11 件で全て有線・全て `name`/`note` なし。実機 `--dry-run` 検証 (2026-10-21): `OFFLINE_AGE=2592000` (30 日) では 0 件 (接続中 43 件を除外)、`OFFLINE_AGE=604800` では 7 日超の 4 件 (Cisco / Infohand / Nintendo / Ubiquiti、いずれも OUI のみ判明) が挙がり 2 段階分岐の動作を確認。30 日では当面削除が発生しないため user 判断で既定を 7 日に決めた |
+| Q39     | dnsmasq → NextDNS CLI 配線の維持 (2026-10-21) | `nextdns-dnsmasq-wire.path` が `/run/dnsmasq.dhcp.conf.d` の変更を監視し、`nextdns.conf` (`server=127.0.0.1#5342`) が無ければ `systemctl restart nextdns`。5 分毎の healthcheck と audit も同じ conf を見る | healthcheck に足すだけ (最大 5 分漏れる) / CLI のテンプレートを複製して自前で書く | CLI (1.47.3 `router/ubios/setup.go`) は起動時に一度だけ conf を書き dnsmasq を kill する。udapi-server が設定変更のたびにディレクトリを再生成して conf を消すと、dnsmasq は `resolv.conf.d/main` の NextDNS IP へ平文 UDP で直接転送し、healthcheck の dig も通るので気付けなかった。NextDNS logs では直近 24h の未識別 2971 件中 2766 件が UDM の eth8 IPv6 発。CLI 経由なら loopback 発は `host.Name()` = `UDM-Pro` で DoH 送信される (`run.go` `setupClientReporting`)。実機で conf 削除 → 約 5 秒で再生成・再起動 1 回のみを確認 |
 
 ---
 
@@ -209,6 +263,10 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
   default route `201.ip6tnl1` (WAN1 DS-Lite) に乗る設計。WAN1 停止時に UniFi が default
   route を書き換えると TCP timeout 後に nextdns が再接続して WAN2 に切り替わる想定だが、
   実機 failover テスト未実施。問題が出たら `/data/nextdns-healthcheck.sh` 側で検知される。
+  部分的な実地観測 (2026-10-16 23:25〜10-17 01:20): WAN1 の DS-Lite (IPv4) だけが落ち、IPv4 は
+  WAN2 へ failover、eth8 の native IPv6 は生存していた間、nextdns は IPv6 の DoH endpoint
+  (`[2a07:a8c1::]:443` 等) に接続したまま解決を継続し、healthcheck は一度も発火しなかった。
+  WAN1 の IPv6 まで落ちるケースは依然未観測。
 - **IPv4 DHCP DNS を "完全に空" にできない**: UniFi dnsmasq は `dhcpd_dns_enabled: true`
   - 全エントリ空にしてもゲートウェイ IP を自動補完する (本 CONTEXT 作成時に実機確認)。
     IPv4 クライアントは `10.0.x.1` 経由で UDM Pro dnsmasq → nextdns CLI → NextDNS DoH を
@@ -216,22 +274,36 @@ Docker container ─daemon.json dns:[]─▶ 100.100.100.100 (tailnet) /
 - **UDM Pro の `/etc/` は firmware update で wipe される**: 本構成は `/data/on_boot.d/*.sh`
   と `/data/<component>/install.sh` が boot 時 or 手動実行で `/etc/` を再構築する。
   dotfiles 側は `/data/` を authoritative とし、`unifi/etc-snapshot/` は参照のみ。
+  UniFi OS 自体は `/data/on_boot.d` を実行しないため、`make unifi/install` が配置する
+  `udm-boot.service` がその実行を担う (2026-10-17 以前は実行されておらず sysctl が再起動で消えていた)。
+  2026-10-16 の UniFi OS 6.0.13 更新では `/etc` overlay (upperdir `/mnt/.rwfs/data`) は残り、
+  `/usr/bin/nextdns` と `/etc/apt/preferences.d/30-unifi-native-protect` だけが消えた
+  (前者は nextdns.service の ExecStartPre が `/data/.nextdns-recover` から、後者は `update.sh` の
+  `guard.sh pins` が復元)。
+- **UDAPI の表示用 monitor は WAN SLA で変えられない** (UniFi Network 11.0.89 時点、2026-10-20
+  確認): WAN SLA が置き換えるのは failover 判定の monitor (`-0..7`、ICMP 4 + DNS 4) だけで、`-8`
+  (echo_server)・`-9..11` (microsoft / google / 1.1.1.1) は残る (番号は SLA の monitor 数で変わる)。前者は usg `echo_server`、後者は udm-dpinger-hijack の
+  DNAT で NextDNS に向けている (Q33/Q34)。設定状態の確認は `make unifi/audit` (読み取りのみ、
+  1 項目ごとに PASS/FAIL)。
 - **NixOS host の rebuild は本 commit 以降 user 手動**: `dotfiles/install` は Arch host で
   即反映されるが、NixOS host は user が `sudo nixos-rebuild switch --flake .#desk-threadripper`
   を実行するまで旧設定のまま。
 
 ### 非目標
 
-- **UniFi controller state の shadow (`setting.json` / `wlanconf.json` / `networkconf.json` 等)**:
+- **UniFi controller state のダンプ (`setting.json` / `wlanconf.json` / `networkconf.json` 等)**:
   UniFi Cloud が既に backup 済、かつこれらの JSON は WPA2 PSK / SSH credentials / SSO token /
   API token を平文で含むため、git に取り込むと secret leak の原因になる (下記 incident 参照)。
   `unifi/scripts/unifi-pull.sh` は user script 側のみ pull、controller API は一切叩かない。
+  例外は Q25: `unifi/controller/` に**手書きした宣言** (FW policy・Traffic Matching List・mDNS
+  mode) だけを `unifictl` が適用する。`unifictl` は API 応答をファイルに書かない
+  (backup は repo 外)。対象を足すときは、その object が秘密を含まないことを先に確かめる。
 - **Tailscale ACL 全面リファクタ**: 現在の ACL は wide-open (`acls:[{action:accept, users:["*"], ports:["*:*"]}]`)、
   単独 kpango tailnet 前提。他ユーザー共有が始まったら要再設計。
 - **IoT 機器の allowlist (DNS redirect 例外)**: Q3 で lockdown 済、壊れる機器が実際に
   出てから個別対応 (事前の予防的 allowlist は作らない)。
-- **NextDNS Parental Control / Category block**: 単独 kpango 利用で不要。family/guest WiFi
-  展開時に再検討。
+- **NextDNS Parental Control の追加カテゴリ**: Q18 で `porn` + SafeSearch のみ移管 (Q10 を更新)。
+  それ以上のカテゴリ/サービスブロックは family/guest WiFi 展開時に再検討。
 - **LAN hostname (home.arpa / Split DNS)**: tailnet 内は MagicDNS で代替、必要時に Q17
   Option A で遅延展開。
 - **Mongo 直編集での UniFi config 変更**: controller API で代替可能なため使わない

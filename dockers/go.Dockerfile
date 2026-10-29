@@ -11,9 +11,10 @@ ENV GO111MODULE=on \
     GOPATH=/go \
     GOBIN=/go/bin \
     GOARCH=${ARCH} \
+    GOAMD64=v3 \
     GOOS=${OS} \
     GOPROXY="https://proxy.golang.org,direct" \
-    GOFLAGS="-ldflags=-s -buildvcs=false" \
+    GOFLAGS="-trimpath -ldflags=-s -buildvcs=false" \
     GOORG="golang.org" \
     GODEV="https://go.dev"
 ENV PATH=${PATH}:${GOROOT}/bin:${GOBIN}
@@ -66,10 +67,10 @@ RUN --mount=type=bind,source=dockers/go.tools,target=go.tools,ro \
        GOTOOLCHAIN=auto \
        GOEXPERIMENT=runtimesecret,simd,jsonv2 \
        xargs -P $(nproc) -n 1 \
-       sh -c 'errfile=$(mktemp); n=1; until go install "$1" >/dev/null 2>"${errfile}"; do if [ "$n" -ge 3 ]; then echo "--- Failed to install $1 after ${n} attempts ---" >&2; cat "${errfile}" >&2; rm "${errfile}"; exit 255; fi; echo "--- Retrying $1 (attempt $((n + 1))/3) ---" >&2; sleep $((n * 5)); n=$((n + 1)); : > "${errfile}"; done; rm "${errfile}"' -- \
+       sh -c 'errfile=$(mktemp); n=1; until go install -trimpath -ldflags="-s -w" "$1" >/dev/null 2>"${errfile}"; do if [ "$n" -ge 3 ]; then echo "--- Failed to install $1 after ${n} attempts ---" >&2; cat "${errfile}" >&2; rm "${errfile}"; exit 255; fi; echo "--- Retrying $1 (attempt $((n + 1))/3) ---" >&2; sleep $((n * 5)); n=$((n + 1)); : > "${errfile}"; done; rm "${errfile}"' -- \
        < go.tools \
     && find ${GOPATH}/bin -type f -executable \
-        | xargs -P $(nproc) -n 1 sh -c 'upx --best "$1" 2>/dev/null || true' --
+        | xargs -P $(nproc) -n 1 sh -c 'upx -9 -q "$1" 2>/dev/null || true' --
 
 # Special
 FROM go-base AS dagger

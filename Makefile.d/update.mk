@@ -100,47 +100,42 @@ update/versions: update/versions/actions update/versions/tools
 
 # ── GitHub Actions action versions ───────────────────────────────────────────
 #
-# Scans all .github/workflows/*.{yml,yaml} files to discover every
-# "uses: owner/repo@..." pin, then fetches the latest release and rewrites
-# each pin to the latest major version tag (e.g. v4.2.1 → v4).
+# Scans all .github/workflows/*.{yml,yaml} and .github/actions/**/*.{yml,yaml}
+# files to discover every action and workflow reference, updates them to their
+# latest releases/tags, and pins them to commit SHAs using pinact.
 #
-# No manual list to maintain — new actions are picked up automatically.
-## scan .github/workflows for "uses:" pins and bump each to the latest major tag
+# Covers root actions (owner/repo@...), subdirectory actions (owner/repo/path@...),
+# and external reusable workflows (owner/repo/.github/workflows/...@...).
+# Preserves local relative paths (./...).
+## scan .github/workflows and .github/actions for action and workflow references and update to latest versions
 update/versions/actions:
 	@echo "==================================================="
 	@echo " update/versions/actions"
 	@echo "==================================================="
-	@GH_TOKEN="$${GITHUB_ACCESS_TOKEN:-$$(pass github.api.ro.token 2>/dev/null)}"; \
-	REPOS=$$(grep -rh 'uses:' "$(ROOTDIR)/.github/workflows" \
-		| sed -n 's/.*uses:[[:space:]]*\([A-Za-z0-9_.-][A-Za-z0-9_.-]*\/[A-Za-z0-9_.-][A-Za-z0-9_.-]*\)@.*/\1/p' \
-		| sort -u); \
-	FAILED=0; \
-	for repo in $$REPOS; do \
-		$(call _gh_fetch_latest); \
-		if [ "$$FETCH_RC" -ne 0 ]; then \
-			printf "  WARNING: GitHub API request failed for %s (HTTP %s) — token invalid/rate-limited/network error?\n" "$$repo" "$${HTTP_STATUS:-?}"; \
-			FAILED=1; \
-			continue; \
+	@if ! command -v pinact >/dev/null 2>&1; then \
+		echo "pinact not found on PATH; installing via go install..."; \
+		go install github.com/suzuki-shunsuke/pinact/cmd/pinact@latest || { \
+			echo "ERROR: pinact is required but could not be installed. Please ensure Go is installed and on PATH." >&2; \
+			exit 1; \
+		}; \
+	fi; \
+	GITHUB_TOKEN="$${GITHUB_TOKEN:-$${GITHUB_ACCESS_TOKEN:-$$(gh auth token 2>/dev/null || pass github.api.ro.token 2>/dev/null || :)}}"; \
+	export GITHUB_TOKEN; \
+	DIRS=""; \
+	[ -d "$(ROOTDIR)/.github/workflows" ] && DIRS="$$DIRS $(ROOTDIR)/.github/workflows"; \
+	[ -d "$(ROOTDIR)/.github/actions" ] && DIRS="$$DIRS $(ROOTDIR)/.github/actions"; \
+	if [ -z "$$DIRS" ]; then \
+		echo "  No workflow or action directories found under $(ROOTDIR)/.github"; \
+	else \
+		TARGETS=$$(find $$DIRS -type f \( -name '*.yml' -o -name '*.yaml' \) 2>/dev/null | sort); \
+		if [ -z "$$TARGETS" ]; then \
+			echo "  No workflow or action files found under $(ROOTDIR)/.github"; \
+		else \
+			echo "$$TARGETS" | xargs pinact run -u || { \
+				echo "  ERROR: pinact run -u failed. Check network or GitHub API token rate limits." >&2; \
+				exit 1; \
+			}; \
 		fi; \
-		TAG=$$(printf '%s' "$$RESP" \
-			| grep '"tag_name"' \
-			| sed 's/.*"tag_name": *"\([^"]*\)".*/\1/' \
-			| head -1); \
-		if [ -z "$$TAG" ] || [ "$$TAG" = "null" ]; then \
-			printf "  SKIP  %-55s (no release found)\n" "$$repo"; \
-			continue; \
-		fi; \
-		MAJOR=$$(printf '%s' "$$TAG" | grep -oE 'v[0-9]+' | head -1); \
-		VER="$${MAJOR:-$$TAG}"; \
-		printf "  %-55s %s → %s\n" "$$repo" "$$TAG" "$$VER"; \
-		find "$(ROOTDIR)/.github/workflows" \( -name '*.yml' -o -name '*.yaml' \) \
-			| xargs $(SED_INPLACE) -E \
-				"s|(uses:[[:space:]]+$$repo)@[^[:space:]]+|\1@$$VER|g" \
-			|| { printf "  WARNING: sed failed rewriting pins for %s\n" "$$repo"; FAILED=1; }; \
-	done; \
-	if [ "$$FAILED" -eq 1 ]; then \
-		echo "  Done (with failures — some pins may not have been rewritten, see WARNING lines above)."; \
-		exit 1; \
 	fi
 	@echo "  Done."
 
@@ -156,7 +151,7 @@ update/versions/tools:
 	@echo "==================================================="
 	@echo " update/versions/tools"
 	@echo "==================================================="
-	@GH_TOKEN="$${GITHUB_ACCESS_TOKEN:-$$(pass github.api.ro.token 2>/dev/null)}"; \
+	@GH_TOKEN="$${GITHUB_TOKEN:-$${GITHUB_ACCESS_TOKEN:-$$(gh auth token 2>/dev/null || pass github.api.ro.token 2>/dev/null || :)}}"; \
 	FAILED=0; \
 	for entry in \
 		"mvdan/sh|SHFMT_VER" \

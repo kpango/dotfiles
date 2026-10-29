@@ -4,9 +4,18 @@ Documentation=man:tmux(1)
 After=default.target
 
 [Service]
-Type=forking
-ExecStart=/usr/bin/tmux -S /run/user/%U/tmux-main.sock new-session -A -d -s %u@%H
-ExecStop=/usr/bin/tmux -S /run/user/%U/tmux-main.sock kill-server
+# oneshot+RemainAfterExit: terminals attach with `new-session -A` on the same socket, so
+# a server/session may already exist (and live outside this unit's cgroup). ExecStart then
+# exits 0 without forking, which Type=forking would treat as "daemon gone" and go inactive.
+# ExecReload is the same idempotent command: `systemctl --user reload` recreates a dead server
+# inside the unit's cgroup without ever killing anything (unlike restart, whose ExecStop kills it).
+Type=oneshot
+RemainAfterExit=yes
+# Trailing ':' in the has-session target: without it tmux parses the '.' of a dotted hostname as
+# the window.pane separator and the exact-match lookup fails.
+ExecStart=/bin/sh -c '/usr/bin/tmux -S /run/user/%U/tmux-main.sock has-session -t =%u@%H: 2>/dev/null || exec /usr/bin/tmux -S /run/user/%U/tmux-main.sock new-session -d -s %u@%H'
+ExecReload=/bin/sh -c '/usr/bin/tmux -S /run/user/%U/tmux-main.sock has-session -t =%u@%H: 2>/dev/null || exec /usr/bin/tmux -S /run/user/%U/tmux-main.sock new-session -d -s %u@%H'
+ExecStop=-/usr/bin/tmux -S /run/user/%U/tmux-main.sock kill-server
 Restart=on-failure
 RestartSec=5
 

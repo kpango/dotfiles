@@ -64,9 +64,18 @@
       "size": 24
     }
   ],
-  "dns": ["100.100.100.100", "2a07:a8c0::21:553f", "2a07:a8c1::21:553f"],
-  "dns-opts": ["timeout:5", "ndots:1"],
-  "registry-mirrors": ["https://mirror.gcr.io"],
+  "dns": [
+    "100.100.100.100",
+    "2a07:a8c0::21:553f",
+    "2a07:a8c1::21:553f"
+  ],
+  "dns-opts": [
+    "timeout:5",
+    "ndots:1"
+  ],
+  "registry-mirrors": [
+    "https://mirror.gcr.io"
+  ],
   "runtimes": {
     "runsc": {
       "path": "/usr/local/bin/runsc"

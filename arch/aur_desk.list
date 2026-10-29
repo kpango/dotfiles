@@ -53,7 +53,7 @@ fwupd
 fwupd-efi
 gettext
 ggshield
-ghostty-x86_64-v3-git
+ghostty
 ghq
 git
 git-delta
@@ -64,6 +64,8 @@ google-cloud-cli
 google-cloud-cli-gke-gcloud-auth-plugin
 gopreload-git
 graphviz
+greetd
+greetd-tuigreet
 grep
 grim
 gzip
@@ -73,12 +75,14 @@ htop
 hyprlang2lua
 imagemagick
 inetutils
+iperf3
 iptables
 irqbalance
 kanshi
 kubectl
 kubectx
 less
+libliftoff
 libnm
 libva-nvidia-driver
 libva-utils
@@ -142,10 +146,13 @@ sheldon
 slack-desktop
 slurp
 smartmontools
+speedtest-cli
 starship
 sudo
 swaybg-git
 sway-git-wlroots-git
+swayidle
+swaylock
 sysbench
 sysfsutils
 systemd
@@ -171,9 +178,7 @@ which
 whois
 wireless-regdb
 wl-clipboard
-wlroots-hidpi-xprop-git
 wofi
-wpscan-git
 xdg-desktop-portal-wlr
 xfsprogs
 xorg-xwayland

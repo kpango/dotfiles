@@ -1,8 +1,0 @@
-select-pane -t 0
-split-window -v
-select-pane -t 1
-split-window -h
-setw main-pane-height 35
-select-layout main-horizontal
-display-panes
-resize-pane -R -t 2 22

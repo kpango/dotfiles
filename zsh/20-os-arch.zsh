@@ -82,7 +82,6 @@ if (($+commands[pacman])); then
 			"$XDG_CONFIG_HOME/gcloud/logs"/* 2>/dev/null || true
 		sudo rm -rf \
 			/tmp/makepkg/* \
-			/usr/share/man/man5/gemfile* \
 			/var/cache/pacman/pkg \
 			/var/lib/pacman/sync/*
 		sudo rm -f /var/lib/pacman/db.lck
@@ -362,15 +361,22 @@ if (($+commands[pacman])); then
 		run_command "cleaning package cache (pre-update 2)" kacclean
 
 		# Now the main event
+		# The nvidia beta set cannot go through the normal upgrade (see
+		# arch_update_nvidia_beta); hold it back here and upgrade it afterwards.
+		local -a _nv_ign=()
+		local _nv_held
+		_nv_held=$(_nvidia_beta_outdated)
+		[[ -n "$_nv_held" ]] && _nv_ign=(--ignore "${_nv_held//$'\n'/,}")
 		# On partial failure, retry each remaining outdated package individually
 		# so a single broken AUR package does not block the rest of the system.
-		if ! run_command "pacman full upgrade" kacman -Syyu --noconfirm; then
+		if ! run_command "pacman full upgrade" kacman -Syyu --noconfirm "${_nv_ign[@]}"; then
 			echo "==> Full upgrade incomplete; retrying remaining packages individually..."
 			local _outdated _failed=()
 			_outdated=$(kacman -Qu 2>/dev/null | awk '{print $1}')
 			if [[ -n "$_outdated" ]]; then
 				while IFS= read -r _pkg; do
 					[[ -z "$_pkg" ]] && continue
+					[[ -n "$_nv_held" ]] && grep -qxF -- "$_pkg" <<<"$_nv_held" && continue
 					run_command "upgrading $_pkg" kacman -S --noconfirm "$_pkg" ||
 						_failed+=("$_pkg")
 				done <<<"$_outdated"
@@ -379,6 +385,40 @@ if (($+commands[pacman])); then
 				echo "WARNING: could not upgrade: ${_failed[*]}" ||
 				true
 		fi
+		[[ -n "$_nv_held" ]] && arch_update_nvidia_beta "${(@f)_nv_held}"
+		return 0
+	}
+
+	# Print the installed nvidia beta AUR packages, one per line, when
+	# nvidia-utils-beta has an AUR update; print nothing otherwise.
+	_nvidia_beta_outdated() {
+		pacman -Q nvidia-utils-beta nvidia-beta-dkms &>/dev/null || return 0
+		(($+commands[paru])) || return 0
+		paru -Qua 2>/dev/null | awk '{print $1}' | grep -qx nvidia-utils-beta || return 0
+		local _p
+		for _p in nvidia-utils-beta opencl-nvidia-beta nvidia-settings-beta nvidia-beta-dkms; do
+			pacman -Q "$_p" &>/dev/null && print -r -- "$_p"
+		done
+	}
+
+	# nvidia-beta-dkms is a separate AUR pkgbase that depends on the exact
+	# nvidia-utils-beta=<ver>. paru installs a freshly built nvidia-utils-beta
+	# on its own, which pacman rejects as breaking the installed
+	# nvidia-beta-dkms, and that aborts every remaining AUR build in the run.
+	# Build the whole set and install it in one transaction instead:
+	#   --batchinstall      queue built packages, install them together
+	#   --nodeps            paru ignores dep versions, so the old utils
+	#                       satisfies dkms and nothing is installed mid-way
+	#   --mflags=--nodeps   makepkg does not reject dkms for the new utils
+	#                       version that is not installed yet
+	# A failed build installs nothing, leaving driver and userspace matched.
+	arch_update_nvidia_beta() {
+		local -a _pkgs=("$@")
+		[[ ${#_pkgs[@]} -eq 0 ]] && _pkgs=("${(@f)$(_nvidia_beta_outdated)}")
+		[[ -z "${_pkgs[1]}" ]] && return 0
+		echo "==> Upgrading nvidia beta set in one transaction: ${_pkgs[*]}"
+		run_command "nvidia beta upgrade" paru -S --noconfirm --batchinstall \
+			--nodeps --mflags=--nodeps "${_pkgs[@]}"
 	}
 
 	alias archpkgs=arch_update_packages

@@ -20,6 +20,8 @@ RUN printf '%s\n' \
       'cores = 0' \
       'connect-timeout = 5' \
       'http-connections = 128' \
+      'download-buffer-size = 134217728' \
+      'eval-cache = true' \
     >> /etc/nix/nix.conf
 
 # nix-devtools — install language-server + linting/formatting tools via nixpkgs.

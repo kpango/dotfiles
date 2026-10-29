@@ -13,7 +13,16 @@ DRY_RUN="${DRY_RUN:-0}"
 # Add new installers here when a new /data/<component>/install.sh is introduced.
 POST_INSTALL_HOOKS=(
   /data/game-geo-bypass/install.sh
+  /data/nextdns-client-names/install.sh
+  /data/nextdns-dnsmasq-wire/install.sh
   /data/on_boot.d/30-nextdns-healthcheck-install.sh
+  /data/udm-sla-tune/install.sh
+  /data/udm-nuro-v6-pbr/install.sh
+  /data/udm-dns-hijack/install.sh
+  /data/udm-ndp-proxy/install.sh
+  /data/udm-dpinger-hijack/install.sh
+  /data/udm-verifier-enforcer/install.sh
+  /data/clean-clients/install.sh
 )
 # guard.sh is special — it takes an "units" argument rather than being a bare
 # installer, so it is handled by its own line further down.
@@ -44,7 +53,7 @@ fi
 # in case anything was pushed with the wrong mode locally.
 ssh "$UDM" 'find /data -maxdepth 4 -name "*.sh" -exec chmod +x {} \;
 find /root -maxdepth 2 -name "*.sh" -exec chmod +x {} \;
-chmod 644 /data/nextdns.conf /data/nextdns.conf.bak-* 2>/dev/null || true'
+chmod 644 /data/nextdns.conf 2>/dev/null || true'
 
 # Post-install hooks + systemctl daemon-reload.
 # Build a shell-safe literal list of hook paths with printf %q so entries with
@@ -67,8 +76,13 @@ if [ -x /data/unifi-native-guard/guard.sh ]; then
     rc=\$?; echo \"[hook-fail] guard.sh units rc=\$rc\" >&2; fail=1
   fi
 fi
+echo '[post-install] udm-boot.service (runs /data/on_boot.d/*.sh at boot)'
+cp /data/on_boot.d/udm-boot.service /etc/systemd/system/udm-boot.service
 systemctl daemon-reload
 echo '[post-install] systemctl daemon-reload done'
+if ! systemctl enable udm-boot.service; then
+  echo '[hook-fail] systemctl enable udm-boot.service' >&2; fail=1
+fi
 exit \$fail"
 
 log install "done"

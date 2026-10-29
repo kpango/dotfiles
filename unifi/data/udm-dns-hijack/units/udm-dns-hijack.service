@@ -1,0 +1,9 @@
+[Unit]
+Description=Transparent :53 DNS redirect to UDM gateway + DoH :443 block
+Documentation=file:/data/udm-dns-hijack/udm-dns-hijack.sh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/udm-dns-hijack/udm-dns-hijack.sh

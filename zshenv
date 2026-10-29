@@ -41,9 +41,17 @@ if [[ -n "$ZSH_EXECUTION_STRING" ]]; then
 	# sh semantics; zsh's defaults silently break loops like
 	# `for f in $files` by not splitting $files.
 	setopt SH_WORD_SPLIT NO_NOMATCH
+	# With HASH_LIST_ALL (the default) the first $commands lookup hashes every
+	# executable on PATH (~1.9ms, ~3400 entries); the caches below only need
+	# per-name lookups. Restored right after, so completion/correction keep it.
+	unsetopt HASH_LIST_ALL
+	# zsh 5.9 (e.g. the Ubuntu dev container) has no per-name fallback: every $commands
+	# lookup then misses. Probe and keep the full hash there.
+	(($+commands[zsh])) || setopt HASH_LIST_ALL
 	[[ -f "$ZCACHE_DIR/env.zsh" ]] && source "$ZCACHE_DIR/env.zsh"
 	[[ -f "$ZCACHE_DIR/combined.zsh" ]] && source "$ZCACHE_DIR/combined.zsh" 2>/dev/null
 	[[ -n "$_ZSH_OS" && -f "$ZCACHE_DIR/os-${_ZSH_OS}.zsh" ]] && source "$ZCACHE_DIR/os-${_ZSH_OS}.zsh" 2>/dev/null
+	setopt HASH_LIST_ALL
 else
 	# Generate ATUIN_SESSION early — required for daemon IPC even before atuin.zsh loads.
 	# atuin.zsh will keep this value (only regenerates when unset or SHLVL changes).

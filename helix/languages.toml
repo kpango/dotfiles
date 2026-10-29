@@ -21,7 +21,9 @@ config.diagnosticSeverity = "Info"
 command = "rust-analyzer"
 
 [language-server.rust-analyzer.config]
-checkOnSave = { command = "clippy" } # run Clippy on save
+checkOnSave = { command = "clippy", extraArgs = ["--target-dir", "/tmp/rust-analyzer-target"] } # isolate check target dir to prevent cargo build lock contention
+check = { command = "clippy", extraArgs = ["--target-dir", "/tmp/rust-analyzer-target"] }
+cargo = { buildScripts = { enable = true }, targetDir = "/tmp/rust-analyzer-target" }
 procMacro = { enable = true }        # enable proc-macro expansion
 inlayHints = { bindingModeHints = { enable = false } } # adjust if hints are too noisy
 
@@ -43,6 +45,8 @@ staticcheck = true               # enable powerful static analysis
 gofumpt = true                   # stricter formatting (optional)
 usePlaceholders = true           # insert placeholders on completion
 analyze = { unusedparams = true, nilness = true, unusedwrite = true }
+directoryFilters = ["-**/node_modules", "-**/.git", "-**/vendor", "-**/target"]
+memoryMode = "DegradeClosed"
 
 [language-server.gopls.config.hints]
 assignVariableTypes = true
@@ -71,8 +75,8 @@ language-servers = [ "gopls", "golangci-lint-lsp", "copilot", "ai", "hx-lsp", "t
 # ==========================================
 [language-server.clangd]
 command = "clangd"
-# enable background indexing, parallelism, and header completion
-args = ["--background-index", "--clang-tidy", "--completion-style=detailed", "--header-insertion=iwyu", "-j=4"]
+# enable background indexing, parallelism, in-memory PCH storage, and header completion
+args = ["--background-index", "--clang-tidy", "--completion-style=detailed", "--header-insertion=iwyu", "--pch-storage=memory", "-j=0"]
 
 [[language]]
 name = "cpp"

@@ -6,6 +6,34 @@
     fileMode = false
     precomposeunicode = true
     quotepath = false
+    preloadindex = true
+    fscache = true
+    untrackedCache = true
+    commitGraph = true
+    deltaBaseCacheLimit = 1g
+
+[feature]
+    manyFiles = true
+
+[index]
+    version = 4
+
+[checkout]
+    workers = 0
+
+[fetch]
+    parallel = 0
+    writeCommitGraph = true
+
+[pack]
+    threads = 0
+    deltaCacheSize = 512m
+
+[status]
+    submoduleSummary = false
+
+[gc]
+    writeCommitGraph = true
 
 [color]
     ui = auto

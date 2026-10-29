@@ -27,6 +27,22 @@
         "root"
         username
       ];
+      download-buffer-size = lib.mkDefault 134217728;
+      eval-cache = lib.mkDefault true;
+      http-connections = lib.mkDefault 50;
+      max-substitution-jobs = lib.mkDefault 32;
+      fsync-metadata = lib.mkDefault false;
+      builders-use-substitutes = lib.mkDefault true;
+      tarball-ttl = lib.mkDefault 604800;
+      connect-timeout = lib.mkDefault 5;
+      substituters = [
+        "https://cache.nixos.org"
+        "https://nix-community.cachix.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      ];
     };
 
     # Store deduplication. Uses the optimise timer rather than

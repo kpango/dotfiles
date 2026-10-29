@@ -344,15 +344,13 @@ in
       rootLabel = "root";
       rootOptions = [
         "rw"
-        "relatime"
+        "noatime"
+        "nodiratime"
         "attr2"
         "inode64"
         "logbufs=8"
-        "logbsize=32k"
+        "logbsize=256k"
         "noquota"
-        "noatime"
-        "nodiratime"
-        "discard"
       ];
       bootLabel = "boot";
       bootOptions = [

@@ -9,9 +9,17 @@ ENV CARGO_HOME=${RUST_HOME}/cargo \
     RUSTUP_HOME=${RUST_HOME}/rustup
 ENV BIN_PATH=${CARGO_HOME}/bin \
     PATH=${CARGO_HOME}/bin:${PATH} \
+    CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse \
     CARGO_NET_GIT_FETCH_WITH_CLI=true \
+    CARGO_NET_MULTIPLEXING=true \
     CARGO_INCREMENTAL=0 \
-    RUSTFLAGS="-C opt-level=z -C strip=symbols -C codegen-units=1"
+    CARGO_PROFILE_RELEASE_OPT_LEVEL=3 \
+    CARGO_PROFILE_RELEASE_LTO=thin \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_STRIP=symbols \
+    CARGO_PROFILE_RELEASE_PANIC=abort \
+    CARGO_PROFILE_RELEASE_DEBUG=false \
+    RUSTFLAGS="-C opt-level=3 -C codegen-units=1 -C strip=symbols -C link-arg=-fuse-ld=mold -C link-arg=-Wl,--hash-style=gnu -C link-arg=-Wl,-z,now"
 
 RUN --mount=type=cache,id=rustup-downloads-${TARGETARCH},target=${RUSTUP_HOME}/downloads,sharing=locked \
     curl --retry ${CURL_RETRY} --retry-all-errors --retry-delay ${CURL_RETRY_DELAY} -fsSL --proto '=https' --tlsv1.2 https://sh.rustup.rs \
@@ -39,35 +47,35 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y cargo-asm \
-    && (upx --best ${BIN_PATH}/cargo-asm || true)
+    && (upx -9 -q ${BIN_PATH}/cargo-asm || true)
 
 FROM rust-base AS cargo-binutils
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y cargo-binutils \
-    && (upx --best ${BIN_PATH}/cargo-* ${BIN_PATH}/rust-* || true)
+    && (upx -9 -q ${BIN_PATH}/cargo-* ${BIN_PATH}/rust-* || true)
 
 FROM rust-base AS cargo-bloat
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y cargo-bloat \
-    && (upx --best ${BIN_PATH}/cargo-bloat || true)
+    && (upx -9 -q ${BIN_PATH}/cargo-bloat || true)
 
 FROM rust-base AS cargo-edit
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y cargo-edit \
-    && (upx --best ${BIN_PATH}/cargo-add ${BIN_PATH}/cargo-rm ${BIN_PATH}/cargo-set-version ${BIN_PATH}/cargo-upgrade || true)
+    && (upx -9 -q ${BIN_PATH}/cargo-add ${BIN_PATH}/cargo-rm ${BIN_PATH}/cargo-set-version ${BIN_PATH}/cargo-upgrade || true)
 
 FROM rust-base AS cargo-expand
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y cargo-expand \
-    && (upx --best ${BIN_PATH}/cargo-expand || true)
+    && (upx -9 -q ${BIN_PATH}/cargo-expand || true)
 
 FROM rust-base AS cargo-machete
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -75,14 +83,14 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     cargo-machete \
-    && (upx --best ${BIN_PATH}/cargo-machete || true)
+    && (upx -9 -q ${BIN_PATH}/cargo-machete || true)
 
 FROM rust-base AS cargo-watch
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y cargo-watch \
-    && (upx --best ${BIN_PATH}/cargo-watch || true)
+    && (upx -9 -q ${BIN_PATH}/cargo-watch || true)
 
 FROM rust-base AS ast-grep
 # hadolint ignore=DL3003,DL4006,SC2086,SC2153,SC2098,SC2016,SC2046,DL3008,DL3047
@@ -91,7 +99,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     ast-grep \
-    && (upx --best ${BIN_PATH}/sg || true)
+    && (upx -9 -q ${BIN_PATH}/sg || true)
 
 FROM rust-stable AS atuin
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -99,7 +107,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     atuin \
-    && (upx --best ${BIN_PATH}/atuin || true)
+    && (upx -9 -q ${BIN_PATH}/atuin || true)
 
 FROM rust-base AS bandwhich
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -107,7 +115,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     bandwhich \
-    && (upx --best ${BIN_PATH}/bandwhich || true)
+    && (upx -9 -q ${BIN_PATH}/bandwhich || true)
 
 FROM rust-stable AS bat
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -115,7 +123,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     bat \
-    && (upx --best ${BIN_PATH}/bat || true)
+    && (upx -9 -q ${BIN_PATH}/bat || true)
 
 FROM rust-stable AS bottom
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -123,7 +131,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     bottom \
-    && (upx --best ${BIN_PATH}/btm || true)
+    && (upx -9 -q ${BIN_PATH}/btm || true)
 
 FROM rust-base AS broot
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -131,7 +139,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     broot \
-    && (upx --best ${BIN_PATH}/broot || true)
+    && (upx -9 -q ${BIN_PATH}/broot || true)
 
 FROM rust-stable AS cpz
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -139,7 +147,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     cpz \
-    && (upx --best ${BIN_PATH}/cpz || true)
+    && (upx -9 -q ${BIN_PATH}/cpz || true)
 
 FROM rust-stable AS deno
 RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
@@ -147,7 +155,7 @@ RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y deno \
-    && (upx --best "${BIN_PATH}/deno" || true) \
+    && (upx -9 -q "${BIN_PATH}/deno" || true) \
     || make --no-print-directory -f /mk/download.mk install-tool \
         APP_NAME=deno REPO=denoland/deno EXT=.zip \
         DEST="${BIN_PATH}" UPX=1 \
@@ -159,7 +167,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     dutree \
-    && (upx --best ${BIN_PATH}/dutree || true)
+    && (upx -9 -q ${BIN_PATH}/dutree || true)
 
 FROM rust-base AS erdtree
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -167,7 +175,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     erdtree \
-    && (upx --best ${BIN_PATH}/erd || true)
+    && (upx -9 -q ${BIN_PATH}/erd || true)
 
 FROM rust-stable AS eza
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -175,14 +183,14 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     eza \
-    && (upx --best ${BIN_PATH}/eza || true)
+    && (upx -9 -q ${BIN_PATH}/eza || true)
 
 FROM rust-base AS fd
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y fd-find \
-    && (upx --best ${BIN_PATH}/fd || true)
+    && (upx -9 -q ${BIN_PATH}/fd || true)
 
 # rust-stable, not rust-base: ahash 0.7.6 -- which frawk's committed Cargo.lock
 # pins, and which `cargo install --git` honours -- has a build.rs that turns on
@@ -209,7 +217,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
             cargo install --no-default-features --features "use_jemalloc" \
                 --git ${GITHUB}/ezrosent/frawk frawk ;; \
     esac \
-    && (upx --best ${BIN_PATH}/frawk || true)
+    && (upx -9 -q ${BIN_PATH}/frawk || true)
 
 FROM rust-stable AS gitui
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -217,7 +225,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     gitui \
-    && (upx --best ${BIN_PATH}/gitui || true)
+    && (upx -9 -q ${BIN_PATH}/gitui || true)
 
 FROM rust-stable AS gping
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -225,7 +233,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y --no-fallback \
     gping \
-    && (upx --best ${BIN_PATH}/gping || true) \
+    && (upx -9 -q ${BIN_PATH}/gping || true) \
     || touch ${BIN_PATH}/gping
 
 FROM rust-base AS helix
@@ -251,7 +259,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     hx-lsp \
-    && (upx --best ${BIN_PATH}/hx-lsp || true)
+    && (upx -9 -q ${BIN_PATH}/hx-lsp || true)
 
 FROM rust-base AS hyperfine
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -259,7 +267,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     hyperfine \
-    && (upx --best ${BIN_PATH}/hyperfine || true)
+    && (upx -9 -q ${BIN_PATH}/hyperfine || true)
 
 FROM rust-stable AS kdash
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -267,21 +275,21 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     kdash \
-    && (upx --best ${BIN_PATH}/kdash || true)
+    && (upx -9 -q ${BIN_PATH}/kdash || true)
 
 FROM rust-base AS leaf
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo install --git ${GITHUB}/RivoLink/leaf \
-    && (upx --best ${BIN_PATH}/leaf || true)
+    && (upx -9 -q ${BIN_PATH}/leaf || true)
 
 FROM rust-base AS lsd
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y lsd \
-    && (upx --best ${BIN_PATH}/lsd || true)
+    && (upx -9 -q ${BIN_PATH}/lsd || true)
 
 FROM rust-base AS lsp-ai
 RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
@@ -295,7 +303,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y lumen \
-    && (upx --best ${BIN_PATH}/lumen || true)
+    && (upx -9 -q ${BIN_PATH}/lumen || true)
 
 FROM rust-base AS nushell
 # hadolint ignore=DL3003,DL4006,SC2086,SC2153,SC2098,SC2016,SC2046,DL3008,DL3047
@@ -303,7 +311,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y nu \
-    && (upx --best ${BIN_PATH}/nu || true)
+    && (upx -9 -q ${BIN_PATH}/nu || true)
 
 FROM rust-stable AS pay-respects
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -311,7 +319,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     pay-respects \
-    && (upx --best ${BIN_PATH}/pay-respects || true)
+    && (upx -9 -q ${BIN_PATH}/pay-respects || true)
 
 FROM rust-base AS prek
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -319,7 +327,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     prek \
-    && (upx --best ${BIN_PATH}/prek || true)
+    && (upx -9 -q ${BIN_PATH}/prek || true)
 
 FROM rust-base AS prmt
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -327,14 +335,14 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     prmt \
-    && (upx --best ${BIN_PATH}/prmt || true)
+    && (upx -9 -q ${BIN_PATH}/prmt || true)
 
 FROM rust-base AS procs
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y procs \
-    && (upx --best ${BIN_PATH}/procs || true)
+    && (upx -9 -q ${BIN_PATH}/procs || true)
 
 FROM rust-stable AS rg
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -342,7 +350,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     ripgrep \
-    && (upx --best ${BIN_PATH}/rg || true)
+    && (upx -9 -q ${BIN_PATH}/rg || true)
 
 FROM rg AS rga
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -350,7 +358,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     ripgrep_all \
-    && (upx --best ${BIN_PATH}/rga || true)
+    && (upx -9 -q ${BIN_PATH}/rga || true)
 
 FROM rust-stable AS rmz
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -358,7 +366,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     rmz \
-    && (upx --best ${BIN_PATH}/rmz || true)
+    && (upx -9 -q ${BIN_PATH}/rmz || true)
 
 
 FROM rust-base AS rtk
@@ -389,14 +397,14 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     sd \
-    && (upx --best ${BIN_PATH}/sd || true)
+    && (upx -9 -q ${BIN_PATH}/sd || true)
 
 FROM rust-base AS sheldon
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y sheldon \
-    && (upx --best ${BIN_PATH}/sheldon || true)
+    && (upx -9 -q ${BIN_PATH}/sheldon || true)
 
 FROM rust-base AS shellharden
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -404,21 +412,21 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     shellharden \
-    && (upx --best ${BIN_PATH}/shellharden || true)
+    && (upx -9 -q ${BIN_PATH}/shellharden || true)
 
 FROM rust-base AS stylua
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y stylua \
-    && (upx --best ${BIN_PATH}/stylua || true)
+    && (upx -9 -q ${BIN_PATH}/stylua || true)
 
 FROM rust-base AS tokei
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y tokei \
-    && (upx --best ${BIN_PATH}/tokei || true)
+    && (upx -9 -q ${BIN_PATH}/tokei || true)
 
 FROM rust-base AS t-rec
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -426,7 +434,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     t-rec \
-    && (upx --best ${BIN_PATH}/t-rec || true)
+    && (upx -9 -q ${BIN_PATH}/t-rec || true)
 
 FROM rust-base AS tree-sitter
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -434,7 +442,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo +nightly binstall -y \
     tree-sitter-cli \
-    && (upx --best ${BIN_PATH}/tree-sitter || true)
+    && (upx -9 -q ${BIN_PATH}/tree-sitter || true)
 
 FROM rust-base AS typos-lsp
 RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
@@ -451,7 +459,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=cache,id=cargo-git-${TARGETARCH},target=${CARGO_HOME}/git,sharing=locked \
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y watchexec-cli \
-    && (upx --best ${BIN_PATH}/watchexec || true)
+    && (upx -9 -q ${BIN_PATH}/watchexec || true)
 
 FROM rust-base AS xh
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -461,7 +469,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     RUSTFLAGS="${RUSTFLAGS} --cfg reqwest_unstable" \
     cargo +nightly binstall -y \
     xh \
-    && (upx --best ${BIN_PATH}/xh || true)
+    && (upx -9 -q ${BIN_PATH}/xh || true)
 
 FROM rust-stable AS zoxide
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -469,7 +477,7 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     zoxide \
-    && (upx --best ${BIN_PATH}/zoxide || true)
+    && (upx -9 -q ${BIN_PATH}/zoxide || true)
 
 FROM rust-stable AS zsh-patina
 RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/registry,sharing=locked \
@@ -477,12 +485,12 @@ RUN --mount=type=cache,id=cargo-registry-${TARGETARCH},target=${CARGO_HOME}/regi
     --mount=type=secret,id=gat \
     GITHUB_TOKEN=$(cat /run/secrets/gat) cargo binstall -y \
     zsh-patina \
-    && (upx --best ${BIN_PATH}/zsh-patina || true)
+    && (upx -9 -q ${BIN_PATH}/zsh-patina || true)
 
 FROM rust-base AS rust-base-bins
 RUN find ${CARGO_HOME}/bin -maxdepth 1 -type f -executable \
     ! -name 'rustc' ! -name 'rustup' ! -name 'rust-analyzer' \
-    | xargs -P $(nproc) -n 1 sh -c 'upx --best "$1" 2>/dev/null || true' --
+    | xargs -P $(nproc) -n 1 sh -c 'upx -9 -q "$1" 2>/dev/null || true' --
 
 FROM scratch AS rust
 ENV RUST_HOME=/usr/local/lib/rust \
