@@ -35,7 +35,7 @@ if [ -z "$plan_path" ]; then
   plan_path="$(git rev-parse --show-toplevel)/@fix_plan.md"
 fi
 
-exec python3 - "$plan_path" "$fit" "$stale_id" <<'PYEOF'
+exec python3 -I - "$plan_path" "$fit" "$stale_id" <<'PYEOF'
 import sys
 import re
 import json

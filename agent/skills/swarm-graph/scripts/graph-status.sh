@@ -39,7 +39,7 @@ MISSION_LINE="$mission_line" \
 GOAL_LINE="$goal_line" \
 SCALE_LINE="$scale_line" \
 GRAPH_MANAGED_LINE="$graph_managed_line" \
-python3 - <<'PYEOF'
+python3 -I - <<'PYEOF'
 import json
 import os
 from collections import Counter

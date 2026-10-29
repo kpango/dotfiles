@@ -1,0 +1,29 @@
+# Shared skills (agent/skills/<name>) that primeagent/install links into ~/.prime/agent/skills/.
+# One name per line; '#' starts a comment. Excluded on purpose:
+#   swarm-*               Claude orchestration (Agent/Workflow/hooks); prime versions live in agent/harnesses/primeagent/skills/
+#   security-scan         audits ~/.claude config only
+#   mcp-ecosystem-audit   audits ~/.claude/settings.json mcpServers only
+ann-benchmark-patterns
+benchmark
+claude-api-go
+cpp-patterns
+cpp-testing
+deployment-patterns
+github-actions-patterns
+golang-patterns
+golang-testing
+graft
+grill-interview
+k8s-patterns
+nix-patterns
+ponytail-patterns
+protobuf-patterns
+python-patterns
+python-testing
+pytorch-patterns
+rust-patterns
+rust-testing
+security-bounty-hunter
+security-review
+unifi-api
+zig-patterns

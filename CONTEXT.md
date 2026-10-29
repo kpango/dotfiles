@@ -924,3 +924,223 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
 ### 補足
 
 - host 側の `docker exec` を kill しても、コンテナ内のプロセス（tmux client を含む）は終了しないことがある（docker の挙動）
+
+## primeagent-max-customize (2026-10-14) — prime-agent 0.10.0 (Rust) ネイティブ化と swarm 移植
+
+`/swarm-meta` → `swarm-graph` ミッション。DeepResearch 6 shard（重複除去 687 URL、うち WebFetch で本文確認 130）
+と、インストール済みバイナリをサンドボックス HOME で動かした仕様抽出（`prime-agent prompt --json`、
+`telemetry off` 等）に基づく。`/swarm-architect` 提案書と Grilling 設計面談（Q1〜Q9）の決定事項。
+
+### 実測で確定した前提（2026-10-14、prime-agent 0.10.0）
+
+- **P-1 SYSTEM.md はコアを置換する**: `~/.prime/agent/SYSTEM.md`（または `<cwd>/.prime/agent/SYSTEM.md`）があると
+  core/usage/opinionated の 3 層（約 22KB、ipython/rlm の使い方）が消える。`APPEND_SYSTEM.md` は無視される。
+  したがって prime-agent には SYSTEM.md を置かない（install と validate で不在を強制）。
+- **P-2 settings.json は symlink できない**: CLI が設定を書くと（`telemetry off` 等）一時ファイル＋rename で
+  通常ファイル（0600）に置き換わり、symlink は外れる。不正な値は警告なしで捨てられ、壊れた JSON は全 null に戻る。
+- **P-3 TypeScript 拡張は読まれない**: pi の `extensions/*.ts`・hooks・prompts・keybindings・`mcp.json` は無効。
+  拡張手段は Python スキル（kernel-venv）、markdown スキル、MCP（settings の `mcpServers`）、packages、factory machine。
+- **P-4 AGENTS.md は `/` までの全祖先を読む**: git root で止まらない。repo 内の worktree では repo の AGENTS.md が二重に入る。
+- **P-5 スキル探索**: `~/.prime/agent/skills`、`~/.agents/skills`、`<cwd>/.prime/agent/skills`、祖先の `.agents/skills`
+  （git root まで）、settings の `skills`。`~/.claude/skills` は読まない。
+- **P-6 認証**: `auth.json` にあるのは `prime-inference` と `opencode-go` のみ。Claude は `prime-inference/anthropic/*` 経由。
+- **P-7 factory machine**: machine 形式（`states`/`transitions`、guard、自己ループ、`retries`、`run.max_transitions`、
+  state ごとの `subagent.model`/`thinking`）で loop を表現できる。全 state がサブエージェントで、シェルを直接実行する
+  決定論的ノードは無い。
+- 以上により、上記 I-8（「インストーラは `~/.prime/agent` を触らない」は正しいが、repo の `primeagent/install` が
+  pi 由来の SYSTEM.md・extensions を張る点は誤配線だった）と I-9（Rust 版 0.10.0 では pi とワイヤ互換ではない）を
+  本節で訂正する。
+
+### 決定事項
+
+- **Q1 全体方針 = 全面移植（案 C）**: settings/AGENTS.md/skills/guard/検証の作り直しに加え、swarm-* を prime-agent へ移植する。
+  Claude 側の `agent/skills/swarm-*/SKILL.md`・hooks・SWARM.md（Tier B）は変更しない。prime 用は
+  `agent/harnesses/primeagent/` 配下に新設する。
+- **Q2 移植方式 = factory machine（MACHINE.md）主体、Python 化できるものは Python**: 状態機械は MACHINE.md、
+  手順・判断の説明は prime 用 markdown スキル、機械的な処理は Python 実行スキル。
+- **Q3 Python は薄いアダプタ**: Python スキルは REPL から使える型付き API を提供し、ロジックは既存スクリプト
+  （将来は Go の agentctl）を subprocess で呼ぶ。budget-guard・graph-compile・decide.py 等を Python で再実装しない
+  （agent-go-unification の決定と整合、pi の TS 薄アダプタ方針と対称）。
+- **Q3-a 書き込みフック代替は adapter の prime 固有制御（2026-10-14、T8 スポット診断 A1 を人間採択）**: prime は書き込み
+  hook を持たないため、Claude 側で hook が担う write-time ガードの代替（commit/merge 前の Tier B 照合・変更集合計算・
+  per-path stage）は `swarm_adapter` の prime 固有制御に含める（`worktree_alloc`/`verify` と同格、`change_set`/
+  `tier_b_hits`/`stage_task`/`incoming`）。`write-scope-rules.json` は cross-impl の fnmatch データなので照合は再実装禁止の
+  対象外（parity テストで pin）。budget-guard・graph-compile・decide.py の再実装禁止は不変。merge/commit 自体は skill 側が
+  `decide_shell` 経由で行い、adapter は破壊的操作を持たない。
+- **Q3-b（2026-10-15、T6c attempt 11 で人間採択「全 git を shadow で実行」）**: adapter の全 git 呼び出しは config/hooks/attributes を
+  持たない私用 shadow bare repo（`GIT_OBJECT_DIRECTORY`=実 objects、`GIT_CONFIG_NOSYSTEM`/`GLOBAL=/dev/null`、`GIT_NO_LAZY_FETCH`）で
+  実行し、所在・ref・repo format は Python で解析する。実 repo の config を git に読ませると maker が設定した外部コマンド
+  （filter・driver・hooks・promisor uploadpack 等）が次々に実行経路になるため。これに伴い Q3-a の「commit/merge は skill 側」を改め、
+  `commit_tree`（オブジェクト作成のみ）と `update_ref`（Python のロックファイル CAS、`refs/heads/swarm-prime/*` 限定・first-parent=old
+  限定で履歴は 1 commit ずつしか伸びない）を adapter が持つ。`git commit`/`git merge`/`git update-ref` を実 repo で呼ばない。
+- **Q4 モデル = 混成・別系統検証**: root=`prime-inference/anthropic/claude-opus-5.5`(high)、High(Maker)=
+  `prime-inference/anthropic/claude-sonnet-5`、XHigh(Checker)=`prime-inference/openai/gpt-6-astra`（別系統）、
+  Max=`prime-inference/anthropic/claude-fable-5.1`、Medium=`opencode-go/kimi-k3`、Low/auxiliary=`opencode-go/qwen3.8-flash`、
+  providerBackupModel=`opencode-go/glm-5.3`（prime-inference の残高切れ・障害時も継続）。SSoT は
+  `agent/harnesses/primeagent/model-routing.json`。prime-inference の残高補充が前提（2026-10-14 時点で 402 を確認）。
+- **Q5 安全 = 二段構え**: 既定は `shellCommandPrefix` に `security-rules.json` を decide.py で判定するガード（ガードレールで
+  あり境界ではない。REPL の Python は通らない）＋起動時の環境変数ホワイトリスト。自律実行・信頼できない repo 用に
+  prime-agent プロセス全体を bwrap で囲む `pa-sandbox` を別途用意する。
+- **Q6 autoRefine = 既定値で有効**: `autoRefine.enabled=true`、間隔等は prime-agent 既定値。global harness state の
+  大きさは validate で報告のみ（失敗にはしない）。
+- **Q7 settings 合成 = repo 優先＋差分表示**: install は symlink をやめ、live（CLI 所有キー）に repo 所有キーを jq で上書き
+  マージし 0600 で置換。上書きで失われる CLI 側の値は差分表示し、バックアップを残す。
+- **Q8 worktree = repo の外**: prime 版 swarm は `${SWARM_WORKTREE_DIR:-<repo の親>/.worktrees/<repo 名>}` に作る（P-4 対策）。
+  Claude 側 `mission-worktree-alloc.sh` は変えない。
+- **Q9 検証 = 静的＋ローカル実走**: pytest・shellcheck・JSON 検証・`prime-agent factory import`（MACHINE.md 検証）・
+  サンドボックス HOME での `prompt --json`/install 検証を必須とし、ローカル ollama（`qwen2.5-coder:32b`）を
+  サンドボックスの models.json 経由で使って shellCommandPrefix の意味と小さな machine を実走する。
+  実環境 `~/.prime/agent` への反映は GATE 承認後。
+
+### 実装中に判明した訂正（2026-10-14）
+
+- **C-1 Q5 のガード配線**: settings の `shellCommandPrefix` は ipython の `bash()` に効かない（サンドボックスで
+  probe を仕込んでも実行されず、バイナリ内でも schema キー一覧にしか現れない）。効くのは環境変数
+  `PRIME_AGENT_BASH_COMMAND_PREFIX` のみで、`rlm/bash.py` の `_with_prefix()` が値を `bash -c` スクリプト内の
+  コマンド直前の行へ生のシェルコードとして挿入する（実行時 `/proc/$$/cmdline` で確認）。したがってガードは
+  `. ~/.prime/agent/bin/prime-shell-guard.sh` として source され、スクリプト本文からコマンドを取り出して判定する。
+  env はカーネルを起動したプロセス（daemon）から継承されるため、設定は起動経路すべてに効く場所で行う。
+- **C-2 root / backup モデルの置き場所**: `agent/models/schema.json` の `tiers` は Low〜Max のみ許可
+  （`additionalProperties:false`）で Inherit を置けない。root（`defaultProvider`/`defaultModel`）と
+  `providerBackupModel` は settings.json の repo 所有キーとし、`subagentDefaultModel`(High)・`auxiliaryModel`(Low)・
+  `allowedModels`（全 tier の主・fallback ＋ root/backup）は install 時に model-routing.json から導出する。
+- **C-3 Q5 の配線の実際（2026-10-19 追記、T12 docs 確認）**: 既定経路（第 1 層）で配線されているのは guard の
+  `PRIME_AGENT_BASH_COMMAND_PREFIX` だけで、`zsh/20-dev.zsh` が `~/.prime/agent/bin/prime-shell-guard.sh` の存在時に export する
+  （同時に `PA_SANDBOX_ALLOW_HOST_PROC=1` も export）。Q5 の「起動時の環境変数ホワイトリスト」は pa-sandbox の中
+  にしか実装されておらず、サンドボックス外の起動では環境変数は絞られない。pa-sandbox は `--clearenv` の後、
+  `PA_SANDBOX_ENV_ALLOW`（PATH TERM COLORTERM LANG TZ USER LOGNAME OLLAMA_API_KEY VLLM_API_KEY）・`PA_SANDBOX_PASS_ENV` の名前・
+  `LC_*`・`PRIME_AGENT_*` だけをホストから渡す（`pa_sandbox_build_argv`）。それ以外に中で設定されるのは固定値だけで、
+  `HOME`（サンドボックスの HOME）、名前が挙がった `TMPDIR` は `/tmp`、最後に `GIT_CONFIG_NOSYSTEM`・
+  `PRIME_AGENT_CODING_AGENT_DIR`・`PRIME_AGENT_DAEMON_SOCKET`・`PRIME_AGENT_BASH_COMMAND_PREFIX` を上書きする。この export を経ずに起動した prime-agent / daemon には guard の prefix も入らない（C-1 の env 継承）。
+  **bwrap 自身の環境も空（T9c、2026-10-29）**: pid ns モード（`--unshare-pid --proc /proc`）ではサンドボックスの pid 1 が bwrap の
+  init で、サンドボックスと同じ user ns にいるため、中から `/proc/1/environ` を読むと bwrap 自身の環境（呼び出し元の全環境変数）が
+  見える（`--clearenv` が変えるのは子の環境だけ）。実測（2026-10-29 の 1 回、この端末の環境）: `HOSTSECRET=x` を付けて
+  `pa_sandbox_main` を起動すると、環境を継承する版では `/proc/1/environ` に `HOSTSECRET` を含む 179 変数が見え（変数の数は環境で変わる）、
+  `env -i` 付きでは 0 変数だった。そのため `pa_sandbox_build_argv` の private /proc probe、guard probe、本番起動の 3 箇所の
+  bwrap 呼び出しはすべて `env -i "$bw" ...` で起動する。`$bw` は `pa_sandbox_bwrap_bin` が解決する絶対パスで、相対パス
+  （PATH に空・相対エントリがあると `command -v` は `./bwrap` を返す）なら起動を拒否する。この関数は解決だけを行い、
+  起動は外部コマンドのままにする: シェル関数呼び出しに付けたリダイレクト（`2>bwrap.err` 等）は呼び出し中の pa-sandbox 本体の
+  シェルに適用され、INT/TERM の trap が出す警告（scrub の `removed N planted ...`）が bwrap.err に流れて失われる
+  （T9c の SIGTERM 再現: 修正前は 0 件、修正後は 1 件。テスト (T9c C)）。中で必要な変数は従来どおり `--setenv` で渡る。
+
+### 実走結果（2026-10-18、T13、`agent/harnesses/primeagent/e2e/run-ollama-e2e.sh`）
+
+使い捨て HOME（`make -o dotfiles/install primeagent/install HOME=<tmp>`）＋ ollama `local-ollama/qwen3:4b-instruct`
+（Q9 の `qwen2.5-coder:32b` は未導入のため代替。pull はしていない）での結果。Checker が実走・コードで確認した事実を
+地の文で書き、ログの無い Maker の報告・所見はそう明記する。
+
+- **guard（C-1）**: 無改変の pa-sandbox 内 `-p` で、モデルが REPL から `bash('touch PA-E2E-ALLOW && git status --short')`
+  （exit 0、ファイル作成）と `bash('touch PA-E2E-LEAK && git add -A')`（exit 126、`prime-shell-guard: BLOCKED`、
+  PA-E2E-LEAK 未作成）を実行。env `PRIME_AGENT_BASH_COMMAND_PREFIX` 経由のガードが実カーネルの bash() で効く。
+- **allowedModels**: `-p`（非 daemon）では allowedModels 外の local モデルも弾かれない。daemon セッションでは
+  `is blocked by the daemon model allowlist` で拒否され、install 既定の allowedModels（local を含まない）では
+  local モデルは daemon で使えない。
+- **factory（P-7）**: `-p` では `rlm.spawn requires a daemon-backed session` で失敗する（`--autonomous`・`--mode rpc` は未確認）。
+  daemon セッションで 2 state の `pa-e2e-min` が ping→pong→`done` に到達する。ただし毎回ではない: attempt 1 の Checker の実走 1 回（t13-a1-checker.json）で、
+  factory が ping の子を回答なしで settle し（events は spawned/settled のみ、`answer_captured` なし）、遷移せずに
+  `done`（pong pending）で終わった。その子の transcript には正しい `{"ping": {"ok": true}}` があり、タスクメッセージは
+  spawn の約 60 秒後に届いていた。factory が子の spawn に渡すのは prompt と `name`/`model`/`thinking` だけで
+  （runtime `rlm/factory.py` `_admit`）、子の settle までの待ち時間を延ばす machine-spec の設定は見当たらない
+  （state の `budget_ms` は上限、`retries` は子が `done` 以外で settle したときだけ再 spawn する。同 `_apply_settlement`）。
+  E2E ではこれを INCONCLUSIVE とし、ollama のモデル事前ロード後に再試行する。原因（小モデルか daemon 側の settle
+  判定か）は特定していない。attempt 3 の Maker は、実走 3 回（2026-10-18 12:50–13:02、タイムゾーンの記録なし）がいずれも guard・allowlist・
+  machine とも PASS（exit 0）で machine は毎回 1 回目に PASS したと報告した（ログは見つからない）。再試行の経路は
+  attempt 4 の Checker の run 1 で実際に通った（下記）。
+- **pa-sandbox の制約（T13 時点、T9 への申し送り。(1)(2) は T9b で対応済み、次項）**: (1) 読み取り専用の agent dir では daemon が起動しない
+  （`daemon-workers/<sha256(socket)[:12]>/supervisor-config.tmp-*` の作成が EROFS で失敗）。したがって pa-sandbox 内では
+  factory machine を実行できない。E2E は使い捨て agent dir を rw bind するラッパーで実行した。
+  (2) kernel venv の python と pyvenv.cfg `home` が uv の minor 版 symlink（`cpython-3.11-…`）を経由するが、
+  pa-sandbox は解決後のディレクトリ（`readlink -f` の結果）しか ro bind しない（pa-sandbox `pa_sandbox_build_argv`、
+  実 HOME の `~/.data/uv/python` も同じ構造）。その結果サンドボックス内で venv の再構築に入り EROFS でカーネルが
+  起動しない、というのは Maker の所見で、ログには残っていない（E2E は常に `PA_SANDBOX_RO_EXTRA=<uv python dir>` 付きで走る）。
+  (3) pa-sandbox は `/` を ro bind し、tmpfs を被せるのは `/tmp`・`$HOME`・（存在すれば）`/run/user`・`/run/dbus`
+  （`/dev` は `--dev`、docker/podman ソケットは `/dev/null` で mask。`pa_sandbox_build_argv`）。実 HOME はこの一覧に
+  含まれないので、HOME を差し替えて起動すると実 HOME がサンドボックス内から読める（`/` の ro bind により書けない）。
+  E2E のラッパーは実 HOME を tmpfs で隠し、この checkout と prime-agent の実行ファイルだけを ro で戻す。
+- **T9b での対応（2026-10-19 追記、T12）**: T9b の pa-sandbox（`pa_sandbox_build_argv`、ヘッダの設計節と KNOWN LIMITS）で
+  上の (1)(2) に対応した。(3) は T9b でも変わらない（tmpfs は `/tmp`・`$HOME`・`/run/user`・`/run/dbus`）。
+  (1) agent dir（`~/.prime/agent`）はサンドボックス私有の tmpfs になり、pa-sandbox がプロファイルを作るときに列挙した
+  ホストの各エントリを同じパスへ ro bind する（`--ro-bind-try`。lock 名 `*.lock`・`*.lock.*` は bind せず、tmpfs 内で私有の
+  lock になる）。`daemon-workers/`・`rlm-ledger/`（`PA_SANDBOX_AGENT_TMP_DIRS`）は空の tmpfs で、終了時に破棄される。
+  列挙後にホストが消したエントリで bwrap のセットアップが失敗したときは、`PA_SANDBOX_SETUP_TRIES`（既定 3）回まで起動をやり直す
+  （実走は、前回の起動の残りが無いとホスト側 watcher が確認できたときだけ。`pa_sandbox_watch`・`pa_sandbox_main`、ヘッダの設計節）。
+  rw は従来どおり `PA_SANDBOX_AGENT_RW_DIRS`（sessions session-artifacts session-leases logs swarm）・`telemetry.json(l)`・
+  ワークスペースだけ。ホストに無い名前（`SYSTEM.md` 等）は中で作れるがホストには届かない。
+  (2) kernel venv の `bin/python` と pyvenv.cfg `home` を 1 要素ずつ辿り、agent dir 内の hop を除き、`$HOME`・`/tmp` 配下の symlink
+  hop ごとにそれを含むディレクトリ（uv なら minor 版 symlink のある python ディレクトリ）を ro bind する（そのディレクトリが
+  `$HOME`・`/tmp` 自身か、ワークスペース・agent dir を含むときは link 自体）。解決後のインストール先も ro bind する（`_vpath`/`_vexpose`、
+  ヘッダの KERNEL VENV INTERPRETER）。経路がワークスペースや rw state を通る場合は起動を拒否する。
+  **未実走**: `e2e/run-ollama-e2e.sh` は T9b 以降に再実走しておらず、同スクリプトはまだ daemon フェーズで agent dir を
+  rw bind し `PA_SANDBOX_RO_EXTRA=<uv python dir>` を付けている（ヘッダの Deviations は T9b 以前の pa-sandbox についての記述）。
+  したがって「無改変の pa-sandbox 内で daemon と factory machine が動く」ことは E2E では確かめていない。T9b 自身の
+  実測・テストは T9b の報告と `bin/test-pa-wrappers.sh` による。
+- **T9c: pid ns モードでの 2 点（2026-10-29、カーネル更新後にホストが private /proc を mount できるようになったことで顕在化）**:
+  (A) 上記のとおり bwrap を空環境で起動する（修正済み）。(B) **修正せず文書化**: pid ns モードでは bwrap の init が pid 1 で、その
+  fd 2 が `$PA_SANDBOX_RUNDIR/bwrap.err` なので、中のコードは `/proc/1/fd/2` から bwrap.err へ任意のバイト列を書ける
+  （`--as-pid-1` は付けない判断）。`started`（fd 4、prime-agent の exec 前に閉じる）・`info`・`block`・`record` には
+  `/proc/<pid>/fd` 経由でも届かないことをテストが確かめる。再起動判定は `started` が空であることも条件にするため、bwrap.err
+  を偽造しても再起動は起きない（T9b h のテストが偽造 `bwrap: forged` で確認）。端末への出力は代わりに無害化する: bwrap.err を
+  表示するとき、先頭 64 KiB（`head -c 65536`）だけを出し、`\n`・`\t` 以外の C0 制御バイト（ESC・CR を含む）・DEL・
+  0x80-0x9f（C1）を `?` に置き換える（一部の UTF-8 文字の継続バイトも 0x80-0x9f に当たるので `?` になりうる。UTF-8 表現の C1
+  `\302\233` は `\302?` になり CSI としては働かない）。pid ns モードでは `/proc/1/cmdline` から bwrap の argv 全体（後の
+  `--setenv` で上書きされるホスト側の値、例 `PRIME_AGENT_DAEMON_SOCKET`、を含む）も読める。これは T9c 以前からで、修正せず
+  `bin/pa-sandbox` の KNOWN LIMITS に書いただけ。degraded（host /proc）モードでは bwrap.err へ届く
+  fd は見つからなかった（同テストの `FDWRITE-ERR` が 0 件）。
+  テスト（`bin/test-pa-wrappers.sh`）: pid ns モードでは bwrap が作った namespace が pid 1 の終了で破棄されるため setsid の孫も死に、
+  「sweep 無し」の mutation は何も示さない。そこで sweep の mutation と再現は bwrap shim（private /proc の probe だけを失敗させる）で
+  degraded モードに落として実行し、pid ns モードには「孫が namespace と一緒に死ぬ」アサーションを足した。
+  `PATH` 先頭にその shim を置いて全スイートを走らせると degraded モードでも通る（2026-10-29 の実走: pid ns 859 passed / 0 failed、
+  shim 付き 840 passed / 0 failed。ok の名前の差分を取ると、pid ns だけで走るケースが 24 件、degraded だけで走るケースが 5 件
+  （degraded の「bwrap.err に届かない」3 件と「no private /proc」系 2 件））。
+- **E2E のホスト側書き込み**: settings・models.json・machine など agent dir へのホスト書き込みは、すべてサンドボックスが
+  その dir を見る前に済ませる。フェーズ（guard / allowlist / machine の各試行）ごとに、ホスト専用テンプレート
+  （サンドボックス内では一時 HOME ごと tmpfs で見えない）を `cp -aT` で未存在の `~/.prime/agent` へ新規コピーし、
+  終了後は `mv -T` で退避するだけで再び書かない。サンドボックスが書けた dir の `*.jsonl` は通常ファイルだけを読む
+  （`find -type f`、python は `O_NOFOLLOW|O_NONBLOCK`＋`fstat`、`grep -D skip`）。読み込みはすべて `timeout` 付き。
+- **E2E の判定**: runtime は子の回答が空でも json ポートの parse に失敗しても子を `done` で settle し、run も `done` に
+  なる（`rlm/factory.py` `_apply_settlement`・`_capture_outputs`・`_finalize`）。したがって run `done` だけでは回答を
+  確かめたことにならない。machine の判定は次の順で行う。
+  1. FAIL: 画面に allowlist 拒否または `turn failed`（(a) より先に判定）。
+  2. INCONCLUSIVE (a): どの assistant tool call にも指示コードの全行が無い（モデルがコードを実行していない）。
+  3. FAIL: 指示コードの tool call（id）に対応する toolResult に status 行が無い（例外/タイムアウト）、run が `done`
+     でない、ノードが error/cancelled、error settle・`node_error`・`retry` がある、または capture された回答の
+     json ポート値が期待値と違う。
+  4. INCONCLUSIVE (b): `answer_captured` 無しで `done` settle したノードがあり、そのすべてについて子 transcript の text に
+     正しい回答（`{"ping": {"ok": true}}` / `{"pong": {"done": true}}`）がある。無ければ FAIL。
+  5. PASS: ping・pong とも `done`、`transition_fired` ping→pong、両ノードに `answer_captured` があり、status の
+     `answer_preview`（`_state_report` が返す最新 settle の回答）を runtime の `_parse_json_output` と同じ手順
+     （末尾の ```json フェンス優先、次に回答全体）で読んだポート値が ping `{"ok": true}`・pong `{"done": true}` に
+     JSON として厳密一致（`true` と `1` は別）。
+  6. それ以外は FAIL。
+  guard は指示コードの tool call に対応する toolResult の結果行だけを読む。allowlist フェーズは PASS か FAIL だけ
+  （拒否はモデル出力より前に起きる）。
+- **attempt 2/3 の PASS の扱い**: attempt 2/3 の PASS 判定は `answer_captured` も回答値も見ていなかった（INCONCLUSIVE (b) の
+  判定では attempt 2 が `answer_captured`、attempt 3 がさらに子 transcript の回答値を見ていた）。attempt 3 の
+  Checker の実走 1 回は PASS と判定されたが、events に `answer_captured:pong` が無く（子 transcript には
+  `{"pong": {"done": true}}` があった）、上の基準では INCONCLUSIVE に当たる。attempt 2/3 の Maker の実走（上記の
+  attempt 3 の Maker の報告を含む）も同じ理由で、上の基準では INCONCLUSIVE または FAIL だった可能性がある。attempt 2 の
+  Checker の実走 2 回（scratchpad/t13-a2-checker.json の証跡、t13a2/run1.out・run2.out）のログには
+  `answer_captured:ping`・`answer_captured:pong` の両方があるが、回答の値（`answer_preview`）は出力していないので
+  正誤は確かめられない。attempt 3 の Maker の実走 3 回のログは見つからず、確かめられない。
+- **attempt 4 の実走（上の判定）**:
+  - Checker の実走 2 回（2026-10-18 14:15–14:29 UTC 頃、scratchpad/t13-a4-checker.json の証跡、
+    t13a4/run1.out・run2.out）: 2 回とも EXIT 0（guard・allowlist・machine が PASS）。run 1 は machine の 1 試行目が
+    INCONCLUSIVE (a)（Checker が session を確認した記録では、モデルがクォートを崩して送ったコードが SyntaxError になり、
+    指示コードは実行されていない）、2 試行目で PASS。run 2 は 1 試行目で PASS。PASS した試行はいずれも
+    `answer_captured:ping`・`answer_captured:pong` があり、回答が `{"ping": {"ok": true}}`・`{"pong": {"done": true}}`
+    の正答だった。
+  - Maker の報告（ログは保存していない）: 実走 3 回（2026-10-18 13:53–14:06 UTC）がいずれも exit 0 で、2 回目は
+    1 試行目が INCONCLUSIVE (b)、2 試行目で PASS だったとしている。
+  - Checker の実走と同時に別タスク（T9b）が同じ ollama を使っていた（t13-a4-checker.json）が、INCONCLUSIVE との関係は確かめていない。
+- pty ごと終了した場合: attempt 1 の Checker（t13-a1-checker.json）が daemon と worker の動作中に `script` を SIGKILL した 2 回とも、
+  HOME=<tmp> のプロセスは残らなかった（pa-sandbox の sweep は EXIT trap にあり、非対話 bash は SIGHUP でも EXIT trap を
+  実行するので、sweep が走ったと推定される。sweep の実行自体は記録していない）。attempt 1 で報告したプロセス残存の原因は特定していない。
+- `-p` では settings の `defaultProvider`/`defaultModel` が反映されず amazon-bedrock の fixture モデルに落ちた。
+  `--provider`/`--model` を明示すれば local モデルが使われる。原因は未調査。
+
+### システム不変条件
+
+- prime-agent に SYSTEM.md を置かない。settings.json を symlink しない。pi 専用キーを prime の settings に書かない。
+- prime 用の swarm 成果物は Claude 用 SKILL.md・hooks・SWARM.md を複製・改変しない（参照のみ）。
+- 決定論的検証の結果は Python アダプタが構造化 JSON で返し、machine の guard はその JSON のフィールドだけで分岐する。
+  LLM の自然文による「合格」で遷移しない。残存リスク: 中継するサブエージェントが JSON を改変しうる（P-7）。
