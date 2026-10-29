@@ -10,6 +10,7 @@
     fscache = true
     untrackedCache = true
     commitGraph = true
+    deltaBaseCacheLimit = 1g
 
 [feature]
     manyFiles = true
@@ -23,6 +24,13 @@
 [fetch]
     parallel = 0
     writeCommitGraph = true
+
+[pack]
+    threads = 0
+    deltaCacheSize = 512m
+
+[status]
+    submoduleSummary = false
 
 [gc]
     writeCommitGraph = true

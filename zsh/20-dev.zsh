@@ -15,6 +15,8 @@ if [ -z "$CARGO_HOME" ]; then
 		export RUSTUP_HOME=$HOME/.rustup
 	fi
 fi
+export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=${CARGO_REGISTRIES_CRATES_IO_PROTOCOL:-sparse}
+export CARGO_BUILD_JOBS=${CARGO_BUILD_JOBS:-${CPUCORES:-$(nproc 2>/dev/null || echo 4)}}
 if (($+commands[go])); then
 	#GO
 	export GOPATH=${GOPATH:-$HOME/go}
