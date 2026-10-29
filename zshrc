@@ -150,12 +150,20 @@ if [[ -t 0 ]]; then
 	export ZSH_AUTOSUGGEST_USE_ASYNC=1
 	export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 	export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=60
+	export ZSH_AUTOSUGGEST_STRATEGY=(history)
+	export ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
+		forward-char backward-char forward-word backward-word
+		vi-forward-char vi-backward-char vi-forward-word vi-backward-word
+		beginning-of-line end-of-line
+	)
+	export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 	bindkey -e
 	export KEYTIMEOUT=1
 
-	# Completion caching for instantaneous Tab responsiveness
+	# Completion caching and smart matching for instantaneous Tab responsiveness
 	zstyle ':completion:*' use-cache on
 	zstyle ':completion:*' cache-path "${ZCACHE_DIR:-$HOME/.zcache}/zcompcache"
+	zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*'
 
 	# These options used to live in the deferred zsh/03-history.zsh, but zsh-defer's
 	# _zsh-defer-resume wraps every deferred task in `emulate -L zsh` for its own

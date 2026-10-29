@@ -1,4 +1,7 @@
 #!/bin/sh
+if [ -x "$HOME/.zcache/tmux-pane-info" ]; then
+  exec "$HOME/.zcache/tmux-pane-info" disk
+fi
 df -BG / 2>/dev/null | awk 'NR==2{
   gsub(/G/,"",$2); gsub(/G/,"",$3)
   used=$3+0; total=$2+0

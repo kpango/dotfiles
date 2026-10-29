@@ -7,6 +7,7 @@
 //	tmux-pane-info branch <dir>             → " branchname" or ""
 //	tmux-pane-info pane   <dir>             → complete path+branch coloured segment
 //	tmux-pane-info kube   [ctx_fg] [ns_fg]  → tmux colour-coded kube segment
+//	tmux-pane-info disk                     → tmux colour-coded disk usage segment
 //
 // Per-directory cache: ~/.cache/tmux-pane-info.<fnv32hex>
 //
@@ -125,6 +126,9 @@ func main() {
 			nsFg = os.Args[3]
 		}
 		os.Stdout.WriteString(kubeSegment(ctxFg, nsFg))
+
+	case "disk":
+		diskSegment()
 
 	default: // "path" or any unrecognised subcommand
 		dir := "."
