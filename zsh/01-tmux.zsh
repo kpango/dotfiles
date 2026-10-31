@@ -19,9 +19,20 @@ fi
 
 if (($+commands[tmux])); then
 	# Unset $TMUX if the server it points to is no longer running (stale socket).
-	# This allows the auto-attach logic below to reconnect to the live server.
-	if [[ -n "$TMUX" ]] && ! tmux info &>/dev/null; then
-		unset TMUX TMUX_PANE
+	# Fast path on Linux checks socket file and /proc/<pid>/comm with zero forks,
+	# falling back to `tmux info` on macOS or cross-PID-namespace sockets.
+	if [[ -n "$TMUX" ]]; then
+		_tmux_sock="${TMUX%%,*}"
+		_tmux_pid="${TMUX#*,}"
+		_tmux_pid="${_tmux_pid%%,*}"
+		_tmux_comm=""
+		if [[ ! -S "$_tmux_sock" ]] || {
+			! { [[ -r "/proc/$_tmux_pid/comm" ]] && IFS= read -r _tmux_comm <"/proc/$_tmux_pid/comm" && [[ "$_tmux_comm" == tmux* ]]; } &&
+				! tmux info &>/dev/null
+		}; then
+			unset TMUX TMUX_PANE
+		fi
+		unset _tmux_sock _tmux_pid _tmux_comm
 	fi
 
 	if [ -z "$_TMUX_KEYS_SET" ] && [ -n "$TMUX" ]; then

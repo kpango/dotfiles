@@ -151,20 +151,16 @@ if [[ -t 0 ]]; then
 	export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 	export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=60
 	typeset -ga ZSH_AUTOSUGGEST_STRATEGY=(history)
-	typeset -ga ZSH_AUTOSUGGEST_IGNORE_WIDGETS
-	ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(
-		forward-char backward-char forward-word backward-word
-		vi-forward-char vi-backward-char vi-forward-word vi-backward-word
-		beginning-of-line end-of-line
-	)
 	export WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 	bindkey -e
+	bindkey '^[[Z' reverse-menu-complete
 	export KEYTIMEOUT=1
 
-	# Completion caching and smart matching for instantaneous Tab responsiveness
+	# Completion caching, menu selection, and smart matching for instantaneous Tab responsiveness
+	zstyle ':completion:*' menu select
 	zstyle ':completion:*' use-cache on
 	zstyle ':completion:*' cache-path "${ZCACHE_DIR:-$HOME/.zcache}/zcompcache"
-	zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*'
+	zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*'
 
 	# These options used to live in the deferred zsh/03-history.zsh, but zsh-defer's
 	# _zsh-defer-resume wraps every deferred task in `emulate -L zsh` for its own
@@ -244,13 +240,18 @@ unset _zsh_cold_env _zsh_early_base
 # Load sheldon only when stdin is a TTY — all deferred tasks require ZLE-idle (never fires
 # for non-TTY), and prmt is independently guarded. Skipping for pipe/file stdin saves ~3ms.
 if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]] && (($+commands[sheldon])); then
-	_zcache_eval sheldon 0 "sheldon source" \
-		"${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml"
+	_sheldon_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml"
+	if [[ -f "$ZCACHE_DIR/sheldon.zsh" && ! "$_sheldon_cfg" -nt "$ZCACHE_DIR/sheldon.zsh" ]]; then
+		source "$ZCACHE_DIR/sheldon.zsh"
+	else
+		_zcache_eval sheldon 0 "sheldon source" "$_sheldon_cfg"
+	fi
+	unset _sheldon_cfg
 fi
 
 # Shells inside tmux: 01-tmux.zsh at its original position (the early block above covers
 # shells outside tmux). It still unsets a stale $TMUX and may then exec tmux from here.
-if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -n "$TMUX" ]]; then
+if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -n "$TMUX" && -z "$_ZSH_TMUX_LOADED" ]]; then
 	source "$DOTFILES_DIR/zsh/01-tmux.zsh"
 fi
 

@@ -8,6 +8,7 @@
 //	tmux-pane-info pane   <dir>             → complete path+branch coloured segment
 //	tmux-pane-info kube   [ctx_fg] [ns_fg]  → tmux colour-coded kube segment
 //	tmux-pane-info disk                     → tmux colour-coded disk usage segment
+//	tmux-pane-info right                    → complete right status bar (CPU/RAM/GPU/VOL/kube)
 //
 // Per-directory cache: ~/.cache/tmux-pane-info.<fnv32hex>
 //
@@ -130,6 +131,9 @@ func main() {
 	case "disk":
 		diskSegment()
 
+	case "right":
+		rightSegment()
+
 	default: // "path" or any unrecognised subcommand
 		dir := "."
 		if len(os.Args) >= 3 {
@@ -181,10 +185,13 @@ func paneOut(dir string, wantBranch bool) {
 	}
 }
 
-// plRight is the Powerline right-pointing solid triangle (U+E0B0).
+// plRight and plLeft are the Powerline solid triangles (U+E0B0, U+E0B2).
 // Hardcoded so the Go binary controls separator rendering rather than relying
 // on tmux user-option expansion inside #(…) output.
-const plRight = ""
+const (
+	plRight = ""
+	plLeft  = ""
+)
 
 // paneSegment outputs the complete path+branch tmux colour segment for dir in
 // a single call, replacing the three separate path/branch invocations that the
@@ -607,4 +614,311 @@ func kubeCacheValid(sources []string) bool {
 		}
 	}
 	return true
+}
+
+// ── status-right formatting & metric parsers ─────────────────────────────────
+
+// appendLoadColor appends tmux fg colour matching tmux-cpu's load_status thresholds
+// (<30.0%: green, <80.0%: yellow, >=80.0%: red), where tenths is percentage * 10.
+func appendLoadColor(dst []byte, tenths int) []byte {
+	switch {
+	case tenths >= 800:
+		return append(dst, "#[fg=red]"...)
+	case tenths >= 300:
+		return append(dst, "#[fg=yellow]"...)
+	default:
+		return append(dst, "#[fg=green]"...)
+	}
+}
+
+// appendTempColor appends tmux fg colour matching tmux-cpu's temp_status thresholds
+// (<80C: green, <90C: yellow, >=90C: red).
+func appendTempColor(dst []byte, tempC int) []byte {
+	switch {
+	case tempC >= 90:
+		return append(dst, "#[fg=red]"...)
+	case tempC >= 80:
+		return append(dst, "#[fg=yellow]"...)
+	default:
+		return append(dst, "#[fg=green]"...)
+	}
+}
+
+// appendPctTenths formats tenths (e.g. 428 → "42.8%") without fmt allocations.
+func appendPctTenths(dst []byte, tenths int) []byte {
+	if tenths < 0 {
+		tenths = 0
+	} else if tenths > 1000 {
+		tenths = 1000
+	}
+	dst = strconv.AppendInt(dst, int64(tenths/10), 10)
+	dst = append(dst, '.', byte('0'+tenths%10), '%')
+	return dst
+}
+
+// appendTempC formats integer Celsius matching "%2.0fC" (e.g. 45 → "45C", 9 → " 9C").
+func appendTempC(dst []byte, tempC int) []byte {
+	if tempC >= 0 && tempC < 10 {
+		dst = append(dst, ' ')
+	}
+	dst = strconv.AppendInt(dst, int64(tempC), 10)
+	return append(dst, 'C')
+}
+
+// appendDiskUsage formats "#[fg=<color>]<used>/<total>GB" without fmt allocations.
+func appendDiskUsage(dst []byte, usedGB, totalGB uint64) []byte {
+	pct := 0
+	if totalGB > 0 {
+		pct = int((usedGB * 100) / totalGB)
+	}
+	color := "#a6e3a1"
+	if pct >= 90 {
+		color = "#f38ba8"
+	} else if pct >= 70 {
+		color = "#f9e2af"
+	}
+	dst = append(dst, "#[fg="...)
+	dst = append(dst, color...)
+	dst = append(dst, ']')
+	dst = strconv.AppendUint(dst, usedGB, 10)
+	dst = append(dst, '/')
+	dst = strconv.AppendUint(dst, totalGB, 10)
+	return append(dst, "GB"...)
+}
+
+type gpuMetrics struct {
+	gpuTenths  int
+	tempC      int
+	vramTenths int
+	hasTemp    bool
+	hasVRAM    bool
+}
+
+// buildRightStatus assembles the complete status-right string from surface0 through kube(surface1).
+func buildRightStatus(
+	cpuTenths int,
+	cpuTempC int, hasCPUTemp bool,
+	ramTenths int,
+	gpu gpuMetrics, hasGPU bool,
+	usedGB, totalGB uint64, hasDisk bool,
+	kube string,
+) []byte {
+	out := make([]byte, 0, 256+len(kube))
+
+	// CPU on surface0 (#282c33 is already set by status-right entry or set explicitly here)
+	out = append(out, "#[fg=#a1c181,bg=#282c33]CPU:"...)
+	out = appendLoadColor(out, cpuTenths)
+	out = appendPctTenths(out, cpuTenths)
+
+	if hasCPUTemp {
+		out = append(out, ' ')
+		out = appendTempColor(out, cpuTempC)
+		out = appendTempC(out, cpuTempC)
+	}
+
+	// RAM
+	out = append(out, " #[fg=#73ade9]RAM:"...)
+	out = appendLoadColor(out, ramTenths)
+	out = appendPctTenths(out, ramTenths)
+
+	// GPU + VRAM
+	if hasGPU {
+		out = append(out, " #[fg=#b477cf]GPU:"...)
+		out = appendLoadColor(out, gpu.gpuTenths)
+		out = appendPctTenths(out, gpu.gpuTenths)
+		if gpu.hasTemp {
+			out = append(out, ' ')
+			out = appendTempColor(out, gpu.tempC)
+			out = appendTempC(out, gpu.tempC)
+		}
+		if gpu.hasVRAM {
+			out = append(out, " #[fg=#6eb4bf]VRAM:"...)
+			out = appendLoadColor(out, gpu.vramTenths)
+			out = appendPctTenths(out, gpu.vramTenths)
+		}
+	}
+
+	// Disk volume (host only)
+	if hasDisk {
+		out = append(out, " #[fg=#dfc184]VOL:"...)
+		out = appendDiskUsage(out, usedGB, totalGB)
+	}
+
+	// Separator surface0 (#282c33) → surface1 (#2f343e) + kube segment
+	out = append(out, " #[fg=#2f343e,bg=#282c33]"...)
+	out = append(out, plLeft...)
+	out = append(out, "#[bg=#2f343e]"...)
+	if kube != "" {
+		out = append(out, kube...)
+		out = append(out, ' ')
+	}
+	return out
+}
+
+// parseUintField parses the next whitespace/comma-delimited unsigned integer from b.
+func parseUintField(b []byte) (val uint64, rest []byte, ok bool) {
+	i := 0
+	for i < len(b) && (b[i] == ' ' || b[i] == '\t' || b[i] == ',') {
+		i++
+	}
+	start := i
+	for i < len(b) && b[i] >= '0' && b[i] <= '9' {
+		val = val*10 + uint64(b[i]-'0')
+		i++
+	}
+	if i == start {
+		return 0, b[i:], false
+	}
+	return val, b[i:], true
+}
+
+// parseProcStatCPU parses the aggregate "cpu " line from /proc/stat and returns
+// total ticks (user..steal) and idle ticks (idle + iowait).
+func parseProcStatCPU(data []byte) (total, idle uint64, ok bool) {
+	if len(data) < 5 || data[0] != 'c' || data[1] != 'p' || data[2] != 'u' || data[3] != ' ' {
+		return 0, 0, false
+	}
+	line := data[4:]
+	if nl := bytes.IndexByte(line, '\n'); nl >= 0 {
+		line = line[:nl]
+	}
+	var fields [8]uint64
+	n := 0
+	for n < len(fields) {
+		v, rest, valid := parseUintField(line)
+		if !valid {
+			break
+		}
+		fields[n] = v
+		n++
+		line = rest
+	}
+	if n < 4 {
+		return 0, 0, false
+	}
+	for i := 0; i < n; i++ {
+		total += fields[i]
+	}
+	idle = fields[3] + fields[4]
+	return total, idle, true
+}
+
+// calcCPUTenths computes CPU busy percentage * 10 from two /proc/stat snapshots.
+func calcCPUTenths(prevTotal, prevIdle, curTotal, curIdle uint64) (int, bool) {
+	if curTotal <= prevTotal {
+		return 0, false
+	}
+	dTotal := curTotal - prevTotal
+	var dIdle uint64
+	if curIdle >= prevIdle {
+		dIdle = curIdle - prevIdle
+	}
+	if dIdle > dTotal {
+		dIdle = dTotal
+	}
+	busy := dTotal - dIdle
+	tenths := int((busy*1000 + dTotal/2) / dTotal)
+	if tenths > 1000 {
+		tenths = 1000
+	}
+	return tenths, true
+}
+
+// parseMeminfoTenths parses /proc/meminfo and returns RAM usage percentage * 10.
+func parseMeminfoTenths(data []byte) (int, bool) {
+	var memTotal, memAvail, memFree, buffers, cached uint64
+	var hasTotal, hasAvail bool
+
+	for len(data) > 0 {
+		var line []byte
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 {
+			line = data[:nl]
+			data = data[nl+1:]
+		} else {
+			line = data
+			data = nil
+		}
+		switch {
+		case bytes.HasPrefix(line, []byte("MemTotal:")):
+			if v, _, ok := parseUintField(line[len("MemTotal:"):]); ok {
+				memTotal = v
+				hasTotal = true
+			}
+		case bytes.HasPrefix(line, []byte("MemAvailable:")):
+			if v, _, ok := parseUintField(line[len("MemAvailable:"):]); ok {
+				memAvail = v
+				hasAvail = true
+			}
+		case bytes.HasPrefix(line, []byte("MemFree:")):
+			memFree, _, _ = parseUintField(line[len("MemFree:"):])
+		case bytes.HasPrefix(line, []byte("Buffers:")):
+			buffers, _, _ = parseUintField(line[len("Buffers:"):])
+		case bytes.HasPrefix(line, []byte("Cached:")):
+			cached, _, _ = parseUintField(line[len("Cached:"):])
+		}
+		if hasTotal && hasAvail {
+			break
+		}
+	}
+	if !hasTotal || memTotal == 0 {
+		return 0, false
+	}
+	avail := memAvail
+	if !hasAvail {
+		avail = memFree + buffers + cached
+	}
+	if avail > memTotal {
+		avail = memTotal
+	}
+	used := memTotal - avail
+	return int((used*1000 + memTotal/2) / memTotal), true
+}
+
+// parseNvidiaCSV parses `nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits`.
+func parseNvidiaCSV(data []byte) (gpuMetrics, bool) {
+	var sumUtil, sumTemp, sumUsed, sumTotal uint64
+	var count uint64
+
+	for len(data) > 0 {
+		var line []byte
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 {
+			line = data[:nl]
+			data = data[nl+1:]
+		} else {
+			line = data
+			data = nil
+		}
+		line = bytes.TrimSpace(line)
+		if len(line) == 0 {
+			continue
+		}
+		u, r1, ok1 := parseUintField(line)
+		t, r2, ok2 := parseUintField(r1)
+		mUsed, r3, ok3 := parseUintField(r2)
+		mTot, _, ok4 := parseUintField(r3)
+		if !ok1 || !ok2 || !ok3 || !ok4 {
+			continue
+		}
+		sumUtil += u
+		sumTemp += t
+		sumUsed += mUsed
+		sumTotal += mTot
+		count++
+	}
+	if count == 0 {
+		return gpuMetrics{}, false
+	}
+	gpuTenths := int((sumUtil*10 + count/2) / count)
+	tempC := int((sumTemp + count/2) / count)
+	vramTenths := 0
+	if sumTotal > 0 {
+		vramTenths = int((sumUsed*1000 + sumTotal/2) / sumTotal)
+	}
+	return gpuMetrics{
+		gpuTenths:  gpuTenths,
+		tempC:      tempC,
+		vramTenths: vramTenths,
+		hasTemp:    true,
+		hasVRAM:    sumTotal > 0,
+	}, true
 }

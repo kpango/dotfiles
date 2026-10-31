@@ -70,8 +70,7 @@ if (($+commands[prmt])) && [[ -t 0 ]]; then
   zmodload zsh/datetime
   # PRMT_HOSTNAME: stripped hostname (prmt has no native hostname stripping)
   # PRMT_DURATION: command duration (prmt has no native duration module)
-  local _prmt_h=${HOSTNAME%%-*}
-  export PRMT_HOSTNAME=${_prmt_h:0:12} PRMT_DURATION=''
+  export PRMT_HOSTNAME=${${HOSTNAME%%-*}:0:12} PRMT_DURATION=''
   typeset -g _prmt_fd=0
   # {time}       — native 24h time with seconds
   # {path:r}     — native relative path (~ substituted for home)
@@ -242,8 +241,11 @@ inline = '''zsh-defer -r -t 0.01 -c "(
   [[ ! -f \$DOTFILES_DIR/zfunc/_zcache_eval.zwc || \$DOTFILES_DIR/zfunc/_zcache_eval -nt \$DOTFILES_DIR/zfunc/_zcache_eval.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_zcache_eval 2>/dev/null
   [[ ! -f \$DOTFILES_DIR/zfunc/_atuin_init.zwc || \$DOTFILES_DIR/zfunc/_atuin_init -nt \$DOTFILES_DIR/zfunc/_atuin_init.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_atuin_init 2>/dev/null
   [[ ! -f \$DOTFILES_DIR/zfunc/_gen_env.zwc || \$DOTFILES_DIR/zfunc/_gen_env -nt \$DOTFILES_DIR/zfunc/_gen_env.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_gen_env 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_base_path.zwc || \$DOTFILES_DIR/zfunc/_base_path -nt \$DOTFILES_DIR/zfunc/_base_path.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_base_path 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_apply_base_path.zwc || \$DOTFILES_DIR/zfunc/_apply_base_path -nt \$DOTFILES_DIR/zfunc/_apply_base_path.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_apply_base_path 2>/dev/null
+  [[ ! -f \$DOTFILES_DIR/zfunc/_source_deferred.zwc || \$DOTFILES_DIR/zfunc/_source_deferred -nt \$DOTFILES_DIR/zfunc/_source_deferred.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_source_deferred 2>/dev/null
   [[ ! -f \$DOTFILES_DIR/zfunc/_autosuggest_cached_bind.zwc || \$DOTFILES_DIR/zfunc/_autosuggest_cached_bind -nt \$DOTFILES_DIR/zfunc/_autosuggest_cached_bind.zwc ]] && zcompile \$DOTFILES_DIR/zfunc/_autosuggest_cached_bind 2>/dev/null
-  for f in $XDG_DATA_HOME/sheldon/repos/**/*.zsh(N) $XDG_DATA_HOME/sheldon/downloads/**/*.zsh(N); do
+  for f in \${XDG_DATA_HOME:-\$HOME/.data}/sheldon/repos/**/*.zsh(N) \${XDG_DATA_HOME:-\$HOME/.data}/sheldon/downloads/**/*.zsh(N); do
       [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
   done
   # -1 (regenerate, no source) and only when stale: with 0 this subshell sourced the whole
@@ -252,14 +254,15 @@ inline = '''zsh-defer -r -t 0.01 -c "(
   if [[ -n \$_zn && \$_zn -nt \$ZCACHE_DIR/combined.zsh ]]; then
       _zcache_eval combined -1 'for _f in \"\$DOTFILES_DIR/zsh\"/*.zsh(N); do [[ \"\${_f:t}\" = 20-os-*.zsh || \"\${_f:t}\" = 01-tmux.zsh ]] || cat \"\$_f\"; done'
   fi
-  if [[ \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\" -nt \"\$ZCACHE_DIR/sheldon.zsh\" ]]; then
-      _zcache_eval sheldon 0 \"sheldon source\" \"\$XDG_CONFIG_HOME/sheldon/plugins.toml\"
+  _scfg=\"\${XDG_CONFIG_HOME:-\$HOME/.config}/sheldon/plugins.toml\"
+  if [[ \"\$_scfg\" -nt \"\$ZCACHE_DIR/sheldon.zsh\" ]]; then
+      _zcache_eval sheldon -1 \"sheldon source\" \"\$_scfg\"
   fi
   if (($+commands[direnv])) && [[ \"\$commands[direnv]\" -nt \"\$ZCACHE_DIR/direnv.zsh\" ]]; then
-      _zcache_eval direnv 1 \"direnv hook zsh\" \"\$commands[direnv]\"
+      _zcache_eval direnv -1 \"direnv hook zsh\" \"\$commands[direnv]\"
   fi
   if [[ ${OSTYPE} == "darwin"* && -x /usr/libexec/path_helper ]] && [[ /etc/paths -nt \"\$ZCACHE_DIR/path_helper.zsh\" || /etc/paths.d -nt \"\$ZCACHE_DIR/path_helper.zsh\" ]]; then
-      _zcache_eval path_helper 0 \"/usr/libexec/path_helper -s\" /etc/paths /etc/paths.d
+      _zcache_eval path_helper -1 \"/usr/libexec/path_helper -s\" /etc/paths /etc/paths.d
   fi
   for f in \$ZCACHE_DIR/*.zsh(N); do
       [[ ! -f \$f.zwc || \$f -nt \$f.zwc ]] && zcompile \$f 2>/dev/null
@@ -268,9 +271,9 @@ inline = '''zsh-defer -r -t 0.01 -c "(
 
 [templates]
 defer = "zsh-defer -mpr -c \"{% for file in files %}source '{{ file }}'\n{% endfor %}\""
-fzf-install = "[[ ! -x {{ dir }}/bin/fzf ]] && {{ dir }}/install --bin > /dev/null \n[[ ! $PATH == *{{ dir }}* ]] && export PATH=\"$PATH:{{ dir }}/bin\" && rehash\n"
+fzf-install = "if ! (($+commands[fzf])); then [[ -x '{{ dir }}/bin/fzf' ]] || '{{ dir }}/install' --bin >/dev/null; path+=('{{ dir }}/bin'); fi\n"
 # The sed filter is cached via _zcache_eval instead of `source <(sed ...)`, which forked
 # sed once per file on every startup. Regenerated when the fzf file or this config (which
-# holds the filter) changes.
-fzf-source = "zsh-defer -mpr -c \"{% for file in files %}_zcache_eval fzf-\\${\\${:-'{{ file }}'}:t:r} 0 \\\"sed -e '/bindkey.*fzf-history-widget/d' '{{ file }}'\\\" '{{ file }}' \\\"\\${XDG_CONFIG_HOME:-\\$HOME/.config}/sheldon/plugins.toml\\\"\n{% endfor %}\""
+# holds the filter) changes; inline fast-path sources the cache directly on warm hits.
+fzf-source = "zsh-defer -mpr -c \"_scfg=\\\"\\${XDG_CONFIG_HOME:-\\$HOME/.config}/sheldon/plugins.toml\\\"; {% for file in files %}_fn=fzf-\\${\\${:-'{{ file }}'}:t:r}; _fc=\\\"\\$ZCACHE_DIR/\\$_fn.zsh\\\"; if [[ -f \\\"\\$_fc\\\" && ! '{{ file }}' -nt \\\"\\$_fc\\\" && ! \\\"\\$_scfg\\\" -nt \\\"\\$_fc\\\" ]]; then source \\\"\\$_fc\\\"; else _zcache_eval \\\"\\$_fn\\\" 0 \\\"sed -e '/bindkey.*fzf-history-widget/d' '{{ file }}'\\\" '{{ file }}' \\\"\\$_scfg\\\"; fi; unset _fn _fc; {% endfor %}unset _scfg\""
 xpanes-path = "whence xpanes tmux-xpanes >/dev/null || path+=(\"{{ dir }}/bin\")\nfpath+=(\"{{ dir }}/completion/zsh/\")\n"
