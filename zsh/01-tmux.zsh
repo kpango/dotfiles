@@ -38,14 +38,14 @@ if (($+commands[tmux])); then
 	if [ -z "$_TMUX_KEYS_SET" ] && [ -n "$TMUX" ]; then
 		export _TMUX_KEYS_SET=1
 		if [ -f /.dockerenv ]; then
-			tmux unbind C-b \; set -g prefix C-w \; bind C-w send-prefix &|
+			tmux unbind C-b \; set -g prefix C-w \; bind C-w send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
 		else
 			case ${OSTYPE} in
 			darwin*)
-				tmux unbind C-b \; set -g prefix C-g \; bind C-g send-prefix &|
+				tmux unbind C-b \; set -g prefix C-g \; bind C-g send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
 				;;
 			linux*)
-				tmux bind C-b send-prefix &|
+				tmux bind C-b send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
 				;;
 			esac
 		fi

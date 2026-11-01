@@ -1,0 +1,214 @@
+# _prmt_init — two-stage interactive prompt (replaces external `prmt` binary invocation).
+#
+# Stage 1 (synchronous in precmd, <0.1ms, zero forks):
+#   Reads .git/HEAD (including git worktree/submodule gitdir pointers) and project marker
+#   files (go.mod, Cargo.toml, package.json) in pure zsh, then renders the full 3-line
+#   prompt immediately without a placeholder flash or UPX binary startup overhead.
+#
+# Stage 2 (asynchronous via `zle -F`, ~4ms in git repos):
+#   Queries `git --no-optional-locks status --porcelain --ignore-submodules=dirty` for
+#   dirty indicators (* = unstaged, + = staged, ? = untracked) and caches Go/Rust/Node
+#   toolchain versions once per session, invoking `zle reset-prompt` only if the rendered
+#   prompt actually changed.
+
+emulate -L zsh
+[[ -t 0 ]] || return 0
+
+zmodload zsh/datetime
+
+export PRMT_HOSTNAME=${${${HOSTNAME:-$HOST}%%-*}:0:12} PRMT_DURATION=''
+typeset -gi _prmt_fd=0 _prmt_stale_fd=0 _prmt_last_exit=0 _prmt_has_go=0 _prmt_has_rust=0 _prmt_has_node=0
+typeset -g _prmt_init_done='' _prmt_time=''
+typeset -g _prmt_prev_pwd='' _prmt_prev_git_root='' _prmt_git_root='' _prmt_git_branch='' _prmt_git_dirty='' _prmt_git_disp=''
+typeset -g _prmt_go_ver='' _prmt_rust_ver='' _prmt_node_ver=''
+
+_prmt_preexec() {
+	typeset -gF _prmt_cmd_start=$EPOCHREALTIME
+}
+
+_prmt_scan_cwd() {
+	emulate -L zsh
+	local d=$PWD hp='' gd='' line=''
+	_prmt_git_root=''
+	_prmt_git_branch=''
+	_prmt_has_go=0
+	_prmt_has_rust=0
+	_prmt_has_node=0
+	while true; do
+		(( ! _prmt_has_go ))   && [[ -f "$d/go.mod" ]]       && _prmt_has_go=1
+		(( ! _prmt_has_rust )) && [[ -f "$d/Cargo.toml" ]]   && _prmt_has_rust=1
+		(( ! _prmt_has_node )) && [[ -f "$d/package.json" ]] && _prmt_has_node=1
+		if [[ -z $_prmt_git_root && -e "$d/.git" ]]; then
+			_prmt_git_root=$d
+			if [[ -f "$d/.git/HEAD" ]]; then
+				hp="$d/.git/HEAD"
+			elif [[ -f "$d/.git" ]] && IFS= read -r line <"$d/.git"; then
+				if [[ $line == 'gitdir: '* ]]; then
+					gd=${line#gitdir: }
+					[[ $gd == /* ]] || gd="$d/$gd"
+					hp="$gd/HEAD"
+				fi
+			fi
+			if [[ -n $hp && -r $hp ]] && IFS= read -r line <"$hp"; then
+				if [[ $line == 'ref: refs/heads/'* ]]; then
+					_prmt_git_branch=${line#ref: refs/heads/}
+				elif [[ $line == 'ref: '* ]]; then
+					_prmt_git_branch=${line##*/}
+				else
+					_prmt_git_branch=${line[1,7]}
+				fi
+			fi
+		fi
+		[[ $d == / || -z $d ]] && break
+		d=${d:h}
+	done
+	if [[ $_prmt_git_root != $_prmt_prev_git_root || -z $_prmt_git_branch ]]; then
+		_prmt_git_dirty=''
+		_prmt_prev_git_root=$_prmt_git_root
+	fi
+}
+
+_prmt_render_prompt() {
+	emulate -L zsh
+	local b="🕙 %F{cyan}${_prmt_time}%f"$'\n'
+	b+="%B%F{green}╭─%n@%f%b${PRMT_HOSTNAME}: in %F{cyan}%~%f"
+	if [[ -n $_prmt_git_branch ]]; then
+		_prmt_git_disp=" ${_prmt_git_branch//\%/%%}${_prmt_git_dirty}"
+		b+='%F{magenta}${_prmt_git_disp}%f'
+	else
+		_prmt_git_disp=''
+	fi
+	(( _prmt_has_go ))   && [[ -n $_prmt_go_ver ]]   && b+="%F{cyan} 🐹${_prmt_go_ver}%f"
+	(( _prmt_has_rust )) && [[ -n $_prmt_rust_ver ]] && b+="%F{red} 🦀${_prmt_rust_ver}%f"
+	(( _prmt_has_node )) && [[ -n $_prmt_node_ver ]] && b+="%F{green} ⬢${_prmt_node_ver}%f"
+	[[ -n $PRMT_DURATION ]] && b+="%F{yellow}  took ${PRMT_DURATION}%f"
+	b+=$'\n'
+	if (( _prmt_last_exit == 0 )); then
+		b+="%B%F{green}╰─λ%f%b "
+	else
+		b+="%B%F{red}╰─✗%f%b %F{red}${_prmt_last_exit}%f "
+	fi
+	PROMPT=$b
+}
+
+_prmt_async_callback() {
+	emulate -L zsh
+	local fd=$1
+	{
+		local line old_prompt=$PROMPT old_disp=$_prmt_git_disp
+		while IFS= read -r -u $fd line || [[ -n $line ]]; do
+			case $line in
+				G:*) _prmt_git_dirty=${line#G:} ;;
+				O:*) _prmt_go_ver=${line#O:} ;;
+				R:*) _prmt_rust_ver=${line#R:} ;;
+				N:*) _prmt_node_ver=${line#N:} ;;
+			esac
+		done
+		_prmt_render_prompt
+		if [[ $_prmt_git_disp != $old_disp || $PROMPT != $old_prompt ]]; then
+			zle reset-prompt 2>/dev/null
+		fi
+	} always {
+		zle -F $fd 2>/dev/null
+		# Defer closing $fd until the next _prmt_precmd: if closed here while ZLE's
+		# raw_getbyte watch_fds loop is mid-iteration with POLLHUP set on $fd, a
+		# sibling callback in the same batch (e.g. zsh-defer's _zsh-defer-schedule)
+		# can allocate the freed fd number and have its new watcher silently dropped
+		# by ZLE's post-callback POLLHUP cleanup.
+		(( _prmt_stale_fd && _prmt_stale_fd != fd )) && exec {_prmt_stale_fd}<&- 2>/dev/null
+		_prmt_stale_fd=$fd
+		(( _prmt_fd == fd )) && _prmt_fd=0
+	}
+}
+
+_prmt_precmd() {
+	local _exit=$?
+	emulate -L zsh
+	[[ -t 0 ]] || return
+	[[ -n ${zsh_defer_options:-} && $PWD == $_prmt_prev_pwd ]] && return 0
+	_prmt_prev_pwd=$PWD
+	_prmt_last_exit=$_exit
+	if (( _prmt_stale_fd )); then
+		exec {_prmt_stale_fd}<&- 2>/dev/null
+		_prmt_stale_fd=0
+	fi
+	strftime -s _prmt_time '%H:%M:%S' $EPOCHSECONDS
+	if [[ -n ${_prmt_cmd_start:-} ]]; then
+		local -F elapsed=$(( EPOCHREALTIME - _prmt_cmd_start ))
+		(( elapsed >= 1.0 )) && printf -v PRMT_DURATION '%.1fs' $elapsed || PRMT_DURATION=''
+		unset _prmt_cmd_start
+	else
+		PRMT_DURATION=''
+	fi
+
+	if (( _prmt_fd )); then
+		zle -F $_prmt_fd 2>/dev/null
+		exec {_prmt_fd}<&- 2>/dev/null
+		_prmt_fd=0
+	fi
+
+	_prmt_scan_cwd
+	_prmt_render_prompt
+
+	local -i need_git=0 need_go=0 need_rust=0 need_node=0
+	[[ -n $_prmt_git_root ]] && (($+commands[git])) && need_git=1
+	(( _prmt_has_go ))   && [[ -z $_prmt_go_ver ]]   && (($+commands[go]))    && need_go=1
+	(( _prmt_has_rust )) && [[ -z $_prmt_rust_ver ]] && (($+commands[rustc])) && need_rust=1
+	(( _prmt_has_node )) && [[ -z $_prmt_node_ver ]] && (($+commands[node]))  && need_node=1
+
+	(( need_git || need_go || need_rust || need_node )) || return 0
+
+	exec {_prmt_fd}< <(
+		if (( need_git )); then
+			git --no-optional-locks status --porcelain --ignore-submodules=dirty 2>/dev/null | {
+				local -i mod=0 stg=0 unt=0
+				local l c1 c2 d=''
+				while IFS= read -r l; do
+					c1=${l[1]}
+					c2=${l[2]}
+					if [[ $c1 == '?' && $c2 == '?' ]]; then
+						unt=1
+					else
+						[[ $c1 != ' ' && $c1 != '!' ]] && stg=1
+						[[ $c2 != ' ' && $c2 != '!' ]] && mod=1
+					fi
+					(( mod && stg && unt )) && break
+				done
+				(( mod )) && d+='*'
+				(( stg )) && d+='+'
+				(( unt )) && d+='?'
+				print -r -- "G:$d"
+			}
+		fi
+		if (( need_go )); then
+			local gv=$(go version 2>/dev/null)
+			gv=${${gv#*go version go}%% *}
+			[[ -n $gv ]] && print -r -- "O:$gv"
+		fi
+		if (( need_rust )); then
+			local rv=$(rustc --version 2>/dev/null)
+			rv=${${rv#rustc }%% *}
+			[[ -n $rv ]] && print -r -- "R:$rv"
+		fi
+		if (( need_node )); then
+			local nv=$(node --version 2>/dev/null)
+			nv=${nv#v}
+			[[ -n $nv ]] && print -r -- "N:$nv"
+		fi
+	)
+	zle -F $_prmt_fd _prmt_async_callback 2>/dev/null
+}
+
+# Idempotent zle-line-init hook: when ZLE first becomes active, register the fd callback that
+# precmd opened but could not register (ZLE was not yet active at precmd time).
+_prmt_zle_init() {
+	[[ -n $_prmt_init_done ]] && return
+	_prmt_init_done=1
+	(( _prmt_fd )) && zle -F $_prmt_fd _prmt_async_callback 2>/dev/null
+}
+autoload -Uz add-zle-hook-widget
+{ add-zle-hook-widget zle-line-init _prmt_zle_init } 2>/dev/null ||
+	zle -N zle-line-init _prmt_zle_init
+
+(( ${preexec_functions[(Ie)_prmt_preexec]} )) || preexec_functions=(_prmt_preexec "${preexec_functions[@]}")
+(( ${precmd_functions[(Ie)_prmt_precmd]}   )) || precmd_functions=(_prmt_precmd   "${precmd_functions[@]}")

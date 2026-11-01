@@ -39,8 +39,9 @@ if (($+commands[atuin])); then
 			(( _needs_tmux_env )) && export _TMUX_ATUIN_ENV_SET=1
 			(
 				if (( _needs_tmux_env )); then
-					tmux set-environment XDG_DATA_HOME "${XDG_DATA_HOME:-$HOME/.data}" \; \
-						set-environment XDG_CONFIG_HOME "${XDG_CONFIG_HOME:-$HOME/.config}"
+					tmux set-environment -g XDG_DATA_HOME "${XDG_DATA_HOME:-$HOME/.data}" \; \
+						set-environment -g XDG_CONFIG_HOME "${XDG_CONFIG_HOME:-$HOME/.config}" \; \
+						set-environment -g _TMUX_ATUIN_ENV_SET 1
 				fi
 				if (( _needs_daemon_restart )); then
 					local _m="${ZCACHE_DIR:-$HOME/.zcache}/atuin-daemon.ver"

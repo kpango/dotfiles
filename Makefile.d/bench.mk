@@ -3,7 +3,7 @@
 _bench_check:
 	@command -v hyperfine >/dev/null 2>&1 || { printf 'Error: hyperfine not found\n' >&2; exit 1; }
 
-PTY_BENCH := python3 $(CURDIR)/Makefile.d/scripts/zsh-pty-startup.py
+PTY_BENCH := python3 -S $(CURDIR)/Makefile.d/scripts/zsh-pty-startup.py
 
 # All targets below launch zsh under a real pty (scripts/zsh-pty-startup.py), not
 # `zsh -i -c exit` or `zsh -i < file`/`</dev/null`: both of those leave `[[ -t 0 ]]`
