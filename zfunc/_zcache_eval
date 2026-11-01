@@ -56,9 +56,9 @@ if (( need_eval )); then
 		/bin/mv -f "${cache_file}.tmp.$$" "$cache_file" || /bin/rm -f "${cache_file}.tmp.$$" 2>/dev/null
 		/bin/rmdir "${cache_file}.lock" 2>/dev/null
 		if (( defer == -1 )); then
-			zcompile "$cache_file" 2>/dev/null
+			zcompile -U -R "$cache_file" 2>/dev/null
 		else
-			zcompile "$cache_file" 2>/dev/null &|
+			zcompile -U -R "$cache_file" 2>/dev/null &|
 		fi
 	else
 		local i=0

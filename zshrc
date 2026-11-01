@@ -228,13 +228,12 @@ HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 # ancestry. Downstream, 00-env.zsh's own guard still skips its redundant copy of
 # this on non-darwin once this has run; on darwin it always re-derives PATH from
 # scratch after its own PATH="" reset regardless, so this cannot go stale there.
-export _ZSH_PATH_LOADED=1
-# _apply_base_path (zfunc/) holds the typeset -g -U / _base_path / export
-# triplet shared with 00-env.zsh, the fast-path call and the early call above — see its header
-# for why -g matters even though this call site itself runs at the top level,
-# not inside a function.
+# triplet shared with 00-env.zsh, the fast-path call and the early call above.
+# Bypassed when _zsh_early_base is set or when env.zsh already loaded PATH and set
+# _ZSH_PATH_LOADED in this process on non-darwin without cold-env regeneration.
 autoload -Uz _apply_base_path
-[[ -n "$_zsh_early_base" ]] || _apply_base_path
+[[ -n "$_zsh_early_base" || ( -n "$_ZSH_PATH_LOADED" && -z "$_zsh_cold_env" && "$_ZSH_OS" != brew ) ]] || _apply_base_path
+export _ZSH_PATH_LOADED=1
 unset _zsh_cold_env _zsh_early_base
 
 # Load sheldon only when stdin is a TTY — all deferred tasks require ZLE-idle (never fires
@@ -280,7 +279,7 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 		# -t 0.01 starts a new yield chunk (see sheldon.toml, above [plugins.colors]):
 		# sourcing this cache is the single most expensive deferred task, so it must not
 		# share a zle callback with the plugin tasks queued before it.
-		_source_deferred "$combined_cache" "-mpr -t 0.01"
+		_source_deferred "$combined_cache" "-mprs -t 0.01"
 	else
 		_zsh_deps=()
 		for _f in "$DOTFILES_DIR/zsh"/*.zsh; do
@@ -288,7 +287,7 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 			[[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || _zsh_deps+=("$_f")
 		done
 		_zcache_eval combined 0 \
-			'for _f in "$DOTFILES_DIR/zsh"/*.zsh; do [[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || cat "$_f"; done' \
+			'for _f in "$DOTFILES_DIR/zsh"/*.zsh; do [[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || print -r -- "$(<"$_f")"; done' \
 			"${_zsh_deps[@]}"
 	fi
 
@@ -297,9 +296,9 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 	if [[ -f "$_os_src" ]]; then
 		_os_cache="$ZCACHE_DIR/os-${_ZSH_OS}.zsh"
 		if [[ -f "$_os_cache" && ! "$_os_src" -nt "$_os_cache" ]]; then
-			_source_deferred "$_os_cache" "-mpr"
+			_source_deferred "$_os_cache" "-mprs"
 		else
-			_zcache_eval "os-${_ZSH_OS}" 0 "cat '$_os_src'" "$_os_src"
+			_zcache_eval "os-${_ZSH_OS}" 0 'print -r -- "$(<"$_os_src")"' "$_os_src"
 		fi
 	fi
 
@@ -308,9 +307,9 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 	if [[ -f "$_gui_src" && "$_gui_src" != "$_os_src" ]]; then
 		_gui_cache="$ZCACHE_DIR/os-gui.zsh"
 		if [[ -f "$_gui_cache" && ! "$_gui_src" -nt "$_gui_cache" ]]; then
-			_source_deferred "$_gui_cache" "-mpr"
+			_source_deferred "$_gui_cache" "-mprs"
 		else
-			_zcache_eval "os-gui" 0 "cat '$_gui_src'" "$_gui_src"
+			_zcache_eval "os-gui" 0 'print -r -- "$(<"$_gui_src")"' "$_gui_src"
 		fi
 	fi
 
@@ -323,7 +322,7 @@ if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 	# guarded on the array existing so a zsh-defer rename degrades to today's behaviour
 	# rather than erroring at every prompt.
 	if (($+functions[zsh-defer])) && (($+_zsh_defer_tasks)); then
-		zsh-defer -mpr -c '_zsh_defer_tasks=("${(@)_zsh_defer_tasks/#0 /1 }")'
+		zsh-defer -mprs -c '_zsh_defer_tasks=("${(@)_zsh_defer_tasks/#0 /1 }")'
 	fi
 fi
 

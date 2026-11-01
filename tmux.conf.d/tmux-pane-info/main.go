@@ -22,7 +22,7 @@
 //
 // Hot path (cache hit): raw syscalls only — go-git is never invoked.
 // Cold path (cache miss): go-git resolves the branch name.
-// Kubernetes info uses k8s client-go instead of an external kubectl process.
+// Kubernetes info uses a pure Go YAML scanner instead of client-go or kubectl.
 package main
 
 import (
@@ -32,9 +32,6 @@ import (
 	"strconv"
 	"syscall"
 	"unicode/utf8"
-
-	gogit "github.com/go-git/go-git/v5"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
 var (
@@ -174,7 +171,7 @@ func paneOut(dir string, wantBranch bool) {
 	}
 
 	sp := abbreviatePath(dir)
-	br := branchFromGoGit(dir, headPath)
+	br := branchFromHead(headPath)
 
 	writePaneCache(cp, key, sp, br)
 
@@ -223,7 +220,7 @@ func paneSegment(dir string) {
 	}
 
 	sp := abbreviatePath(dir)
-	br := branchFromGoGit(dir, headPath)
+	br := branchFromHead(headPath)
 
 	writePaneCache(cp, key, sp, br)
 	writeSegment(sp, br)
@@ -314,71 +311,45 @@ func parentDir(d string) string {
 	return d[:i]
 }
 
-// gitRootFromHeadPath derives the worktree root from a HEAD file path for a
-// normal repository (headPath ends with "/.git/HEAD"). Returns "" for
-// worktrees and submodules whose HEAD lives outside the worktree.
-func gitRootFromHeadPath(headPath string) string {
-	const suffix = "/.git/HEAD"
-	if len(headPath) > len(suffix) && headPath[len(headPath)-len(suffix):] == suffix {
-		return headPath[:len(headPath)-len(suffix)]
-	}
-	return ""
-}
+var (
+	branchRefPrefix = []byte("ref: refs/heads/")
+	refPrefix       = []byte("ref: ")
+)
 
-// branchFromGoGit opens the repository using go-git and returns the current
-// branch name or short commit hash. Called only on cache miss.
-//
-// For normal repos: PlainOpen(gitRoot) — no directory walk needed.
-// For submodules/worktrees: PlainOpenWithOptions(dir, DetectDotGit) as fallback.
-func branchFromGoGit(dir, headPath string) []byte {
-	var repo *gogit.Repository
-
-	if root := gitRootFromHeadPath(headPath); root != "" {
-		var err error
-		repo, err = gogit.PlainOpen(root)
-		if err != nil {
-			repo = nil
-		}
-	}
-	if repo == nil && dir != "" {
-		var err error
-		repo, err = gogit.PlainOpenWithOptions(dir, &gogit.PlainOpenOptions{
-			DetectDotGit:          true,
-			EnableDotGitCommonDir: true,
-		})
-		if err != nil {
-			return nil
-		}
-	}
-	return branchFromRepo(repo)
-}
-
-// branchFromRepo reads the current branch name (or short commit hash on
-// detached HEAD) from an open go-git Repository.
+// branchFromHead reads the current branch name or short commit hash directly
+// from the HEAD file located by findGitHeadPath. Called only on cache miss.
 // Returns the bare name with no padding, e.g. "main" or "abc1234".
-func branchFromRepo(repo *gogit.Repository) []byte {
-	if repo == nil {
+func branchFromHead(headPath string) []byte {
+	if headPath == "" {
 		return nil
 	}
-	ref, err := repo.Head()
+	data, err := os.ReadFile(headPath)
 	if err != nil {
 		return nil
 	}
-
-	var name string
-	if ref.Name().IsBranch() {
-		name = ref.Name().Short()
-	} else {
-		h := ref.Hash().String()
-		if len(h) > 7 {
-			h = h[:7]
+	data = bytes.TrimSpace(data)
+	if bytes.HasPrefix(data, branchRefPrefix) {
+		name := data[len(branchRefPrefix):]
+		if len(name) > 0 {
+			return name
 		}
-		name = h
-	}
-	if name == "" {
 		return nil
 	}
-	return []byte(name)
+	if bytes.HasPrefix(data, refPrefix) {
+		ref := data[len(refPrefix):]
+		if idx := bytes.LastIndexByte(ref, '/'); idx >= 0 {
+			return ref[idx+1:]
+		}
+		return ref
+	}
+	// Detached HEAD: commit hash (take first 7 hex characters)
+	if len(data) >= 7 {
+		return data[:7]
+	}
+	if len(data) > 0 {
+		return data
+	}
+	return nil
 }
 
 // ── path helpers ─────────────────────────────────────────────────────────────
@@ -556,12 +527,182 @@ func writePaneCache(cp string, key, sp, br []byte) {
 
 // ── kubernetes segment ───────────────────────────────────────────────────────
 
-// kubeSegment returns a tmux-coloured kubernetes context:namespace string.
-// Config is loaded via k8s client-go (no external kubectl invocation).
-func kubeSegment(ctxFg, nsFg string) string {
-	rules := clientcmd.NewDefaultClientConfigLoadingRules()
+var (
+	currentContextPrefix = []byte("current-context:")
+	contextsPrefix       = []byte("contexts:")
+	namePrefix           = []byte("name:")
+	namespacePrefix      = []byte("namespace:")
+)
 
-	if kubeCacheValid(rules.Precedence) {
+// defaultKubeConfigPaths returns candidate kubeconfig paths from $KUBECONFIG or ~/.kube/config.
+func defaultKubeConfigPaths() []string {
+	if env := os.Getenv("KUBECONFIG"); env != "" {
+		var paths []string
+		for _, p := range bytes.Split([]byte(env), []byte{os.PathListSeparator}) {
+			p = bytes.TrimSpace(p)
+			if len(p) > 0 {
+				paths = append(paths, string(p))
+			}
+		}
+		if len(paths) > 0 {
+			return paths
+		}
+	}
+	if homeDir != "" {
+		return []string{homeDir + "/.kube/config"}
+	}
+	return nil
+}
+
+// cleanYAMLValue trims leading/trailing whitespace and surrounding single or double quotes,
+// as well as any unquoted inline comments.
+func cleanYAMLValue(b []byte) string {
+	b = bytes.TrimSpace(b)
+	if len(b) > 0 && (b[0] == '"' || b[0] == '\'') {
+		q := b[0]
+		if end := bytes.IndexByte(b[1:], q); end >= 0 {
+			return string(b[1 : 1+end])
+		}
+	}
+	if idx := bytes.IndexByte(b, '#'); idx >= 0 {
+		b = bytes.TrimSpace(b[:idx])
+	}
+	return string(b)
+}
+
+// parseKubeCurrentContext scans a kubeconfig YAML file for the current-context key.
+func parseKubeCurrentContext(data []byte) string {
+	for len(data) > 0 {
+		var line []byte
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 {
+			line = data[:nl]
+			data = data[nl+1:]
+		} else {
+			line = data
+			data = nil
+		}
+		trimmed := bytes.TrimSpace(line)
+		if len(trimmed) == 0 || trimmed[0] == '#' {
+			continue
+		}
+		if bytes.HasPrefix(trimmed, currentContextPrefix) {
+			return cleanYAMLValue(trimmed[len(currentContextPrefix):])
+		}
+	}
+	return ""
+}
+
+// parseKubeContextNamespace scans the contexts section of a kubeconfig YAML file
+// for the context named targetCtx and extracts its namespace.
+func parseKubeContextNamespace(data []byte, targetCtx string) (string, bool) {
+	inContexts := false
+	var curName string
+	var curNamespace string
+
+	flush := func() (string, bool) {
+		if curName == targetCtx {
+			if curNamespace == "" {
+				return "default", true
+			}
+			return curNamespace, true
+		}
+		return "", false
+	}
+
+	for len(data) > 0 {
+		var line []byte
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 {
+			line = data[:nl]
+			data = data[nl+1:]
+		} else {
+			line = data
+			data = nil
+		}
+		trimmed := bytes.TrimSpace(line)
+		if len(trimmed) == 0 || trimmed[0] == '#' {
+			continue
+		}
+
+		indent := len(line) - len(bytes.TrimLeft(line, " \t"))
+
+		if indent == 0 && trimmed[0] != '-' {
+			if bytes.HasPrefix(trimmed, contextsPrefix) {
+				inContexts = true
+				continue
+			} else if inContexts {
+				if ns, ok := flush(); ok {
+					return ns, true
+				}
+				inContexts = false
+				continue
+			}
+		}
+
+		if inContexts {
+			if trimmed[0] == '-' {
+				if ns, ok := flush(); ok {
+					return ns, true
+				}
+				curName = ""
+				curNamespace = ""
+				trimmed = bytes.TrimSpace(trimmed[1:])
+			}
+
+			if bytes.HasPrefix(trimmed, namePrefix) {
+				curName = cleanYAMLValue(trimmed[len(namePrefix):])
+			} else if bytes.HasPrefix(trimmed, namespacePrefix) {
+				curNamespace = cleanYAMLValue(trimmed[len(namespacePrefix):])
+			}
+		}
+	}
+
+	if inContexts {
+		if ns, ok := flush(); ok {
+			return ns, true
+		}
+	}
+
+	return "", false
+}
+
+// loadKubeContext locates the current context and its namespace across source configs.
+func loadKubeContext(sources []string) (ctx, ns string) {
+	var targetCtx string
+	for _, src := range sources {
+		data, err := os.ReadFile(src)
+		if err != nil {
+			continue
+		}
+		if c := parseKubeCurrentContext(data); c != "" {
+			targetCtx = c
+			break
+		}
+	}
+	if targetCtx == "" {
+		return "", ""
+	}
+
+	for _, src := range sources {
+		data, err := os.ReadFile(src)
+		if err != nil {
+			continue
+		}
+		if n, ok := parseKubeContextNamespace(data, targetCtx); ok {
+			return targetCtx, n
+		}
+	}
+	return targetCtx, "default"
+}
+
+// kubeSegment returns a tmux-coloured kubernetes context:namespace string.
+// Config is loaded via standard library YAML scanner (no external client-go or kubectl).
+func kubeSegment(ctxFg, nsFg string) string {
+	sources := defaultKubeConfigPaths()
+	if len(sources) == 0 {
+		return ""
+	}
+
+	if kubeCacheValid(sources) {
 		fd, errno := openBuf(kubePathNT, syscall.O_RDONLY)
 		if errno == 0 {
 			var buf [512]byte
@@ -577,15 +718,9 @@ func kubeSegment(ctxFg, nsFg string) string {
 		}
 	}
 
-	rawConfig, err := rules.Load()
-	if err != nil || rawConfig.CurrentContext == "" {
+	ctx, ns := loadKubeContext(sources)
+	if ctx == "" {
 		return ""
-	}
-
-	ctx := rawConfig.CurrentContext
-	ns := "default"
-	if ctxInfo, ok := rawConfig.Contexts[ctx]; ok && ctxInfo != nil && ctxInfo.Namespace != "" {
-		ns = ctxInfo.Namespace
 	}
 
 	out := "#[fg=blue]⎈ #[fg=" + ctxFg + "]" + ctx + "#[fg=colour250]:#[fg=" + nsFg + "]" + ns

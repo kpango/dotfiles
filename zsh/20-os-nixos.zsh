@@ -1,7 +1,7 @@
 if [[ -f /etc/NIXOS || -f /etc/nixos/configuration.nix ]]; then
 	nixup() {
 		kpangoup
-		local host="${NIX_HOST_NAME:-$(hostname)}"
+		local host="${NIX_HOST_NAME:-$HOST}"
 		local dotfiles="${DOTFILES_DIR:-$HOME/dotfiles}"
 		echo "==> Rebuilding NixOS for host: $host"
 		sudo nixos-rebuild switch --flake "${dotfiles}/nix#${host}" --show-trace
@@ -9,7 +9,7 @@ if [[ -f /etc/NIXOS || -f /etc/nixos/configuration.nix ]]; then
 	alias up=nixup
 
 	nixtest() {
-		local host="${NIX_HOST_NAME:-$(hostname)}"
+		local host="${NIX_HOST_NAME:-$HOST}"
 		local dotfiles="${DOTFILES_DIR:-$HOME/dotfiles}"
 		echo "==> Dry-run build for host: $host"
 		sudo nixos-rebuild dry-activate --flake "${dotfiles}/nix#${host}" --show-trace
@@ -25,7 +25,7 @@ if [[ -f /etc/NIXOS || -f /etc/nixos/configuration.nix ]]; then
 
 	if (($+commands[home-manager])); then
 		hmup() {
-			local host="${NIX_HOST_NAME:-$(hostname)}"
+			local host="${NIX_HOST_NAME:-$HOST}"
 			local dotfiles="${DOTFILES_DIR:-$HOME/dotfiles}"
 			echo "==> Switching home-manager for host: $host"
 			home-manager switch --flake "${dotfiles}/nix#${host}"

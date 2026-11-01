@@ -96,7 +96,7 @@ _zsh_autosuggest_bind_widgets() {
 	{
 		if command mkdir $tmpd; then
 			print -rl -- "[[ \$1 == ${(qq)key} ]] || return 1" $code >$tmpd/${cache:t} &&
-				zcompile $tmpd/${cache:t} &&
+				zcompile -U -R $tmpd/${cache:t} &&
 				command mv -f $tmpd/${cache:t} $cache &&
 				command mv -f $tmpd/${cache:t}.zwc $cache.zwc
 			command rm -f $tmpd/${cache:t} $tmpd/${cache:t}.zwc

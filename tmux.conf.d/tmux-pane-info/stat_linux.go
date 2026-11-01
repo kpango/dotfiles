@@ -12,6 +12,13 @@ import (
 	"time"
 )
 
+func init() {
+	if len(os.Args) == 2 && os.Args[1] == "--refresh-gpu" {
+		updateGPUCacheSync()
+		os.Exit(0)
+	}
+}
+
 // statMtimeNs returns st's mtime in nanoseconds. Linux's syscall.Stat_t exposes
 // this as the Mtim field (darwin uses Mtimespec instead — see stat_darwin.go).
 func statMtimeNs(st *syscall.Stat_t) int64 {
@@ -144,17 +151,10 @@ func linuxCPUTenths() int {
 		}
 	}
 
-	// Cold start or stale (>30s): take a short 15ms delta instead of blocking 1000ms like iostat
-	time.Sleep(15 * time.Millisecond)
-	curTotal2, curIdle2, ok2 := readProcStat()
-	now2 := time.Now().UnixNano()
-	if !ok2 {
-		writeCPUStatCache(cp, now, curTotal, curIdle, 0)
-		return 0
-	}
-	tenths, _ := calcCPUTenths(curTotal, curIdle, curTotal2, curIdle2)
-	writeCPUStatCache(cp, now2, curTotal2, curIdle2, tenths)
-	return tenths
+	// Cold start or stale (>30s): record baseline snapshot without blocking.
+	// The next tmux status tick (5s) will compute the accurate delta.
+	writeCPUStatCache(cp, now, curTotal, curIdle, 0)
+	return 0
 }
 
 func writeCPUStatCache(cp string, nowNano int64, total, idle uint64, tenths int) {
@@ -254,6 +254,8 @@ func linuxCPUTempC() (int, bool) {
 func linuxGPUMetrics() (gpuMetrics, bool) {
 	cp := cacheDir + "/tmux-gpu-out"
 	now := time.Now().UnixNano()
+	const freshTTL = int64(12 * time.Second)
+	const staleTTL = int64(60 * time.Second)
 
 	var cbuf [128]byte
 	if cdata, cok := readSmallFile(cp, cbuf[:]); cok {
@@ -265,38 +267,30 @@ func linuxGPUMetrics() (gpuMetrics, bool) {
 				if age >= 0 && age < int64(60*time.Second) {
 					return gpuMetrics{}, false
 				}
-			} else if age >= 0 && age < int64(3*time.Second) {
+			} else {
 				g, r1, ok2 := parseUintField(rest)
 				hasT, r2, ok3 := parseUintField(r1)
 				t, r3, ok4 := parseUintField(r2)
 				hasV, r4, ok5 := parseUintField(r3)
 				v, _, ok6 := parseUintField(r4)
 				if ok2 && ok3 && ok4 && ok5 && ok6 {
-					return gpuMetrics{
+					cached := gpuMetrics{
 						gpuTenths:  int(g),
 						tempC:      int(t),
 						vramTenths: int(v),
 						hasTemp:    hasT == 1,
 						hasVRAM:    hasV == 1,
-					}, true
+					}
+					if age >= 0 && age < freshTTL {
+						return cached, true
+					}
+					if age >= freshTTL && age < staleTTL {
+						// Atomic lease: update timestamp to prevent multiple concurrent spawns
+						writeGPUCache(cp, now, cached, true)
+						spawnGPURefresh()
+						return cached, true
+					}
 				}
-			}
-		}
-	}
-
-	if fileExists("/dev/nvidiactl") {
-		ctx, cancel := context.WithTimeout(context.Background(), 1500*time.Millisecond)
-		out, err := exec.CommandContext(
-			ctx,
-			"nvidia-smi",
-			"--query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total",
-			"--format=csv,noheader,nounits",
-		).Output()
-		cancel()
-		if err == nil {
-			if m, ok := parseNvidiaCSV(out); ok {
-				writeGPUCache(cp, now, m, true)
-				return m, true
 			}
 		}
 	}
@@ -304,6 +298,14 @@ func linuxGPUMetrics() (gpuMetrics, bool) {
 	if m, ok := amdSysfsGPU(); ok {
 		writeGPUCache(cp, now, m, true)
 		return m, true
+	}
+
+	if fileExists("/dev/nvidiactl") {
+		// Cold start seed: synchronous initial query
+		if m, ok := queryNvidiaGPU(); ok {
+			writeGPUCache(cp, now, m, true)
+			return m, true
+		}
 	}
 
 	writeGPUCache(cp, now, gpuMetrics{}, false)
@@ -381,4 +383,49 @@ func writeGPUCache(cp string, nowNano int64, m gpuMetrics, present bool) {
 	if err := os.WriteFile(tmp, b, 0o644); err == nil {
 		_ = os.Rename(tmp, cp)
 	}
+}
+
+func queryNvidiaGPU() (gpuMetrics, bool) {
+	if !fileExists("/dev/nvidiactl") {
+		return gpuMetrics{}, false
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 1500*time.Millisecond)
+	defer cancel()
+	out, err := exec.CommandContext(
+		ctx,
+		"nvidia-smi",
+		"--query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total",
+		"--format=csv,noheader,nounits",
+	).Output()
+	if err != nil {
+		return gpuMetrics{}, false
+	}
+	return parseNvidiaCSV(out)
+}
+
+func updateGPUCacheSync() {
+	now := time.Now().UnixNano()
+	cp := cacheDir + "/tmux-gpu-out"
+	if m, ok := queryNvidiaGPU(); ok {
+		writeGPUCache(cp, now, m, true)
+		return
+	}
+	if m, ok := amdSysfsGPU(); ok {
+		writeGPUCache(cp, now, m, true)
+		return
+	}
+	writeGPUCache(cp, now, gpuMetrics{}, false)
+}
+
+func spawnGPURefresh() {
+	execPath, err := os.Executable()
+	if err != nil {
+		return
+	}
+	cmd := exec.Command(execPath, "--refresh-gpu")
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+	cmd.Stdin = nil
+	cmd.Stdout = nil
+	cmd.Stderr = nil
+	_ = cmd.Start()
 }

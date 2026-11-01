@@ -9,42 +9,46 @@ if (($+commands[atuin])); then
 	# runner never opens the popup and need not check the daemon) and share one
 	# background subshell, i.e. one fork of this shell.
 	if [[ -z "$ZSH_EXECUTION_STRING" ]]; then
-		(
-			# The tmux popup runs sh -c and only inherits the tmux session environment, not
-			# the current shell's exported vars. XDG_DATA_HOME/XDG_CONFIG_HOME are set in
-			# combined.zsh (00-env.zsh) but not in tmux's session env, so atuin falls back
-			# to ~/.local/share/atuin and fails if that path has a stale symlink. One tmux
-			# client for both; asynchronous, as the popup only opens on a later keypress.
-			if [[ -n "${TMUX:-}" ]]; then
-				tmux set-environment XDG_DATA_HOME "${XDG_DATA_HOME:-$HOME/.data}" \; \
-					set-environment XDG_CONFIG_HOME "${XDG_CONFIG_HOME:-$HOME/.config}"
-			fi
+		local _needs_tmux_env=0
+		[[ -n "${TMUX:-}" && -z "$_TMUX_ATUIN_ENV_SET" ]] && _needs_tmux_env=1
 
-			# On the host only (not inside a container): restart the atuin daemon when the
-			# binary is newer than the last-restart marker. A stale daemon (version mismatch)
-			# causes atuin to fall back to direct SQLite writes, breaking real-time sync
-			# between tmux panes and the dev container. auto_start=false in config prevents
-			# atuin from silently spawning a second daemon on connection failure.
-			if [[ ! -f /.dockerenv ]] && (($+commands[systemctl])); then
-				local _m="${ZCACHE_DIR:-$HOME/.zcache}/atuin-daemon.ver"
-				local _ds
-				_ds=$(atuin daemon status 2>/dev/null)
-				if ! echo "$_ds" | rg -qF 'Daemon running'; then
-					# Daemon is down — restart unconditionally (e.g. after container stop)
-					systemctl --user restart atuin.service 2>/dev/null
-					touch "$_m"
-				elif echo "$_ds" | rg -qF 'needs restart'; then
-					# Version mismatch — only restart if binary was updated since last check
-					if [[ "$commands[atuin]" -nt "$_m" ]]; then
-						systemctl --user restart atuin.service 2>/dev/null
+		local _needs_daemon_restart=0
+		if [[ ! -f /.dockerenv ]] && (($+commands[systemctl])); then
+			local _m="${ZCACHE_DIR:-$HOME/.zcache}/atuin-daemon.ver"
+			local _sock="${XDG_RUNTIME_DIR:-/run/user/$UID}/atuin.sock"
+			[[ -S "$_sock" ]] || _sock="${XDG_DATA_HOME:-$HOME/.data}/atuin/atuin.sock"
+			[[ -S "$_sock" ]] || _sock="$HOME/.local/share/atuin/atuin.sock"
+
+			local _is_live=0
+			if [[ -S "$_sock" ]]; then
+				if zmodload -F zsh/net/socket b:zsocket 2>/dev/null; then
+					if zsocket "$_sock" 2>/dev/null; then
+						exec {REPLY}<&-
+						_is_live=1
 					fi
-					touch "$_m"
-				elif [[ "$commands[atuin]" -nt "$_m" ]]; then
-					# Daemon healthy and binary updated — just refresh marker
-					touch "$_m"
+				else
+					_is_live=1
 				fi
 			fi
-		) &|
+			if (( ! _is_live )) || [[ "$commands[atuin]" -nt "$_m" ]]; then
+				_needs_daemon_restart=1
+			fi
+		fi
+
+		if (( _needs_tmux_env || _needs_daemon_restart )); then
+			(( _needs_tmux_env )) && export _TMUX_ATUIN_ENV_SET=1
+			(
+				if (( _needs_tmux_env )); then
+					tmux set-environment XDG_DATA_HOME "${XDG_DATA_HOME:-$HOME/.data}" \; \
+						set-environment XDG_CONFIG_HOME "${XDG_CONFIG_HOME:-$HOME/.config}"
+				fi
+				if (( _needs_daemon_restart )); then
+					local _m="${ZCACHE_DIR:-$HOME/.zcache}/atuin-daemon.ver"
+					systemctl --user restart atuin.service 2>/dev/null
+					touch "$_m"
+				fi
+			) &|
+		fi
 	fi
 
 	# Async _atuin_preexec: the atuin-generated version runs `atuin history start`

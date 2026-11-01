@@ -51,7 +51,7 @@ zprecompile() {
 	command rm -rf "$d"/*.lock
 
 	# Reload _zcache_eval from current source (avoids loading a stale .zwc).
-	zcompile "$_df/zfunc/_zcache_eval" 2>/dev/null
+	zcompile -U -z "$_df/zfunc/_zcache_eval" 2>/dev/null
 	unfunction _zcache_eval 2>/dev/null
 	autoload -Uz _zcache_eval
 
@@ -66,17 +66,17 @@ zprecompile() {
 	_zcache_eval combined -1 \
 		'for _f in "$DOTFILES_DIR/zsh"/*.zsh; do
 			[[ -e "$_f" ]] || continue
-			[[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || cat "$_f"
+			[[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || print -r -- "$(<"$_f")"
 		done' \
 		"$_df/zsh"/*.zsh
 
 	local _os_src="$_df/zsh/20-os-${_ZSH_OS}.zsh"
 	[[ -f "$_os_src" ]] &&
-		_zcache_eval "os-${_ZSH_OS}" -1 "cat '$_os_src'" "$_os_src"
+		_zcache_eval "os-${_ZSH_OS}" -1 'print -r -- "$(<"$_os_src")"' "$_os_src"
 
 	local _gui_src="$_df/zsh/20-os-gui.zsh"
 	[[ -f "$_gui_src" && "$_gui_src" != "$_os_src" ]] &&
-		_zcache_eval os-gui -1 "cat '$_gui_src'" "$_gui_src"
+		_zcache_eval os-gui -1 'print -r -- "$(<"$_gui_src")"' "$_gui_src"
 
 	if (($+commands[atuin])); then
 		autoload -Uz _atuin_init
@@ -93,36 +93,21 @@ zprecompile() {
 		_zcache_eval pay-respects -1 "pay-respects zsh" "$commands[pay-respects]"
 
 	(($+commands[zsh-patina])) &&
-		_zcache_eval zsh-patina -1 \
-			'zsh-patina activate; printf "export _ZSH_PATINA_PATH=\$(command -v zsh-patina)\n"' \
-			"$commands[zsh-patina]"
+		_zcache_eval zsh-patina -1 "zsh-patina activate" "$commands[zsh-patina]"
 
 	# zcompile rc files and autoloaded functions (_zcache_eval covers its own output).
-	# _base_path/_apply_base_path run unconditionally on every shell start (both
-	# interactive and non-interactive `zsh -c`, from zshrc, ahead of combined.zsh)
-	# just like _zcache_eval/_atuin_init/_gen_env, so they belong in this list for
-	# the same reason those already are. _source_deferred is called from zshrc
-	# itself (ahead of combined.zsh, for combined.zsh/os-cache/gui-cache) and from
-	# 3 zsh/*.zsh files bundled into combined.zsh -- same "runs on every startup"
-	# reasoning, as is _autosuggest_cached_bind (every sheldon-managed interactive start,
-	# see sheldon.toml). pinentry-tmux is NOT a zsh function despite
-	# living under tmux.conf.d/pinentry-tmux/ -- it's the Go GPG pinentry binary `make
-	# pinentry-tmux/build` installs to /usr/local/bin, so `zcompile` (which compiles
-	# zsh script source to .zwc bytecode) was never applicable to it; the stale
-	# "$_df/zfunc/pinentry-tmux" entry only ever no-op'd via the -f guard below.
 	local f
-	for f in \
-		"$HOME/.zshrc" \
-		"$HOME/.zshenv" \
-		"$_df/zsh/01-tmux.zsh" \
-		"$_df/zfunc/_zcache_eval" \
-		"$_df/zfunc/_atuin_init" \
-		"$_df/zfunc/_gen_env" \
-		"$_df/zfunc/_base_path" \
-		"$_df/zfunc/_apply_base_path" \
-		"$_df/zfunc/_source_deferred" \
-		"$_df/zfunc/_autosuggest_cached_bind"; do
-		[[ -f "$f" ]] && zcompile "$f" 2>/dev/null
+	for f in "$HOME/.zshrc" "$HOME/.zshenv" "$_df/zsh/01-tmux.zsh"; do
+		[[ -f "$f" ]] && zcompile -U -R "$f" 2>/dev/null
+	done
+	for f in "$_df/zfunc"/*(N.); do
+		[[ "${f:e}" == "zwc" ]] && continue
+		zcompile -U -z "$f" 2>/dev/null
+	done
+	local _zcd="${ZDOTDIR:-$HOME}/.zcompdump"
+	[[ -f "$_zcd" ]] && zcompile -U -M "$_zcd" 2>/dev/null
+	for f in "$d"/*.zsh(N.); do
+		zcompile -U -R "$f" 2>/dev/null
 	done
 
 	local -a _zpc_files=($d/*.zsh)

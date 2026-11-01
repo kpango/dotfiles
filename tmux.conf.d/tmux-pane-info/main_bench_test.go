@@ -281,3 +281,131 @@ func BenchmarkRightSegmentCacheHit(b *testing.B) {
 		rightSegment()
 	}
 }
+
+func TestBranchFromHead(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	tests := []struct {
+		name     string
+		content  string
+		want     string
+		fileMiss bool
+	}{
+		{
+			name:    "standard branch",
+			content: "ref: refs/heads/main\n",
+			want:    "main",
+		},
+		{
+			name:    "nested feature branch",
+			content: "ref: refs/heads/feature/perf-opt\n",
+			want:    "feature/perf-opt",
+		},
+		{
+			name:    "detached HEAD commit hash",
+			content: "4a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b\n",
+			want:    "4a1b2c3",
+		},
+		{
+			name:    "short detached HEAD hash",
+			content: "abc12\n",
+			want:    "abc12",
+		},
+		{
+			name:    "tag reference",
+			content: "ref: refs/tags/v1.0.0\n",
+			want:    "v1.0.0",
+		},
+		{
+			name:    "empty file",
+			content: "",
+			want:    "",
+		},
+		{
+			name:     "non-existent file",
+			fileMiss: true,
+			want:     "",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			path := tmpDir + "/" + tc.name
+			if !tc.fileMiss {
+				if err := os.WriteFile(path, []byte(tc.content), 0644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			got := string(branchFromHead(path))
+			if got != tc.want {
+				t.Fatalf("branchFromHead(%q) = %q, want %q", tc.name, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestParseKubeConfig(t *testing.T) {
+	testYAML := `
+apiVersion: v1
+clusters:
+- cluster:
+    server: https://127.0.0.1:6443
+  name: test-cluster
+contexts:
+- context:
+    cluster: other-cluster
+    namespace: other-ns
+  name: other-ctx
+- context:
+    cluster: test-cluster
+    namespace: "my-namespace" # inline comment
+  name: 'my-ctx'
+- context:
+    cluster: default-cluster
+  name: default-ctx
+current-context: my-ctx # active context
+users:
+- name: my-ctx
+  user:
+    token: secret
+`
+	data := []byte(testYAML)
+	ctx := parseKubeCurrentContext(data)
+	if ctx != "my-ctx" {
+		t.Fatalf("parseKubeCurrentContext = %q, want 'my-ctx'", ctx)
+	}
+
+	ns, ok := parseKubeContextNamespace(data, ctx)
+	if !ok || ns != "my-namespace" {
+		t.Fatalf("parseKubeContextNamespace = (%q, %v), want ('my-namespace', true)", ns, ok)
+	}
+
+	// Test default namespace fallback when omitted
+	nsDefault, okDefault := parseKubeContextNamespace(data, "default-ctx")
+	if !okDefault || nsDefault != "default" {
+		t.Fatalf("default fallback = (%q, %v), want ('default', true)", nsDefault, okDefault)
+	}
+
+	// Test non-existent context
+	if _, okMissing := parseKubeContextNamespace(data, "nonexistent"); okMissing {
+		t.Fatalf("parseKubeContextNamespace for nonexistent should return false")
+	}
+}
+
+func TestCleanYAMLValue(t *testing.T) {
+	cases := []struct {
+		input string
+		want  string
+	}{
+		{`"my-value"`, `my-value`},
+		{`'my-value'`, `my-value`},
+		{`"my-value" # comment`, `my-value`},
+		{`my-value # comment`, `my-value`},
+		{`  simple  `, `simple`},
+	}
+	for _, tc := range cases {
+		if got := cleanYAMLValue([]byte(tc.input)); got != tc.want {
+			t.Fatalf("cleanYAMLValue(%q) = %q, want %q", tc.input, got, tc.want)
+		}
+	}
+}
