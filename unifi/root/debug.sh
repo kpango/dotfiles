@@ -8,9 +8,9 @@ cat << 'EOF' > /tmp/udm-deep-trace.sh
 set -u
 
 TARGET="8.8.8.8"
-TUNNEL_V4="192.0.0.2"
+TUNNEL_V4="192.0.0.3"
 LAN_V4="10.0.0.1"
-TUNNEL_PEER_V6="2404:8e00::feed:100"
+TUNNEL_PEER_V6="2001:260:700:1::1:275" # MAP-E JPIX BR (since 2026-11-02)
 
 echo "================================================================================"
 echo " UDM-Pro Ultra-Deep Diagnostic Report - $(date '+%Y-%m-%d %H:%M:%S')"
@@ -49,7 +49,7 @@ sec "2. IPv6 Underlay, Neighbor Cache & Nexthop State"
 subsec "IPv6 Neighbor Table (Full)"
 ip -6 neigh show
 
-subsec "Route get to Tunnel Peer (2404:8e00::feed:100)"
+subsec "Route get to Tunnel Peer ($TUNNEL_PEER_V6)"
 ip -6 route get "$TUNNEL_PEER_V6" 2>&1 || true
 
 subsec "Route get from eth8 IPv6 to Peer"

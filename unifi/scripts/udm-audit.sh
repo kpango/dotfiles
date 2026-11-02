@@ -46,8 +46,13 @@ chk "br3 has 240d:f:fc4:29f2::1/64" sh -c 'ip -6 addr show br3 | grep -q "240d:f
 chk "br2 (IoT) has no NURO v6" sh -c '! ip -6 addr show br2 | grep -q "240d:f:fc4"'
 chk "eth10 has :29f0 address" sh -c 'ip -6 addr show eth10 | grep -q "240d:f:fc4:29f0:"'
 
-echo "== WAN2 DS-Lite"
-chk "ip6tnl2 remote = 2404:8e00::feed:101" sh -c 'ip -d link show ip6tnl2 | grep -q "remote 2404:8e00::feed:101"'
+echo "== WAN2 MAP-E (JPIX, since 2026-11-02)"
+chk "ip6tnl2 remote = JPIX BR 2001:260:700:1::1:275" sh -c 'ip -d link show ip6tnl2 | grep -q "remote 2001:260:700:1::1:275"'
+chk "MAP_E-POSTROUTING SNATs ip6tnl2 (tcp/udp/icmp)" sh -c 'r=$(iptables -w 30 -t nat -S MAP_E-POSTROUTING) || exit 1; for p in tcp udp icmp; do printf "%s\n" "$r" | grep -q -- "-o ip6tnl2 -p $p .*-j SNAT" || exit 1; done'
+# The tunnel inner address (192.0.0.3) is un-NATed only on DS-Lite. A dpinger
+# whose conntrack entry predates the MAP-E SNAT keeps it alive forever (5s
+# pings vs 30s timeout) and shows 0% availability. Fix: conntrack -D -q 192.0.0.3
+chk "no un-NATed conntrack (reply-dst 192.0.0.3)" sh -c '[ "$(conntrack -L -q 192.0.0.3 2>/dev/null | wc -l)" = 0 ]'
 
 echo "== WAN SLA (official)"
 # The SLA is found through its WAN assignment, not its name (renamed in the
@@ -80,7 +85,7 @@ U=$(api /api/s/default/rest/setting/usg)
 chk "usg echo_server = 45.90.28.0" sh -c "echo '$U' | jq -e '.data[0].echo_server == \"45.90.28.0\"'"
 NC=$(api /api/s/default/rest/networkconf)
 chk "both WAN dns1/2 + v6 dns = NextDNS" sh -c "echo '$NC' | jq -e '[.data[] | select(.purpose==\"wan\") | .wan_dns1==\"45.90.28.74\" and .wan_dns2==\"45.90.30.74\" and .wan_ipv6_dns1==\"2a07:a8c0::21:553f\" and .wan_ipv6_dns2==\"2a07:a8c1::21:553f\"] | (length==2 and all)'"
-chk "WAN2 AFTR manual feed:101" sh -c "echo '$NC' | jq -e '.data[] | select(.wan_networkgroup==\"WAN2\") | .wan_dslite_remote_host==\"2404:8e00::feed:101\" and .wan_dslite_remote_host_auto==false'"
+chk "WAN2 wan_type = map-e,jpix" sh -c "echo '$NC' | jq -e '.data[] | select(.wan_networkgroup==\"WAN2\") | .wan_type==\"map-e,jpix\"'"
 chk "Default VLAN v6 static :29f1::1/64" sh -c "echo '$NC' | jq -e 'any(.data[]; .ipv6_interface_type==\"static\" and .ipv6_subnet==\"240d:f:fc4:29f1::1/64\")'"
 chk "Media VLAN v6 static :29f2::1/64" sh -c "echo '$NC' | jq -e 'any(.data[]; .ipv6_interface_type==\"static\" and .ipv6_subnet==\"240d:f:fc4:29f2::1/64\")'"
 chk "IoT VLAN v6 none" sh -c "echo '$NC' | jq -e 'any(.data[]; (.ip_subnet//\"\")==\"10.0.10.1/26\" and .ipv6_interface_type==\"none\")'"
