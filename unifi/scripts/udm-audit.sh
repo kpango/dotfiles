@@ -27,11 +27,16 @@ done
 echo "== DNS / resolver"
 chk "dnsmasq forwards to NextDNS CLI (nextdns.conf server=127.0.0.1#5342)" /data/nextdns-dnsmasq-wire/check.sh --check-only
 chk "ip6tnl2 resolv = NextDNS only" sh -c 'grep -q "^nameserver 45.90.28.74" /run/resolv.conf.d/ip6tnl2 && grep -q "^nameserver 45.90.30.74" /run/resolv.conf.d/ip6tnl2 && ! grep -qE "^nameserver (1\.1\.1\.1|8\.8)" /run/resolv.conf.d/ip6tnl2'
-chk "v4 :53 DNAT chain (6 rules) hooked once" sh -c '[ "$(iptables -w 30 -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 6 ] && [ "$(iptables -w 30 -t nat -S PREROUTING | grep -c -- "-j UDM_DNS_HIJACK$")" = 1 ]'
-chk "v6 :53 DNAT chain (4 rules) hooked once" sh -c '[ "$(ip6tables -w 30 -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 4 ] && [ "$(ip6tables -w 30 -t nat -S PREROUTING | grep -c -- "-j UDM_DNS_HIJACK$")" = 1 ]'
+chk "v4 :53 DNAT chain (8 rules incl. tailscale0) hooked once" sh -c '[ "$(iptables -w 30 -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 8 ] && [ "$(iptables -w 30 -t nat -S PREROUTING | grep -c -- "-j UDM_DNS_HIJACK$")" = 1 ]'
+chk "v6 :53 DNAT chain (6 rules incl. tailscale0) hooked once" sh -c '[ "$(ip6tables -w 30 -t nat -S UDM_DNS_HIJACK | grep -c DNAT)" = 6 ] && [ "$(ip6tables -w 30 -t nat -S PREROUTING | grep -c -- "-j UDM_DNS_HIJACK$")" = 1 ]'
 chk "UDM_NEXTDNS_V4 = 4 entries" sh -c '[ "$(ipset list UDM_NEXTDNS_V4 | grep -cE "^45\.90")" = 4 ]'
 chk "UDM_NEXTDNS_V6 = 2 entries" sh -c '[ "$(ipset list UDM_NEXTDNS_V6 | grep -c "^2a07")" = 2 ]'
-chk "DoH block ipset 10 + FORWARD DROP once" sh -c '[ "$(ipset list UDM_DOH_BLOCK | grep -cE "^[0-9]")" = 10 ] && [ "$(iptables -w 30 -S FORWARD | grep -c -- "--match-set UDM_DOH_BLOCK dst -j DROP")" = 1 ]'
+for p in "iptables UDM_DOH_BLOCK" "ip6tables UDM_DOH_BLOCK6"; do
+  set -- $p
+  for proto in tcp udp; do
+    chk "DoH block $2: ipset 10 + $proto/443 FORWARD DROP once" sh -c '[ "$(ipset list "$2" | grep -cE "^[0-9a-f]+[.:]")" = 10 ] && [ "$($1 -w 30 -S FORWARD | grep -c -- "-p $3 .*--match-set $2 dst -j DROP")" = 1 ]' _ "$1" "$2" "$proto"
+  done
+done
 chk "UBIOS DoT allowlist v4 has NextDNS DoT" sh -c 'ipset list UBIOS4policy_dst_dn_75 | grep -q 103.170.232.254 && ipset list UBIOS4policy_dst_dn_75 | grep -q 167.179.109.118'
 chk "UBIOS DoT allowlist v6 has NextDNS DoT" sh -c 'ipset list UBIOS6policy_dst_dn_75 | grep -q 2a0b:4341:b02:166 && ipset list UBIOS6policy_dst_dn_75 | grep -q 2001:19f0:7001:5e19'
 

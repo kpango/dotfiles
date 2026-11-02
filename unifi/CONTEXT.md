@@ -162,7 +162,7 @@ other-user 誤 advertise のリスクなし。
 | UDM Pro `/data/udm-dpinger-hijack/`          | WAN SLA で変えられない表示用 monitor (microsoft/google/1.1.1.1) の ICMP を NextDNS へ DNAT (60 秒毎、Q33) | `/etc/hosts` への probe ホスト名追記禁止 |
 | UDM Pro `/data/udm-verifier-enforcer/`       | usg `echo_server` = 45.90.28.0 を 1 時間毎に書き戻す (Q34)          | `dns_verification` の上書き禁止 (UniFi 既定のまま) |
 | UDM Pro `/data/udm-sla-tune/`                | `/run/resolv.conf.d/ip6tnl2` を NextDNS に書き換え、その dnsmasq だけ SIGHUP | WAN health probe の設定 (Q32 で WAN SLA に移管) |
-| UDM Pro `/data/udm-dns-hijack/`              | LAN の非 NextDNS 宛 :53 を gateway へ DNAT、主要 DoH の :443 を DROP | 自前 iptables は `-w 30` 必須 (Q35)              |
+| UDM Pro `/data/udm-dns-hijack/`              | LAN の非 NextDNS 宛 :53 を gateway へ DNAT (tailscale0 は NextDNS へ)、主要 DoH の v4/v6 tcp+udp :443 を DROP | 自前 iptables は `-w 30` 必須 (Q35)              |
 
 ### 3.2 データフロー不変
 
@@ -182,6 +182,9 @@ LAN client (IPv6) ─DHCPv6/RA (dns auto = gateway 自身, Q20)─▶ UDM Pro dn
 
 tailnet client ─MagicDNS 100.100.100.100─▶ Tailscale admin UI の NextDNS DoH
    (profile ID は Tailscale admin DNS で設定済、現状の DoH stamp は NextDNS-21553f)
+   └─▶ UDM exit node 経由で :53 を直打ちする app は udm-dns-hijack が tailscale0 で
+       45.90.28.74 / 2a07:a8c0::21:553f へ DNAT (dnsmasq は br0/br2/br3 のみ listen
+       のため gateway へは向けない、2026-11-02)
 
 systemd-resolved on host ─DoT─▶ 2a07:a8c0::#21553f.dns.nextdns.io  (SNI auth)
    └─▶ FallbackDNS 空 → 失敗時は fail-closed
