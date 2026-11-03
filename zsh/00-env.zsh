@@ -172,5 +172,13 @@ export BUN_INSTALL="$HOME/.bun"
 if [[ -z "$DBUS_SESSION_BUS_ADDRESS" && -S "$XDG_RUNTIME_DIR/bus" ]]; then
 	export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
 fi
-export BROWSER="${commands[xdg-open]:-$HOME/.local/bin/xdg-open}"
+# gh etc. exec $BROWSER verbatim, so it must name a file that exists. The dev container
+# links only zshrc/zshenv (zsh/20-docker.zsh), leaving ~/.local/bin/xdg-open absent, but
+# the repo's bin/xdg-open still opens the host browser via the bind-mounted D-Bus portal
+# — hence that last candidate is only used when a session bus is configured.
+for _browser in "$commands[xdg-open]" "$HOME/.local/bin/xdg-open" \
+	${DBUS_SESSION_BUS_ADDRESS:+"$DOTFILES_DIR/bin/xdg-open"}; do
+	[[ -n "$_browser" && -x "$_browser" ]] && { export BROWSER="$_browser"; break }
+done
+unset _browser
 
