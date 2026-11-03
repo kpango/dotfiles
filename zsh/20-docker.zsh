@@ -263,11 +263,9 @@ devrun() {
 			"$rcpath/sheldon.toml:$container_home/.config/sheldon/plugins.toml"
 			"$rcpath/tmux.conf:$container_home/.tmux.conf"
 			"$rcpath/tmux.conf.d:$container_home/.tmux.conf.d"
-			# NOT $HOME/.zcache, unlike the Linux branch below: _zcache_eval (zfunc/_zcache_eval)
-			# caches *absolute source paths* into $ZCACHE_DIR/*.zsh (e.g. "source
-			# $DOTFILES_DIR/zsh/01-tmux.zsh"). On Linux this repo's own host path already equals
-			# container_home ($HOME is /home/kpango on both sides), so sharing the cache is a
-			# harmless no-op cache hit. On macOS the host path is /Users/<user>/... while
+			# NOT $HOME/.zcache (the Linux branch below doesn't mount it either): _zcache_eval
+			# (zfunc/_zcache_eval) caches *absolute source paths* into $ZCACHE_DIR/*.zsh (e.g.
+			# "source $DOTFILES_DIR/zsh/01-tmux.zsh"). On macOS the host path is /Users/<user>/... while
 			# container_home is /home/kpango — bind-mounting the host's cache verbatim confirmed
 			# (2026-08-19) to fail every _zcache_eval'd source line at container shell startup
 			# ("no such file or directory: /Users/yusukekato/...zsh/01-tmux.zsh"). Leaving this
@@ -491,7 +489,10 @@ devrun() {
 			"$rcpath/sheldon.toml:$container_home/.config/sheldon/plugins.toml"
 			"$rcpath/tmux.conf:$container_home/.tmux.conf"
 			"$rcpath/tmux.conf.d:$container_home/.tmux.conf.d"
-			"$HOME/.zcache:$container_home/.zcache"
+			# NOT $HOME/.zcache, same as the macOS branch above: env.zsh bakes the generating
+			# OS's _ZSH_OS (and PATH), so a cache regenerated inside the Debian-based container
+			# poisoned the Arch host with _ZSH_OS=debian -- 20-os-arch.zsh stopped loading and
+			# kacman/kacup went "command not found" (2026-11-03).
 			"${XDG_RUNTIME_DIR:-/run/user/$UID}:/run/user/$UID"
 			"$docker_config:$docker_config:ro,cached"
 			"$docker_daemon:$docker_daemon:ro,cached"
