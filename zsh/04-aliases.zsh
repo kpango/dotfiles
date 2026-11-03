@@ -139,7 +139,12 @@ zsync_state() {
 	if (($+commands[gpg-connect-agent])); then
 		if ((verbose)); then printf '  -> Refreshing GPG-Agent TTY...\n'; fi
 		export GPG_TTY="${TTY:-$(tty)}"
-		[[ -n "$TMUX" ]] && export PINENTRY_USER_DATA="TMUX=$TMUX"
+		# Container: host tmux socket, same reason as zsh/20-ssh-gpg.zsh.
+		if [[ -f /.dockerenv && -S /run/user/$UID/tmux-main.sock ]]; then
+			export PINENTRY_USER_DATA="TMUX=/run/user/$UID/tmux-main.sock"
+		elif [[ -n "$TMUX" ]]; then
+			export PINENTRY_USER_DATA="TMUX=$TMUX"
+		fi
 		gpg-connect-agent updatestartuptty /bye &>/dev/null || {
 			gpgconf --kill gpg-agent
 			gpg-connect-agent updatestartuptty /bye &>/dev/null

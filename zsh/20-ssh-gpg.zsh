@@ -2,7 +2,15 @@ if (($+commands[gpg])); then
 	export GPG_TTY=$TTY
 	# Pass the tmux socket to gpg-agent so pinentry-tmux can open a popup
 	# even when gpg-agent itself was started outside the current tmux session.
-	[[ -n "$TMUX" ]] && export PINENTRY_USER_DATA="TMUX=$TMUX"
+	# In a container $TMUX is a container-local /var/tmp socket (zsh/01-tmux.zsh) that the
+	# host's gpg-agent (shared via /run/user/$UID/gnupg) and its pinentry-tmux cannot see,
+	# so name the host server instead: same path on both sides, and the container's tmux
+	# is nested inside it, so the popup lands over the current pane.
+	if [[ -f /.dockerenv && -S /run/user/$UID/tmux-main.sock ]]; then
+		export PINENTRY_USER_DATA="TMUX=/run/user/$UID/tmux-main.sock"
+	elif [[ -n "$TMUX" ]]; then
+		export PINENTRY_USER_DATA="TMUX=$TMUX"
+	fi
 	# Refresh gpg-agent's TTY so pinentry writes to the current session's PTY.
 	# Backgrounded+disowned (&|): this is a fire-and-forget RPC to gpg-agent, a
 	# persistent daemon outside this zsh process — unlike a local termios/ZLE side

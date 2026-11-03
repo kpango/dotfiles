@@ -921,6 +921,11 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   立てない。さらに `/run/user/$UID` と `/tmp` のマウント越しに host の server に届くため、prefix 設定が host 側を書き換え得る
 - I2: コンテナ内の prefix は `tmux.conf.d/options.conf` の `/.dockerenv` 判定で C-w になる（host は C-b のまま）
 
+- I3（2026-11-03 追加）: コンテナ内の `PINENTRY_USER_DATA` は host の `/run/user/$UID/tmux-main.sock` を指す
+  （`zsh/20-ssh-gpg.zsh`・`zsh/04-aliases.zsh`）。gpg-agent は host のもの（`/run/user/$UID/gnupg` を共有）で、
+  pinentry-tmux も host で動くため、コンテナ内だけにある `/var/tmp` の socket は見えない。見えないと pinentry-tty に
+  切り替わるが、agent の GPG_TTY が host で使えず入力画面が出なかった。Q1 で socket を `/var/tmp` に移したことが原因
+
 ### 補足
 
 - host 側の `docker exec` を kill しても、コンテナ内のプロセス（tmux client を含む）は終了しないことがある（docker の挙動）
