@@ -59,6 +59,7 @@ chk "MAP_E-POSTROUTING SNATs ip6tnl2 (tcp/udp/icmp)" sh -c 'r=$(iptables -w 30 -
 # pings vs 30s timeout) and shows 0% availability. Fix: conntrack -D -q 192.0.0.3
 chk "no un-NATed conntrack (reply-dst 192.0.0.3)" sh -c '[ "$(conntrack -L -q 192.0.0.3 2>/dev/null | wc -l)" = 0 ]'
 chk "MAP-E fallback has saved parameters (CONTEXT Q41)" test -s /data/udm-mape-fallback/ip6tnl-parameters
+chk "api.enabler.ne.jp pinned to NGN DNS answer in /etc/hosts (CONTEXT Q41)" sh -c 'sed -n "/^# udm-mape-fallback begin$/,/^# udm-mape-fallback end$/p" /etc/hosts | grep -q " api.enabler.ne.jp$"'
 
 echo "== WAN SLA (official)"
 # The SLA is found through its WAN assignment, not its name (renamed in the

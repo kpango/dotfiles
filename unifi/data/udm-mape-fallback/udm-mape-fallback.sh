@@ -4,11 +4,13 @@
 # is unreachable (CONTEXT.md Q41).
 #
 # Why: stock ubnt-hb46pp builds ip6tnl2 + MAP_E-POSTROUTING only from a fresh
-# api.enabler.ne.jp fetch. It keeps the tunnel when a later fetch fails, but
-# after a reboot it has nothing, so WAN2 stays down until the server answers
-# (it stopped answering TLS on 2026-11-02 18:43).
+# api.enabler.ne.jp fetch, resolved through eth8's DNS. That DNS is NextDNS
+# (audit: "both WAN dns1/2 + v6 dns = NextDNS"), whose answer for the host never completes TLS; only the
+# NGN DNS answer works. hb46pp keeps the tunnel when a later fetch fails, but
+# after a reboot it has nothing, so WAN2 stayed down (2026-11-04).
 #
-# What (every 5 min):
+# What (1 min after boot, then every 5 min):
+#   always   pin api.enabler.ne.jp to the NGN DNS answer in /etc/hosts.
 #   healthy  (tunnel has a remote and the SNAT chain exists): save the
 #            parameters hb46pp last applied (/run/hb46pp/eth8.json) to $SAVED.
 #   broken   (hb46pp still running for map_e_jpix, uptime > 5 min, saved CE
@@ -26,6 +28,8 @@ SAVED=$D/ip6tnl-parameters
 IF=eth8
 TUN=ip6tnl2
 JSON=/run/hb46pp/$IF.json
+# Provisioning host of map_e_jpix (hb46pp default TXT record).
+PIN_HOSTS=api.enabler.ne.jp
 MODE=${1:-run}
 case "$MODE" in run|--check) ;; *) echo "usage: $0 [--check]" >&2; exit 64 ;; esac
 
@@ -40,6 +44,31 @@ healthy() {
 }
 # "CE -> BR, IPv4" for log lines.
 summary() { awk -F'|' '{split($5, v, ":"); print $2 " -> " $3 ", " v[1]}' <<<"$1"; }
+
+# hb46pp resolves through /run/resolv.conf.d/eth8, which is NextDNS-only, and
+# NextDNS answers api.enabler.ne.jp with endpoints that never complete TLS.
+# Pin the NGN DNS answer (the servers udapi lists as "# disabled") in a marked
+# /etc/hosts block; hb46pp's resolver reads files before dns. Re-done every
+# run because udapi rewrites /etc/hosts.
+pin_hosts() {
+    local ngn a block="" cur
+    ngn=$(sed -n 's/^# disabled \([0-9a-f]*:[0-9a-f:]*\)$/\1/p;T;q' "/run/resolv.conf.d/$IF")
+    [ -n "$ngn" ] || { log "no NGN DNS server in /run/resolv.conf.d/$IF — hosts pin skipped"; return 0; }
+    for h in $PIN_HOSTS; do
+        for a in $(dig +short +time=3 +tries=2 "@$ngn" AAAA "$h" | grep -E '^[0-9a-f:]+$' || true); do
+            block+="$a $h"$'\n'
+        done
+    done
+    [ -n "$block" ] || { log "NGN DNS $ngn gave no AAAA for $PIN_HOSTS — hosts pin kept as is"; return 0; }
+    block=$(sort <<<"${block%$'\n'}")$'\n'   # DNS rotates the order
+    cur=$(sed -n '/^# udm-mape-fallback begin$/,/^# udm-mape-fallback end$/p' /etc/hosts | sed '1d;$d')
+    [ "$cur"$'\n' = "$block" ] && return 0
+    { sed '/^# udm-mape-fallback begin$/,/^# udm-mape-fallback end$/d' /etc/hosts
+      printf '# udm-mape-fallback begin\n%s# udm-mape-fallback end\n' "$block"; } > /etc/hosts.mape.tmp
+    cat /etc/hosts.mape.tmp > /etc/hosts && rm -f /etc/hosts.mape.tmp
+    log "pinned via NGN DNS: $(tr '\n' ' ' <<<"$block")"
+}
+[ "$MODE" = run ] && pin_hosts
 
 if healthy; then
     [ "$MODE" = --check ] && exit 0
@@ -78,7 +107,7 @@ ubios-udapi-client internal /interfaces/hb46pp-update "@$JSON" >/dev/null
 sleep 10
 conntrack -D -q 192.0.0.3 >/dev/null 2>&1 || true
 if healthy; then
-    log "provisioning server unreachable — applied saved MAP-E parameters ($(summary "$p"))"
+    log "hb46pp has no tunnel — applied saved MAP-E parameters ($(summary "$p"))"
 else
     log "applied saved MAP-E parameters but $TUN is still not up"; exit 1
 fi

@@ -17,5 +17,9 @@ done
 systemctl enable --now udm-mape-fallback.timer >/dev/null
 systemctl is-active --quiet udm-mape-fallback.timer \
     || { echo "FAIL: udm-mape-fallback.timer not active" >&2; exit 1; }
+# Run once now so the /etc/hosts pin (and a needed re-push) does not wait
+# for the next 5-min tick after a firmware update wiped the units.
+systemctl start udm-mape-fallback.service \
+    || echo "WARN: udm-mape-fallback.service failed — see journalctl -t udm-mape-fallback" >&2
 
 echo "udm-mape-fallback: 5-min timer active."

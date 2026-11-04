@@ -2,7 +2,7 @@
 Description=WAN2 MAP-E fallback check every 5 min
 
 [Timer]
-OnBootSec=6min
+OnBootSec=1min
 OnUnitActiveSec=5min
 Unit=udm-mape-fallback.service
 
