@@ -1,5 +1,5 @@
 # Boot runner for /data/on_boot.d/*.sh — UniFi OS has no native on_boot.d hook.
-# Installed into /etc/systemd/system by scripts/unifi-install.sh (make unifi/install).
+# Installed into /etc/systemd/system by /data/udm-post-install/post-install.sh (make unifi/install and boot).
 # Only executable *.sh files run, in glob order; one failing script does not stop the rest.
 [Unit]
 Description=Run /data/on_boot.d scripts at boot

@@ -17,10 +17,10 @@ K=$(cat /data/nextdns-client-names/api-key 2>/dev/null) || { ng "api key /data/n
 api() { curl -ksS -H "X-API-KEY: $K" "https://127.0.0.1/proxy/network$1"; }
 
 echo "== units"
-for u in udm-sla-tune.timer udm-nuro-v6-pbr.timer udm-dns-hijack.timer udm-dpinger-hijack.timer udm-verifier-enforcer.timer udm-dfs-restore.timer udm-mape-fallback.timer clean-clients.timer nextdns-dnsmasq-wire.path ndppd.service; do
+for u in udm-sla-tune.timer udm-nuro-v6-pbr.timer udm-dns-hijack.timer udm-dpinger-hijack.timer udm-verifier-enforcer.timer udm-dfs-restore.timer udm-mape-fallback.timer udm-boot.service clean-clients.timer nextdns-dnsmasq-wire.path ndppd.service; do
   chk "$u active+enabled" sh -c "systemctl is-active --quiet $u && systemctl is-enabled --quiet $u"
 done
-for s in udm-sla-tune udm-nuro-v6-pbr udm-dns-hijack udm-dpinger-hijack udm-verifier-enforcer udm-dfs-restore udm-mape-fallback clean-clients; do
+for s in udm-sla-tune udm-nuro-v6-pbr udm-dns-hijack udm-dpinger-hijack udm-verifier-enforcer udm-dfs-restore udm-mape-fallback udm-post-install clean-clients; do
   chk "$s.service last run not failed" sh -c "! systemctl is-failed --quiet $s.service"
 done
 

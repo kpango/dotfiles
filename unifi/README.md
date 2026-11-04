@@ -31,7 +31,7 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
 | `_lib.sh`             | `UDM` / `REPO_ROOT` / `UNIFI_{DIR,SCRIPTS,DATA,ROOT}` の解決と `log` / `die` ヘルパ。3 スクリプトが共通で `. "$(dirname "$0")/_lib.sh"` で source する                                                                                                     |
 | `_data-allowlist.txt` | `unifi-pull.sh` が `/data` 配下から tar に含めるパスの allowlist (`#` コメント・空行可)。vendor/service state (`/data/unifi/`, `/data/unifi-credential-server/`, `/data/udapi-config/` 等) は意図的に除外されている                                        |
 | `unifi-pull.sh`       | SSH で `/data` と `/root` を tar+pipe で取り込み、`unifi/{data,root}/` を更新 (dest 不在時は `mkdir -p` で救済)                                                                                                                                            |
-| `unifi-install.sh`    | 逆方向。tar+ssh で push、chmod で実行権復元、`POST_INSTALL_HOOKS` と `guard.sh units` を再実行して `/etc` 配下を再構築、`systemctl daemon-reload`。Hook 失敗は `[hook-fail] <path> rc=<n>` を stderr に出して exit 非 0 で可視化する (silent failure 排除) |
+| `unifi-install.sh`    | 逆方向。tar+ssh で push、chmod で実行権復元、UDM 上の `/data/udm-post-install/post-install.sh` (各 `install.sh` と `guard.sh units` を再実行して `/etc` 配下を再構築、`udm-boot.service` 配置、`systemctl daemon-reload`) を実行する。同じスクリプトを boot 時も `on_boot.d/90-post-install.sh` が実行する (Q42)。Hook 失敗は `[hook-fail] <path> rc=<n>` を stderr に出して exit 非 0 で可視化する (silent failure 排除) |
 | `unifi-diff.sh`       | md5sum ベースで `unifi/{data,root}/` と UDM Pro 実機を比較、drift を報告。`remote_dir` は `/data` または `/root` の literal 固定 (injection 防御)                                                                                                          |
 | `unifi-status.sh`     | 読み取り専用 one-shot 診断: nextdns status + 設定ハイライト + healthcheck.log tail + Tailscale 状態 + dnsmasq upstream + systemd ユニット + cron。実機状態の "いま" を手早く知るためのダッシュボード                                                       |
 | `unifi-audit.sh`      | `udm-audit.sh` を `ssh "$UDM" 'bash -s'` で実機に流す。読み取りのみで、unit・DNS・IPv6・WAN SLA・iptables hook 本数などを 1 項目ずつ PASS/FAIL 表示し、FAIL 数を exit code で返す                                                                     |
@@ -49,7 +49,7 @@ UDM Pro `/data` と `/root` を dotfiles 側に取り込む (JSON ダンプは�
   boot 時に再生成
 - `udm-{sla-tune,nuro-v6-pbr,dns-hijack,dpinger-hijack}` (60 秒毎)・`udm-verifier-enforcer` (1 時間毎)・
   `clean-clients` (毎日 09:00 JST) の `.service`/`.timer` と `ndppd.service` ← 各
-  `/data/<component>/install.sh` が `units/` から配置 (`unifi-install.sh` の `POST_INSTALL_HOOKS`)
+  `/data/<component>/install.sh` が `units/` から配置 (`data/udm-post-install/post-install.sh` の `HOOKS`)
 
 したがって dotfiles 側は `/data/` のみを正本として扱い、`/etc/` は boot 時 or install.sh
 実行時に自動再生成される。`etc-snapshot/` は「現状何が生成されているか」の読み取り専用
@@ -96,7 +96,8 @@ policy は消えない (prune しない)。
 - UniFi OS 自体には on_boot.d を実行する仕組みが無い。`make unifi/install` が
   `data/on_boot.d/udm-boot.service` を `/etc/systemd/system/` に配置・enable して実行させる。
   この unit 自体も `/etc` にあるため、firmware update で `/etc` が wipe された場合は
-  `make unifi/install` の再実行が必要 (2026-10-16 の UniFi OS 6.0.13 更新では `/etc` overlay は残った)
+  `make unifi/install` の再実行が必要 (2026-10-16 の 6.0.13、2026-11-04 の 6.0.17 更新では `/etc` overlay は残った)。
+  overlay が残る限り、boot 時に `on_boot.d/90-post-install.sh` が `make unifi/install` と同じ hook を再実行する (Q42)
 - `unifi-native-guard` は Ubiquiti 製パッケージを Debian trixie upgrade から保護する
   仕組み (詳細は `data/unifi-native-guard/guard.sh` ヘッダ参照)
 - `game-geo-bypass` は Region Block の例外として Windows ゲーム機の WNS (Windows プッシュ通知、IN の Azure に解決される)
