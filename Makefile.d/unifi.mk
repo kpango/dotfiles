@@ -17,7 +17,7 @@ UNIFI_DIR     := $(ROOTDIR)/unifi
 UNIFI_SCRIPTS := $(UNIFI_DIR)/scripts
 UDM           ?= udmpro
 
-.PHONY: unifi/help unifi/pull unifi/install unifi/dry-run unifi/diff unifi/status unifi/audit unifi/logs \
+.PHONY: unifi/help unifi/pull unifi/install unifi/dry-run unifi/diff unifi/status unifi/audit unifi/logs unifi/update \
         unifi/controller-plan unifi/controller-apply unifi/controller-test \
         unifi/f2886q-plan unifi/f2886q-apply
 
@@ -52,6 +52,10 @@ unifi/status:
 ## read-only PASS/FAIL audit of out-of-band UDM settings + WAN SLA/usg/routes (exit != 0 on FAIL)
 unifi/audit:
 	@UDM=$(UDM) $(UNIFI_SCRIPTS)/unifi-audit.sh
+
+## run /root/{update,clean-clients,restart-tailscale,debug}.sh on the UDM Pro in order (stops on failure)
+unifi/update:
+	@UDM=$(UDM) $(UNIFI_SCRIPTS)/unifi-update.sh
 
 ## tail the UDM Pro-side logs (nextdns.service, healthcheck.log, tailscaled, dmesg)
 unifi/logs:
