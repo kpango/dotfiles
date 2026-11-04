@@ -1,0 +1,10 @@
+[Unit]
+Description=WAN2 MAP-E fallback check every 5 min
+
+[Timer]
+OnBootSec=6min
+OnUnitActiveSec=5min
+Unit=udm-mape-fallback.service
+
+[Install]
+WantedBy=timers.target

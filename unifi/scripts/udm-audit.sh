@@ -17,10 +17,10 @@ K=$(cat /data/nextdns-client-names/api-key 2>/dev/null) || { ng "api key /data/n
 api() { curl -ksS -H "X-API-KEY: $K" "https://127.0.0.1/proxy/network$1"; }
 
 echo "== units"
-for u in udm-sla-tune.timer udm-nuro-v6-pbr.timer udm-dns-hijack.timer udm-dpinger-hijack.timer udm-verifier-enforcer.timer clean-clients.timer nextdns-dnsmasq-wire.path ndppd.service; do
+for u in udm-sla-tune.timer udm-nuro-v6-pbr.timer udm-dns-hijack.timer udm-dpinger-hijack.timer udm-verifier-enforcer.timer udm-dfs-restore.timer udm-mape-fallback.timer clean-clients.timer nextdns-dnsmasq-wire.path ndppd.service; do
   chk "$u active+enabled" sh -c "systemctl is-active --quiet $u && systemctl is-enabled --quiet $u"
 done
-for s in udm-sla-tune udm-nuro-v6-pbr udm-dns-hijack udm-dpinger-hijack udm-verifier-enforcer clean-clients; do
+for s in udm-sla-tune udm-nuro-v6-pbr udm-dns-hijack udm-dpinger-hijack udm-verifier-enforcer udm-dfs-restore udm-mape-fallback clean-clients; do
   chk "$s.service last run not failed" sh -c "! systemctl is-failed --quiet $s.service"
 done
 
@@ -58,6 +58,7 @@ chk "MAP_E-POSTROUTING SNATs ip6tnl2 (tcp/udp/icmp)" sh -c 'r=$(iptables -w 30 -
 # whose conntrack entry predates the MAP-E SNAT keeps it alive forever (5s
 # pings vs 30s timeout) and shows 0% availability. Fix: conntrack -D -q 192.0.0.3
 chk "no un-NATed conntrack (reply-dst 192.0.0.3)" sh -c '[ "$(conntrack -L -q 192.0.0.3 2>/dev/null | wc -l)" = 0 ]'
+chk "MAP-E fallback has saved parameters (CONTEXT Q41)" test -s /data/udm-mape-fallback/ip6tnl-parameters
 
 echo "== WAN SLA (official)"
 # The SLA is found through its WAN assignment, not its name (renamed in the
@@ -127,6 +128,17 @@ chk "no probe-hostname override in /etc/hosts or hosts.dnsmasq" sh -c '! grep -q
 chk "NextDNS CLI answers google.com with a non-NextDNS IP" sh -c 'a=$(dig +short +time=2 A google.com @127.0.0.1 -p 5342 | head -1); [ -n "$a" ] && ! echo "$a" | grep -q "^45\.90\."'
 LEAK=$(conntrack -L -n 2>/dev/null | grep -E "src=(10\.0\.1\.2|192\.0\.0\.3) " | grep -E "dst=(1\.1\.1\.1|8\.8\.8\.8|23\.|142\.251\.|192\.178\.)" | grep -vE "src=45\.90\." | grep -c .)
 [ "$LEAK" = 0 ] && ok "no UDM-local probe flow replying from non-NextDNS" || ng "UDM-local probe flows still answered by third party: $LEAK"
+
+echo "== Wi-Fi channels (CONTEXT Q40)"
+# Configured vs live channel of every 5 GHz radio; a mismatch means a DFS move
+# that udm-dfs-restore has not undone yet (unplanned overlaps are flagged).
+WIFI=$(/data/udm-dfs-restore/udm-dfs-restore.sh --check 2>&1); rc=$?
+if [ "$rc" = 0 ]; then ok "all 5 GHz radios on their configured channel"
+else
+  n=$(grep -c '^FAIL' <<<"$WIFI")
+  [ "$n" -gt 0 ] && printf '%s\n' "$WIFI" || ng "udm-dfs-restore --check failed (rc=$rc): $WIFI"
+  FAILS=$((FAILS + n))
+fi
 
 echo
 [ "$FAILS" = 0 ] && echo "audit: all checks passed" || echo "audit: $FAILS check(s) FAILED"

@@ -1,0 +1,8 @@
+[Unit]
+Description=Restore 5 GHz radios moved off their configured channel by DFS
+Documentation=file:/data/udm-dfs-restore/udm-dfs-restore.sh
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/udm-dfs-restore/udm-dfs-restore.sh

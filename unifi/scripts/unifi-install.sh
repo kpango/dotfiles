@@ -22,6 +22,8 @@ POST_INSTALL_HOOKS=(
   /data/udm-ndp-proxy/install.sh
   /data/udm-dpinger-hijack/install.sh
   /data/udm-verifier-enforcer/install.sh
+  /data/udm-dfs-restore/install.sh
+  /data/udm-mape-fallback/install.sh
   /data/clean-clients/install.sh
 )
 # guard.sh is special — it takes an "units" argument rather than being a bare

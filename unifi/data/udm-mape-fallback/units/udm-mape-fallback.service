@@ -1,0 +1,8 @@
+[Unit]
+Description=Re-apply saved WAN2 MAP-E (JPIX) parameters when provisioning fails
+Documentation=file:/data/udm-mape-fallback/udm-mape-fallback.sh
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/udm-mape-fallback/udm-mape-fallback.sh
