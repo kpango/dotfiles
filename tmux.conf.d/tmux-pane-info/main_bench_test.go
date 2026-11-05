@@ -4,6 +4,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -50,10 +51,51 @@ func BenchmarkFindGitHeadPath(b *testing.B) {
 
 func BenchmarkAbbreviatePath(b *testing.B) {
 	dir := "/home/kpango/go/src/github.com/kpango/dotfiles"
+	var buf [256]byte
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = abbreviatePath(dir)
+		_ = abbreviatePath(buf[:0], dir)
+	}
+}
+
+func TestAbbreviatePath(t *testing.T) {
+	tests := []struct {
+		name string
+		dir  string
+		want string
+	}{
+		{"exact home", homeDir, "~"},
+		{"home trailing slash", homeDir + "/", "~/"},
+		{"home single subfolder", homeDir + "/dotfiles", "~/dotfiles"},
+		{"home nested path", homeDir + "/go/src/github.com/kpango/dotfiles", "~/g/s/g/k/dotfiles"},
+		{"home deep nested", homeDir + "/foo/bar/baz/qux", "~/f/b/b/qux"},
+		{"home trailing slash nested", homeDir + "/foo/bar/", "~/f/b/"},
+		{"home consecutive slashes", homeDir + "//foo", "~//foo"},
+		{"home prefix in other name", "/home/kpango-other/dir", "/h/k/dir"},
+		{"root dir", "/", "/"},
+		{"empty string", "", ""},
+		{"single root subfolder", "/var", "/var"},
+		{"two root subfolders", "/var/log", "/v/log"},
+		{"syslog path", "/var/log/syslog", "/v/l/syslog"},
+		{"nginx log path", "/var/log/nginx/access.log", "/v/l/n/access.log"},
+		{"deep non-home path", "/a/b/c/d/e", "/a/b/c/d/e"},
+		{"trailing slash non-home", "/a/b/c/", "/a/b/c/"},
+		{"relative single", "relative", "relative"},
+		{"relative two", "relative/path", "r/path"},
+		{"relative three", "relative/path/to/target", "r/p/t/target"},
+		{"multibyte unicode", homeDir + "/ドキュメント/開発/dotfiles", "~/ド/開/dotfiles"},
+		{"emoji unicode", "/tmp/🚀project/src", "/t/🚀/src"},
+	}
+
+	var buf [256]byte
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := string(abbreviatePath(buf[:0], tc.dir))
+			if got != tc.want {
+				t.Fatalf("abbreviatePath(%q) = %q, want %q", tc.dir, got, tc.want)
+			}
+		})
 	}
 }
 
@@ -62,8 +104,9 @@ func BenchmarkReadCacheToStdout(b *testing.B) {
 	silenceStdout(b)
 	paneOut(dir, false) // prime cache
 
-	_, cpNT := cachePathForDir(dir)
-	_, headMtime := findGitHeadPath(dir)
+	var cpBuf [128]byte
+	cpNT := appendCachePathNT(cpBuf[:0], dir)
+	headMtime := findGitHeadMtime(dir)
 	var keyBuf [512]byte
 	key := keyBuf[:0]
 	key = append(key, dir...)
@@ -282,6 +325,32 @@ func BenchmarkRightSegmentCacheHit(b *testing.B) {
 	}
 }
 
+func BenchmarkLinuxCPUTempC(b *testing.B) {
+	if _, ok := linuxCPUTempC(); !ok {
+		b.Skip("no CPU temperature sensor available")
+	}
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = linuxCPUTempC()
+	}
+}
+
+func BenchmarkReadHwmonTemps(b *testing.B) {
+	if cachedHwmonH < 0 || len(cachedHwmonIndices) == 0 {
+		_, _ = linuxCPUTempC() // prime cache
+		if cachedHwmonH < 0 || len(cachedHwmonIndices) == 0 {
+			b.Skip("no hwmon indices available")
+		}
+	}
+	var buf [64]byte
+	b.ReportAllocs()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = readHwmonTemps(cachedHwmonH, cachedHwmonIndices, buf[:])
+	}
+}
+
 func TestBranchFromHead(t *testing.T) {
 	tmpDir := t.TempDir()
 
@@ -406,6 +475,63 @@ func TestCleanYAMLValue(t *testing.T) {
 	for _, tc := range cases {
 		if got := cleanYAMLValue([]byte(tc.input)); got != tc.want {
 			t.Fatalf("cleanYAMLValue(%q) = %q, want %q", tc.input, got, tc.want)
+		}
+	}
+}
+
+func TestCachePathForDir(t *testing.T) {
+	tests := []struct {
+		dir      string
+		wantHash string
+	}{
+		{"", "811c9dc5"},
+		{"/", "2a0c975e"},
+		{"/home/kpango/go/src/github.com/kpango/dotfiles", "9edb8909"},
+	}
+	for _, tc := range tests {
+		path, nt := cachePathForDir(tc.dir)
+		wantPath := cacheFilePath + "." + tc.wantHash
+		if path != wantPath {
+			t.Errorf("cachePathForDir(%q) path = %q, want %q", tc.dir, path, wantPath)
+		}
+		if len(nt) != len(path)+1 || nt[len(nt)-1] != 0 || string(nt[:len(nt)-1]) != path {
+			t.Errorf("cachePathForDir(%q) nt null termination invalid", tc.dir)
+		}
+	}
+}
+
+func TestBuildRightStatus(t *testing.T) {
+	gpu := gpuMetrics{
+		gpuTenths:  150,
+		tempC:      55,
+		vramTenths: 420,
+		hasTemp:    true,
+		hasVRAM:    true,
+	}
+
+	// Test 1: Stack buffer vs nil buffer produce identical output
+	var buf [512]byte
+	outStack := string(buildRightStatus(buf[:0], 250, 48, true, 450, gpu, true, 50, 100, true, "my-kube"))
+	outNil := string(buildRightStatus(nil, 250, 48, true, 450, gpu, true, 50, 100, true, "my-kube"))
+	if outStack != outNil {
+		t.Fatalf("buildRightStatus stack buffer output does not match nil buffer output:\nstack: %q\nnil:   %q", outStack, outNil)
+	}
+
+	// Test 2: Invariants in output string
+	if len(outStack) == 0 {
+		t.Fatal("buildRightStatus returned empty output")
+	}
+	for _, expected := range []string{"CPU:", "25.0%", "48C", "RAM:", "45.0%", "GPU:", "15.0%", "55C", "VRAM:", "42.0%", "VOL:", "50/100GB", "my-kube"} {
+		if !strings.Contains(outStack, expected) {
+			t.Errorf("expected buildRightStatus output to contain %q, got: %s", expected, outStack)
+		}
+	}
+
+	// Test 3: Minimal without optional metrics
+	outMin := string(buildRightStatus(buf[:0], 50, 0, false, 200, gpuMetrics{}, false, 0, 0, false, ""))
+	for _, omitted := range []string{"GPU:", "VRAM:", "VOL:", "⎈"} {
+		if strings.Contains(outMin, omitted) {
+			t.Errorf("minimal output should not contain %q", omitted)
 		}
 	}
 }

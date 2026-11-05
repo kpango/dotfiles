@@ -50,16 +50,48 @@ raise SystemExit(0 if srv.get('serverUrl') else 1)
     && check "mcp_config.json: executor gateway configured" "OK" \
     || check "mcp_config.json: executor gateway configured" "MISSING (add mcpServers.executor)"
 
-# settings.json: model must be string or absent, not object (schema regression prevention)
+# settings.json: model, agentMode, toolPermission, artifactReviewPolicy must be valid strings
 python3 -c "
 import json, sys
 d = json.load(open('$SCRIPT_DIR/settings.json'))
 model = d.get('model')
 if model is not None and not isinstance(model, str):
     sys.exit(1)
+for k in ('agentMode', 'toolPermission', 'artifactReviewPolicy'):
+    v = d.get(k)
+    if not isinstance(v, str) or not v:
+        sys.exit(1)
 " \
-    && check "settings.json: model is valid string ID" "OK" \
-    || check "settings.json: model is valid string ID" "INVALID (model must be string, not object)"
+    && check "settings.json: model & CLI policy keys are valid strings" "OK" \
+    || check "settings.json: model & CLI policy keys are valid strings" "INVALID (expected non-empty strings)"
+
+[[ -x "$SCRIPT_DIR/install.sh" ]] && bash -n "$SCRIPT_DIR/install.sh" 2>/dev/null \
+    && check "install.sh executable and valid syntax" "OK" \
+    || check "install.sh executable and valid syntax" "INVALID"
+
+LIVE_CLI_SETTINGS="$HOME/.gemini/antigravity-cli/settings.json"
+if [[ -e "$LIVE_CLI_SETTINGS" || -L "$LIVE_CLI_SETTINGS" ]]; then
+    if [[ ! -L "$LIVE_CLI_SETTINGS" && -f "$LIVE_CLI_SETTINGS" ]]; then
+        python3 -c "
+import json, os, stat, sys
+p = '$LIVE_CLI_SETTINGS'
+mode = stat.S_IMODE(os.lstat(p).st_mode)
+if mode != 0o600:
+    sys.exit(1)
+live = json.load(open(p))
+repo = json.load(open('$SCRIPT_DIR/settings.json'))
+for k in ('mcpServers', 'security', 'statusLine', 'worktree'):
+    if live.get(k) != repo.get(k):
+        sys.exit(1)
+if not isinstance(live.get('trustedWorkspaces'), list):
+    sys.exit(1)
+" \
+            && check "live ~/.gemini/antigravity-cli/settings.json (0600 regular file, synced)" "OK" \
+            || check "live ~/.gemini/antigravity-cli/settings.json" "INVALID (perm != 600 or repo keys out of sync — run make agy/install)"
+    else
+        check "live ~/.gemini/antigravity-cli/settings.json" "INVALID (must be regular file, not symlink — run make agy/install)"
+    fi
+fi
 
 # settings.json: mcpServers.executor must use serverUrl if defined
 python3 -c "
@@ -153,6 +185,7 @@ echo "[ Agent Skills ($ROOT/agent/skills/) ]"
 SKILL_COUNT=0
 for skill_dir in "$ROOT/agent/skills"/*/; do
     [[ -d "$skill_dir" ]] || continue
+    [[ "$(basename "$skill_dir")" == "synced" ]] && continue
     SKILL_COUNT=$((SKILL_COUNT + 1))
     if [[ ! -f "${skill_dir}SKILL.md" ]]; then
         check "SKILL.md in $(basename "$skill_dir")" "MISSING"

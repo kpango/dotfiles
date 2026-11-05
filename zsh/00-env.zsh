@@ -37,7 +37,7 @@ for _nixdir in \
 	"/nix/var/nix/profiles/default/bin"; do
 	[[ -d "$_nixdir" ]] && _nixpath="${_nixpath}${_nixdir}:"
 done
-[[ -n "$_nixpath" ]] && export PATH="${_nixpath}${PATH}"
+[[ -n "$_nixpath" && "$PATH:" != "$_nixpath"* ]] && export PATH="${_nixpath}${PATH}"
 unset _nixdir _nixpath
 
 export CHARSET=${CHARSET:-UTF-8}

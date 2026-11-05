@@ -21,6 +21,29 @@ func statMtimeNs(st *syscall.Stat_t) int64 {
 	return st.Mtimespec.Sec*1e9 + st.Mtimespec.Nsec
 }
 
+// statBuf stats the path given as a null-terminated byte slice (Darwin fallback).
+func statBuf(path []byte, st *syscall.Stat_t) syscall.Errno {
+	if len(path) == 0 {
+		return syscall.EINVAL
+	}
+	if err := syscall.Stat(string(path[:len(path)-1]), st); err != nil {
+		return err.(syscall.Errno)
+	}
+	return 0
+}
+
+// openBuf opens the path given as a null-terminated byte slice (Darwin fallback).
+func openBuf(path []byte, flags int) (int, syscall.Errno) {
+	if len(path) == 0 {
+		return -1, syscall.EINVAL
+	}
+	fd, err := syscall.Open(string(path[:len(path)-1]), flags, 0)
+	if err != nil {
+		return -1, err.(syscall.Errno)
+	}
+	return fd, 0
+}
+
 func diskUsageGB() (used, total uint64, ok bool) {
 	var stat syscall.Statfs_t
 	if err := syscall.Statfs("/", &stat); err != nil {
@@ -44,7 +67,9 @@ func diskSegment() {
 func rightSegment() {
 	cpuTenths, ramTenths := darwinSysMetrics()
 	kube := kubeSegment("green", "brightcyan")
+	var buf [512]byte
 	os.Stdout.Write(buildRightStatus(
+		buf[:0],
 		cpuTenths,
 		0, false,
 		ramTenths,
@@ -126,7 +151,6 @@ func darwinSysMetrics() (cpuTenths, ramTenths int) {
 		}
 	}
 
-	_ = os.MkdirAll(cacheDir, 0o755)
 	var buf [96]byte
 	b := strconv.AppendInt(buf[:0], now, 10)
 	b = append(b, ' ')
@@ -137,6 +161,11 @@ func darwinSysMetrics() (cpuTenths, ramTenths int) {
 	tmp := cp + pidSuffix
 	if err := os.WriteFile(tmp, b, 0o644); err == nil {
 		_ = os.Rename(tmp, cp)
+	} else if os.IsNotExist(err) {
+		_ = os.MkdirAll(cacheDir, 0o755)
+		if err := os.WriteFile(tmp, b, 0o644); err == nil {
+			_ = os.Rename(tmp, cp)
+		}
 	}
 	return cpuTenths, ramTenths
 }

@@ -10,9 +10,66 @@ import (
 	"strconv"
 	"syscall"
 	"time"
+	"unsafe"
 )
 
+// atFdcwd represents AT_FDCWD (-100) safely without Go compiler constant overflow.
+const atFdcwd = ^uintptr(99)
+
+var (
+	dockerenvPathNT   = []byte("/.dockerenv\x00")
+	proc1CommPathNT   = []byte("/proc/1/comm\x00")
+	procStatPathNT    = []byte("/proc/stat\x00")
+	procMeminfoPathNT = []byte("/proc/meminfo\x00")
+	nvidiactlPathNT   = []byte("/dev/nvidiactl\x00")
+
+	cpuStatPathNT    []byte
+	hwmonCachePathNT []byte
+	gpuOutPathNT     []byte
+)
+
+// statBuf stats the path given as a null-terminated byte slice using SYS_NEWFSTATAT/SYS_FSTATAT.
+func statBuf(path []byte, st *syscall.Stat_t) syscall.Errno {
+	if len(path) == 0 {
+		return syscall.EINVAL
+	}
+	_, _, errno := syscall.Syscall6(
+		sysFstatat,
+		atFdcwd,
+		uintptr(unsafe.Pointer(&path[0])),
+		uintptr(unsafe.Pointer(st)),
+		0,
+		0,
+		0,
+	)
+	return errno
+}
+
+// openBuf opens the path given as a null-terminated byte slice using SYS_OPENAT.
+func openBuf(path []byte, flags int) (int, syscall.Errno) {
+	if len(path) == 0 {
+		return -1, syscall.EINVAL
+	}
+	r0, _, errno := syscall.Syscall6(
+		syscall.SYS_OPENAT,
+		atFdcwd,
+		uintptr(unsafe.Pointer(&path[0])),
+		uintptr(flags|syscall.O_LARGEFILE),
+		0,
+		0,
+		0,
+	)
+	if errno != 0 {
+		return -1, errno
+	}
+	return int(r0), 0
+}
+
 func init() {
+	cpuStatPathNT = append([]byte(cacheDir+"/tmux-cpu-stat"), 0)
+	hwmonCachePathNT = append([]byte(cacheDir+"/tmux-cpu-hwmon"), 0)
+	gpuOutPathNT = append([]byte(cacheDir+"/tmux-gpu-out"), 0)
+
 	if len(os.Args) == 2 && os.Args[1] == "--refresh-gpu" {
 		updateGPUCacheSync()
 		os.Exit(0)
@@ -46,17 +103,9 @@ func diskSegment() {
 }
 
 func rightSegment() {
-	type gpuRes struct {
-		m  gpuMetrics
-		ok bool
-	}
-	gpuCh := make(chan gpuRes, 1)
-	go func() {
-		m, ok := linuxGPUMetrics()
-		gpuCh <- gpuRes{m: m, ok: ok}
-	}()
+	gpu, hasGPU := linuxGPUMetrics()
 
-	inDocker := fileExists("/.dockerenv")
+	inDocker := fileExistsNT(dockerenvPathNT)
 	isHost := !inDocker && isSystemdPid1()
 
 	cpuTenths := linuxCPUTenths()
@@ -74,13 +123,14 @@ func rightSegment() {
 	}
 
 	kube := kubeSegment("green", "brightcyan")
-	gr := <-gpuCh
 
+	var buf [512]byte
 	os.Stdout.Write(buildRightStatus(
+		buf[:0],
 		cpuTenths,
 		cpuTempC, hasCPUTemp,
 		ramTenths,
-		gr.m, gr.ok,
+		gpu, hasGPU,
 		usedGB, totalGB, hasDisk,
 		kube,
 	))
@@ -89,6 +139,11 @@ func rightSegment() {
 func fileExists(path string) bool {
 	var st syscall.Stat_t
 	return syscall.Stat(path, &st) == nil
+}
+
+func fileExistsNT(pathNT []byte) bool {
+	var st syscall.Stat_t
+	return statBuf(pathNT, &st) == 0
 }
 
 func readSmallFile(path string, buf []byte) ([]byte, bool) {
@@ -104,9 +159,22 @@ func readSmallFile(path string, buf []byte) ([]byte, bool) {
 	return buf[:n], true
 }
 
+func readSmallFileNT(pathNT []byte, buf []byte) ([]byte, bool) {
+	fd, errno := openBuf(pathNT, syscall.O_RDONLY)
+	if errno != 0 {
+		return nil, false
+	}
+	n, err := syscall.Read(fd, buf)
+	syscall.Close(fd)
+	if err != nil || n <= 0 {
+		return nil, false
+	}
+	return buf[:n], true
+}
+
 func isSystemdPid1() bool {
 	var buf [32]byte
-	data, ok := readSmallFile("/proc/1/comm", buf[:])
+	data, ok := readSmallFileNT(proc1CommPathNT, buf[:])
 	if !ok {
 		return false
 	}
@@ -115,7 +183,7 @@ func isSystemdPid1() bool {
 
 func readProcStat() (total, idle uint64, ok bool) {
 	var buf [512]byte
-	data, valid := readSmallFile("/proc/stat", buf[:])
+	data, valid := readSmallFileNT(procStatPathNT, buf[:])
 	if !valid {
 		return 0, 0, false
 	}
@@ -131,7 +199,7 @@ func linuxCPUTenths() int {
 	cp := cacheDir + "/tmux-cpu-stat"
 
 	var cbuf [128]byte
-	if cdata, cok := readSmallFile(cp, cbuf[:]); cok {
+	if cdata, cok := readSmallFileNT(cpuStatPathNT, cbuf[:]); cok {
 		prevNano, r1, ok1 := parseUintField(cdata)
 		prevTotal, r2, ok2 := parseUintField(r1)
 		prevIdle, r3, ok3 := parseUintField(r2)
@@ -158,7 +226,6 @@ func linuxCPUTenths() int {
 }
 
 func writeCPUStatCache(cp string, nowNano int64, total, idle uint64, tenths int) {
-	_ = os.MkdirAll(cacheDir, 0o755)
 	var buf [128]byte
 	b := strconv.AppendInt(buf[:0], nowNano, 10)
 	b = append(b, ' ')
@@ -171,12 +238,17 @@ func writeCPUStatCache(cp string, nowNano int64, total, idle uint64, tenths int)
 	tmp := cp + pidSuffix
 	if err := os.WriteFile(tmp, b, 0o644); err == nil {
 		_ = os.Rename(tmp, cp)
+	} else if os.IsNotExist(err) {
+		_ = os.MkdirAll(cacheDir, 0o755)
+		if err := os.WriteFile(tmp, b, 0o644); err == nil {
+			_ = os.Rename(tmp, cp)
+		}
 	}
 }
 
 func linuxRAMTenths() int {
 	var buf [1024]byte
-	data, ok := readSmallFile("/proc/meminfo", buf[:])
+	data, ok := readSmallFileNT(procMeminfoPathNT, buf[:])
 	if !ok {
 		return 0
 	}
@@ -184,34 +256,93 @@ func linuxRAMTenths() int {
 	return tenths
 }
 
+var (
+	cachedHwmonH       = -1
+	cachedHwmonIndices []int
+)
+
 // linuxCPUTempC reads CPU die/core temperature directly from /sys/class/hwmon
 // without spawning `sensors`. Matches tmux-cpu's `Core *` / `Tccd*` average.
 func linuxCPUTempC() (int, bool) {
 	var buf [64]byte
+
+	// 1. In-memory fast path
+	if cachedHwmonH >= 0 {
+		if temp, ok := readHwmonTemps(cachedHwmonH, cachedHwmonIndices, buf[:]); ok {
+			return temp, true
+		}
+		cachedHwmonH = -1
+		cachedHwmonIndices = nil
+	}
+
+	// 2. Persistent cache fast path (~/.cache/tmux-cpu-hwmon)
+	hwmonCache := cacheDir + "/tmux-cpu-hwmon"
+	var cbuf [64]byte
+	if cdata, cok := readSmallFileNT(hwmonCachePathNT, cbuf[:]); cok {
+		if hVal, rest, ok1 := parseUintField(cdata); ok1 {
+			var indices []int
+			for {
+				idxVal, nextRest, ok2 := parseUintField(rest)
+				if !ok2 {
+					break
+				}
+				indices = append(indices, int(idxVal))
+				rest = nextRest
+			}
+			if len(indices) > 0 {
+				if temp, ok := readHwmonTemps(int(hVal), indices, buf[:]); ok {
+					cachedHwmonH = int(hVal)
+					cachedHwmonIndices = indices
+					return temp, true
+				}
+			}
+		}
+	}
+
+	// 3. Sysfs scan with early-exit on non-existent sensor indices
 	fallbackC := -1
 
 	for h := 0; h < 16; h++ {
-		dir := "/sys/class/hwmon/hwmon" + strconv.Itoa(h)
-		nameBytes, ok := readSmallFile(dir+"/name", buf[:])
+		var dbuf [64]byte
+		d := append(dbuf[:0], "/sys/class/hwmon/hwmon"...)
+		d = strconv.AppendInt(d, int64(h), 10)
+		nameNT := append(d, "/name\x00"...)
+		nameBytes, ok := readSmallFileNT(nameNT, buf[:])
 		if !ok {
 			continue
 		}
-		name := string(bytes.TrimSpace(nameBytes))
-		isPrimary := name == "coretemp" || name == "k10temp" || name == "zenpower"
-		isFallback := name == "cpu_thermal" || name == "acpitz"
+		name := bytes.TrimSpace(nameBytes)
+		isPrimary := bytes.Equal(name, []byte("coretemp")) || bytes.Equal(name, []byte("k10temp")) || bytes.Equal(name, []byte("zenpower"))
+		isFallback := bytes.Equal(name, []byte("cpu_thermal")) || bytes.Equal(name, []byte("acpitz"))
 		if !isPrimary && !isFallback {
 			continue
 		}
 
 		var sumMilli, count int64
 		var pkgMilli int64 = -1
+		var foundIndices []int
+		missCount := 0
 
 		for idx := 1; idx <= 32; idx++ {
-			prefix := dir + "/temp" + strconv.Itoa(idx)
-			valBytes, vok := readSmallFile(prefix+"_input", buf[:])
+			p := append(dbuf[:0], "/sys/class/hwmon/hwmon"...)
+			p = strconv.AppendInt(p, int64(h), 10)
+			p = append(p, "/temp"...)
+			p = strconv.AppendInt(p, int64(idx), 10)
+			pLen := len(p)
+
+			p = append(p, "_input\x00"...)
+			valBytes, vok := readSmallFileNT(p, buf[:])
 			if !vok {
+				missCount++
+				// Fast path: AMD k10temp skips temp2 but temp3..10 are contiguous.
+				// Break immediately on 2 consecutive misses or when missing after finding cores.
+				if missCount >= 2 || (count > 0 && idx > 2) {
+					break
+				}
 				continue
 			}
+			missCount = 0
+
 			milli, _, pok := parseUintField(valBytes)
 			if !pok || milli == 0 {
 				continue
@@ -222,7 +353,9 @@ func linuxCPUTempC() (int, bool) {
 			if !isPrimary {
 				continue
 			}
-			lblBytes, lok := readSmallFile(prefix+"_label", buf[:])
+
+			p = append(p[:pLen], "_label\x00"...)
+			lblBytes, lok := readSmallFileNT(p, buf[:])
 			if !lok {
 				continue
 			}
@@ -230,14 +363,21 @@ func linuxCPUTempC() (int, bool) {
 			if bytes.HasPrefix(lbl, []byte("Core ")) || bytes.HasPrefix(lbl, []byte("Tccd")) {
 				sumMilli += int64(milli)
 				count++
+				foundIndices = append(foundIndices, idx)
 			}
 		}
 
-		if count > 0 {
+		if isPrimary && count > 0 {
+			cachedHwmonH = h
+			cachedHwmonIndices = foundIndices
+			writeHwmonCache(hwmonCache, h, foundIndices)
 			avgMilli := sumMilli / count
 			return int((avgMilli + 500) / 1000), true
 		}
 		if isPrimary && pkgMilli > 0 {
+			cachedHwmonH = h
+			cachedHwmonIndices = []int{1}
+			writeHwmonCache(hwmonCache, h, []int{1})
 			return int((pkgMilli + 500) / 1000), true
 		}
 		if fallbackC < 0 && pkgMilli > 0 {
@@ -251,6 +391,53 @@ func linuxCPUTempC() (int, bool) {
 	return 0, false
 }
 
+func readHwmonTemps(h int, indices []int, buf []byte) (int, bool) {
+	var sumMilli, count int64
+	var dbuf [64]byte
+	d := append(dbuf[:0], "/sys/class/hwmon/hwmon"...)
+	d = strconv.AppendInt(d, int64(h), 10)
+	d = append(d, "/temp"...)
+	dLen := len(d)
+
+	for _, idx := range indices {
+		p := strconv.AppendInt(d[:dLen], int64(idx), 10)
+		p = append(p, "_input\x00"...)
+		valBytes, ok := readSmallFileNT(p, buf)
+		if !ok {
+			return 0, false
+		}
+		milli, _, pok := parseUintField(valBytes)
+		if !pok || milli == 0 {
+			return 0, false
+		}
+		sumMilli += int64(milli)
+		count++
+	}
+	if count == 0 {
+		return 0, false
+	}
+	return int(((sumMilli / count) + 500) / 1000), true
+}
+
+func writeHwmonCache(cp string, h int, indices []int) {
+	var buf [64]byte
+	b := strconv.AppendInt(buf[:0], int64(h), 10)
+	for _, idx := range indices {
+		b = append(b, ' ')
+		b = strconv.AppendInt(b, int64(idx), 10)
+	}
+	b = append(b, '\n')
+	tmp := cp + pidSuffix
+	if err := os.WriteFile(tmp, b, 0o644); err == nil {
+		_ = os.Rename(tmp, cp)
+	} else if os.IsNotExist(err) {
+		_ = os.MkdirAll(cacheDir, 0o755)
+		if err := os.WriteFile(tmp, b, 0o644); err == nil {
+			_ = os.Rename(tmp, cp)
+		}
+	}
+}
+
 func linuxGPUMetrics() (gpuMetrics, bool) {
 	cp := cacheDir + "/tmux-gpu-out"
 	now := time.Now().UnixNano()
@@ -258,7 +445,7 @@ func linuxGPUMetrics() (gpuMetrics, bool) {
 	const staleTTL = int64(60 * time.Second)
 
 	var cbuf [128]byte
-	if cdata, cok := readSmallFile(cp, cbuf[:]); cok {
+	if cdata, cok := readSmallFileNT(gpuOutPathNT, cbuf[:]); cok {
 		ts, rest, ok1 := parseUintField(cdata)
 		if ok1 {
 			age := now - int64(ts)
@@ -300,7 +487,7 @@ func linuxGPUMetrics() (gpuMetrics, bool) {
 		return m, true
 	}
 
-	if fileExists("/dev/nvidiactl") {
+	if fileExistsNT(nvidiactlPathNT) {
 		// Cold start seed: synchronous initial query
 		if m, ok := queryNvidiaGPU(); ok {
 			writeGPUCache(cp, now, m, true)
@@ -314,9 +501,14 @@ func linuxGPUMetrics() (gpuMetrics, bool) {
 
 func amdSysfsGPU() (gpuMetrics, bool) {
 	var buf [64]byte
+	var devBuf [64]byte
 	for card := 0; card < 4; card++ {
-		dev := "/sys/class/drm/card" + strconv.Itoa(card) + "/device"
-		busyBytes, ok := readSmallFile(dev+"/gpu_busy_percent", buf[:])
+		dev := append(devBuf[:0], "/sys/class/drm/card"...)
+		dev = strconv.AppendInt(dev, int64(card), 10)
+		dev = append(dev, "/device"...)
+		devLen := len(dev)
+
+		busyBytes, ok := readSmallFileNT(append(dev[:devLen], "/gpu_busy_percent\x00"...), buf[:])
 		if !ok {
 			continue
 		}
@@ -326,9 +518,9 @@ func amdSysfsGPU() (gpuMetrics, bool) {
 		}
 		m := gpuMetrics{gpuTenths: int(busy) * 10}
 
-		if usedB, uok := readSmallFile(dev+"/mem_info_vram_used", buf[:]); uok {
+		if usedB, uok := readSmallFileNT(append(dev[:devLen], "/mem_info_vram_used\x00"...), buf[:]); uok {
 			used, _, ok1 := parseUintField(usedB)
-			if totB, tok := readSmallFile(dev+"/mem_info_vram_total", buf[:]); tok && ok1 {
+			if totB, tok := readSmallFileNT(append(dev[:devLen], "/mem_info_vram_total\x00"...), buf[:]); tok && ok1 {
 				tot, _, ok2 := parseUintField(totB)
 				if ok2 && tot > 0 {
 					m.vramTenths = int((used*1000 + tot/2) / tot)
@@ -337,7 +529,10 @@ func amdSysfsGPU() (gpuMetrics, bool) {
 			}
 		}
 		for h := 0; h < 8; h++ {
-			tB, tok := readSmallFile(dev+"/hwmon/hwmon"+strconv.Itoa(h)+"/temp1_input", buf[:])
+			hw := append(dev[:devLen], "/hwmon/hwmon"...)
+			hw = strconv.AppendInt(hw, int64(h), 10)
+			hw = append(hw, "/temp1_input\x00"...)
+			tB, tok := readSmallFileNT(hw, buf[:])
 			if !tok {
 				continue
 			}
@@ -353,7 +548,6 @@ func amdSysfsGPU() (gpuMetrics, bool) {
 }
 
 func writeGPUCache(cp string, nowNano int64, m gpuMetrics, present bool) {
-	_ = os.MkdirAll(cacheDir, 0o755)
 	var buf [128]byte
 	b := strconv.AppendInt(buf[:0], nowNano, 10)
 	if !present {
@@ -382,13 +576,19 @@ func writeGPUCache(cp string, nowNano int64, m gpuMetrics, present bool) {
 	tmp := cp + pidSuffix
 	if err := os.WriteFile(tmp, b, 0o644); err == nil {
 		_ = os.Rename(tmp, cp)
+	} else if os.IsNotExist(err) {
+		_ = os.MkdirAll(cacheDir, 0o755)
+		if err := os.WriteFile(tmp, b, 0o644); err == nil {
+			_ = os.Rename(tmp, cp)
+		}
 	}
 }
 
 func queryNvidiaGPU() (gpuMetrics, bool) {
-	if !fileExists("/dev/nvidiactl") {
+	if !fileExistsNT(nvidiactlPathNT) {
 		return gpuMetrics{}, false
 	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 1500*time.Millisecond)
 	defer cancel()
 	out, err := exec.CommandContext(

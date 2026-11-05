@@ -27,7 +27,6 @@ package main
 
 import (
 	"bytes"
-	"hash/fnv"
 	"os"
 	"strconv"
 	"syscall"
@@ -66,32 +65,32 @@ func init() {
 // dir. Each directory maps to its own file via FNV-32a so that concurrent tmux
 // sessions with different active pane paths never overwrite each other's cache.
 func cachePathForDir(dir string) (path string, nt []byte) {
-	h := fnv.New32a()
-	h.Write([]byte(dir))
-	path = cacheFilePath + "." + strconv.FormatUint(uint64(h.Sum32()), 16)
-	nt = append([]byte(path), 0)
+	var h uint32 = 2166136261
+	for i := 0; i < len(dir); i++ {
+		h ^= uint32(dir[i])
+		h *= 16777619
+	}
+	var buf [128]byte
+	b := append(buf[:0], cacheFilePath...)
+	b = append(b, '.')
+	b = strconv.AppendUint(b, uint64(h), 16)
+	path = string(b)
+	nt = append(b, 0)
 	return
 }
 
-// statBuf stats the path given as a null-terminated byte slice.
-// Uses syscall.Stat which dispatches the correct syscall per architecture
-// (SYS_STAT on amd64, SYS_FSTATAT on arm64).
-func statBuf(path []byte, st *syscall.Stat_t) syscall.Errno {
-	if err := syscall.Stat(string(path[:len(path)-1]), st); err != nil {
-		return err.(syscall.Errno)
+// appendCachePathNT appends the per-directory cache file path with null terminator
+// directly into dst without heap allocation.
+func appendCachePathNT(dst []byte, dir string) []byte {
+	var h uint32 = 2166136261
+	for i := 0; i < len(dir); i++ {
+		h ^= uint32(dir[i])
+		h *= 16777619
 	}
-	return 0
-}
-
-// openBuf opens the path given as a null-terminated byte slice.
-// Uses syscall.Open which dispatches the correct syscall per architecture
-// (SYS_OPEN on amd64, SYS_OPENAT on arm64).
-func openBuf(path []byte, flags int) (int, syscall.Errno) {
-	fd, err := syscall.Open(string(path[:len(path)-1]), flags, 0)
-	if err != nil {
-		return -1, err.(syscall.Errno)
-	}
-	return fd, 0
+	b := append(dst, cacheFilePath...)
+	b = append(b, '.')
+	b = strconv.AppendUint(b, uint64(h), 16)
+	return append(b, 0)
 }
 
 func main() {
@@ -157,8 +156,9 @@ func paneOut(dir string, wantBranch bool) {
 		return
 	}
 
-	cp, cpNT := cachePathForDir(dir)
-	headPath, headMtime := findGitHeadPath(dir)
+	var cpBuf [128]byte
+	cpNT := appendCachePathNT(cpBuf[:0], dir)
+	headMtime := findGitHeadMtime(dir)
 
 	var keyBuf [512]byte
 	key := keyBuf[:0]
@@ -170,9 +170,12 @@ func paneOut(dir string, wantBranch bool) {
 		return
 	}
 
-	sp := abbreviatePath(dir)
+	var pathBuf [256]byte
+	sp := abbreviatePath(pathBuf[:0], dir)
+	headPath, _ := findGitHeadPath(dir)
 	br := branchFromHead(headPath)
 
+	cp := string(cpNT[:len(cpNT)-1])
 	writePaneCache(cp, key, sp, br)
 
 	if wantBranch {
@@ -206,8 +209,9 @@ func paneSegment(dir string) {
 		return
 	}
 
-	cp, cpNT := cachePathForDir(dir)
-	headPath, headMtime := findGitHeadPath(dir)
+	var cpBuf [128]byte
+	cpNT := appendCachePathNT(cpBuf[:0], dir)
+	headMtime := findGitHeadMtime(dir)
 
 	var keyBuf [512]byte
 	key := keyBuf[:0]
@@ -219,14 +223,76 @@ func paneSegment(dir string) {
 		return
 	}
 
-	sp := abbreviatePath(dir)
+	var pathBuf [256]byte
+	sp := abbreviatePath(pathBuf[:0], dir)
+	headPath, _ := findGitHeadPath(dir)
 	br := branchFromHead(headPath)
 
+	cp := string(cpNT[:len(cpNT)-1])
 	writePaneCache(cp, key, sp, br)
 	writeSegment(sp, br)
 }
 
-// ── git helpers ──────────────────────────────────────────────────────────────
+// findGitHeadMtime walks up from dir using raw syscalls to locate the .git/HEAD
+// file and returns its mtime nanoseconds without allocating any heap string.
+func findGitHeadMtime(dir string) int64 {
+	var buf [4112]byte
+	var st syscall.Stat_t
+	d := dir
+	for {
+		dn := copy(buf[:], d)
+		if dn+11 > len(buf) {
+			break
+		}
+		buf[dn] = '/'
+		buf[dn+1] = '.'
+		buf[dn+2] = 'g'
+		buf[dn+3] = 'i'
+		buf[dn+4] = 't'
+		buf[dn+5] = 0
+
+		if errno := statBuf(buf[:dn+6], &st); errno == 0 {
+			if st.Mode&syscall.S_IFMT == syscall.S_IFDIR {
+				buf[dn+5] = '/'
+				buf[dn+6] = 'H'
+				buf[dn+7] = 'E'
+				buf[dn+8] = 'A'
+				buf[dn+9] = 'D'
+				buf[dn+10] = 0
+				var hst syscall.Stat_t
+				if errno2 := statBuf(buf[:dn+11], &hst); errno2 == 0 {
+					return statMtimeNs(&hst)
+				}
+			} else {
+				// gitfile: "gitdir: <path>" — submodule or git worktree
+				fd, errno2 := openBuf(buf[:dn+6], syscall.O_RDONLY)
+				if errno2 == 0 {
+					var raw [512]byte
+					n, _ := syscall.Read(fd, raw[:])
+					syscall.Close(fd)
+					line := bytes.TrimSpace(raw[:n])
+					line = bytes.TrimPrefix(line, gitdirPrefix)
+					gd := string(line)
+					if len(gd) == 0 || gd[0] != '/' {
+						gd = d + "/" + gd
+					}
+					hp := gd + "/HEAD"
+					var hst syscall.Stat_t
+					if syscall.Stat(hp, &hst) == nil {
+						return statMtimeNs(&hst)
+					}
+				}
+			}
+			return 0
+		}
+		parent := parentDir(d)
+		if parent == d {
+			break
+		}
+		d = parent
+	}
+	return 0
+}
 
 // findGitHeadPath walks up from dir using raw syscalls to locate the .git/HEAD
 // file. Returns its path and mtime nanoseconds. Used on every call for the
@@ -355,53 +421,61 @@ func branchFromHead(headPath string) []byte {
 // ── path helpers ─────────────────────────────────────────────────────────────
 
 // abbreviatePath replaces $HOME with ~ and abbreviates every path component
-// before the last one to its first Unicode rune. Returns []byte.
-func abbreviatePath(dir string) []byte {
-	var p string
-	if dir == homeDir {
-		return []byte("~")
-	} else if len(dir) > len(homeDir) && dir[:len(homeDir)] == homeDir && dir[len(homeDir)] == '/' {
-		p = "~" + dir[len(homeDir):]
-	} else {
-		p = dir
+// before the last one to its first Unicode rune, appending to dst.
+// Passing a caller-allocated buffer (e.g. buf[:0] with cap >= len(dir)+1)
+// ensures 0 heap allocations.
+func abbreviatePath(dst []byte, dir string) []byte {
+	out := dst[:0]
+
+	hasHome := false
+	s := dir
+	if len(homeDir) > 0 {
+		if dir == homeDir {
+			return append(out, '~')
+		}
+		if len(dir) > len(homeDir) && dir[:len(homeDir)] == homeDir && dir[len(homeDir)] == '/' {
+			hasHome = true
+			s = dir[len(homeDir):]
+		}
 	}
 
-	out := make([]byte, 0, len(p)/2+8)
-
 	lastSlash := -1
-	for i := len(p) - 1; i >= 0; i-- {
-		if p[i] == '/' {
+	for i := len(s) - 1; i >= 0; i-- {
+		if s[i] == '/' {
 			lastSlash = i
 			break
 		}
 	}
-	if lastSlash <= 0 {
-		return []byte(p)
+
+	if !hasHome {
+		if lastSlash <= 0 {
+			return append(out, dir...)
+		}
+	} else {
+		out = append(out, '~')
+		if lastSlash == 0 {
+			return append(out, s...)
+		}
 	}
 
 	i := 0
-	for i < len(p) {
-		if p[i] == '/' {
+	for i < len(s) {
+		if s[i] == '/' {
 			out = append(out, '/')
 			i++
 			continue
 		}
 		end := i
-		for end < len(p) && p[end] != '/' {
+		for end < len(s) && s[end] != '/' {
 			end++
 		}
 		if i > lastSlash {
-			out = append(out, p[i:end]...)
+			out = append(out, s[i:end]...)
 			i = end
 			continue
 		}
-		seg := p[i:end]
-		if seg == "~" {
-			out = append(out, '~')
-		} else {
-			_, size := utf8.DecodeRuneInString(seg)
-			out = append(out, seg[:size]...)
-		}
+		_, size := utf8.DecodeRuneInString(s[i:end])
+		out = append(out, s[i:i+size]...)
 		i = end
 	}
 	return out
@@ -485,7 +559,11 @@ func paneSegmentFromCache(cpNT []byte, key []byte) bool {
 // sp is the abbreviated path; br is the bare branch name (e.g. "main"),
 // or nil/empty for non-git directories.
 func writeSegment(sp, br []byte) {
-	out := make([]byte, 0, 96+len(sp)+len(br))
+	var stackBuf [256]byte
+	out := stackBuf[:0]
+	if capReq := 96 + len(sp) + len(br); capReq > len(stackBuf) {
+		out = make([]byte, 0, capReq)
+	}
 	// path: cyan on surface1
 	out = append(out, "#[fg=#6eb4bf,bg=#2f343e]"...)
 	out = append(out, sp...)
@@ -509,7 +587,6 @@ func writeSegment(sp, br []byte) {
 
 // writePaneCache writes key, sp, and br to the per-dir cache file atomically via rename.
 func writePaneCache(cp string, key, sp, br []byte) {
-	_ = os.MkdirAll(cacheDir, 0o755)
 	tmp := cp + pidSuffix
 
 	content := make([]byte, 0, len(key)+1+len(sp)+1+len(br)+1)
@@ -521,7 +598,12 @@ func writePaneCache(cp string, key, sp, br []byte) {
 	content = append(content, '\n')
 
 	if err := os.WriteFile(tmp, content, 0o644); err == nil {
-		os.Rename(tmp, cp) //nolint:errcheck — best-effort atomic write
+		_ = os.Rename(tmp, cp)
+	} else if os.IsNotExist(err) {
+		_ = os.MkdirAll(cacheDir, 0o755)
+		if err := os.WriteFile(tmp, content, 0o644); err == nil {
+			_ = os.Rename(tmp, cp)
+		}
 	}
 }
 
@@ -725,10 +807,14 @@ func kubeSegment(ctxFg, nsFg string) string {
 
 	out := "#[fg=blue]⎈ #[fg=" + ctxFg + "]" + ctx + "#[fg=colour250]:#[fg=" + nsFg + "]" + ns
 
-	_ = os.MkdirAll(cacheDir, 0o755)
 	tmp := kubeCachePath + pidSuffix
 	if err := os.WriteFile(tmp, []byte(out+"\n"), 0o644); err == nil {
-		os.Rename(tmp, kubeCachePath) //nolint:errcheck
+		_ = os.Rename(tmp, kubeCachePath)
+	} else if os.IsNotExist(err) {
+		_ = os.MkdirAll(cacheDir, 0o755)
+		if err := os.WriteFile(tmp, []byte(out+"\n"), 0o644); err == nil {
+			_ = os.Rename(tmp, kubeCachePath)
+		}
 	}
 	return out
 }
@@ -831,6 +917,7 @@ type gpuMetrics struct {
 
 // buildRightStatus assembles the complete status-right string from surface0 through kube(surface1).
 func buildRightStatus(
+	dst []byte,
 	cpuTenths int,
 	cpuTempC int, hasCPUTemp bool,
 	ramTenths int,
@@ -838,7 +925,10 @@ func buildRightStatus(
 	usedGB, totalGB uint64, hasDisk bool,
 	kube string,
 ) []byte {
-	out := make([]byte, 0, 256+len(kube))
+	out := dst[:0]
+	if capReq := 256 + len(kube); cap(out) < capReq {
+		out = make([]byte, 0, capReq)
+	}
 
 	// CPU on surface0 (#282c33 is already set by status-right entry or set explicitly here)
 	out = append(out, "#[fg=#a1c181,bg=#282c33]CPU:"...)

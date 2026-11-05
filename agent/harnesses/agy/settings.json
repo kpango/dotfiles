@@ -6,6 +6,9 @@
     },
     "defaultApprovalMode": "auto"
   },
+  "agentMode": "auto",
+  "toolPermission": "always-proceed",
+  "artifactReviewPolicy": "always-proceed",
   "autoExecutionPolicy": "always-proceed",
   "artifactReviewMode": "always-proceed",
   "allowNonWorkspaceAccess": true,
@@ -311,7 +314,7 @@
     "excludedEnvVars": ["DEBUG", "DEBUG_MODE", "NODE_ENV"]
   },
   "context": {
-    "fileName": ["AGENTS.md", "AGY.md", "CONTEXT.md"],
+    "fileName": ["AGENTS.md", "GEMINI.md", "AGY.md", "CONTEXT.md"],
     "loadFromIncludeDirectories": false,
     "fileFiltering": {
       "respectGitIgnore": true,

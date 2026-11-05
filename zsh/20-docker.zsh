@@ -145,6 +145,67 @@ _devrun_docker_sidecar_prepare() {
 	return 0
 }
 
+# Ensure all persistent Antigravity host directories and merged 0600 settings.json exist on the
+# host BEFORE devrun evaluates mount_specs (`[[ -e "$_host" ]]`). Without this, any missing path
+# (.gemini, .config/antigravity for auth_store.go plugin-secrets.json, .cache/antigravity, etc.)
+# is silently omitted from -v mounts and falls back to the container's ephemeral layer, wiping
+# settings, OAuth secrets, conversations, and history.jsonl on every devrun/devres recreation.
+_devrun_prepare_agy_host() {
+	mkdir -p \
+		"$HOME/.agy/policies" \
+		"$HOME/.agy/hooks" \
+		"$HOME/.gemini/antigravity-cli/conversations" \
+		"$HOME/.gemini/antigravity-cli/brain" \
+		"$HOME/.gemini/antigravity-cli/annotations" \
+		"$HOME/.gemini/antigravity-cli/cache" \
+		"$HOME/.gemini/antigravity/conversations" \
+		"$HOME/.gemini/config/projects" \
+		"$HOME/.gemini/policies" \
+		"$HOME/.gemini/hooks" \
+		"$HOME/.gemini/memory" \
+		"$HOME/.gemini/extensions" \
+		"$HOME/.antigravity" \
+		"$HOME/.config/Antigravity" \
+		"$HOME/.config/antigravity" \
+		"$HOME/.cache/antigravity"
+	chmod 700 "$HOME/.agy" "$HOME/.gemini/antigravity-cli" "$HOME/.config/antigravity" 2>/dev/null || true
+	if (($+commands[jq])) && [[ -f "$rcpath/agent/harnesses/agy/install.sh" ]]; then
+		ROOTDIR="$rcpath" HOME="$HOME" bash "$rcpath/agent/harnesses/agy/install.sh" >/dev/null ||
+			echo "WARNING: agy/install.sh failed on host; will retry inside container" >&2
+	fi
+}
+
+# Print the POSIX shell snippet executed as root inside the newly started dev container to:
+#   1. Bridge macOS host $HOME (/Users/<user>) -> $container_home (/home/kpango) so host-created
+#      symlinks in ~/.gemini and ~/.agy as well as workspace paths in settings.json/history.jsonl resolve.
+#   2. Persist Antigravity CLI's background auto-updates across devrun/devres recreations via
+#      ~/.cache/antigravity/container-bin-<arch>/agy (never downgrading an updated binary back to an
+#      older image layer, while adopting a newer image binary when dev:nightly updates).
+_devrun_agy_container_root_sh() {
+	local host_home="$1" container_home="$2" uid="$3" gid="$4"
+	cat <<EOF
+{
+	if [ '$host_home' != '$container_home' ] && [ ! -e '$host_home' ]; then
+		mkdir -p "\$(dirname '$host_home')" && ln -sfn '$container_home' '$host_home'
+	fi
+	arch="\$(uname -m)"
+	cbin_dir='$container_home/.cache/antigravity/container-bin-'"\$arch"
+	cbin="\$cbin_dir/agy"
+	mkdir -p "\$cbin_dir"
+	if [ -x /usr/local/bin/agy ] && [ ! -L /usr/local/bin/agy ]; then
+		img_ver="\$(/usr/local/bin/agy --version 2>/dev/null | head -n1)"
+		cache_ver=""
+		[ -x "\$cbin" ] && cache_ver="\$("\$cbin" --version 2>/dev/null | head -n1)"
+		if [ ! -x "\$cbin" ] || { [ -n "\$img_ver" ] && [ -n "\$cache_ver" ] && [ "\$img_ver" != "\$cache_ver" ] && [ "\$(printf '%s\n%s\n' "\$cache_ver" "\$img_ver" | sort -V | tail -n1)" = "\$img_ver" ]; }; then
+			cp -f /usr/local/bin/agy "\$cbin"
+		fi
+		chown -R '$uid:$gid' "\$cbin_dir"
+		ln -sfn "\$cbin" /usr/local/bin/agy
+	fi
+}
+EOF
+}
+
 devrun() {
 	local -a _no_gpu
 	zparseopts -D -- -no-gpu=_no_gpu || {
@@ -203,6 +264,8 @@ devrun() {
 		echo "Pulling image: $image_name"
 		container image pull "$image_name"
 
+		_devrun_prepare_agy_host
+
 		# Unlike `docker run -v`, `container run -v` does NOT create a missing host-side
 		# path — it hard-errors ("path '...' does not exist") and aborts the whole run.
 		# Several of these are optional/per-machine (.talos, .aws, .kube, gcloud config,
@@ -215,8 +278,8 @@ devrun() {
 			"$HOME/.claude:$container_home/.claude"
 			"$HOME/.claude.json:$container_home/.claude.json"
 			"$HOME/.pi:$container_home/.pi"
-			# .agy/.gemini/.antigravity/.config/Antigravity/.cache/antigravity/.gnupg (and .password-store below):
-			# mounted read-write deliberately, unlike .ssh/:ro/.netrc/:ro further down. Per kpango
+			# .agy/.gemini/.antigravity/.config/Antigravity/.config/antigravity/.cache/antigravity/.gnupg
+			# (and .password-store below): mounted read-write deliberately, unlike .ssh/:ro/.netrc/:ro further down. Per kpango
 			# (repo owner), the devrun container is actually used to run
 			# write-side gpg/pass operations, not just read them -- :ro would
 			# break that interactive workflow. (This isn't something the
@@ -227,6 +290,7 @@ devrun() {
 			"$HOME/.gemini:$container_home/.gemini"
 			"$HOME/.antigravity:$container_home/.antigravity"
 			"$HOME/.config/Antigravity:$container_home/.config/Antigravity"
+			"$HOME/.config/antigravity:$container_home/.config/antigravity"
 			"$HOME/.cache/antigravity:$container_home/.cache/antigravity"
 			"$HOME/.gnupg:$container_home/.gnupg"
 			"$HOME/go/src:$container_goroot/src"
@@ -337,14 +401,19 @@ devrun() {
 		# of silently leaving symlinks/ownership unset.
 		if ! container exec -u 0 $container_name sh -c \
 			"ln -sfvn $container_goroot/src/github.com/kpango/dotfiles/zshrc $container_home/.zshrc && \
-			 ln -sfvn $container_goroot/src/github.com/kpango/dotfiles/zshenv $container_home/.zshenv"; then
-			echo "WARNING: failed to symlink zshrc/zshenv into container" >&2
+			 ln -sfvn $container_goroot/src/github.com/kpango/dotfiles/zshenv $container_home/.zshenv && \
+			 $(_devrun_agy_container_root_sh "$HOME" "$container_home" "$container_uid" "$container_gid")"; then
+			echo "WARNING: failed to symlink zshrc/zshenv or init agy into container" >&2
 		elif ! container exec -u 0 $container_name \
 			chown "$container_uid:$container_gid" \
 			"$container_home" \
+			"$container_home/.agy" \
+			"$container_home/.gemini" \
 			"$container_home/.antigravity" \
+			"$container_home/.cache/antigravity" \
 			"$container_home/.config" \
 			"$container_home/.config/Antigravity" \
+			"$container_home/.config/antigravity" \
 			"$container_home/.config/atuin" \
 			"$container_home/.config/gitui" \
 			"$container_home/.config/helix" \
@@ -353,6 +422,10 @@ devrun() {
 			"$container_home/.config/sheldon" \
 			"$container_home/.pi" 2>/dev/null; then
 			echo "WARNING: failed to chown container config dirs" >&2
+		fi
+		if ! (($+commands[jq])); then
+			container exec -u "$container_uid:$container_gid" $container_name \
+				sh -c "ROOTDIR='$HOME/go/src/github.com/kpango/dotfiles' HOME='$container_home' bash '$container_goroot/src/github.com/kpango/dotfiles/agent/harnesses/agy/install.sh' >/dev/null" 2>/dev/null || true
 		fi
 		devin
 		;;
@@ -446,6 +519,8 @@ devrun() {
 			docker container rm -f "$container_name" &>/dev/null || true
 		fi
 
+		_devrun_prepare_agy_host
+
 		# Build mount list defensively: mount optional host paths only if they exist on the host,
 		# avoiding docker creating missing paths as root:root on the host filesystem.
 		local -a mount_specs=(
@@ -456,12 +531,13 @@ devrun() {
 			"$HOME/.claude:$container_home/.claude"
 			"$HOME/.claude.json:$container_home/.claude.json"
 			"$HOME/.pi:$container_home/.pi"
-			# .agy/.gemini/.antigravity/.config/Antigravity/.cache/antigravity/.gnupg/.password-store:
+			# .agy/.gemini/.antigravity/.config/Antigravity/.config/antigravity/.cache/antigravity/.gnupg/.password-store:
 			# deliberately read-write, see the matching comment in the macOS mount_specs above.
 			"$HOME/.agy:$container_home/.agy"
 			"$HOME/.gemini:$container_home/.gemini"
 			"$HOME/.antigravity:$container_home/.antigravity"
 			"$HOME/.config/Antigravity:$container_home/.config/Antigravity"
+			"$HOME/.config/antigravity:$container_home/.config/antigravity"
 			"$HOME/.cache/antigravity:$container_home/.cache/antigravity"
 			"$HOME/.gnupg:$container_home/.gnupg"
 			"$HOME/go/src:$container_goroot/src:cached"
@@ -508,6 +584,8 @@ devrun() {
 			"$HOME/.agy:/root/.agy"
 			"$HOME/.gemini:/root/.gemini"
 			"$HOME/.antigravity:/root/.antigravity"
+			"$HOME/.config/antigravity:/root/.config/antigravity"
+			"$HOME/.cache/antigravity:/root/.cache/antigravity"
 			"$HOME/.claude:/root/.claude"
 			"$HOME/.pi:/root/.pi"
 			"$HOME/.ssh:$container_home/.ssh:ro"
@@ -589,15 +667,20 @@ devrun() {
 		fi
 		docker exec -u 0 $container_name bash -c \
 			"ln -sfvn $container_goroot/src/github.com/kpango/dotfiles/zshrc $container_home/.zshrc && \
-			 ln -sfvn $container_goroot/src/github.com/kpango/dotfiles/zshenv $container_home/.zshenv" &&
+			 ln -sfvn $container_goroot/src/github.com/kpango/dotfiles/zshenv $container_home/.zshenv && \
+			 $(_devrun_agy_container_root_sh "$HOME" "$container_home" "$UID" "$GID")" &&
 			docker exec -u 0 $container_name \
 				chown "$UID:$GID" \
 				"$container_home" \
+				"$container_home/.agy" \
+				"$container_home/.gemini" \
 				"$container_home/.antigravity" \
 				"$container_home/.bun" \
 				"$container_home/.cache" \
+				"$container_home/.cache/antigravity" \
 				"$container_home/.config" \
 				"$container_home/.config/Antigravity" \
+				"$container_home/.config/antigravity" \
 				"$container_home/.config/atuin" \
 				"$container_home/.config/gitui" \
 				"$container_home/.config/helix" \
@@ -608,6 +691,10 @@ devrun() {
 				"$container_home/.local/share" \
 				"$container_home/.npm" \
 				"$container_home/.pi" 2>/dev/null || true
+		if ! (($+commands[jq])); then
+			docker exec -u "$UID:$GID" $container_name \
+				sh -c "ROOTDIR='$HOME/go/src/github.com/kpango/dotfiles' HOME='$container_home' bash '$container_goroot/src/github.com/kpango/dotfiles/agent/harnesses/agy/install.sh' >/dev/null" 2>/dev/null || true
+		fi
 		docker exec -u "$UID" $container_name \
 			sh -c 'atuin daemon status 2>/dev/null \
 				&& echo "atuin: daemon reachable from container (real-time history sync active)" \

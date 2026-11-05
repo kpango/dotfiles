@@ -18,6 +18,11 @@ unsetopt GLOBAL_RCS
 # (regardless of which of those sites runs) silently drops the repeat instead
 # of accumulating it. Same idiom as `typeset -U path PATH` in _apply_base_path.
 typeset -U fpath
+if [[ "$OSTYPE" == darwin* ]]; then
+	fpath=(${fpath:#*(Solaris|AIX|Cygwin|BSD|Windows)*})
+else
+	fpath=(${fpath:#*(Solaris|AIX|Cygwin|Darwin|BSD|Windows)*})
+fi
 
 # Default committer identity (GIT_COMMITTER_NAME/EMAIL): no longer set here as a
 # hardcoded literal. It's now baked into $ZCACHE_DIR/env.zsh by zfunc/_gen_env

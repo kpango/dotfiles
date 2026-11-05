@@ -5,9 +5,9 @@ if [ -z "$VIM" ]; then
 		export VIM=${commands[nvim]}
 		if [[ ${OSTYPE} == "darwin"* ]]; then
 			if [[ -f "$ZCACHE_DIR/nvim_runtime.zsh" ]]; then
-				_source_deferred "$ZCACHE_DIR/nvim_runtime.zsh" "-m -p -r"
+				source "$ZCACHE_DIR/nvim_runtime.zsh"
 			else
-				_zcache_eval nvim_runtime 1 'local rts=(/opt/homebrew/Cellar/neovim/*/share/nvim/runtime(N)); ((${#rts[@]} > 0)) && echo "export VIMRUNTIME=\"${rts[-1]}\""'
+				_zcache_eval nvim_runtime 0 'local rts=(/opt/homebrew/Cellar/neovim/*/share/nvim/runtime(N)); ((${#rts[@]} > 0)) && echo "export VIMRUNTIME=\"${rts[-1]}\""'
 			fi
 		elif [[ ${OSTYPE} == "linux"* ]] && [ -d /usr/share/nvim/runtime ]; then
 			export VIMRUNTIME="/usr/share/nvim/runtime"

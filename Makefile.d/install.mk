@@ -103,16 +103,17 @@ agent/harnesses/agy/policies/policy.toml .agy/policies/rules.toml
 agent/harnesses/agy/mcp_config.json .agy/mcp_config.json
 agent/harnesses/agy/model-routing.json .agy/model-routing.json
 agent/harnesses/agy/AGENTS.md .gemini/AGENTS.md
+agent/harnesses/agy/AGENTS.md .gemini/GEMINI.md
 agent/harnesses/agy/SYSTEM.md .gemini/SYSTEM.md
 agent/SWARM.md .gemini/SWARM.md
 agent/SWARM_REFERENCES.md .gemini/SWARM_REFERENCES.md
 agent/RTK.md .gemini/RTK.md
 agent/harnesses/agy/settings.json .gemini/settings.json
-agent/harnesses/agy/settings.json .gemini/antigravity-cli/settings.json
 agent/harnesses/agy/policies/policy.toml .gemini/policies/rules.toml
 agent/harnesses/agy/policies/policy.toml .gemini/policies/policy.toml
 agent/harnesses/agy/mcp_config.json .gemini/config/mcp_config.json
 agent/harnesses/agy/hooks/hooks.json .gemini/config/hooks.json
+agent/harnesses/agy/hooks/hooks.json .gemini/antigravity-cli/hooks.json
 agent/harnesses/agy/model-routing.json .gemini/model-routing.json
 agent/harnesses/agy/model-routing.json .gemini/config/model-routing.json
 agent/AGENTS.md .codex/AGENTS.md
@@ -563,9 +564,6 @@ claude/install: dotfiles/install
 		sudo rm -rf $(ROOT_HOME)/.claude && sudo ln -sfvn "$(HOME)/.claude" $(ROOT_HOME)/.claude; \
 	fi
 	sudo ln -sfvn "$(ROOTDIR)/gitconfig"                   $(ROOT_HOME)/.gitconfig
-	sudo mkdir -p $(ROOT_HOME)/.agy/policies
-	sudo ln -sfvn "$(ROOTDIR)/agent/harnesses/agy/settings.json"        $(ROOT_HOME)/.agy/settings.json
-	sudo ln -sfvn "$(ROOTDIR)/agent/harnesses/agy/policies/policy.toml" $(ROOT_HOME)/.agy/policies/rules.toml
 
 ## Deploy Pi Coding Agent config inside a Docker build layer (no sudo, copies not symlinks)
 pi/docker/install:
@@ -654,15 +652,28 @@ agy/docker/install:
 		"$(HOME)/.agy/hooks" \
 		"$(HOME)/.gemini" \
 		"$(HOME)/.gemini/antigravity-cli" \
+		"$(HOME)/.gemini/antigravity-cli/conversations" \
+		"$(HOME)/.gemini/antigravity-cli/brain" \
+		"$(HOME)/.gemini/antigravity-cli/annotations" \
+		"$(HOME)/.gemini/antigravity-cli/cache" \
+		"$(HOME)/.gemini/antigravity" \
+		"$(HOME)/.gemini/antigravity/conversations" \
 		"$(HOME)/.gemini/policies" \
 		"$(HOME)/.gemini/config" \
+		"$(HOME)/.gemini/config/projects" \
 		"$(HOME)/.gemini/config/skills" \
 		"$(HOME)/.gemini/config/rules" \
 		"$(HOME)/.gemini/config/agents" \
 		"$(HOME)/.gemini/skills" \
 		"$(HOME)/.gemini/rules" \
 		"$(HOME)/.gemini/agents" \
-		"$(HOME)/.gemini/hooks"
+		"$(HOME)/.gemini/hooks" \
+		"$(HOME)/.gemini/memory" \
+		"$(HOME)/.gemini/extensions" \
+		"$(HOME)/.antigravity" \
+		"$(HOME)/.config/Antigravity" \
+		"$(HOME)/.config/antigravity" \
+		"$(HOME)/.cache/antigravity"
 	install -m 600 -o "$(USER_ID)" -g "$(GROUP_ID)" \
 		"$(ROOTDIR)/agent/harnesses/agy/settings.json" "$(HOME)/.agy/settings.json"
 	install -m 600 -o "$(USER_ID)" -g "$(GROUP_ID)" \
@@ -674,9 +685,17 @@ agy/docker/install:
 	install -m 600 -o "$(USER_ID)" -g "$(GROUP_ID)" \
 		"$(ROOTDIR)/agent/harnesses/agy/mcp_config.json" "$(HOME)/.gemini/config/mcp_config.json"
 	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/agent/harnesses/agy/model-routing.json" "$(HOME)/.agy/model-routing.json"
+	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/agent/harnesses/agy/model-routing.json" "$(HOME)/.gemini/model-routing.json"
+	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/agent/harnesses/agy/model-routing.json" "$(HOME)/.gemini/config/model-routing.json"
+	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
 		"$(ROOTDIR)/agent/harnesses/agy/AGENTS.md" "$(HOME)/.agy/AGENTS.md"
 	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
 		"$(ROOTDIR)/agent/harnesses/agy/AGENTS.md" "$(HOME)/.gemini/AGENTS.md"
+	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/agent/harnesses/agy/AGENTS.md" "$(HOME)/.gemini/GEMINI.md"
 	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
 		"$(ROOTDIR)/agent/harnesses/agy/SYSTEM.md" "$(HOME)/.agy/SYSTEM.md"
 	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
@@ -703,6 +722,8 @@ agy/docker/install:
 		"$(ROOTDIR)/agent/harnesses/agy/policies/policy.toml" "$(HOME)/.gemini/policies/policy.toml"
 	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
 		"$(ROOTDIR)/agent/harnesses/agy/hooks/hooks.json" "$(HOME)/.gemini/config/hooks.json"
+	install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" \
+		"$(ROOTDIR)/agent/harnesses/agy/hooks/hooks.json" "$(HOME)/.gemini/antigravity-cli/hooks.json"
 	find "$(ROOTDIR)/agent/rules" -maxdepth 1 -name "*.md" \
 		-exec install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" {} "$(HOME)/.agy/rules/" \; \
 		-exec install -m 644 -o "$(USER_ID)" -g "$(GROUP_ID)" {} "$(HOME)/.gemini/config/rules/" \; \
@@ -720,6 +741,7 @@ agy/docker/install:
 	@install -d -m 755 -o "$(USER_ID)" -g "$(GROUP_ID)" "$(HOME)/.agy/skills" "$(HOME)/.gemini/config/skills" "$(HOME)/.gemini/skills"
 	@for skill_dir in "$(ROOTDIR)/agent/skills"/*/; do \
 		skill_name=$$(basename "$$skill_dir"); \
+		[ "$$skill_name" = "synced" ] && continue; \
 		for target_dir in "$(HOME)/.agy/skills" "$(HOME)/.gemini/config/skills" "$(HOME)/.gemini/skills"; do \
 			dest="$${target_dir}/$${skill_name}"; \
 			rm -rf "$$dest"; \
@@ -731,39 +753,27 @@ agy/docker/install:
 		done; \
 	done
 
-## symlink ~/.agy and ~/.gemini/ agents, skills, rules, hooks, and policy.toml
-## (per-file config symlinks such as settings.json/AGENTS.md/SYSTEM.md are handled
-## by dotfiles/install via DOTFILES_MAP, not here)
+## deploy ~/.agy and ~/.gemini for Antigravity CLI: merged 0600 ~/.gemini/antigravity-cli/settings.json
+## (preserving user runtime keys such as model and trustedWorkspaces across atomic CLI rewrites),
+## persistent conversation/history/secret dirs, and per-entry hook symlinks via agent/harnesses/agy/install.sh.
 agy/install: dotfiles/install
-	mkdir -p "$(HOME)/.agy/policies" "$(HOME)/.gemini/antigravity-cli" "$(HOME)/.gemini/config" "$(HOME)/.gemini/policies"
-	ln -sfvn "$(ROOTDIR)/agent/agents"           "$(HOME)/.agy/agents"
-	ln -sfvn "$(ROOTDIR)/agent/skills"           "$(HOME)/.agy/skills"
-	ln -sfvn "$(ROOTDIR)/agent/rules"            "$(HOME)/.agy/rules"
-	@if [ -L "$(HOME)/.agy/hooks" ]; then rm -f "$(HOME)/.agy/hooks"; fi
-	@mkdir -p "$(HOME)/.agy/hooks"
-	@find "$(ROOTDIR)/agent/harnesses/agy/hooks" -maxdepth 1 -type f \
-		-exec ln -sfvn {} "$(HOME)/.agy/hooks/" \;
-	@find "$(ROOTDIR)/agent/hooks/agy" -maxdepth 1 -type f \
-		-exec ln -sfvn {} "$(HOME)/.agy/hooks/" \;
-	ln -sfvn "$(ROOTDIR)/agent/harnesses/agy/policies/policy.toml" "$(HOME)/.agy/policies/policy.toml"
-	ln -sfvn "$(ROOTDIR)/agent/skills"           "$(HOME)/.gemini/config/skills"
-	ln -sfvn "$(ROOTDIR)/agent/rules"            "$(HOME)/.gemini/config/rules"
-	ln -sfvn "$(ROOTDIR)/agent/agents"           "$(HOME)/.gemini/config/agents"
-	ln -sfvn "$(ROOTDIR)/agent/skills"           "$(HOME)/.gemini/skills"
-	ln -sfvn "$(ROOTDIR)/agent/rules"            "$(HOME)/.gemini/rules"
-	ln -sfvn "$(ROOTDIR)/agent/agents"           "$(HOME)/.gemini/agents"
-	@if [ -L "$(HOME)/.gemini/hooks" ]; then rm -f "$(HOME)/.gemini/hooks"; fi
-	@mkdir -p "$(HOME)/.gemini/hooks"
-	@find "$(ROOTDIR)/agent/harnesses/agy/hooks" -maxdepth 1 -type f \
-		-exec ln -sfvn {} "$(HOME)/.gemini/hooks/" \;
-	@find "$(ROOTDIR)/agent/hooks/agy" -maxdepth 1 -type f \
-		-exec ln -sfvn {} "$(HOME)/.gemini/hooks/" \;
-	@echo "Sharing Antigravity sessions: $(ROOT_HOME)/.agy -> $(HOME)/.agy and $(ROOT_HOME)/.gemini -> $(HOME)/.gemini"
+	@ROOTDIR='$(ROOTDIR)' HOME='$(HOME)' bash '$(ROOTDIR)/agent/harnesses/agy/install.sh'
+	@echo "Sharing Antigravity sessions: $(ROOT_HOME)/{.agy,.gemini,.antigravity,.config/antigravity,.cache/antigravity} -> $(HOME)/..."
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.agy 2>/dev/null; then \
 		sudo rm -rf $(ROOT_HOME)/.agy && sudo ln -sfvn "$(HOME)/.agy" $(ROOT_HOME)/.agy; \
 	fi
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.gemini 2>/dev/null; then \
 		sudo rm -rf $(ROOT_HOME)/.gemini && sudo ln -sfvn "$(HOME)/.gemini" $(ROOT_HOME)/.gemini; \
+	fi
+	@if ! sudo mountpoint -q $(ROOT_HOME)/.antigravity 2>/dev/null; then \
+		sudo rm -rf $(ROOT_HOME)/.antigravity && sudo ln -sfvn "$(HOME)/.antigravity" $(ROOT_HOME)/.antigravity; \
+	fi
+	@sudo mkdir -p $(ROOT_HOME)/.config $(ROOT_HOME)/.cache
+	@if ! sudo mountpoint -q $(ROOT_HOME)/.config/antigravity 2>/dev/null; then \
+		sudo rm -rf $(ROOT_HOME)/.config/antigravity && sudo ln -sfvn "$(HOME)/.config/antigravity" $(ROOT_HOME)/.config/antigravity; \
+	fi
+	@if ! sudo mountpoint -q $(ROOT_HOME)/.cache/antigravity 2>/dev/null; then \
+		sudo rm -rf $(ROOT_HOME)/.cache/antigravity && sudo ln -sfvn "$(HOME)/.cache/antigravity" $(ROOT_HOME)/.cache/antigravity; \
 	fi
 
 ## symlink ~/.codex config files and shared skills

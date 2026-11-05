@@ -2,7 +2,7 @@
 export _ZSH_TMUX_LOADED=1
 
 # ── Herdr: ctrl+space prefix — no readline conflict (ctrl+a = beginning-of-line)
-if (($+commands[herdr])); then
+if whence -p herdr >/dev/null 2>&1; then
 	export HERDR_SESSION="${USER:-$USERNAME}-${HOST:-$HOSTNAME}"
 	# ~/.config/herdr/config.toml is a read-only bind mount in this container;
 	# point herdr at the writable dotfiles source instead.
@@ -17,7 +17,7 @@ if (($+commands[herdr])); then
 	export HERDR_LOG=herdr=debug
 fi
 
-if (($+commands[tmux])); then
+if [[ -n "${HAS_TMUX:-}" ]] || whence -p tmux >/dev/null 2>&1; then
 	# Unset $TMUX if the server it points to is no longer running (stale socket).
 	# Fast path on Linux checks socket file and /proc/<pid>/comm with zero forks,
 	# falling back to `tmux info` on macOS or cross-PID-namespace sockets.
@@ -37,17 +37,25 @@ if (($+commands[tmux])); then
 
 	if [ -z "$_TMUX_KEYS_SET" ] && [ -n "$TMUX" ]; then
 		export _TMUX_KEYS_SET=1
-		if [ -f /.dockerenv ]; then
-			tmux unbind C-b \; set -g prefix C-w \; bind C-w send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
+		_apply_tmux_keys() {
+			if [ -f /.dockerenv ]; then
+				tmux unbind C-b \; set -g prefix C-w \; bind C-w send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
+			else
+				case ${OSTYPE} in
+				darwin*)
+					tmux unbind C-b \; set -g prefix C-g \; bind C-g send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
+					;;
+				linux*)
+					tmux bind C-b send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
+					;;
+				esac
+			fi
+			unfunction _apply_tmux_keys 2>/dev/null
+		}
+		if (($+functions[zsh-defer])); then
+			zsh-defer -mprs _apply_tmux_keys
 		else
-			case ${OSTYPE} in
-			darwin*)
-				tmux unbind C-b \; set -g prefix C-g \; bind C-g send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
-				;;
-			linux*)
-				tmux bind C-b send-prefix \; set-environment -g _TMUX_KEYS_SET 1 &|
-				;;
-			esac
+			_apply_tmux_keys
 		fi
 	fi
 	alias tedit="$EDITOR $HOME/.tmux.conf"
@@ -137,7 +145,7 @@ if (($+commands[tmux])); then
 			# Ensure the server is running.
 			# Prefer systemd (which also creates the session), fall back to direct start.
 			if ! tmux -S "$TMUX_SOCK" has-session 2>/dev/null; then
-				if (($+commands[systemctl])) && systemctl --user is-enabled tmux.service &>/dev/null; then
+				if whence -p systemctl >/dev/null 2>&1 && systemctl --user is-enabled tmux.service &>/dev/null; then
 					# tmux.service is Type=oneshot+RemainAfterExit: once the server has died the unit
 					# stays "active" and start would be a no-op, so reload (ExecReload re-runs the
 					# idempotent ExecStart) recreates it. Never restart here: its ExecStop and the

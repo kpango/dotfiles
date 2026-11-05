@@ -5,9 +5,23 @@ if (($+commands[sheldon])) && [[ -z "$ZSH_EXECUTION_STRING" ]] && ! (($+function
 fi
 
 if (($+commands[direnv])); then
-	if [[ -f "$ZCACHE_DIR/direnv.zsh" ]]; then
-		_source_deferred "$ZCACHE_DIR/direnv.zsh" "-p -r"
+	_direnv_hook_fast() {
+		[[ -n $DIRENV_DIR ]] && { eval "$("$commands[direnv]" export zsh)"; return; }
+		local d=$PWD
+		while [[ -n $d ]]; do
+			if [[ -f "$d/.envrc" || -f "$d/.env" ]]; then
+				eval "$("$commands[direnv]" export zsh)"
+				return
+			fi
+			[[ $d == / || ( -n ${HOME:-} && $d == $HOME ) ]] && break
+			d=${d:h}
+		done
+	}
+	if [[ -f "$ZCACHE_DIR/direnv.zsh" && ! "$commands[direnv]" -nt "$ZCACHE_DIR/direnv.zsh" ]]; then
+		source "$ZCACHE_DIR/direnv.zsh"
 	else
-		_zcache_eval direnv 1 "direnv hook zsh" "$commands[direnv]"
+		_zcache_eval direnv 0 "direnv hook zsh" "$commands[direnv]"
 	fi
+	_direnv_hook() { _direnv_hook_fast }
 fi
+

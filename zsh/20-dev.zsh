@@ -37,13 +37,16 @@ if (($+commands[clang])); then
 		export _ZSH_CLANG_ENV_LOADED=1
 		if (($+commands[llvm-config])); then
 			export LLVM_CONFIG_PATH=${commands[llvm-config]}
-			if [[ -f "$ZCACHE_DIR/llvm_libdir.zsh" ]]; then
-				_source_deferred "$ZCACHE_DIR/llvm_libdir.zsh" "-m -p -r"
+			if [[ -f "$ZCACHE_DIR/llvm_libdir.zsh" && ! "$LLVM_CONFIG_PATH" -nt "$ZCACHE_DIR/llvm_libdir.zsh" ]]; then
+				source "$ZCACHE_DIR/llvm_libdir.zsh"
 			else
-				_zcache_eval llvm_libdir 1 'echo "export LD_LIBRARY_PATH=\"$(llvm-config --libdir):\$LD_LIBRARY_PATH\""' "$LLVM_CONFIG_PATH"
+				_zcache_eval llvm_libdir 0 'echo "export LD_LIBRARY_PATH=\"$(llvm-config --libdir)\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}\""' "$LLVM_CONFIG_PATH"
 			fi
 		else
-			export LD_LIBRARY_PATH=/usr/lib/clang/*/lib:$LD_LIBRARY_PATH
+			for _clang_lib in /usr/lib/clang/*/lib; do
+				[[ -d "$_clang_lib" ]] && export LD_LIBRARY_PATH="${_clang_lib}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+			done
+			unset _clang_lib
 		fi
 		# export LDFLAGS="-g -flto -march=native -fno-plt -Wl,-O3 -ffast-math,--sort-common,--as-needed,-z,relro,-z,now -fdata-sections -ffunction-sections -Wl,--gc-sections -fvisibility=hidden -L$LLVM_HOME/lib:-L$QT_HOME/lib:-L/usr/local/opt/openssl/lib:-L/usr/local/opt/bison/lib:$LDFLAGS"
 		# export FFLAGS=$LDFLAGS
@@ -173,8 +176,15 @@ fi
 
 if [ -z "$_ZSH_LD_ENV_LOADED" ]; then
 	export _ZSH_LD_ENV_LOADED=1
-	export LD_LIBRARY_PATH=/lib:/usr/local/lib:${GCLOUD_PATH}/lib:/opt/containerd/lib:/opt/cuda/lib:${LD_LIBRARY_PATH}
-	export LIBRARY_PATH=/lib:/usr/local/lib:${GCLOUD_PATH}/lib:/opt/containerd/lib:/opt/cuda/lib:${LD_LIBRARY_PATH}
+	_ld_extra=""
+	for _ld_d in ${GCLOUD_PATH:+"$GCLOUD_PATH/lib"} /opt/containerd/lib /opt/cuda/lib; do
+		[[ -d "$_ld_d" ]] && _ld_extra="${_ld_extra:+$_ld_extra:}$_ld_d"
+	done
+	if [[ -n "$_ld_extra" ]]; then
+		export LD_LIBRARY_PATH="${_ld_extra}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+		export LIBRARY_PATH="${_ld_extra}${LIBRARY_PATH:+:$LIBRARY_PATH}"
+	fi
+	unset _ld_extra _ld_d
 fi
 
 if (($+commands[rails])); then

@@ -16,37 +16,39 @@ if (($+commands[kubectl])); then
 	alias knall="k get namespace -o wide"
 	alias kdall="k get deployment --all-namespaces -o wide"
 
-	# The completion cache is only ever sourced by interactive shells, so neither its
-	# freshness check (7 command lookups) nor its regeneration runs under `zsh -c`.
+	# Lazy-load k8s completions on first Tab invocation to decouple 53.7KB
+	# combined_completion.zsh and 7 stat checks from interactive startup.
 	if [[ -z "$ZSH_EXECUTION_STRING" ]]; then
-		deps=()
-		cmds=()
-		for cmd in kubectl kind k3d helm skaffold linkerd kustomize; do
-			if (($+commands[$cmd])); then
-				deps+=("$commands[$cmd]")
-				cmds+=("$cmd")
+		_lazy_k8s_completion() {
+			local _s="$service"
+			[[ -z "$_s" ]] && _s="$words[1]"
+			local _cf="$ZCACHE_DIR/combined_completion.zsh"
+			if [[ ! -f "$_cf" ]]; then
+				local -a _cmds
+				for _cmd in kubectl kind k3d helm skaffold linkerd kustomize k9s; do
+					(($+commands[$_cmd])) && _cmds+=("$_cmd")
+				done
+				if ((${#_cmds[@]} > 0)); then
+					for _cmd in "${_cmds[@]}"; do
+						timeout 10 "$_cmd" completion zsh 2>/dev/null
+						print -r -- ""
+					done >"${_cf}.tmp.$$" &&
+						command mv -f "${_cf}.tmp.$$" "$_cf" &&
+						zcompile -U -R "$_cf" 2>/dev/null
+					command rm -f "${_cf}.tmp.$$" 2>/dev/null
+				fi
 			fi
-		done
-
-		if ((${#cmds[@]} > 0)); then
-			cache_file="$ZCACHE_DIR/combined_completion.zsh"
-			need_eval=0
-			if [[ ! -f "$cache_file" ]]; then need_eval=1; fi
-			for cmd in ${deps[@]}; do if [[ "$cmd" -nt "$cache_file" ]]; then need_eval=1; fi; done
-
-			if ((need_eval)); then
-				(
-					for cmd in "${cmds[@]}"; do timeout 10 "$cmd" completion zsh 2>/dev/null; done \
-						>"${cache_file}.tmp.$$" &&
-						command mv -f "${cache_file}.tmp.$$" "$cache_file" &&
-						zcompile "$cache_file" 2>/dev/null
-					command rm -f "${cache_file}.tmp.$$" 2>/dev/null
-				) &|
+			if [[ -f "$_cf" ]]; then
+				source "$_cf"
+				compdef _kubectl kubecolor k 2>/dev/null
 			fi
-
-			if (($+functions[zsh-defer])); then
-				zsh-defer -m -p -r -c "[[ -f '$cache_file' ]] && source '$cache_file'"
+			if [[ "$_s" == "k" || "$_s" == "kubecolor" ]]; then
+				_s="kubectl"
 			fi
-		fi
+			if [[ -n "$_comps[$_s]" && "$_comps[$_s]" != "_lazy_k8s_completion" ]]; then
+				"$_comps[$_s]" "$@"
+			fi
+		}
+		compdef _lazy_k8s_completion kubectl kind k3d helm skaffold linkerd kustomize k9s kubecolor k 2>/dev/null
 	fi
 fi

@@ -81,6 +81,12 @@
           "script": "agent/scripts/gen-agents-md-for-agy.sh",
           "live_path": "$HOME/.gemini/AGENTS.md"
         },
+        "gemini-md": {
+          "path": "agent/harnesses/agy/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-agents-md-for-agy.sh",
+          "live_path": "$HOME/.gemini/GEMINI.md"
+        },
         "primeagent": {
           "path": "agent/harnesses/primeagent/AGENTS.md",
           "mode": "generate",
@@ -225,6 +231,13 @@
       "note": "CONTEXT P-2/Q7: CLI が一時ファイル+rename で書き換えるため symlink にできず、install が live と repo 所有キーを合成した 0600 の通常ファイルになる。内容(live 所有キーを含む)は照合せず形だけを live-regular-file mode で検証する。repo 所有キーとのずれ・prime スキーマ外のキーは agent/harnesses/primeagent/validate-harness.sh が検査する。settings.json 自体がツール間で共有できない点は not_shareable の settings.json 参照。",
       "targets": {
         "primeagent": { "path": "$HOME/.prime/agent/settings.json", "mode": "live-regular-file", "perm": "600" }
+      }
+    },
+    {
+      "name": "agy/settings.json",
+      "note": "Antigravity CLI (cli_setting_manager.go) も ~/.gemini/antigravity-cli/settings.json を一時ファイル+rename(0600)で書き換えるため symlink にできない。agent/harnesses/agy/install.sh が live のランタイム選択キー(model・trustedWorkspaces・agentMode・toolPermission・artifactReviewPolicy 等)を保持しつつ repo 所有キーを合成した 0600 通常ファイルとして管理する。形・権限は live-regular-file mode で検証し、repo 所有キーとの整合は agent/harnesses/agy/validate-harness.sh が検査する。",
+      "targets": {
+        "agy-cli": { "path": "$HOME/.gemini/antigravity-cli/settings.json", "mode": "live-regular-file", "perm": "600" }
       }
     }
   ],

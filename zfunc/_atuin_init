@@ -20,11 +20,14 @@ atuin init zsh | awk '
 	print "    export ATUIN_SESSION=\"${ATUIN_SESSION//-/}\""
 	next
 }
-/autoload -U add-zsh-hook/  { next }
-/add-zsh-hook preexec /     { print "preexec_functions+=(" $NF ")"; next }
-/add-zsh-hook precmd /      { print "precmd_functions+=(" $NF ")";  next }
+/autoload -U add-zsh-hook/      { next }
+/add-zsh-hook preexec /         { print "preexec_functions+=(" $NF ")"; next }
+/add-zsh-hook precmd /          { print "precmd_functions+=(" $NF ")";  next }
+/add-zsh-hook zshaddhistory /   { print "zshaddhistory_functions+=(" $NF ")"; next }
 /^\(ATUIN_SHELL=zsh atuin __internal prepare-search-index .*&\)$/ {
-	sub(/^\(/, ""); sub(/ &\)$/, " \\&|"); print; next
+	sub(/^\(/, ""); sub(/ &\)$/, " \\&|")
+	print "() { setopt local_options extended_glob; local _s=\"${ZCACHE_DIR:-$HOME/.zcache}/.atuin_idx_stamp\"; if [[ ! -f $_s || -n $_s(#qN.mh+1) ]]; then command touch \"$_s\" 2>/dev/null; " $0 "; fi }"
+	next
 }
 { print }
 '

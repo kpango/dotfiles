@@ -86,8 +86,15 @@ print "export _ZSH_OS=${_ZSH_OS}"
 # keeps the original baked-PATH behavior unchanged.
 if [[ "$_ZSH_OS" != brew ]]; then
 	autoload -Uz _base_path
-	local _base="$(_base_path)"
+	local _base="$(_base_path)" _nixpath="" _nixdir
+	for _nixdir in \
+		"$HOME/.nix-profile/bin" \
+		"/etc/profiles/per-user/${USER:-$USERNAME}/bin" \
+		"/run/current-system/sw/bin" \
+		"/nix/var/nix/profiles/default/bin"; do
+		[[ -d "$_nixdir" ]] && _nixpath="${_nixpath}${_nixdir}:"
+	done
 	print 'export _ZSH_PATH_LOADED=1'
 	print 'typeset -U path PATH'
-	print "export PATH=\"${_base}:\${PATH}\""
+	print "export PATH=\"${_nixpath}${_base}:\${PATH}\""
 fi

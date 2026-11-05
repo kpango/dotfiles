@@ -91,9 +91,6 @@ fi
 # Both only change how lookups are cached; a per-name lookup finds the same command.
 # Restored at the end of this file, so the deferred tasks already run with them on.
 unsetopt HASH_LIST_ALL HASH_DIRS
-# zsh 5.9 (e.g. the Ubuntu dev container) has no per-name fallback: every $commands
-# lookup then misses. Probe and keep the full hash there (as in zshenv).
-(($+commands[zsh])) || setopt HASH_LIST_ALL
 
 if ! (($+functions[_zcache_eval])); then
 	fpath=("$DOTFILES_DIR/zfunc" $fpath)
@@ -136,7 +133,7 @@ fi
 # Also skipped when _ZSH_TMUX_LOADED is inherited: 01-tmux.zsh would return at once, and the
 # $+commands probe below would only build a command hash that _apply_base_path then discards.
 if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 && -n "$DOTFILES_DIR" && -z "$TMUX" && -z "$_ZSH_TMUX_LOADED" ]]; then
-	if [[ "$_ZSH_OS" == brew || -n "$_zsh_cold_env" ]] || ! (($+commands[tmux])); then
+	if [[ "$_ZSH_OS" == brew || -n "$_zsh_cold_env" ]] || ! { [[ -n "${HAS_TMUX:-}" ]] || whence -p tmux >/dev/null 2>&1; }; then
 		autoload -Uz _apply_base_path
 		_apply_base_path
 		_zsh_early_base=1
@@ -206,7 +203,13 @@ if [[ -t 0 ]]; then
 	# 84.8ms ± 13.9ms baseline vs 81.5ms ± 16.8ms candidate — within noise). Do not
 	# re-attempt via any hook that fires after the first zle-line-init; this must stay
 	# synchronous, before ZLE ever starts.
-	stty -ixon -ixoff 2>/dev/null
+	if [[ -x /usr/bin/gnustty ]]; then
+		/usr/bin/gnustty -ixon -ixoff 2>/dev/null
+	elif [[ -x /usr/bin/stty ]]; then
+		/usr/bin/stty -ixon -ixoff 2>/dev/null
+	else
+		stty -ixon -ixoff 2>/dev/null
+	fi
 fi
 
 # HISTFILE must be set before the first prompt — 03-history.zsh runs deferred and zsh
@@ -231,18 +234,20 @@ HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 # triplet shared with 00-env.zsh, the fast-path call and the early call above.
 # Bypassed when _zsh_early_base is set or when env.zsh already loaded PATH and set
 # _ZSH_PATH_LOADED in this process on non-darwin without cold-env regeneration.
-autoload -Uz _apply_base_path
-[[ -n "$_zsh_early_base" || ( -n "$_ZSH_PATH_LOADED" && -z "$_zsh_cold_env" && "$_ZSH_OS" != brew ) ]] || _apply_base_path
+if [[ -z "$_zsh_early_base" && ( -z "$_ZSH_PATH_LOADED" || -n "$_zsh_cold_env" || "$_ZSH_OS" == brew ) ]]; then
+	autoload -Uz _apply_base_path
+	_apply_base_path
+fi
 export _ZSH_PATH_LOADED=1
 unset _zsh_cold_env _zsh_early_base
 
 # Load sheldon only when stdin is a TTY — all deferred tasks require ZLE-idle (never fires
 # for non-TTY), and prmt is independently guarded. Skipping for pipe/file stdin saves ~3ms.
-if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]] && (($+commands[sheldon])); then
+if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
 	_sheldon_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml"
 	if [[ -f "$ZCACHE_DIR/sheldon.zsh" && ! "$_sheldon_cfg" -nt "$ZCACHE_DIR/sheldon.zsh" ]]; then
 		source "$ZCACHE_DIR/sheldon.zsh"
-	else
+	elif whence -p sheldon >/dev/null 2>&1; then
 		_zcache_eval sheldon 0 "sheldon source" "$_sheldon_cfg"
 	fi
 	unset _sheldon_cfg
@@ -263,70 +268,60 @@ fi
 # ZLE-idle deferred execution (or the autosuggestions/completions loaded therein). Skip
 # entirely for non-TTY stdin to avoid synchronous sourcing of large cache files.
 if [[ -z "$ZSH_EXECUTION_STRING" && -t 0 ]]; then
-	autoload -Uz _source_deferred
-	# Combined cache: all zsh/*.zsh except OS-specific files (20-os-*.zsh)
-	combined_cache="$ZCACHE_DIR/combined.zsh"
-	# Freshness via a single native glob (no subshell/loop): editing an existing
-	# file's *contents* previously went undetected here (only "cache file exists?"
-	# was checked), so combined.zsh kept sourcing stale code until a manual
-	# `zclean` — silently, indefinitely. (N.om[1]) is over-inclusive (also covers
-	# 20-os-*.zsh/01-tmux.zsh, which combined.zsh doesn't contain) but that only
-	# costs an occasional unnecessary rebuild, never a missed one. An array assignment:
-	# a scalar one does not glob (GLOB_ASSIGN is off), so it used to hold the literal
-	# pattern, which is never -nt anything, and the check always passed.
-	_newest_zsh=("$DOTFILES_DIR/zsh"/*.zsh(N.om[1]))
-	if [[ -f "$combined_cache" && ( -z "$_newest_zsh[1]" || ! "$_newest_zsh[1]" -nt "$combined_cache" ) ]]; then
-		# -t 0.01 starts a new yield chunk (see sheldon.toml, above [plugins.colors]):
-		# sourcing this cache is the single most expensive deferred task, so it must not
-		# share a zle callback with the plugin tasks queued before it.
-		_source_deferred "$combined_cache" "-mprs -t 0.01"
-	else
-		_zsh_deps=()
-		for _f in "$DOTFILES_DIR/zsh"/*.zsh; do
-			[[ -e "$_f" ]] || continue
-			[[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || _zsh_deps+=("$_f")
-		done
-		_zcache_eval combined 0 \
-			'for _f in "$DOTFILES_DIR/zsh"/*.zsh; do [[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || print -r -- "$(<"$_f")"; done' \
-			"${_zsh_deps[@]}"
-	fi
-
-	# OS-specific cache: only the file matching the detected OS
-	_os_src="$DOTFILES_DIR/zsh/20-os-${_ZSH_OS}.zsh"
-	if [[ -f "$_os_src" ]]; then
-		_os_cache="$ZCACHE_DIR/os-${_ZSH_OS}.zsh"
-		if [[ -f "$_os_cache" && ! "$_os_src" -nt "$_os_cache" ]]; then
-			_source_deferred "$_os_cache" "-mprs"
-		else
-			_zcache_eval "os-${_ZSH_OS}" 0 'print -r -- "$(<"$_os_src")"' "$_os_src"
+	# --- BATCH 3: combined.zsh+os-*.zsh ---
+	_defer_batch3() {
+		# Combined cache: all zsh/*.zsh except OS-specific files (20-os-*.zsh)
+		local _b3_comb="$ZCACHE_DIR/combined.zsh" _b3_f _b3_os_src _b3_os_cache _b3_gui_src _b3_gui_cache
+		local -a _b3_newest _b3_deps
+		# Freshness via a single native glob (no subshell/loop): editing an existing
+		# file's *contents* previously went undetected here (only "cache file exists?"
+		# was checked), so combined.zsh kept sourcing stale code until a manual
+		# `zclean` — silently, indefinitely. (N.om[1]) is over-inclusive (also covers
+		# 20-os-*.zsh/01-tmux.zsh, which combined.zsh doesn't contain) but that only
+		# costs an occasional unnecessary rebuild, never a missed one. An array assignment:
+		# a scalar one does not glob (GLOB_ASSIGN is off), so it used to hold the literal
+		# pattern, which is never -nt anything, and the check always passed.
+		_b3_newest=("$DOTFILES_DIR/zsh"/*.zsh(N.om[1]))
+		if [[ ! -f "$_b3_comb" || ( -n "$_b3_newest[1]" && "$_b3_newest[1]" -nt "$_b3_comb" ) ]]; then
+			for _b3_f in "$DOTFILES_DIR/zsh"/*.zsh; do
+				[[ -e "$_b3_f" ]] || continue
+				[[ "${_b3_f:t}" = 20-os-*.zsh || "${_b3_f:t}" = 01-tmux.zsh ]] || _b3_deps+=("$_b3_f")
+			done
+			_zcache_eval combined -1 \
+				'for _f in "$DOTFILES_DIR/zsh"/*.zsh; do [[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || print -r -- "$(<"$_f")"; done' \
+				"${_b3_deps[@]}"
 		fi
-	fi
 
-	# GUI-specific cache: always loaded on top of the OS file
-	_gui_src="$DOTFILES_DIR/zsh/20-os-gui.zsh"
-	if [[ -f "$_gui_src" && "$_gui_src" != "$_os_src" ]]; then
-		_gui_cache="$ZCACHE_DIR/os-gui.zsh"
-		if [[ -f "$_gui_cache" && ! "$_gui_src" -nt "$_gui_cache" ]]; then
-			_source_deferred "$_gui_cache" "-mprs"
-		else
-			_zcache_eval "os-gui" 0 'print -r -- "$(<"$_gui_src")"' "$_gui_src"
+		# OS-specific cache: only the file matching the detected OS
+		_b3_os_src="$DOTFILES_DIR/zsh/20-os-${_ZSH_OS}.zsh"
+		if [[ -f "$_b3_os_src" ]]; then
+			_b3_os_cache="$ZCACHE_DIR/os-${_ZSH_OS}.zsh"
+			if [[ ! -f "$_b3_os_cache" || "$_b3_os_src" -nt "$_b3_os_cache" ]]; then
+				_zcache_eval "os-${_ZSH_OS}" -1 'print -r -- "$(<"$_b3_os_src")"' "$_b3_os_src"
+			fi
 		fi
-	fi
 
-	# Tasks that combined.zsh queues while it is itself running (direnv, select-word-style,
-	# the kubectl completion cache) are appended to zsh-defer's queue with delay 0 *after*
-	# every task this file registers, so no -t placed here can reach them and they run
-	# back-to-back in one zle callback. Rewriting the leading delay field of whatever is
-	# still queued gives each of them the same yield point `zsh-defer -t 0.01` would have
-	# given at registration time. Queue elements are "<delay-in-centiseconds> <opts> <cmd>";
-	# guarded on the array existing so a zsh-defer rename degrades to today's behaviour
-	# rather than erroring at every prompt.
-	if (($+functions[zsh-defer])) && (($+_zsh_defer_tasks)); then
-		zsh-defer -mprs -c '_zsh_defer_tasks=("${(@)_zsh_defer_tasks/#0 /1 }")'
+		# GUI-specific cache: always loaded on top of the OS file
+		_b3_gui_src="$DOTFILES_DIR/zsh/20-os-gui.zsh"
+		if [[ -f "$_b3_gui_src" && "$_b3_gui_src" != "$_b3_os_src" ]]; then
+			_b3_gui_cache="$ZCACHE_DIR/os-gui.zsh"
+			if [[ ! -f "$_b3_gui_cache" || "$_b3_gui_src" -nt "$_b3_gui_cache" ]]; then
+				_zcache_eval "os-gui" -1 'print -r -- "$(<"$_b3_gui_src")"' "$_b3_gui_src"
+			fi
+		fi
+
+		[[ -f "$_b3_comb" ]] && source "$_b3_comb"
+		[[ -n "$_b3_os_cache" && -f "$_b3_os_cache" ]] && source "$_b3_os_cache"
+		[[ -n "$_b3_gui_cache" && -f "$_b3_gui_cache" ]] && source "$_b3_gui_cache"
+		unfunction _defer_batch3
+	}
+	setopt HASH_LIST_ALL HASH_DIRS
+	if ! (($+functions[zsh-defer])); then
+		_defer_batch3
 	fi
+else
+	setopt HASH_LIST_ALL HASH_DIRS
 fi
-
-setopt HASH_LIST_ALL HASH_DIRS
 
 # Appended by an installer writing through the ~/.zshrc -> repo symlink. Guarded
 # because the target does not exist on every machine, and an unguarded `.` of a

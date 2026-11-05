@@ -21,6 +21,25 @@ typeset -gi _prmt_fd=0 _prmt_stale_fd=0 _prmt_last_exit=0 _prmt_has_go=0 _prmt_h
 typeset -g _prmt_init_done='' _prmt_time=''
 typeset -g _prmt_prev_pwd='' _prmt_prev_git_root='' _prmt_git_root='' _prmt_git_branch='' _prmt_git_dirty='' _prmt_git_disp=''
 typeset -g _prmt_go_ver='' _prmt_rust_ver='' _prmt_node_ver=''
+typeset -g _prmt_cached_go_ver='' _prmt_cached_rust_ver='' _prmt_cached_node_ver=''
+typeset -g _prmt_ver_cache="${ZCACHE_DIR:-$HOME/.zcache}/prmt_versions.zsh"
+[[ -f $_prmt_ver_cache ]] && source "$_prmt_ver_cache" 2>/dev/null
+
+_prmt_stale_fd_close() {
+	if (( _prmt_stale_fd )); then
+		exec {_prmt_stale_fd}<&- 2>/dev/null
+		_prmt_stale_fd=0
+	fi
+}
+
+_prmt_save_ver_cache() {
+	local tmp="$_prmt_ver_cache.tmp.$$"
+	{
+		print -r -- "_prmt_cached_go_ver='${_prmt_cached_go_ver}'"
+		print -r -- "_prmt_cached_rust_ver='${_prmt_cached_rust_ver}'"
+		print -r -- "_prmt_cached_node_ver='${_prmt_cached_node_ver}'"
+	} >"$tmp" 2>/dev/null && command mv -f "$tmp" "$_prmt_ver_cache" 2>/dev/null
+}
 
 _prmt_preexec() {
 	typeset -gF _prmt_cmd_start=$EPOCHREALTIME
@@ -59,9 +78,24 @@ _prmt_scan_cwd() {
 				fi
 			fi
 		fi
-		[[ $d == / || -z $d ]] && break
+		[[ -n $_prmt_git_root || ( -n ${HOME:-} && $d == $HOME ) || $d == / || -z $d ]] && break
 		d=${d:h}
 	done
+	if (( _prmt_has_go )) && [[ -z $_prmt_go_ver ]]; then
+		if [[ -n $_prmt_cached_go_ver && -f $_prmt_ver_cache && ! ( $+commands[go] && "$commands[go]" -nt "$_prmt_ver_cache" ) ]]; then
+			_prmt_go_ver=$_prmt_cached_go_ver
+		fi
+	fi
+	if (( _prmt_has_rust )) && [[ -z $_prmt_rust_ver ]]; then
+		if [[ -n $_prmt_cached_rust_ver && -f $_prmt_ver_cache && ! ( $+commands[rustc] && "$commands[rustc]" -nt "$_prmt_ver_cache" ) ]]; then
+			_prmt_rust_ver=$_prmt_cached_rust_ver
+		fi
+	fi
+	if (( _prmt_has_node )) && [[ -z $_prmt_node_ver ]]; then
+		if [[ -n $_prmt_cached_node_ver && -f $_prmt_ver_cache && ! ( $+commands[node] && "$commands[node]" -nt "$_prmt_ver_cache" ) ]]; then
+			_prmt_node_ver=$_prmt_cached_node_ver
+		fi
+	fi
 	if [[ $_prmt_git_root != $_prmt_prev_git_root || -z $_prmt_git_branch ]]; then
 		_prmt_git_dirty=''
 		_prmt_prev_git_root=$_prmt_git_root
@@ -96,14 +130,28 @@ _prmt_async_callback() {
 	local fd=$1
 	{
 		local line old_prompt=$PROMPT old_disp=$_prmt_git_disp
+		local -i ver_changed=0
 		while IFS= read -r -u $fd line || [[ -n $line ]]; do
 			case $line in
 				G:*) _prmt_git_dirty=${line#G:} ;;
-				O:*) _prmt_go_ver=${line#O:} ;;
-				R:*) _prmt_rust_ver=${line#R:} ;;
-				N:*) _prmt_node_ver=${line#N:} ;;
+				O:*)
+					_prmt_go_ver=${line#O:}
+					_prmt_cached_go_ver=$_prmt_go_ver
+					ver_changed=1
+					;;
+				R:*)
+					_prmt_rust_ver=${line#R:}
+					_prmt_cached_rust_ver=$_prmt_rust_ver
+					ver_changed=1
+					;;
+				N:*)
+					_prmt_node_ver=${line#N:}
+					_prmt_cached_node_ver=$_prmt_node_ver
+					ver_changed=1
+					;;
 			esac
 		done
+		(( ver_changed )) && _prmt_save_ver_cache
 		_prmt_render_prompt
 		if [[ $_prmt_git_disp != $old_disp || $PROMPT != $old_prompt ]]; then
 			zle reset-prompt 2>/dev/null
@@ -118,6 +166,9 @@ _prmt_async_callback() {
 		(( _prmt_stale_fd && _prmt_stale_fd != fd )) && exec {_prmt_stale_fd}<&- 2>/dev/null
 		_prmt_stale_fd=$fd
 		(( _prmt_fd == fd )) && _prmt_fd=0
+		if (( $+functions[zsh-defer] )); then
+			zsh-defer -mprs -c '_prmt_stale_fd_close'
+		fi
 	}
 }
 
@@ -150,6 +201,11 @@ _prmt_precmd() {
 	_prmt_scan_cwd
 	_prmt_render_prompt
 
+	[[ -n $_prmt_init_done ]] && _prmt_worker_start
+}
+
+_prmt_worker_start() {
+	(( _prmt_fd )) && return 0
 	local -i need_git=0 need_go=0 need_rust=0 need_node=0
 	[[ -n $_prmt_git_root ]] && (($+commands[git])) && need_git=1
 	(( _prmt_has_go ))   && [[ -z $_prmt_go_ver ]]   && (($+commands[go]))    && need_go=1
@@ -199,16 +255,22 @@ _prmt_precmd() {
 	zle -F $_prmt_fd _prmt_async_callback 2>/dev/null
 }
 
-# Idempotent zle-line-init hook: when ZLE first becomes active, register the fd callback that
-# precmd opened but could not register (ZLE was not yet active at precmd time).
+# Defer worker launch on first prompt to zle-line-init so prompt displays immediately
 _prmt_zle_init() {
-	[[ -n $_prmt_init_done ]] && return
-	_prmt_init_done=1
-	(( _prmt_fd )) && zle -F $_prmt_fd _prmt_async_callback 2>/dev/null
+	if [[ -z $_prmt_init_done ]]; then
+		_prmt_init_done=1
+		_prmt_worker_start
+	fi
+	[[ ${widgets[zle-line-init]:-} == user:_prmt_zle_init ]] && zle -D zle-line-init 2>/dev/null
+	return 0
 }
-autoload -Uz add-zle-hook-widget
-{ add-zle-hook-widget zle-line-init _prmt_zle_init } 2>/dev/null ||
+if ! zle -l zle-line-init >/dev/null 2>&1; then
 	zle -N zle-line-init _prmt_zle_init
+else
+	autoload -Uz add-zle-hook-widget
+	{ add-zle-hook-widget zle-line-init _prmt_zle_init } 2>/dev/null ||
+		zle -N zle-line-init _prmt_zle_init
+fi
 
 (( ${preexec_functions[(Ie)_prmt_preexec]} )) || preexec_functions=(_prmt_preexec "${preexec_functions[@]}")
 (( ${precmd_functions[(Ie)_prmt_precmd]}   )) || precmd_functions=(_prmt_precmd   "${precmd_functions[@]}")
