@@ -99,7 +99,6 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
   "enableAllProjectMcpServers": true,
   "hooks": {
     "SessionStart": [
@@ -338,6 +337,7 @@
   "theme": "dark",
   "editorMode": "vim",
   "preferredNotifChannel": "ghostty",
+  "switchModelsOnFlag": false,
   "autoScrollEnabled": true,
   "fileCheckpointingEnabled": true,
   "showTurnDuration": true,

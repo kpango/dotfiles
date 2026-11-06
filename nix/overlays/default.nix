@@ -168,5 +168,27 @@
         };
       };
     }
+    # opencode 2.2.5's node_modules FOD carries the Linux hash on every platform
+    # at the pinned nixos-unstable, so every darwin host fails with a hash
+    # mismatch (and Hydra has no darwin output to substitute). Upstream fixed it
+    # in nixpkgs c399e1b7fb90 ("opencode: fix hash", 2026-11-04) with this exact
+    # darwin value. Guarded on the old hash, so the override switches itself
+    # off once flake.lock moves past the fix — delete this block then. (The
+    # hash check sits inside the value, not in optionalAttrs' condition: the
+    # overlay's attribute names must not depend on a package, or the package
+    # set's fixpoint recurses infinitely.)
+    // prev.lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
+      opencode =
+        if
+          prev.opencode.node_modules.outputHash == "sha256-xfOVcw1+waLVNhFDwzOtzxrUSQEogvn88YomydOlhwc="
+        then
+          prev.opencode.overrideAttrs (old: {
+            node_modules = old.node_modules.overrideAttrs {
+              outputHash = "sha256-dIveiaiPFGSItwLyeMuPDxTE9gpvvnlTCB/+nG24qCc=";
+            };
+          })
+        else
+          prev.opencode;
+    }
   )
 ]
