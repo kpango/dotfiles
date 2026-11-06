@@ -80,12 +80,29 @@ nix/setup:
 	@echo " Starting Nix Development Environment Setup"
 	@echo " User: $$(whoami), Hostname: $(NIX_HOST_NAME), OS: $$(uname -s)"
 	@echo "=========================================================="
-	@if ! command -v nix >/dev/null 2>&1; then \
-		echo "=> Installing Nix (Determinate Systems)..."; \
-		curl --retry 3 --retry-all-errors --retry-delay 3 --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install --no-confirm; \
-	else \
+	@# The installer binary comes straight from GitHub Releases rather than through
+	@# install.determinate.systems (blocked on some networks, e.g. the corporate one
+	@# macbook-pro-m3 sits on): it is the same binary that script fetches, and it
+	@# embeds both the Determinate Nix tarball and determinate-nixd, so installing
+	@# needs no other host. --determinate is explicit to match the existing hosts.
+	@if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; \
+	if command -v nix >/dev/null 2>&1; then \
 		echo "=> Nix is already installed."; \
+	else \
+		echo "=> Installing Nix (Determinate Systems)..."; \
+		_arch=$$(uname -m); [ "$$_arch" = arm64 ] && _arch=aarch64; \
+		_os=$$(uname -s | tr '[:upper:]' '[:lower:]'); \
+		_tmp=$$(mktemp -d) || exit 1; \
+		curl --retry 3 --retry-all-errors --retry-delay 3 --proto '=https' --tlsv1.2 -sSfL \
+			-o "$$_tmp/nix-installer" \
+			"https://github.com/DeterminateSystems/nix-installer/releases/latest/download/nix-installer-$$_arch-$$_os" \
+			&& chmod +x "$$_tmp/nix-installer" \
+			&& "$$_tmp/nix-installer" install --determinate --no-confirm \
+			|| { echo "Error: Nix installation failed."; exit 1; }; \
+		rm -f "$$_tmp/nix-installer"; rmdir "$$_tmp"; \
 	fi
+	@if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; \
+	command -v nix >/dev/null 2>&1 || { echo "Error: nix not found after install."; exit 1; }
 	@if [ "$$(uname -s)" = "Darwin" ]; then \
 		$(NIX_SETUP_DARWIN); \
 	fi
@@ -93,26 +110,22 @@ nix/setup:
 	@if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
 		if [ -n "$$SUDO_USER" ]; then sudo -u $$SUDO_USER git init; else git init; fi; \
 	fi
-	@if [ -n "$$SUDO_USER" ]; then \
-		sudo -u $$SUDO_USER git add .; \
-		if ! sudo -u $$SUDO_USER git config user.name >/dev/null 2>&1; then sudo -u $$SUDO_USER git config user.name "$$SUDO_USER"; fi; \
-		if ! sudo -u $$SUDO_USER git config user.email >/dev/null 2>&1; then sudo -u $$SUDO_USER git config user.email "$$SUDO_USER@localhost"; fi; \
-		sudo -u $$SUDO_USER git commit -m "Initial commit for Nix configuration" || true; \
-	else \
-		git add .; \
-		if ! git config user.name >/dev/null 2>&1; then git config user.name "$$(whoami)"; fi; \
-		if ! git config user.email >/dev/null 2>&1; then git config user.email "$$(whoami)@localhost"; fi; \
-		git commit -m "Initial commit for Nix configuration" || true; \
-	fi
+	@# Tracking (git add) is all a flake needs. No commit: it would sweep the user's
+	@# uncommitted work into an "Initial commit", and on a fresh Mac it fails anyway
+	@# (commit.gpgsign is on, but gpg only arrives with nix-darwin).
+	@if [ -n "$$SUDO_USER" ]; then sudo -u $$SUDO_USER git add .; else git add .; fi
 	@echo "=> Running initial nix build for host: $(NIX_HOST_NAME)..."
 	@if [ "$$(uname -s)" = "Darwin" ]; then \
-		echo "=> Note: Running nix-darwin switch as root."; \
-		echo "=> (nix-darwin now requires root for system activation)"; \
-		if [ -n "$$SUDO_USER" ]; then \
-			if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; sudo -u $$SUDO_USER sh -c "cd '$$PWD' && sudo nix run nix-darwin -- switch --flake ./nix#$(NIX_HOST_NAME)"; \
-		else \
-			if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; sudo nix run nix-darwin -- switch --flake ./nix#$(NIX_HOST_NAME); \
-		fi; \
+		echo "=> Building as the repo owner, then registering + activating as root"; \
+		echo "=> (same split as nix-update: evaluating the flake as root fails with"; \
+		echo "=>  'repository path is not owned by current user')"; \
+		if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; \
+		_nix=$$(command -v nix) && _nixenv=$$(command -v nix-env) || { echo "Error: nix not found in PATH."; exit 1; }; \
+		if [ -n "$$SUDO_USER" ]; then _asuser="sudo -u $$SUDO_USER"; else _asuser=""; fi; \
+		_system=$$($$_asuser "$$_nix" --extra-experimental-features 'nix-command flakes' build --no-link --print-out-paths \
+			"./nix#darwinConfigurations.$(NIX_HOST_NAME).system") || exit 1; \
+		sudo "$$_nixenv" -p /nix/var/nix/profiles/system --set "$$_system" || exit 1; \
+		sudo "$$_system/sw/bin/darwin-rebuild" activate || exit 1; \
 	elif grep -q "NixOS" /etc/os-release >/dev/null 2>&1 || [ -f /etc/NIXOS ]; then \
 		$(NIX_BUILD_NIXOS); \
 	else \

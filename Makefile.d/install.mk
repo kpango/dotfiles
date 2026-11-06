@@ -34,6 +34,24 @@ define DEPLOY_FUNC
 	}
 endef
 
+# $(call LINK_DIR_FUNC,src,dest): `ln -sfvn src dest` for a directory link, but when
+# dest is already a real directory (e.g. Claude Code ran once before this install
+# and created ~/.claude/skills or ~/.claude/projects) — where plain ln would nest
+# the link inside it as dest/<basename src> — its contents are merged into src
+# (never overwriting) and the directory is kept aside as dest.pre-dotfiles.<ts>.
+# cp's status is ignored on purpose: macOS `cp -n` exits 1 whenever it skips an
+# existing file, and nothing is lost either way since dest is moved, not deleted.
+define LINK_DIR_FUNC
+	if [ -d "$(2)" ] && [ ! -L "$(2)" ]; then \
+		if [ -L "$(2)/$$(basename "$(1)")" ]; then rm -f "$(2)/$$(basename "$(1)")"; fi; \
+		mkdir -p "$(1)" || exit 1; \
+		cp -Rpn "$(2)/." "$(1)/" || true; \
+		mv "$(2)" "$(2).pre-dotfiles.$$(date +%Y%m%d%H%M%S)" || exit 1; \
+		echo "merged pre-existing $(2) into $(1) (original kept as $(2).pre-dotfiles.*)"; \
+	fi; \
+	ln -sfvn "$(1)" "$(2)"
+endef
+
 define CLEAN_FUNC
 	[ -z "$(1)" ] || $(2) rm -rf "$(1)"
 endef
@@ -540,21 +558,29 @@ claude/docker/install:
 ## path itself (/root vs macOS's /var/root) is resolved once via $(ROOT_HOME) in variables.mk.
 claude/install: dotfiles/install
 	mkdir -p "$(HOME)/.claude/plugins" "$(HOME)/.claude/memory" "$(HOME)/.claude/session-data"
-	envsubst < "$(ROOTDIR)/agent/harnesses/claude/installed_plugins.json" > "$(HOME)/.claude/plugins/installed_plugins.json"
-	ln -sfvn "$(ROOTDIR)/agent/agents" "$(HOME)/.claude/agents"
+	@# envsubst (gettext) is absent on a fresh Mac before nix/setup; perl ships with macOS.
+	if command -v envsubst >/dev/null 2>&1; then \
+		envsubst < "$(ROOTDIR)/agent/harnesses/claude/installed_plugins.json"; \
+	else \
+		perl -pe 's{\$$(?:\{(\w+)\}|(\w+))}{$$ENV{$$1 // $$2} // ""}ge' "$(ROOTDIR)/agent/harnesses/claude/installed_plugins.json"; \
+	fi > "$(HOME)/.claude/plugins/installed_plugins.json"
+	@$(call LINK_DIR_FUNC,$(ROOTDIR)/agent/agents,$(HOME)/.claude/agents)
 	@if [ -L "$(HOME)/.claude/hooks" ]; then rm -f "$(HOME)/.claude/hooks"; fi
 	@mkdir -p "$(HOME)/.claude/hooks"
 	@find "$(ROOTDIR)/agent/harnesses/claude/hooks" -maxdepth 1 -name "*.sh" \
 		-exec ln -sfvn {} "$(HOME)/.claude/hooks/" \;
 	@find "$(ROOTDIR)/agent/hooks/claude" -maxdepth 1 -name "*.sh" \
 		-exec ln -sfvn {} "$(HOME)/.claude/hooks/" \;
-	ln -sfvn "$(ROOTDIR)/agent/skills" "$(HOME)/.claude/skills"
-	ln -sfvn "$(ROOTDIR)/agent/rules"   "$(HOME)/.claude/rules"
+	@$(call LINK_DIR_FUNC,$(ROOTDIR)/agent/skills,$(HOME)/.claude/skills)
+	@$(call LINK_DIR_FUNC,$(ROOTDIR)/agent/rules,$(HOME)/.claude/rules)
 	ln -sfvn "$(ROOTDIR)/agent/RTK.md" "$(HOME)/.claude/RTK.md"
 	@pass_claude="$(HOME)/go/src/github.com/kpango/pass/claude"; \
 	mkdir -p "$${pass_claude}/projects"; \
 	test -f "$${pass_claude}/history.jsonl" || touch "$${pass_claude}/history.jsonl"; \
-	ln -sfvn "$${pass_claude}/projects"      "$(HOME)/.claude/projects"; \
+	$(call LINK_DIR_FUNC,$${pass_claude}/projects,$(HOME)/.claude/projects); \
+	if [ -f "$(HOME)/.claude/history.jsonl" ] && [ ! -L "$(HOME)/.claude/history.jsonl" ]; then \
+		cat "$(HOME)/.claude/history.jsonl" >> "$${pass_claude}/history.jsonl" && rm -f "$(HOME)/.claude/history.jsonl"; \
+	fi; \
 	ln -sfvn "$${pass_claude}/history.jsonl" "$(HOME)/.claude/history.jsonl"; \
 	echo "linked: ~/.claude/projects -> $${pass_claude}/projects"; \
 	echo "linked: ~/.claude/history.jsonl -> $${pass_claude}/history.jsonl"
@@ -825,6 +851,8 @@ pinentry/install:
 	    && sudo install -m 755 /tmp/pinentry-tmux /usr/local/bin/pinentry-tmux \
 	    && rm -f /tmp/pinentry-tmux \
 	    && echo "pinentry-tmux: installed /usr/local/bin/pinentry-tmux"; \
+	elif [ "$(UNAME_S)" = Darwin ] && [ -z "$(PINENTRY_STRICT)" ]; then \
+	    echo "pinentry-tmux: Go not found — skipped (mac/install builds it after nix/setup provides Go)"; \
 	else \
 	    echo "pinentry-tmux: Go not found — cannot build"; \
 	    exit 1; \
@@ -1011,8 +1039,12 @@ mac/install: dotfiles/install claude/install pi/install agy/install codex/instal
 		launchctl load -w "$(HOME)/Library/LaunchAgents/$$agent"; \
 	done
 	sudo rm -rf $(ROOTDIR)/nvim/lua/lua
-	@$(MAKE) pinentry/install ROOTDIR='$(ROOTDIR)'
 	@$(MAKE) nix/setup ROOTDIR='$(ROOTDIR)' NIX_HOST_NAME=$(MAC_NIX_HOST_NAME)
+	@# After nix/setup so a fresh Mac (no Go before Nix) still gets pinentry-tmux.
+	@# This make process still has the pre-Nix PATH, so take PATH from a fresh zsh,
+	@# which loads whatever environment the system now configures (nix-darwin's
+	@# /etc/zshenv) — no Nix paths spelled out here. Strict: a missing Go is an error.
+	@PATH="$$(zsh -c 'printf %s "$$PATH"')" $(MAKE) pinentry/install ROOTDIR='$(ROOTDIR)' PINENTRY_STRICT=1
 
 ## mac/install pinned to the MacBook Pro (M1, account "yusukekato") nix-darwin host
 m1/install:
