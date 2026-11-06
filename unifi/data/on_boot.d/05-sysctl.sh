@@ -23,8 +23,12 @@ fi
 # Larger socket buffers for the WAN-facing TCP stack
 sysctl -w net.core.rmem_max=134217728
 sysctl -w net.core.wmem_max=134217728
-sysctl -w net.core.rmem_default=16777216
-sysctl -w net.core.wmem_default=16777216
+# Keep the *_default at the kernel default (212992). A 16MB default applied to every
+# socket, including dpinger's raw ICMP sockets that receive a copy of every ICMP packet
+# and are never drained: 19 of them sat full at 16MB (301MB Recv-Q), which drove the UDM
+# into swap thrashing and an OOM kill (2026-11-06). Apps that want more opt in up to *_max.
+sysctl -w net.core.rmem_default=212992
+sysctl -w net.core.wmem_default=212992
 
 # TCP Fast Open (client + server)
 sysctl -w net.ipv4.tcp_fastopen=3 2>/dev/null || true
