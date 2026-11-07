@@ -23,7 +23,6 @@ Run budget arithmetic (critical path): init 300000 + scope 600000 + ceil(8 / max
 - Nothing in the runtime sandboxes the child agents: all agents share one filesystem and one user, so every restriction below is a prompt contract, not an enforced guarantee.
 - Explorers catching their own errors and writing `findings-<shard>.json` is a prompt contract. The secretary summarizes what the files say; it is an LLM and can mis-merge. A runtime-level instance failure is a non-success state (see the success rule).
 
-
 ## How to run it
 
 The run call takes only a spec name (no input argument). The caller therefore creates a fresh per-run directory, puts the task in it, and writes ONE fixed pointer file that only `init` reads:

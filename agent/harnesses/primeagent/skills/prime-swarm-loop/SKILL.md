@@ -114,7 +114,7 @@ them apart from the node outputs in `await rlm.factory.status(run_id)`): the las
    most 3 review runs per review round (no `budget_guard` runs there, so no mission budget either); after the 3rd,
    stop and report. Failed lenses become new tasks (back to EXECUTE, max 2 review rounds), then stop and report.
 7. **GATE** - run the **HEAD check** again, then present: task outcomes, `change_set(<worktree>, <INIT base>,
-   expect_common_dir=<common_dir>)` paths with their `in` states, review summary, residual risks. Then read
+expect_common_dir=<common_dir>)` paths with their `in` states, review summary, residual risks. Then read
    `~/.prime/agent/skills/prime-swarm-release-gate/SKILL.md` and follow it with this `<tip>` as its `<tip>` and the
    INIT `branch` as its `<branch>` (or ask the human to run `/skill:prime-swarm-release-gate` and give them both).
    STOP and wait for the human.

@@ -63,6 +63,8 @@ chk "eth8 accept_dad = 0 (CE re-add not held tentative, CONTEXT Q44)" sh -c '[ "
 echo "== memory (CONTEXT Q43)"
 chk "net.core rmem/wmem_default = 212992" sh -c '[ "$(sysctl -n net.core.rmem_default)" = 212992 ] && [ "$(sysctl -n net.core.wmem_default)" = 212992 ]'
 chk "raw socket Recv-Q total < 64MB (dpinger send sockets)" sh -c '[ "$(ss -anw 2>/dev/null | awk "NR>1{s+=\$2} END{print int(s/1048576)}")" -lt 64 ]'
+chk "netlink Rmem total < 32MB (udapi-bridge unread route sockets, CONTEXT Q47)" sh -c '[ "$(awk "NR>1{s+=\$5} END{print int(s/1048576)}" /proc/net/netlink)" -lt 32 ]'
+chk "tcp_mem high < 1GB (kernel default, CONTEXT Q47)" sh -c '[ "$(awk "{print \$3}" /proc/sys/net/ipv4/tcp_mem)" -lt 262144 ]'
 chk "MemAvailable > 512MB" sh -c '[ "$(awk "/MemAvailable/{print int(\$2/1024)}" /proc/meminfo)" -gt 512 ]'
 chk "MAP-E fallback has saved parameters (CONTEXT Q41)" test -s /data/udm-mape-fallback/ip6tnl-parameters
 chk "api.enabler.ne.jp pinned to NGN DNS answer in /etc/hosts (CONTEXT Q41)" sh -c 'sed -n "/^# udm-mape-fallback begin$/,/^# udm-mape-fallback end$/p" /etc/hosts | grep -q " api.enabler.ne.jp$"'

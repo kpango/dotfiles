@@ -381,11 +381,12 @@ define MAC_PREP
 	# already replaced any hand-written ~/.zprofile, e.g. one with brew shellenv).
 	rm -f $(HOME)/.zshrc $(HOME)/.zshenv $(HOME)/.zprofile
 	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
-	cp $(ROOTDIR)/gpg-agent.conf $(HOME)/.gnupg/gpg-agent.conf
 	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
-	# gpg-agent.conf is left pointing at /usr/local/bin/pinentry-tmux (the
-	# template default) — nix-darwin's home-manager activation (invoked by
-	# nix/setup below) owns the final pinentry-program value from here.
+	# gpg-agent.conf is NOT copied here: nix-darwin's home-manager activation
+	# (nix/setup below) owns it (darwin.nix, Nix-built pinentry wrapper path).
+	# A plain-file copy here made home-manager back it up to
+	# gpg-agent.conf.hm-bak on every run, and the second run aborted with
+	# "Existing file '...gpg-agent.conf.hm-bak' would be clobbered".
 	# Previously this rewrote the path to /opt/homebrew/bin/pinentry-mac, a
 	# Homebrew path that stopped existing once Homebrew was disabled in favor
 	# of nixpkgs (see nix/modules/home/dotfiles/darwin.nix) — that stale sed

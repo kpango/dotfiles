@@ -711,7 +711,7 @@ kpango は `~/.zprofile` の `exec sway`、root(bash) は `/etc/profile.d/sway.s
   同じ既存挙動）。MAC_PREP は home-manager に場所を空けるため 3 ファイルとも無条件に削除する
 - **I2 (Q2) env import は 1 回**: 値の持ち主は `arch/sway.sh`（sway に export）。systemd/D-Bus への
   反映は sway.conf autostart の 1 exec（`sh -c 'env -u … dbus-update-activation-environment --systemd --all;
-  systemctl --user start --no-block sway-session.target'`）のみ。sway の exec は非同期なので import と
+systemctl --user start --no-block sway-session.target'`）のみ。sway の exec は非同期なので import と
   target 起動は同一 exec 内で順序付けし、`;` で import 失敗時も target は起動する。sway 起動前の import と
   キー列挙による個別 import は持たない。NVIDIA 用の `LIBVA_DRIVER_NAME`/`__GL_*` は
   `systemd/environment.d/xdg.conf` から `arch/sway.sh` の NVIDIA 分岐へ移設（sway 外のセッションには付かない）。
@@ -1117,8 +1117,8 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
      （末尾の ```json フェンス優先、次に回答全体）で読んだポート値が ping `{"ok": true}`・pong `{"done": true}` に
      JSON として厳密一致（`true` と `1` は別）。
   6. それ以外は FAIL。
-  guard は指示コードの tool call に対応する toolResult の結果行だけを読む。allowlist フェーズは PASS か FAIL だけ
-  （拒否はモデル出力より前に起きる）。
+     guard は指示コードの tool call に対応する toolResult の結果行だけを読む。allowlist フェーズは PASS か FAIL だけ
+     （拒否はモデル出力より前に起きる）。
 - **attempt 2/3 の PASS の扱い**: attempt 2/3 の PASS 判定は `answer_captured` も回答値も見ていなかった（INCONCLUSIVE (b) の
   判定では attempt 2 が `answer_captured`、attempt 3 がさらに子 transcript の回答値を見ていた）。attempt 3 の
   Checker の実走 1 回は PASS と判定されたが、events に `answer_captured:pong` が無く（子 transcript には

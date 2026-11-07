@@ -25,7 +25,6 @@ Run budget arithmetic (critical path with `max_parallel` 3): init 300000 + diff-
 - Nothing in the runtime sandboxes the child agents: all agents share one filesystem and one user, so every restriction below is a prompt contract, not an enforced guarantee.
 - Each lens verdict is an LLM judgement; the aggregator only counts them. `all_pass` is evidence for the human gate, not a replacement for it.
 
-
 ## How to run it
 
 The run call takes only a spec name (no input argument). The caller therefore creates a fresh per-run directory, puts the task in it, and writes ONE fixed pointer file that only `init` reads:

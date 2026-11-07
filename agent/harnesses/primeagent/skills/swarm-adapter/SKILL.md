@@ -109,7 +109,7 @@ if vm["exit_code"] != 0:
   worktrees of it). A submodule or `--separate-git-dir` checkout is refused (`error` "unsupported repository layout"). The worktree dir may be
   neither inside the main checkout nor inside the caller's checkout. Inherited `GIT_DIR`/`GIT_WORK_TREE`/`GIT_INDEX_FILE`/... are
   stripped from every git call (e.g. when run from a git hook).
-  Known limit: a *linked* worktree of a `--separate-git-dir` repo is not detected (indistinguishable by layout).
+  Known limit: a _linked_ worktree of a `--separate-git-dir` repo is not detected (indistinguishable by layout).
 - `graph_compile`/`graph_status`/`mission_init` take `cwd` (default: process cwd).
 - `budget_guard(task, mission=, max_attempts=, mission_max=, reset=)` maps to the script's positional/`--mission`/`--mission-max`/`--reset`
   options; `fable_maker(base_task)` is `--fable-maker`. `mission_init(..., depth=, cwd=)` runs in the mission worktree `cwd`.
@@ -207,13 +207,13 @@ if vm["exit_code"] != 0:
     followed, anything else a plain entry), an element the tree does NOT have (untracked, ignored: a checkout leaves it on disk, T6c
     a16) and an element outside every checkout location (below) by the DISK (lstat; a symlink is read
     and followed, so `<outside symlink>/..` is the parent of its target, as for the kernel: with `~/.claude/skills ->
-    <dotfiles>/agent/skills` from `make claude/install`, a link `x -> ../../../../../.claude/skills/../write-scope-rules.json` in the
+<dotfiles>/agent/skills` from `make claude/install`, a link `x -> ../../../../../.claude/skills/../write-scope-rules.json` in the
     main checkout resolves to `<main>/agent/write-scope-rules.json`, T6c a14). Tree and disk hops together: at most 40, else
     `error`; over all links, locations and twin re-walks of one check at most 100000 hops and at most 1000 symlinks in the tree,
     else `error`; an lstat/readlink error other than a missing element is an `error` too. **A process-dependent or special file
     system is an `error`** (T6c a15): the kernel resolves `/proc/self`, `/proc/thread-self`, `/proc/<pid>/{cwd,root,fd}`,
     `/dev/fd`, `/dev/stdin` ... for the process that LOOKS, so what the adapter reads there is only its own view (`x ->
-    /proc/self/cwd/../dotfiles/.claude/settings.json` passed every check with the adapter's cwd anywhere and is the main
+/proc/self/cwd/../dotfiles/.claude/settings.json` passed every check with the adapter's cwd anywhere and is the main
     checkout's settings.json for a process whose cwd is the main checkout). Refused: an element the walk resolves on disk at or
     below `/proc`, `/dev` or `/sys` (the whole trees, so a container whose `/dev` is a tmpfs is covered), an element whose lstat
     `st_dev` is a mount of type proc / sysfs / devtmpfs / devpts / cgroup(2) / mqueue / debugfs / tracefs / securityfs / pstore /
@@ -293,7 +293,7 @@ if vm["exit_code"] != 0:
     `base` must be an ancestor of HEAD, else `error` before anything is staged: after a maker's `git reset --hard base~1` the tree differs from base's by the reverse of base's own commits (it used to be reported as `zero_diff` true, dropping the task's effect).
     **Build, then verify the RESULT**: new blobs are written by `hash-object -w --no-filters --stdin-paths` from private copies (each
     re-read must still hash as checked), the entries go into a PRIVATE index (`GIT_INDEX_FILE` in a mkdtemp dir, `update-index -z
-    --index-info`), `write-tree`. That tree's `diff-tree -r --no-renames base..tree` is Tier B checked together with every earlier path
+--index-info`), `write-tree`. That tree's `diff-tree -r --no-renames base..tree` is Tier B checked together with every earlier path
     (an entry that reached the private index after the pre-check is exit 3 with NO `tree`), every intended entry must be in it, and no
     excluded path may differ from HEAD in it. Only then is the REAL index written, with `read-tree <tree>` (no `-m`/`-u`), and it must
     write back the same tree (else `error`). Every failure before that leaves the real index as the maker left it. `read-tree` drops
@@ -318,14 +318,14 @@ if vm["exit_code"] != 0:
   - `verify_merge(mission_wt, head, expect_common_dir=)` (READ-ONLY; call it right after the merge): `head` = `incoming`'s `head` (full 40-hex).
     HEAD must be a descendant of `head` (else `error`); `diff-tree -r head HEAD` over the COMMITTED trees (replace refs ignored, submodule
     hiding off) is gitlink-checked and Tier B checked, symlink targets included (above). Returns `{paths, tier_b, head: <HEAD checked>,
-    exit_code}`: 0 clean, 3 Tier B hit, other = error (gitlink, not a descendant, git failure). **Anything but 0: STOP and report to a human; do not
+exit_code}`: 0 clean, 3 Tier B hit, other = error (gitlink, not a descendant, git failure). **Anything but 0: STOP and report to a human; do not
     `git reset --hard` (the adapter never destroys, and nothing here undoes the merge for you).**
     Why it exists: the merge commit is checked as committed, independent of how it was made (a9-a10 merged with `git merge`, where a
     `post-merge` hook could replace HEAD, measured). ALWAYS run `verify_merge` before anything builds on the new HEAD.
   - `commit_tree(wt, tree, parents, msg, expect_common_dir=)`: writes the commit object only (1-2 full-sha parents, an existing tree; no
     ref, index or working tree touched) via `commit-tree` in the shadow, into the repository's object store. The written commit's
     parents are read back from git and must be `parents` (`commit-tree` drops a duplicate `-p` with exit 0: `error`). Returns `{commit,
-    tree, parents, exit_code}`. Not signed (above).
+tree, parents, exit_code}`. Not signed (above).
   - `update_ref(wt, new, old, checkout=False, expect_common_dir=)`: the step that makes the commit the branch tip. HEAD of `wt` must be
     a symbolic ref to `refs/heads/swarm-prime/*` (what `worktree_alloc` creates; detached HEAD or another branch: `error`), `new`'s first
     parent must be `old` (a fast-forward by one commit: history is never rewound or replaced, undo = move it back to that parent), and

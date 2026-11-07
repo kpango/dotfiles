@@ -369,7 +369,7 @@ statistics history is cleared and starts fresh after the update."
 ([release notes](https://community.ui.com/releases/UniFi-Network-Application-11-0-83/d6940379-cd5a-4e61-8596-7e22d647a4ea)).
 Check the version first, then use the matching recipe.
 
-*Network >= 11.0.83 (PostgreSQL).* Observed on Network 11.0.89: no `mongod` process, port 27117
+_Network >= 11.0.83 (PostgreSQL)._ Observed on Network 11.0.89: no `mongod` process, port 27117
 refuses connections, and the Java app runs with `-Dunifi.active.db.mode=postgresql`. PostgreSQL
 listens on unix sockets in `/var/run/postgresql` on ports 5432 and 5434; database `unifi-network`
 is on 5434. These recipes were run as the `postgres` user with `LC_ALL=C` (without it, perl locale
@@ -382,7 +382,7 @@ q "select name, to_timestamp(last_seen) from config.device order by name"
 q "select dynamic_part from config.setting where key='ips'"
 ```
 
-*Network < 11.0.83 (MongoDB).*
+_Network < 11.0.83 (MongoDB)._
 
 ```bash
 mongo --quiet --port 27117 --eval 'db.device.find({},{name:1,last_seen:1,_id:0}).toArray()' ace

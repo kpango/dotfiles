@@ -24,7 +24,6 @@ Runs one implementation task as a guarded loop with EXPLICIT terminal states. `i
 - The checker verdict is an LLM judgement, grounded by its own re-run of `swarm_adapter.verify` and by the runtime-bound `init` json (CONTEXT.md P-7). It is not a guarantee: a maker sharing the filesystem could in principle overwrite `outcome.json`, `checker.md` or the tests. Human review of the diff at the gate remains the authority.
 - `swarm_adapter.verify(commands, cwd)` runs the commands sequentially with a default timeout of 600 s per command (swarm-adapter `verify`, `timeout: float = 600`). Both `maker` (900000 ms) and `checker` (900000 ms) run it once per entry, so a gate set whose total runtime approaches 900 s will exceed the state `budget_ms` and pause the run. Size budgets first: sum the gate's command times plus implementation or judging time, then raise the maker and checker `budget_ms` and the implement run `budget_ms` together (the arithmetic in this file and `run_budgets_cover_critical_paths` in the simulator must still hold).
 
-
 ## How to run it
 
 The run call takes only a spec name (no input argument). The caller therefore creates a fresh per-run directory, puts the task in it, and writes ONE fixed pointer file that only `init` reads:

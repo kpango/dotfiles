@@ -1336,17 +1336,17 @@ settings.json`・`agent/harnesses/pi/mcp.json`・`agent/harnesses/agy/mcp_config
 
 ### 構成（`agent/harnesses/primeagent/`）
 
-| ファイル | 役割 | `$HOME` 側 |
-| --- | --- | --- |
-| `settings.json` | repo 所有キー（root モデル `defaultProvider`/`defaultModel`、`providerBackupModel`、autonomous・retry・telemetry 無効・`factory.enabled`・`mcpServers` 等） | `install.sh` が live とマージした 0600 の通常ファイル（symlink にしない、P-2） |
-| `model-routing.json` | Tier Low〜Max の SSoT（Q4）。`subagentDefaultModel`(High)・`auxiliaryModel`(Low)・`allowedModels` は install 時にここから導出（C-2） | `~/.prime/agent/model-routing.json`（symlink、DOTFILES_MAP） |
-| `models.json` | ローカル provider（`local-ollama` の `qwen3:4b-instruct`、`local-vllm`） | `~/.prime/agent/models.json`（symlink、DOTFILES_MAP） |
-| `AGENTS.md` | `gen-agents-md.sh` が `agent/AGENTS.md` の中立部分＋`AGENTS-supplement.md` から生成して commit したもの（手編集しない） | `~/.prime/agent/AGENTS.md`（symlink、DOTFILES_MAP） |
-| `skills.list` | `agent/skills/` の共有スキルのうち prime に張るもの（24 件） | `~/.prime/agent/skills/<name>`（per-entry symlink） |
-| `skills/` | prime 専用スキル 7 件（`prime-swarm-*` 6 件＋Python スキル `swarm-adapter`） | 同上 |
-| `machines/` | factory machine 3 件（`swarm-explore`/`swarm-implement`/`swarm-review`） | `~/.prime/agent/machines/<name>`（per-entry symlink） |
-| `bin/pa-sandbox`, `bin/pa-auto` | 第 2 層の隔離実行（下記） | `~/.local/bin/`（symlink） |
-| （`agent/scripts/prime-shell-guard.sh`） | 第 1 層の shell guard | `~/.prime/agent/bin/prime-shell-guard.sh`（symlink） |
+| ファイル                                 | 役割                                                                                                                                                        | `$HOME` 側                                                                     |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `settings.json`                          | repo 所有キー（root モデル `defaultProvider`/`defaultModel`、`providerBackupModel`、autonomous・retry・telemetry 無効・`factory.enabled`・`mcpServers` 等） | `install.sh` が live とマージした 0600 の通常ファイル（symlink にしない、P-2） |
+| `model-routing.json`                     | Tier Low〜Max の SSoT（Q4）。`subagentDefaultModel`(High)・`auxiliaryModel`(Low)・`allowedModels` は install 時にここから導出（C-2）                        | `~/.prime/agent/model-routing.json`（symlink、DOTFILES_MAP）                   |
+| `models.json`                            | ローカル provider（`local-ollama` の `qwen3:4b-instruct`、`local-vllm`）                                                                                    | `~/.prime/agent/models.json`（symlink、DOTFILES_MAP）                          |
+| `AGENTS.md`                              | `gen-agents-md.sh` が `agent/AGENTS.md` の中立部分＋`AGENTS-supplement.md` から生成して commit したもの（手編集しない）                                     | `~/.prime/agent/AGENTS.md`（symlink、DOTFILES_MAP）                            |
+| `skills.list`                            | `agent/skills/` の共有スキルのうち prime に張るもの（24 件）                                                                                                | `~/.prime/agent/skills/<name>`（per-entry symlink）                            |
+| `skills/`                                | prime 専用スキル 7 件（`prime-swarm-*` 6 件＋Python スキル `swarm-adapter`）                                                                                | 同上                                                                           |
+| `machines/`                              | factory machine 3 件（`swarm-explore`/`swarm-implement`/`swarm-review`）                                                                                    | `~/.prime/agent/machines/<name>`（per-entry symlink）                          |
+| `bin/pa-sandbox`, `bin/pa-auto`          | 第 2 層の隔離実行（下記）                                                                                                                                   | `~/.local/bin/`（symlink）                                                     |
+| （`agent/scripts/prime-shell-guard.sh`） | 第 1 層の shell guard                                                                                                                                       | `~/.prime/agent/bin/prime-shell-guard.sh`（symlink）                           |
 
 `agents`（→ `agent/agents`）・`themes`（→ `agent/harnesses/pi/themes`）・`SWARM.md`・`SWARM_REFERENCES.md`・`RTK.md` も
 `~/.prime/agent/` へ symlink される。`SYSTEM.md` は置かない（prime のコア prompt 層を置換するため、P-1）。
@@ -1428,17 +1428,17 @@ live 配線の宣言は `agent/sync-manifest.json` の `primeagent` target（`li
 `validate-harness.sh`・`test-agents-md.sh`・`test-install.sh` はその項目を SKIP / WARN にするが、`test-pa-wrappers.sh`
 （bwrap）・`test-machines.sh`・`test-prime-skills.sh`（prime-agent）を単体で実行すると FAIL になる。
 
-| コマンド | 内容 |
-| --- | --- |
-| `bash agent/harnesses/primeagent/validate-harness.sh` | repo の検査は常に、`$HOME/.prime/agent` があれば live を読み取りのみで検査（prime-agent はコピーした HOME でオフライン実行）。`PRIME_VALIDATE_FULL=1` で下の遅いスイートも流す。実 HOME を使わず新規 install を検証する手順はヘッダにある |
-| `bash agent/harnesses/primeagent/test-install.sh` | `make primeagent/install` を使い捨て HOME へ |
-| `bash agent/harnesses/primeagent/test-agents-md.sh` / `gen-agents-md.sh --check` | 生成 AGENTS.md の drift・行数・guard 表・パス参照など |
-| `bash agent/harnesses/primeagent/bin/test-pa-wrappers.sh` | pa-auto の gate 検出と pa-sandbox の bwrap プロファイル（fake HOME） |
-| `bash agent/harnesses/primeagent/skills/test-prime-skills.sh` | `prime-swarm-*` スキルの静的検査＋サンドボックス検査 |
-| `bash agent/harnesses/primeagent/machines/test-machines.sh` | MACHINE.md の parse・モデル selector・サンドボックスでの `prime-agent factory import` |
-| `cd agent/harnesses/primeagent/skills/swarm-adapter && python3 -m pytest -q` | swarm-adapter（pytest が無ければ `uv run --no-project --with pytest python -m pytest`） |
-| `bash agent/scripts/test-prime-shell-guard.sh` | shell guard |
-| `SYNC_VERIFY_ONLY=primeagent bash agent/scripts/sync-verify.sh` | live 配線（linked worktree では `SYNC_VERIFY_LIVE_ROOT=<main checkout>`） |
+| コマンド                                                                         | 内容                                                                                                                                                                                                                                      |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bash agent/harnesses/primeagent/validate-harness.sh`                            | repo の検査は常に、`$HOME/.prime/agent` があれば live を読み取りのみで検査（prime-agent はコピーした HOME でオフライン実行）。`PRIME_VALIDATE_FULL=1` で下の遅いスイートも流す。実 HOME を使わず新規 install を検証する手順はヘッダにある |
+| `bash agent/harnesses/primeagent/test-install.sh`                                | `make primeagent/install` を使い捨て HOME へ                                                                                                                                                                                              |
+| `bash agent/harnesses/primeagent/test-agents-md.sh` / `gen-agents-md.sh --check` | 生成 AGENTS.md の drift・行数・guard 表・パス参照など                                                                                                                                                                                     |
+| `bash agent/harnesses/primeagent/bin/test-pa-wrappers.sh`                        | pa-auto の gate 検出と pa-sandbox の bwrap プロファイル（fake HOME）                                                                                                                                                                      |
+| `bash agent/harnesses/primeagent/skills/test-prime-skills.sh`                    | `prime-swarm-*` スキルの静的検査＋サンドボックス検査                                                                                                                                                                                      |
+| `bash agent/harnesses/primeagent/machines/test-machines.sh`                      | MACHINE.md の parse・モデル selector・サンドボックスでの `prime-agent factory import`                                                                                                                                                     |
+| `cd agent/harnesses/primeagent/skills/swarm-adapter && python3 -m pytest -q`     | swarm-adapter（pytest が無ければ `uv run --no-project --with pytest python -m pytest`）                                                                                                                                                   |
+| `bash agent/scripts/test-prime-shell-guard.sh`                                   | shell guard                                                                                                                                                                                                                               |
+| `SYNC_VERIFY_ONLY=primeagent bash agent/scripts/sync-verify.sh`                  | live 配線（linked worktree では `SYNC_VERIFY_LIVE_ROOT=<main checkout>`）                                                                                                                                                                 |
 
 ### ollama E2E（`agent/harnesses/primeagent/e2e/run-ollama-e2e.sh`）
 

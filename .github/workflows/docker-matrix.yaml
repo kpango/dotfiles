@@ -66,19 +66,7 @@ jobs:
       fail-fast: false
       matrix:
         image:
-          [
-            dart,
-            docker,
-            gcloud,
-            go,
-            k8s,
-            laya,
-            nim,
-            nix,
-            ollama,
-            rust,
-            zig,
-          ]
+          [dart, docker, gcloud, go, k8s, laya, nim, nix, ollama, rust, zig]
     uses: ./.github/workflows/docker-reusable.yaml
     with:
       image_name: ${{ matrix.image }}

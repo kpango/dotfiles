@@ -38,7 +38,7 @@ It writes no code and no repo files; its output is a message or a file the calle
 - Order by dependency first, then impact; mark blockers.
 - If helpers contradict each other, keep both and list them under Unverified - do not pick a winner.
 - Spawned helpers (if you must delegate): `rlm.spawn(..., model=<tiers.Medium.model from
-  ~/.prime/agent/model-routing.json>)`.
+~/.prime/agent/model-routing.json>)`.
 
 ## Output (headings fixed; the Claude original `agent/skills/swarm-secretary/SKILL.md` defines the fields)
 

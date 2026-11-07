@@ -16,9 +16,7 @@
         "type": "DOMAIN",
         "domainFilter": {
           "type": "DOMAINS",
-          "domains": [
-            "21553f.dns.nextdns.io"
-          ]
+          "domains": ["21553f.dns.nextdns.io"]
         },
         "portFilter": {
           "type": "PORTS",
@@ -132,9 +130,7 @@
         "type": "NETWORK",
         "networkFilter": {
           "matchOpposite": false,
-          "networks": [
-            "IoT"
-          ]
+          "networks": ["IoT"]
         }
       }
     },
@@ -189,9 +185,7 @@
         "type": "NETWORK",
         "networkFilter": {
           "matchOpposite": false,
-          "networks": [
-            "IoT"
-          ]
+          "networks": ["IoT"]
         }
       }
     },
@@ -246,9 +240,7 @@
         "type": "NETWORK",
         "networkFilter": {
           "matchOpposite": false,
-          "networks": [
-            "Media"
-          ]
+          "networks": ["Media"]
         }
       }
     },
