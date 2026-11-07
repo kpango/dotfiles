@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"strconv"
+	"sync"
 	"syscall"
 	"time"
 	"unsafe"
@@ -23,10 +24,19 @@ var (
 	procMeminfoPathNT = []byte("/proc/meminfo\x00")
 	nvidiactlPathNT   = []byte("/dev/nvidiactl\x00")
 
+	linuxPathsOnce   sync.Once
 	cpuStatPathNT    []byte
 	hwmonCachePathNT []byte
 	gpuOutPathNT     []byte
 )
+
+func ensureLinuxStatusPaths() {
+	linuxPathsOnce.Do(func() {
+		cpuStatPathNT = append([]byte(cacheDir+"/tmux-cpu-stat"), 0)
+		hwmonCachePathNT = append([]byte(cacheDir+"/tmux-cpu-hwmon"), 0)
+		gpuOutPathNT = append([]byte(cacheDir+"/tmux-gpu-out"), 0)
+	})
+}
 
 // statBuf stats the path given as a null-terminated byte slice using SYS_NEWFSTATAT/SYS_FSTATAT.
 func statBuf(path []byte, st *syscall.Stat_t) syscall.Errno {
@@ -66,11 +76,8 @@ func openBuf(path []byte, flags int) (int, syscall.Errno) {
 }
 
 func init() {
-	cpuStatPathNT = append([]byte(cacheDir+"/tmux-cpu-stat"), 0)
-	hwmonCachePathNT = append([]byte(cacheDir+"/tmux-cpu-hwmon"), 0)
-	gpuOutPathNT = append([]byte(cacheDir+"/tmux-gpu-out"), 0)
-
 	if len(os.Args) == 2 && os.Args[1] == "--refresh-gpu" {
+		ensureLinuxStatusPaths()
 		updateGPUCacheSync()
 		os.Exit(0)
 	}
@@ -103,6 +110,7 @@ func diskSegment() {
 }
 
 func rightSegment() {
+	ensureLinuxStatusPaths()
 	gpu, hasGPU := linuxGPUMetrics()
 
 	inDocker := fileExistsNT(dockerenvPathNT)
@@ -122,10 +130,11 @@ func rightSegment() {
 		usedGB, totalGB, hasDisk = diskUsageGB()
 	}
 
-	kube := kubeSegment("green", "brightcyan")
+	var kbuf [256]byte
+	kube := appendKubeSegment(kbuf[:0], "green", "brightcyan")
 
 	var buf [512]byte
-	os.Stdout.Write(buildRightStatus(
+	os.Stdout.Write(buildRightStatusBytes(
 		buf[:0],
 		cpuTenths,
 		cpuTempC, hasCPUTemp,
@@ -191,12 +200,12 @@ func readProcStat() (total, idle uint64, ok bool) {
 }
 
 func linuxCPUTenths() int {
+	ensureLinuxStatusPaths()
 	curTotal, curIdle, ok := readProcStat()
 	if !ok {
 		return 0
 	}
 	now := time.Now().UnixNano()
-	cp := cacheDir + "/tmux-cpu-stat"
 
 	var cbuf [128]byte
 	if cdata, cok := readSmallFileNT(cpuStatPathNT, cbuf[:]); cok {
@@ -212,7 +221,7 @@ func linuxCPUTenths() int {
 			}
 			if age >= int64(500*time.Millisecond) && age <= int64(30*time.Second) {
 				if tenths, valid := calcCPUTenths(prevTotal, prevIdle, curTotal, curIdle); valid {
-					writeCPUStatCache(cp, now, curTotal, curIdle, tenths)
+					writeCPUStatCache(cacheDir+"/tmux-cpu-stat", now, curTotal, curIdle, tenths)
 					return tenths
 				}
 			}
@@ -221,7 +230,7 @@ func linuxCPUTenths() int {
 
 	// Cold start or stale (>30s): record baseline snapshot without blocking.
 	// The next tmux status tick (5s) will compute the accurate delta.
-	writeCPUStatCache(cp, now, curTotal, curIdle, 0)
+	writeCPUStatCache(cacheDir+"/tmux-cpu-stat", now, curTotal, curIdle, 0)
 	return 0
 }
 
@@ -235,7 +244,7 @@ func writeCPUStatCache(cp string, nowNano int64, total, idle uint64, tenths int)
 	b = append(b, ' ')
 	b = strconv.AppendInt(b, int64(tenths), 10)
 	b = append(b, '\n')
-	tmp := cp + pidSuffix
+	tmp := tempCachePath(cp)
 	if err := os.WriteFile(tmp, b, 0o644); err == nil {
 		_ = os.Rename(tmp, cp)
 	} else if os.IsNotExist(err) {
@@ -276,7 +285,7 @@ func linuxCPUTempC() (int, bool) {
 	}
 
 	// 2. Persistent cache fast path (~/.cache/tmux-cpu-hwmon)
-	hwmonCache := cacheDir + "/tmux-cpu-hwmon"
+	ensureLinuxStatusPaths()
 	var cbuf [64]byte
 	if cdata, cok := readSmallFileNT(hwmonCachePathNT, cbuf[:]); cok {
 		if hVal, rest, ok1 := parseUintField(cdata); ok1 {
@@ -300,6 +309,7 @@ func linuxCPUTempC() (int, bool) {
 	}
 
 	// 3. Sysfs scan with early-exit on non-existent sensor indices
+	hwmonCache := cacheDir + "/tmux-cpu-hwmon"
 	fallbackC := -1
 
 	for h := 0; h < 16; h++ {
@@ -427,7 +437,7 @@ func writeHwmonCache(cp string, h int, indices []int) {
 		b = strconv.AppendInt(b, int64(idx), 10)
 	}
 	b = append(b, '\n')
-	tmp := cp + pidSuffix
+	tmp := tempCachePath(cp)
 	if err := os.WriteFile(tmp, b, 0o644); err == nil {
 		_ = os.Rename(tmp, cp)
 	} else if os.IsNotExist(err) {
@@ -439,7 +449,7 @@ func writeHwmonCache(cp string, h int, indices []int) {
 }
 
 func linuxGPUMetrics() (gpuMetrics, bool) {
-	cp := cacheDir + "/tmux-gpu-out"
+	ensureLinuxStatusPaths()
 	now := time.Now().UnixNano()
 	const freshTTL = int64(12 * time.Second)
 	const staleTTL = int64(60 * time.Second)
@@ -473,7 +483,7 @@ func linuxGPUMetrics() (gpuMetrics, bool) {
 					}
 					if age >= freshTTL && age < staleTTL {
 						// Atomic lease: update timestamp to prevent multiple concurrent spawns
-						writeGPUCache(cp, now, cached, true)
+						writeGPUCache(cacheDir+"/tmux-gpu-out", now, cached, true)
 						spawnGPURefresh()
 						return cached, true
 					}
@@ -482,6 +492,7 @@ func linuxGPUMetrics() (gpuMetrics, bool) {
 		}
 	}
 
+	cp := cacheDir + "/tmux-gpu-out"
 	if m, ok := amdSysfsGPU(); ok {
 		writeGPUCache(cp, now, m, true)
 		return m, true
@@ -573,7 +584,7 @@ func writeGPUCache(cp string, nowNano int64, m gpuMetrics, present bool) {
 		b = strconv.AppendInt(b, int64(m.vramTenths), 10)
 		b = append(b, '\n')
 	}
-	tmp := cp + pidSuffix
+	tmp := tempCachePath(cp)
 	if err := os.WriteFile(tmp, b, 0o644); err == nil {
 		_ = os.Rename(tmp, cp)
 	} else if os.IsNotExist(err) {

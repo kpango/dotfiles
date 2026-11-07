@@ -38,27 +38,32 @@ var (
 	cacheDir      string
 	cacheFilePath string // base path; actual cache = cacheFilePath + "." + fnv32hex(dir)
 	kubeCachePath string
-	kubePathNT    []byte // null-terminated kubeCachePath for openBuf
-	pidSuffix     string // ".tmp.<pid>" precomputed for atomic writes
 )
 
 var gitdirPrefix = []byte("gitdir: ")
 
 func init() {
-	homeDir, _ = os.UserHomeDir()
-	base := homeDir + "/.cache"
-	if d := os.Getenv("XDG_CACHE_HOME"); d != "" {
-		base = d
+	homeDir = os.Getenv("HOME")
+	if homeDir == "" {
+		homeDir, _ = os.UserHomeDir()
+	}
+	base := os.Getenv("XDG_CACHE_HOME")
+	if base == "" {
+		base = homeDir + "/.cache"
 	}
 	cacheDir = base
 	cacheFilePath = base + "/tmux-pane-info"
 	kubeCachePath = base + "/tmux-kube-out"
-	kubePathNT = append([]byte(kubeCachePath), 0)
+}
 
-	var buf [32]byte
-	b := append(buf[:0], ".tmp."...)
+// tempCachePath builds "<path>.tmp.<pid>" only on cold cache-miss writes,
+// keeping init() and all cache-hit hot paths free of getpid/formatting work.
+func tempCachePath(path string) string {
+	var buf [256]byte
+	b := append(buf[:0], path...)
+	b = append(b, ".tmp."...)
 	b = strconv.AppendInt(b, int64(os.Getpid()), 10)
-	pidSuffix = string(b)
+	return string(b)
 }
 
 // cachePathForDir returns the cache file path and its null-terminated form for
@@ -587,7 +592,7 @@ func writeSegment(sp, br []byte) {
 
 // writePaneCache writes key, sp, and br to the per-dir cache file atomically via rename.
 func writePaneCache(cp string, key, sp, br []byte) {
-	tmp := cp + pidSuffix
+	tmp := tempCachePath(cp)
 
 	content := make([]byte, 0, len(key)+1+len(sp)+1+len(br)+1)
 	content = append(content, key...)
@@ -776,16 +781,50 @@ func loadKubeContext(sources []string) (ctx, ns string) {
 	return targetCtx, "default"
 }
 
-// kubeSegment returns a tmux-coloured kubernetes context:namespace string.
-// Config is loaded via standard library YAML scanner (no external client-go or kubectl).
-func kubeSegment(ctxFg, nsFg string) string {
-	sources := defaultKubeConfigPaths()
-	if len(sources) == 0 {
-		return ""
+// appendKubeSegment appends the tmux-coloured kubernetes context:namespace segment
+// into dst without heap allocations on cache hit when using default ~/.kube/config.
+func appendKubeSegment(dst []byte, ctxFg, nsFg string) []byte {
+	var kpBuf [256]byte
+	kpNT := append(append(kpBuf[:0], kubeCachePath...), 0)
+
+	if os.Getenv("KUBECONFIG") == "" {
+		if homeDir == "" {
+			return dst
+		}
+		var srcBuf [256]byte
+		srcNT := append(append(srcBuf[:0], homeDir...), "/.kube/config\x00"...)
+		var cst syscall.Stat_t
+		if statBuf(kpNT, &cst) == 0 {
+			valid := true
+			var sst syscall.Stat_t
+			if statBuf(srcNT, &sst) == 0 && statMtimeNs(&sst) > statMtimeNs(&cst) {
+				valid = false
+			}
+			if valid {
+				fd, errno := openBuf(kpNT, syscall.O_RDONLY)
+				if errno == 0 {
+					var buf [512]byte
+					n, _ := syscall.Read(fd, buf[:])
+					syscall.Close(fd)
+					data := buf[:n]
+					for len(data) > 0 && data[len(data)-1] == '\n' {
+						data = data[:len(data)-1]
+					}
+					if len(data) > 0 {
+						return append(dst, data...)
+					}
+				}
+			}
+		}
 	}
 
-	if kubeCacheValid(sources) {
-		fd, errno := openBuf(kubePathNT, syscall.O_RDONLY)
+	sources := defaultKubeConfigPaths()
+	if len(sources) == 0 {
+		return dst
+	}
+
+	if kubeCacheValid(kpNT, sources) {
+		fd, errno := openBuf(kpNT, syscall.O_RDONLY)
 		if errno == 0 {
 			var buf [512]byte
 			n, _ := syscall.Read(fd, buf[:])
@@ -795,19 +834,19 @@ func kubeSegment(ctxFg, nsFg string) string {
 				data = data[:len(data)-1]
 			}
 			if len(data) > 0 {
-				return string(data)
+				return append(dst, data...)
 			}
 		}
 	}
 
 	ctx, ns := loadKubeContext(sources)
 	if ctx == "" {
-		return ""
+		return dst
 	}
 
 	out := "#[fg=blue]⎈ #[fg=" + ctxFg + "]" + ctx + "#[fg=colour250]:#[fg=" + nsFg + "]" + ns
 
-	tmp := kubeCachePath + pidSuffix
+	tmp := tempCachePath(kubeCachePath)
 	if err := os.WriteFile(tmp, []byte(out+"\n"), 0o644); err == nil {
 		_ = os.Rename(tmp, kubeCachePath)
 	} else if os.IsNotExist(err) {
@@ -816,13 +855,24 @@ func kubeSegment(ctxFg, nsFg string) string {
 			_ = os.Rename(tmp, kubeCachePath)
 		}
 	}
-	return out
+	return append(dst, out...)
+}
+
+// kubeSegment returns a tmux-coloured kubernetes context:namespace string.
+// Config is loaded via standard library YAML scanner (no external client-go or kubectl).
+func kubeSegment(ctxFg, nsFg string) string {
+	var buf [512]byte
+	b := appendKubeSegment(buf[:0], ctxFg, nsFg)
+	if len(b) == 0 {
+		return ""
+	}
+	return string(b)
 }
 
 // kubeCacheValid checks whether the kube cache is newer than all source configs.
-func kubeCacheValid(sources []string) bool {
+func kubeCacheValid(kpNT []byte, sources []string) bool {
 	var cst syscall.Stat_t
-	if statBuf(kubePathNT, &cst) != 0 {
+	if statBuf(kpNT, &cst) != 0 {
 		return false
 	}
 	cacheMtime := statMtimeNs(&cst)
@@ -925,6 +975,18 @@ func buildRightStatus(
 	usedGB, totalGB uint64, hasDisk bool,
 	kube string,
 ) []byte {
+	return buildRightStatusBytes(dst, cpuTenths, cpuTempC, hasCPUTemp, ramTenths, gpu, hasGPU, usedGB, totalGB, hasDisk, []byte(kube))
+}
+
+func buildRightStatusBytes(
+	dst []byte,
+	cpuTenths int,
+	cpuTempC int, hasCPUTemp bool,
+	ramTenths int,
+	gpu gpuMetrics, hasGPU bool,
+	usedGB, totalGB uint64, hasDisk bool,
+	kube []byte,
+) []byte {
 	out := dst[:0]
 	if capReq := 256 + len(kube); cap(out) < capReq {
 		out = make([]byte, 0, capReq)
@@ -973,7 +1035,7 @@ func buildRightStatus(
 	out = append(out, " #[fg=#2f343e,bg=#282c33]"...)
 	out = append(out, plLeft...)
 	out = append(out, "#[bg=#2f343e]"...)
-	if kube != "" {
+	if len(kube) > 0 {
 		out = append(out, kube...)
 		out = append(out, ' ')
 	}

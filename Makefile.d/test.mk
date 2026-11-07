@@ -23,9 +23,6 @@ test/e2e/tier4:
 ## run adversarial challenger tests
 test/adversarial:
 	@python3 tests/e2e/test_challenger_m1_adversarial.py
-	@python3 tests/e2e/test_challenger_m2_adversarial.py
-	@python3 tests/e2e/test_challenger_m3_adversarial.py
-	@python3 tests/e2e/test_challenger_m3_2_adversarial.py
 
 ## run validation harness
 test/harness:

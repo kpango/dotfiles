@@ -112,8 +112,8 @@ zprecompile() {
 	command rm -f "$_df/zfunc.zwc.old" "$_df/zfunc"/*.zwc.old 2>/dev/null
 	local _zcd="${ZDOTDIR:-$HOME}/.zcompdump"
 	[[ -f "$_zcd" ]] && zcompile -U -M "$_zcd" 2>/dev/null
-	for f in "$d"/*.zsh(N.); do
-		zcompile -U -R "$f" 2>/dev/null
+	for f in "$d"/*.zsh; do
+		[[ -f "$f" ]] && zcompile -U -R "$f" 2>/dev/null
 	done
 
 	local -a _zpc_files=($d/*.zsh)
@@ -190,13 +190,12 @@ chword() {
 duk() {
 	local dir="${1:-/}"
 	local k="${2:-10}"
-	sudo du -h -d 1 "$dir" 2>/dev/null \
-		| sort -rh \
-		| awk -v d="${dir%/}" -v k="$k" '
+	sudo du -h -d 1 "$dir" 2>/dev/null |
+		sort -rh |
+		awk -v d="${dir%/}" -v k="$k" '
 			$2 == d "/proc" || $2 == d "/sys" || $2 == d "/dev" || $2 == d "/run" { next }
 			$2 != d && $2 != d "/" { print; if (++cnt >= k) exit }
 		'
 }
-
 
 autoload -Uz sysclean

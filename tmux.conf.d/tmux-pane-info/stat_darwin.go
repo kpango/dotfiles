@@ -66,9 +66,10 @@ func diskSegment() {
 
 func rightSegment() {
 	cpuTenths, ramTenths := darwinSysMetrics()
-	kube := kubeSegment("green", "brightcyan")
+	var kbuf [256]byte
+	kube := appendKubeSegment(kbuf[:0], "green", "brightcyan")
 	var buf [512]byte
-	os.Stdout.Write(buildRightStatus(
+	os.Stdout.Write(buildRightStatusBytes(
 		buf[:0],
 		cpuTenths,
 		0, false,
@@ -158,7 +159,7 @@ func darwinSysMetrics() (cpuTenths, ramTenths int) {
 	b = append(b, ' ')
 	b = strconv.AppendInt(b, int64(ramTenths), 10)
 	b = append(b, '\n')
-	tmp := cp + pidSuffix
+	tmp := tempCachePath(cp)
 	if err := os.WriteFile(tmp, b, 0o644); err == nil {
 		_ = os.Rename(tmp, cp)
 	} else if os.IsNotExist(err) {
