@@ -58,6 +58,12 @@ chk "MAP_E-POSTROUTING SNATs ip6tnl2 (tcp/udp/icmp)" sh -c 'r=$(iptables -w 30 -
 # whose conntrack entry predates the MAP-E SNAT keeps it alive forever (5s
 # pings vs 30s timeout) and shows 0% availability. Fix: conntrack -D -q 192.0.0.3
 chk "no un-NATed conntrack (reply-dst 192.0.0.3)" sh -c '[ "$(conntrack -L -q 192.0.0.3 2>/dev/null | wc -l)" = 0 ]'
+chk "eth8 accept_dad = 0 (CE re-add not held tentative, CONTEXT Q44)" sh -c '[ "$(cat /proc/sys/net/ipv6/conf/eth8/accept_dad)" = 0 ]'
+
+echo "== memory (CONTEXT Q43)"
+chk "net.core rmem/wmem_default = 212992" sh -c '[ "$(sysctl -n net.core.rmem_default)" = 212992 ] && [ "$(sysctl -n net.core.wmem_default)" = 212992 ]'
+chk "raw socket Recv-Q total < 64MB (dpinger send sockets)" sh -c '[ "$(ss -anw 2>/dev/null | awk "NR>1{s+=\$2} END{print int(s/1048576)}")" -lt 64 ]'
+chk "MemAvailable > 512MB" sh -c '[ "$(awk "/MemAvailable/{print int(\$2/1024)}" /proc/meminfo)" -gt 512 ]'
 chk "MAP-E fallback has saved parameters (CONTEXT Q41)" test -s /data/udm-mape-fallback/ip6tnl-parameters
 chk "api.enabler.ne.jp pinned to NGN DNS answer in /etc/hosts (CONTEXT Q41)" sh -c 'sed -n "/^# udm-mape-fallback begin$/,/^# udm-mape-fallback end$/p" /etc/hosts | grep -q " api.enabler.ne.jp$"'
 

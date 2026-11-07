@@ -38,4 +38,9 @@ sysctl -w net.ipv4.neigh.default.gc_thresh1=2048
 sysctl -w net.ipv4.neigh.default.gc_thresh2=8192
 sysctl -w net.ipv4.neigh.default.gc_thresh3=16384
 
+# WAN2 (eth8, MAP-E): udapi's WAN-Diag deletes the MAP-E CE /128 every ~3 min and udapi
+# re-adds it within ms, but DAD then holds it tentative ~1.5s and ip6tnl2 drops every
+# packet meanwhile ("Local address not yet configured!"). Skip DAD on this WAN link.
+sysctl -w net.ipv6.conf.eth8.accept_dad=0 2>/dev/null || true
+
 echo "[05-sysctl] Applied UDM Pro performance sysctl"
