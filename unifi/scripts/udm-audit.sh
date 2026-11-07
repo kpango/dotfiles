@@ -66,6 +66,7 @@ chk "raw socket Recv-Q total < 64MB (dpinger send sockets)" sh -c '[ "$(ss -anw 
 chk "netlink Rmem total < 32MB (udapi-bridge unread route sockets, CONTEXT Q47)" sh -c '[ "$(awk "NR>1{s+=\$5} END{print int(s/1048576)}" /proc/net/netlink)" -lt 32 ]'
 chk "tcp_mem high < 1GB (kernel default, CONTEXT Q47)" sh -c '[ "$(awk "{print \$3}" /proc/sys/net/ipv4/tcp_mem)" -lt 262144 ]'
 chk "MemAvailable > 512MB" sh -c '[ "$(awk "/MemAvailable/{print int(\$2/1024)}" /proc/meminfo)" -gt 512 ]'
+chk "stock dnsmasq.service not failed (healthcheck no longer starts it, CONTEXT Q48)" sh -c '! systemctl is-failed --quiet dnsmasq.service'
 chk "MAP-E fallback has saved parameters (CONTEXT Q41)" test -s /data/udm-mape-fallback/ip6tnl-parameters
 chk "api.enabler.ne.jp pinned to NGN DNS answer in /etc/hosts (CONTEXT Q41)" sh -c 'sed -n "/^# udm-mape-fallback begin$/,/^# udm-mape-fallback end$/p" /etc/hosts | grep -q " api.enabler.ne.jp$"'
 
