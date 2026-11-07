@@ -108,10 +108,10 @@ valdup() {
 				print -u2 "valdup: step '$label' succeeded, but these sub-targets failed silently:"
 				print -u2 -- "$ignored"
 			fi
-			"${_rm[@]}" "$outfile"
+			"${_rm[@]:-rm}" "$outfile"
 			return 0
 		fi
-		"${_rm[@]}" "$outfile"
+		"${_rm[@]:-rm}" "$outfile"
 		print -u2 "valdup: step '$label' failed — rolling back its file changes"
 		if [[ -n $snap ]]; then
 			# $snap is the worktree state; its 2nd parent is the pre-step index.
@@ -127,7 +127,7 @@ valdup() {
 		untracked_after=$(git ls-files --others --exclude-standard 2>/dev/null)
 		comm -13 <(print -r -- "$untracked_before" | sort) <(print -r -- "$untracked_after" | sort) |
 			while IFS= read -r f; do
-				[[ -n $f ]] && "${_rm[@]}" -- "$f"
+				[[ -n $f ]] && "${_rm[@]:-rm}" -- "$f"
 			done
 		return 0
 	}
@@ -156,7 +156,7 @@ valdup() {
 		print -u2 "valdup: NGT $have installed but versions/NGT_VERSION is $want — reinstalling"
 		# SUDO is unset by default (Docker builds run as root), so pass it for
 		# the /usr/local installs of NGT and its libomp prerequisite.
-		sudo "${_rm[@]}" /usr/local/include/NGT/Capi.h && make SUDO=sudo ngt/install
+		sudo "${_rm[@]:-rm}" /usr/local/include/NGT/Capi.h && make SUDO=sudo ngt/install
 	}
 	# Every make invocation (~40 sub-makes per run) creates its own
 	# TEMP_DIR via `mktemp -d` and never removes it. Point TMPDIR at a per-run
@@ -173,14 +173,14 @@ valdup() {
 		_valdup_step perm make perm
 	} always {
 		[[ $_oc == 2 ]] && sudo sysctl -q -w vm.overcommit_memory=2
-		[[ -n $_tmp ]] && "${_rm[@]}" -- "$_tmp"
+		[[ -n $_tmp ]] && "${_rm[@]:-rm}" -- "$_tmp"
 		unset -f _valdup_step _valdup_ngt_sync
 	}
 	return 0
 }
 _vald_generate_mod() {
 	local file=$1
-	"${_rm[@]}" "$file"
+	"${_rm[@]:-rm}" "$file"
 	head -n 5 hack/go.mod.default >"$file"
 	awk '{printf "\t%s => %s upgrade\n", $1, $1}' go.sum | sort -n | uniq | sort -n >>"$file"
 	echo ")" >>"$file"
@@ -188,19 +188,19 @@ _vald_generate_mod() {
 
 valddep() {
 	cd "$GOPATH/src/github.com/vdaas/vald" || return 1
-	"${_rm[@]}" go.mod go.sum
-	"${_cp[@]}" hack/go.mod.default go.mod
+	"${_rm[@]:-rm}" go.mod go.sum
+	"${_cp[@]:-cp}" hack/go.mod.default go.mod
 	GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
 
 	_vald_generate_mod hack/go.mod.default2
 
-	"${_rm[@]}" hack/go.mod.default3
+	"${_rm[@]:-rm}" hack/go.mod.default3
 	head -n 5 hack/go.mod.default >hack/go.mod.default3
 	rg 'k8s|opentelemetry|containerd' hack/go.mod.default >>hack/go.mod.default3
 	echo ")" >>hack/go.mod.default3
 
 	command mv go.mod go.sum /tmp/
-	"${_cp[@]}" hack/go.mod.default3 go.mod
+	"${_cp[@]:-cp}" hack/go.mod.default3 go.mod
 	GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
 
 	_vald_generate_mod hack/go.mod.default3

@@ -1057,7 +1057,9 @@ mac/install: dotfiles/install claude/install pi/install agy/install codex/instal
 	@# This make process still has the pre-Nix PATH, so take PATH from a fresh zsh,
 	@# which loads whatever environment the system now configures (nix-darwin's
 	@# /etc/zshenv) — no Nix paths spelled out here. Strict: a missing Go is an error.
-	@PATH="$$(zsh -c 'printf %s "$$PATH"')" $(MAKE) pinentry/install ROOTDIR='$(ROOTDIR)' PINENTRY_STRICT=1
+	@# Keeps the current PATH if zsh is missing or fails: an empty PATH would hide
+	@# make itself ("make: not found"), and this line runs even under `make -n`.
+	@PATH="$$(zsh -c 'printf %s "$$PATH"' 2>/dev/null || printf %s "$$PATH")" $(MAKE) pinentry/install ROOTDIR='$(ROOTDIR)' PINENTRY_STRICT=1
 
 ## mac/install pinned to the MacBook Pro (M1, account "yusukekato") nix-darwin host
 m1/install:

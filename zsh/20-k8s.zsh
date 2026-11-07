@@ -35,7 +35,7 @@ if (($+commands[kubectl])); then
 					done >"${_cf}.tmp.$$" &&
 						command mv -f "${_cf}.tmp.$$" "$_cf" &&
 						zcompile -U -R "$_cf" 2>/dev/null
-					"${_rm[@]}" "${_cf}.tmp.$$" 2>/dev/null
+					"${_rm[@]:-rm}" "${_cf}.tmp.$$" 2>/dev/null
 				fi
 			fi
 			if [[ -f "$_cf" ]]; then

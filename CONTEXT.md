@@ -1180,3 +1180,10 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   ステージ（`kpango/base` 由来・`python:3.12-slim`・gcloud 公式イメージ）には無い。rust は base に依存するので
   base に入れると循環する。そのため現状のビルドでは常にフォールバックの cp/rm が使われ、ビルド結果は変わらない。
   フォールバック側は元のフラグをそのまま残し（`rm` と `rm -f` の違い、`cp -a` を含む）、rmz 側は `-f` の有無だけを合わせる。
+- 再混入の検出（2026-11-07 追記）: `Makefile.d/scripts/check-cprm.sh`（`make cprm/lint`、CI は `.github/workflows/cprm-lint.yaml`）が
+  zsh / Makefile / Nix / Dockerfile の素の cp/rm を失敗にする。許可するのは、コメント、`docker ... rm`・`--rm`・`cargo-rm`、
+  同じ行で cpz/rmz に言及するフォールバック、およびスクリプト内 `ALLOW` に列挙した意図的な例外だけ。新しい例外は `ALLOW` に足す。
+- zsh の呼び出しは `"${_rm[@]:-rm}"` / `"${_cp[@]:-cp}"` と既定値付きで書く。配列が未定義（04-aliases.zsh が未読込）でも
+  `sudo "${_rm[@]}" path` が `sudo path`（path 自体の実行）に化けず、素の rm/cp になる。
+- Nix の `installCargoBinTools` は cpz と rmz が両方 `${CARGO_HOME:-$HOME/.cargo}/bin` にあれば `cargo binstall` を呼ばない
+  （rebuild のたびの通信をなくす）。更新は手動の `cargo binstall --force cpz rmz`。

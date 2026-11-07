@@ -3,9 +3,14 @@
 	actionlint/lint \
 	ghalint/lint \
 	pinact/fix \
-	ghatm/fix
+	ghatm/fix \
+	cprm/lint
 
 ACTIONLINT_IGNORES =
+
+## fail on a bare cp/rm where cpz/rmz must be preferred (zsh/Makefile/Nix/Docker)
+cprm/lint:
+	@bash $(ROOTDIR)/Makefile.d/scripts/check-cprm.sh $(ROOTDIR)
 
 ## run lint for workflow files
 workflow/lint: actionlint/lint ghalint/lint

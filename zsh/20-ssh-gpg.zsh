@@ -66,7 +66,7 @@ if (($+commands[ssh-keygen])); then
 		rg "Host " $HOME/.ssh/config | awk '{print $2}' | rg -v "\*"
 	}
 	sshinit() {
-		"${_rm[@]}" $HOME/.ssh/known_hosts \
+		"${_rm[@]:-rm}" $HOME/.ssh/known_hosts \
 			$HOME/.ssh/master_$GIT_USER@192.168.2.* \
 			/tmp/ssh-.*.sock
 		sshperm
@@ -75,7 +75,7 @@ fi
 if (($+commands[gpg])); then
 	gpgbackup() {
 		local backup_dir="$HOME/gpgbackup"
-		sudo "${_rm[@]}" "$backup_dir" || return
+		sudo "${_rm[@]:-rm}" "$backup_dir" || return
 		# umask 077 so the directory and every exported key file land as
 		# owner-only from creation, not the default-umask 0755/0644 --
 		# without this, mkdir/gpg's export redirects leave the secret key
@@ -114,7 +114,7 @@ if (($+commands[gpg])); then
 			# once tar has actually succeeded -- otherwise a failed archive
 			# silently takes the only copy of the exported keys down with it.
 			if ( umask 077; tar Jcvf "$HOME/Downloads/gpgbackup.tar.gz" "$backup_dir" ); then
-				"${_rm[@]}" "$backup_dir"
+				"${_rm[@]:-rm}" "$backup_dir"
 			else
 				print -u2 "gpgbackup: tar failed, leaving $backup_dir in place (not deleted)"
 				return 1

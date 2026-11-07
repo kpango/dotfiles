@@ -71,12 +71,12 @@ if [[ -n "${HAS_TMUX:-}" ]] || whence -p tmux >/dev/null 2>&1; then
 			for s in /var/tmp/tmux-$UID/*.sock; do
 				[[ "$s" == "${TMUX%%,*}" ]] && continue
 				if ! tmux -S "$s" has-session 2>/dev/null; then
-					"${_rm[@]}" -- "$s" && echo "removed dead socket $s"
+					"${_rm[@]:-rm}" -- "$s" && echo "removed dead socket $s"
 					continue
 				fi
 				n=$(tmux -S "$s" list-clients 2>/dev/null | wc -l)
 				if ((all || n == 0)); then
-					tmux -S "$s" kill-server && "${_rm[@]}" -- "$s" && echo "killed $s (clients: $n)"
+					tmux -S "$s" kill-server && "${_rm[@]:-rm}" -- "$s" && echo "killed $s (clients: $n)"
 				fi
 			done
 		}
