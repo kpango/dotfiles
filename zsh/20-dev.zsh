@@ -108,14 +108,18 @@ valdup() {
 				print -u2 "valdup: step '$label' succeeded, but these sub-targets failed silently:"
 				print -u2 -- "$ignored"
 			fi
-			rm -f "$outfile"
+			"${_rm[@]}" "$outfile"
 			return 0
 		fi
-		rm -f "$outfile"
+		"${_rm[@]}" "$outfile"
 		print -u2 "valdup: step '$label' failed — rolling back its file changes"
 		if [[ -n $snap ]]; then
-			git restore --source="$snap" --worktree --staged -- . 2>/dev/null ||
+			# $snap is the worktree state; its 2nd parent is the pre-step index.
+			# Restoring --staged from $snap itself would leave every pre-step
+			# worktree change staged.
+			git restore --source="$snap" --worktree -- . 2>/dev/null ||
 				git checkout --quiet "$snap" -- . 2>/dev/null
+			git restore --source="${snap}^2" --staged -- . 2>/dev/null
 		else
 			git restore --worktree --staged -- . 2>/dev/null ||
 				git checkout --quiet -- . 2>/dev/null
@@ -123,20 +127,60 @@ valdup() {
 		untracked_after=$(git ls-files --others --exclude-standard 2>/dev/null)
 		comm -13 <(print -r -- "$untracked_before" | sort) <(print -r -- "$untracked_after" | sort) |
 			while IFS= read -r f; do
-				[[ -n $f ]] && rm -f -- "$f"
+				[[ -n $f ]] && "${_rm[@]}" -- "$f"
 			done
 		return 0
 	}
-	_valdup_step manifest valdmanifest
-	_valdup_step update make -k update
-	_valdup_step proto make proto/replace format/go format/go/test license format/rust workflow/fix
-	_valdup_step perm make perm
-	unset -f _valdup_step
+	# vm.overcommit_memory=2 (strict) makes the 128-way parallel formatters and
+	# `go fix ./...` hit "fork: Cannot allocate memory" / "runtime: out of
+	# memory" once CommitLimit fills. Relax to 0 for the run and restore it
+	# afterwards (also on Ctrl-C), same as _dkms_install_safe.
+	local _oc
+	# `make update` resolves ~30 latest versions via api.github.com; anonymous
+	# calls hit the 60/h rate limit (403) and silently keep stale versions.
+	local -x GITHUB_TOKEN=${GITHUB_TOKEN:-$(gh auth token 2>/dev/null)}
+	[[ -n $GITHUB_TOKEN ]] || print -u2 "valdup: no GITHUB_TOKEN (gh auth login?) — version bumps may be rate-limited"
+	_oc=$(sysctl -n vm.overcommit_memory 2>/dev/null)
+	[[ $_oc == 2 ]] && { sudo sysctl -q -w vm.overcommit_memory=0 ||
+		print -u2 "valdup: failed to relax vm.overcommit_memory — parallel steps may OOM"; }
+	# `make ngt/install` is keyed only on Capi.h existing, so a bumped
+	# versions/NGT_VERSION never reinstalls NGT and cgo (`go fix ./...` in
+	# format/go) fails on fields the old headers lack. Reinstall on mismatch.
+	_valdup_ngt_sync() {
+		local want have
+		local -a libs
+		want=$(<versions/NGT_VERSION)
+		libs=(/usr/local/lib/libngt.so.*.*.*(Nn))
+		have=${libs[-1]##*/libngt.so.}
+		[[ -z $have || $have == "$want" ]] && return 0
+		print -u2 "valdup: NGT $have installed but versions/NGT_VERSION is $want — reinstalling"
+		# SUDO is unset by default (Docker builds run as root), so pass it for
+		# the /usr/local installs of NGT and its libomp prerequisite.
+		sudo "${_rm[@]}" /usr/local/include/NGT/Capi.h && make SUDO=sudo ngt/install
+	}
+	# Every make invocation (~40 sub-makes per run) creates its own
+	# TEMP_DIR via `mktemp -d` and never removes it. Point TMPDIR at a per-run
+	# dir so all of those (and _valdup_step's output captures) are dropped at
+	# the end.
+	local _tmp
+	_tmp=$(mktemp -d -t valdup.XXXXXXXX) && local -x TMPDIR=$_tmp
+	{
+		_valdup_step manifest valdmanifest
+		_valdup_step ngt _valdup_ngt_sync
+		_valdup_step update make -k update
+		_valdup_step ngt _valdup_ngt_sync
+		_valdup_step proto make proto/replace format/go format/go/test license format/rust workflow/fix
+		_valdup_step perm make perm
+	} always {
+		[[ $_oc == 2 ]] && sudo sysctl -q -w vm.overcommit_memory=2
+		[[ -n $_tmp ]] && "${_rm[@]}" -- "$_tmp"
+		unset -f _valdup_step _valdup_ngt_sync
+	}
 	return 0
 }
 _vald_generate_mod() {
 	local file=$1
-	rm -rf "$file"
+	"${_rm[@]}" "$file"
 	head -n 5 hack/go.mod.default >"$file"
 	awk '{printf "\t%s => %s upgrade\n", $1, $1}' go.sum | sort -n | uniq | sort -n >>"$file"
 	echo ")" >>"$file"
@@ -144,24 +188,24 @@ _vald_generate_mod() {
 
 valddep() {
 	cd "$GOPATH/src/github.com/vdaas/vald" || return 1
-	rm -rf go.mod go.sum
-	cp hack/go.mod.default go.mod
+	"${_rm[@]}" go.mod go.sum
+	"${_cp[@]}" hack/go.mod.default go.mod
 	GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
 
 	_vald_generate_mod hack/go.mod.default2
 
-	rm -rf hack/go.mod.default3
+	"${_rm[@]}" hack/go.mod.default3
 	head -n 5 hack/go.mod.default >hack/go.mod.default3
 	rg 'k8s|opentelemetry|containerd' hack/go.mod.default >>hack/go.mod.default3
 	echo ")" >>hack/go.mod.default3
 
-	mv go.mod go.sum /tmp/
-	cp hack/go.mod.default3 go.mod
+	command mv go.mod go.sum /tmp/
+	"${_cp[@]}" hack/go.mod.default3 go.mod
 	GOPRIVATE=github.com/vdaas/vald,github.com/vdaas/vald/apis go mod tidy
 
 	_vald_generate_mod hack/go.mod.default3
 
-	mv /tmp/go.mod /tmp/go.sum .
+	command mv /tmp/go.mod /tmp/go.sum .
 	$EDITOR -d hack/go.mod.default hack/go.mod.default2
 	$EDITOR -d hack/go.mod.default hack/go.mod.default3
 	cd -
