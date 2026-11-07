@@ -1166,3 +1166,9 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   - `zsh/01-tmux.zsh` の起動時コピー（04-aliases より先に読まれるため、その場で `$+commands[cpz]` を判定する）。
   - `zsh/20-docker.zsh` のコンテナ内 sh スニペット（その場で `command -v cpz` を判定する）。
   - `docker container rm` / `docker buildx rm` はファイル操作ではないため対象外。
+- Nix（2026-11-07 追記）: cpz/rmz の導入（`installCargoBinTools`、`cargo binstall`）を darwin 専用から
+  `nix/modules/home/packages/shared.nix` に移し、全ホストで行う（ユーザー判断）。home-manager の activation は
+  `home.emptyActivationPath`（stateVersion >= 22.11 で既定 true、本 repo は 24.11）により PATH が空なので、
+  `command -v` ではなく binstall の既定の導入先 `${CARGO_HOME:-$HOME/.cargo}/bin` を直接見る。
+  `compileTmuxScripts` は `installCargoBinTools` の後に走らせ、初回の activation から cpz/rmz を使う。
+  `nix-update` はユーザーの PATH で動くので `command -v rmz` で判定する。

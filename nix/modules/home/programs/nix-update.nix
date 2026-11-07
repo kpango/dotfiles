@@ -80,7 +80,8 @@ let
         bak="$home/$rel.hm-bak"
         if [ -e "$bak" ]; then
           echo "    removing $bak" >&2
-          rm -rf "$bak"
+          # Prefer rmz like zsh/04-aliases.zsh; runs as the user, so their PATH applies.
+          if command -v rmz >/dev/null 2>&1; then rmz -f "$bak"; else rm -rf "$bak"; fi
         fi
       done <<< "$homeFiles"
     '';

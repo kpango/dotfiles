@@ -319,4 +319,23 @@
     # the matching AUR package (zsh-patina-bin) for the desk host.
     zsh-patina
   ];
+
+  # cpz/rmz (cp/rm replacements preferred by zsh/04-aliases.zsh's _cp/_rm,
+  # Makefile.d/variables.mk's CP/RM and the activation steps in dotfiles/shared.nix)
+  # have no nixpkgs package — dockers/rust.Dockerfile installs them via
+  # `cargo binstall`, so this mirrors that at activation time on every host. This is
+  # a deliberate exception to preferring prebuilt nixpkgs binaries (see the Rust
+  # section above): no nixpkgs package exists, and re-implementing them as custom
+  # crates.io-fetching derivations isn't worth it for two small tools. Uses nixpkgs'
+  # own cargo (not rustup's rustup-managed one) so this doesn't depend on a default
+  # toolchain being configured. Installs into binstall's default
+  # ${CARGO_HOME:-$HOME/.cargo}/bin, which is where dotfiles/shared.nix looks for
+  # them. Every consumer falls back to plain cp/rm, so a failure here (e.g. offline)
+  # is non-fatal — it only means the fallback is used until the next successful
+  # activation.
+  home.activation.installCargoBinTools = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    $DRY_RUN_CMD env PATH="${pkgs.cargo-binstall}/bin:${pkgs.cargo}/bin:$PATH" \
+      cargo binstall --no-confirm --quiet cpz rmz \
+      || echo "installCargoBinTools: cpz/rmz install skipped (offline or binstall failed)" >&2
+  '';
 }
