@@ -222,6 +222,8 @@ arch/mkinitcpio.conf /etc/mkinitcpio.conf
 arch/mkinitcpio/linux-zen.preset /etc/mkinitcpio.d/linux-zen.preset
 arch/systemd/NetworkManager.service.d/capabilities.conf /etc/systemd/system/NetworkManager.service.d/capabilities.conf
 arch/systemd/sshd.service.d/tailscale.conf /etc/systemd/system/sshd.service.d/tailscale.conf
+arch/systemd/tmp-orphan-clean.service /etc/systemd/system/tmp-orphan-clean.service
+arch/systemd/tmp-orphan-clean.timer /etc/systemd/system/tmp-orphan-clean.timer
 arch/sshd_config.d/10-tailscale.conf /etc/ssh/sshd_config.d/10-tailscale.conf
 arch/initcpio/install/acpi_override /etc/initcpio/install/acpi_override
 endef
@@ -300,6 +302,7 @@ define ARCH_POST
 	sudo chown root:root /usr/local/bin/rebuild-aur-helpers.sh
 	sudo sysctl -e -p /etc/sysctl.d/99-sysctl.conf
 	sudo systemctl daemon-reload
+	sudo systemctl enable --now tmp-orphan-clean.timer
 	loginctl enable-linger $(SYS_USER)
 	systemctl --user daemon-reload
 	systemctl --user enable --now atuin.service
