@@ -125,7 +125,7 @@ install-tool:
 		|| { printf '[download.mk] Error: APP_NAME is required\n' >&2; exit 1; }
 	@set -euo pipefail; \
 	_TMPDIR="$$(mktemp -d)"; \
-	trap 'rm -rf "$$_TMPDIR"' EXIT; \
+	trap '$(RM) "$$_TMPDIR"' EXIT; \
 	cd "$$_TMPDIR"; \
 	_dl_probe() { \
 	  _url="$$1"; _out="$$2"; \
@@ -168,7 +168,7 @@ install-tool:
 	    $(if $(filter 1,$(UPX)),upx -9 -q '$(DEST)'/$$_BIN 2>/dev/null || true;) \
 	    printf '[download.mk] installed: %s -> $(DEST)\n' "$$_BIN"; \
 	  done; \
-	  $(if $(EXTRA_GLOB),mkdir -p '$(EXTRA_DEST)' && cp -r $(EXTRA_GLOB) '$(EXTRA_DEST)'/;) \
+	  $(if $(EXTRA_GLOB),mkdir -p '$(EXTRA_DEST)' && $(CP) $(EXTRA_GLOB) '$(EXTRA_DEST)'/;) \
 	}; \
 	_is_archive=0; \
 	case '$(EXT)' in .tar.gz|.tgz|.tar.xz|.zip) _is_archive=1 ;; esac; \
@@ -180,7 +180,7 @@ install-tool:
 	    .tar.xz)      tar -xJf 'dl$(EXT)' ;; \
 	    .zip)         unzip -q  'dl$(EXT)' ;; \
 	  esac; \
-	  rm -f 'dl$(EXT)'; \
+	  $(RM) 'dl$(EXT)'; \
 	  _install_bins $(BINS); \
 	else \
 	  for _BIN in $(BINS); do \
@@ -200,7 +200,7 @@ install-tool:
 	          .tar.xz)      tar -xJf 'dl$(EXT)' ;; \
 	          .zip)         unzip -q  'dl$(EXT)' ;; \
 	        esac; \
-	        rm -f 'dl$(EXT)'; \
+	        $(RM) 'dl$(EXT)'; \
 	        _install_bins "$$_BIN"; \
 	        ;; \
 	      *) \

@@ -1149,3 +1149,20 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
 - prime 用の swarm 成果物は Claude 用 SKILL.md・hooks・SWARM.md を複製・改変しない（参照のみ）。
 - 決定論的検証の結果は Python アダプタが構造化 JSON で返し、machine の guard はその JSON のフィールドだけで分岐する。
   LLM の自然文による「合格」で遷移しない。残存リスク: 中継するサブエージェントが JSON を改変しうる（P-7）。
+
+## cpz-rmz-preference (2026-11-07) — Makefile/zsh の cp・rm を cpz・rmz 優先に統一
+
+- 判定は1箇所に集約する。Makefile は `Makefile.d/variables.mk` の `CP`/`RM`、zsh は `zsh/04-aliases.zsh` の
+  配列 `_cp`/`_rm`。レシピ・関数では素の cp/rm ではなく `$(CP)`/`$(RM)`、`"${_cp[@]}"`/`"${_rm[@]}"` を使う。
+- cpz/rmz は絶対パスで解決する（cargo bin は sudo の secure_path に無いため、`sudo $(RM)` が動く前提）。
+  無ければ `cp -rf`/`rm -rf` にフォールバックする。
+- 実測した挙動差（2026-11-07）:
+  - rmz に `-r` は無く常に再帰削除。シンボリックリンクはリンクだけ消し、リンク先は残る。
+  - rmz は引数0個だと rc=2 になる（`rm -f` は成功）。nullglob 下のグロブは配列に受けて件数を確認してから呼ぶ。
+  - cpz は `-f` が無いと既存ファイルを上書きせずエラーになるため、常に `-f` を付ける。`-p`/`-n` は無い。
+  - `cpz dir/. dst/` は中身を統合せず `dst/dir` を作る。既存ディレクトリ宛ての `cpz -f src dst` は `dst/src` を作らず統合する。
+- 例外（cp/rm のまま残す、またはその場で判定する）:
+  - `install.mk` の LINK_DIR_FUNC にある `cp -Rpn`（no-clobber での統合を cpz では表現できない）。
+  - `zsh/01-tmux.zsh` の起動時コピー（04-aliases より先に読まれるため、その場で `$+commands[cpz]` を判定する）。
+  - `zsh/20-docker.zsh` のコンテナ内 sh スニペット（その場で `command -v cpz` を判定する）。
+  - `docker container rm` / `docker buildx rm` はファイル操作ではないため対象外。

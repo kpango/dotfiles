@@ -23,11 +23,11 @@ define DEPLOY_FUNC
 	[ -z "$(1)" ] || { \
 		$(3) mkdir -p "$$(dirname "$(2)")"; \
 		$(if $(filter copy,$(MODE)), \
-			$(3) rm -rf "$(2)" && $(3) cp -r "$(1)" "$(2)", \
+			$(3) $(RM) "$(2)" && $(3) $(CP) "$(1)" "$(2)", \
 			if [ -d "$(2)" ] && [ ! -L "$(2)" ]; then \
 				echo "Skipping existing directory: $(2)"; \
 			else \
-				$(3) rm -f "$(2)" 2>/dev/null || true; \
+				$(3) $(RM) "$(2)" 2>/dev/null || true; \
 				$(3) ln -sfvn "$(1)" "$(2)"; \
 			fi \
 		); \
@@ -41,9 +41,11 @@ endef
 # (never overwriting) and the directory is kept aside as dest.pre-dotfiles.<ts>.
 # cp's status is ignored on purpose: macOS `cp -n` exits 1 whenever it skips an
 # existing file, and nothing is lost either way since dest is moved, not deleted.
+# Plain cp (not $(CP)) on purpose: cpz has no -n/-p, and `cpz dir/. dst/` copies
+# dir itself into dst/ instead of merging its contents.
 define LINK_DIR_FUNC
 	if [ -d "$(2)" ] && [ ! -L "$(2)" ]; then \
-		if [ -L "$(2)/$$(basename "$(1)")" ]; then rm -f "$(2)/$$(basename "$(1)")"; fi; \
+		if [ -L "$(2)/$$(basename "$(1)")" ]; then $(RM) "$(2)/$$(basename "$(1)")"; fi; \
 		mkdir -p "$(1)" || exit 1; \
 		cp -Rpn "$(2)/." "$(1)/" || true; \
 		mv "$(2)" "$(2).pre-dotfiles.$$(date +%Y%m%d%H%M%S)" || exit 1; \
@@ -53,7 +55,7 @@ define LINK_DIR_FUNC
 endef
 
 define CLEAN_FUNC
-	[ -z "$(1)" ] || $(2) rm -rf "$(1)"
+	[ -z "$(1)" ] || $(2) $(RM) "$(1)"
 endef
 
 define FIND_GO
@@ -258,12 +260,12 @@ endef
 export ARCH_DESK_SUDO_CP_MAP
 
 define ARCH_PREP
-	@if [ ! -f /boot/vmlinuz-linux ]; then sudo rm -f /etc/mkinitcpio.d/linux.preset /etc/mkinitcpio.d/linux.preset.pacsave; fi
-	@if [ -L /etc/profile.d/sway.sh ] || grep -qs 'system-wide sway launcher' /etc/profile.d/sway.sh; then sudo rm -f /etc/profile.d/sway.sh; fi
+	@if [ ! -f /boot/vmlinuz-linux ]; then sudo $(RM) /etc/mkinitcpio.d/linux.preset /etc/mkinitcpio.d/linux.preset.pacsave; fi
+	@if [ -L /etc/profile.d/sway.sh ] || grep -qs 'system-wide sway launcher' /etc/profile.d/sway.sh; then sudo $(RM) /etc/profile.d/sway.sh; fi
 	@# modprobe.d is copied, not linked: the initramfs (modconf) would carry the links dangling (no /home there),
 	@# so libkmod errors out and options such as nvidia-tweaks never reach modules loaded early. Drop old links
 	@# first; `cp` onto them would write through into the repo file.
-	@for f in /etc/modprobe.d/*.conf; do [ -L "$$f" ] && case "$$(readlink "$$f")" in */dotfiles/*) sudo rm -f "$$f";; esac; done; true
+	@for f in /etc/modprobe.d/*.conf; do [ -L "$$f" ] && case "$$(readlink "$$f")" in */dotfiles/*) sudo $(RM) "$$f";; esac; done; true
 	sudo mkdir -p /etc/systemd/system/NetworkManager.service.d
 	sudo mkdir -p /etc/systemd/system/sshd.service.d
 	sudo mkdir -p /etc/acpi_override
@@ -314,7 +316,7 @@ define ARCH_POST
 endef
 
 define ARCH_P1_POST
-	rm -rf $(HOME)/.config/psd
+	$(RM) $(HOME)/.config/psd
 	mkdir $(HOME)/.config/psd
 	sudo systemctl daemon-reload
 endef
@@ -323,14 +325,14 @@ define ARCH_DESK_POST
 	sudo mkdir -p /etc/cdi
 	sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml 2>/dev/null || echo "warning: nvidia-ctk cdi generate skipped (reboot required after driver update)"
 	sudo mkdir -p /etc/systemd/system/irqbalance.service.d
-	sudo rm -rf /etc/systemd/system/irqbalance.service.d/override.conf
-	sudo cp $(ROOTDIR)/arch/service/irqbalance.service /etc/systemd/system/irqbalance.service.d/override.conf
-	sudo rm -rf /etc/NetworkManager/system-connections
+	sudo $(RM) /etc/systemd/system/irqbalance.service.d/override.conf
+	sudo $(CP) $(ROOTDIR)/arch/service/irqbalance.service /etc/systemd/system/irqbalance.service.d/override.conf
+	sudo $(RM) /etc/NetworkManager/system-connections
 	sudo mkdir -p /etc/NetworkManager/system-connections
-	sudo cp $(ROOTDIR)/network/nm/desk/bond0.nmconnection /etc/NetworkManager/system-connections/bond0.nmconnection
-	sudo cp $(ROOTDIR)/network/nm/desk/eth0.nmconnection /etc/NetworkManager/system-connections/eth0.nmconnection
-	sudo cp $(ROOTDIR)/network/nm/desk/slave0.nmconnection /etc/NetworkManager/system-connections/slave0.nmconnection
-	sudo cp $(ROOTDIR)/network/nm/desk/slave1.nmconnection /etc/NetworkManager/system-connections/slave1.nmconnection
+	sudo $(CP) $(ROOTDIR)/network/nm/desk/bond0.nmconnection /etc/NetworkManager/system-connections/bond0.nmconnection
+	sudo $(CP) $(ROOTDIR)/network/nm/desk/eth0.nmconnection /etc/NetworkManager/system-connections/eth0.nmconnection
+	sudo $(CP) $(ROOTDIR)/network/nm/desk/slave0.nmconnection /etc/NetworkManager/system-connections/slave0.nmconnection
+	sudo $(CP) $(ROOTDIR)/network/nm/desk/slave1.nmconnection /etc/NetworkManager/system-connections/slave1.nmconnection
 	sudo chmod 700 /etc/NetworkManager/system-connections
 	sudo find /etc/NetworkManager/system-connections -type f -exec chmod 600 {} +
 	sudo chown -R root:root /etc/NetworkManager/system-connections
@@ -359,7 +361,7 @@ MACOS_LAUNCH_AGENTS = localhost.homebrew-autoupdate.plist ulimit.plist
 MAC_NIX_HOST_NAME ?= macbook-pro-m3
 
 define MAC_PREP
-	sudo rm -rf \
+	sudo $(RM) \
 		/etc/docker/config.json \
 		/etc/docker/daemon.json \
 		$(HOME)/.docker/config.json \
@@ -379,8 +381,8 @@ define MAC_PREP
 	# its own without a "would be clobbered" collision. Plain rm, no sudo:
 	# by this point all three are dotfiles/install's own output (its DEPLOY_FUNC
 	# already replaced any hand-written ~/.zprofile, e.g. one with brew shellenv).
-	rm -f $(HOME)/.zshrc $(HOME)/.zshenv $(HOME)/.zprofile
-	cp $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
+	$(RM) $(HOME)/.zshrc $(HOME)/.zshenv $(HOME)/.zprofile
+	$(CP) $(ROOTDIR)/tmux.conf $(HOME)/.tmux.conf
 	sed -i.bak '/^#.*set-environment -g PATH/s/^#//' $(HOME)/.tmux.conf
 	# gpg-agent.conf is NOT copied here: nix-darwin's home-manager activation
 	# (nix/setup below) owns it (darwin.nix, Nix-built pinentry wrapper path).
@@ -402,7 +404,7 @@ cdi/update:
 # ── Shared Nvidia block (used by arch/p1/install and arch/desk/install) ────────
 
 define NVIDIA_INSTALL
-	sudo cp $(ROOTDIR)/nvidia/nvidia-tweaks.conf /etc/modprobe.d/nvidia-tweaks.conf
+	sudo $(CP) $(ROOTDIR)/nvidia/nvidia-tweaks.conf /etc/modprobe.d/nvidia-tweaks.conf
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/nvidia/nvidia-uvm.conf,/etc/modules-load.d/nvidia-uvm.conf,sudo)
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/nvidia/60-nvidia.rules,/etc/udev/rules.d/60-nvidia.rules,sudo)
 endef
@@ -428,10 +430,10 @@ tmux/go/install:
 	    && echo "tmux-pane-info: installed $(HOME)/.zcache/tmux-pane-info"; \
 	else \
 	    echo "tmux-pane-info: Go not found — installing zsh fallback scripts"; \
-	    cp $(ROOTDIR)/tmux.conf.d/kube          $(HOME)/.zcache/tmux-kube; \
-	    cp $(ROOTDIR)/tmux.conf.d/status-left   $(HOME)/.zcache/tmux-status-left; \
-	    cp $(ROOTDIR)/tmux.conf.d/status-branch $(HOME)/.zcache/tmux-status-branch; \
-	    cp $(ROOTDIR)/tmux.conf.d/short-path    $(HOME)/.zcache/tmux-short-path; \
+	    $(CP) $(ROOTDIR)/tmux.conf.d/kube          $(HOME)/.zcache/tmux-kube; \
+	    $(CP) $(ROOTDIR)/tmux.conf.d/status-left   $(HOME)/.zcache/tmux-status-left; \
+	    $(CP) $(ROOTDIR)/tmux.conf.d/status-branch $(HOME)/.zcache/tmux-status-branch; \
+	    $(CP) $(ROOTDIR)/tmux.conf.d/short-path    $(HOME)/.zcache/tmux-short-path; \
 	    zsh -c 'zcompile $(HOME)/.zcache/tmux-kube; zcompile $(HOME)/.zcache/tmux-status-left; zcompile $(HOME)/.zcache/tmux-status-branch; zcompile $(HOME)/.zcache/tmux-short-path' || true; \
 	fi
 
@@ -454,8 +456,8 @@ tmux/go/update:
 ## install tmux powerline glyph scripts and Go-compiled status helpers to ~/.zcache
 dotfiles/compile: tmux/go/install pinentry/install
 	mkdir -p $(HOME)/.zcache
-	cp $(ROOTDIR)/tmux.conf.d/pl-right $(HOME)/.zcache/tmux-pl-right
-	cp $(ROOTDIR)/tmux.conf.d/pl-left  $(HOME)/.zcache/tmux-pl-left
+	$(CP) $(ROOTDIR)/tmux.conf.d/pl-right $(HOME)/.zcache/tmux-pl-right
+	$(CP) $(ROOTDIR)/tmux.conf.d/pl-left  $(HOME)/.zcache/tmux-pl-left
 	chmod +x $(HOME)/.zcache/tmux-pl-right $(HOME)/.zcache/tmux-pl-left
 
 ## symlink or copy all dotfiles to $HOME (see DEPLOY_FUNC for MODE=link|copy).
@@ -476,7 +478,7 @@ dotfiles/install:
 		fi; \
 		$(call DEPLOY_FUNC,$(ROOTDIR)/$$src,$(HOME)/$$dest,); \
 	done
-	@if [ -L "$(HOME)/.tmux.new-session" ]; then rm -f "$(HOME)/.tmux.new-session"; fi
+	@if [ -L "$(HOME)/.tmux.new-session" ]; then $(RM) "$(HOME)/.tmux.new-session"; fi
 ifneq ($(UNAME_S),Darwin)
 	# Linux, non-NixOS only: NixOS manages /etc/docker declaratively
 	# (nix/modules/nixos/virtualization/docker.nix, nix/hosts/tr/virtualization/
@@ -545,8 +547,8 @@ claude/docker/install:
 	@for skill_dir in "$(ROOTDIR)/agent/skills"/*/; do \
 		skill_name=$$(basename "$$skill_dir"); \
 		dest="$(HOME)/.claude/skills/$${skill_name}"; \
-		rm -rf "$$dest"; \
-		cp -R "$${skill_dir}" "$$dest"; \
+		$(RM) "$$dest"; \
+		$(CP) "$${skill_dir}" "$$dest"; \
 		find "$$dest" -type d -exec chmod 755 {} \; ; \
 		find "$$dest" -type f -exec chmod 644 {} \; ; \
 		find "$$dest" -type f -name "*.sh" -exec chmod 755 {} \; ; \
@@ -567,7 +569,7 @@ claude/install: dotfiles/install
 		perl -pe 's{\$$(?:\{(\w+)\}|(\w+))}{$$ENV{$$1 // $$2} // ""}ge' "$(ROOTDIR)/agent/harnesses/claude/installed_plugins.json"; \
 	fi > "$(HOME)/.claude/plugins/installed_plugins.json"
 	@$(call LINK_DIR_FUNC,$(ROOTDIR)/agent/agents,$(HOME)/.claude/agents)
-	@if [ -L "$(HOME)/.claude/hooks" ]; then rm -f "$(HOME)/.claude/hooks"; fi
+	@if [ -L "$(HOME)/.claude/hooks" ]; then $(RM) "$(HOME)/.claude/hooks"; fi
 	@mkdir -p "$(HOME)/.claude/hooks"
 	@find "$(ROOTDIR)/agent/harnesses/claude/hooks" -maxdepth 1 -name "*.sh" \
 		-exec ln -sfvn {} "$(HOME)/.claude/hooks/" \;
@@ -581,14 +583,14 @@ claude/install: dotfiles/install
 	test -f "$${pass_claude}/history.jsonl" || touch "$${pass_claude}/history.jsonl"; \
 	$(call LINK_DIR_FUNC,$${pass_claude}/projects,$(HOME)/.claude/projects); \
 	if [ -f "$(HOME)/.claude/history.jsonl" ] && [ ! -L "$(HOME)/.claude/history.jsonl" ]; then \
-		cat "$(HOME)/.claude/history.jsonl" >> "$${pass_claude}/history.jsonl" && rm -f "$(HOME)/.claude/history.jsonl"; \
+		cat "$(HOME)/.claude/history.jsonl" >> "$${pass_claude}/history.jsonl" && $(RM) "$(HOME)/.claude/history.jsonl"; \
 	fi; \
 	ln -sfvn "$${pass_claude}/history.jsonl" "$(HOME)/.claude/history.jsonl"; \
 	echo "linked: ~/.claude/projects -> $${pass_claude}/projects"; \
 	echo "linked: ~/.claude/history.jsonl -> $${pass_claude}/history.jsonl"
 	@echo "Sharing Claude session: $(ROOT_HOME)/.claude -> $(HOME)/.claude"
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.claude 2>/dev/null; then \
-		sudo rm -rf $(ROOT_HOME)/.claude && sudo ln -sfvn "$(HOME)/.claude" $(ROOT_HOME)/.claude; \
+		sudo $(RM) $(ROOT_HOME)/.claude && sudo ln -sfvn "$(HOME)/.claude" $(ROOT_HOME)/.claude; \
 	fi
 	sudo ln -sfvn "$(ROOTDIR)/gitconfig"                   $(ROOT_HOME)/.gitconfig
 
@@ -637,8 +639,8 @@ pi/docker/install:
 	@for skill_dir in "$(ROOTDIR)/agent/skills"/*/; do \
 		skill_name=$$(basename "$$skill_dir"); \
 		dest="$(HOME)/.pi/agent/skills/$${skill_name}"; \
-		rm -rf "$$dest"; \
-		cp -R "$${skill_dir}" "$$dest"; \
+		$(RM) "$$dest"; \
+		$(CP) "$${skill_dir}" "$$dest"; \
 		find "$$dest" -type d -exec chmod 755 {} \; ; \
 		find "$$dest" -type f -exec chmod 644 {} \; ; \
 		find "$$dest" -type f -name "*.sh" -exec chmod 755 {} \; ; \
@@ -652,7 +654,7 @@ pi/install: dotfiles/install
 	ln -sfvn "$(ROOTDIR)/agent/skills"     "$(HOME)/.pi/agent/skills"
 	ln -sfvn "$(ROOTDIR)/agent/rules"   "$(HOME)/.pi/agent/rules"
 	ln -sfvn "$(ROOTDIR)/agent/harnesses/pi/prompts"    "$(HOME)/.pi/agent/prompts"
-	@if [ -L "$(HOME)/.pi/agent/extensions" ]; then rm -f "$(HOME)/.pi/agent/extensions"; fi
+	@if [ -L "$(HOME)/.pi/agent/extensions" ]; then $(RM) "$(HOME)/.pi/agent/extensions"; fi
 	@mkdir -p "$(HOME)/.pi/agent/extensions/lib"
 	@find "$(ROOTDIR)/agent/harnesses/pi/extensions" -maxdepth 1 -type f \
 		-exec ln -sfvn {} "$(HOME)/.pi/agent/extensions/" \;
@@ -665,7 +667,7 @@ pi/install: dotfiles/install
 	ln -sfvn "$(ROOTDIR)/agent/harnesses/pi/themes"     "$(HOME)/.pi/agent/themes"
 	@echo "Sharing Pi session: $(ROOT_HOME)/.pi -> $(HOME)/.pi"
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.pi 2>/dev/null; then \
-		sudo rm -rf $(ROOT_HOME)/.pi && sudo ln -sfvn "$(HOME)/.pi" $(ROOT_HOME)/.pi; \
+		sudo $(RM) $(ROOT_HOME)/.pi && sudo ln -sfvn "$(HOME)/.pi" $(ROOT_HOME)/.pi; \
 	fi
 
 ## Deploy Antigravity (AGY) config inside a Docker build layer (no sudo, copies not symlinks)
@@ -771,8 +773,8 @@ agy/docker/install:
 		[ "$$skill_name" = "synced" ] && continue; \
 		for target_dir in "$(HOME)/.agy/skills" "$(HOME)/.gemini/config/skills" "$(HOME)/.gemini/skills"; do \
 			dest="$${target_dir}/$${skill_name}"; \
-			rm -rf "$$dest"; \
-			cp -R "$${skill_dir}" "$$dest"; \
+			$(RM) "$$dest"; \
+			$(CP) "$${skill_dir}" "$$dest"; \
 			find "$$dest" -type d -exec chmod 755 {} \; ; \
 			find "$$dest" -type f -exec chmod 644 {} \; ; \
 			find "$$dest" -type f -name "*.sh" -exec chmod 755 {} \; ; \
@@ -787,20 +789,20 @@ agy/install: dotfiles/install
 	@ROOTDIR='$(ROOTDIR)' HOME='$(HOME)' bash '$(ROOTDIR)/agent/harnesses/agy/install.sh'
 	@echo "Sharing Antigravity sessions: $(ROOT_HOME)/{.agy,.gemini,.antigravity,.config/antigravity,.cache/antigravity} -> $(HOME)/..."
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.agy 2>/dev/null; then \
-		sudo rm -rf $(ROOT_HOME)/.agy && sudo ln -sfvn "$(HOME)/.agy" $(ROOT_HOME)/.agy; \
+		sudo $(RM) $(ROOT_HOME)/.agy && sudo ln -sfvn "$(HOME)/.agy" $(ROOT_HOME)/.agy; \
 	fi
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.gemini 2>/dev/null; then \
-		sudo rm -rf $(ROOT_HOME)/.gemini && sudo ln -sfvn "$(HOME)/.gemini" $(ROOT_HOME)/.gemini; \
+		sudo $(RM) $(ROOT_HOME)/.gemini && sudo ln -sfvn "$(HOME)/.gemini" $(ROOT_HOME)/.gemini; \
 	fi
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.antigravity 2>/dev/null; then \
-		sudo rm -rf $(ROOT_HOME)/.antigravity && sudo ln -sfvn "$(HOME)/.antigravity" $(ROOT_HOME)/.antigravity; \
+		sudo $(RM) $(ROOT_HOME)/.antigravity && sudo ln -sfvn "$(HOME)/.antigravity" $(ROOT_HOME)/.antigravity; \
 	fi
 	@sudo mkdir -p $(ROOT_HOME)/.config $(ROOT_HOME)/.cache
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.config/antigravity 2>/dev/null; then \
-		sudo rm -rf $(ROOT_HOME)/.config/antigravity && sudo ln -sfvn "$(HOME)/.config/antigravity" $(ROOT_HOME)/.config/antigravity; \
+		sudo $(RM) $(ROOT_HOME)/.config/antigravity && sudo ln -sfvn "$(HOME)/.config/antigravity" $(ROOT_HOME)/.config/antigravity; \
 	fi
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.cache/antigravity 2>/dev/null; then \
-		sudo rm -rf $(ROOT_HOME)/.cache/antigravity && sudo ln -sfvn "$(HOME)/.cache/antigravity" $(ROOT_HOME)/.cache/antigravity; \
+		sudo $(RM) $(ROOT_HOME)/.cache/antigravity && sudo ln -sfvn "$(HOME)/.cache/antigravity" $(ROOT_HOME)/.cache/antigravity; \
 	fi
 
 ## symlink ~/.codex config files and shared skills
@@ -818,7 +820,7 @@ primeagent/install: dotfiles/install
 ## remove all dotfile symlinks/copies from $HOME and clean generated config files
 dotfiles/clean: dotfiles/perm
 	$(eval TMP_DIR := $(shell mktemp -d))
-	trap 'rm -rf "$(TMP_DIR)"' EXIT; \
+	trap '$(RM) "$(TMP_DIR)"' EXIT; \
 	jq . $(ROOTDIR)/arch/waybar.json > $(TMP_DIR)/waybar.json.tmp && mv $(TMP_DIR)/waybar.json.tmp $(ROOTDIR)/arch/waybar.json || \
 		{ echo "Error: failed to reformat arch/waybar.json (jq parse or mv failed) — leaving it untouched" >&2; exit 1; }
 	@echo "$$DOTFILES_MAP" | while read -r src dest; do \
@@ -860,7 +862,7 @@ pinentry/install:
 	    cd $(ROOTDIR)/tmux.conf.d/pinentry-tmux \
 	    && GOROOT="$$_root" GOEXPERIMENT=runtimesecret "$$_go" build -trimpath -ldflags="-s -w" -buildvcs=false -o /tmp/pinentry-tmux . \
 	    && sudo install -m 755 /tmp/pinentry-tmux /usr/local/bin/pinentry-tmux \
-	    && rm -f /tmp/pinentry-tmux \
+	    && $(RM) /tmp/pinentry-tmux \
 	    && echo "pinentry-tmux: installed /usr/local/bin/pinentry-tmux"; \
 	elif [ "$(UNAME_S)" = Darwin ] && [ -z "$(PINENTRY_STRICT)" ]; then \
 	    echo "pinentry-tmux: Go not found — skipped (mac/install builds it after nix/setup provides Go)"; \
@@ -875,7 +877,7 @@ pinentry/update:
 	if [ -n "$$_go" ]; then \
 	    GOROOT="$$_root" GOEXPERIMENT=runtimesecret "$$_go" build -trimpath -ldflags="-s -w" -buildvcs=false -o /tmp/pinentry-tmux github.com/kpango/dotfiles/tmux.conf.d/pinentry-tmux@latest \
 	    && sudo install -m 755 /tmp/pinentry-tmux /usr/local/bin/pinentry-tmux \
-	    && rm -f /tmp/pinentry-tmux \
+	    && $(RM) /tmp/pinentry-tmux \
 	    && echo "pinentry-tmux: updated to latest at /usr/local/bin/pinentry-tmux"; \
 	else \
 	    echo "pinentry-tmux: Go not found — cannot update"; \
@@ -925,9 +927,9 @@ network/install:
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/network/dns/resolved.conf,/etc/systemd/resolved.conf,sudo)
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/network/dns/resolv.dnsmasq.conf,/etc/resolv.dnsmasq.conf,sudo)
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/network/sysctl/sysctl.conf,/etc/sysctl.d/99-sysctl.conf,sudo)
-	sudo cp $(ROOTDIR)/network/nm/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
-	sudo cp $(ROOTDIR)/network/nm/nmcli-bond-auto-connect.sh   /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
-	sudo cp $(ROOTDIR)/network/nm/99-coalesce-x710              /etc/NetworkManager/dispatcher.d/99-coalesce-x710
+	sudo $(CP) $(ROOTDIR)/network/nm/nmcli-wifi-eth-autodetect.sh /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh
+	sudo $(CP) $(ROOTDIR)/network/nm/nmcli-bond-auto-connect.sh   /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh
+	sudo $(CP) $(ROOTDIR)/network/nm/99-coalesce-x710              /etc/NetworkManager/dispatcher.d/99-coalesce-x710
 	sudo chmod a+x /etc/NetworkManager/dispatcher.d/nmcli-wifi-eth-autodetect.sh \
 	               /etc/NetworkManager/dispatcher.d/nmcli-bond-auto-connect.sh \
 	               /etc/NetworkManager/dispatcher.d/99-coalesce-x710
@@ -956,7 +958,7 @@ arch/install: dotfiles/install claude/install pi/install agy/install codex/insta
 	done
 	@echo "$$ARCH_SUDO_CP_MAP" | while read -r src dest; do \
 		[ -z "$$src" ] && continue; \
-		sudo cp "$(ROOTDIR)/$$src" "$$dest"; \
+		sudo $(CP) "$(ROOTDIR)/$$src" "$$dest"; \
 	done
 	@echo "$$ARCH_SUDO_LINK_MAP" | while read -r src dest; do \
 		$(call DEPLOY_FUNC,$(ROOTDIR)/$$src,$$dest,sudo); \
@@ -965,7 +967,7 @@ arch/install: dotfiles/install claude/install pi/install agy/install codex/insta
 
 ## arch/install variant for ThinkPad P1 (adds P1 waybar CSS + NVIDIA drivers)
 arch/p1/install: arch/install
-	rm -rf $(HOME)/.config/waybar/style.css
+	$(RM) $(HOME)/.config/waybar/style.css
 	@$(call DEPLOY_FUNC,$(ROOTDIR)/arch/waybar_p1.css,$(HOME)/.config/waybar/style.css,)
 	$(NVIDIA_INSTALL)
 	$(ARCH_P1_POST)
@@ -979,7 +981,7 @@ arch/desk/install: arch/install
 	done
 	@echo "$$ARCH_DESK_SUDO_CP_MAP" | while read -r src dest; do \
 		[ -z "$$src" ] && continue; \
-		sudo cp "$(ROOTDIR)/$$src" "$$dest"; \
+		sudo $(CP) "$(ROOTDIR)/$$src" "$$dest"; \
 	done
 	$(ARCH_DESK_POST)
 
@@ -1043,13 +1045,13 @@ mac/install: dotfiles/install claude/install pi/install agy/install codex/instal
 	# and doesn't read Docker's config.json/daemon.json. MAC_PREP above still removes any
 	# leftover files from a pre-migration install.
 	for agent in $(MACOS_LAUNCH_AGENTS); do \
-		rm -f "$(HOME)/Library/LaunchAgents/$$agent"; \
-		cp -f "$(ROOTDIR)/macos/$$agent" "$(HOME)/Library/LaunchAgents/$$agent"; \
+		$(RM) "$(HOME)/Library/LaunchAgents/$$agent"; \
+		$(CP) "$(ROOTDIR)/macos/$$agent" "$(HOME)/Library/LaunchAgents/$$agent"; \
 		chmod 600 "$(HOME)/Library/LaunchAgents/$$agent"; \
 		plutil -lint "$(HOME)/Library/LaunchAgents/$$agent"; \
 		launchctl load -w "$(HOME)/Library/LaunchAgents/$$agent"; \
 	done
-	sudo rm -rf $(ROOTDIR)/nvim/lua/lua
+	sudo $(RM) $(ROOTDIR)/nvim/lua/lua
 	@$(MAKE) nix/setup ROOTDIR='$(ROOTDIR)' NIX_HOST_NAME=$(MAC_NIX_HOST_NAME)
 	@# After nix/setup so a fresh Mac (no Go before Nix) still gets pinentry-tmux.
 	@# This make process still has the pre-Nix PATH, so take PATH from a fresh zsh,

@@ -16,7 +16,7 @@ if (($+commands[brew])); then
 		darwin*)
 			softwareupdate --all --install --force
 			sudo pmset -a hibernatemode 0
-			sudo rm -rf /private/var/vm/sleepimage \
+			sudo "${_rm[@]}" /private/var/vm/sleepimage \
 				/System/Library/Speech/Voices/* \
 				/private/var/log/* \
 				/private/var/folders/ \

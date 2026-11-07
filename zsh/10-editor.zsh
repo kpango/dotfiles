@@ -49,7 +49,7 @@ elif (($+commands[nvim])); then
 	alias nvim="neovim" vim="neovim" vi="neovim" bim="neovim" cim="neovim"
 	alias nvup="nvim --headless -c 'UpdateRemotePlugins' -c 'PackerSync' -c 'PackerCompile'"
 	nvim-init() {
-		rm -rf "$XDG_CONFIG_HOME/gocode" \
+		"${_rm[@]}" "$XDG_CONFIG_HOME/gocode" \
 			"$XDG_CONFIG_HOME/nvim/autoload" \
 			"$XDG_CONFIG_HOME/nvim/ftplugin" \
 			"$XDG_CONFIG_HOME/nvim/log" \
@@ -60,16 +60,16 @@ elif (($+commands[nvim])); then
 	}
 	alias nvinit="nvim-init"
 	alias vake="$EDITOR Makefile"
-	alias vback="cp $XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua.back"
+	alias vback='"${_cp[@]}" '"$XDG_CONFIG_HOME/nvim/init.lua $XDG_CONFIG_HOME/nvim/init.lua.back"
 	alias vedit="$EDITOR $XDG_CONFIG_HOME/nvim/"
 	alias vocker="$EDITOR Dockerfile"
-	alias vrest="cp $XDG_CONFIG_HOME/nvim/init.lua.back $XDG_CONFIG_HOME/nvim/init.lua"
+	alias vrest='"${_cp[@]}" '"$XDG_CONFIG_HOME/nvim/init.lua.back $XDG_CONFIG_HOME/nvim/init.lua"
 else
 	alias nvim="$EDITOR" vim="$EDITOR" vi="$EDITOR" bim="$EDITOR" cim="$EDITOR"
 	alias vedit="$EDITOR $HOME/.vimrc"
 fi
 
-alias vspdchk="rm -rf /tmp/startup.log && $EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
+alias vspdchk='"${_rm[@]}" /tmp/startup.log && '"$EDITOR --startuptime /tmp/startup.log +q && less /tmp/startup.log"
 alias xedit="$EDITOR $HOME/.Xdefaults"
 alias wedit="$EDITOR $XDG_CONFIG_HOME/sway/config"
 
@@ -81,4 +81,4 @@ zedit() {
 	fi
 }
 
-alias zsback="cp $HOME/.zshrc $HOME/.zshrc.back"
+alias zsback='"${_cp[@]}" '"$HOME/.zshrc $HOME/.zshrc.back"

@@ -76,15 +76,15 @@ if (($+commands[pacman])); then
 		# inaccessible with no explanation why".
 		[[ -n "${XDG_CONFIG_HOME:-}" && -d "$XDG_CONFIG_HOME/gcloud" ]] && { sudo chown -R "$USER" "$XDG_CONFIG_HOME/gcloud" 2>/dev/null ||
 			print -u2 "kacclean: failed to chown $XDG_CONFIG_HOME/gcloud back to $USER — it may now be inaccessible"; }
-		[[ -n "${HOME:-}" ]] && sudo rm -rf "$HOME/.cache"/* 2>/dev/null || true
-		[[ -n "${XDG_CONFIG_HOME:-}" ]] && sudo rm -rf \
+		[[ -n "${HOME:-}" ]] && sudo "${_rm[@]}" "$HOME/.cache"/* 2>/dev/null || true
+		[[ -n "${XDG_CONFIG_HOME:-}" ]] && sudo "${_rm[@]}" \
 			"$XDG_CONFIG_HOME/gcloud/config_sentinel" \
 			"$XDG_CONFIG_HOME/gcloud/logs"/* 2>/dev/null || true
-		sudo rm -rf \
+		sudo "${_rm[@]}" \
 			/tmp/makepkg/* \
 			/var/cache/pacman/pkg \
 			/var/lib/pacman/sync/*
-		sudo rm -f /var/lib/pacman/db.lck
+		sudo "${_rm[@]}" /var/lib/pacman/db.lck
 		sudo mkdir -p /var/cache/pacman/pkg
 		sudo pacman -Scc --noconfirm
 		local _orphans
@@ -134,7 +134,7 @@ if (($+commands[pacman])); then
 		fi
 
 		if kacman -Syy --noconfirm >"$log_file" 2>&1; then
-			rm -f "$log_file"
+			"${_rm[@]}" "$log_file"
 			return 0
 		fi
 
@@ -146,7 +146,7 @@ if (($+commands[pacman])); then
 				sleep $_delay
 				_delay=$((_delay * 2))
 				if kacman -Syy --noconfirm >"$log_file" 2>&1; then
-					rm -f "$log_file"
+					"${_rm[@]}" "$log_file"
 					return 0
 				fi
 			else
@@ -156,7 +156,7 @@ if (($+commands[pacman])); then
 
 		echo "pacman -Syy failed; see log:"
 		cat "$log_file"
-		rm -f "$log_file"
+		"${_rm[@]}" "$log_file"
 		return 1
 	}
 
@@ -170,7 +170,7 @@ if (($+commands[pacman])); then
 
 		# if there is no mirrorlist yet, handle gracefully
 		if [[ -f "$mirror" ]]; then
-			sudo cp "$mirror" "$backup"
+			sudo "${_cp[@]}" "$mirror" "$backup"
 		fi
 
 		# Call reflector
@@ -189,14 +189,14 @@ if (($+commands[pacman])); then
 			--number 20 \
 			--save "$tmpfile"; then
 			echo "Reflector failed; keeping existing mirrorlist"
-			rm -f "$tmpfile"
+			"${_rm[@]}" "$tmpfile"
 			return 1
 		fi
 
 		# Minimal sanity check
 		if [[ ! -s "$tmpfile" || $(wc -l <"$tmpfile") -lt 5 ]]; then
 			echo "Reflector produced an unexpectedly small mirrorlist; aborting."
-			rm -f "$tmpfile"
+			"${_rm[@]}" "$tmpfile"
 			return 1
 		fi
 
@@ -219,7 +219,7 @@ if (($+commands[pacman])); then
 		fi
 
 		echo "New mirrorlist validated successfully; removing backup"
-		sudo rm -f "$backup"
+		sudo "${_rm[@]}" "$backup"
 		return 0
 	}
 
@@ -478,7 +478,7 @@ if (($+commands[pacman])); then
 			makepkg -si --noconfirm || exit 1
 		)
 		local _rc=$?
-		rm -rf "$_dir"
+		"${_rm[@]}" "$_dir"
 		if [[ $_rc -eq 0 ]]; then
 			echo "==> paru rebuilt successfully"
 		else
@@ -512,7 +512,7 @@ if (($+commands[pacman])); then
 
 		local backup="${conf}.broken.bak.$(date +%Y%m%d-%H%M%S)"
 		echo "==> Restoring from $pacnew (backup: $backup)"
-		sudo cp "$conf" "$backup" || return 1
+		sudo "${_cp[@]}" "$conf" "$backup" || return 1
 		sudo install -m 644 "$pacnew" "$conf" || return 1
 
 		# Ensure PKGDEST is in conf.d (new architecture) rather than /etc/makepkg.conf.
@@ -521,8 +521,8 @@ if (($+commands[pacman])); then
 			printf '\nPKGDEST=/tmp/pakku-%s\n' "$USER" | sudo tee -a "$_custom_conf" >/dev/null
 		fi
 
-		sudo rm -f "$pacnew"
-		rm -f "/tmp/pakku-${USER}/makepkg.conf"
+		sudo "${_rm[@]}" "$pacnew"
+		"${_rm[@]}" "/tmp/pakku-${USER}/makepkg.conf"
 		echo "==> $conf restored ($(wc -l <"$conf") lines)"
 	}
 
@@ -541,7 +541,7 @@ if (($+commands[pacman])); then
 				echo "WARNING: $pacnew_file has live customizations; run 'sudo pacdiff' to merge"
 			else
 				echo "==> Auto-merging unchanged ${live_file##*/}.pacnew"
-				sudo install -m 644 "$pacnew_file" "$live_file" && sudo rm -f "$pacnew_file"
+				sudo install -m 644 "$pacnew_file" "$live_file" && sudo "${_rm[@]}" "$pacnew_file"
 			fi
 		done
 	}
@@ -780,7 +780,7 @@ if (($+commands[pacman])); then
 		} 2>&1 | tee "$_log"
 
 		# Rotate: keep the 20 most recent logs
-		ls -1t "$_log_dir"/archup-*.log 2>/dev/null | tail -n +21 | xargs -r rm -f 2>/dev/null || true
+		ls -1t "$_log_dir"/archup-*.log 2>/dev/null | tail -n +21 | xargs -r "${_rm[@]}" 2>/dev/null || true
 	}
 	alias up=archup
 

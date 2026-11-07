@@ -74,7 +74,7 @@ bench/zsh/first-prompt: _bench_check
 ## real $HOME gets (see --share-zcompdump in scripts/zsh-pty-startup.py for details/caveats).
 bench/zsh/profile:
 	@_D=$$(mktemp -d); \
-	trap 'rm -rf "$$_D"' EXIT; \
+	trap '$(RM) "$$_D"' EXIT; \
 	{ printf 'zmodload zsh/zprof\n'; cat "$(HOME)/.zshenv" 2>/dev/null || true; } > "$$_D/.zshenv"; \
 	printf 'source "%s/.zshrc"\nzsh-defer -c "zprof > \"%s/zprof.out\" 2>&1"\n' "$(HOME)" "$$_D" > "$$_D/.zshrc"; \
 	ZDOTDIR="$$_D" $(PTY_BENCH) --quiet-ms 500 --max-wait-s 15 $(if $(SHARE_ZCOMPDUMP),--share-zcompdump,) >/dev/null 2>&1; \

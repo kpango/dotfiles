@@ -38,7 +38,7 @@ docker/build/prod: \
 docker/build/image:
 	@$(eval TMP_DIR := $(shell mktemp -d))
 	@umask 077 && printf '%s' "$${GITHUB_ACCESS_TOKEN:-$$(pass github.api.ro.token 2>/dev/null)}" > $(TMP_DIR)/gat
-	trap 'rm -rf "$(TMP_DIR)"' EXIT; \
+	trap '$(RM) "$(TMP_DIR)"' EXIT; \
 	DOCKER_BUILDKIT=1 docker buildx build \
 		$(DOCKER_EXTRA_OPTS) \
 		--builder "$(DOCKER_BUILDER_NAME)" \
@@ -156,7 +156,7 @@ docker/builder/add-nodes:
 ## force-remove all inactive buildx builders and wipe local buildx state
 docker/builder/remove:
 	docker buildx rm --force --all-inactive
-	sudo rm -rf $(HOME)/.docker/buildx
+	sudo $(RM) $(HOME)/.docker/buildx
 	docker buildx ls
 
 ## merge amd64 and arm64 single-arch images into a multi-arch manifest for NAME
@@ -174,8 +174,8 @@ docker/merge/%:
 
 ## install docker config.json and run docker login
 docker/login:
-	rm -rf $(HOME)/.docker/config.json
-	cp $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
+	$(RM) $(HOME)/.docker/config.json
+	$(CP) $(ROOTDIR)/dockers/config.json $(HOME)/.docker/config.json
 	docker login
 
 ## push the dev image to Docker Hub and GHCR
@@ -188,7 +188,7 @@ docker/pull:
 
 ## analyse image layers with dlayer and write analyze.txt
 docker/profile:
-	rm -f analyze.txt
+	$(RM) analyze.txt
 	command -v dlayer >/dev/null 2>&1 && docker save kpango/dev:$(VERSION) | dlayer >> analyze.txt
 
 # ── Backward-compat aliases ───────────────────────────────────────────────────

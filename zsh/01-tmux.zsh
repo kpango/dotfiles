@@ -71,12 +71,12 @@ if [[ -n "${HAS_TMUX:-}" ]] || whence -p tmux >/dev/null 2>&1; then
 			for s in /var/tmp/tmux-$UID/*.sock; do
 				[[ "$s" == "${TMUX%%,*}" ]] && continue
 				if ! tmux -S "$s" has-session 2>/dev/null; then
-					command rm -f -- "$s" && echo "removed dead socket $s"
+					"${_rm[@]}" -- "$s" && echo "removed dead socket $s"
 					continue
 				fi
 				n=$(tmux -S "$s" list-clients 2>/dev/null | wc -l)
 				if ((all || n == 0)); then
-					tmux -S "$s" kill-server && command rm -f -- "$s" && echo "killed $s (clients: $n)"
+					tmux -S "$s" kill-server && "${_rm[@]}" -- "$s" && echo "killed $s (clients: $n)"
 				fi
 			done
 		}
@@ -95,7 +95,8 @@ if [[ -n "${HAS_TMUX:-}" ]] || whence -p tmux >/dev/null 2>&1; then
 				_tmux_src="$HOME/.tmux.conf.d/${_tmux_pair%%:*}"
 				_tmux_dst="$HOME/.zcache/${_tmux_pair##*:}"
 				if [[ -f "$_tmux_src" ]] && { [[ ! -f "$_tmux_dst" ]] || [[ "$_tmux_src" -nt "$_tmux_dst" ]]; }; then
-					cp "$_tmux_src" "$_tmux_dst" && chmod +x "$_tmux_dst" && zcompile "$_tmux_dst" 2>/dev/null
+					# Runs before 04-aliases.zsh defines _cp, so pick cpz here directly.
+					if (($+commands[cpz])); then cpz -f "$_tmux_src" "$_tmux_dst"; else command cp -f "$_tmux_src" "$_tmux_dst"; fi && chmod +x "$_tmux_dst" && zcompile "$_tmux_dst" 2>/dev/null
 				fi
 			done
 			unset _tmux_pair _tmux_src _tmux_dst

@@ -1,7 +1,7 @@
 zclean() {
 	setopt localoptions nullglob
 	local _zc="${ZCACHE_DIR:-$HOME/.zcache}"
-	sudo rm -rf $HOME/.zcompdump* \
+	sudo "${_rm[@]}" $HOME/.zcompdump* \
 		$HOME/.zsh*.zwc \
 		$HOME/.zsh_*_cache* \
 		$HOME/.*_cache.zsh* \
@@ -14,7 +14,9 @@ zclean() {
 		${XDG_CACHE_HOME:-$HOME/.cache}/sheldon
 	# Clean ZCACHE_DIR contents only (not the dir itself — it may be a mount point)
 	if [[ -d "$_zc" ]]; then
-		sudo rm -rf "$_zc"/* "$_zc"/*.lock
+		# rmz (unlike rm -f) errors on an empty arg list, which nullglob can produce.
+		local -a _zf=("$_zc"/* "$_zc"/*.lock)
+		((${#_zf})) && sudo "${_rm[@]}" -- "${_zf[@]}"
 	fi
 	# Unset stale $TMUX if the server is no longer running
 	if (($+commands[tmux])) && [[ -n "$TMUX" ]] && ! tmux info &>/dev/null; then
@@ -28,7 +30,7 @@ zprecompile() {
 
 	# Ensure the cache directory exists and is writable.
 	mkdir -p "$d" 2>/dev/null
-	if ! { command touch "$d/.writable_check" 2>/dev/null && command rm -f "$d/.writable_check" 2>/dev/null; }; then
+	if ! { command touch "$d/.writable_check" 2>/dev/null && "${_rm[@]}" "$d/.writable_check" 2>/dev/null; }; then
 		printf 'Error: ZCACHE_DIR (%s) is not writable.\n' "$d" >&2
 		printf 'If running in a container, recreate the bind-mount source on the host:\n' >&2
 		printf '  mkdir -p %s\n' "$d" >&2
@@ -47,12 +49,12 @@ zprecompile() {
 	# the next interactive shell creates them (an orphaned autosuggest-bind
 	# *.<pid>.d dir from a killed writer is only removed by zclean).
 	setopt localoptions nullglob
-	command rm -f "$d"/*.{zsh,zwc}
-	command rm -f "$d"/*.tmp.*
-	command rm -rf "$d"/*.lock
+	# rmz (unlike rm -f) errors on an empty arg list, which nullglob can produce.
+	local -a _stale=("$d"/*.{zsh,zwc} "$d"/*.tmp.* "$d"/*.lock)
+	((${#_stale})) && "${_rm[@]}" -- "${_stale[@]}"
 
 	# Reload _zcache_eval from current source (avoids loading a stale .zwc).
-	command rm -f "$_df/zfunc.zwc" "$_df/zfunc.zwc.old" 2>/dev/null
+	"${_rm[@]}" "$_df/zfunc.zwc" "$_df/zfunc.zwc.old" 2>/dev/null
 	zcompile -U -z -R "$_df/zfunc/_zcache_eval" 2>/dev/null
 	unfunction _zcache_eval 2>/dev/null
 	autoload -Uz _zcache_eval
@@ -109,7 +111,7 @@ zprecompile() {
 		zcompile -U -z -R "$f" 2>/dev/null
 	done
 	((${#_zf_srcs})) && zcompile -U -z -M "$_df/zfunc.zwc" "${_zf_srcs[@]}" 2>/dev/null
-	command rm -f "$_df/zfunc.zwc.old" "$_df/zfunc"/*.zwc.old 2>/dev/null
+	"${_rm[@]}" "$_df/zfunc.zwc.old" "$_df/zfunc"/*.zwc.old 2>/dev/null
 	local _zcd="${ZDOTDIR:-$HOME}/.zcompdump"
 	[[ -f "$_zcd" ]] && zcompile -U -M "$_zcd" 2>/dev/null
 	for f in "$d"/*.zsh; do

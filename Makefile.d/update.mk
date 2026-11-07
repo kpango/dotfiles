@@ -58,7 +58,7 @@ define _gh_fetch_latest
 					"https://api.github.com/repos/$$repo/releases/latest" 2>/dev/null); \
 			fi; \
 			RESP=$$(cat "$$_FETCH_TMP" 2>/dev/null); \
-			rm -f "$$_FETCH_TMP"; \
+			$(RM) "$$_FETCH_TMP"; \
 			if [ "$$HTTP_STATUS" = "200" ] || [ "$$HTTP_STATUS" = "404" ]; then \
 				FETCH_RC=0; \
 			else \

@@ -25,5 +25,5 @@ devbox/update:
 
 ## remove the .devbox state directory
 devbox/clean:
-	rm -rf .devbox
+	$(RM) .devbox
 	@echo "=> Devbox state cleaned."

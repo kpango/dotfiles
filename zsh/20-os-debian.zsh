@@ -1,7 +1,7 @@
 if (($+commands[apt-get])); then
 	_apt_clean_cache() {
 		sudo du -sh /var/cache/apt/archives 2>/dev/null || true
-		sudo rm -rf /var/cache/apt /var/lib/apt/lists/*
+		sudo "${_rm[@]}" /var/cache/apt /var/lib/apt/lists/*
 		sudo mkdir -p /var/cache/apt/archives/partial
 	}
 

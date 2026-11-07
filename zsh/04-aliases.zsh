@@ -1,3 +1,17 @@
+# _cp/_rm: what functions and scripts call instead of a bare cp/rm ("${_cp[@]}",
+# `sudo "${_rm[@]}"`). Absolute paths so sudo finds cpz/rmz despite secure_path.
+# rmz is always recursive (no -r); cpz refuses to overwrite without -f.
+if (($+commands[cpz])); then
+	typeset -ga _cp=("$commands[cpz]" -f)
+else
+	typeset -ga _cp=(cp -rf)
+fi
+if (($+commands[rmz])); then
+	typeset -ga _rm=("$commands[rmz]" -f)
+else
+	typeset -ga _rm=(rm -rf)
+fi
+
 if (($+commands[cpz])); then
 	alias cp='cpz'
 else
@@ -149,7 +163,7 @@ zsync_state() {
 	fi
 	if (($+commands[atuin])); then
 		if ((verbose)); then printf '  -> Verifying Atuin daemon state...\n'; fi
-		rm -f "${XDG_DATA_HOME:-$HOME/.local/share}/atuin/history.db-lock" 2>/dev/null
+		"${_rm[@]}" "${XDG_DATA_HOME:-$HOME/.local/share}/atuin/history.db-lock" 2>/dev/null
 		fc -RI 2>/dev/null
 	fi
 	if ((verbose)); then printf '  -> Sweeping container & infrastructure subsystems...\n'; fi
@@ -166,12 +180,12 @@ zsync_state() {
 	fi
 	if (($+commands[herdr])); then
 		export HERDR_SESSION="${USER:-$USERNAME}-${HOST:-$HOSTNAME}"
-		rm -f "/tmp/herdr-${HERDR_SESSION:?}.sock" 2>/dev/null
+		"${_rm[@]}" "/tmp/herdr-${HERDR_SESSION:?}.sock" 2>/dev/null
 	fi
 	local _tmpdir="${TMPDIR:-${XDG_RUNTIME_DIR:-/tmp}}"
 	if [[ -d "$_tmpdir" ]]; then
-		rm -rf "$_tmpdir"/fzf-* 2>/dev/null
-		rm -rf "$_tmpdir"/.pin-* 2>/dev/null
+		"${_rm[@]}" "$_tmpdir"/fzf-* 2>/dev/null
+		"${_rm[@]}" "$_tmpdir"/.pin-* 2>/dev/null
 	fi
 
 	printf 'Dotfiles runtime state synchronized successfully.\n'

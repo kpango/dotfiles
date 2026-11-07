@@ -197,7 +197,7 @@ _devrun_agy_container_root_sh() {
 		cache_ver=""
 		[ -x "\$cbin" ] && cache_ver="\$("\$cbin" --version 2>/dev/null | head -n1)"
 		if [ ! -x "\$cbin" ] || { [ -n "\$img_ver" ] && [ -n "\$cache_ver" ] && [ "\$img_ver" != "\$cache_ver" ] && [ "\$(printf '%s\n%s\n' "\$cache_ver" "\$img_ver" | sort -V | tail -n1)" = "\$img_ver" ]; }; then
-			cp -f /usr/local/bin/agy "\$cbin"
+			if command -v cpz >/dev/null 2>&1; then cpz -f /usr/local/bin/agy "\$cbin"; else cp -f /usr/local/bin/agy "\$cbin"; fi
 		fi
 		chown -R '$uid:$gid' "\$cbin_dir"
 		ln -sfn "\$cbin" /usr/local/bin/agy

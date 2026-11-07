@@ -99,7 +99,7 @@ nix/setup:
 			&& chmod +x "$$_tmp/nix-installer" \
 			&& "$$_tmp/nix-installer" install --determinate --no-confirm \
 			|| { echo "Error: Nix installation failed."; exit 1; }; \
-		rm -f "$$_tmp/nix-installer"; rmdir "$$_tmp"; \
+		$(RM) "$$_tmp/nix-installer"; rmdir "$$_tmp"; \
 	fi
 	@if [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh; fi; \
 	command -v nix >/dev/null 2>&1 || { echo "Error: nix not found after install."; exit 1; }
