@@ -1,5 +1,8 @@
 .PHONY: install-tool get-version get-stable-version
 
+# $(CP)/$(RM): this file is also run standalone (`make -f /mk/download.mk`).
+include $(dir $(lastword $(MAKEFILE_LIST)))fuc.mk
+
 # ── OS / arch normalization ────────────────────────────────────────────────────
 _RAW_ARCH    := $(or $(TARGETARCH),$(ARCH),$(shell uname -m))
 _RAW_OS      := $(or $(TARGETOS),$(OS),$(shell uname -s | tr '[:upper:]' '[:lower:]'))

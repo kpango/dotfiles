@@ -1152,7 +1152,9 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
 
 ## cpz-rmz-preference (2026-11-07) — Makefile/zsh の cp・rm を cpz・rmz 優先に統一
 
-- 判定は1箇所に集約する。Makefile は `Makefile.d/variables.mk` の `CP`/`RM`、zsh は `zsh/04-aliases.zsh` の
+- 判定は1箇所に集約する。Makefile は `Makefile.d/fuc.mk` の `CP`/`RM`（`variables.mk` と、Dockerfile から
+  `make -f /mk/download.mk` で単体実行される `download.mk` の両方が include する。dad0eaa で `variables.mk` に置いた
+  ときは単体実行の `download.mk` で `$(RM)` が組み込みの `rm -f`、`$(CP)` が空になり、Docker ビルドが壊れた）、zsh は `zsh/04-aliases.zsh` の
   配列 `_cp`/`_rm`。レシピ・関数では素の cp/rm ではなく `$(CP)`/`$(RM)`、`"${_cp[@]}"`/`"${_rm[@]}"` を使う。
 - cpz/rmz は絶対パスで解決する（cargo bin は sudo の secure_path に無いため、`sudo $(RM)` が動く前提）。
   無ければ `cp -rf`/`rm -rf` にフォールバックする。

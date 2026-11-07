@@ -12,14 +12,7 @@ SED_INPLACE := sed -i
 else
 SED_INPLACE := sed -i ''
 endif
-# cp/rm: prefer cpz/rmz (fuc) when installed; use $(CP)/$(RM) instead of a bare
-# cp/rm in recipes. Resolved to absolute paths so `sudo $(RM)` works even though the
-# cargo bin dir is outside sudo's secure_path. rmz is always recursive (no -r flag),
-# and cpz refuses to overwrite without -f, so -f keeps plain cp/rm -rf semantics.
-CPZ := $(shell command -v cpz 2>/dev/null)
-RMZ := $(shell command -v rmz 2>/dev/null)
-CP := $(if $(CPZ),$(CPZ) -f,cp -rf)
-RM := $(if $(RMZ),$(RMZ) -f,rm -rf)
+include $(dir $(lastword $(MAKEFILE_LIST)))fuc.mk
 # root's home directory: macOS keeps it at /var/root, not /root.
 ifeq ($(UNAME_S),Darwin)
 ROOT_HOME := /var/root
