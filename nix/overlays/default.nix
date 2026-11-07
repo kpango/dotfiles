@@ -177,14 +177,25 @@
     # hash check sits inside the value, not in optionalAttrs' condition: the
     # overlay's attribute names must not depend on a package, or the package
     # set's fixpoint recurses infinitely.)
-    // prev.lib.optionalAttrs prev.stdenv.hostPlatform.isDarwin {
+    # Linux too since 2026-11-06: the same stale hash no longer matches the
+    # x86_64-linux output either, failing every NixOS host build in CI
+    # ("Test Nix configurations"), so it gets the value the build reports,
+    # under the same self-disabling guard.
+    // {
       opencode =
+        let
+          fixedHash =
+            if prev.stdenv.hostPlatform.isDarwin then
+              "sha256-dIveiaiPFGSItwLyeMuPDxTE9gpvvnlTCB/+nG24qCc="
+            else
+              "sha256-prx9dX7kUvs/E3zopkaPk5LXh3xJAy5sZeum/W8L7cA=";
+        in
         if
           prev.opencode.node_modules.outputHash == "sha256-xfOVcw1+waLVNhFDwzOtzxrUSQEogvn88YomydOlhwc="
         then
           prev.opencode.overrideAttrs (old: {
             node_modules = old.node_modules.overrideAttrs {
-              outputHash = "sha256-dIveiaiPFGSItwLyeMuPDxTE9gpvvnlTCB/+nG24qCc=";
+              outputHash = fixedHash;
             };
           })
         else
