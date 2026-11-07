@@ -23,7 +23,7 @@ RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
         APP_NAME=slim REPO='slimtoolkit/$(APP_NAME)' \
         BINS='mint mint-sensor' URL_VER_TAG= EXT=.tar.gz UPX=1 \
         URL_TEMPLATE='$(GITHUB)/slimtoolkit/slim/$(RELEASE_DL)/$(VERSION)/dist_$(OS)$(if $(filter arm64,$(ARCH)),_arm64,).tar.gz' \
-    && rm -f "${BIN_PATH}/slim" "${BIN_PATH}/docker-slim" "${BIN_PATH}/docker-slim-sensor" "${BIN_PATH}/slim-sensor" \
+    && { if command -v rmz >/dev/null 2>&1; then rmz -f "${BIN_PATH}/slim" "${BIN_PATH}/docker-slim" "${BIN_PATH}/docker-slim-sensor" "${BIN_PATH}/slim-sensor"; else rm -f "${BIN_PATH}/slim" "${BIN_PATH}/docker-slim" "${BIN_PATH}/docker-slim-sensor" "${BIN_PATH}/slim-sensor"; fi; } \
     && ln "${BIN_PATH}/mint" "${BIN_PATH}/slim" \
     && ln "${BIN_PATH}/mint" "${BIN_PATH}/docker-slim" \
     && ln "${BIN_PATH}/mint-sensor" "${BIN_PATH}/docker-slim-sensor" \

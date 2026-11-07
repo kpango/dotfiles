@@ -1,6 +1,6 @@
 # syntax = docker/dockerfile:latest
 FROM gcr.io/google.com/cloudsdktool/google-cloud-cli:latest
-RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+RUN { if command -v rmz >/dev/null 2>&1; then rmz -f /etc/apt/apt.conf.d/docker-clean; else rm -f /etc/apt/apt.conf.d/docker-clean; fi; } \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
     && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \

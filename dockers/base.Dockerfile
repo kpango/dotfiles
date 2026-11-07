@@ -43,7 +43,7 @@ ENV OS=${TARGETOS} \
 ENV PATH=${PATH}:${CLANG_PATH}/bin \
     LD_LIBRARY_PATH=${CLANG_PATH}/lib
 
-RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+RUN { if command -v rmz >/dev/null 2>&1; then rmz -f /etc/apt/apt.conf.d/docker-clean; else rm -f /etc/apt/apt.conf.d/docker-clean; fi; } \
     && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache \
     && echo 'APT::Install-Recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends \
     && echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/no-languages \
@@ -128,7 +128,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     && echo "${LANG} UTF-8" > /etc/locale.gen \
     && ln -fs /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
     && locale-gen \
-    && rm /etc/localtime \
+    && { if command -v rmz >/dev/null 2>&1; then rmz /etc/localtime; else rm /etc/localtime; fi; } \
     && dpkg-reconfigure -f noninteractive tzdata
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \

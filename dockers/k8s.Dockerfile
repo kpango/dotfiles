@@ -125,7 +125,7 @@ RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \
     make --no-print-directory -f /mk/download.mk install-tool \
         APP_NAME=kube-linter REPO='stackrox/$(APP_NAME)' UPX=1 \
         URL_TEMPLATE='$(GITHUB)/$(REPO)/$(RELEASE_DL)/v$(VERSION)/$(APP_NAME)-$(OS)$(if $(filter arm64,$(ARCH)),_arm64,).tar.gz' \
-    && cp "${BIN_PATH}/kube-linter" "${BIN_PATH}/kubectl-lint"
+    && { if command -v cpz >/dev/null 2>&1; then cpz -f "${BIN_PATH}/kube-linter" "${BIN_PATH}/kubectl-lint"; else cp "${BIN_PATH}/kube-linter" "${BIN_PATH}/kubectl-lint"; fi; }
 
 FROM k8s-base AS helm-docs
 RUN --mount=type=bind,source=Makefile.d,target=/mk,ro \

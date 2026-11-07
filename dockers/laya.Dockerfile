@@ -95,7 +95,7 @@ COPY dockers/laya-fetch-checkpoint.py /tmp/fetch_laya_checkpoint.py
 # the LAYA_HF_REVISION ENV value set above, so a different value invalidates and
 # redownloads) actually fetched and verified.
 RUN python3 /tmp/fetch_laya_checkpoint.py \
-    && cp -a /root/.cache/huggingface /root/huggingface-baked
+    && { if command -v cpz >/dev/null 2>&1; then cpz -f /root/.cache/huggingface /root/huggingface-baked; else cp -a /root/.cache/huggingface /root/huggingface-baked; fi; }
 
 # --- runtime stage -----------------------------------------------------------------------
 FROM ${BASE_IMAGE}
@@ -134,7 +134,7 @@ RUN existing_group="$(getent group "${GROUP_ID}" | cut -d: -f1 || true)"; \
 # size small.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends gcc libc6-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && { if command -v rmz >/dev/null 2>&1; then rmz -f /var/lib/apt/lists/*; else rm -rf /var/lib/apt/lists/*; fi; }
 
 # venv, not a global pip install: sidesteps PEP 668 regardless of whether a future base
 # swap reintroduces it, and keeps laya's dependency tree out of the system site-packages.

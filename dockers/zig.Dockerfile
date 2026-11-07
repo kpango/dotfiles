@@ -42,7 +42,7 @@ RUN --mount=type=cache,id=zig-download-${ARCH},target=/tmp/zig-cache \
            sleep "${CURL_RETRY_DELAY}"; \
        done \
     && tar -xJf "/tmp/zig-cache/${TAR_FILE}" \
-    && rm "/tmp/zig-cache/${TAR_FILE}" \
+    && { if command -v rmz >/dev/null 2>&1; then rmz "/tmp/zig-cache/${TAR_FILE}"; else rm "/tmp/zig-cache/${TAR_FILE}"; fi; } \
     && mv "${TAR_FILE%.tar.xz}" "${ZIG_HOME}" \
     && "${ZIG_HOME}/zig" version
 

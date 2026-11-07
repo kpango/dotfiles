@@ -21,7 +21,7 @@ RUN --mount=type=cache,id=vald-git-${TARGETARCH},target=/root/.cache/git \
     GIT_DIR=/root/.cache/git/vald.git git clone --depth 1 ${GITHUB}/vdaas/vald "/tmp/vald" \
     && cd "/tmp/vald" \
     && make cmake/install \
-    && rm -rf "/tmp/vald/.git"
+    && { if command -v rmz >/dev/null 2>&1; then rmz -f "/tmp/vald/.git"; else rm -rf "/tmp/vald/.git"; fi; }
 
 FROM cmake-base AS ngt
 WORKDIR /tmp/vald

@@ -1172,3 +1172,9 @@ login → sway 起動は 1s 未満で、体感遅延の主因はモード変更�
   `command -v` ではなく binstall の既定の導入先 `${CARGO_HOME:-$HOME/.cargo}/bin` を直接見る。
   `compileTmuxScripts` は `installCargoBinTools` の後に走らせ、初回の activation から cpz/rmz を使う。
   `nix-update` はユーザーの PATH で動くので `command -v rmz` で判定する。
+- Docker（2026-11-07 追記）: `dockers/*.Dockerfile` の RUN 内の cp/rm は
+  `{ if command -v rmz >/dev/null 2>&1; then rmz ...; else rm ...; fi; }` の形で判定付きにする（ユーザー判断）。
+  cpz/rmz は `rust.Dockerfile` の専用ステージでビルドされて最終の dev イメージにだけ入り、cp/rm を使う各ビルド
+  ステージ（`kpango/base` 由来・`python:3.12-slim`・gcloud 公式イメージ）には無い。rust は base に依存するので
+  base に入れると循環する。そのため現状のビルドでは常にフォールバックの cp/rm が使われ、ビルド結果は変わらない。
+  フォールバック側は元のフラグをそのまま残し（`rm` と `rm -f` の違い、`cp -a` を含む）、rmz 側は `-f` の有無だけを合わせる。
