@@ -21,7 +21,7 @@ NIX_TEST_HOSTS ?= tr p1 x1 g2
 # (space-separated). Must match nix/flake.nix's darwinConfigurations attribute
 # names. Unlike NIX_TEST_HOSTS these are checked unconditionally (fixed small
 # set, no per-host override needed) so a plain `make nix/test` catches darwin
-# regressions from Linux without waiting on the macos-14 CI runner.
+# regressions from Linux without waiting on the macOS CI runner.
 NIX_TEST_DARWIN_HOSTS ?= macbook-air-m1 macbook-pro-m3 macbook-pro-m1
 
 # NixOS container image used when nix is not installed natively
@@ -199,7 +199,7 @@ nix/pull:
 # evaluation and --dry-run derivation-graph resolution need no aarch64-darwin
 # builder (they only read the flake and query substituters), so they catch the
 # same class of regression that used to be visible only via the darwin-build CI
-# job on a real macos-14 runner (see nix/test/build/darwin) — several minutes
+# job on a real macOS runner (see nix/test/build/darwin) — several minutes
 # there vs. seconds here, and they run on every push/PR instead of needing a
 # scarcer macOS runner slot.
 #

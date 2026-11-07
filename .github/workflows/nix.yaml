@@ -200,7 +200,7 @@ jobs:
   # No aarch64-darwin builder needed: --dry-run only resolves the derivation
   # graph against substituters. Catches the same missing-package/hash-mismatch
   # class of regression as darwin-build below, in seconds instead of minutes,
-  # without spending a scarce macos-14 runner slot — darwin-build below gates
+  # without spending a scarce macOS runner slot — darwin-build below gates
   # on this passing first.
 
   dry-run-darwin:
@@ -238,14 +238,14 @@ jobs:
   # ── Stage 2b: Darwin build on Apple Silicon macOS (all events) ────────────
   #
   # Runs after dry-run-darwin passes, so an obvious attribute/hash-mismatch
-  # regression fails fast on ubuntu-latest instead of burning macos-14 minutes.
+  # regression fails fast on ubuntu-latest instead of burning macOS runner minutes.
 
   darwin-build:
     name: "Darwin build (${{ matrix.host }})"
     timeout-minutes: 60
     permissions:
       contents: read
-    runs-on: macos-14
+    runs-on: macos-26
     needs: [fmt-check, eval, eval-darwin, check, dry-run-darwin]
     strategy:
       fail-fast: false
@@ -271,7 +271,7 @@ jobs:
             fsync-metadata = false
             cores = 0
             max-jobs = auto
-      # magic-nix-cache-action@v13 crashes on macos-14 (ARM64) due to a libc++
+      # magic-nix-cache-action@v13 crashed on macos-14 (ARM64) due to a libc++
       # ABI mismatch; skip it here and rely on Nix's own binary cache instead.
       - name: Build Darwin system for ${{ matrix.host }}
         run: make nix/test/build/darwin NIX_HOST_NAME=${{ matrix.host }}
