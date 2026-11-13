@@ -1,0 +1,103 @@
+{
+  "$schema": "../../models/schema.json",
+  "harness": "primeagent",
+  "default_tier": "High",
+  "tiers": {
+    "Low": {
+      "provider": "opencode-go",
+      "model": "opencode-go/qwen3.8-flash",
+      "effort": "low",
+      "description": "Fast, cheap tier for exploration and bulk simple tasks.",
+      "fallbacks": [
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4-flash",
+          "effort": "low",
+          "trigger": "rate_limit",
+          "description": "Switch to DeepSeek V4 Flash when Qwen is rate limited."
+        }
+      ]
+    },
+    "Medium": {
+      "provider": "opencode-go",
+      "model": "opencode-go/kimi-k3",
+      "effort": "medium",
+      "description": "Balanced tier for aggregation and routine implementation.",
+      "fallbacks": [
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/glm-5.3",
+          "effort": "medium",
+          "trigger": "rate_limit",
+          "description": "Switch to GLM 5.3 when Kimi is rate limited."
+        }
+      ]
+    },
+    "High": {
+      "provider": "prime-inference",
+      "model": "prime-inference/anthropic/claude-sonnet-5",
+      "effort": "high",
+      "description": "Maker tier for implementation work.",
+      "fallbacks": [
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/glm-5.3",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "Switch to GLM 5.3 when Sonnet tokens are exhausted."
+        },
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/kimi-k3",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Switch to Kimi K3 when Sonnet is rate limited."
+        }
+      ]
+    },
+    "XHigh": {
+      "provider": "prime-inference",
+      "model": "prime-inference/openai/gpt-6-astra",
+      "effort": "high",
+      "description": "Cross-family Checker tier, deliberately non-Anthropic.",
+      "fallbacks": [
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4-pro",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "Switch to DeepSeek V4 Pro when GPT tokens are exhausted."
+        },
+        {
+          "provider": "prime-inference",
+          "model": "prime-inference/z-ai/glm-5.3",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Switch to GLM 5.3 via Prime Inference when GPT is rate limited."
+        }
+      ]
+    },
+    "Max": {
+      "provider": "prime-inference",
+      "model": "prime-inference/anthropic/claude-fable-5.1",
+      "effort": "high",
+      "description": "Top tier for architecture and hard diagnosis.",
+      "fallbacks": [
+        {
+          "provider": "prime-inference",
+          "model": "prime-inference/anthropic/claude-opus-5.5",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Switch to Opus 5.5 when Fable is rate limited."
+        },
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4-pro",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "Switch to DeepSeek V4 Pro when Fable tokens are exhausted."
+        }
+      ]
+    }
+  }
+}

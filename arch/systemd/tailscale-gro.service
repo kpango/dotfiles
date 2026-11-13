@@ -1,0 +1,13 @@
+[Unit]
+Description=Tailscale UDP GRO forwarding optimization (bond0)
+Documentation=https://tailscale.com/kb/1320/performance-best-practices
+After=sys-subsystem-net-devices-bond0.device
+Wants=sys-subsystem-net-devices-bond0.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/ethtool -K bond0 rx-udp-gro-forwarding on rx-gro-list off
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+# greetd on tty1 (replaces getty@tty1). Both sessions run `zsh -l` so ~/.zprofile stays the only sway launcher.
+[terminal]
+vt = 1
+
+# Once per boot, no password: SWAY_AUTOLOGIN makes ~/.zprofile lock the screen before any terminal maps and
+# end the session (back to the greeter) instead of leaving a shell if sway does not run.
+[initial_session]
+command = "env SWAY_AUTOLOGIN=1 zsh -l"
+user = "kpango"
+
+# After logout: password login through tuigreet.
+[default_session]
+command = "tuigreet --time --remember --cmd 'zsh -l'"
+user = "greeter"

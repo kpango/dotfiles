@@ -1,0 +1,76 @@
+{
+  "capabilities": {
+    "guard_deny": {
+      "enabled": false,
+      "metrics": {
+        "condition": "held_out_safe_false_positives == 0 and held_out_dangerous_recall >= 0.5",
+        "held_out_dangerous_recall": 0.10344827586206896,
+        "held_out_n_dangerous": 58,
+        "held_out_n_safe": 59,
+        "held_out_safe_false_positives": 1
+      },
+      "threshold": 0.8182
+    },
+    "guard_relax": {
+      "enabled": false,
+      "metrics": {
+        "condition": "held_out_missed_dangerous == 0",
+        "held_out_missed_dangerous": 1,
+        "held_out_n_dangerous": 58
+      },
+      "threshold": 0.4491
+    },
+    "guard_strengthen": {
+      "enabled": false,
+      "metrics": {
+        "condition": "held_out_auroc >= 0.90",
+        "held_out_auroc": 0.8395675043834016,
+        "held_out_false_positive_rate_at_threshold": 0.13559322033898305,
+        "held_out_recall_at_threshold": 0.603448275862069
+      },
+      "threshold": 0.6791
+    },
+    "reducer_rank": {
+      "enabled": true,
+      "metrics": {
+        "condition": "held_out_laya_critical_recall >= held_out_deterministic_critical_recall",
+        "held_out_deterministic_critical_precision_reference_only": 0.8260869565217391,
+        "held_out_deterministic_critical_recall": 0.7916666666666666,
+        "held_out_deterministic_predicted_critical_n": 23,
+        "held_out_laya_critical_recall": 0.9166666666666666,
+        "held_out_n": 76,
+        "held_out_n_critical": 24
+      }
+    },
+    "tier_raise": {
+      "enabled": false,
+      "metrics": {
+        "condition": "held_out_accuracy >= 0.70 and held_out_over_tier_rate <= 0.25",
+        "held_out_accuracy": 0.5348837209302325,
+        "held_out_n": 43,
+        "held_out_over_tier_rate": 0.46511627906976744,
+        "held_out_per_class_accuracy": {
+          "complex": 1.0,
+          "simple": 1.0,
+          "standard": 0.0,
+          "trivial": 0.23076923076923078
+        }
+      }
+    }
+  },
+  "created_at": "2026-09-24T06:33:29.330439+00:00",
+  "dataset_sha256": {
+    "guard": "7c247127b4edb9ac1c476da90fada9663bfc3b2f2a10bc58780c7c47ec8c1b11",
+    "loglines": "ba752922208553c537a0fb077e0b6e7aed95d368fb5de40f07b1e481c261df33",
+    "tier": "77568e62281f3d3e4fd919406f208052ad6652895beddfaab06a8fd6f008f9b8"
+  },
+  "device": "cuda",
+  "laya_version": "0.3.11",
+  "model_repo": "convaiinnovations/laya",
+  "revision": "bf2e02ac0a5f86d70c84adedd87c1c1dccdde0bc",
+  "split_seed": 20260924,
+  "temperature_fitting": {
+    "reason": "laya 0.3.11's public API (laya.Agent) exposes only the temperature the checkpoint already ships (self.temperature / self.temperature_by_options, applied automatically); no separate domain temperature-fitting entry point was found to fit on calib data, so none was used. The checkpoint's own calibration is used as-is.",
+    "used": false
+  }
+}

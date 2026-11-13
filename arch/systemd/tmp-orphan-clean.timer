@@ -1,0 +1,9 @@
+[Unit]
+Description=Hourly removal of empty orphaned auth-agent dirs and .hm files from /tmp
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+
+[Install]
+WantedBy=timers.target

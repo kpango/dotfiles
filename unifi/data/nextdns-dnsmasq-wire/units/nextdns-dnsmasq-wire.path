@@ -1,0 +1,9 @@
+[Unit]
+Description=Re-wire dnsmasq to NextDNS CLI when udapi-server regenerates its conf dir
+
+[Path]
+PathChanged=/run/dnsmasq.dhcp.conf.d
+Unit=nextdns-dnsmasq-wire.service
+
+[Install]
+WantedBy=paths.target

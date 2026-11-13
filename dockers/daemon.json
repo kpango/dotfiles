@@ -1,0 +1,78 @@
+{
+  "debug": false,
+  "init": true,
+  "features": {
+    "containerd-snapshotter": true,
+    "buildkit": true
+  },
+  "builder": {
+    "gc": {
+      "enabled": true,
+      "defaultKeepStorage": "50GB"
+    },
+    "driver": "docker-container"
+  },
+  "log-driver": "local",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3",
+    "compress": "true"
+  },
+  "default-shm-size": "2g",
+  "live-restore": true,
+  "userland-proxy": false,
+  "no-new-privileges": true,
+  "mtu": 9000,
+  "max-concurrent-downloads": 24,
+  "max-concurrent-uploads": 24,
+  "max-download-attempts": 24,
+  "shutdown-timeout": 10,
+  "experimental": true,
+  "selinux-enabled": false,
+  "default-ulimits": {
+    "nofile": {
+      "Name": "nofile",
+      "Hard": 1048576,
+      "Soft": 1048576
+    },
+    "memlock": {
+      "Name": "memlock",
+      "Hard": -1,
+      "Soft": -1
+    }
+  },
+  "ipv6": true,
+  "bip": "192.168.249.1/24",
+  "fixed-cidr": "192.168.249.0/25",
+  "fixed-cidr-v6": "fd00:d:1::/64",
+  "default-gateway": "192.168.249.254",
+  "default-address-pools": [
+    {
+      "base": "10.201.0.0/16",
+      "size": 24
+    },
+    {
+      "base": "10.202.0.0/16",
+      "size": 24
+    },
+    {
+      "base": "10.203.0.0/16",
+      "size": 24
+    },
+    {
+      "base": "10.27.16.0/22",
+      "size": 24
+    }
+  ],
+  "dns": ["100.100.100.100", "2a07:a8c0::21:553f", "2a07:a8c1::21:553f"],
+  "dns-opts": ["timeout:5", "ndots:1"],
+  "registry-mirrors": ["https://mirror.gcr.io"],
+  "runtimes": {
+    "runsc": {
+      "path": "/usr/local/bin/runsc"
+    },
+    "runu": {
+      "path": "/usr/local/bin/runu"
+    }
+  }
+}

@@ -1,0 +1,329 @@
+# ==============================================================================
+# Antigravity (AGY) & Gemini CLI Security Policy
+# Priority Tiers:
+#   300: Catastrophic & System Destruction Blocklist
+#   200: Direct Git Sync & Write Operations Restriction
+#   100: Approved Developer Tools & Utilities Allowlist
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Priority 300: Catastrophic System Commands (run_shell_command)
+# ------------------------------------------------------------------------------
+[[rules]]
+toolName = "run_shell_command"
+commandPrefix = [
+  "rm -rf /",
+  "rm -rf /*",
+  "mkfs",
+  "dd if=",
+  ":(){ :|: };:",
+  "chmod -R 777 /",
+  "chown -R root /",
+  # NOTE: 以下36件の commandPrefix は namespace 値 "prod"/"vald-prod" の2値のみを
+  # 単純文字列前方一致でカバーする(prod|production|vald-prod|vald-production の
+  # 4値中2値。"production"/"vald-production" は本リストに含まれない)。
+  # kubectl/helm本番namespace保護の主管理層(SoT)は agent/security-rules.json の
+  # "kubectl_delete_prod"/"helm_uninstall_prod" ルールであり、正規表現ベースで
+  # 4値をカバーする(ただし delete/uninstall サブコマンドの後に namespace フラグが
+  # 続く記法のみが前提。namespace フラグがサブコマンドより前に来る記法、例:
+  # "kubectl -n prod delete ..." はこの正規表現でもカバーされない既知の制約であり、
+  # agent/security-rules.json 側の制約であって本ミッションのスコープ外)、
+  # agent/hooks/agy/security-gate.sh 経由で機能する。
+  # このcommandPrefixリストはAntigravityサンドボックス層での追加のdefense-in-depth
+  # (fallback)であり、SoTのカバレッジと1:1で同期される保証はない。
+  "kubectl delete -n prod",
+  "kubectl delete -n vald-prod",
+  "kubectl delete --namespace prod",
+  "kubectl delete --namespace vald-prod",
+  "kubectl delete --namespace=prod",
+  "kubectl delete --namespace=vald-prod",
+  "kubectl delete ns prod",
+  "kubectl delete ns vald-prod",
+  "kubectl delete namespace prod",
+  "kubectl delete namespace vald-prod",
+  "kubectl delete namespaces prod",
+  "kubectl delete namespaces vald-prod",
+  "kubectl delete -n=prod",
+  "kubectl delete -n=vald-prod",
+  "kubectl delete -nprod",
+  "kubectl delete -nvald-prod",
+  "helm uninstall -n prod",
+  "helm uninstall -n vald-prod",
+  "helm uninstall --namespace prod",
+  "helm uninstall --namespace vald-prod",
+  "helm uninstall --namespace=prod",
+  "helm uninstall --namespace=vald-prod",
+  "helm uninstall -n=prod",
+  "helm uninstall -n=vald-prod",
+  "helm uninstall -nprod",
+  "helm uninstall -nvald-prod",
+  "helm delete -n prod",
+  "helm delete -n vald-prod",
+  "helm delete --namespace prod",
+  "helm delete --namespace vald-prod",
+  "helm delete --namespace=prod",
+  "helm delete --namespace=vald-prod",
+  "helm delete -n=prod",
+  "helm delete -n=vald-prod",
+  "helm delete -nprod",
+  "helm delete -nvald-prod"
+]
+decision = "deny"
+priority = 300
+denyMessage = "Catastrophic destructive system commands are strictly prohibited by policy."
+
+# ------------------------------------------------------------------------------
+# Priority 300: Catastrophic System Commands (run_command)
+# ------------------------------------------------------------------------------
+[[rules]]
+toolName = "run_command"
+commandPrefix = [
+  "rm -rf /",
+  "rm -rf /*",
+  "mkfs",
+  "dd if=",
+  ":(){ :|: };:",
+  "chmod -R 777 /",
+  "chown -R root /",
+  # NOTE: 以下36件の commandPrefix は namespace 値 "prod"/"vald-prod" の2値のみを
+  # 単純文字列前方一致でカバーする(prod|production|vald-prod|vald-production の
+  # 4値中2値。"production"/"vald-production" は本リストに含まれない)。
+  # kubectl/helm本番namespace保護の主管理層(SoT)は agent/security-rules.json の
+  # "kubectl_delete_prod"/"helm_uninstall_prod" ルールであり、正規表現ベースで
+  # 4値をカバーする(ただし delete/uninstall サブコマンドの後に namespace フラグが
+  # 続く記法のみが前提。namespace フラグがサブコマンドより前に来る記法、例:
+  # "kubectl -n prod delete ..." はこの正規表現でもカバーされない既知の制約であり、
+  # agent/security-rules.json 側の制約であって本ミッションのスコープ外)、
+  # agent/hooks/agy/security-gate.sh 経由で機能する。
+  # このcommandPrefixリストはAntigravityサンドボックス層での追加のdefense-in-depth
+  # (fallback)であり、SoTのカバレッジと1:1で同期される保証はない。
+  "kubectl delete -n prod",
+  "kubectl delete -n vald-prod",
+  "kubectl delete --namespace prod",
+  "kubectl delete --namespace vald-prod",
+  "kubectl delete --namespace=prod",
+  "kubectl delete --namespace=vald-prod",
+  "kubectl delete ns prod",
+  "kubectl delete ns vald-prod",
+  "kubectl delete namespace prod",
+  "kubectl delete namespace vald-prod",
+  "kubectl delete namespaces prod",
+  "kubectl delete namespaces vald-prod",
+  "kubectl delete -n=prod",
+  "kubectl delete -n=vald-prod",
+  "kubectl delete -nprod",
+  "kubectl delete -nvald-prod",
+  "helm uninstall -n prod",
+  "helm uninstall -n vald-prod",
+  "helm uninstall --namespace prod",
+  "helm uninstall --namespace vald-prod",
+  "helm uninstall --namespace=prod",
+  "helm uninstall --namespace=vald-prod",
+  "helm uninstall -n=prod",
+  "helm uninstall -n=vald-prod",
+  "helm uninstall -nprod",
+  "helm uninstall -nvald-prod",
+  "helm delete -n prod",
+  "helm delete -n vald-prod",
+  "helm delete --namespace prod",
+  "helm delete --namespace vald-prod",
+  "helm delete --namespace=prod",
+  "helm delete --namespace=vald-prod",
+  "helm delete -n=prod",
+  "helm delete -n=vald-prod",
+  "helm delete -nprod",
+  "helm delete -nvald-prod"
+]
+decision = "deny"
+priority = 300
+denyMessage = "Catastrophic destructive system commands are strictly prohibited by policy."
+
+# ------------------------------------------------------------------------------
+# Priority 200: Direct Git Write/Sync Operations (run_shell_command)
+# ------------------------------------------------------------------------------
+[[rules]]
+toolName = "run_shell_command"
+commandPrefix = [
+  "git add",
+  "git commit",
+  "git push",
+  "git rebase",
+  "git reset",
+  "git clean",
+  "git merge",
+  "git fetch",
+  "git pull"
+]
+decision = "deny"
+priority = 200
+denyMessage = "Direct write/sync Git operations are restricted by local policy. Use worktrees and make targets."
+
+# ------------------------------------------------------------------------------
+# Priority 200: Direct Git Write/Sync Operations (run_command)
+# ------------------------------------------------------------------------------
+[[rules]]
+toolName = "run_command"
+commandPrefix = [
+  "git add",
+  "git commit",
+  "git push",
+  "git rebase",
+  "git reset",
+  "git clean",
+  "git merge",
+  "git fetch",
+  "git pull"
+]
+decision = "deny"
+priority = 200
+denyMessage = "Direct write/sync Git operations are restricted by local policy. Use worktrees and make targets."
+
+# ------------------------------------------------------------------------------
+# Priority 100: Approved Developer Tools Allowlist (run_shell_command)
+# ------------------------------------------------------------------------------
+[[rules]]
+toolName = "run_shell_command"
+commandPrefix = [
+  "awk",
+  "bash",
+  "bun",
+  "bunx",
+  "cargo",
+  "cat",
+  "cmake",
+  "cp",
+  "curl",
+  "df",
+  "diff",
+  "docker",
+  "du",
+  "echo",
+  "fd",
+  "file",
+  "find",
+  "git branch",
+  "git checkout",
+  "git diff",
+  "git log",
+  "git rev-parse",
+  "git show",
+  "git status",
+  "git worktree",
+  "go",
+  "gofmt",
+  "golangci-lint",
+  "grep",
+  "head",
+  "hx",
+  "jq",
+  "less",
+  "ls",
+  "make",
+  "md5sum",
+  "mkdir",
+  "mv",
+  "node",
+  "npm",
+  "pacman",
+  "paru",
+  "pip",
+  "pip3",
+  "printf",
+  "pytest",
+  "python",
+  "python3",
+  "rg",
+  "rtk",
+  "rustc",
+  "rustup",
+  "sed",
+  "sh",
+  "tail",
+  "tar",
+  "tee",
+  "touch",
+  "tree",
+  "uname",
+  "wc",
+  "wget",
+  "which",
+  "zig",
+  "zsh"
+]
+decision = "allow"
+priority = 100
+
+# ------------------------------------------------------------------------------
+# Priority 100: Approved Developer Tools Allowlist (run_command)
+# ------------------------------------------------------------------------------
+[[rules]]
+toolName = "run_command"
+commandPrefix = [
+  "awk",
+  "bash",
+  "bun",
+  "bunx",
+  "cargo",
+  "cat",
+  "cmake",
+  "cp",
+  "curl",
+  "df",
+  "diff",
+  "docker",
+  "du",
+  "echo",
+  "fd",
+  "file",
+  "find",
+  "git branch",
+  "git checkout",
+  "git diff",
+  "git log",
+  "git rev-parse",
+  "git show",
+  "git status",
+  "git worktree",
+  "go",
+  "gofmt",
+  "golangci-lint",
+  "grep",
+  "head",
+  "hx",
+  "jq",
+  "less",
+  "ls",
+  "make",
+  "md5sum",
+  "mkdir",
+  "mv",
+  "node",
+  "npm",
+  "pacman",
+  "paru",
+  "pip",
+  "pip3",
+  "printf",
+  "pytest",
+  "python",
+  "python3",
+  "rg",
+  "rtk",
+  "rustc",
+  "rustup",
+  "sed",
+  "sh",
+  "tail",
+  "tar",
+  "tee",
+  "touch",
+  "tree",
+  "uname",
+  "wc",
+  "wget",
+  "which",
+  "zig",
+  "zsh"
+]
+decision = "allow"
+priority = 100

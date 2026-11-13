@@ -1,0 +1,88 @@
+{"description": "Fix a typo in the error message string in internal/api/errors.go", "tier": "trivial", "note": "single string literal, no logic change"}
+{"description": "Rename the constant MaxRetry to MaxRetries in one file, no callers outside that file", "tier": "trivial", "note": "single-file rename, no behavior change"}
+{"description": "Bump the version string in package.json from 1.2.3 to 1.2.4", "tier": "trivial", "note": "single-line version bump"}
+{"description": "Fix a misspelled function comment on ParseConfig", "tier": "trivial", "note": "comment-only edit"}
+{"description": "Change a log message's wording from 'faild' to 'failed'", "tier": "trivial", "note": "single string fix"}
+{"description": "Update the copyright year in the LICENSE header of one file", "tier": "trivial", "note": "single-line metadata edit"}
+{"description": "Remove a trailing blank line at the end of config.yaml", "tier": "trivial", "note": "whitespace-only edit"}
+{"description": "Fix indentation of one struct field in models.py to match gofmt/black style", "tier": "trivial", "note": "formatting-only edit"}
+{"description": "Correct a broken markdown link in README.md pointing to the wrong section", "tier": "trivial", "note": "single-line doc fix"}
+{"description": "Change the default port constant from 8080 to 8081 in one config file", "tier": "trivial", "note": "single constant value change"}
+{"description": "Fix a typo in a CLI flag's help text ('destintation' -> 'destination')", "tier": "trivial", "note": "single string literal"}
+{"description": "Delete an unused import statement flagged by the linter in one file", "tier": "trivial", "note": "single-line deletion, no logic change"}
+{"description": "Update a hardcoded email address in a contact template to the new support address", "tier": "trivial", "note": "single string literal"}
+{"description": "Fix capitalization of 'GitHub' in three places within one README section", "tier": "trivial", "note": "cosmetic text fix within one file"}
+{"description": "Add a missing period at the end of a docstring in one function", "tier": "trivial", "note": "punctuation-only edit"}
+{"description": "Change a TODO comment to reference the correct ticket number", "tier": "trivial", "note": "comment-only edit"}
+{"description": "Fix a typo in an environment variable's example value in .env.example", "tier": "trivial", "note": "single-line example fix"}
+{"description": "Correct the plural form of 'index' to 'indices' in a single log message", "tier": "trivial", "note": "single string literal"}
+{"description": "Remove a duplicated blank import line in one Go file", "tier": "trivial", "note": "single-line deletion, no logic change"}
+{"description": "Update the Slack channel name referenced in one alert template", "tier": "trivial", "note": "single string literal"}
+{"description": "Fix a broken shield.io badge URL in README.md", "tier": "trivial", "note": "single-line doc fix"}
+{"description": "Change one YAML key's quoting style to match the rest of the file", "tier": "trivial", "note": "formatting-only edit"}
+{"description": "Add a nil-check guard at the top of GetUserByID following the same pattern used in GetOrderByID", "tier": "simple", "note": "one function, mirrors an existing guard pattern"}
+{"description": "Add a new log.Debug() call inside the existing retry loop in the HTTP client, following nearby logging style", "tier": "simple", "note": "small addition inside one existing function"}
+{"description": "Add a getter method Name() to the existing Config struct, alongside its sibling getters", "tier": "simple", "note": "one small method, existing pattern"}
+{"description": "Add input validation for an empty string on the existing CreateTag handler, matching validation already used in CreateLabel", "tier": "simple", "note": "one function, follows an established validation pattern"}
+{"description": "Add a new case to an existing switch statement in the formatter for a new enum value", "tier": "simple", "note": "extends one existing function"}
+{"description": "Add a timeout parameter with a sane default to one existing function signature and its single call site", "tier": "simple", "note": "small, localized signature change"}
+{"description": "Add a unit test for the existing ParseDuration function covering one new edge case", "tier": "simple", "note": "single test function, existing test style"}
+{"description": "Add a new field to an existing struct and thread it through the one function that serializes it", "tier": "simple", "note": "small, localized change to one function"}
+{"description": "Add a small helper function isBlank(s string) bool reusing strings.TrimSpace, used in one call site", "tier": "simple", "note": "one small function, reuses stdlib"}
+{"description": "Add a missing context.Context propagation to one existing function that already accepts ctx but doesn't forward it", "tier": "simple", "note": "one function, existing pattern"}
+{"description": "Add a new CLI flag --verbose to an existing cobra command, following the existing --debug flag's definition", "tier": "simple", "note": "small addition to one existing command"}
+{"description": "Add an early return for an already-known error code in the existing error-handling switch", "tier": "simple", "note": "one function, follows existing branch style"}
+{"description": "Add a doc comment block to one previously undocumented exported function", "tier": "trivial", "note": "documentation only, no behavior change but touches one function's context"}
+{"description": "Add a retry count metric increment inside the existing retry loop, following how other metrics are incremented nearby", "tier": "simple", "note": "small addition inside one function"}
+{"description": "Add a new constant to an existing const block and use it in place of a magic number in one function", "tier": "trivial", "note": "small, localized refactor of one function"}
+{"description": "Add a null check before dereferencing a pointer in one existing function, matching the style of a sibling function", "tier": "simple", "note": "one function, mirrors existing pattern"}
+{"description": "Extend an existing regex constant to also match a new file extension", "tier": "trivial", "note": "single constant + no new logic"}
+{"description": "Add a --dry-run flag to one existing script that already has similar flags", "tier": "simple", "note": "small addition to one existing script"}
+{"description": "Add a short-circuit for an empty slice at the top of one existing loop function", "tier": "simple", "note": "one function, standard guard-clause pattern"}
+{"description": "Add a new column to an existing SELECT statement in one query function", "tier": "trivial", "note": "one function, no new logic"}
+{"description": "Add a missing test case for a boundary value in an existing table-driven test", "tier": "simple", "note": "single test-table row, existing pattern"}
+{"description": "Add a small wrapper function that calls an existing function twice with different arguments", "tier": "simple", "note": "one small function, no new abstraction"}
+{"description": "Add a new REST endpoint GET /v1/users/:id/orders including handler, route registration, and integration test", "tier": "standard", "note": "multiple files: handler, router, test"}
+{"description": "Implement a caching layer in front of the existing UserRepository, including cache invalidation on writes", "tier": "standard", "note": "new logic spanning read and write paths"}
+{"description": "Refactor error handling across the payments package to use a shared error-wrapping helper", "tier": "standard", "note": "touches multiple files in one package"}
+{"description": "Add pagination support to three existing list endpoints, updating their handlers, DTOs, and tests", "tier": "standard", "note": "multiple files, new behavior"}
+{"description": "Implement a new background worker that polls a queue and processes jobs, with its own tests", "tier": "standard", "note": "new component with new logic"}
+{"description": "Add structured logging middleware to the HTTP server and wire it into every route", "tier": "standard", "note": "new logic that touches the whole server setup"}
+{"description": "Migrate one service's config loading from flat env vars to a structured YAML file, updating all read sites", "tier": "standard", "note": "multiple files touched, new parsing logic"}
+{"description": "Add a new database migration plus the corresponding repository methods and tests for a new `tags` table", "tier": "standard", "note": "multiple files: migration, repository, tests"}
+{"description": "Implement rate limiting middleware for the public API, including config, tests, and metrics", "tier": "standard", "note": "new subsystem within one service"}
+{"description": "Add a circuit breaker around the outbound payment-gateway client, including new tests", "tier": "standard", "note": "new logic wrapping an existing client"}
+{"description": "Refactor the notification service to support multiple channels (email + Slack) behind one interface", "tier": "complex", "note": "new abstraction across a package, multiple files"}
+{"description": "Add end-to-end integration tests covering the full signup flow across three services", "tier": "standard", "note": "spans multiple existing components"}
+{"description": "Implement soft-delete semantics for the Order model, updating the repository, API responses, and tests", "tier": "standard", "note": "new logic touching several layers of one feature"}
+{"description": "Add a new gRPC service method, including proto changes, generated code, and the handler implementation", "tier": "standard", "note": "multiple files across proto/generated/handler"}
+{"description": "Refactor the CLI's argument parsing to support subcommands, updating every existing command", "tier": "standard", "note": "touches many files, new structure"}
+{"description": "Add a webhook delivery system with retry-with-backoff, including new tests and a new config section", "tier": "standard", "note": "new logic, multiple files"}
+{"description": "Implement request/response validation middleware shared across all handlers in one service", "tier": "standard", "note": "new cross-cutting logic, multiple files touched"}
+{"description": "Add feature-flag support to the billing service, including a new flag-evaluation module and its tests", "tier": "standard", "note": "new module plus integration across the service"}
+{"description": "Refactor the test suite's fixtures to use a shared test-database setup across all package tests", "tier": "standard", "note": "touches many test files, new shared infrastructure"}
+{"description": "Implement audit logging for all mutating admin API endpoints", "tier": "standard", "note": "new cross-cutting logic across several handlers"}
+{"description": "Add a new Kubernetes Helm subchart for a sidecar service, including values, templates, and CI wiring", "tier": "standard", "note": "multiple new files, new deployment logic"}
+{"description": "Implement graceful shutdown handling across the HTTP server, worker pool, and DB connection pool", "tier": "standard", "note": "new logic spanning three components"}
+{"description": "Design and implement a distributed leader-election mechanism for the scheduler cluster", "tier": "complex", "note": "new distributed algorithm across multiple nodes/systems"}
+{"description": "Build a new plugin architecture allowing third-party modules to hook into the request pipeline", "tier": "complex", "note": "new abstraction spanning the whole system"}
+{"description": "Design a custom load-balancing algorithm that accounts for per-node latency and queue depth", "tier": "complex", "note": "novel algorithm design, cross-system impact"}
+{"description": "Implement a new consensus protocol variant for the config-sync service across multiple regions", "tier": "complex", "note": "distributed systems design across regions"}
+{"description": "Design and build a multi-tenant isolation layer spanning the API gateway, database, and cache", "tier": "complex", "note": "new abstraction across three subsystems"}
+{"description": "Build a new query planner for the internal search service that chooses between three execution strategies based on cost estimation", "tier": "complex", "note": "algorithm design, new abstraction"}
+{"description": "Design a cross-service saga/transaction-compensation framework for the order-fulfillment pipeline", "tier": "complex", "note": "new abstraction spanning multiple services"}
+{"description": "Implement a custom vector-index sharding scheme balancing recall and query latency across nodes", "tier": "complex", "note": "algorithm + distributed systems design"}
+{"description": "Design and implement an adaptive autoscaling controller that reacts to custom application-level metrics", "tier": "complex", "note": "new control-loop algorithm across infra + app layers"}
+{"description": "Build a new event-sourcing framework replacing the current CRUD-based persistence across two services", "tier": "complex", "note": "new architecture spanning multiple services"}
+{"description": "Design a zero-downtime schema-migration framework usable across all of the company's Postgres services", "tier": "complex", "note": "new abstraction with wide architectural impact"}
+{"description": "Implement a new distributed rate-limiting algorithm shared across all API gateways using a gossip protocol", "tier": "complex", "note": "novel distributed algorithm"}
+{"description": "Design and build a new service mesh sidecar handling mTLS, retries, and traffic shaping from scratch", "tier": "complex", "note": "new subsystem spanning networking and multiple services"}
+{"description": "Build a custom garbage-collection strategy for the in-memory cache layer to bound tail latency", "tier": "complex", "note": "novel algorithm design with system-wide performance impact"}
+{"description": "Design a multi-region active-active replication strategy for the primary datastore, including conflict resolution", "tier": "complex", "note": "distributed systems design, new abstraction"}
+{"description": "Implement a new capability-based permission system replacing the existing role-based one across the whole platform", "tier": "complex", "note": "new abstraction with platform-wide impact"}
+{"description": "Design and build a streaming ETL pipeline that joins data from four upstream systems in near-real-time", "tier": "complex", "note": "new architecture spanning multiple systems"}
+{"description": "Build a new distributed tracing correlation engine that reconstructs causal chains across async job queues", "tier": "complex", "note": "novel algorithm, cross-system design"}
+{"description": "Design a custom consistent-hashing ring with virtual nodes for the new sharded cache cluster", "tier": "complex", "note": "algorithm design with distributed-systems implications"}
+{"description": "Implement a new anomaly-detection subsystem for infrastructure metrics using an online learning algorithm", "tier": "complex", "note": "novel algorithm design, new subsystem"}
+{"description": "Design and build a cross-cloud disaster-recovery failover system spanning AWS and GCP", "tier": "complex", "note": "architecture spanning multiple cloud providers"}
+{"description": "Build a new compiler pass for the internal DSL that performs whole-program dead-code elimination", "tier": "complex", "note": "novel algorithm design, new abstraction"}

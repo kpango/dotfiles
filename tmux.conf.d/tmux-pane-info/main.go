@@ -1,0 +1,1211 @@
+// tmux-pane-info: fast replacement for tmux-status-left, tmux-status-branch,
+// tmux-short-path, and tmux-kube zsh scripts.
+//
+// Usage:
+//
+//	tmux-pane-info path   <dir>             → abbreviated path
+//	tmux-pane-info branch <dir>             → " branchname" or ""
+//	tmux-pane-info pane   <dir>             → complete path+branch coloured segment
+//	tmux-pane-info kube   [ctx_fg] [ns_fg]  → tmux colour-coded kube segment
+//	tmux-pane-info disk                     → tmux colour-coded disk usage segment
+//	tmux-pane-info right                    → complete right status bar (CPU/RAM/GPU/VOL/kube)
+//
+// Per-directory cache: ~/.cache/tmux-pane-info.<fnv32hex>
+//
+//	line 1: key = "dir:HEAD_mtime_ns"
+//	line 2: abbreviated path
+//	line 3: branch (" main" / " abc1234" / "")
+//
+// Each directory gets its own cache file so concurrent tmux sessions with
+// different active pane paths do not thrash each other's cache, which would
+// cause go-git cold-path invocations and blank status-left output.
+//
+// Hot path (cache hit): raw syscalls only — go-git is never invoked.
+// Cold path (cache miss): go-git resolves the branch name.
+// Kubernetes info uses a pure Go YAML scanner instead of client-go or kubectl.
+package main
+
+import (
+	"bytes"
+	"os"
+	"strconv"
+	"syscall"
+	"unicode/utf8"
+)
+
+var (
+	homeDir       string
+	cacheDir      string
+	cacheFilePath string // base path; actual cache = cacheFilePath + "." + fnv32hex(dir)
+	kubeCachePath string
+)
+
+var gitdirPrefix = []byte("gitdir: ")
+
+func init() {
+	homeDir = os.Getenv("HOME")
+	if homeDir == "" {
+		homeDir, _ = os.UserHomeDir()
+	}
+	base := os.Getenv("XDG_CACHE_HOME")
+	if base == "" {
+		base = homeDir + "/.cache"
+	}
+	cacheDir = base
+	cacheFilePath = base + "/tmux-pane-info"
+	kubeCachePath = base + "/tmux-kube-out"
+}
+
+// tempCachePath builds "<path>.tmp.<pid>" only on cold cache-miss writes,
+// keeping init() and all cache-hit hot paths free of getpid/formatting work.
+func tempCachePath(path string) string {
+	var buf [256]byte
+	b := append(buf[:0], path...)
+	b = append(b, ".tmp."...)
+	b = strconv.AppendInt(b, int64(os.Getpid()), 10)
+	return string(b)
+}
+
+// cachePathForDir returns the cache file path and its null-terminated form for
+// dir. Each directory maps to its own file via FNV-32a so that concurrent tmux
+// sessions with different active pane paths never overwrite each other's cache.
+func cachePathForDir(dir string) (path string, nt []byte) {
+	var h uint32 = 2166136261
+	for i := 0; i < len(dir); i++ {
+		h ^= uint32(dir[i])
+		h *= 16777619
+	}
+	var buf [128]byte
+	b := append(buf[:0], cacheFilePath...)
+	b = append(b, '.')
+	b = strconv.AppendUint(b, uint64(h), 16)
+	path = string(b)
+	nt = append(b, 0)
+	return
+}
+
+// appendCachePathNT appends the per-directory cache file path with null terminator
+// directly into dst without heap allocation.
+func appendCachePathNT(dst []byte, dir string) []byte {
+	var h uint32 = 2166136261
+	for i := 0; i < len(dir); i++ {
+		h ^= uint32(dir[i])
+		h *= 16777619
+	}
+	b := append(dst, cacheFilePath...)
+	b = append(b, '.')
+	b = strconv.AppendUint(b, uint64(h), 16)
+	return append(b, 0)
+}
+
+func main() {
+	if len(os.Args) < 2 {
+		os.Stdout.WriteString(".")
+		return
+	}
+	switch os.Args[1] {
+	case "branch":
+		dir := ""
+		if len(os.Args) >= 3 {
+			dir = os.Args[2]
+		}
+		paneOut(dir, true)
+
+	case "pane":
+		// Single call that outputs the complete path+branch coloured segment.
+		dir := "."
+		if len(os.Args) >= 3 {
+			dir = os.Args[2]
+		}
+		paneSegment(dir)
+
+	case "kube":
+		ctxFg, nsFg := "green", "brightcyan"
+		if len(os.Args) > 2 {
+			ctxFg = os.Args[2]
+		}
+		if len(os.Args) > 3 {
+			nsFg = os.Args[3]
+		}
+		os.Stdout.WriteString(kubeSegment(ctxFg, nsFg))
+
+	case "disk":
+		diskSegment()
+
+	case "right":
+		rightSegment()
+
+	default: // "path" or any unrecognised subcommand
+		dir := "."
+		if len(os.Args) >= 3 {
+			dir = os.Args[2]
+		}
+		paneOut(dir, false)
+	}
+}
+
+// paneOut computes (or reads from cache) the abbreviated path and branch for
+// dir, then writes the requested field to stdout.
+func paneOut(dir string, wantBranch bool) {
+	switch dir {
+	case "", ".":
+		if wd, err := os.Getwd(); err == nil {
+			dir = wd
+		} else {
+			dir = "."
+		}
+	case "/":
+		if !wantBranch {
+			os.Stdout.WriteString("/")
+		}
+		return
+	}
+
+	var cpBuf [128]byte
+	cpNT := appendCachePathNT(cpBuf[:0], dir)
+	headMtime := findGitHeadMtime(dir)
+
+	var keyBuf [512]byte
+	key := keyBuf[:0]
+	key = append(key, dir...)
+	key = append(key, ':')
+	key = strconv.AppendInt(key, headMtime, 10)
+
+	if readCacheToStdout(cpNT, key, wantBranch) {
+		return
+	}
+
+	var pathBuf [256]byte
+	sp := abbreviatePath(pathBuf[:0], dir)
+	headPath, _ := findGitHeadPath(dir)
+	br := branchFromHead(headPath)
+
+	cp := string(cpNT[:len(cpNT)-1])
+	writePaneCache(cp, key, sp, br)
+
+	if wantBranch {
+		os.Stdout.Write(br)
+	} else {
+		os.Stdout.Write(sp)
+	}
+}
+
+// plRight and plLeft are the Powerline solid triangles (U+E0B0, U+E0B2).
+// Hardcoded so the Go binary controls separator rendering rather than relying
+// on tmux user-option expansion inside #(…) output.
+const (
+	plRight = ""
+	plLeft  = ""
+)
+
+// paneSegment outputs the complete path+branch tmux colour segment for dir in
+// a single call, replacing the three separate path/branch invocations that the
+// old status-left format required.
+func paneSegment(dir string) {
+	switch dir {
+	case "", ".":
+		if wd, err := os.Getwd(); err == nil {
+			dir = wd
+		} else {
+			dir = "."
+		}
+	case "/":
+		os.Stdout.WriteString("#[fg=#6eb4bf,bg=#2f343e]/#[fg=#2f343e,bg=#1f1f1f,nobold]" + plRight)
+		return
+	}
+
+	var cpBuf [128]byte
+	cpNT := appendCachePathNT(cpBuf[:0], dir)
+	headMtime := findGitHeadMtime(dir)
+
+	var keyBuf [512]byte
+	key := keyBuf[:0]
+	key = append(key, dir...)
+	key = append(key, ':')
+	key = strconv.AppendInt(key, headMtime, 10)
+
+	if paneSegmentFromCache(cpNT, key) {
+		return
+	}
+
+	var pathBuf [256]byte
+	sp := abbreviatePath(pathBuf[:0], dir)
+	headPath, _ := findGitHeadPath(dir)
+	br := branchFromHead(headPath)
+
+	cp := string(cpNT[:len(cpNT)-1])
+	writePaneCache(cp, key, sp, br)
+	writeSegment(sp, br)
+}
+
+// findGitHeadMtime walks up from dir using raw syscalls to locate the .git/HEAD
+// file and returns its mtime nanoseconds without allocating any heap string.
+func findGitHeadMtime(dir string) int64 {
+	var buf [4112]byte
+	var st syscall.Stat_t
+	d := dir
+	for {
+		dn := copy(buf[:], d)
+		if dn+11 > len(buf) {
+			break
+		}
+		buf[dn] = '/'
+		buf[dn+1] = '.'
+		buf[dn+2] = 'g'
+		buf[dn+3] = 'i'
+		buf[dn+4] = 't'
+		buf[dn+5] = 0
+
+		if errno := statBuf(buf[:dn+6], &st); errno == 0 {
+			if st.Mode&syscall.S_IFMT == syscall.S_IFDIR {
+				buf[dn+5] = '/'
+				buf[dn+6] = 'H'
+				buf[dn+7] = 'E'
+				buf[dn+8] = 'A'
+				buf[dn+9] = 'D'
+				buf[dn+10] = 0
+				var hst syscall.Stat_t
+				if errno2 := statBuf(buf[:dn+11], &hst); errno2 == 0 {
+					return statMtimeNs(&hst)
+				}
+			} else {
+				// gitfile: "gitdir: <path>" — submodule or git worktree
+				fd, errno2 := openBuf(buf[:dn+6], syscall.O_RDONLY)
+				if errno2 == 0 {
+					var raw [512]byte
+					n, _ := syscall.Read(fd, raw[:])
+					syscall.Close(fd)
+					line := bytes.TrimSpace(raw[:n])
+					line = bytes.TrimPrefix(line, gitdirPrefix)
+					gd := string(line)
+					if len(gd) == 0 || gd[0] != '/' {
+						gd = d + "/" + gd
+					}
+					hp := gd + "/HEAD"
+					var hst syscall.Stat_t
+					if syscall.Stat(hp, &hst) == nil {
+						return statMtimeNs(&hst)
+					}
+				}
+			}
+			return 0
+		}
+		parent := parentDir(d)
+		if parent == d {
+			break
+		}
+		d = parent
+	}
+	return 0
+}
+
+// findGitHeadPath walks up from dir using raw syscalls to locate the .git/HEAD
+// file. Returns its path and mtime nanoseconds. Used on every call for the
+// cache key — raw syscalls keep this allocation-free on cache hit.
+func findGitHeadPath(dir string) (headPath string, mtimeNs int64) {
+	// PATH_MAX(4096) + "/.git/HEAD\0"(11) = 4107; round to 4112.
+	var buf [4112]byte
+	var st syscall.Stat_t
+	d := dir
+	for {
+		dn := copy(buf[:], d)
+		if dn+11 > len(buf) {
+			break
+		}
+		buf[dn] = '/'
+		buf[dn+1] = '.'
+		buf[dn+2] = 'g'
+		buf[dn+3] = 'i'
+		buf[dn+4] = 't'
+		buf[dn+5] = 0
+
+		if errno := statBuf(buf[:dn+6], &st); errno == 0 {
+			if st.Mode&syscall.S_IFMT == syscall.S_IFDIR {
+				// Normal .git dir: HEAD is at d/.git/HEAD
+				buf[dn+5] = '/'
+				buf[dn+6] = 'H'
+				buf[dn+7] = 'E'
+				buf[dn+8] = 'A'
+				buf[dn+9] = 'D'
+				buf[dn+10] = 0
+				var hst syscall.Stat_t
+				if errno2 := statBuf(buf[:dn+11], &hst); errno2 == 0 {
+					hp := string(buf[:dn+10])
+					return hp, statMtimeNs(&hst)
+				}
+			} else {
+				// gitfile: "gitdir: <path>" — submodule or git worktree
+				fd, errno2 := openBuf(buf[:dn+6], syscall.O_RDONLY)
+				if errno2 == 0 {
+					var raw [512]byte
+					n, _ := syscall.Read(fd, raw[:])
+					syscall.Close(fd)
+					line := bytes.TrimSpace(raw[:n])
+					line = bytes.TrimPrefix(line, gitdirPrefix)
+					gd := string(line)
+					if len(gd) == 0 || gd[0] != '/' {
+						gd = d + "/" + gd
+					}
+					hp := gd + "/HEAD"
+					var hst syscall.Stat_t
+					if syscall.Stat(hp, &hst) == nil {
+						return hp, statMtimeNs(&hst)
+					}
+				}
+			}
+			return "", 0
+		}
+		parent := parentDir(d)
+		if parent == d {
+			break
+		}
+		d = parent
+	}
+	return "", 0
+}
+
+// parentDir returns the parent directory of d without allocating via filepath.Dir.
+func parentDir(d string) string {
+	if d == "/" {
+		return d
+	}
+	i := len(d) - 1
+	for i > 0 && d[i] == '/' {
+		i--
+	}
+	for i > 0 && d[i] != '/' {
+		i--
+	}
+	if i == 0 {
+		return "/"
+	}
+	return d[:i]
+}
+
+var (
+	branchRefPrefix = []byte("ref: refs/heads/")
+	refPrefix       = []byte("ref: ")
+)
+
+// branchFromHead reads the current branch name or short commit hash directly
+// from the HEAD file located by findGitHeadPath. Called only on cache miss.
+// Returns the bare name with no padding, e.g. "main" or "abc1234".
+func branchFromHead(headPath string) []byte {
+	if headPath == "" {
+		return nil
+	}
+	data, err := os.ReadFile(headPath)
+	if err != nil {
+		return nil
+	}
+	data = bytes.TrimSpace(data)
+	if bytes.HasPrefix(data, branchRefPrefix) {
+		name := data[len(branchRefPrefix):]
+		if len(name) > 0 {
+			return name
+		}
+		return nil
+	}
+	if bytes.HasPrefix(data, refPrefix) {
+		ref := data[len(refPrefix):]
+		if idx := bytes.LastIndexByte(ref, '/'); idx >= 0 {
+			return ref[idx+1:]
+		}
+		return ref
+	}
+	// Detached HEAD: commit hash (take first 7 hex characters)
+	if len(data) >= 7 {
+		return data[:7]
+	}
+	if len(data) > 0 {
+		return data
+	}
+	return nil
+}
+
+// ── path helpers ─────────────────────────────────────────────────────────────
+
+// abbreviatePath replaces $HOME with ~ and abbreviates every path component
+// before the last one to its first Unicode rune, appending to dst.
+// Passing a caller-allocated buffer (e.g. buf[:0] with cap >= len(dir)+1)
+// ensures 0 heap allocations.
+func abbreviatePath(dst []byte, dir string) []byte {
+	out := dst[:0]
+
+	hasHome := false
+	s := dir
+	if len(homeDir) > 0 {
+		if dir == homeDir {
+			return append(out, '~')
+		}
+		if len(dir) > len(homeDir) && dir[:len(homeDir)] == homeDir && dir[len(homeDir)] == '/' {
+			hasHome = true
+			s = dir[len(homeDir):]
+		}
+	}
+
+	lastSlash := -1
+	for i := len(s) - 1; i >= 0; i-- {
+		if s[i] == '/' {
+			lastSlash = i
+			break
+		}
+	}
+
+	if !hasHome {
+		if lastSlash <= 0 {
+			return append(out, dir...)
+		}
+	} else {
+		out = append(out, '~')
+		if lastSlash == 0 {
+			return append(out, s...)
+		}
+	}
+
+	i := 0
+	for i < len(s) {
+		if s[i] == '/' {
+			out = append(out, '/')
+			i++
+			continue
+		}
+		end := i
+		for end < len(s) && s[end] != '/' {
+			end++
+		}
+		if i > lastSlash {
+			out = append(out, s[i:end]...)
+			i = end
+			continue
+		}
+		_, size := utf8.DecodeRuneInString(s[i:end])
+		out = append(out, s[i:i+size]...)
+		i = end
+	}
+	return out
+}
+
+// ── cache helpers ─────────────────────────────────────────────────────────────
+
+// readCacheToStdout reads the per-dir cache file into a stack buffer, checks
+// the key, and writes the requested field directly to stdout.
+// Returns true on cache hit. Uses openBuf for zero-alloc file open.
+func readCacheToStdout(cpNT []byte, key []byte, wantBranch bool) bool {
+	fd, errno := openBuf(cpNT, syscall.O_RDONLY)
+	if errno != 0 {
+		return false
+	}
+	var buf [1024]byte
+	n, _ := syscall.Read(fd, buf[:])
+	syscall.Close(fd)
+
+	data := buf[:n]
+
+	nl1 := bytes.IndexByte(data, '\n')
+	if nl1 < 0 {
+		return false
+	}
+	if !bytes.Equal(data[:nl1], key) {
+		return false
+	}
+
+	rest := data[nl1+1:]
+
+	nl2 := bytes.IndexByte(rest, '\n')
+	if nl2 < 0 {
+		return false
+	}
+	spSlice := rest[:nl2]
+	brSlice := rest[nl2+1:]
+	if i := bytes.IndexByte(brSlice, '\n'); i >= 0 {
+		brSlice = brSlice[:i]
+	}
+
+	if wantBranch {
+		os.Stdout.Write(brSlice)
+	} else {
+		os.Stdout.Write(spSlice)
+	}
+	return true
+}
+
+// paneSegmentFromCache reads the per-dir cache file, verifies the key, then
+// writes the full coloured segment to stdout. Returns true on cache hit.
+func paneSegmentFromCache(cpNT []byte, key []byte) bool {
+	fd, errno := openBuf(cpNT, syscall.O_RDONLY)
+	if errno != 0 {
+		return false
+	}
+	var buf [1024]byte
+	n, _ := syscall.Read(fd, buf[:])
+	syscall.Close(fd)
+
+	data := buf[:n]
+	nl1 := bytes.IndexByte(data, '\n')
+	if nl1 < 0 || !bytes.Equal(data[:nl1], key) {
+		return false
+	}
+	rest := data[nl1+1:]
+	nl2 := bytes.IndexByte(rest, '\n')
+	if nl2 < 0 {
+		return false
+	}
+	sp := rest[:nl2]
+	br := rest[nl2+1:]
+	if i := bytes.IndexByte(br, '\n'); i >= 0 {
+		br = br[:i]
+	}
+	writeSegment(sp, br)
+	return true
+}
+
+// writeSegment formats and writes the path+branch coloured tmux segment.
+// sp is the abbreviated path; br is the bare branch name (e.g. "main"),
+// or nil/empty for non-git directories.
+func writeSegment(sp, br []byte) {
+	var stackBuf [256]byte
+	out := stackBuf[:0]
+	if capReq := 96 + len(sp) + len(br); capReq > len(stackBuf) {
+		out = make([]byte, 0, capReq)
+	}
+	// path: cyan on surface1
+	out = append(out, "#[fg=#6eb4bf,bg=#2f343e]"...)
+	out = append(out, sp...)
+	if len(br) > 0 {
+		// path→branch sep: fg=surface1(left bg), bg=yellow(right bg)
+		out = append(out, "#[fg=#2f343e,bg=#b477cf,nobold]"...)
+		out = append(out, plRight...)
+		// branch: black text on yellow bg (filled pill)
+		out = append(out, "#[fg=#282c33,bg=#b477cf,nobold]"...)
+		out = append(out, br...)
+		// branch→end sep: fg=yellow(left bg), bg=base(right bg)
+		out = append(out, "#[fg=#b477cf,bg=#1f1f1f,nobold]"...)
+		out = append(out, plRight...)
+	} else {
+		// path→end sep: fg=surface1(left bg), bg=base(right bg)
+		out = append(out, "#[fg=#2f343e,bg=#1f1f1f,nobold]"...)
+		out = append(out, plRight...)
+	}
+	os.Stdout.Write(out)
+}
+
+// writePaneCache writes key, sp, and br to the per-dir cache file atomically via rename.
+func writePaneCache(cp string, key, sp, br []byte) {
+	tmp := tempCachePath(cp)
+
+	content := make([]byte, 0, len(key)+1+len(sp)+1+len(br)+1)
+	content = append(content, key...)
+	content = append(content, '\n')
+	content = append(content, sp...)
+	content = append(content, '\n')
+	content = append(content, br...)
+	content = append(content, '\n')
+
+	if err := os.WriteFile(tmp, content, 0o644); err == nil {
+		_ = os.Rename(tmp, cp)
+	} else if os.IsNotExist(err) {
+		_ = os.MkdirAll(cacheDir, 0o755)
+		if err := os.WriteFile(tmp, content, 0o644); err == nil {
+			_ = os.Rename(tmp, cp)
+		}
+	}
+}
+
+// ── kubernetes segment ───────────────────────────────────────────────────────
+
+var (
+	currentContextPrefix = []byte("current-context:")
+	contextsPrefix       = []byte("contexts:")
+	namePrefix           = []byte("name:")
+	namespacePrefix      = []byte("namespace:")
+)
+
+// defaultKubeConfigPaths returns candidate kubeconfig paths from $KUBECONFIG or ~/.kube/config.
+func defaultKubeConfigPaths() []string {
+	if env := os.Getenv("KUBECONFIG"); env != "" {
+		var paths []string
+		for _, p := range bytes.Split([]byte(env), []byte{os.PathListSeparator}) {
+			p = bytes.TrimSpace(p)
+			if len(p) > 0 {
+				paths = append(paths, string(p))
+			}
+		}
+		if len(paths) > 0 {
+			return paths
+		}
+	}
+	if homeDir != "" {
+		return []string{homeDir + "/.kube/config"}
+	}
+	return nil
+}
+
+// cleanYAMLValue trims leading/trailing whitespace and surrounding single or double quotes,
+// as well as any unquoted inline comments.
+func cleanYAMLValue(b []byte) string {
+	b = bytes.TrimSpace(b)
+	if len(b) > 0 && (b[0] == '"' || b[0] == '\'') {
+		q := b[0]
+		if end := bytes.IndexByte(b[1:], q); end >= 0 {
+			return string(b[1 : 1+end])
+		}
+	}
+	if idx := bytes.IndexByte(b, '#'); idx >= 0 {
+		b = bytes.TrimSpace(b[:idx])
+	}
+	return string(b)
+}
+
+// parseKubeCurrentContext scans a kubeconfig YAML file for the current-context key.
+func parseKubeCurrentContext(data []byte) string {
+	for len(data) > 0 {
+		var line []byte
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 {
+			line = data[:nl]
+			data = data[nl+1:]
+		} else {
+			line = data
+			data = nil
+		}
+		trimmed := bytes.TrimSpace(line)
+		if len(trimmed) == 0 || trimmed[0] == '#' {
+			continue
+		}
+		if bytes.HasPrefix(trimmed, currentContextPrefix) {
+			return cleanYAMLValue(trimmed[len(currentContextPrefix):])
+		}
+	}
+	return ""
+}
+
+// parseKubeContextNamespace scans the contexts section of a kubeconfig YAML file
+// for the context named targetCtx and extracts its namespace.
+func parseKubeContextNamespace(data []byte, targetCtx string) (string, bool) {
+	inContexts := false
+	var curName string
+	var curNamespace string
+
+	flush := func() (string, bool) {
+		if curName == targetCtx {
+			if curNamespace == "" {
+				return "default", true
+			}
+			return curNamespace, true
+		}
+		return "", false
+	}
+
+	for len(data) > 0 {
+		var line []byte
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 {
+			line = data[:nl]
+			data = data[nl+1:]
+		} else {
+			line = data
+			data = nil
+		}
+		trimmed := bytes.TrimSpace(line)
+		if len(trimmed) == 0 || trimmed[0] == '#' {
+			continue
+		}
+
+		indent := len(line) - len(bytes.TrimLeft(line, " \t"))
+
+		if indent == 0 && trimmed[0] != '-' {
+			if bytes.HasPrefix(trimmed, contextsPrefix) {
+				inContexts = true
+				continue
+			} else if inContexts {
+				if ns, ok := flush(); ok {
+					return ns, true
+				}
+				inContexts = false
+				continue
+			}
+		}
+
+		if inContexts {
+			if trimmed[0] == '-' {
+				if ns, ok := flush(); ok {
+					return ns, true
+				}
+				curName = ""
+				curNamespace = ""
+				trimmed = bytes.TrimSpace(trimmed[1:])
+			}
+
+			if bytes.HasPrefix(trimmed, namePrefix) {
+				curName = cleanYAMLValue(trimmed[len(namePrefix):])
+			} else if bytes.HasPrefix(trimmed, namespacePrefix) {
+				curNamespace = cleanYAMLValue(trimmed[len(namespacePrefix):])
+			}
+		}
+	}
+
+	if inContexts {
+		if ns, ok := flush(); ok {
+			return ns, true
+		}
+	}
+
+	return "", false
+}
+
+// loadKubeContext locates the current context and its namespace across source configs.
+func loadKubeContext(sources []string) (ctx, ns string) {
+	var targetCtx string
+	for _, src := range sources {
+		data, err := os.ReadFile(src)
+		if err != nil {
+			continue
+		}
+		if c := parseKubeCurrentContext(data); c != "" {
+			targetCtx = c
+			break
+		}
+	}
+	if targetCtx == "" {
+		return "", ""
+	}
+
+	for _, src := range sources {
+		data, err := os.ReadFile(src)
+		if err != nil {
+			continue
+		}
+		if n, ok := parseKubeContextNamespace(data, targetCtx); ok {
+			return targetCtx, n
+		}
+	}
+	return targetCtx, "default"
+}
+
+// appendKubeSegment appends the tmux-coloured kubernetes context:namespace segment
+// into dst without heap allocations on cache hit when using default ~/.kube/config.
+func appendKubeSegment(dst []byte, ctxFg, nsFg string) []byte {
+	var kpBuf [256]byte
+	kpNT := append(append(kpBuf[:0], kubeCachePath...), 0)
+
+	if os.Getenv("KUBECONFIG") == "" {
+		if homeDir == "" {
+			return dst
+		}
+		var srcBuf [256]byte
+		srcNT := append(append(srcBuf[:0], homeDir...), "/.kube/config\x00"...)
+		var cst syscall.Stat_t
+		if statBuf(kpNT, &cst) == 0 {
+			valid := true
+			var sst syscall.Stat_t
+			if statBuf(srcNT, &sst) == 0 && statMtimeNs(&sst) > statMtimeNs(&cst) {
+				valid = false
+			}
+			if valid {
+				fd, errno := openBuf(kpNT, syscall.O_RDONLY)
+				if errno == 0 {
+					var buf [512]byte
+					n, _ := syscall.Read(fd, buf[:])
+					syscall.Close(fd)
+					data := buf[:n]
+					for len(data) > 0 && data[len(data)-1] == '\n' {
+						data = data[:len(data)-1]
+					}
+					if len(data) > 0 {
+						return append(dst, data...)
+					}
+				}
+			}
+		}
+	}
+
+	sources := defaultKubeConfigPaths()
+	if len(sources) == 0 {
+		return dst
+	}
+
+	if kubeCacheValid(kpNT, sources) {
+		fd, errno := openBuf(kpNT, syscall.O_RDONLY)
+		if errno == 0 {
+			var buf [512]byte
+			n, _ := syscall.Read(fd, buf[:])
+			syscall.Close(fd)
+			data := buf[:n]
+			for len(data) > 0 && data[len(data)-1] == '\n' {
+				data = data[:len(data)-1]
+			}
+			if len(data) > 0 {
+				return append(dst, data...)
+			}
+		}
+	}
+
+	ctx, ns := loadKubeContext(sources)
+	if ctx == "" {
+		return dst
+	}
+
+	out := "#[fg=blue]⎈ #[fg=" + ctxFg + "]" + ctx + "#[fg=colour250]:#[fg=" + nsFg + "]" + ns
+
+	tmp := tempCachePath(kubeCachePath)
+	if err := os.WriteFile(tmp, []byte(out+"\n"), 0o644); err == nil {
+		_ = os.Rename(tmp, kubeCachePath)
+	} else if os.IsNotExist(err) {
+		_ = os.MkdirAll(cacheDir, 0o755)
+		if err := os.WriteFile(tmp, []byte(out+"\n"), 0o644); err == nil {
+			_ = os.Rename(tmp, kubeCachePath)
+		}
+	}
+	return append(dst, out...)
+}
+
+// kubeSegment returns a tmux-coloured kubernetes context:namespace string.
+// Config is loaded via standard library YAML scanner (no external client-go or kubectl).
+func kubeSegment(ctxFg, nsFg string) string {
+	var buf [512]byte
+	b := appendKubeSegment(buf[:0], ctxFg, nsFg)
+	if len(b) == 0 {
+		return ""
+	}
+	return string(b)
+}
+
+// kubeCacheValid checks whether the kube cache is newer than all source configs.
+func kubeCacheValid(kpNT []byte, sources []string) bool {
+	var cst syscall.Stat_t
+	if statBuf(kpNT, &cst) != 0 {
+		return false
+	}
+	cacheMtime := statMtimeNs(&cst)
+	for _, src := range sources {
+		var sst syscall.Stat_t
+		if syscall.Stat(src, &sst) == nil {
+			if statMtimeNs(&sst) > cacheMtime {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// ── status-right formatting & metric parsers ─────────────────────────────────
+
+// appendLoadColor appends tmux fg colour matching tmux-cpu's load_status thresholds
+// (<30.0%: green, <80.0%: yellow, >=80.0%: red), where tenths is percentage * 10.
+func appendLoadColor(dst []byte, tenths int) []byte {
+	switch {
+	case tenths >= 800:
+		return append(dst, "#[fg=red]"...)
+	case tenths >= 300:
+		return append(dst, "#[fg=yellow]"...)
+	default:
+		return append(dst, "#[fg=green]"...)
+	}
+}
+
+// appendTempColor appends tmux fg colour matching tmux-cpu's temp_status thresholds
+// (<80C: green, <90C: yellow, >=90C: red).
+func appendTempColor(dst []byte, tempC int) []byte {
+	switch {
+	case tempC >= 90:
+		return append(dst, "#[fg=red]"...)
+	case tempC >= 80:
+		return append(dst, "#[fg=yellow]"...)
+	default:
+		return append(dst, "#[fg=green]"...)
+	}
+}
+
+// appendPctTenths formats tenths (e.g. 428 → "42.8%") without fmt allocations.
+func appendPctTenths(dst []byte, tenths int) []byte {
+	if tenths < 0 {
+		tenths = 0
+	} else if tenths > 1000 {
+		tenths = 1000
+	}
+	dst = strconv.AppendInt(dst, int64(tenths/10), 10)
+	dst = append(dst, '.', byte('0'+tenths%10), '%')
+	return dst
+}
+
+// appendTempC formats integer Celsius matching "%2.0fC" (e.g. 45 → "45C", 9 → " 9C").
+func appendTempC(dst []byte, tempC int) []byte {
+	if tempC >= 0 && tempC < 10 {
+		dst = append(dst, ' ')
+	}
+	dst = strconv.AppendInt(dst, int64(tempC), 10)
+	return append(dst, 'C')
+}
+
+// appendDiskUsage formats "#[fg=<color>]<used>/<total>GB" without fmt allocations.
+func appendDiskUsage(dst []byte, usedGB, totalGB uint64) []byte {
+	pct := 0
+	if totalGB > 0 {
+		pct = int((usedGB * 100) / totalGB)
+	}
+	color := "#a6e3a1"
+	if pct >= 90 {
+		color = "#f38ba8"
+	} else if pct >= 70 {
+		color = "#f9e2af"
+	}
+	dst = append(dst, "#[fg="...)
+	dst = append(dst, color...)
+	dst = append(dst, ']')
+	dst = strconv.AppendUint(dst, usedGB, 10)
+	dst = append(dst, '/')
+	dst = strconv.AppendUint(dst, totalGB, 10)
+	return append(dst, "GB"...)
+}
+
+type gpuMetrics struct {
+	gpuTenths  int
+	tempC      int
+	vramTenths int
+	hasTemp    bool
+	hasVRAM    bool
+}
+
+// buildRightStatus assembles the complete status-right string from surface0 through kube(surface1).
+func buildRightStatus(
+	dst []byte,
+	cpuTenths int,
+	cpuTempC int, hasCPUTemp bool,
+	ramTenths int,
+	gpu gpuMetrics, hasGPU bool,
+	usedGB, totalGB uint64, hasDisk bool,
+	kube string,
+) []byte {
+	return buildRightStatusBytes(dst, cpuTenths, cpuTempC, hasCPUTemp, ramTenths, gpu, hasGPU, usedGB, totalGB, hasDisk, []byte(kube))
+}
+
+func buildRightStatusBytes(
+	dst []byte,
+	cpuTenths int,
+	cpuTempC int, hasCPUTemp bool,
+	ramTenths int,
+	gpu gpuMetrics, hasGPU bool,
+	usedGB, totalGB uint64, hasDisk bool,
+	kube []byte,
+) []byte {
+	out := dst[:0]
+	if capReq := 256 + len(kube); cap(out) < capReq {
+		out = make([]byte, 0, capReq)
+	}
+
+	// CPU on surface0 (#282c33 is already set by status-right entry or set explicitly here)
+	out = append(out, "#[fg=#a1c181,bg=#282c33]CPU:"...)
+	out = appendLoadColor(out, cpuTenths)
+	out = appendPctTenths(out, cpuTenths)
+
+	if hasCPUTemp {
+		out = append(out, ' ')
+		out = appendTempColor(out, cpuTempC)
+		out = appendTempC(out, cpuTempC)
+	}
+
+	// RAM
+	out = append(out, " #[fg=#73ade9]RAM:"...)
+	out = appendLoadColor(out, ramTenths)
+	out = appendPctTenths(out, ramTenths)
+
+	// GPU + VRAM
+	if hasGPU {
+		out = append(out, " #[fg=#b477cf]GPU:"...)
+		out = appendLoadColor(out, gpu.gpuTenths)
+		out = appendPctTenths(out, gpu.gpuTenths)
+		if gpu.hasTemp {
+			out = append(out, ' ')
+			out = appendTempColor(out, gpu.tempC)
+			out = appendTempC(out, gpu.tempC)
+		}
+		if gpu.hasVRAM {
+			out = append(out, " #[fg=#6eb4bf]VRAM:"...)
+			out = appendLoadColor(out, gpu.vramTenths)
+			out = appendPctTenths(out, gpu.vramTenths)
+		}
+	}
+
+	// Disk volume (host only)
+	if hasDisk {
+		out = append(out, " #[fg=#dfc184]VOL:"...)
+		out = appendDiskUsage(out, usedGB, totalGB)
+	}
+
+	// Separator surface0 (#282c33) → surface1 (#2f343e) + kube segment
+	out = append(out, " #[fg=#2f343e,bg=#282c33]"...)
+	out = append(out, plLeft...)
+	out = append(out, "#[bg=#2f343e]"...)
+	if len(kube) > 0 {
+		out = append(out, kube...)
+		out = append(out, ' ')
+	}
+	return out
+}
+
+// parseUintField parses the next whitespace/comma-delimited unsigned integer from b.
+func parseUintField(b []byte) (val uint64, rest []byte, ok bool) {
+	i := 0
+	for i < len(b) && (b[i] == ' ' || b[i] == '\t' || b[i] == ',') {
+		i++
+	}
+	start := i
+	for i < len(b) && b[i] >= '0' && b[i] <= '9' {
+		val = val*10 + uint64(b[i]-'0')
+		i++
+	}
+	if i == start {
+		return 0, b[i:], false
+	}
+	return val, b[i:], true
+}
+
+// parseProcStatCPU parses the aggregate "cpu " line from /proc/stat and returns
+// total ticks (user..steal) and idle ticks (idle + iowait).
+func parseProcStatCPU(data []byte) (total, idle uint64, ok bool) {
+	if len(data) < 5 || data[0] != 'c' || data[1] != 'p' || data[2] != 'u' || data[3] != ' ' {
+		return 0, 0, false
+	}
+	line := data[4:]
+	if nl := bytes.IndexByte(line, '\n'); nl >= 0 {
+		line = line[:nl]
+	}
+	var fields [8]uint64
+	n := 0
+	for n < len(fields) {
+		v, rest, valid := parseUintField(line)
+		if !valid {
+			break
+		}
+		fields[n] = v
+		n++
+		line = rest
+	}
+	if n < 4 {
+		return 0, 0, false
+	}
+	for i := 0; i < n; i++ {
+		total += fields[i]
+	}
+	idle = fields[3] + fields[4]
+	return total, idle, true
+}
+
+// calcCPUTenths computes CPU busy percentage * 10 from two /proc/stat snapshots.
+func calcCPUTenths(prevTotal, prevIdle, curTotal, curIdle uint64) (int, bool) {
+	if curTotal <= prevTotal {
+		return 0, false
+	}
+	dTotal := curTotal - prevTotal
+	var dIdle uint64
+	if curIdle >= prevIdle {
+		dIdle = curIdle - prevIdle
+	}
+	if dIdle > dTotal {
+		dIdle = dTotal
+	}
+	busy := dTotal - dIdle
+	tenths := int((busy*1000 + dTotal/2) / dTotal)
+	if tenths > 1000 {
+		tenths = 1000
+	}
+	return tenths, true
+}
+
+// parseMeminfoTenths parses /proc/meminfo and returns RAM usage percentage * 10.
+func parseMeminfoTenths(data []byte) (int, bool) {
+	var memTotal, memAvail, memFree, buffers, cached uint64
+	var hasTotal, hasAvail bool
+
+	for len(data) > 0 {
+		var line []byte
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 {
+			line = data[:nl]
+			data = data[nl+1:]
+		} else {
+			line = data
+			data = nil
+		}
+		switch {
+		case bytes.HasPrefix(line, []byte("MemTotal:")):
+			if v, _, ok := parseUintField(line[len("MemTotal:"):]); ok {
+				memTotal = v
+				hasTotal = true
+			}
+		case bytes.HasPrefix(line, []byte("MemAvailable:")):
+			if v, _, ok := parseUintField(line[len("MemAvailable:"):]); ok {
+				memAvail = v
+				hasAvail = true
+			}
+		case bytes.HasPrefix(line, []byte("MemFree:")):
+			memFree, _, _ = parseUintField(line[len("MemFree:"):])
+		case bytes.HasPrefix(line, []byte("Buffers:")):
+			buffers, _, _ = parseUintField(line[len("Buffers:"):])
+		case bytes.HasPrefix(line, []byte("Cached:")):
+			cached, _, _ = parseUintField(line[len("Cached:"):])
+		}
+		if hasTotal && hasAvail {
+			break
+		}
+	}
+	if !hasTotal || memTotal == 0 {
+		return 0, false
+	}
+	avail := memAvail
+	if !hasAvail {
+		avail = memFree + buffers + cached
+	}
+	if avail > memTotal {
+		avail = memTotal
+	}
+	used := memTotal - avail
+	return int((used*1000 + memTotal/2) / memTotal), true
+}
+
+// parseNvidiaCSV parses `nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits`.
+func parseNvidiaCSV(data []byte) (gpuMetrics, bool) {
+	var sumUtil, sumTemp, sumUsed, sumTotal uint64
+	var count uint64
+
+	for len(data) > 0 {
+		var line []byte
+		if nl := bytes.IndexByte(data, '\n'); nl >= 0 {
+			line = data[:nl]
+			data = data[nl+1:]
+		} else {
+			line = data
+			data = nil
+		}
+		line = bytes.TrimSpace(line)
+		if len(line) == 0 {
+			continue
+		}
+		u, r1, ok1 := parseUintField(line)
+		t, r2, ok2 := parseUintField(r1)
+		mUsed, r3, ok3 := parseUintField(r2)
+		mTot, _, ok4 := parseUintField(r3)
+		if !ok1 || !ok2 || !ok3 || !ok4 {
+			continue
+		}
+		sumUtil += u
+		sumTemp += t
+		sumUsed += mUsed
+		sumTotal += mTot
+		count++
+	}
+	if count == 0 {
+		return gpuMetrics{}, false
+	}
+	gpuTenths := int((sumUtil*10 + count/2) / count)
+	tempC := int((sumTemp + count/2) / count)
+	vramTenths := 0
+	if sumTotal > 0 {
+		vramTenths = int((sumUsed*1000 + sumTotal/2) / sumTotal)
+	}
+	return gpuMetrics{
+		gpuTenths:  gpuTenths,
+		tempC:      tempC,
+		vramTenths: vramTenths,
+		hasTemp:    true,
+		hasVRAM:    sumTotal > 0,
+	}, true
+}

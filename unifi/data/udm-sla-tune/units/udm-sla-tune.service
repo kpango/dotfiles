@@ -1,0 +1,8 @@
+[Unit]
+Description=Keep DS-Lite (ip6tnl2) dnsmasq upstream resolver on NextDNS
+Documentation=file:/data/udm-sla-tune/udm-sla-tune.sh
+After=ubios-udapi-server.service
+
+[Service]
+Type=oneshot
+ExecStart=/data/udm-sla-tune/udm-sla-tune.sh

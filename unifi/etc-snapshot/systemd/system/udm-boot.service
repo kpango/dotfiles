@@ -1,0 +1,15 @@
+# Boot runner for /data/on_boot.d/*.sh — UniFi OS has no native on_boot.d hook.
+# Installed into /etc/systemd/system by scripts/unifi-install.sh (make unifi/install).
+# Only executable *.sh files run, in glob order; one failing script does not stop the rest.
+[Unit]
+Description=Run /data/on_boot.d scripts at boot
+Wants=network-online.target
+After=network-online.target tailscale-install.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/sh -c 'rc=0; for f in /data/on_boot.d/*.sh; do [ -x "$$f" ] || continue; echo "on_boot: $$f"; "$$f" || { echo "on_boot: FAILED $$f rc=$$?"; rc=1; }; done; exit $$rc'
+
+[Install]
+WantedBy=multi-user.target

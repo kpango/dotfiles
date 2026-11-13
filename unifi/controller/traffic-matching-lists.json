@@ -1,0 +1,182 @@
+[
+  {
+    "name": "WAN Scanner IPv4s",
+    "type": "IPV4_ADDRESSES",
+    "items": [
+      {
+        "type": "SUBNET",
+        "value": "39.110.250.232/29"
+      },
+      {
+        "type": "IP_ADDRESS",
+        "value": "60.117.232.72"
+      },
+      {
+        "type": "IP_ADDRESS",
+        "value": "68.183.90.120"
+      },
+      {
+        "type": "SUBNET",
+        "value": "114.156.17.192/27"
+      },
+      {
+        "type": "SUBNET",
+        "value": "114.156.17.224/29"
+      },
+      {
+        "type": "SUBNET",
+        "value": "114.156.22.248/29"
+      },
+      {
+        "type": "SUBNET",
+        "value": "114.156.23.0/27"
+      },
+      {
+        "type": "SUBNET",
+        "value": "118.238.5.24/29"
+      },
+      {
+        "type": "SUBNET",
+        "value": "150.249.227.160/28"
+      },
+      {
+        "type": "SUBNET",
+        "value": "153.150.12.64/26"
+      },
+      {
+        "type": "SUBNET",
+        "value": "153.231.215.8/29"
+      },
+      {
+        "type": "SUBNET",
+        "value": "153.231.216.176/29"
+      },
+      {
+        "type": "SUBNET",
+        "value": "153.231.216.184/29"
+      },
+      {
+        "type": "SUBNET",
+        "value": "153.231.216.216/29"
+      },
+      {
+        "type": "SUBNET",
+        "value": "153.231.226.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "153.231.227.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "180.42.93.0/28"
+      },
+      {
+        "type": "IP_ADDRESS",
+        "value": "217.178.183.191"
+      },
+      {
+        "type": "IP_ADDRESS",
+        "value": "219.104.143.196"
+      },
+      {
+        "type": "SUBNET",
+        "value": "223.135.152.48/28"
+      },
+      {
+        "type": "SUBNET",
+        "value": "162.142.125.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "167.94.138.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "167.94.144.0/23"
+      },
+      {
+        "type": "SUBNET",
+        "value": "167.248.133.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "66.132.172.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "66.132.186.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "66.132.195.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "74.120.14.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "206.168.32.0/22"
+      },
+      {
+        "type": "SUBNET",
+        "value": "71.6.216.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "71.6.232.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "146.88.240.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "184.105.139.64/26"
+      },
+      {
+        "type": "SUBNET",
+        "value": "184.105.247.192/26"
+      },
+      {
+        "type": "SUBNET",
+        "value": "216.218.206.64/26"
+      },
+      {
+        "type": "SUBNET",
+        "value": "74.82.47.0/26"
+      },
+      {
+        "type": "SUBNET",
+        "value": "64.62.156.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "65.49.1.0/24"
+      },
+      {
+        "type": "SUBNET",
+        "value": "207.90.244.0/24"
+      }
+    ]
+  },
+  {
+    "name": "WAN Scanner IPv6s",
+    "type": "IPV6_ADDRESSES",
+    "items": [
+      {
+        "type": "SUBNET",
+        "value": "2602:80d:1000::/44"
+      },
+      {
+        "type": "SUBNET",
+        "value": "2620:24:c040::/48"
+      },
+      {
+        "type": "SUBNET",
+        "value": "2002::/16"
+      }
+    ]
+  }
+]

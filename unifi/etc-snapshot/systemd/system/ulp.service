@@ -1,0 +1,37 @@
+[Unit]
+Description = ULP-GO
+After = network.target postgresql.service
+Requires = postgresql.service
+
+# only allow to restarting 10 times in 1 hour
+# to avoid to too many restarts, and overwrite the logs
+# to reset the counter, run: systemctl reset-failed ulp-go
+StartLimitIntervalSec=1h
+StartLimitBurst=10
+
+[Service]
+ExecStart= /usr/lib/ulp-go/scripts/service/start.sh
+ExecStartPre = /usr/lib/ulp-go/scripts/service/pre-start.sh
+ExecReload = /usr/lib/ulp-go/scripts/service/reload.sh
+
+Restart = always
+RestartSec = 5
+StandardOutput = journal
+KillMode = process
+Type = notify
+PIDFile=/run/ulp-go.pid
+LimitNOFILE=65536
+TimeoutStartSec=100
+NotifyAccess=all
+
+MemoryHigh=1.5G
+MemoryMax=2G
+MemorySwapMax=1G
+
+# ulp-go does not print lots of logs to journal, so it is same to set log level to debug
+# check ticket: https://ubiquiti.atlassian.net/browse/ULP-2474
+LogLevelMax=debug
+
+[Install]
+WantedBy = multi-user.target
+Alias = ulp.service

@@ -1,0 +1,13 @@
+[Unit]
+Description=Zsh Patina Syntax Highlighting Daemon
+After=default.target
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/zsh-patina stop
+ExecStart=/usr/bin/zsh-patina start --no-daemon
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=default.target

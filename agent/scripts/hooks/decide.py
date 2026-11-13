@@ -1,0 +1,314 @@
+#!/usr/bin/env python3
+"""rule_engine.py を各ツールのシム(claude/hooks/*.sh・agy/hooks/*.sh・pi/extensions/*.ts)から
+呼び出すためのCLIエントリポイント。
+
+stdinで正規化済みJSONを受け取り、stdoutへ正規化済みの決定JSONを1行で返す。exit codeは常に0
+(判定結果はstdoutのJSONで表現し、シム側がツール固有のexit code/JSON形式へ変換する)。
+
+入力(stdinのJSON、"family"で分岐):
+  security_shell:  {family, command, cwd, rules_file, resolve_command_target, harness?}
+    harness: "claude"|"agy"|"pi"(T9/I-14、任意)。System-1 (Laya) 後段ガードレールの
+    opt-in。未指定または上記3値以外なら System-1 後段は一切適用しない(no-op、
+    guard_advisor自体をimportしない)。
+  security_write:  {family, file_path, cwd, home, rules_file}
+  write_scope:     {family, file_path, cwd, home, rules_file}  (Tier B, fail-closed — 他familyと違いrules_file欠落時もblock)
+  vald_law1:        {family, file_path, vald_rules_file}
+  vald_law2:        {family, command, cwd, vald_rules_file, scope_mode, workspaces?}
+  vald_law345:      {family, file_path, content, vald_rules_file, scope_mode, cwd?, workspaces?}
+
+出力(stdoutのJSON、1行):
+  {"decision": "allow"|"ask"|"block", "reason": "...", "matches": [...]}
+  security_shell はtier別に "block_matches"/"ask_matches" のIDリストも含める(シム側が
+  claudeの「block全件→ask全件」評価順序を再現できるようにするため)。security_shell は
+  System-1 後段が実際に呼ばれた場合のみ "laya" キーも含める(guard_advisor.apply()の
+  戻り値、probability/enabled_capabilities/applied_capability/decision)。
+
+旧 memory_context family(claude/agy の SessionStart フックが読む markdown ダンプ合成)は
+supermemory-migration ミッション(2026-09-08〜09-10)で撤去済み。両フックは現在
+`agent/scripts/hooks/supermemory.sh` の `sm_inject` を直接呼ぶ(decide.py 経由ではない)。
+"""
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import rule_engine as re_  # noqa: E402
+
+# T9 (CONTEXT.md "ai-env-deepresearch-overhaul", I-2/I-3/I-13/I-14): Laya post-stage
+# advisory layer for the security_shell family only, opt-in per harness via the
+# request's "harness" field, shared by claude/agy/pi (they all invoke this same
+# decide.py CLI for that family -- see each shim's own `family: "security_shell"`
+# request construction).
+#
+# PERF: `guard_advisor` is imported lazily (inside `handle_security_shell()`, not at
+# module top) specifically to keep `jev_client` (and, through it, `urllib.request`)
+# out of the import graph of every decide.py invocation that isn't security_shell
+# with a guard_* capability actually declared enabled (false for all of them as of
+# the committed laya-calibration.json). `_GUARD_CALIBRATION_FILE` is just a path
+# (no I/O); the actual `guard_advisor` import is gated by
+# `_any_guard_capability_declared_enabled()` -- a stdlib-`json`-only peek at the raw
+# calibration file, deliberately NOT applying the I-13 revision gate (that gate can
+# only narrow/disable further, never enable something this peek missed, so a peek
+# without it is always a safe superset of guard_advisor's own fully-gated notion of
+# "enabled" -- see `_any_guard_capability_declared_enabled`'s own docstring).
+_GUARD_CAPABILITY_NAMES = ("guard_strengthen", "guard_deny", "guard_relax")
+_KNOWN_HARNESSES = ("claude", "agy", "pi")
+# Must equal guard_advisor.DEFAULT_CALIBRATION_FILE -- pinned by
+# test_decide_integration.py's `TestPeekConstantsMatchGuardAdvisor.
+# test_calibration_file_path_matches` (added T20). `_GUARD_CAPABILITY_NAMES`/
+# `_KNOWN_HARNESSES` above must equal guard_advisor._GUARD_CAPABILITIES/
+# guard_advisor._KNOWN_HARNESSES respectively -- pinned by that same class's
+# `test_constants_match`. Kept as separate copies specifically so importing
+# guard_advisor is not required just to read them; these tests are what stop the
+# two copies from silently drifting apart.
+_GUARD_CALIBRATION_FILE = str(Path(__file__).resolve().parent.parent / "jev" / "calibration" / "laya-calibration.json")
+
+
+def _load_json(path: str):
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return None
+
+
+def _any_guard_capability_declared_enabled(calibration_file: str) -> bool:
+    """Cheap, stdlib-only peek at whether ANY guard_* capability is declared
+    `"enabled": true` in the raw calibration JSON -- BEFORE the I-13 revision gate
+    (`revision_check.load_verified_calibration()`, applied later inside
+    `guard_advisor.apply()`) is applied. The revision gate can only turn an
+    "enabled": true entry OFF (never turn a false one on), so this raw peek is
+    always a safe superset of guard_advisor's own, fully-gated enabled set --
+    using it to decide whether importing guard_advisor (and, transitively,
+    jev_client/urllib.request/revision_check/calibrate) is worth paying for at
+    all never causes a real capability to be missed, only occasionally imports
+    guard_advisor one extra time for nothing (when the raw file says "true" but
+    the revision gate would have said "false" anyway) -- a wasted import, not a
+    correctness bug."""
+    data = _load_json(calibration_file)
+    caps = data.get("capabilities") if isinstance(data, dict) else None
+    if not isinstance(caps, dict):
+        return False
+    return any(
+        isinstance(caps.get(name), dict) and caps[name].get("enabled") is True
+        for name in _GUARD_CAPABILITY_NAMES
+    )
+
+
+def _out(decision: str, reason: str = "", **extra):
+    payload = {"decision": decision, "reason": reason}
+    payload.update(extra)
+    print(json.dumps(payload))
+    sys.exit(0)
+
+
+def handle_security_shell(req: dict):
+    rules_data = _load_json(req["rules_file"])
+    if not rules_data:
+        _out("allow", "rules file missing/invalid (fail-open)")
+    command = req.get("command", "")
+    cwd = req.get("cwd", ".")
+    resolve_target = req.get("resolve_command_target", True)
+    harness = req.get("harness")
+    all_rules = rules_data.get("shell_command_rules", [])
+
+    # all_matches: JSON宣言順のまま全一致ルールを返す(pi実装が「宣言順に1パスで走査し、
+    # hasUI時はマッチ毎にconfirmを出し承認後も走査継続する」挙動を再現するために必要
+    # — claude/agyはこのフィールドを使わずtop-levelのdecision/reasonのみ参照する)。
+    # tier/descriptionをここで直接埋め込む(呼び出し側にモジュールロード時キャッシュ等の
+    # 別経路でルール定義を再取得させない設計 — security-audit指摘2026-09-03: 呼び出し側が
+    # idだけを受け取り自前の陳腐化しうるキャッシュから逆引きすると、decide.pyがフレッシュに
+    # 読んだルールファイルとキャッシュがズレた場合にマッチが未確認のまま握り潰される穴になる。
+    # decide.py自身が"今読んだばかりの"rules_dataから直接tier/descriptionを渡すことで、
+    # 呼び出し側がローカルキャッシュを持つ必要そのものを無くす)。
+    all_matches = [
+        {"id": r.get("id"), "tier": r.get("tier"), "description": r.get("description")}
+        for r in all_rules
+        if re_.evaluate_rule(r, command, cwd, resolve_command_target=resolve_target)
+    ]
+
+    # top-level decision: block全件→ask全件の2パス評価(claude/agyの historical な優先順位、
+    # ask()がexit 0で即終了するため先に評価すると複合コマンドで後続のblock条件に到達できない
+    # 罠への対策)。
+    block_rules = [r for r in all_rules if r.get("tier") == "block"]
+    ask_rules = [r for r in all_rules if r.get("tier") == "ask"]
+    decision = "allow"
+    reason = ""
+    matched_rule_id = None
+    for rule in block_rules:
+        if re_.evaluate_rule(rule, command, cwd, resolve_command_target=resolve_target):
+            decision, reason, matched_rule_id = "block", rule.get("description", ""), rule.get("id")
+            break
+    if decision != "block":
+        for rule in ask_rules:
+            if re_.evaluate_rule(rule, command, cwd, resolve_command_target=resolve_target):
+                decision, reason, matched_rule_id = "ask", rule.get("description", ""), rule.get("id")
+                break
+
+    # T9/I-14: Laya post-stage advisory layer. Runs strictly after the
+    # deterministic decision above is final, and can only adjust it -- never
+    # substitutes for it. Three independent gates, all cheap, checked before
+    # paying for the guard_advisor import at all: (1) harness must be one of the
+    # 3 known values (I-14: no harness -> no-op), (2) decision must not already
+    # be "block" (I-2 hard floor -- nothing left to compute), (3) the raw
+    # calibration peek above must find at least one guard_* capability declared
+    # enabled. guard_advisor.apply() itself re-derives the true, revision-gated
+    # enabled set and is the sole place that can actually call out to Laya; see
+    # its own docstring for the full no-op/fail-open contract.
+    #
+    # The `guard_advisor.apply(...)` CALL ITSELF is wrapped separately from the
+    # `import guard_advisor` above (Checker-reported defect, revision 2 review):
+    # guard_advisor.apply() now has its own internal try/except (defense in
+    # depth), but this call site must not depend on that alone -- an uncaught
+    # exception here previously propagated out of handle_security_shell(), out
+    # of main(), crashing decide.py entirely (nonzero exit, empty stdout).
+    # Every one of the three shims' own "decide.py itself is unreachable"
+    # fallback then kicked in and returned a blanket ALLOW (claude's
+    # `|| exit 0`, agy's `except Exception: return {"decision": "allow"}`,
+    # pi's `{decision: "allow"}` fallback) -- silently downgrading a
+    # deterministic "ask" to "allow", the exact violation of I-3
+    # (fail-to-DETERMINISTIC, not fail-to-allow) this wraps against.
+    laya_info = None
+    if harness in _KNOWN_HARNESSES and decision != "block" and _any_guard_capability_declared_enabled(_GUARD_CALIBRATION_FILE):
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "jev"))
+            import guard_advisor  # noqa: E402  (deferred on purpose, see perf note above)
+        except Exception:
+            guard_advisor = None
+        if guard_advisor is not None:
+            try:
+                decision, reason, laya_info = guard_advisor.apply(decision, reason, command, harness=harness)
+            except Exception:
+                pass  # decision/reason stay exactly as the deterministic pass left them
+
+    extra = {"all_matches": all_matches}
+    if matched_rule_id is not None:
+        extra["matched_rule_id"] = matched_rule_id
+    if laya_info is not None:
+        extra["laya"] = laya_info
+    _out(decision, reason, **extra)
+
+
+def handle_security_write(req: dict):
+    rules_data = _load_json(req["rules_file"])
+    if not rules_data:
+        _out("allow", "rules file missing/invalid (fail-open)")
+    candidates = re_.resolve_write_path_candidates(
+        req.get("file_path", ""), req.get("cwd", "."), req.get("home", "")
+    )
+    hit = re_.eval_sensitive_write_path(rules_data.get("sensitive_write_path_rules", []), candidates)
+    if hit:
+        rule_id, label = hit
+        _out("block", label, matched_rule_id=rule_id, resolved_path=candidates[2])
+    _out("allow")
+
+
+def handle_write_scope(req: dict):
+    """Tier B 書込保護ゲート。他family(handle_security_write等)はrules_file欠落時
+    "allow"(fail-open)を返すが、write_scope は swarm-implement/hooks/skills/SWARM.md/
+    settings.json等の自己言及的な保護対象(swarmの行動規範そのもの)を扱うため、判定不能な状態を
+    安全側ではなく危険側の緩さとみなし、明示的にblockする(fail-closed)。これは意図的な非対称
+    設計であり、他familyのfail-open方針とは異なる(agent/write-scope-rules.jsonが読めない/壊れて
+    いる状態でTier B保護対象への書込を素通りさせないため)。"""
+    rules_data = _load_json(req["rules_file"])
+    # fail-closed: 欠落/構文エラー(None)だけでなく、構文的に有効でも期待する構造
+    # (dict かつ suffix_patterns / fixed_absolute_path_patterns の両キーを持つ)を欠く場合も
+    # blockする。これを怠ると rules_data が truthy な dict (例 {"unrelated_key":123}) や
+    # list ([1,2,3]) の場合に eval_write_scope が空リストへフォールバックして常にallowを返し、
+    # Tier B保護対象書込がfail-openですり抜ける(かつ write-scope-rules.json 自身は保護対象外
+    # なので、これを壊れた有効JSONへ書き換えると以降全ての保護がすり抜ける連鎖が成立する)。
+    # また list型を eval_write_scope の rules.get に渡すと AttributeError で非ゼロ終了し decide.py の
+    # 「exit code は常に0」契約にも違反するため、ここで型・構造を先に検証する。
+    if (
+        not isinstance(rules_data, dict)
+        or not isinstance(rules_data.get("suffix_patterns"), list)
+        or not isinstance(rules_data.get("fixed_absolute_path_patterns"), list)
+    ):
+        # キー存在だけでなく値がlistであることまで検証する(Checker advisory 2026-09-07):
+        # 例 {"suffix_patterns":"x", ...} のように値が文字列だと、キー存在検査は通過し
+        # rule_engine 側の `rules.get(...) or []` が文字列を返して文字単位でglob評価され、
+        # 実質パターン失効=fail-openになる(保護対象パスがすり抜ける)。write_scope は
+        # Tier B で fail-open 禁止のため、型不一致も malformed とみなし block へ倒す。
+        _out("block", "write-scope rules malformed; failing closed")
+    candidates = re_.resolve_write_path_candidates(
+        req.get("file_path", ""), req.get("cwd", "."), req.get("home", "")
+    )
+    realpath = candidates[-1]  # canonical (os.path.realpath 済み)
+    if re_.eval_write_scope(rules_data, realpath, req.get("home", "")):
+        _out("block", "Tier B protected path (write-scope)", resolved_path=realpath)
+    _out("allow")
+
+
+def handle_vald_law1(req: dict):
+    vald_rules = _load_json(req["vald_rules_file"])
+    if not vald_rules:
+        _out("allow", "vald rules file missing/invalid (fail-open)")
+    msg = re_.eval_vald_law1(vald_rules, req.get("file_path", ""))
+    if msg:
+        _out("block", msg, matched_rule_id="law1")
+    _out("allow")
+
+
+def handle_vald_law2(req: dict):
+    vald_rules = _load_json(req["vald_rules_file"])
+    if not vald_rules:
+        _out("allow", "vald rules file missing/invalid (fail-open)")
+    hit = re_.eval_vald_law2(
+        vald_rules,
+        req.get("command", ""),
+        req.get("cwd", "."),
+        req.get("scope_mode", "none"),
+        workspaces=req.get("workspaces"),
+    )
+    if hit:
+        rule_id, remediation = hit
+        _out("block", f"Vald Law 2 violation: {remediation}", matched_rule_id=rule_id)
+    _out("allow")
+
+
+def handle_vald_law345(req: dict):
+    vald_rules = _load_json(req["vald_rules_file"])
+    if not vald_rules:
+        _out("allow", "vald rules file missing/invalid (fail-open)")
+    scope_mode = req.get("scope_mode", "none")
+    if scope_mode == "none":
+        is_vald_scope = True
+    else:
+        pattern = vald_rules.get("vald_repo_pattern", "")
+        import re as _re
+        candidates = [req.get("cwd", ""), req.get("file_path", "")] + list(req.get("workspaces") or [])
+        is_vald_scope = any(_re.search(pattern, c, _re.IGNORECASE) for c in candidates if c)
+    violations = re_.eval_vald_law345(
+        vald_rules, req.get("file_path", ""), req.get("content", ""), is_vald_scope
+    )
+    if violations:
+        _out("ask", "", violations=violations)
+    _out("allow")
+
+
+HANDLERS = {
+    "security_shell": handle_security_shell,
+    "security_write": handle_security_write,
+    "write_scope": handle_write_scope,
+    "vald_law1": handle_vald_law1,
+    "vald_law2": handle_vald_law2,
+    "vald_law345": handle_vald_law345,
+}
+
+
+def main():
+    try:
+        req = json.loads(sys.stdin.read() or "{}")
+    except Exception:
+        _out("allow", "invalid input JSON (fail-open)")
+    family = req.get("family")
+    handler = HANDLERS.get(family)
+    if not handler:
+        _out("allow", f"unknown family: {family} (fail-open)")
+    handler(req)
+
+
+if __name__ == "__main__":
+    main()

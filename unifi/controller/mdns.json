@@ -1,0 +1,4 @@
+{
+  "mode": "all",
+  "networks": ["Default", "Media", "IoT"]
+}

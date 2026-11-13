@@ -1,0 +1,7 @@
+[Unit]
+Description=Export UniFi client names to /etc/hosts.dnsmasq for NextDNS CLI
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/nextdns-client-names/sync.sh

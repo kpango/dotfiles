@@ -1,0 +1,259 @@
+/* ── Catppuccin Mocha palette ─────────────────────────────────────────────────
+   base     #1e1e2e   surface0 #313244   surface1 #45475a   surface2 #585b70
+   overlay0 #6c7086   text     #cdd6f4   subtext1 #bac2de   subtext0 #a6adc8
+   blue     #89b4fa   lavender #b4befe   mauve    #cba6f7   pink     #f5c2e7
+   red      #f38ba8   maroon   #eba0ac   peach    #fab387   yellow   #f9e2af
+   green    #a6e3a1   teal     #94e2d5   sky      #89dceb   sapphire #74c7ec
+*/
+
+* {
+  border: none;
+  border-radius: 0;
+  font-family: HackGen35ConsoleNF, monospace;
+  font-size: 15px;
+  min-height: 0;
+}
+
+window#waybar {
+  background-color: #1e1e2e;
+  border-bottom: 2px solid #313244;
+  color: #cdd6f4;
+  transition-property: background-color;
+  transition-duration: 0.3s;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+/* ── Workspaces ──────────────────────────────────────────────────────────── */
+
+#workspaces {
+  background-color: transparent;
+  padding: 0 4px;
+}
+
+#workspaces button {
+  padding: 2px 10px;
+  background-color: #313244;
+  color: #6c7086;
+  border-radius: 6px;
+  margin: 4px 2px;
+  min-width: 28px;
+  font-size: 14px;
+  transition: all 0.15s ease;
+  box-shadow: none;
+}
+
+#workspaces button:hover {
+  background-color: #45475a;
+  color: #cdd6f4;
+  box-shadow: none;
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+  background-color: #89b4fa;
+  color: #1e1e2e;
+  font-weight: bold;
+}
+
+#workspaces button.urgent {
+  background-color: #f38ba8;
+  color: #1e1e2e;
+  font-weight: bold;
+}
+
+/* ── Mode ────────────────────────────────────────────────────────────────── */
+
+#mode {
+  background-color: #f9e2af;
+  color: #1e1e2e;
+  padding: 2px 12px;
+  margin: 4px 4px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+/* ── Window title ────────────────────────────────────────────────────────── */
+
+#window {
+  background-color: #313244;
+  color: #cdd6f4;
+  padding: 2px 14px;
+  margin: 4px 4px;
+  border-radius: 6px;
+}
+
+/* ── Shared module base ──────────────────────────────────────────────────── */
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#tray,
+#disk,
+#custom-ssd,
+#custom-powerbar {
+  padding: 2px 10px;
+  margin: 4px 2px;
+  border-radius: 6px;
+  font-weight: bold;
+  color: #1e1e2e;
+}
+
+/* ── Clock ───────────────────────────────────────────────────────────────── */
+
+#clock {
+  background-color: #89b4fa;
+  padding: 2px 14px;
+  margin: 4px 4px;
+}
+
+/* ── CPU ─────────────────────────────────────────────────────────────────── */
+
+#cpu {
+  background-color: #a6e3a1;
+}
+
+/* ── Memory ──────────────────────────────────────────────────────────────── */
+
+#memory {
+  background-color: #cba6f7;
+}
+
+/* ── Temperature ─────────────────────────────────────────────────────────── */
+
+#temperature {
+  background-color: #fab387;
+}
+
+#temperature.critical {
+  background-color: #f38ba8;
+  animation-name: blink-critical;
+  animation-duration: 0.8s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+/* ── Backlight ───────────────────────────────────────────────────────────── */
+
+#backlight {
+  background-color: #f9e2af;
+}
+
+/* ── Network ─────────────────────────────────────────────────────────────── */
+
+#network {
+  background-color: #89dceb;
+}
+
+#network.disconnected,
+#network.disabled {
+  background-color: #f38ba8;
+  color: #1e1e2e;
+}
+
+/* ── Pulseaudio ──────────────────────────────────────────────────────────── */
+
+#pulseaudio {
+  background-color: #f9e2af;
+}
+
+#pulseaudio.muted {
+  background-color: #45475a;
+  color: #6c7086;
+  font-weight: normal;
+}
+
+/* ── Battery ─────────────────────────────────────────────────────────────── */
+
+#battery {
+  background-color: #a6e3a1;
+}
+
+#battery.warning:not(.charging) {
+  background-color: #f9e2af;
+  color: #1e1e2e;
+}
+
+#battery.charging,
+#battery.plugged {
+  background-color: #a6e3a1;
+  color: #1e1e2e;
+}
+
+#battery.critical:not(.charging) {
+  background-color: #f38ba8;
+  animation-name: blink-critical;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes blink-critical {
+  from { opacity: 1;   }
+  to   { opacity: 0.6; }
+}
+
+/* ── Power bar ───────────────────────────────────────────────────────────── */
+
+#custom-powerbar {
+  background-color: transparent;
+  color: #a6e3a1;
+  padding: 2px 6px;
+  font-size: 13px;
+}
+
+#custom-powerbar.charging,
+#custom-powerbar.fully-charged {
+  color: #a6e3a1;
+}
+
+#custom-powerbar.discharging {
+  color: #f9e2af;
+}
+
+/* ── Disk ────────────────────────────────────────────────────────────────── */
+
+#disk {
+  background-color: #b4befe;
+}
+
+/* ── SSD temperature ─────────────────────────────────────────────────────── */
+
+#custom-ssd {
+  background-color: #89dceb;
+}
+
+/* ── Tray ────────────────────────────────────────────────────────────────── */
+
+#tray {
+  background-color: #313244;
+  padding: 2px 8px;
+  margin: 4px 4px;
+  border-radius: 6px;
+  color: #cdd6f4;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: #f38ba8;
+  border-radius: 4px;
+}
+
+/* ── Focus ───────────────────────────────────────────────────────────────── */
+
+label:focus {
+  background-color: #313244;
+}

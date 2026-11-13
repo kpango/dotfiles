@@ -1,0 +1,67 @@
+{
+  "defaultProvider": "prime-inference",
+  "defaultModel": "anthropic/claude-opus-5.5",
+  "providerBackupModel": "opencode-go/glm-5.3",
+  "defaultThinkingLevel": "high",
+  "rlmMaxDepth": 1,
+  "transport": "auto",
+  "autonomous": {
+    "maxTurns": 60,
+    "maxTokens": 600000,
+    "timeoutMs": 3600000,
+    "maxContinuations": 5
+  },
+  "compaction": {
+    "enabled": true,
+    "agentCallable": true
+  },
+  "autoRefine": {
+    "enabled": true
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3,
+    "baseDelayMs": 2000,
+    "failover": {
+      "enabled": true
+    },
+    "provider": {
+      "timeoutMs": 3600000,
+      "maxRetryDelayMs": 60000
+    }
+  },
+  "telemetry": {
+    "enabled": false
+  },
+  "agentTraces": {
+    "enabled": false
+  },
+  "factory": {
+    "enabled": true
+  },
+  "enableSkillCommands": true,
+  "treeFilterMode": "no-tools",
+  "theme": "kpango-dark",
+  "themes": ["~/.prime/agent/themes"],
+  "markdown": {
+    "codeBlockIndent": "  ",
+    "mermaid": "streaming"
+  },
+  "terminal": {
+    "showImages": true
+  },
+  "warnings": {
+    "anthropicExtraUsage": false
+  },
+  "mcpServers": {
+    "graft": {
+      "type": "stdio",
+      "command": "graft",
+      "args": ["mcp"]
+    },
+    "executor": {
+      "type": "http",
+      "url": "http://localhost:4788/mcp"
+    }
+  }
+}

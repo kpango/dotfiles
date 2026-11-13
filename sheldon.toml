@@ -1,0 +1,250 @@
+shell = "zsh"
+
+apply = ["defer"]
+
+[plugins]
+[plugins.zsh-defer]
+github = 'romkatv/zsh-defer'
+apply = ['source']
+
+# Every `-t` call site in this config is a yield point, never a real delay (see
+# [plugins.colors]); this makes every `zsh-defer -t` in the session one. Upstream arms a
+# `<(zselect -t N)` timer for -t, which forks and then sleeps >=10ms per yield point --
+# ~55ms of pure idle across the queue. An always-readable fd returns control to zle's
+# main loop just the same, so a keypress queued meanwhile is still served before the
+# next chunk (with this whole change, keystroke echo while the queue drains measured
+# 2026-10-21 under a pty: max 6.1ms vs 11.8ms before), only without the sleep or fork.
+# Replaces upstream's function only while schedule and resume (whose contract it relies
+# on) are the 53a26e2 bodies, checked by length -- a same-length edit would slip
+# through; otherwise upstream's timer stays. Inline plugins are templates too, so
+# `${#...}` (whose `{#` opens a template comment) is spelled `$#...` here.
+[plugins.zsh-defer-yield]
+inline = '''
+if (($#functions[_zsh-defer-schedule] == 149 && $#functions[_zsh-defer-resume] == 428)); then
+  _zsh-defer-schedule() { local fd; exec {fd}</dev/null; zle -F $fd _zsh-defer-resume }
+fi
+'''
+
+[plugins.prmt]
+inline = 'if [[ -t 0 ]]; then autoload -Uz _prmt_init && _prmt_init; fi'
+
+# --- BATCH 1: completions, compinit ---
+# Consolidated into a single deferred task. compinit scans fpath after zsh-completions
+# registers its src directory.
+[plugins.batch1-start]
+inline = '_defer_batch1() {'
+
+[plugins.bun-completions-zsh]
+remote = "https://raw.githubusercontent.com/oven-sh/bun/refs/heads/main/completions/bun.zsh"
+apply = ["bun-fpath"]
+
+[plugins.tmux-xpanes]
+github = "greymd/tmux-xpanes"
+apply = ['xpanes-path']
+
+[plugins.zsh-completions]
+github = "zsh-users/zsh-completions"
+apply = ['raw-source']
+
+[plugins.batch1-end]
+inline = '''
+autoload -Uz compinit && () {
+  setopt local_options extended_glob
+  local _zcd=${ZDOTDIR:-$HOME}/.zcompdump
+  if [[ ! -f $_zcd ]] || [[ -n $_zcd(#qN.mh+24) ]]; then
+    compinit -u -d "$_zcd"
+  else
+    compinit -C -u -d "$_zcd"
+  fi
+}
+unfunction _defer_batch1
+}
+zsh-defer -mprs _defer_batch1
+'''
+
+# --- BATCH 2: fzf + kubectl + zoxide + atuin + pay-respects + patina + autosuggestions ---
+# Consolidated into a single deferred task with deterministic autosuggestion startup.
+[plugins.batch2-start]
+inline = '''
+_defer_batch2() {
+local _scfg="${XDG_CONFIG_HOME:-$HOME/.config}/sheldon/plugins.toml"
+'''
+
+[plugins.fzf]
+github = 'junegunn/fzf'
+apply = ['fzf-install', 'raw-fzf-source']
+
+[plugins.kubectl-fzf]
+remote = "https://raw.githubusercontent.com/bonnefoa/kubectl-fzf/main/shell/kubectl_fzf.plugin.zsh"
+apply = ['kubectl-fzf-source']
+
+[plugins.zoxide]
+inline = '''
+if (($+commands[zoxide])); then
+  if [[ -f "$ZCACHE_DIR/zoxide.zsh" && ! "$commands[zoxide]" -nt "$ZCACHE_DIR/zoxide.zsh" ]]; then
+    source "$ZCACHE_DIR/zoxide.zsh"
+  else
+    _zcache_eval zoxide 0 "zoxide init zsh" "$commands[zoxide]"
+  fi
+fi
+'''
+
+[plugins.atuin]
+inline = '''
+if (($+commands[atuin])); then
+  if [[ -f "$ZCACHE_DIR/atuin.zsh" && ! "$commands[atuin]" -nt "$ZCACHE_DIR/atuin.zsh" &&
+    ! "$DOTFILES_DIR/zfunc/_atuin_init" -nt "$ZCACHE_DIR/atuin.zsh" ]]; then
+    source "$ZCACHE_DIR/atuin.zsh"
+  else
+    autoload -Uz _atuin_init
+    _zcache_eval atuin 0 "_atuin_init" "$commands[atuin]" "$DOTFILES_DIR/zfunc/_atuin_init"
+  fi
+fi
+'''
+
+[plugins.pay-respects]
+inline = '''
+if (($+commands[pay-respects])); then
+  if [[ -f "$ZCACHE_DIR/pay-respects.zsh" && ! "$commands[pay-respects]" -nt "$ZCACHE_DIR/pay-respects.zsh" ]]; then
+    source "$ZCACHE_DIR/pay-respects.zsh"
+  else
+    _zcache_eval pay-respects 0 "pay-respects zsh" "$commands[pay-respects]"
+  fi
+fi
+'''
+
+[plugins.zsh-patina]
+inline = '''
+if (($+commands[zsh-patina])); then
+  if [[ -f "$ZCACHE_DIR/zsh-patina.zsh" && ! "$commands[zsh-patina]" -nt "$ZCACHE_DIR/zsh-patina.zsh" && ! "$_scfg" -nt "$ZCACHE_DIR/zsh-patina.zsh" ]]; then
+    source "$ZCACHE_DIR/zsh-patina.zsh"
+  else
+    _zcache_eval zsh-patina 0 "zsh-patina activate | sed -e 's/^autoload -U add-zle-hook-widget add-zsh-hook$/autoload -Uz add-zle-hook-widget/' -e 's/^add-zsh-hook chpwd _zsh_patina_chpwd$/chpwd_functions+=(_zsh_patina_chpwd)/'" "$commands[zsh-patina]" "$_scfg"
+  fi
+fi
+'''
+
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ['autosuggest-source']
+
+[plugins.autosuggest-cached-bind]
+inline = '''
+ZSH_AUTOSUGGEST_IGNORE_WIDGETS+=(vi-\* \*-vicmd \*-viins visual-\* select-a-\* select-in-\* describe-key-briefly what-cursor-position where-is undefined-key neg-argument digit-argument universal-argument argument-base)
+autoload -Uz _autosuggest_cached_bind && _autosuggest_cached_bind && _zsh_autosuggest_start
+'''
+
+[plugins.async-compile]
+inline = '''() {
+setopt local_options extended_glob
+local _stamp="${ZCACHE_DIR:-$HOME/.zcache}/.async_compile_stamp"
+if [[ ! -f "$_stamp" || -n "$_stamp"(#qN.mh+24) ||
+      ! -f ~/.zshrc.zwc || ~/.zshrc -nt ~/.zshrc.zwc ||
+      ! -f ~/.zshenv.zwc || ~/.zshenv -nt ~/.zshenv.zwc ||
+      ! -f ~/.zcompdump.zwc || ~/.zcompdump -nt ~/.zcompdump.zwc ||
+      ! -f $DOTFILES_DIR/zfunc.zwc ||
+      ! -f $DOTFILES_DIR/zsh/01-tmux.zsh.zwc || $DOTFILES_DIR/zsh/01-tmux.zsh -nt $DOTFILES_DIR/zsh/01-tmux.zsh.zwc ||
+      "$_scfg" -nt "$ZCACHE_DIR/sheldon.zsh" ]]; then
+(
+  [[ ! -f ~/.zshrc.zwc || ~/.zshrc -nt ~/.zshrc.zwc ]] && zcompile -U -R ~/.zshrc 2>/dev/null
+  [[ ! -f ~/.zshenv.zwc || ~/.zshenv -nt ~/.zshenv.zwc ]] && zcompile -U -R ~/.zshenv 2>/dev/null
+  [[ ! -f ~/.zcompdump.zwc || ~/.zcompdump -nt ~/.zcompdump.zwc ]] && zcompile -U -M ~/.zcompdump 2>/dev/null
+  [[ ! -f $DOTFILES_DIR/zsh/01-tmux.zsh.zwc || $DOTFILES_DIR/zsh/01-tmux.zsh -nt $DOTFILES_DIR/zsh/01-tmux.zsh.zwc ]] && zcompile -U -R $DOTFILES_DIR/zsh/01-tmux.zsh 2>/dev/null
+  local -a _zfs=()
+  local _zf_stale=0
+  [[ ! -f $DOTFILES_DIR/zfunc.zwc ]] && _zf_stale=1
+  for f in $DOTFILES_DIR/zfunc/*(N.); do
+      [[ ${f:e} == zwc || $f == *.zwc.old ]] && continue
+      _zfs+=($f)
+      [[ $f -nt $DOTFILES_DIR/zfunc.zwc ]] && _zf_stale=1
+      [[ ! -f $f.zwc || $f -nt $f.zwc ]] && zcompile -U -z -R $f 2>/dev/null
+  done
+  if (( $#_zfs && _zf_stale )); then
+      zcompile -U -z -M $DOTFILES_DIR/zfunc.zwc $_zfs 2>/dev/null
+      command rm -f $DOTFILES_DIR/zfunc.zwc.old $DOTFILES_DIR/zfunc/*.zwc.old 2>/dev/null
+  fi
+  for f in ${XDG_DATA_HOME:-$HOME/.data}/sheldon/repos/**/*.zsh(N) ${XDG_DATA_HOME:-$HOME/.data}/sheldon/downloads/**/*.zsh(N); do
+      [[ ! -f $f.zwc || $f -nt $f.zwc ]] && zcompile -U -R $f 2>/dev/null
+  done
+  _zn=("$DOTFILES_DIR/zsh"/*.zsh(N.om[1]))
+  if [[ -n $_zn && $_zn -nt $ZCACHE_DIR/combined.zsh ]]; then
+      _zcache_eval combined -1 'for _f in "$DOTFILES_DIR/zsh"/*.zsh(N); do [[ "${_f:t}" = 20-os-*.zsh || "${_f:t}" = 01-tmux.zsh ]] || print -r -- "$(<"$_f")"; done'
+  fi
+  if [[ "$_scfg" -nt "$ZCACHE_DIR/sheldon.zsh" ]]; then
+      _zcache_eval sheldon -1 "sheldon source" "$_scfg"
+  fi
+  if (($+commands[direnv])) && [[ "$commands[direnv]" -nt "$ZCACHE_DIR/direnv.zsh" ]]; then
+      _zcache_eval direnv -1 "direnv hook zsh" "$commands[direnv]"
+  fi
+  if [[ ${OSTYPE} == "darwin"* && -x /usr/libexec/path_helper ]] && [[ /etc/paths -nt "$ZCACHE_DIR/path_helper.zsh" || /etc/paths.d -nt "$ZCACHE_DIR/path_helper.zsh" ]]; then
+      _zcache_eval path_helper -1 "/usr/libexec/path_helper -s" /etc/paths /etc/paths.d
+  fi
+  for f in $ZCACHE_DIR/*.zsh(N); do
+      [[ ! -f $f.zwc || $f -nt $f.zwc ]] && zcompile -U -R $f 2>/dev/null
+  done
+  touch "$_stamp" 2>/dev/null
+) &|
+fi
+}'''
+
+[plugins.batch2-end]
+inline = '''
+(( $+functions[_defer_batch3] )) && _defer_batch3
+unfunction _defer_batch2
+}
+zsh-defer -mprs _defer_batch2
+'''
+
+[templates]
+defer = "zsh-defer -mprs -c \"{% for file in files %}source '{{ file }}'\n{% endfor %}\""
+raw-source = "{% for file in files %}source '{{ file }}'\n{% endfor %}"
+fzf-install = "if ! (($+commands[fzf])); then [[ -x '{{ dir }}/bin/fzf' ]] || '{{ dir }}/install' --bin >/dev/null; path+=('{{ dir }}/bin'); fi\n"
+raw-fzf-source = '''
+{% for file in files %}_fn=fzf-${${:-'{{ file }}'}:t:r}
+_fc="$ZCACHE_DIR/$_fn.zsh"
+if [[ -f "$_fc" && ! '{{ file }}' -nt "$_fc" && ! "$_scfg" -nt "$_fc" ]]; then
+  source "$_fc"
+else
+  _zcache_eval "$_fn" 0 "sed -e '/bindkey.*fzf-history-widget/d' '{{ file }}'" '{{ file }}' "$_scfg"
+fi
+unset _fn _fc
+{% endfor %}'''
+xpanes-path = "path+=(\"{{ dir }}/bin\")\nfpath+=(\"{{ dir }}/completion/zsh/\")\n"
+bun-fpath = "[[ -e '{{ dir }}/_bun' ]] || ln -s '{{ dir }}/bun.zsh' '{{ dir }}/_bun' 2>/dev/null\nfpath+=('{{ dir }}')\n"
+kubectl-fzf-source = '''
+kubectl_fzf_default_completion=${kubectl_fzf_default_completion:-expand-or-complete}
+{% for file in files %}_kf_c="$ZCACHE_DIR/kubectl-fzf.zsh"
+if [[ -f "$_kf_c" && ! '{{ file }}' -nt "$_kf_c" && ! "$_scfg" -nt "$_kf_c" ]]; then
+  source "$_kf_c"
+else
+  _zcache_eval kubectl-fzf 0 "sed -e '/^if \[\[ -z \"\$kubectl_fzf_default_completion\" \]\]; then\$/,/^fi\$/d' '{{ file }}'" '{{ file }}' "$_scfg"
+fi
+unset _kf_c
+{% endfor %}'''
+autosuggest-source = '''
+_as_src='{{ dir }}/zsh-autosuggestions.zsh'
+_as_c="$ZCACHE_DIR/zsh-autosuggestions.zsh"
+if [[ -f "$_as_c" && ! "$_as_src" -nt "$_as_c" && ! "$_scfg" -nt "$_as_c" ]]; then
+  source "$_as_c"
+else
+  _zcache_eval zsh-autosuggestions 0 "awk '
+    /^\tfor action in \\\$_ZSH_AUTOSUGGEST_BUILTIN_ACTIONS modify partial_accept; do\$/ {
+      split(\"clear fetch suggest accept execute enable disable toggle modify partial_accept\", acts, \" \")
+      for (i = 1; i <= 10; i++) {
+        a = acts[i]
+        print \"\t_zsh_autosuggest_widget_\" a \"() { local -i retval; _zsh_autosuggest_highlight_reset; _zsh_autosuggest_\" a \" \$@; retval=\$?; _zsh_autosuggest_highlight_apply; zle -R; return \$retval }\"
+      }
+      in_eval = 1; next
+    }
+    in_eval && /^\tdone\$/ { in_eval = 0; next }
+    in_eval { next }
+    /autoload -Uz (add-zsh-hook )?is-at-least/ { next }
+    /is-at-least 5\\.8 \\|\\| command true/ { print \"\t[[ \$ZSH_VERSION == (5.<8->|<6->).* ]] || command true\"; next }
+    /add-zsh-hook -d precmd _zsh_autosuggest_start/ { print \"\t\tprecmd_functions=(\${precmd_functions:#_zsh_autosuggest_start})\"; next }
+    /^if is-at-least 5\\.0\\.8; then\$/ { print \"if [[ \$ZSH_VERSION != (4.*|5.0.[0-7]) ]]; then\"; next }
+    /^add-zsh-hook precmd _zsh_autosuggest_start\$/ { print \"(( \${+ZSH_AUTOSUGGEST_MANUAL_REBIND} )) || precmd_functions+=(_zsh_autosuggest_start)\"; next }
+    { print }
+  ' '$_as_src'" "$_as_src" "$_scfg"
+fi
+unset _as_src _as_c
+'''

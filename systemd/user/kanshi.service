@@ -1,0 +1,16 @@
+[Unit]
+Description=Dynamic display configuration daemon (kanshi)
+Documentation=man:kanshi(1)
+PartOf=graphical-session.target
+After=graphical-session.target
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/kanshi
+ExecReload=/usr/bin/kanshictl reload
+Restart=always
+RestartSec=3s
+
+[Install]
+WantedBy=graphical-session.target

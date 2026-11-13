@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]]; then
+	_uid="$(id -u 2>/dev/null || echo 1000)"
+	if [[ -S "/run/user/${_uid}/bus" ]]; then
+		export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/${_uid}/bus"
+	fi
+fi
+
+open_target() {
+	local target="$1"
+	local uri
+
+	if [[ "$target" =~ ^[a-zA-Z][a-zA-Z0-9+.-]*:// ]]; then
+		uri="$target"
+	elif [[ -e "$target" ]]; then
+		uri="file://$(realpath "$target")"
+	else
+		if [[ "$target" =~ ^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/.*)?$ ]]; then
+			uri="https://${target}"
+		else
+			uri="$target"
+		fi
+	fi
+
+	# 1. Try D-Bus org.freedesktop.portal.OpenURI (standard for flatpak / container host delegation)
+	if [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] && command -v gdbus >/dev/null 2>&1; then
+		if gdbus call --session \
+			--dest org.freedesktop.portal.Desktop \
+			--object-path /org/freedesktop/portal/desktop \
+			--method org.freedesktop.portal.OpenURI.OpenURI \
+			"" "$uri" "{}" >/dev/null 2>&1; then
+			return 0
+		fi
+	fi
+
+	if [[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ]] && command -v busctl >/dev/null 2>&1; then
+		if busctl --user call \
+			org.freedesktop.portal.Desktop \
+			/org/freedesktop/portal/desktop \
+			org.freedesktop.portal.OpenURI \
+			OpenURI ssa{sv} "" "$uri" 0 >/dev/null 2>&1; then
+			return 0
+		fi
+	fi
+
+	# 2. Fallback to native system xdg-open if present and not this script
+	local real_xdg
+	real_xdg="$(which -a xdg-open 2>/dev/null | grep -v "$0" | head -n 1 || true)"
+	if [[ -n "$real_xdg" && -x "$real_xdg" ]]; then
+		exec "$real_xdg" "$target"
+	fi
+
+	echo "Error: unable to open URI via D-Bus portal: $target" >&2
+	return 1
+}
+
+if [[ $# -eq 0 ]]; then
+	echo "Usage: $(basename "$0") <url-or-file-path>" >&2
+	exit 1
+fi
+
+for arg in "$@"; do
+	# Filter out browser CLI flags (e.g. --new-window, --incognito, -n)
+	if [[ "$arg" == -* ]]; then
+		continue
+	fi
+	open_target "$arg"
+done

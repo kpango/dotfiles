@@ -1,0 +1,13 @@
+[Unit]
+Description=NDP Proxy Daemon for NURO sub-/64 LAN prefixes
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/ndppd -c /etc/ndppd.conf
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

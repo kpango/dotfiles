@@ -1,0 +1,32 @@
+{
+  "providers": {
+    "local-ollama": {
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "apiKey": "OLLAMA_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "qwen3:4b-instruct",
+          "name": "Qwen3 4B Instruct (Local Ollama)",
+          "contextWindow": 262144,
+          "maxTokens": 16384,
+          "reasoning": false
+        }
+      ]
+    },
+    "local-vllm": {
+      "baseUrl": "http://127.0.0.1:8000/v1",
+      "apiKey": "VLLM_API_KEY",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "default",
+          "name": "Local vLLM Server",
+          "contextWindow": 131072,
+          "maxTokens": 16384,
+          "reasoning": false
+        }
+      ]
+    }
+  }
+}
