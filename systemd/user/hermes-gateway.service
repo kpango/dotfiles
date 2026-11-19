@@ -1,0 +1,13 @@
+[Unit]
+Description=Hermes Agent Multi-Profile Gateway Daemon
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/hermes gateway run
+Restart=on-failure
+RestartSec=5
+Environment="PATH=%h/.local/bin:%h/.bun/bin:/usr/local/bin:/usr/bin"
+
+[Install]
+WantedBy=default.target

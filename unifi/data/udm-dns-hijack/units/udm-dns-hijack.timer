@@ -1,0 +1,10 @@
+[Unit]
+Description=Re-apply DNS hijack rules every 60s (udapi-server flushes iptables on reconcile)
+
+[Timer]
+OnBootSec=25s
+OnUnitActiveSec=60s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

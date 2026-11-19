@@ -1,0 +1,40 @@
+# ~/.omp/agent/models.yml (Canonical SSoT in agent/harnesses/omp/models.yml)
+providers:
+  opencode-go:
+    # NOTE: Keep the exact baseUrl and apiKey env var name from the previous models.json
+    baseUrl: https://opencode.ai/zen/go/v1
+    api: openai-completions
+    apiKey: OPENCODE_API_KEY
+    models:
+      - id: deepseek-v4.1-flash
+        name: DeepSeek V4.1 Flash (OpenCode Go)
+        reasoning: true
+        contextWindow: 131072
+        maxTokens: 16384
+      - id: qwen4-max
+        name: Qwen4 Max (OpenCode Go)
+        reasoning: true
+        contextWindow: 262144
+        maxTokens: 32768
+      - id: kimi-k3.1-pro
+        name: Kimi K3.1 Pro (OpenCode Go)
+        reasoning: true
+        contextWindow: 262144
+        maxTokens: 32768
+
+  ollama:
+    baseUrl: http://127.0.0.1:11434/v1
+    api: openai-completions
+    auth: none
+    discovery:
+      type: ollama
+      timeoutMs: 1500
+    models:
+      - id: gpt-oss-20b
+        name: GPT-OSS 20B (Local Ollama)
+        contextWindow: 65536
+        maxTokens: 8192
+      - id: qwen2.5-coder:32b
+        name: Qwen 2.5 Coder 32B (Local Ollama)
+        contextWindow: 65536
+        maxTokens: 8192

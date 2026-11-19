@@ -1,0 +1,137 @@
+{
+  "$schema": "../../models/schema.json",
+  "harness": "hermes",
+  "default_tier": "High",
+  "tiers": {
+    "Low": {
+      "provider": "opencode-go",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "effort": "low",
+      "description": "DeepSeek V4.1 Flash (quick alias) for fast Hermes research, memory recall, and triage",
+      "sub_routes": {
+        "web_research": {
+          "provider": "antigravity-cli",
+          "model": "antigravity-cli/gemini-4-hydrogen",
+          "effort": "low",
+          "description": "Gemini 4 Hydrogen for web and documentation research"
+        },
+        "code_research": {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4.1-flash",
+          "effort": "low",
+          "description": "DeepSeek V4.1 Flash for fast code scanning"
+        }
+      },
+      "fallbacks": [
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-haiku-5-5",
+          "effort": "low",
+          "compaction_threshold": 90000,
+          "trigger": "rate_limit",
+          "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+        },
+        {
+          "provider": "ollama",
+          "model": "ollama/gpt-oss-20b",
+          "effort": "low",
+          "max_context_tokens": 65536,
+          "trigger": "cost_saver",
+          "description": "Local Ollama GPT-OSS 20B (local alias) offline fallback"
+        }
+      ]
+    },
+    "Medium": {
+      "provider": "opencode-go",
+      "model": "opencode-go/kimi-k3.1-pro",
+      "effort": "medium",
+      "description": "OpenCode Go Kimi K3.1 Pro for Hermes structured synthesis and planning",
+      "fallbacks": [
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/qwen4-max",
+          "effort": "medium",
+          "trigger": "rate_limit",
+          "description": "OpenCode Go Qwen4 Max structured synthesis fallback"
+        },
+        {
+          "provider": "ollama",
+          "model": "ollama/qwen2.5-coder:32b",
+          "effort": "medium",
+          "max_context_tokens": 65536,
+          "trigger": "cost_saver",
+          "description": "Local Ollama Qwen 2.5 Coder 32B offline coding fallback"
+        }
+      ]
+    },
+    "High": {
+      "provider": "anthropic",
+      "model": "anthropic/claude-sonnet-5-5",
+      "effort": "high",
+      "description": "Claude Sonnet 5.5 (Hermes default / OMH deep) for implementation and orchestration",
+      "fallbacks": [
+        {
+          "provider": "openai",
+          "model": "openai/gpt-6.2-sol",
+          "effort": "high",
+          "compaction_threshold": 250000,
+          "trigger": "rate_limit",
+          "description": "OpenAI GPT-6.2 Sol fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+        },
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/qwen4-max",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "OpenCode Go Qwen4 Max zero-marginal-cost fallback"
+        }
+      ]
+    },
+    "XHigh": {
+      "provider": "openai",
+      "model": "openai/gpt-6.2-astra",
+      "effort": "xhigh",
+      "compaction_threshold": 250000,
+      "description": "OpenAI GPT-6.2 Astra (deep alias) for independent cross-family verification (Pricing Cliff auto-compaction at 250,000 tokens)",
+      "fallbacks": [
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-opus-5-5",
+          "effort": "xhigh",
+          "trigger": "rate_limit",
+          "description": "Claude Opus 5.5 (ultrabrain alias) invariant verification fallback"
+        },
+        {
+          "provider": "antigravity-cli",
+          "model": "antigravity-cli/gemini-4-argon",
+          "effort": "xhigh",
+          "trigger": "token_exhaustion",
+          "description": "Gemini 4 Argon cross-provider verification fallback"
+        }
+      ]
+    },
+    "Max": {
+      "provider": "anthropic",
+      "model": "anthropic/claude-opus-5-5",
+      "effort": "max",
+      "description": "Claude Opus 5.5 (ultrabrain alias) for Hermes chief architectural reasoning",
+      "fallbacks": [
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-fable-5-2",
+          "effort": "xhigh",
+          "trigger": "unavailability",
+          "description": "Claude Fable 5.2 frontier escalation fallback"
+        },
+        {
+          "provider": "openai",
+          "model": "openai/gpt-6.2-astra",
+          "effort": "xhigh",
+          "compaction_threshold": 250000,
+          "trigger": "rate_limit",
+          "description": "OpenAI GPT-6.2 Astra cross-provider frontier fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "actionFusion": true,
+  "observationPack": true,
+  "evidencePreservingReducer": true,
+  "evidencePreservingReducerProvider": "opencode-go",
+  "evidencePreservingReducerModel": "deepseek-v4.1-flash",
+  "onlineContextCompact": false,
+  "cacheWriteReadRatio": 12.5
+}

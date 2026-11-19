@@ -1,0 +1,6 @@
+# Redirect bun's install cache to a user-writable location.
+# System bun lives at /usr/local/bin/bun, which causes bun to set
+# BUN_INSTALL=/usr/local and attempt to write to /usr/local/install/cache
+# (root-owned). This override points bun's cache at ~/.bun/install/cache.
+[install.cache]
+dir = "/home/kpango/.bun/install/cache"

@@ -1,0 +1,1163 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-19T00:00:00Z",
+  "update_sources": {
+    "litellm_url": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json",
+    "openrouter_url": "https://openrouter.ai/api/v1/models",
+    "opencode_go_models_url": "https://opencode.ai/zen/go/v1/models",
+    "ollama_tags_url": "http://127.0.0.1:11434/api/tags",
+    "local_catalog_paths": [
+      "~/.omp/agent/antigravity-model-catalog.json",
+      "~/.pi/agent/antigravity-model-catalog.json"
+    ],
+    "cache_dir": "~/.cache/omp/model-catalog",
+    "hysteresis_margin": 0.02
+  },
+  "tier_optimization_profiles": {
+    "Low": {
+      "effort": "low",
+      "min_context_tokens": 65536,
+      "weights": {
+        "quality_coding": 0.2,
+        "quality_reasoning": 0.1,
+        "cost_efficiency": 0.35,
+        "speed": 0.25,
+        "context_score": 0.1
+      }
+    },
+    "Medium": {
+      "effort": "medium",
+      "min_context_tokens": 131072,
+      "weights": {
+        "quality_coding": 0.35,
+        "quality_reasoning": 0.2,
+        "cost_efficiency": 0.25,
+        "speed": 0.1,
+        "context_score": 0.1
+      }
+    },
+    "High": {
+      "effort": "high",
+      "min_context_tokens": 200000,
+      "weights": {
+        "quality_coding": 0.45,
+        "quality_reasoning": 0.3,
+        "cost_efficiency": 0.1,
+        "speed": 0.05,
+        "context_score": 0.1
+      }
+    },
+    "XHigh": {
+      "effort": "xhigh",
+      "min_context_tokens": 200000,
+      "cross_family_from_tier": "High",
+      "weights": {
+        "quality_coding": 0.35,
+        "quality_reasoning": 0.45,
+        "cost_efficiency": 0.05,
+        "speed": 0.05,
+        "context_score": 0.1
+      }
+    },
+    "Max": {
+      "effort": "xhigh",
+      "min_context_tokens": 200000,
+      "weights": {
+        "quality_coding": 0.3,
+        "quality_reasoning": 0.55,
+        "cost_efficiency": 0.05,
+        "speed": 0.0,
+        "context_score": 0.1
+      }
+    }
+  },
+  "role_aliases": {
+    "@smol": "Low",
+    "@fast": "Low",
+    "@good": "High",
+    "@review": "XHigh",
+    "@slow": "Max",
+    "@plan": "Max"
+  },
+  "legacy_aliases": {
+    "haiku": "Low",
+    "sonnet": "High",
+    "opus": "XHigh",
+    "fable": "Max",
+    "opusplan": "Medium",
+    "quick": "Low",
+    "deep": "XHigh",
+    "ultrabrain": "Max",
+    "local": "Low"
+  },
+  "consensus_models": [
+    {
+      "id": "anthropic/claude-sonnet-5-5",
+      "label": "Claude Sonnet 5.5 (Anthropic)",
+      "tier": "High"
+    },
+    {
+      "id": "antigravity-cli/gemini-4-argon",
+      "label": "Gemini 4 Argon (Google DeepMind)",
+      "tier": "XHigh"
+    },
+    {
+      "id": "openai/gpt-6.2-astra",
+      "label": "GPT-6.2 Astra (OpenAI)",
+      "tier": "XHigh"
+    }
+  ],
+  "models": {
+    "opencode-go/deepseek-v4.1-flash": {
+      "provider": "opencode-go",
+      "model_id": "deepseek-v4.1-flash",
+      "family": "deepseek",
+      "display_name": "DeepSeek V4.1 Flash (OpenCode Go)",
+      "harness_support": ["omp", "hermes"],
+      "eligible_tiers": ["Low", "Medium"],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.14,
+        "output_per_1m": 0.28,
+        "cache_read_per_1m": 0.014,
+        "cache_write_per_1m": 0.14,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 86.0,
+        "reasoning": 81.0,
+        "speed": 95.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "opencode-go/kimi-k3.1-pro": {
+      "provider": "opencode-go",
+      "model_id": "kimi-k3.1-pro",
+      "family": "moonshot",
+      "display_name": "Kimi K3.1 Pro (OpenCode Go)",
+      "harness_support": ["omp", "hermes"],
+      "eligible_tiers": ["Medium", "High", "XHigh"],
+      "reasoning": true,
+      "context_window": 262144,
+      "max_output_tokens": 32768,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.5,
+        "output_per_1m": 2.0,
+        "cache_read_per_1m": 0.1,
+        "cache_write_per_1m": 0.5,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 90.0,
+        "reasoning": 88.0,
+        "speed": 78.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "opencode-go/qwen4-max": {
+      "provider": "opencode-go",
+      "model_id": "qwen4-max",
+      "family": "qwen",
+      "display_name": "Qwen4 Max (OpenCode Go)",
+      "harness_support": ["omp", "hermes"],
+      "eligible_tiers": ["Medium", "High"],
+      "reasoning": true,
+      "context_window": 262144,
+      "max_output_tokens": 32768,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.4,
+        "output_per_1m": 1.6,
+        "cache_read_per_1m": 0.08,
+        "cache_write_per_1m": 0.4,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 88.0,
+        "reasoning": 85.0,
+        "speed": 80.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "anthropic/claude-haiku-5-5": {
+      "provider": "anthropic",
+      "model_id": "claude-haiku-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Haiku 5.5",
+      "harness_support": ["omp", "claude", "agy", "hermes"],
+      "eligible_tiers": ["Low", "Medium"],
+      "reasoning": true,
+      "context_window": 200000,
+      "max_output_tokens": 16384,
+      "compaction_threshold": 90000,
+      "pricing": {
+        "input_per_1m": 1.0,
+        "output_per_1m": 5.0,
+        "cache_read_per_1m": 0.1,
+        "cache_write_per_1m": 1.25,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 79.0,
+        "speed": 92.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "anthropic/claude-sonnet-5-5": {
+      "provider": "anthropic",
+      "model_id": "claude-sonnet-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Sonnet 5.5",
+      "harness_support": ["omp", "claude", "agy", "hermes"],
+      "eligible_tiers": ["Medium", "High"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 3.0,
+        "output_per_1m": 15.0,
+        "cache_read_per_1m": 0.3,
+        "cache_write_per_1m": 3.75,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 97.0,
+        "reasoning": 93.0,
+        "speed": 74.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "anthropic/claude-opus-5-5": {
+      "provider": "anthropic",
+      "model_id": "claude-opus-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Opus 5.5",
+      "harness_support": ["omp", "claude", "agy", "hermes"],
+      "eligible_tiers": ["XHigh", "Max"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 5.0,
+        "output_per_1m": 25.0,
+        "cache_read_per_1m": 0.5,
+        "cache_write_per_1m": 6.25,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 97.0,
+        "reasoning": 98.0,
+        "speed": 52.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "anthropic/claude-fable-5-2": {
+      "provider": "anthropic",
+      "model_id": "claude-fable-5-2",
+      "family": "anthropic",
+      "display_name": "Claude Fable 5.2",
+      "harness_support": ["omp", "claude", "agy", "hermes"],
+      "eligible_tiers": ["Max"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 15.0,
+        "output_per_1m": 75.0,
+        "cache_read_per_1m": 1.5,
+        "cache_write_per_1m": 18.75,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 96.0,
+        "reasoning": 99.0,
+        "speed": 38.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "antigravity-cli/claude-sonnet-5-5": {
+      "provider": "antigravity-cli",
+      "model_id": "claude-sonnet-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Sonnet 5.5 (Antigravity CLI)",
+      "harness_support": ["omp"],
+      "eligible_tiers": ["High"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 3.0,
+        "output_per_1m": 15.0,
+        "cache_read_per_1m": 0.3,
+        "cache_write_per_1m": 3.75,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 95.0,
+        "reasoning": 93.0,
+        "speed": 70.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "antigravity-cli/gemini-4-hydrogen": {
+      "provider": "antigravity-cli",
+      "model_id": "gemini-4-hydrogen",
+      "family": "google",
+      "display_name": "Gemini 4 Hydrogen",
+      "harness_support": ["omp", "agy", "hermes"],
+      "eligible_tiers": ["Low", "Medium"],
+      "reasoning": true,
+      "context_window": 1048576,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.15,
+        "output_per_1m": 0.6,
+        "cache_read_per_1m": 0.0375,
+        "cache_write_per_1m": 0.15,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 83.0,
+        "reasoning": 82.0,
+        "speed": 95.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "antigravity-cli/gemini-4-argon": {
+      "provider": "antigravity-cli",
+      "model_id": "gemini-4-argon",
+      "family": "google",
+      "display_name": "Gemini 4 Argon",
+      "harness_support": ["omp", "agy", "hermes"],
+      "eligible_tiers": ["High", "XHigh", "Max"],
+      "reasoning": true,
+      "context_window": 1048576,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 1.25,
+        "output_per_1m": 5.0,
+        "cache_read_per_1m": 0.31,
+        "cache_write_per_1m": 1.25,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 90.0,
+        "reasoning": 93.0,
+        "speed": 68.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "openai/gpt-6.2-sol": {
+      "provider": "openai",
+      "model_id": "gpt-6.2-sol",
+      "family": "openai",
+      "display_name": "GPT-6.2 Sol",
+      "harness_support": ["omp", "agy", "hermes"],
+      "eligible_tiers": ["Medium", "High"],
+      "reasoning": true,
+      "context_window": 400000,
+      "max_output_tokens": 32768,
+      "compaction_threshold": 250000,
+      "pricing": {
+        "input_per_1m": 1.5,
+        "output_per_1m": 6.0,
+        "cache_read_per_1m": 0.15,
+        "cache_write_per_1m": 1.5,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 92.0,
+        "reasoning": 90.0,
+        "speed": 80.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "openai/gpt-6.2-astra": {
+      "provider": "openai",
+      "model_id": "gpt-6.2-astra",
+      "family": "openai",
+      "display_name": "GPT-6.2 Astra",
+      "harness_support": ["omp", "agy", "hermes"],
+      "eligible_tiers": ["XHigh", "Max"],
+      "reasoning": true,
+      "context_window": 400000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": 250000,
+      "pricing": {
+        "input_per_1m": 2.5,
+        "output_per_1m": 10.0,
+        "cache_read_per_1m": 0.25,
+        "cache_write_per_1m": 2.5,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 96.0,
+        "reasoning": 98.0,
+        "speed": 64.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "ollama/gpt-oss-20b": {
+      "provider": "ollama",
+      "model_id": "gpt-oss-20b",
+      "family": "local",
+      "display_name": "GPT-OSS 20B (Local Ollama)",
+      "harness_support": ["omp", "hermes"],
+      "eligible_tiers": ["Low"],
+      "local_fallback_only": true,
+      "reasoning": false,
+      "context_window": 65536,
+      "max_output_tokens": 8192,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 62.0,
+        "reasoning": 58.0,
+        "speed": 75.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "ollama/qwen2.5-coder:32b": {
+      "provider": "ollama",
+      "model_id": "qwen2.5-coder:32b",
+      "family": "local",
+      "display_name": "Qwen 2.5 Coder 32B (Local Ollama)",
+      "harness_support": ["omp", "hermes"],
+      "eligible_tiers": ["Medium"],
+      "local_fallback_only": true,
+      "reasoning": false,
+      "context_window": 65536,
+      "max_output_tokens": 8192,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 72.0,
+        "reasoning": 64.0,
+        "speed": 65.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "typesafe/jev": {
+      "provider": "typesafe",
+      "model_id": "jev",
+      "family": "typesafe",
+      "display_name": "Jev (TTSR Judge)",
+      "harness_support": ["omp"],
+      "eligible_tiers": [],
+      "auxiliary_role_only": true,
+      "reasoning": false,
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 50.0,
+        "reasoning": 60.0,
+        "speed": 98.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "local/lfm2-1.2b": {
+      "provider": "local",
+      "model_id": "lfm2-1.2b",
+      "family": "local",
+      "display_name": "LFM2 1.2B (Local Tiny/Memory)",
+      "harness_support": ["omp"],
+      "eligible_tiers": [],
+      "auxiliary_role_only": true,
+      "local_fallback_only": true,
+      "reasoning": false,
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 40.0,
+        "reasoning": 40.0,
+        "speed": 99.0
+      },
+      "status": "active",
+      "source": "curated"
+    }
+  },
+  "omp_providers": {
+    "opencode-go": {
+      "baseUrl": "https://opencode.ai/zen/go/v1",
+      "api": "openai-completions",
+      "apiKey": "OPENCODE_API_KEY",
+      "models": [
+        {
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash (OpenCode Go)",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen4-max",
+          "name": "Qwen4 Max (OpenCode Go)",
+          "reasoning": true,
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        },
+        {
+          "id": "kimi-k3.1-pro",
+          "name": "Kimi K3.1 Pro (OpenCode Go)",
+          "reasoning": true,
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        }
+      ]
+    },
+    "ollama": {
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "api": "openai-completions",
+      "auth": "none",
+      "discovery": {
+        "type": "ollama",
+        "timeoutMs": 1500
+      },
+      "models": [
+        {
+          "id": "gpt-oss-20b",
+          "name": "GPT-OSS 20B (Local Ollama)",
+          "contextWindow": 65536,
+          "maxTokens": 8192
+        },
+        {
+          "id": "qwen2.5-coder:32b",
+          "name": "Qwen 2.5 Coder 32B (Local Ollama)",
+          "contextWindow": 65536,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  },
+  "omp_config": {
+    "defaultThinkingLevel": "high",
+    "modelRoles": {
+      "default": "anthropic/claude-opus-5-5:high",
+      "slow": "anthropic/claude-opus-5-5:xhigh",
+      "plan": "anthropic/claude-opus-5-5:high",
+      "good": "anthropic/claude-sonnet-5-5:high",
+      "smol": "opencode-go/deepseek-v4.1-flash:medium",
+      "fast": "opencode-go/deepseek-v4.1-flash:low",
+      "review": "openai/gpt-6.2-astra:xhigh",
+      "judge": "typesafe/jev",
+      "tiny": "local/lfm2-1.2b",
+      "memory": "local/lfm2-1.2b"
+    },
+    "retry_fallbackChains": {
+      "default": [
+        "anthropic/claude-sonnet-5-5:high",
+        "antigravity-cli/claude-sonnet-5-5:high",
+        "openai/gpt-6.2-sol:high",
+        "opencode-go/qwen4-max:high"
+      ],
+      "smol": [
+        "anthropic/claude-haiku-5-5:medium",
+        "antigravity-cli/gemini-4-hydrogen:medium",
+        "ollama/gpt-oss-20b"
+      ],
+      "review": [
+        "opencode-go/kimi-k3.1-pro:max",
+        "antigravity-cli/gemini-4-argon:xhigh",
+        "anthropic/claude-fable-5-2:xhigh"
+      ]
+    },
+    "sol_pi": {
+      "evidencePreservingReducerProvider": "opencode-go",
+      "evidencePreservingReducerModel": "deepseek-v4.1-flash"
+    }
+  },
+  "harnesses": {
+    "omp": {
+      "default_tier": "High",
+      "tiers": {
+        "Low": {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4.1-flash",
+          "effort": "low",
+          "max_context_tokens": 131072,
+          "description": "OpenCode Go DeepSeek V4.1 Flash (Low) for rapid exploration, repository survey, and semantic search",
+          "sub_routes": {
+            "web_research": {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-hydrogen",
+              "effort": "low",
+              "description": "Antigravity CLI Gemini 4 Hydrogen (Low) for web/docs research, RFCs, and semantic search"
+            },
+            "code_research": {
+              "provider": "opencode-go",
+              "model": "opencode-go/deepseek-v4.1-flash",
+              "effort": "low",
+              "max_context_tokens": 131072,
+              "description": "OpenCode Go DeepSeek V4.1 Flash for high-throughput repository code scanning"
+            }
+          },
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-haiku-5-5",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "rate_limit",
+              "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-hydrogen",
+              "effort": "low",
+              "trigger": "cost_saver",
+              "description": "Antigravity CLI Gemini 4 Hydrogen fast research fallback"
+            },
+            {
+              "provider": "ollama",
+              "model": "ollama/gpt-oss-20b",
+              "effort": "low",
+              "max_context_tokens": 65536,
+              "trigger": "token_exhaustion",
+              "description": "Local Ollama GPT-OSS 20B zero-cost offline fallback"
+            }
+          ]
+        },
+        "Medium": {
+          "provider": "opencode-go",
+          "model": "opencode-go/kimi-k3.1-pro",
+          "effort": "medium",
+          "max_context_tokens": 262144,
+          "description": "OpenCode Go Kimi K3.1 Pro for high-completion coding, AST synthesis, and multi-step planning",
+          "fallbacks": [
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/qwen4-max",
+              "effort": "medium",
+              "max_context_tokens": 262144,
+              "trigger": "rate_limit",
+              "description": "OpenCode Go Qwen4 Max structured synthesis fallback"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-hydrogen",
+              "effort": "medium",
+              "trigger": "token_exhaustion",
+              "description": "Antigravity CLI Gemini 4 Hydrogen structured synthesis fallback"
+            },
+            {
+              "provider": "ollama",
+              "model": "ollama/qwen2.5-coder:32b",
+              "effort": "medium",
+              "max_context_tokens": 65536,
+              "trigger": "cost_saver",
+              "description": "Local Ollama Qwen 2.5 Coder 32B offline coding fallback"
+            }
+          ]
+        },
+        "High": {
+          "provider": "anthropic",
+          "model": "anthropic/claude-sonnet-5-5",
+          "effort": "high",
+          "description": "Claude Sonnet 5.5 for top-tier Maker code implementation",
+          "fallbacks": [
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Antigravity CLI Claude Sonnet 5.5 mirror fallback when direct Anthropic rate limits are reached"
+            },
+            {
+              "provider": "openai",
+              "model": "openai/gpt-6.2-sol",
+              "effort": "high",
+              "compaction_threshold": 250000,
+              "trigger": "token_exhaustion",
+              "description": "OpenAI GPT-6.2 Sol fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+            },
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/qwen4-max",
+              "effort": "high",
+              "max_context_tokens": 262144,
+              "trigger": "cost_saver",
+              "description": "OpenCode Go Qwen4 Max zero-marginal-cost coding fallback"
+            }
+          ]
+        },
+        "XHigh": {
+          "provider": "openai",
+          "model": "openai/gpt-6.2-astra",
+          "effort": "xhigh",
+          "compaction_threshold": 250000,
+          "description": "OpenAI GPT-6.2 Astra for independent cross-family Checker verification (Pricing Cliff auto-compaction at 250,000 tokens)",
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "rate_limit",
+              "description": "Claude Opus 5.5 deep invariant verifier fallback"
+            },
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/kimi-k3.1-pro",
+              "effort": "max",
+              "max_context_tokens": 262144,
+              "trigger": "token_exhaustion",
+              "description": "OpenCode Go Kimi K3.1 Pro reasoning verifier fallback"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-argon",
+              "effort": "xhigh",
+              "trigger": "cost_saver",
+              "description": "Antigravity CLI Gemini 4 Argon independent verifier fallback"
+            }
+          ]
+        },
+        "Max": {
+          "provider": "anthropic",
+          "model": "anthropic/claude-fable-5-2",
+          "effort": "xhigh",
+          "description": "Claude Fable 5.2 for frontier spot architectural diagnosis",
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "token_exhaustion",
+              "description": "Claude Opus 5.5 fallback when Fable 5.2 quota is strained"
+            },
+            {
+              "provider": "openai",
+              "model": "openai/gpt-6.2-astra",
+              "effort": "xhigh",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "OpenAI GPT-6.2 Astra cross-provider frontier architectural diagnosis fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-argon",
+              "effort": "xhigh",
+              "trigger": "cost_saver",
+              "description": "Antigravity CLI Gemini 4 Argon architectural diagnosis fallback"
+            }
+          ]
+        }
+      }
+    },
+    "claude": {
+      "default_tier": "High",
+      "tiers": {
+        "Low": {
+          "model": "claude-haiku-5-5",
+          "effort": "low",
+          "compaction_threshold": 90000,
+          "description": "Claude Haiku 5.5 for fast & cost-efficient exploration and bulk survey (Pricing Cliff auto-compaction at 90,000 tokens)",
+          "fallbacks": [
+            {
+              "model": "haiku",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "rate_limit",
+              "description": "Claude Code native haiku alias fallback"
+            }
+          ]
+        },
+        "Medium": {
+          "model": "opusplan",
+          "effort": "medium",
+          "description": "Hybrid planning: Opus 5.5 in Plan mode, Sonnet 5.5 in execution mode",
+          "fallbacks": [
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "medium",
+              "trigger": "token_exhaustion",
+              "description": "Degrade to pure Claude Sonnet 5.5 planning when Opus token budget is strained"
+            },
+            {
+              "model": "claude-haiku-5-5",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "cost_saver",
+              "description": "Budget session survival fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+            }
+          ]
+        },
+        "High": {
+          "model": "claude-sonnet-5-5",
+          "effort": "high",
+          "description": "Claude Sonnet 5.5 for high-capability Maker implementation and reviews",
+          "fallbacks": [
+            {
+              "model": "sonnet",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Default sonnet alias fallback during version-specific spikes"
+            },
+            {
+              "model": "claude-haiku-5-5",
+              "effort": "medium",
+              "compaction_threshold": 90000,
+              "trigger": "token_exhaustion",
+              "description": "Emergency Haiku 5.5 session lifetime extension fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+            }
+          ]
+        },
+        "XHigh": {
+          "model": "claude-opus-5-5",
+          "effort": "xhigh",
+          "description": "Claude Opus 5.5 for independent refutational checking and deep invariant verification",
+          "fallbacks": [
+            {
+              "model": "opus",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Default opus alias fallback during version-specific spikes"
+            },
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "token_exhaustion",
+              "description": "Degrade to top-tier Claude Sonnet 5.5 verification when Opus quota is tight"
+            }
+          ]
+        },
+        "Max": {
+          "model": "claude-fable-5-2",
+          "effort": "xhigh",
+          "description": "Claude Fable 5.2 for frontier spot architectural diagnosis and breakthroughs",
+          "fallbacks": [
+            {
+              "model": "claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "rate_limit",
+              "description": "Degrade to Opus 5.5 frontier reasoning when Fable 5.2 limits are reached"
+            },
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "cost_saver",
+              "description": "Sonnet 5.5 fallback when Fable and Opus quotas are strained"
+            }
+          ]
+        }
+      }
+    },
+    "agy": {
+      "default_tier": "High",
+      "tiers": {
+        "Low": {
+          "model": "gemini-4-hydrogen",
+          "effort": "low",
+          "description": "Gemini 4 Hydrogen (Low) for rapid exploration and bulk survey",
+          "fallbacks": [
+            {
+              "model": "claude-haiku-5-5",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "rate_limit",
+              "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction limit: 90,000 tokens)"
+            },
+            {
+              "model": "gpt-6.2-sol",
+              "effort": "low",
+              "compaction_threshold": 250000,
+              "trigger": "cost_saver",
+              "description": "GPT-6.2 Sol fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+            }
+          ]
+        },
+        "Medium": {
+          "model": "gemini-4-hydrogen",
+          "effort": "medium",
+          "description": "Gemini 4 Hydrogen (Medium) for fast structured synthesis and triage",
+          "fallbacks": [
+            {
+              "model": "gpt-6.2-sol",
+              "effort": "medium",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "GPT-6.2 Sol structured synthesis fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+            },
+            {
+              "model": "claude-haiku-5-5",
+              "effort": "medium",
+              "compaction_threshold": 90000,
+              "trigger": "token_exhaustion",
+              "description": "Claude Haiku 5.5 session extension fallback (Pricing Cliff auto-compaction limit: 90,000 tokens)"
+            }
+          ]
+        },
+        "High": {
+          "model": "claude-sonnet-5-5",
+          "effort": "high",
+          "description": "Claude Sonnet 5.5 for robust, high-performance Maker implementation in AGY",
+          "fallbacks": [
+            {
+              "model": "gemini-4-argon",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Google Gemini 4 Argon cross-provider Maker fallback"
+            },
+            {
+              "model": "gpt-6.2-sol",
+              "effort": "high",
+              "compaction_threshold": 250000,
+              "trigger": "token_exhaustion",
+              "description": "GPT-6.2 Sol cross-provider fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+            },
+            {
+              "model": "gemini-4-hydrogen",
+              "effort": "high",
+              "trigger": "cost_saver",
+              "description": "Gemini 4 Hydrogen cost-saving Maker fallback"
+            }
+          ]
+        },
+        "XHigh": {
+          "model": "gemini-4-argon",
+          "effort": "xhigh",
+          "description": "Gemini 4 Argon (XHigh) for cutting-edge invariant verification and auditing",
+          "fallbacks": [
+            {
+              "model": "gpt-6.2-astra",
+              "effort": "xhigh",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "Cross-provider independent verification fallback to GPT-6.2 Astra (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+            },
+            {
+              "model": "claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "token_exhaustion",
+              "description": "Claude Opus 5.5 deep invariant verification fallback"
+            }
+          ]
+        },
+        "Max": {
+          "model": "claude-opus-5-5",
+          "effort": "max",
+          "description": "Claude Opus 5.5 (Max effort) for spot architectural diagnosis and deadlock breakthroughs",
+          "fallbacks": [
+            {
+              "model": "claude-fable-5-2",
+              "effort": "xhigh",
+              "trigger": "token_exhaustion",
+              "description": "Claude Fable 5.2 frontier architectural diagnosis fallback"
+            },
+            {
+              "model": "gpt-6.2-astra",
+              "effort": "xhigh",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "GPT-6.2 Astra cross-provider architectural diagnosis fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+            },
+            {
+              "model": "gemini-4-argon",
+              "effort": "max",
+              "trigger": "context_overflow",
+              "description": "Gemini 4 Argon large-context architectural diagnosis fallback"
+            }
+          ]
+        }
+      }
+    },
+    "hermes": {
+      "default_tier": "High",
+      "tiers": {
+        "Low": {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4.1-flash",
+          "effort": "low",
+          "description": "DeepSeek V4.1 Flash (quick alias) for fast Hermes research, memory recall, and triage",
+          "sub_routes": {
+            "web_research": {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-hydrogen",
+              "effort": "low",
+              "description": "Gemini 4 Hydrogen for web and documentation research"
+            },
+            "code_research": {
+              "provider": "opencode-go",
+              "model": "opencode-go/deepseek-v4.1-flash",
+              "effort": "low",
+              "description": "DeepSeek V4.1 Flash for fast code scanning"
+            }
+          },
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-haiku-5-5",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "rate_limit",
+              "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+            },
+            {
+              "provider": "ollama",
+              "model": "ollama/gpt-oss-20b",
+              "effort": "low",
+              "max_context_tokens": 65536,
+              "trigger": "cost_saver",
+              "description": "Local Ollama GPT-OSS 20B (local alias) offline fallback"
+            }
+          ]
+        },
+        "Medium": {
+          "provider": "opencode-go",
+          "model": "opencode-go/kimi-k3.1-pro",
+          "effort": "medium",
+          "description": "OpenCode Go Kimi K3.1 Pro for Hermes structured synthesis and planning",
+          "fallbacks": [
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/qwen4-max",
+              "effort": "medium",
+              "trigger": "rate_limit",
+              "description": "OpenCode Go Qwen4 Max structured synthesis fallback"
+            },
+            {
+              "provider": "ollama",
+              "model": "ollama/qwen2.5-coder:32b",
+              "effort": "medium",
+              "max_context_tokens": 65536,
+              "trigger": "cost_saver",
+              "description": "Local Ollama Qwen 2.5 Coder 32B offline coding fallback"
+            }
+          ]
+        },
+        "High": {
+          "provider": "anthropic",
+          "model": "anthropic/claude-sonnet-5-5",
+          "effort": "high",
+          "description": "Claude Sonnet 5.5 (Hermes default / OMH deep) for implementation and orchestration",
+          "fallbacks": [
+            {
+              "provider": "openai",
+              "model": "openai/gpt-6.2-sol",
+              "effort": "high",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "OpenAI GPT-6.2 Sol fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+            },
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/qwen4-max",
+              "effort": "high",
+              "trigger": "token_exhaustion",
+              "description": "OpenCode Go Qwen4 Max zero-marginal-cost fallback"
+            }
+          ]
+        },
+        "XHigh": {
+          "provider": "openai",
+          "model": "openai/gpt-6.2-astra",
+          "effort": "xhigh",
+          "compaction_threshold": 250000,
+          "description": "OpenAI GPT-6.2 Astra (deep alias) for independent cross-family verification (Pricing Cliff auto-compaction at 250,000 tokens)",
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "rate_limit",
+              "description": "Claude Opus 5.5 (ultrabrain alias) invariant verification fallback"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-argon",
+              "effort": "xhigh",
+              "trigger": "token_exhaustion",
+              "description": "Gemini 4 Argon cross-provider verification fallback"
+            }
+          ]
+        },
+        "Max": {
+          "provider": "anthropic",
+          "model": "anthropic/claude-opus-5-5",
+          "effort": "max",
+          "description": "Claude Opus 5.5 (ultrabrain alias) for Hermes chief architectural reasoning",
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-fable-5-2",
+              "effort": "xhigh",
+              "trigger": "unavailability",
+              "description": "Claude Fable 5.2 frontier escalation fallback"
+            },
+            {
+              "provider": "openai",
+              "model": "openai/gpt-6.2-astra",
+              "effort": "xhigh",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "OpenAI GPT-6.2 Astra cross-provider frontier fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "harness_native_bonuses": {
+    "omp": {},
+    "claude": {
+      "anthropic": 0.02
+    },
+    "agy": {
+      "antigravity-cli": 0.03
+    },
+    "hermes": {}
+  }
+}

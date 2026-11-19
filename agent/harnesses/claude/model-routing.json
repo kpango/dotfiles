@@ -1,0 +1,100 @@
+{
+  "$schema": "../../models/schema.json",
+  "harness": "claude",
+  "default_tier": "High",
+  "tiers": {
+    "Low": {
+      "model": "claude-haiku-5-5",
+      "effort": "low",
+      "compaction_threshold": 90000,
+      "description": "Claude Haiku 5.5 for fast & cost-efficient exploration and bulk survey (Pricing Cliff auto-compaction at 90,000 tokens)",
+      "fallbacks": [
+        {
+          "model": "haiku",
+          "effort": "low",
+          "compaction_threshold": 90000,
+          "trigger": "rate_limit",
+          "description": "Claude Code native haiku alias fallback"
+        }
+      ]
+    },
+    "Medium": {
+      "model": "opusplan",
+      "effort": "medium",
+      "description": "Hybrid planning: Opus 5.5 in Plan mode, Sonnet 5.5 in execution mode",
+      "fallbacks": [
+        {
+          "model": "claude-sonnet-5-5",
+          "effort": "medium",
+          "trigger": "token_exhaustion",
+          "description": "Degrade to pure Claude Sonnet 5.5 planning when Opus token budget is strained"
+        },
+        {
+          "model": "claude-haiku-5-5",
+          "effort": "low",
+          "compaction_threshold": 90000,
+          "trigger": "cost_saver",
+          "description": "Budget session survival fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+        }
+      ]
+    },
+    "High": {
+      "model": "claude-sonnet-5-5",
+      "effort": "high",
+      "description": "Claude Sonnet 5.5 for high-capability Maker implementation and reviews",
+      "fallbacks": [
+        {
+          "model": "sonnet",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Default sonnet alias fallback during version-specific spikes"
+        },
+        {
+          "model": "claude-haiku-5-5",
+          "effort": "medium",
+          "compaction_threshold": 90000,
+          "trigger": "token_exhaustion",
+          "description": "Emergency Haiku 5.5 session lifetime extension fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+        }
+      ]
+    },
+    "XHigh": {
+      "model": "claude-opus-5-5",
+      "effort": "xhigh",
+      "description": "Claude Opus 5.5 for independent refutational checking and deep invariant verification",
+      "fallbacks": [
+        {
+          "model": "opus",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Default opus alias fallback during version-specific spikes"
+        },
+        {
+          "model": "claude-sonnet-5-5",
+          "effort": "high",
+          "trigger": "token_exhaustion",
+          "description": "Degrade to top-tier Claude Sonnet 5.5 verification when Opus quota is tight"
+        }
+      ]
+    },
+    "Max": {
+      "model": "claude-fable-5-2",
+      "effort": "xhigh",
+      "description": "Claude Fable 5.2 for frontier spot architectural diagnosis and breakthroughs",
+      "fallbacks": [
+        {
+          "model": "claude-opus-5-5",
+          "effort": "xhigh",
+          "trigger": "rate_limit",
+          "description": "Degrade to Opus 5.5 frontier reasoning when Fable 5.2 limits are reached"
+        },
+        {
+          "model": "claude-sonnet-5-5",
+          "effort": "high",
+          "trigger": "cost_saver",
+          "description": "Sonnet 5.5 fallback when Fable and Opus quotas are strained"
+        }
+      ]
+    }
+  }
+}

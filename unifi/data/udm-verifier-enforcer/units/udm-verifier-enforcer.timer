@@ -1,0 +1,13 @@
+[Unit]
+Description=Hourly re-apply of UDM Verifier settings (counteracts UI-triggered reverts)
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=1h
+# RandomizedDelaySec jitters the fire time so a reboot swarm (or a
+# post-firmware boot) doesn't thundering-herd the UniFi API.
+RandomizedDelaySec=5min
+Unit=udm-verifier-enforcer.service
+
+[Install]
+WantedBy=timers.target

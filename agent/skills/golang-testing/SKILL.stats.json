@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "golang-testing",
+  "version": "1.0.0",
+  "description": "Metrics and lifecycle statistics for golang-testing",
+  "category": "domain-specialist",
+  "metrics": {
+    "execution_count": 76,
+    "success_count": 35,
+    "failure_count": 41,
+    "success_rate": 0.4605,
+    "retry_count": 0,
+    "total_duration_ms": 9120,
+    "avg_duration_ms": 120.0,
+    "min_duration_ms": 120,
+    "max_duration_ms": 120,
+    "total_tokens_in": 30400,
+    "total_tokens_out": 15200,
+    "avg_tokens_per_call": 600.0,
+    "cache_read_tokens": 0,
+    "cache_hit_rate": 0.0
+  },
+  "lifecycle": {
+    "created_at": "2026-09-02T07:36:05Z",
+    "first_executed": "2026-09-02T07:17:29Z",
+    "last_executed": "2026-09-02T07:36:05Z",
+    "last_status": "failure"
+  },
+  "failure_signatures": [],
+  "prompt_revision_history": [
+    {
+      "revision": 1,
+      "timestamp": "2026-09-02T07:17:29Z",
+      "author": "initial",
+      "commit_hash": null,
+      "change_summary": "Initial baseline schema definition",
+      "diff_type": "docs-only",
+      "trigger": "initial",
+      "baseline_success_rate_before": null,
+      "baseline_success_rate_after": 1.0,
+      "target_metric": null
+    },
+    {
+      "revision": 2,
+      "timestamp": "2026-09-02T07:36:05Z",
+      "author": "initial",
+      "commit_hash": null,
+      "change_summary": "Initial baseline schema definition",
+      "diff_type": "docs-only",
+      "trigger": "initial",
+      "baseline_success_rate_before": null,
+      "baseline_success_rate_after": 1.0,
+      "target_metric": null
+    }
+  ]
+}

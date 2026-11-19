@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# herdr default_shell wrapper — runs new panes inside the dev Docker container.
+# Falls back to a plain shell if the container is not running.
+set -euo pipefail
+
+CONTAINER="${HERDR_DOCKER_CONTAINER:-dev}"
+INNER_SHELL="${HERDR_DOCKER_SHELL:-/usr/bin/zsh}"
+
+# Inherit the CWD that herdr set via chdir(2) before exec'ing this wrapper.
+# Passed to docker exec -w so the new pane lands in the same directory.
+CWD="$(pwd)"
+
+# Prevent recursive container-in-container exec when herdr runs inside dev.
+if [ -f /.dockerenv ] || [ -n "${HERDR_IN_CONTAINER:-}" ]; then
+    cd "$CWD" 2>/dev/null || true
+    exec "$INNER_SHELL"
+fi
+
+DOCKER_BIN="$(command -v docker 2>/dev/null || echo /usr/bin/docker)"
+if [ -x "$DOCKER_BIN" ] && "$DOCKER_BIN" inspect --format '{{.State.Status}}' "$CONTAINER" 2>/dev/null \
+        | grep -q '^running$'; then
+    exec "$DOCKER_BIN" exec \
+        -e HERDR_IN_CONTAINER=1 \
+        -e HERDR_PANE_ID="${HERDR_PANE_ID:-}" \
+        -e HERDR_SESSION="${HERDR_SESSION:-}" \
+        -it -w "$CWD" "$CONTAINER" "$INNER_SHELL"
+elif [ "$(uname -s)" = "Darwin" ] && command -v container >/dev/null 2>&1 \
+        && container inspect "$CONTAINER" 2>/dev/null | grep -qi '"running"'; then
+    exec container exec \
+        -e HERDR_IN_CONTAINER=1 \
+        -e HERDR_PANE_ID="${HERDR_PANE_ID:-}" \
+        -e HERDR_SESSION="${HERDR_SESSION:-}" \
+        -it -w "$CWD" "$CONTAINER" "$INNER_SHELL"
+fi
+
+# Container not running — open a plain host shell so herdr stays usable.
+cd "$CWD" 2>/dev/null || true
+exec "${SHELL:-/bin/zsh}"

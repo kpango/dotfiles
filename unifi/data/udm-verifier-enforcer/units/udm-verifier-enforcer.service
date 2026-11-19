@@ -1,0 +1,8 @@
+[Unit]
+Description=Enforce NextDNS echo_server / dns_verification via UniFi API (usg)
+Documentation=file:/data/udm-verifier-enforcer/udm-verifier-enforcer.sh
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/udm-verifier-enforcer/udm-verifier-enforcer.sh

@@ -1,0 +1,25 @@
+name: ops
+role: Arch Linux, Wayland, Kubernetes & Dotfiles Operations
+tier: High
+description: Infrastructure, systemd user units, Nix/Make deployment, container runtime, Kubernetes, and UniFi network operations specialist.
+model:
+  provider: anthropic
+  default: claude-sonnet-5-5
+  aliases:
+    ultrabrain: anthropic/claude-opus-5-5
+    deep: openai/gpt-6.2-sol
+    quick: opencode-go/deepseek-v4.1-flash
+    local: ollama/gpt-oss-20b
+toolsets:
+  - file
+  - terminal
+  - web
+  - skills
+  - memory
+omh:
+  home: ~/.omh/profiles/ops
+  lsp_tools: false
+  dreaming_mode: off
+delegation:
+  - omp
+  - claude-code
