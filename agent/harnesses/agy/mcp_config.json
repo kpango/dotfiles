@@ -3,7 +3,12 @@
   "mcpServers": {
     "lsp-go": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "$PWD", "--lsp", "gopls"],
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "gopls"
+      ],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -12,7 +17,12 @@
     },
     "lsp-rust": {
       "command": "mcp-language-server",
-      "args": ["--workspace", "$PWD", "--lsp", "rust-analyzer"],
+      "args": [
+        "--workspace",
+        "$PWD",
+        "--lsp",
+        "rust-analyzer"
+      ],
       "env": {
         "HOME": "$HOME",
         "PWD": "$PWD"
@@ -235,8 +245,10 @@
       "timeout": 60000
     },
     "trail": {
-      "command": "bunx",
-      "args": ["@trailhq/trail-code", "mcp"]
+      "command": "trail",
+      "args": [
+        "mcp"
+      ]
     }
   }
 }

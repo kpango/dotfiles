@@ -52,6 +52,7 @@ run_suite "Model Routing & Tier Fallbacks" "bash '$ROOT/agent/scripts/test-model
 
 # 3b. SSoT Model Catalog Daily Updater & Pareto Optimizer
 run_suite "SSoT Model Catalog Updater" "bash '$ROOT/agent/scripts/test-model-catalog-update.sh'"
+run_suite "Harness Model List Fetcher" "bash '$ROOT/agent/scripts/test-fetch-harness-models.sh'"
 
 # 4. Swarm Meta & Harness Guard Tests
 run_suite "Swarm Meta & Harness Guard" "bash '$ROOT/agent/skills/swarm-meta/scripts/test-harness-guard.sh'"

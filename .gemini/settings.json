@@ -1,8 +1,10 @@
 {
   "mcpServers": {
     "trail": {
-      "command": "bunx",
-      "args": ["@trailhq/trail-code", "mcp"]
+      "command": "trail",
+      "args": [
+        "mcp"
+      ]
     }
   }
 }

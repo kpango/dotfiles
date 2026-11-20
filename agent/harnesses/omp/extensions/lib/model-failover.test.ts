@@ -202,10 +202,14 @@ eq("quota: out-of-range/garbage env -> null", loadQuotaUsage({ OPENCODE_GO_USAGE
   const notes: string[] = [];
   const ctx = { ui: { notify: (m: string) => notes.push(m) } };
   let usage: QuotaUsage = { fiveHourPct: 30, weeklyPct: 0 };
+  let refreshed = 0;
   extension(pi, {
     loadConfig: () => ({ pricingCliffAdvisoryConfig: { enabled: false } }) as any,
     loadRouting: () => ({ tiers: {}, routingPolicy: { openCodeGoQuotaGuard: qPolicy } }),
     loadQuota: () => usage,
+    refreshModels: () => {
+      refreshed++;
+    },
   });
   const fire = async () => {
     for (const h of handlers) await h({}, ctx);
@@ -221,6 +225,7 @@ eq("quota: out-of-range/garbage env -> null", loadQuotaUsage({ OPENCODE_GO_USAGE
   for (const s of starts) await s();
   await fire();
   eq("quota wiring: session_start resets", notes.length, 3);
+  eq("session_start refreshes the verified model lists", refreshed, 1);
 }
 
 console.log(`\nmodel-failover: ${pass} passed, ${fail} failed`);

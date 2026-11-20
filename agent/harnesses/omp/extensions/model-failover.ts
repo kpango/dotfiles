@@ -31,6 +31,8 @@ import * as os from "os";
 import * as path from "path";
 import { contextTokensFromUsage, type TurnUsage } from "./context-economy";
 import { evaluateOnlineCompaction, loadSolPiConfig, pricingCliffFor, type SolPiConfig } from "./lib/sol-pi-core";
+import { resolveCatalogPath } from "./lib/model-catalog";
+import { refreshVerifiedModels } from "./lib/verified-models";
 
 export type FailoverTrigger = "rate_limit" | "token_exhaustion";
 
@@ -247,14 +249,23 @@ export default function (
     loadConfig?: () => SolPiConfig;
     loadRouting?: () => ModelRoutingConfig | undefined;
     loadQuota?: () => QuotaUsage;
+    refreshModels?: () => void;
   } = {}
 ) {
   const config: SolPiConfig = (deps.loadConfig ?? loadSolPiConfig)();
   const loadRouting = deps.loadRouting ?? loadRoutingConfig;
   const loadQuota = deps.loadQuota ?? (() => loadQuotaUsage());
+  // Re-fetch the CLI-reported model lists each session so selection is limited to models verified right now.
+  const refreshModels =
+    deps.refreshModels ??
+    (() => {
+      const catalog = resolveCatalogPath();
+      if (catalog) refreshVerifiedModels(path.resolve(path.dirname(catalog), "..", "scripts", "fetch-harness-models.py"));
+    });
   let lastAdviceKey = "";
   let lastQuotaKey = "";
   pi.on("session_start", async () => {
+    refreshModels();
     lastAdviceKey = "";
     lastQuotaKey = "";
   });

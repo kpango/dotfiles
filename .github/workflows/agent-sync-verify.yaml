@@ -107,6 +107,9 @@ jobs:
       - name: test-model-catalog-update.sh
         run: bash agent/scripts/test-model-catalog-update.sh
 
+      - name: test-fetch-harness-models.sh
+        run: bash agent/scripts/test-fetch-harness-models.sh
+
       - name: test-catalog-health.sh
         run: bash agent/scripts/test-catalog-health.sh
 

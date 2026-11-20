@@ -16,6 +16,7 @@ import { Type } from "typebox";
 import { allocateWorktree, releaseWorktree, collectWorktreeDiff, listAllocatedWorktrees } from "./lib/worktree-core";
 import { globalReplStore } from "./lib/repl-context-core";
 import { getBareModelAliases, getOmpRoleToTier } from "./lib/model-catalog";
+import { loadVerifiedModels, pickVerified } from "./lib/verified-models";
 
 export interface AgentConfig {
   name: string;
@@ -511,7 +512,7 @@ export interface ModelResolutionContext {
  */
 // Role and bare legacy aliases are resolved dynamically from agent/models/catalog.json via lib/model-catalog.ts.
 
-export function resolveModelTier(
+function resolveModelTierUnchecked(
   modelStr: string | undefined,
   context?: ModelResolutionContext
 ): string | undefined {
@@ -636,6 +637,17 @@ export function resolveModelTier(
     }
   }
   return modelStr;
+}
+
+/**
+ * 解決結果を、直前に CLI から取得した検証済み一覧で絞る。含まれなければ undefined(親モデルを継承)。
+ */
+export function resolveModelTier(
+  modelStr: string | undefined,
+  context?: ModelResolutionContext
+): string | undefined {
+  const resolved = resolveModelTierUnchecked(modelStr, context);
+  return pickVerified(resolved, loadVerifiedModels());
 }
 
 export function loadAgentsFromDirForTest(dir: string, source: "user" | "project"): AgentConfig[] {

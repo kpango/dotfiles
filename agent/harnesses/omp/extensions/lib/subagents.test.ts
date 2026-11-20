@@ -118,6 +118,25 @@ fs.rmSync(tmpDir, { recursive: true, force: true });
   check("実agent/agents/*.md 全件でtools:がpi既知語彙に収まる", unknownTools.length === 0, JSON.stringify(unknownTools));
 }
 
+// 検証済みモデル一覧(CLI取得キャッシュ)のフィクスチャ。resolveModelTier はこの一覧に載るモデルだけを返す。
+const verifiedDir = fs.mkdtempSync(path.join(os.tmpdir(), "subagents-verified-"));
+process.env.AGENT_MODEL_LIST_DIR = verifiedDir;
+const writeVerified = (cli: string, status: string, models: string[]) =>
+  fs.writeFileSync(path.join(verifiedDir, `${cli}.json`), JSON.stringify({ cli, status, fetched_at: Date.now() / 1000, models }));
+const VERIFIED_OMP = [
+  "opencode-go/deepseek-v4.1-flash",
+  "opencode-go/kimi-k3.1-pro",
+  "opencode-go/qwen4-max",
+  "anthropic/claude-sonnet-5-5",
+  "anthropic/claude-opus-5-5",
+  "anthropic/claude-fable-5-2",
+  "openai-codex/gpt-6.2-sol",
+  "openai-codex/gpt-6.2-astra",
+];
+const VERIFIED_AGY = ["antigravity-cli/gemini-4-hydrogen", "antigravity-cli/claude-sonnet-5-5"];
+writeVerified("omp", "ok", VERIFIED_OMP);
+writeVerified("agy", "ok", VERIFIED_AGY);
+
 // 9. resolveModelTier 抽象モデルTierマッピングテスト
 eq("resolveModelTier: inherit -> undefined", resolveModelTier("inherit"), undefined);
 eq("resolveModelTier: Inherit -> undefined", resolveModelTier("Inherit"), undefined);
@@ -131,12 +150,12 @@ eq("resolveModelTier: Low-Web -> gemini-4-hydrogen", resolveModelTier("Low-Web")
 eq("resolveModelTier: Medium -> kimi-k3.1-pro", resolveModelTier("Medium"), "opencode-go/kimi-k3.1-pro");
 eq("resolveModelTier: High -> claude-sonnet-5-5 (primary)", resolveModelTier("High"), "anthropic/claude-sonnet-5-5");
 eq("resolveModelTier: High (trigger: rate_limit) -> antigravity-cli/claude-sonnet-5-5", resolveModelTier("High", { trigger: "rate_limit" }), "antigravity-cli/claude-sonnet-5-5");
-eq("resolveModelTier: High (trigger: token_exhaustion) -> gpt-6.2-sol", resolveModelTier("High", { trigger: "token_exhaustion" }), "openai/gpt-6.2-sol");
+eq("resolveModelTier: High (trigger: token_exhaustion) -> gpt-6.2-sol", resolveModelTier("High", { trigger: "token_exhaustion" }), "openai-codex/gpt-6.2-sol");
 eq("resolveModelTier: High (trigger: cost_saver) -> qwen4-max", resolveModelTier("High", { trigger: "cost_saver" }), "opencode-go/qwen4-max");
-eq("resolveModelTier: High (fallbackIndex: 1) -> gpt-6.2-sol", resolveModelTier("High", { fallbackIndex: 1 }), "openai/gpt-6.2-sol");
+eq("resolveModelTier: High (fallbackIndex: 1) -> gpt-6.2-sol", resolveModelTier("High", { fallbackIndex: 1 }), "openai-codex/gpt-6.2-sol");
 eq("resolveModelTier: XHigh (trigger: rate_limit) -> claude-opus-5-5", resolveModelTier("XHigh", { trigger: "rate_limit" }), "anthropic/claude-opus-5-5");
 eq("resolveModelTier: XHigh (trigger: token_exhaustion) -> kimi-k3.1-pro", resolveModelTier("XHigh", { trigger: "token_exhaustion" }), "opencode-go/kimi-k3.1-pro");
-eq("resolveModelTier: XHigh -> gpt-6.2-astra", resolveModelTier("XHigh"), "openai/gpt-6.2-astra");
+eq("resolveModelTier: XHigh -> gpt-6.2-astra", resolveModelTier("XHigh"), "openai-codex/gpt-6.2-astra");
 eq("resolveModelTier: Max -> claude-fable-5-2", resolveModelTier("Max"), "anthropic/claude-fable-5-2");
 eq("resolveModelTier: Max (trigger: token_exhaustion) -> claude-opus-5-5", resolveModelTier("Max", { trigger: "token_exhaustion" }), "anthropic/claude-opus-5-5");
 eq("resolveModelTier: low (lowercase) -> deepseek-v4.1-flash", resolveModelTier("low"), "opencode-go/deepseek-v4.1-flash");
@@ -144,11 +163,21 @@ eq("resolveModelTier: high (lowercase) -> claude-sonnet-5-5", resolveModelTier("
 eq("resolveModelTier: @smol -> deepseek-v4.1-flash", resolveModelTier("@smol"), "opencode-go/deepseek-v4.1-flash");
 eq("resolveModelTier: @fast -> deepseek-v4.1-flash", resolveModelTier("@fast"), "opencode-go/deepseek-v4.1-flash");
 eq("resolveModelTier: @good -> claude-sonnet-5-5", resolveModelTier("@good"), "anthropic/claude-sonnet-5-5");
-eq("resolveModelTier: @review -> gpt-6.2-astra", resolveModelTier("@review"), "openai/gpt-6.2-astra");
+eq("resolveModelTier: @review -> gpt-6.2-astra", resolveModelTier("@review"), "openai-codex/gpt-6.2-astra");
 eq("resolveModelTier: @slow -> claude-fable-5-2", resolveModelTier("@slow"), "anthropic/claude-fable-5-2");
 eq("resolveModelTier: @plan -> claude-fable-5-2", resolveModelTier("@plan"), "anthropic/claude-fable-5-2");
+
+// 検証済み一覧に無いモデルは返さない(親モデル継承 = undefined)。一覧が使えない場合も何も許可しない。
+eq("resolveModelTier: concrete model not in verified list -> undefined", resolveModelTier("anthropic/claude-haiku-5-5"), undefined);
+writeVerified("agy", "unavailable", []);
+eq("resolveModelTier: agy unavailable -> antigravity-cli route rejected", resolveModelTier("Low-Web"), undefined);
+eq("resolveModelTier: omp list still serves other providers", resolveModelTier("Medium"), "opencode-go/kimi-k3.1-pro");
+writeVerified("omp", "unavailable", []);
+eq("resolveModelTier: no verified list at all -> undefined (fail-closed)", resolveModelTier("High"), undefined);
+writeVerified("omp", "ok", VERIFIED_OMP);
+writeVerified("agy", "ok", VERIFIED_AGY);
 eq("resolveModelTier: sonnet bare alias -> claude-sonnet-5-5", resolveModelTier("sonnet"), "anthropic/claude-sonnet-5-5");
-eq("resolveModelTier: custom-model passthrough", resolveModelTier("custom-model"), "custom-model");
+eq("resolveModelTier: model absent from the verified list is not passed through", resolveModelTier("custom-model"), undefined);
 
 // 9c. parseFrontmatter quoted scalar stripping (e.g. model: "@smol")
 {
