@@ -1246,8 +1246,17 @@ env -u HARNESS2_SECURITY_CMDS python3 -I -B "$H2" --traces "$TMP/tr3.jsonl" --ca
     --experience "$EXP" --out-dir "$PROP" --dry-run --json >"$TMP/out.txt" 2>"$TMP/err.txt"
 d5_rc=$?
 if [[ "$d5_rc" -eq 2 ]]; then
-    check_has "fresh procfs を拒否する環境では --gate-empty-proc 無しで fail-closed (rc=2)" "$(cat "$TMP/err.txt")" "refuses a fresh procfs"
-    check_has "メッセージが回避策 (--gate-empty-proc / --allow-unsandboxed-gate) を示す" "$(cat "$TMP/err.txt")" "--gate-empty-proc"
+    # rc=2 の原因は 2 系統ある: (a) bwrap はあるが fresh procfs を拒否する、(b) bwrap 不在または
+    # namespace を作れない (入れ子コンテナ等)。どちらも fail-closed なので、原因ごとに
+    # 対応する回避策フラグを検証する ((b) に "refuses a fresh procfs" を要求すると誤 FAIL になる)。
+    d5_err="$(cat "$TMP/err.txt")"
+    if [[ "$d5_err" == *"refuses a fresh procfs"* ]]; then
+        check_has "fresh procfs を拒否する環境では --gate-empty-proc 無しで fail-closed (rc=2)" "$d5_err" "refuses a fresh procfs"
+        check_has "メッセージが回避策 (--gate-empty-proc / --allow-unsandboxed-gate) を示す" "$d5_err" "--gate-empty-proc"
+    else
+        check_has "sandbox を作れない環境でも既定 gate は fail-closed (rc=2)" "$d5_err" "cannot create a gate sandbox"
+        check_has "メッセージが回避策 (--allow-unsandboxed-gate) を示す" "$d5_err" "--allow-unsandboxed-gate"
+    fi
     check "fail-closed なら EXPERIENCE.md/出力は変わらない" "false" "$([[ -e "$PROP" ]] && echo true || echo false)"
 else
     check "fresh procfs が使える環境: 既定 gate 2 本が隔離下で通る" "accepted" "$(cstat sbq)"
