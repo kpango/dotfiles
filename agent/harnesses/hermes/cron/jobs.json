@@ -1,0 +1,23 @@
+{
+  "$comment": "Hermes cron jobs for THIS dotfiles repo (SSoT). Registered by agent/scripts/bot/hermes-cron-install.sh (make hermes/cron/install) with `hermes cron create`; Hermes keeps the live copy in ~/.hermes/cron/jobs.json and cannot read this file. Each job runs a generated pre-run gate (~/.hermes/scripts/dotfiles-precheck-<task>.sh) that calls precheck-cron.sh and wakes the agent only when action_required is true, so a quiet tick costs 0 tokens. `task` must be one of precheck-cron.sh's tasks. Schedules use Hermes' syntax (see the cron docs): 'every 2h', 'weekdays at 9am', 'every monday 9am', or a cron expression. Deliveries are always `local`: nothing is sent to a chat service from here.",
+  "jobs": [
+    {
+      "name": "dotfiles-pr-review",
+      "schedule": "weekdays at 9am",
+      "task": "pr-review",
+      "prompt": "The pre-check output above says open pull requests in the dotfiles repo need review. Look at them read-only (gh pr list, gh pr view, gh pr diff, gh pr checks). Reply with a short triage per PR: what it changes, the risk, and the single next action. Do not push, merge, approve or comment, and do not edit protected (Tier B) files; propose a diff instead."
+    },
+    {
+      "name": "dotfiles-ci-failure",
+      "schedule": "every 2h",
+      "task": "ci-failure",
+      "prompt": "The pre-check output above says a recent CI run failed in the dotfiles repo. Find the failing job read-only (gh run list, gh run view --log-failed) and reply with the root cause, whether it is the code or the CI environment, and the smallest fix. Do not push or re-run workflows, and do not edit protected (Tier B) files; propose a diff instead."
+    },
+    {
+      "name": "dotfiles-catalog-drift",
+      "schedule": "every monday 9am",
+      "task": "catalog-drift",
+      "prompt": "The pre-check output above says agent/models/catalog.json and its derived files drifted. Run `python3 agent/scripts/update-model-catalog.py --check` (read-only) and reply with which derived files differ and why. Do not run the updater with --fetch or write anything; a human decides whether to regenerate."
+    }
+  ]
+}

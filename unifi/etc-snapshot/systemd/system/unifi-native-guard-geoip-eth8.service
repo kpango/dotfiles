@@ -1,0 +1,7 @@
+[Unit]
+Description=Apply CyberSecure Region Blocking to eth8 (DS-Lite native IPv6)
+After=udapi-server.service
+
+[Service]
+Type=oneshot
+ExecStart=/data/unifi-native-guard/geoip-eth8.sh

@@ -1,0 +1,205 @@
+---
+name: swarm-meta
+description: メタハーネス選択層（2段・人間招集 `/swarm-meta` 限定）。profile決定論選択で swarm-loop/swarm-graph へ委譲し実績記録。実行中自己改変禁止。
+allowed-tools: [Read, Write, Edit, Bash, Grep, Glob, Agent, Skill]
+user-invocable: true
+disable-model-invocation: true
+---
+
+# swarm-meta — メタハーネス選択・検証・委譲・実績記録
+
+開始前に `~/.claude/skills/_swarm-common/load.sh core --once` を実行して共通要約を読む（SWARM.md 全文 63KB は読まない。
+§N の詳細が必要なときだけ、CORE.md の節インデックスの行範囲を `offset`/`limit` 付きで Read する）。
+同一コンテキストで既読なら本文の代わりにスタブが返る。コンテキスト圧縮後は `--force`。
+
+## 1. 位置づけ
+
+`swarm-loop`（0 段: ミッション実行の状態機械そのもの）・`swarm-graph`（1 段: 並行探索型の代替ハーネス、
+並行タスク新設中）に対し、`swarm-meta` は **2 段目 = メタ層**である（機能の詳細は本 skill の frontmatter
+`description` および下記フロー図を参照）。
+
+**運用要点**: per-mission のハーネス選択は固定最適化構成に勝るが、探索は有界かつ sandbox＋人間検査を
+伴う（自己改変系ハーネスで reward hacking の実例が確認されているため）。検証は決定論的ツールを第一権威
+として二重化する: 着手前の best-effort lint（`harness-lint.sh`）＋実行時の hook（dispatch 先の
+PostToolUse/Stop hook が最終権威）。LLM は推薦をより保守的な側にのみ上書きできる（規範。機械強制では
+ない）。実行中のハーネス切替は禁止する（下記 4. の唯一の例外を除く）。単一 proxy スコアによる構成最適化・
+設定・メモリファイルの自動生成は禁止する（下記 7.）。進化済み構成は LLM backbone 更新で degrade しうる
+ため、registry に model-version を記録する（下記 5. M3 RECORD）。根拠となる研究の詳細・確度は
+`SWARM_REFERENCES.md` の「swarm-meta 設計根拠」節を参照。
+
+```
+PROFILE ─▶ SELECT(+lint) ─▶ DISPATCH ─▶ (ハーネス実行) ─▶ RECORD ─▶ EVOLVE-FEED（非ブロッキング）
+```
+
+### Tier A / Tier B（冒頭で明示する 2 層構造・強制の実態）
+
+- **Tier A（承認不要・全て可逆）**: 既存ブロック（swarm-loop / swarm-graph）からの構成選択、
+  `harness-registry.tsv` への追記/置換、`/tmp/` への harness-plan.json 出力。本 skill の通常動作は
+  すべて Tier A に属する。
+- **Tier B（人間承認必須）**: SKILL.md / hooks / 検証構成テンプレート自体の変更。本 skill はこの層に
+  一切触れず、`/swarm-evolve` への draft 起案（EVOLVE-FEED、下記 6.）までで停止する。ただしこの境界・
+  「保守側上書きのみ」「レンズ削減禁止」（下記 7.）はいずれも規範であり、`swarm-meta` 自身への機械強制は
+  無い。`harness-lint.sh` は harness-plan の**着手前 best-effort スクリーニング**であり `swarm-meta`
+  自身の実行時 Write/Edit を検査しない — 実際の書き込み阻止は dispatch 先ハーネスの PostToolUse/Stop
+  hook が実行時の最終権威として担う。`harness-lint.sh` が機械強制するのは絶対フロア＝ VERIFIER_FLOOR /
+  ROUTING / BUDGET_BOUNDS / WRITE_SCOPE（best-effort、完全性は保証しない）のみである。既知の残課題
+  （best-effort の限界）として、`re_toolcall` の複数行にまたがるツール呼び出し検出の制限・`budget` 値の
+  負数検証の欠如・`deterministic` 配列要素の型検証の欠如があるが、いずれも致命的ではなく将来の改善候補
+  として記録するに留める。
+
+### SWARM.md §0 との関係
+
+自走ループの入口を `/swarm-loop` 単独から `/swarm-loop` ・ `/swarm-graph` ・ `/swarm-meta`（いずれも
+人間招集限定）へ拡張する SWARM.md §0 の改訂は**本 skill の外**（本ミッションの wiring タスク）で行われ、
+Phase 5 GATE の人間承認を prerequisite とする。`swarm-meta` 自身は SWARM.md に一切書き込まない。
+**`swarm-meta` の成果物と §0/CLAUDE.md の wiring diff は同一 GATE で不可分（all-or-nothing）に承認・
+適用し、片方のみの適用を禁ずる**（skill だけ merge され §0 が旧文言のまま残る不整合ウィンドウを作らない）。
+
+なお `allowed-tools` の `Skill` は **dispatch 用ではない**（dispatch は Read＋インライン追従、下記 4.）。
+インライン追従中に起動先ハーネスが呼ぶ下位 skill（`swarm-explore` / `swarm-implement` / `swarm-secretary`、
+いずれも `disable-model-invocation: false`）のためにのみ使う。
+
+## 2. M0 PROFILE
+
+```bash
+~/.claude/skills/swarm-meta/scripts/harness-select.sh --profile-only "<goal>"
+```
+
+この出力（`profile.signals.{parallel,sequential,risk,primary}` / `est_tasks` / `langs`）を会話内に記録
+する。決定論的な語彙一致・正規表現のみで抽出され、LLM は関与しない。exit は常に 0（推薦を含まないため
+強制判定の対象外）。
+
+## 3. M1 SELECT
+
+```bash
+~/.claude/skills/swarm-meta/scripts/harness-select.sh "<goal>"
+```
+
+の推薦（`recommendation.harness` / `lenses` / `budget` / `rationale`）を第一候補とする。
+
+推薦ロジック（`harness-select.sh` 実装、決定論・LLM 不使用）: (B) harness 決定は語彙一致数
+`parallel_n`（並行/並列/複数/全域/全体/一括/監査/audit/横断/swarm 等）と `sequential_n`（順に/手順/逐次/
+段階的/一つずつ/1ファイル/リネーム/typo 等）を比較し、上から最初に真になった規則で確定する:
+`sequential_n > parallel_n` または `est_tasks<=2` → `swarm-loop`、`parallel_n > sequential_n` かつ
+（`est_tasks` 未検出または `>=3`）→ `swarm-graph`、どちらでもなければ保守デフォルト（Endure>Excel>Evolve）
+で `swarm-loop`。(C) `harness=swarm-graph` の場合のみ、同一 `profile.signals.primary` の過去 registry
+行のうちパース可能な行の過半数（`blocked_majority*2 > parseable`）が blocked>done なら `swarm-loop` へ
+降格する。registry の各行は独立レコードとして扱われ、不正 UTF-8 の行は当該行のみ skip し件数を rationale
+に記録する（`registry-unreadable: N lines skipped (decode errors)`）。列数不足の行は当該行のみ沈黙 skip
+する（rationale には記録されない）。ファイル自体が読めない場合のみ全体を registry-unreadable として
+記録する。いずれの場合も all-or-nothing で握り潰さない（`harness-status.sh` の registry 集計も同じ
+fail-safe パターン）。
+
+セッション（LLM）による上書きは**保守側のみ許可**する: `swarm-graph → swarm-loop` への降格・レンズの
+追加・予算の削減。**逆方向（swarm-loop → swarm-graph への昇格・レンズの削除・予算の拡大）はしない**
+（規範であり機械強制はない点を明記する — `harness-lint.sh` はレンズ削減や予算拡大それ自体を検出する
+チェックではなく、あくまで絶対フロアの検査に留まる）。上書きした場合は理由を harness-plan の
+`rationale` 配列に追記する。
+
+確定した harness-plan.json を次の形式で Write する:
+
+```
+/tmp/${CLAUDE_CODE_SESSION_ID:-manual}/swarm/harness-plan-<slug>.json
+```
+
+続けて lint を通す:
+
+```bash
+~/.claude/skills/swarm-meta/scripts/harness-lint.sh /tmp/${CLAUDE_CODE_SESSION_ID:-manual}/swarm/harness-plan-<slug>.json
+```
+
+**lint が非 0 を返した plan では dispatch しない**（exit code に応じて該当箇所を修正し再度 lint を
+通す。優先順は harness-lint.sh 契約どおり 1→4→5→2→3）。
+
+## 4. M2 DISPATCH
+
+1. 選択ハーネスの SKILL.md の実在を確認する（`~/.claude/skills/<harness>/SKILL.md`）。無ければ
+   `swarm-loop` へ保守的降格し、rationale に `harness-unavailable:<name>` を記録する（`harness-select.sh`
+   の存在ガードと同じ判定を dispatch 直前にもう一度行う — select 実行後に環境が変化した場合の防御）。
+   `swarm-loop` 自体も無い場合は他に降格先が無いため推薦値は `swarm-loop` のまま変えず、rationale の
+   警告文言（`... (swarm-loop also unavailable, no other option)`）で異常を明示するに留める（使用不可と
+   宣言した harness を推薦してしまう自己矛盾ではなく、この状態では直後の Read 自体が失敗し異常が可視化
+   される、という設計。`harness-select.sh` の case16 参照）。
+2. **`Skill()` は呼ばない。** 選択した SKILL.md を Read し、その状態機械（`swarm-loop` なら Phase -1
+   以降、`swarm-graph` なら Phase G-1 以降）に同じ目標で従う。`swarm-loop`/`swarm-graph` は
+   `disable-model-invocation: true` のため Skill tool から起動不能であり、人間の `/swarm-meta` 明示
+   招集そのものが自走ループ起動の承認を構成する。ファイル実在のみを根拠に Read して追従するため、
+   Skill tool の一覧表示には依存しない。
+3. harness-plan の要約を `@fix_plan.md` の `## Harness Plan` 節に永続化する（dispatch先の Phase 0/G0 が
+   ミッションworktreeを割当て `mission-init.sh` を実行した後 — `@fix_plan.md` はミッションworktree内に
+   あるため、この時点でのカレントはそのworktree）。
+   同時に `@fix_plan.md` ヘッダへ `- meta-managed: true` 行を追記する（dispatch 先ハーネスの GATE
+   完了メニューが M3 RECORD の実行リマインドを表示するためのマーカー。Quick 分岐では `@fix_plan.md`
+   自体が無いため付与しない）。
+   **Quick 分岐**: dispatch 先の `swarm-loop` が Phase -1 で **Quick** と判定した場合、`@fix_plan.md` は
+   生成されないため本ステップ（`## Harness Plan` 節への永続化・`meta-managed` マーカー付与）は行わず、
+   harness-plan の要約は会話内報告に代える（`harness-select.sh` の `scale` は推薦の既定値であり、
+   `swarm-loop` Phase -1 の判定が優先される — select は Quick を判定しない）。
+4. GATE・ESCALATE・人間承認は**起動先ハーネスのもの**が働く。`swarm-meta` は追加のゲートを作らない。
+5. **実行中のハーネス切替は禁止**する。唯一の例外: `swarm-graph` が GRAPH-FIT で UNFIT を返した、または
+   replan 上限で行き詰まった場合に、`swarm-loop` へ 1 回だけ保守的降格する（rationale を記録する）。
+
+## 5. M3 RECORD
+
+ミッション終了（GATE 完了 / ESCALATE）後、実行する:
+
+```bash
+~/.claude/skills/swarm-meta/scripts/harness-record.sh <mission-slug> <harness> <profile-primary> <model-version> "<outcome>"
+```
+
+`model-version` はセッションモデル ID（例: `claude-fable-5-2` / `Max` 相当）。`outcome` は `done=N blocked=N attempts=N
+replans=N` の多次元サマリであり、**単一スコア化しない・実測値のみ**を記録する（捏造禁止、下記 7.）。
+
+記録は `harness-record.sh` が有界に保つ: (C) 降格判定が読む `swarm-graph` 行は直近 100 件、それ以外（`harness-status.sh`
+の表示集計のみ）は直近 50 件を保持し、古い行は自動で落とす（`HARNESS_REGISTRY_KEEP_GRAPH` / `_KEEP_OTHER` で変更可）。
+`outcome` には `done`/`blocked`/`attempts`/`replans` 以外の自由記述を入れない（作業メモは軌跡ログへ）。
+
+Quick で終了したミッションの RECORD は outcome を `quick=1` 形式で記録する（Tasks テーブルが無いため
+done/blocked 集計は生成されない）。`harness-record.sh` 自体は `outcome` 引数の形式を検証しない
+（TAB/CR/LF の正規化のみを行う自由形式の文字列として受け取る）ため、`done=N blocked=N ...` も
+`quick=1` も呼び出し側の慣習の一つに過ぎない。
+
+## 6. M4 EVOLVE-FEED（非ブロッキング）
+
+反復判定は目視の registry 読解ではなく決定論スクリプトで行う:
+
+```bash
+~/.claude/skills/swarm-meta/scripts/harness-status.sh [profile-primary]
+```
+
+（registry の集計・harness 別傾向・model-version 別件数を表示し、`profile-primary` 指定時は同型の
+blocked>done が 2 回以上反復していれば REPEAT を表示する。表示ツールであり exit 0 固定。）
+REPEAT が示された、すなわち同一 `profile-primary` で同型の失敗・手直しが**2 回以上**反復していたら、
+`swarm-evolve` の draft スキーマ（`pattern` / `evidence` / `target` / `diff_type` / `proposed_diff`）で
+次に Write する:
+
+```
+~/.claude/session-data/swarm/evolve-proposals/<日付>-swarm-meta-draft.md
+```
+
+**`swarm-meta` は Checker 起動も適用も行わない。** 次回 `/swarm-evolve` 実行時に Step 1（証拠収集）が
+既存 draft として検出し、Step 3（Checker）→ Step 4（人間承認）の通常フローに乗る（`swarm-evolve` 側への
+受理配線の追加は本タスクの範囲外）。反復パターンが 0 件なら黙ってスキップする（非ブロッキング）。
+
+## 7. 禁止事項
+
+- **実行中の自己改変**（唯一の例外は上記 4. の GRAPH-FIT UNFIT 時の 1 回限りの降格）。
+- `SKILL.md` / `hooks/*.sh`（具体的には `swarm-fable-gate.sh` / `swarm-stop-verify.sh` /
+  `swarm-post-edit-lint.sh`）/ `SWARM.md` / `budget-guard.sh` / `verify.sh` への書き込み
+  （`harness-lint.sh` の WRITE_SCOPE 正規表現 `PROTECTED` と同じ保護対象。`swarm-meta` 自身にも
+  適用される規範であり、実行時は dispatch 先 hook が最終権威）。
+- **検証レンズの削減**（追加のみ可）。
+- 単一 proxy スコアによる構成最適化。
+- `AGENTS.md` / `CLAUDE.md` 等コンテキストファイルの自動生成。
+- registry 実績の捏造（`harness-record.sh` は実測値のみを記録する）。
+- `swarm-evolve` の Step 3（Checker）以降の代行。
+
+## Handoff Contract
+
+形式・規則・stats 記録: `~/.claude/skills/_swarm-common/load.sh handoff`（HANDOFF.md、正典）。`from: swarm-meta`。
+完了条件（`status: done` の定義）: profile 選択・委譲・registry 記録(M3)が完了した
+
+## 8. Memory Protocol
+
+共通手順: `~/.claude/skills/_swarm-common/load.sh memory`（MEMORY_PROTOCOL.md）。対象: `~/.claude/skill-memory/swarm-meta/MEMORY.md`。
+本 skill 固有の観点: ハーネス推薦が実結果と乖離した傾向、registry 降格閾値が実態に合わなかった事例、存在ガードの誤発火。追記は M3 RECORD の直後。

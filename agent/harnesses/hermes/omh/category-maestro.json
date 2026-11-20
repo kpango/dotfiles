@@ -1,0 +1,21 @@
+{
+  "schema_version": "omh_category_maestro/v1",
+  "profiles": {
+    "omp": {
+      "ultrabrain": [
+        "anthropic/claude-opus-5-5:xhigh",
+        "openai/gpt-6.2-astra:xhigh"
+      ],
+      "deep": ["anthropic/claude-sonnet-5-5:high", "openai/gpt-6.2-sol:high"],
+      "quick": [
+        "opencode-go/deepseek-v4.1-flash:medium",
+        "anthropic/claude-haiku-5-5:medium"
+      ]
+    },
+    "claude-code": {
+      "ultrabrain": ["claude-opus-5-5:xhigh"],
+      "deep": ["claude-sonnet-5-5:high"],
+      "quick": ["claude-haiku-5-5:medium"]
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "mcp": {
+    "trail": {
+      "type": "local",
+      "command": ["bunx", "@trailhq/trail-code", "mcp"],
+      "enabled": true
+    }
+  }
+}

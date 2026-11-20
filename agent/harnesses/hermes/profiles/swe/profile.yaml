@@ -1,0 +1,25 @@
+name: swe
+role: Software Engineering & Coding Fanout Specialist
+tier: High
+description: Surgical multi-language implementation (Go, Rust, C++, TypeScript, Nix, Zsh), test authoring, and OMH coding fanout coordinator.
+model:
+  provider: anthropic
+  default: claude-sonnet-5-5
+  aliases:
+    ultrabrain: anthropic/claude-opus-5-5
+    deep: openai/gpt-6.2-sol
+    quick: opencode-go/deepseek-v4.1-flash
+    local: ollama/qwen2.5-coder:32b
+toolsets:
+  - file
+  - terminal
+  - web
+  - skills
+  - memory
+omh:
+  home: ~/.omh/profiles/swe
+  lsp_tools: true
+  dreaming_mode: off
+delegation:
+  - omp
+  - claude-code

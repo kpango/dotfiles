@@ -1,0 +1,69 @@
+{
+  "$comment": "claude/agy の settings.json は全体としては別スキーマ(omp は config.yml / models.yml の YAML 形式、hermes は config.yaml の YAML 形式であるため本 JSON チェックの対象外)であり、agent/README.mdの既存判断どおりファイル全体のテンプレート化・生成は対象外とする。本ファイルは、claude/agy 間で値まで完全一致していた少数のキー(worktree.symlinkDirectories・subagentPromptCacheTtl・autoMemoryEnabled)と、意図的にscript参照を共有しているstatusLine、そして各ツールが別vocabularyで持つモデル選択を「named profileで束ねる」抽象化のみを対象にした軽量な補助データである。claude/agy側のsettings.jsonそのものは引き続き各ツールの実ファイル(hand-authored)が正典であり、本ファイルはそれらとの整合性を`agent/scripts/test-settings-common.sh`で検証し、`agent/scripts/apply-settings-common.sh`で明示的に(自動ではなく)反映するための参照データに過ぎない。",
+
+  "shared_values": {
+    "worktree.symlinkDirectories": {
+      "description": "claude/settings.json と agy/settings.json で値まで完全一致していた配列。git worktree作成時にコピーでなくsymlinkするディレクトリの一覧。",
+      "targets": ["claude", "agy"],
+      "json_pointer": "/worktree/symlinkDirectories",
+      "value": [
+        "node_modules",
+        ".cache",
+        "vendor",
+        "target",
+        ".cargo",
+        "go/pkg/mod",
+        "rust/target",
+        ".bin",
+        ".venv",
+        "__pycache__",
+        ".pytest_cache",
+        ".mypy_cache",
+        ".claude/graph",
+        ".zig-cache",
+        "dist"
+      ]
+    },
+    "subagentPromptCacheTtl": {
+      "description": "claude/settings.json と agy/settings.json で値まで完全一致。",
+      "targets": ["claude", "agy"],
+      "json_pointer": "/subagentPromptCacheTtl",
+      "value": "1h"
+    },
+    "autoMemoryEnabled": {
+      "description": "claude/settings.json と agy/settings.json で値まで完全一致。autoMemoryDirectory(有効化した場合の書き込み先パス、claude=~/.claude/memory・agy=~/.gemini/memory)はツールごとに異なるため対象外、有効/無効フラグのみが共通値。",
+      "targets": ["claude", "agy"],
+      "json_pointer": "/autoMemoryEnabled",
+      "value": true
+    }
+  },
+
+  "status_line": {
+    "description": "agy/settings.json の statusLine.command は claude/statusline-command.sh をそのまま参照している(コピーではなく意図的な共有)。実機検証(2026-09-03、agy -p でstatusLineのstdin JSONを実際に捕捉)により、Antigravityが送信するJSONはcwd/model.display_name/context_window.remaining_percentageを含めClaude Codeと同一のフィールド構造であることを確認済み — バグではなく正しく機能する共有である。omp/extensions/status-line.tsは別物(外部コマンド+stdin JSONプロトコルではなく拡張APIのctx.ui.setStatus()を使うTUI内蔵実装)であり、この方式では共有できないため独立実装のまま維持する。",
+    "shared_script": "claude/statusline-command.sh",
+    "verified_compatible_fields": [
+      "cwd",
+      "model.display_name",
+      "context_window.remaining_percentage"
+    ],
+    "verification_method": "agy settings.json の statusLine.command を一時的にデバッグロガーへ差し替え、`agy -p \"...\"` を実行してstdinのJSONを実際に捕捉して確認した(2026-09-03)。"
+  },
+
+  "model_profiles": {
+    "$comment": "claude/agyは各社別ベンダーのモデルを使うため『同じモデル名を共有する』ことはできない(claudeはAnthropic専用、agyはGoogle Gemini専用; omp/hermesはYAML設定で管理)。ここでの抽象化は『named profile(用途の呼び名)ごとに、各ツールが自分のvocabularyで対応するモデルを登録する』というマッピングであり、1箇所(current)を書き換えてagent/scripts/apply-settings-common.shを実行すれば各ツールへ伝播できる。",
+    "current": "baseline",
+    "profiles": {
+      "baseline": {
+        "description": "各ツールの実settings.json(hand-authored正典)に現在設定されている値を追認したbaseline profile(新規に選定した値ではない)。claude=sonnet・agy=gemini-4-hydrogen を使用しており、agent/scripts/test-settings-common.sh が実ファイルとの一致を検証する。",
+        "claude": {
+          "json_pointer": "/model",
+          "value": "sonnet"
+        },
+        "agy": {
+          "json_pointer": "/model",
+          "value": "gemini-4-hydrogen"
+        }
+      }
+    }
+  }
+}

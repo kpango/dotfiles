@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "ref": "arXiv:2609.20519",
+  "actionFusion": true,
+  "observationPack": true,
+  "evidencePreservingReducer": true,
+  "evidencePreservingReducerProvider": "opencode-go",
+  "evidencePreservingReducerModel": "deepseek-v4.1-flash",
+  "onlineContextCompact": false,
+  "pricingCliffAdvisory": true,
+  "cacheWriteReadRatio": 12.5,
+  "actionFusionConfig": {
+    "enabled": true,
+    "timeoutMs": 15000,
+    "defaultValidators": {
+      ".go": "go vet ./...",
+      ".rs": "cargo check --quiet",
+      ".nix": "nix-instantiate --parse",
+      ".sh": "bash -n",
+      ".json": "python3 -I -m json.tool",
+      ".py": "python3 -I -m py_compile"
+    }
+  },
+  "observationPackConfig": {
+    "enabled": true,
+    "minBytesThreshold": 10240,
+    "fullReplayTurns": 2,
+    "headLines": 20,
+    "tailLines": 15,
+    "archiveDir": "/tmp/omp-obs-pack"
+  },
+  "evidencePreservingReducerConfig": {
+    "enabled": true,
+    "minBytesThreshold": 4096,
+    "maxInputBytes": 65536,
+    "failClosedOnQuoteMismatch": true,
+    "verifyExitCode": true,
+    "redactSecrets": true
+  },
+  "onlineContextCompactConfig": {
+    "enabled": true,
+    "tokenPressureThreshold": 180000,
+    "respectPricingCliffs": true,
+    "compactOnSubtaskBoundary": true,
+    "warnRatio": 0.85
+  }
+}

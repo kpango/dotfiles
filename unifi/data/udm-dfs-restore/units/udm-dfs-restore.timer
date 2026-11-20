@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily DFS channel restore at 05:00 JST
+
+[Timer]
+OnCalendar=*-*-* 05:00:00 Asia/Tokyo
+Persistent=true
+Unit=udm-dfs-restore.service
+
+[Install]
+WantedBy=timers.target

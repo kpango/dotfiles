@@ -1,0 +1,15 @@
+[Unit]
+Description=Hermes Agent Multi-Profile Gateway Daemon
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/hermes gateway run
+Restart=on-failure
+RestartSec=5
+# One Environment= line only (validate-harness.sh parses this unit with a strict INI reader: no duplicate keys).
+# systemd user units do not read zshenv, so DO_NOT_TRACK / OPENCODE_DISABLE_FREE_MODELS mirror its exports.
+Environment="PATH=%h/.local/bin:%h/.bun/bin:/usr/local/bin:/usr/bin" "DO_NOT_TRACK=1" "OPENCODE_DISABLE_FREE_MODELS=1"
+
+[Install]
+WantedBy=default.target

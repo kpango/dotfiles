@@ -1,0 +1,25 @@
+name: perf
+role: Systems Performance, SIMD & ANN Benchmark Specialist
+tier: XHigh
+description: CPU/memory profiling (pprof, criterion, perf), AVX2/AVX-512 SIMD kernel verification, and ANN benchmark analysis (ArcFlare/NGT/NGTAQ).
+model:
+  provider: openai
+  default: gpt-6.2-astra
+  aliases:
+    ultrabrain: openai/gpt-6.2-astra
+    deep: anthropic/claude-opus-5-5
+    quick: opencode-go/deepseek-v4.1-flash
+    local: ollama/qwen2.5-coder:32b
+toolsets:
+  - file
+  - terminal
+  - web
+  - skills
+  - memory
+omh:
+  home: ~/.omh/profiles/perf
+  lsp_tools: true
+  dreaming_mode: off
+delegation:
+  - omp
+  - claude-code

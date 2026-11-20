@@ -1,0 +1,129 @@
+{
+  "$schema": "../../models/schema.json",
+  "harness": "agy",
+  "default_tier": "High",
+  "tiers": {
+    "Low": {
+      "model": "gemini-4-hydrogen",
+      "effort": "low",
+      "description": "Gemini 4 Hydrogen (Low) for rapid exploration and bulk survey",
+      "fallbacks": [
+        {
+          "model": "claude-haiku-5-5",
+          "effort": "low",
+          "compaction_threshold": 90000,
+          "trigger": "rate_limit",
+          "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction limit: 90,000 tokens)"
+        },
+        {
+          "model": "gpt-6.2-sol",
+          "effort": "low",
+          "compaction_threshold": 250000,
+          "trigger": "cost_saver",
+          "description": "GPT-6.2 Sol fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+        }
+      ]
+    },
+    "Medium": {
+      "model": "gemini-4-hydrogen",
+      "effort": "medium",
+      "description": "Gemini 4 Hydrogen (Medium) for fast structured synthesis and triage",
+      "fallbacks": [
+        {
+          "model": "gpt-6.2-sol",
+          "effort": "medium",
+          "compaction_threshold": 250000,
+          "trigger": "rate_limit",
+          "description": "GPT-6.2 Sol structured synthesis fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+        },
+        {
+          "model": "claude-haiku-5-5",
+          "effort": "medium",
+          "compaction_threshold": 90000,
+          "trigger": "token_exhaustion",
+          "description": "Claude Haiku 5.5 session extension fallback (Pricing Cliff auto-compaction limit: 90,000 tokens)"
+        }
+      ]
+    },
+    "High": {
+      "model": "claude-sonnet-5-5",
+      "effort": "high",
+      "description": "Claude Sonnet 5.5 for robust, high-performance Maker implementation in AGY",
+      "fallbacks": [
+        {
+          "model": "gemini-4-argon",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Google Gemini 4 Argon cross-provider Maker fallback"
+        },
+        {
+          "model": "gpt-6.2-sol",
+          "effort": "high",
+          "compaction_threshold": 250000,
+          "trigger": "token_exhaustion",
+          "description": "GPT-6.2 Sol cross-provider fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+        },
+        {
+          "model": "gemini-4-hydrogen",
+          "effort": "high",
+          "trigger": "cost_saver",
+          "description": "Gemini 4 Hydrogen cost-saving Maker fallback"
+        }
+      ]
+    },
+    "XHigh": {
+      "model": "gemini-4-argon",
+      "effort": "xhigh",
+      "description": "Gemini 4 Argon (XHigh) for cutting-edge invariant verification and auditing",
+      "fallbacks": [
+        {
+          "model": "gpt-6.2-astra",
+          "effort": "xhigh",
+          "compaction_threshold": 250000,
+          "trigger": "rate_limit",
+          "description": "Cross-provider independent verification fallback to GPT-6.2 Astra (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+        },
+        {
+          "model": "claude-opus-5-5",
+          "effort": "xhigh",
+          "trigger": "token_exhaustion",
+          "description": "Claude Opus 5.5 deep invariant verification fallback"
+        }
+      ]
+    },
+    "Max": {
+      "model": "claude-opus-5-5",
+      "effort": "max",
+      "description": "Claude Opus 5.5 (Max effort) for spot architectural diagnosis and deadlock breakthroughs",
+      "fallbacks": [
+        {
+          "model": "claude-fable-5-2",
+          "effort": "xhigh",
+          "trigger": "token_exhaustion",
+          "description": "Claude Fable 5.2 frontier architectural diagnosis fallback"
+        },
+        {
+          "model": "gpt-6.2-astra",
+          "effort": "xhigh",
+          "compaction_threshold": 250000,
+          "trigger": "rate_limit",
+          "description": "GPT-6.2 Astra cross-provider architectural diagnosis fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+        },
+        {
+          "model": "gemini-4-argon",
+          "effort": "max",
+          "trigger": "context_overflow",
+          "description": "Gemini 4 Argon large-context architectural diagnosis fallback"
+        }
+      ]
+    }
+  },
+  "routingPolicy": {
+    "openCodeGoQuotaGuard": {
+      "enabled": true,
+      "fiveHourMaxPct": 20,
+      "weeklyMaxPct": 50,
+      "highVolumeSubagentDefault": "opencode-go/deepseek-v4.1-flash"
+    }
+  }
+}
