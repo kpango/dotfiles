@@ -654,6 +654,8 @@ import {
   isBuildOrTestCommand,
   reduceAndArchive,
   resolveExitCode,
+  parseThenRun,
+  runThenRun,
 } from "./sol-pi-core";
 import { register, textSlots } from "../sol-pi";
 
@@ -913,22 +915,64 @@ describe("archive growth is bounded", () => {
 // ---------------------------------------------------------------------------
 // Extension wiring with a mock pi
 // ---------------------------------------------------------------------------
+type Handler = (e: any, c: any) => Promise<unknown>;
+
 function mockPi(cfg: ReturnType<typeof loadSolPiConfig>) {
-  const h: Record<string, (e: any, c: any) => Promise<void>> = {};
+  // pi allows several handlers per event; run them in registration order and keep the
+  // last non-undefined return (e.g. the reducer returns undefined, Action Fusion returns content).
+  const listeners: Record<string, Handler[]> = {};
   const cmds: Record<string, { handler: (a: string, c: any) => Promise<void> }> = {};
+  const tools: Record<string, any> = {};
+  const entries: { type: string; customType?: string; data?: unknown }[] = [];
   const pi = {
-    on: (n: string, f: (e: any, c: any) => Promise<void>) => void (h[n] = f),
+    on: (n: string, f: Handler) => void (listeners[n] ??= []).push(f),
     registerCommand: (n: string, d: { handler: (a: string, c: any) => Promise<void> }) => void (cmds[n] = d),
+    registerTool: (t: any) => void (tools[t.name] = t),
+    appendEntry: (customType: string, data: unknown) => void entries.push({ type: "custom", customType, data }),
   };
   register(pi as never, () => cfg);
+  const h: Record<string, Handler> = {};
+  for (const name of Object.keys(listeners)) {
+    h[name] = async (e: any, c: any) => {
+      let last: unknown;
+      for (const f of listeners[name]!) {
+        const r = await f(e, c);
+        if (r !== undefined) last = r;
+      }
+      return last;
+    };
+  }
   const notes: string[] = [];
-  const ctx = (cwd: string) => ({ cwd, ui: { notify: (m: string) => void notes.push(m) } });
-  return { h, cmds, notes, ctx };
+  const sessionDir = fs.mkdtempSync(path.join(tmp, "sess-"));
+  const compactCalls: { internalGuidance?: string }[] = [];
+  const ctx = (
+    cwd: string,
+    o: { usage?: { tokens: number; contextWindow: number }; branch?: { type: string; customType?: string; data?: unknown }[] } = {},
+  ) => {
+    const base: any = {
+      cwd,
+      ui: { notify: (m: string) => void notes.push(m) },
+      sessionManager: {
+        getSessionDir: () => sessionDir,
+        getSessionId: () => "test-session",
+        getBranch: () => o.branch ?? entries,
+      },
+      modelRegistry: { find: () => null, resolver: () => "test-key" },
+      compact: async (opts: { internalGuidance?: string }) => void compactCalls.push(opts),
+    };
+    if (o.usage) {
+      const u = o.usage;
+      base.getContextUsage = () => ({ ...u, percent: (u.tokens / u.contextWindow) * 100 });
+    }
+    return base;
+  };
+  return { h, cmds, tools, entries, notes, ctx, sessionDir, compactCalls };
 }
 let extN = 0;
 const extCfg = () => {
   const c = loadSolPiConfig();
   c.observationPackConfig.archiveDir = path.join(tmp, `ext-${extN++}`);
+  // Boundary compaction is opt-in (shipped flag is false); these tests exercise it.
   c.onlineContextCompactConfig.enabled = true;
   return c;
 };
@@ -937,6 +981,10 @@ const runCmd = async (m: ReturnType<typeof mockPi>, args: string, cwd: string) =
   await m.cmds["sol-pi"].handler(args, m.ctx(cwd));
   return m.notes.slice(before).join("\n");
 };
+const asMsg = (role: string, content: unknown, extra: Record<string, unknown> = {}) => ({ role, content, timestamp: 1, ...extra });
+const assistantMsg = (text = "ok") => asMsg("assistant", [{ type: "text", text }]);
+const toolResultMsg = (text: string, id = "call-1") =>
+  asMsg("toolResult", [{ type: "text", text }], { toolCallId: id, toolName: "bash" });
 
 describe("sol-pi.ts: textSlots", () => {
   test("covers string result, result.content parts, result.text and event.content", () => {
@@ -957,81 +1005,111 @@ describe("sol-pi.ts: textSlots", () => {
   });
 });
 
-describe("sol-pi.ts: tool_result rewriting", () => {
-  test("build/test bash output (string result) is reduced in place, with archive handle", async () => {
+describe("sol-pi.ts: ObservationPack projection", () => {
+  test("a large tool result becomes a placeholder once it has been replayed fullReplayTurns times", async () => {
     const cfg = extCfg();
     const m = mockPi(cfg);
-    const log = bigFail();
-    const ev: any = { toolName: "bash", input: { command: "go test ./..." }, exitCode: 1, result: log };
-    await m.h.tool_result(ev, m.ctx(tmp));
-    expect(ev.result).not.toBe(log);
-    expect(ev.result).toContain("exit code: 1");
-    expect(ev.result).toContain("--- FAIL: TestFoo");
-    expect(ev.result).toMatch(/\[raw log archived: #obs_[0-9a-f]{12} → /);
+    const raw = bigPlain();
+    const env: any = { messages: [toolResultMsg(raw), assistantMsg(), assistantMsg()] };
+    const res: any = await m.h.context(env, m.ctx(tmp));
+    const text = res.messages[0].content[0].text as string;
+    expect(text).toContain("[large tool result replaced after 2 provider requests");
+    expect(text).toMatch(/obs_[0-9a-f]{24}/);
+    // history keeps the raw text: only the projection is rewritten
+    expect(env.messages[0].content[0].text).toBe(raw);
     expect(fs.readdirSync(cfg.observationPackConfig.archiveDir).length).toBe(1);
-    expect(await runCmd(m, "pack-stats", tmp)).toContain("Reducer: 1 reduced");
+    expect(await runCmd(m, "stats", tmp)).toContain("1 packed");
   });
-  test("exit code is taken from result.exitCode", async () => {
-    const m = mockPi(extCfg());
-    const log = Array.from({ length: 300 }, (_, i) => `ok   pkg/p${i}\t0.01s`).join("\n");
-    const ev: any = { toolName: "bash", input: { command: "make" }, result: { content: [{ type: "text", text: log }], exitCode: 2 } };
-    await m.h.tool_result(ev, m.ctx(tmp));
-    expect(ev.result.content[0].text).toContain("exit code: 2");
+  test("inside the full-replay window the projection is untouched", async () => {
+    const cfg = extCfg();
+    const m = mockPi(cfg);
+    const raw = bigPlain();
+    const env: any = { messages: [toolResultMsg(raw), assistantMsg()] };
+    const res: any = await m.h.context(env, m.ctx(tmp));
+    expect(res).toBeUndefined();
+    expect(env.messages[0].content[0].text).toBe(raw);
+    expect(fs.existsSync(cfg.observationPackConfig.archiveDir)).toBe(false);
   });
-  test("missing exit code renders 'unknown' and fails closed (never '0')", async () => {
+  test("small results and evidence receipts are never packed", async () => {
     const m = mockPi(extCfg());
-    const log = Array.from({ length: 300 }, (_, i) => `ok   pkg/p${i}\t0.01s`).join("\n");
-    const ev: any = { toolName: "bash", input: { command: "make" }, result: log };
-    await m.h.tool_result(ev, m.ctx(tmp));
-    expect(ev.result).toContain("exit code: unknown");
-    expect(ev.result).not.toContain("exit code: 0");
-    expect(await runCmd(m, "pack-stats", tmp)).toContain("1 fail-closed");
-  });
-  test("tool name falls back to event.tool", async () => {
-    const m = mockPi(extCfg());
-    const ev: any = { tool: "bash", input: { command: "make" }, exitCode: 1, result: bigFail() };
-    await m.h.tool_result(ev, m.ctx(tmp));
-    expect(ev.result).toContain("exit code: 1");
-  });
-  test("a command that merely mentions make/go test is packed, not reduced", async () => {
-    const m = mockPi(extCfg());
-    for (const command of ["git log --grep make", "cat make.log", "grep go test notes.txt"]) {
-      const ev: any = { toolName: "bash", input: { command }, exitCode: 0, result: bigPlain() };
-      await m.h.tool_result(ev, m.ctx(tmp));
-      expect(ev.result).toBe(bigPlain()); // pack leaves the full text for fullReplayTurns
+    const receipt = `sol_pi_evidence_receipt_v1\n${"y".repeat(20000)}`;
+    for (const text of ["tiny", receipt]) {
+      const res: any = await m.h.context({ messages: [toolResultMsg(text), assistantMsg(), assistantMsg()] }, m.ctx(tmp));
+      expect(res).toBeUndefined();
     }
-    expect(await runCmd(m, "pack-stats", tmp)).toContain("3 packed");
-    expect(await runCmd(m, "pack-stats", tmp)).toContain("Reducer: 0 reduced");
   });
-  test("a shared content array is processed once (one archive, one stat)", async () => {
+  test("packing the same id twice reuses the archive file", async () => {
     const cfg = extCfg();
     const m = mockPi(cfg);
-    const arr = [{ type: "text", text: bigPlain() }];
-    const ev: any = { toolName: "read", input: {}, result: { content: arr }, content: arr };
-    await m.h.tool_result(ev, m.ctx(tmp));
+    const raw = bigPlain();
+    for (let i = 0; i < 2; i++) {
+      await m.h.context({ messages: [toolResultMsg(raw), assistantMsg(), assistantMsg()] }, m.ctx(tmp));
+    }
     expect(fs.readdirSync(cfg.observationPackConfig.archiveDir).length).toBe(1);
-    expect(await runCmd(m, "pack-stats", tmp)).toContain("1 packed");
   });
-  test("small outputs are untouched", async () => {
+  test("obs_recall pages the archived observation", async () => {
     const m = mockPi(extCfg());
-    const ev: any = { toolName: "read", input: {}, result: "tiny" };
-    await m.h.tool_result(ev, m.ctx(tmp));
-    expect(ev.result).toBe("tiny");
+    const raw = bigPlain();
+    const res: any = await m.h.context({ messages: [toolResultMsg(raw), assistantMsg(), assistantMsg()] }, m.ctx(tmp));
+    const id = /obs_[0-9a-f]{24}/.exec(res.messages[0].content[0].text)![0];
+    const out: any = await m.tools.obs_recall.execute("c1", { id, offset: 1, limit: 5 }, undefined, undefined, m.ctx(tmp));
+    const text = out.content[0].text as string;
+    expect(text).toContain(`obs ${id}: lines 1-5`);
+    expect(text).toContain("row 0 ");
+    expect(text).toContain("more lines available");
   });
 });
 
-describe("sol-pi.ts: fullReplayTurns downgrade at turn_end", () => {
-  test("full text for 2 turns, then the compact handle replaces it in place", async () => {
+describe("sol-pi.ts: Evidence-Preserving Reducer wiring", () => {
+  test("tags the reducer output with the deterministic excerpt when no provider is configured", async () => {
     const m = mockPi(extCfg());
-    const text = bigPlain();
-    const ev: any = { toolName: "read", input: {}, result: text };
+    const raw = bigFail();
+    const ev: any = { toolName: "bash", input: { command: "go test ./..." }, exitCode: 1, result: raw };
     await m.h.tool_result(ev, m.ctx(tmp));
-    expect(ev.result).toBe(text);
-    await m.h.turn_end({ message: {} }, m.ctx(tmp));
-    expect(ev.result).toBe(text);
-    await m.h.turn_end({ message: {} }, m.ctx(tmp));
-    expect(ev.result).not.toBe(text);
-    expect(ev.result).toMatch(/^\[#obs_[0-9a-f]{12}\] read output packed/);
+    expect(ev.result).toBe(raw); // untouched: reduction needs a provider, never silently lost
+  });
+  test("a build/test log is deterministically reduced when the provider call fails", async () => {
+    const cfg = extCfg();
+    const m = mockPi(cfg);
+    const raw = bigFail();
+    const ev: any = { toolName: "bash", input: { command: "go test ./..." }, exitCode: 1, result: raw };
+    const c: any = m.ctx(tmp);
+    c.modelRegistry.find = () => ({ id: "fake" }); // forces the provider path (the test stub fails)
+    await m.h.tool_result(ev, c);
+    expect(ev.result).not.toBe(raw);
+    expect(ev.result).toContain("exit code: 1");
+    expect(ev.result).toContain("--- FAIL: TestFoo");
+    expect(ev.result).toMatch(/\[raw log archived: #obs_[0-9a-f]{12} → /);
+    expect(m.notes.join("\n")).toContain("provider reduction failed");
+    expect(await runCmd(m, "stats", tmp)).toContain("1 fallbacks");
+  });
+  test("non-build commands and small logs are untouched", async () => {
+    const m = mockPi(extCfg());
+    for (const ev of [
+      { toolName: "bash", input: { command: "cat make.log" }, exitCode: 0, result: bigFail() },
+      { toolName: "bash", input: { command: "go test" }, exitCode: 1, result: "tiny" },
+      { toolName: "read", input: {}, exitCode: 1, result: bigFail() },
+    ]) {
+      const before = JSON.stringify(ev.result);
+      await m.h.tool_result(ev as any, m.ctx(tmp));
+      expect(JSON.stringify(ev.result)).toBe(before);
+    }
+    expect(await runCmd(m, "stats", tmp)).toContain("Reducer: 0 applied");
+  });
+  test("a failed archive leaves the output untouched and says 'reducer'", async () => {
+    const real = fs.mkdtempSync(path.join(tmp, "unsafe-real-"));
+    const link = path.join(tmp, `unsafe-link-${extN++}`);
+    fs.symlinkSync(real, link);
+    const cfg = extCfg();
+    cfg.observationPackConfig.archiveDir = link;
+    const m = mockPi(cfg);
+    const raw = bigFail();
+    const ev: any = { toolName: "bash", input: { command: "go test" }, exitCode: 1, result: raw };
+    const c: any = m.ctx(tmp);
+    c.modelRegistry.find = () => ({ id: "fake" });
+    await m.h.tool_result(ev, c);
+    expect(ev.result).toBe(raw);
+    expect(m.notes.join("\n")).toContain("reducer");
   });
 });
 
@@ -1039,39 +1117,144 @@ describe("sol-pi.ts: turn_end token accounting / session_start", () => {
   const usage = (u: object, model = "anthropic/claude-haiku-5-5") => ({ message: { model, usage: u } });
   test("cache write tokens are counted (input + cache read + cache write)", async () => {
     const m = mockPi(extCfg());
-    await m.h.turn_end(usage({ inputTokens: 40000, cacheReadInputTokens: 30000 }), m.ctx(tmp));
+    await m.h.turn_end(usage({ input: 40000, cacheRead: 30000 }), m.ctx(tmp));
     expect(m.notes.join("\n")).not.toContain("Pricing Cliff reached");
-    await m.h.turn_end(usage({ inputTokens: 40000, cacheReadInputTokens: 30000, cacheCreationInputTokens: 25000 }), m.ctx(tmp));
+    await m.h.turn_end(usage({ input: 40000, cacheRead: 30000, cacheWrite: 25000 }), m.ctx(tmp));
     expect(m.notes.join("\n")).toContain("Pricing Cliff reached for anthropic/claude-haiku-5-5: 95000 >= 90000");
   });
-  test("alternative usage field names are summed too", async () => {
+  test("totalTokens is used when the buckets are absent", async () => {
     const m = mockPi(extCfg());
-    await m.h.turn_end(usage({ promptTokens: 40000, cacheReadTokens: 30000, cacheWriteTokens: 25000 }), m.ctx(tmp));
+    await m.h.turn_end(usage({ totalTokens: 95000 }), m.ctx(tmp));
     expect(m.notes.join("\n")).toContain("95000 >= 90000");
   });
   test("warn level at 85% and no auto action", async () => {
     const m = mockPi(extCfg());
-    await m.h.turn_end(usage({ inputTokens: 80000 }), m.ctx(tmp));
+    await m.h.turn_end(usage({ input: 80000 }), m.ctx(tmp));
     expect(m.notes.join("\n")).toContain("Approaching Pricing Cliff");
   });
-  test("disabled online compaction stays silent", async () => {
+  test("the advisory kill switch silences the notice", async () => {
     const cfg = extCfg();
     cfg.pricingCliffAdvisoryConfig.enabled = false;
     const m = mockPi(cfg);
-    await m.h.turn_end(usage({ inputTokens: 200000 }), m.ctx(tmp));
+    await m.h.turn_end(usage({ input: 200000 }), m.ctx(tmp));
     expect(m.notes.length).toBe(0);
   });
-  test("session_start resets counters, turn, pending and the last advice", async () => {
+  test("session_start resets counters, stats and the last advice", async () => {
     const m = mockPi(extCfg());
-    await m.h.tool_result({ toolName: "read", input: {}, result: bigPlain() }, m.ctx(tmp));
-    await m.h.turn_end(usage({ inputTokens: 95000 }), m.ctx(tmp));
-    expect(await runCmd(m, "pack-stats", tmp)).toContain("1 packed");
+    await m.h.context({ messages: [toolResultMsg(bigPlain()), assistantMsg(), assistantMsg()] }, m.ctx(tmp));
+    await m.h.turn_end(usage({ input: 95000 }), m.ctx(tmp));
+    expect(await runCmd(m, "stats", tmp)).toContain("1 packed");
     expect(await runCmd(m, "status", tmp)).toContain("Pricing Cliff reached");
     await m.h.session_start({}, m.ctx(tmp));
-    expect(await runCmd(m, "pack-stats", tmp)).toContain("0 packed");
+    expect(await runCmd(m, "stats", tmp)).toContain("0 packed");
     const st = await runCmd(m, "status", tmp);
     expect(st).not.toContain("Pricing Cliff");
-    expect(st).toContain("Turn: 0");
+    expect(st).toContain("Plan: 0 steps");
+  });
+});
+
+describe("sol-pi.ts: plan state and correction tracking", () => {
+  test("update_plan normalizes, keeps completed steps terminal and returns diagnostics", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const step = m.tools.update_plan;
+    const first: any = await step.execute("c1", { plan: [{ step: "wire the projection", status: "completed" }, { step: "add tests", status: "in_progress" }] }, undefined, undefined, m.ctx(tmp));
+    expect(first.content[0].text).toContain("[x] wire the projection");
+    const second: any = await step.execute("c2", { plan: [{ step: "wire the projection", status: "pending" }, { step: "add tests", status: "completed" }] }, undefined, undefined, m.ctx(tmp));
+    expect(second.content[0].text).toContain("cannot reopen a completed step");
+    expect(second.content[0].text).toContain("[x] wire the projection");
+    expect(m.entries.some((e) => e.customType === "sol_pi_online_state")).toBe(true);
+  });
+  test("the active plan is appended to the system prompt; no plan -> no replacement", async () => {
+    const m = mockPi(extCfg());
+    const empty: any = await m.h.before_agent_start({ systemPrompt: ["base"] }, m.ctx(tmp));
+    expect(empty).toBeUndefined();
+    await m.tools.update_plan.execute("c1", { plan: [{ step: "wire the projection", status: "in_progress" }] }, undefined, undefined, m.ctx(tmp));
+    const res: any = await m.h.before_agent_start({ systemPrompt: ["base"] }, m.ctx(tmp));
+    expect(res.systemPrompt.length).toBe(2);
+    expect(res.systemPrompt[0]).toBe("base");
+    expect(res.systemPrompt[1]).toContain("[>] wire the projection");
+  });
+  test("plan state survives a session restart (loaded from the branch)", async () => {
+    const first = mockPi(extCfg());
+    await first.h.session_start({}, first.ctx(tmp));
+    await first.tools.update_plan.execute("c1", { plan: [{ step: "kept across restart", status: "in_progress" }] }, undefined, undefined, first.ctx(tmp));
+    const cfg = extCfg();
+    const second = mockPi(cfg);
+    const branch = first.entries.map((e) => ({ ...e }));
+    await second.h.session_start({}, second.ctx(tmp, { branch }));
+    expect(await runCmd(second, "status", tmp)).toContain("Plan: 1 steps");
+  });
+  test("a correction in user input is counted", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    await m.h.input({ text: "違う、そうではなく agent/v1 の方針で", source: "interactive" }, m.ctx(tmp));
+    await m.h.input({ text: "continue", source: "interactive" }, m.ctx(tmp));
+    await m.h.input({ text: "that's wrong", source: "rpc" }, m.ctx(tmp));
+    expect(await runCmd(m, "status", tmp)).toContain("corrections 1");
+  });
+});
+
+describe("sol-pi.ts: boundary compaction", () => {
+  const bigMessages = () =>
+    Array.from({ length: 100 }, (_, i) => assistantMsg(`step ${i} ${"x".repeat(8000)}`));
+  const usageTurn = (output: number) => ({ message: { model: "anthropic/claude-haiku-5-5", usage: { output, input: 100000 } } });
+  test("compacts once at a terminal agent_end when the request budget is low and the archive is large", async () => {
+    const cfg = extCfg();
+    const m = mockPi(cfg);
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    await m.h.turn_end(usageTurn(1000), c);
+    await m.h.turn_end(usageTurn(1000), c);
+    await m.h.agent_end({ willContinue: false, awaitingAsyncWork: false }, c);
+    expect(m.compactCalls.length).toBe(1);
+    expect(m.compactCalls[0].internalGuidance).toContain("obs_");
+    expect(await runCmd(m, "status", tmp)).toContain("done 1, pending false");
+  });
+  test("a continuing turn (willContinue / awaitingAsyncWork) is never compacted", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    await m.h.turn_end(usageTurn(1000), c);
+    await m.h.turn_end(usageTurn(1000), c);
+    await m.h.agent_end({ willContinue: true }, c);
+    await m.h.agent_end({ awaitingAsyncWork: true }, c);
+    expect(m.compactCalls.length).toBe(0);
+  });
+  test("compactOnSubtaskBoundary=false defers compaction from agent_end", async () => {
+    const cfg = extCfg();
+    cfg.onlineContextCompactConfig.compactOnSubtaskBoundary = false;
+    const m = mockPi(cfg);
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    await m.h.turn_end(usageTurn(1000), c);
+    await m.h.turn_end(usageTurn(1000), c);
+    await m.h.agent_end({ willContinue: false }, c);
+    expect(m.compactCalls.length).toBe(0);
+    await m.h.session_stop({}, c);
+    expect(m.compactCalls.length).toBe(1);
+  });
+  test("an unneeded native compaction is cancelled; the pending one is allowed", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const roomy = m.ctx(tmp, { usage: { tokens: 50000, contextWindow: 200000 } });
+    expect(await m.h.session_before_compact({}, roomy)).toEqual({ cancel: true });
+    const full = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    expect(await m.h.session_before_compact({}, full)).toBeUndefined();
+  });
+  test("a disabled policy never compacts", async () => {
+    const cfg = extCfg();
+    cfg.onlineContextCompactConfig.enabled = false;
+    const m = mockPi(cfg);
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 199000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    await m.h.turn_end(usageTurn(1000), c);
+    await m.h.agent_end({ willContinue: false }, c);
+    expect(m.compactCalls.length).toBe(0);
   });
 });
 
@@ -1158,32 +1341,17 @@ describe("sol-pi.ts: Action Fusion wiring", () => {
     await m.h.tool_result({ toolName: "write", input: { path: "loop.json" }, result: "ok" }, m.ctx(d));
     expect(await runCmd(m, "verify", d)).toContain("error");
   });
-});
-
-describe("sol-pi.ts: error notifications name their source and are never swallowed", () => {
-  const unsafeCfg = () => {
-    const real = fs.mkdtempSync(path.join(tmp, "unsafe-real-"));
-    const link = path.join(tmp, `unsafe-link-${extN++}`);
-    fs.symlinkSync(real, link);
-    const c = extCfg();
-    c.observationPackConfig.archiveDir = link;
-    return c;
-  };
-  test("reducer failure: says 'reducer', leaves the output untouched", async () => {
-    const m = mockPi(unsafeCfg());
-    const log = bigFail();
-    const ev: any = { toolName: "bash", input: { command: "go test" }, exitCode: 1, result: log };
-    await m.h.tool_result(ev, m.ctx(tmp));
-    expect(ev.result).toBe(log);
-    expect(m.notes.join("\n")).toContain("reducer could not archive");
-    expect(m.notes.join("\n")).not.toContain("observation pack skipped");
-  });
-  test("pack failure: says 'observation pack', and repeats on later errors", async () => {
-    const m = mockPi(unsafeCfg());
-    for (let i = 0; i < 3; i++) await m.h.tool_result({ toolName: "read", input: {}, result: bigPlain() }, m.ctx(tmp));
-    const n = m.notes.filter((x) => x.includes("observation pack skipped")).length;
-    expect(n).toBe(3);
-    expect(m.notes.join("\n")).not.toContain("reducer");
+  test("a failed validator result is fused into the tool result (barrier)", async () => {
+    const d = mkdir("fx7-");
+    fs.writeFileSync(path.join(d, "bad.json"), "{oops");
+    const m = mockPi(extCfg());
+    const res: any = await m.h.tool_result(
+      { toolName: "write", input: { path: "bad.json" }, result: { content: [{ type: "text", text: "ok" }] } },
+      m.ctx(d),
+    );
+    const texts = res.content.map((p: any) => p.text).join("\n");
+    expect(texts).toContain("action-fusion-validation-failed");
+    expect(texts).toContain("bad.json");
   });
 });
 
@@ -1615,7 +1783,7 @@ describe("Pricing Cliff advisory has its own flag (onlineContextCompact kill swi
     expect(cfg.pricingCliffAdvisoryConfig.enabled).toBe(true);
     cfg.observationPackConfig.archiveDir = path.join(tmp, `ext-${extN++}`);
     const m = mockPi(cfg);
-    await m.h.turn_end({ message: { model: "anthropic/claude-haiku-5-5", usage: { inputTokens: 95000 } } }, m.ctx(tmp));
+    await m.h.turn_end({ message: { model: "anthropic/claude-haiku-5-5", usage: { input: 95000 } } }, m.ctx(tmp));
     expect(m.notes.join("\n")).toContain("Pricing Cliff reached");
   });
 });
@@ -1849,5 +2017,132 @@ describe("Action Fusion: build-class validators run without network (unshare -rn
     } finally {
       srv.stop(true);
     }
+  });
+});
+
+// ===========================================================================
+// Action Fusion: then_run (fused follow-up command)
+// ===========================================================================
+describe("then_run core", () => {
+  const mkFile = (name: string, body = "package x\n") => {
+    const d = fs.mkdtempSync(path.join(tmp, "thenrun-"));
+    const f = path.join(d, name);
+    fs.writeFileSync(f, body);
+    return { d, f };
+  };
+  test("parseThenRun accepts a string and { command, timeout }, rejects blanks", () => {
+    expect(parseThenRun("  go test ./...  ")).toEqual({ command: "go test ./..." });
+    expect(parseThenRun({ command: "make", timeout: 5 })).toEqual({ command: "make", timeout: 5 });
+    expect(parseThenRun({ command: "make", timeout: -1 })).toEqual({ command: "make" });
+    expect(parseThenRun("   ")).toBeUndefined();
+    expect(parseThenRun({})).toBeUndefined();
+    expect(parseThenRun(42)).toBeUndefined();
+  });
+  test("a successful command reports [then_run:succeeded] with its output", async () => {
+    const { d } = mkFile("a.go");
+    const r = await runThenRun({ filePath: path.join(d, "a.go"), cwd: d, spec: { command: "echo fused-ok" } });
+    expect(r.status).toBe("succeeded");
+    expect(r.marker).toBe("[then_run:succeeded]");
+    expect(r.output).toContain("fused-ok");
+  });
+  test("a failing command reports [then_run:failed] with the exit code and output", async () => {
+    const { d, f } = mkFile("b.go");
+    const r = await runThenRun({ filePath: f, cwd: d, spec: { command: "echo boom; exit 3" } });
+    expect(r.status).toBe("failed");
+    expect(r.marker).toBe("[then_run:failed]");
+    expect(r.exitCode).toBe(3);
+    expect(r.output).toContain("boom");
+  });
+  test("a changed file between mutation and command skips the command", async () => {
+    const { d, f } = mkFile("c.go");
+    const log = path.join(d, "ran.log");
+    const r = await runThenRun({
+      filePath: f,
+      cwd: d,
+      spec: { command: `echo ran >> ${JSON.stringify(log)}` },
+      beforeCommand: async () => void fs.writeFileSync(f, "package y\n// mutated elsewhere\n"),
+    });
+    expect(r.status).toBe("skipped");
+    expect(r.marker).toBe("[then_run:skipped]");
+    expect(fs.existsSync(log)).toBe(false);
+  });
+  test("fused operations on the same file are serialized (no interleaving)", async () => {
+    const { d, f } = mkFile("d.go");
+    const log = path.join(d, "order.log");
+    const cmd = `echo start >> ${JSON.stringify(log)}; sleep 0.15; echo end >> ${JSON.stringify(log)}`;
+    await Promise.all([
+      runThenRun({ filePath: f, cwd: d, spec: { command: cmd } }),
+      runThenRun({ filePath: f, cwd: d, spec: { command: cmd } }),
+    ]);
+    expect(fs.readFileSync(log, "utf-8").trim().split("\n")).toEqual(["start", "end", "start", "end"]);
+  });
+  test("a timeout is reported as failed with the timeout marker", async () => {
+    const { d, f } = mkFile("e.go");
+    const r = await runThenRun({ filePath: f, cwd: d, spec: { command: "sleep 5", timeout: 1 }, timeoutMs: 1000 });
+    expect(r.status).toBe("failed");
+    expect(r.timedOut).toBe(true);
+  });
+  test("output is capped at maxOutputChars", async () => {
+    const { d, f } = mkFile("f.go");
+    const r = await runThenRun({ filePath: f, cwd: d, spec: { command: "seq 1 2000" }, maxOutputChars: 100 });
+    expect(r.status).toBe("succeeded");
+    expect(r.output.length).toBeLessThan(200);
+    expect(r.output).toContain("truncated");
+  });
+});
+
+describe("sol-pi.ts: then_run wiring", () => {
+  const writeFile = (d: string, name: string) => {
+    const f = path.join(d, name);
+    fs.writeFileSync(f, "package x\n");
+    return f;
+  };
+  const editEvent = (file: string, thenRun: unknown, extra: Record<string, unknown> = {}) => ({
+    toolName: "edit",
+    input: { path: file, ...(thenRun === undefined ? {} : { then_run: thenRun }) },
+    toolCallId: "call-then",
+    ...extra,
+  });
+  const merged = (res: any) =>
+    [res?.content ?? []].flat().filter((p: any) => p?.type === "text").map((p: any) => p.text).join("\n");
+
+  test("edit + then_run: command runs, marker and output follow the edit result", async () => {
+    const m = mockPi(extCfg());
+    const d = fs.mkdtempSync(path.join(tmp, "trw-"));
+    const f = writeFile(d, "ok.json");
+    const ev: any = editEvent(f, "echo fused-ok", { content: [{ type: "text", text: "edit applied" }] });
+    const res = await m.h.tool_result(ev, m.ctx(d));
+    const text = merged(res);
+    expect(text).toContain("edit applied");
+    expect(text).toContain("[then_run:succeeded]");
+    expect(text).toContain("fused-ok");
+  });
+  test("a failing command keeps the edit result and marks [then_run:failed]", async () => {
+    const m = mockPi(extCfg());
+    const d = fs.mkdtempSync(path.join(tmp, "trw-"));
+    const f = writeFile(d, "fail.json");
+    const ev: any = editEvent(f, { command: "echo nope; exit 7" }, { content: [{ type: "text", text: "edit applied" }] });
+    const text = merged(await m.h.tool_result(ev, m.ctx(d)));
+    expect(text).toContain("edit applied");
+    expect(text).toContain("[then_run:failed] (exit code 7)");
+  });
+  test("a failed mutation skips the command ([then_run:skipped], nothing runs)", async () => {
+    const m = mockPi(extCfg());
+    const d = fs.mkdtempSync(path.join(tmp, "trw-"));
+    const f = writeFile(d, "skip.json");
+    const log = path.join(d, "ran.log");
+    const ev: any = editEvent(f, `echo ran >> ${JSON.stringify(log)}`, { isError: true, content: [{ type: "text", text: "edit failed" }] });
+    const text = merged(await m.h.tool_result(ev, m.ctx(d)));
+    expect(text).toContain("[then_run:skipped]");
+    expect(fs.existsSync(log)).toBe(false);
+  });
+  test("then_run is inert when actionFusion.thenRun.enabled is false", async () => {
+    const cfg = extCfg();
+    cfg.actionFusionConfig.thenRun.enabled = false;
+    const m = mockPi(cfg);
+    const d = fs.mkdtempSync(path.join(tmp, "trw-"));
+    const f = writeFile(d, "off.json");
+    const text = merged(await m.h.tool_result(editEvent(f, "echo fused-ok", { content: [{ type: "text", text: "edit applied" }] }), m.ctx(d)));
+    expect(text).not.toContain("[then_run:");
   });
 });

@@ -43,6 +43,9 @@ function harness(modelProvider: string, modelId: string): Harness {
     {
       on: (n: string, fn: any) => void (h.handlers[n] ??= []).push(fn),
       registerCommand: (n: string, d: any) => void (h.commands[n] = d),
+      // Tool registration is not a side effect (no model/compaction mutation): keep it
+      // out of the sideEffects recorder so ob_recall / online_plan registration stays inert.
+      registerTool: (_t: any) => void 0,
     },
     {
       get(t: any, k: string) {

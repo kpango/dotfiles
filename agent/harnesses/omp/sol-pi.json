@@ -12,6 +12,7 @@
   "actionFusionConfig": {
     "enabled": true,
     "timeoutMs": 15000,
+    "barrier": true,
     "defaultValidators": {
       ".go": "go vet ./...",
       ".rs": "cargo check --quiet",
@@ -19,6 +20,11 @@
       ".sh": "bash -n",
       ".json": "python3 -I -m json.tool",
       ".py": "python3 -I -m py_compile"
+    },
+    "thenRun": {
+      "enabled": true,
+      "timeoutSec": 120,
+      "maxOutputChars": 4000
     }
   },
   "observationPackConfig": {
@@ -27,12 +33,25 @@
     "fullReplayTurns": 2,
     "headLines": 20,
     "tailLines": 15,
-    "archiveDir": "/tmp/omp-obs-pack"
+    "archiveDir": "/tmp/omp-obs-pack",
+    "maxArchiveFiles": 200,
+    "maxArchiveBytes": 67108864,
+    "recallMaxBytes": 16384,
+    "recallMaxLines": 200
   },
   "evidencePreservingReducerConfig": {
     "enabled": true,
+    "provider": "opencode-go",
+    "model": "deepseek-v4.1-flash",
     "minBytesThreshold": 4096,
     "maxInputBytes": 65536,
+    "maxFindings": 12,
+    "maxEvidence": 12,
+    "maxProviderChars": 200000,
+    "timeoutMs": 120000,
+    "maxCallsPerSession": 12,
+    "cacheEntries": 64,
+    "minAcceptedRatio": 0.5,
     "failClosedOnQuoteMismatch": true,
     "verifyExitCode": true,
     "redactSecrets": true
@@ -42,6 +61,11 @@
     "tokenPressureThreshold": 180000,
     "respectPricingCliffs": true,
     "compactOnSubtaskBoundary": true,
-    "warnRatio": 0.85
+    "warnRatio": 0.85,
+    "remainingRequestsTrigger": 6,
+    "minArchiveTokens": 16384,
+    "keepRecentTokens": 20000,
+    "outputReserveTokens": 8192,
+    "maxCompactionsPerSession": 3
   }
 }

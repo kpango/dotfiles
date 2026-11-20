@@ -33,7 +33,15 @@ export interface SolPiConfig {
   actionFusionConfig: {
     enabled: boolean;
     timeoutMs: number;
+    /** Also (re)validate every edited file before the edit result reaches the model (barrier). */
+    barrier: boolean;
     defaultValidators: Record<string, string>;
+    /** Fused follow-up command supplied through the edit/write call's `then_run` input. */
+    thenRun: {
+      enabled: boolean;
+      timeoutSec: number;
+      maxOutputChars: number;
+    };
   };
   /** Kill switch for Pricing Cliff advisories/detectors only (toast, badge, failover advice, pricing_cliff detector). */
   pricingCliffAdvisoryConfig: {
@@ -41,18 +49,41 @@ export interface SolPiConfig {
   };
   observationPackConfig: {
     enabled: boolean;
+    /** Result text at or above this size is packed (replaced by a placeholder) after fullReplayTurns. */
     minBytesThreshold: number;
+    /** Number of provider requests that still see the full text (upstream FULL_SENDS). */
     fullReplayTurns: number;
+    /** Lines the deterministic excerpt keeps (still used by the reducer fallback). */
     headLines: number;
     tailLines: number;
+    /** "" = per-session directory under the session dir; "/tmp/omp-obs-pack" (legacy) = runtime dir. */
     archiveDir: string;
     maxArchiveFiles: number;
     maxArchiveBytes: number;
+    /** obs_recall page cap: bytes returned per call (64 KiB max). */
+    recallMaxBytes: number;
+    /** obs_recall page cap: lines returned per call (400 max). */
+    recallMaxLines: number;
   };
   evidencePreservingReducerConfig: {
     enabled: boolean;
+    /** Provider id accepted by the model registry (e.g. "anthropic"); empty = disabled. */
+    provider: string;
+    /** Model id within that provider (e.g. "claude-sonnet-5-5"); empty = disabled. */
+    model: string;
     minBytesThreshold: number;
     maxInputBytes: number;
+    /** Receipt caps. */
+    maxFindings: number;
+    maxEvidence: number;
+    /** Raw-log chars sent to the provider (head+tail kept). */
+    maxProviderChars: number;
+    timeoutMs: number;
+    maxCallsPerSession: number;
+    /** Rejected/verified receipts remembered per session (toolCallId keyed). */
+    cacheEntries: number;
+    /** Minimum archiveBytes/receiptBytes saving ratio accepted as a reduction. */
+    minAcceptedRatio: number;
     failClosedOnQuoteMismatch: boolean;
     verifyExitCode: boolean;
     redactSecrets: boolean;
@@ -62,6 +93,15 @@ export interface SolPiConfig {
     tokenPressureThreshold: number;
     respectPricingCliffs: boolean;
     warnRatio: number;
+    /** Compaction policy (upstream online-context-compact). */
+    remainingRequestsTrigger: number;
+    minArchiveTokens: number;
+    keepRecentTokens: number;
+    outputReserveTokens: number;
+    /** 0 = unlimited. */
+    maxCompactionsPerSession: number;
+    /** Compact at a subagent (task tool) completion boundary, not only at run end. */
+    compactOnSubtaskBoundary: boolean;
   };
 }
 
@@ -73,6 +113,8 @@ export const DEFAULT_CONFIG: SolPiConfig = {
   actionFusionConfig: {
     enabled: true,
     timeoutMs: 15000,
+    barrier: true,
+    thenRun: { enabled: true, timeoutSec: 120, maxOutputChars: 4000 },
     defaultValidators: {
       ".go": "go vet ./...",
       ".rs": "cargo check --quiet",
@@ -91,14 +133,25 @@ export const DEFAULT_CONFIG: SolPiConfig = {
     fullReplayTurns: 2,
     headLines: 20,
     tailLines: 15,
-    archiveDir: LEGACY_ARCHIVE_DIR,
+    archiveDir: "",
     maxArchiveFiles: 200,
     maxArchiveBytes: 64 * 1024 * 1024,
+    recallMaxBytes: 16384,
+    recallMaxLines: 200,
   },
   evidencePreservingReducerConfig: {
     enabled: true,
+    provider: "anthropic",
+    model: "claude-sonnet-5-5",
     minBytesThreshold: 4096,
     maxInputBytes: 65536,
+    maxFindings: 12,
+    maxEvidence: 12,
+    maxProviderChars: 200000,
+    timeoutMs: 120000,
+    maxCallsPerSession: 12,
+    cacheEntries: 64,
+    minAcceptedRatio: 0.5,
     failClosedOnQuoteMismatch: true,
     verifyExitCode: true,
     redactSecrets: true,
@@ -108,6 +161,12 @@ export const DEFAULT_CONFIG: SolPiConfig = {
     tokenPressureThreshold: 180000,
     respectPricingCliffs: true,
     warnRatio: 0.85,
+    remainingRequestsTrigger: 6,
+    minArchiveTokens: 16384,
+    keepRecentTokens: 20000,
+    outputReserveTokens: 8192,
+    maxCompactionsPerSession: 3,
+    compactOnSubtaskBoundary: true,
   },
 };
 
@@ -645,6 +704,137 @@ export async function runActionFusionValidator(
   return { ran: true, ok: r.status === 0, command: argv, output };
 }
 
+// ---------------------------------------------------------------------------
+// Action Fusion: then_run (fused follow-up command)
+//
+// Upstream declares `then_run` on its own mutation tools; OMP's edit/write are
+// built in, so the same contract is read from the tool call input. Both the
+// mutation's completion and the command run inside one queue slot per canonical
+// file path, and the file must be untouched between them (hash guard).
+// ---------------------------------------------------------------------------
+export const THEN_RUN_SUCCEEDED = "[then_run:succeeded]";
+export const THEN_RUN_FAILED = "[then_run:failed]";
+export const THEN_RUN_SKIPPED = "[then_run:skipped]";
+
+export interface ThenRunSpec {
+  command: string;
+  timeout?: number;
+}
+
+export interface ThenRunResult {
+  status: "succeeded" | "failed" | "skipped";
+  marker: string;
+  output: string;
+  exitCode?: number;
+  timedOut?: boolean;
+}
+
+/** Accepts a shell string or `{ command, timeout }`; anything else (or blank) is ignored. */
+export function parseThenRun(input: unknown): ThenRunSpec | undefined {
+  if (typeof input === "string") {
+    const command = input.trim();
+    return command ? { command } : undefined;
+  }
+  if (isObj(input)) {
+    const command = typeof input.command === "string" ? input.command.trim() : "";
+    if (!command) return undefined;
+    const timeout = typeof input.timeout === "number" && Number.isFinite(input.timeout) && input.timeout > 0 ? input.timeout : undefined;
+    return { command, timeout };
+  }
+  return undefined;
+}
+
+/** Per-file serialization: queue tails keyed by the canonical (symlink-resolved) path. */
+const fusedQueueTails = new Map<string, Promise<void>>();
+
+export function canonicalFusedPath(filePath: string): string {
+  const resolved = path.resolve(filePath);
+  let current = resolved;
+  const missing: string[] = [];
+  for (;;) {
+    try {
+      return path.resolve(fs.realpathSync(current), ...missing);
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code !== "ENOENT" && (e as NodeJS.ErrnoException).code !== "ENOTDIR") return resolved;
+      const parent = path.dirname(current);
+      if (parent === current) return resolved;
+      missing.unshift(path.basename(current));
+      current = parent;
+    }
+  }
+}
+
+/** Run `work` after every earlier fused operation on the same file has settled. */
+export async function withFusedFileQueue<T>(filePath: string, work: () => Promise<T>): Promise<T> {
+  const key = canonicalFusedPath(filePath);
+  const previous = fusedQueueTails.get(key) ?? Promise.resolve();
+  let release!: () => void;
+  const owned = new Promise<void>((r) => (release = r));
+  const tail = previous.then(() => owned);
+  fusedQueueTails.set(key, tail);
+  await previous;
+  try {
+    return await work();
+  } finally {
+    release();
+    if (fusedQueueTails.get(key) === tail) fusedQueueTails.delete(key);
+  }
+}
+
+export interface ThenRunOptions {
+  /** Absolute path of the file the mutation wrote (already resolved by the caller). */
+  filePath: string;
+  cwd: string;
+  spec: ThenRunSpec;
+  /** Hard cap for this command; the spec's own timeout wins when it is smaller. */
+  timeoutMs?: number;
+  maxOutputChars?: number;
+  /** Test seam: runs between the mutation hash and the command (default yields one tick). */
+  beforeCommand?: () => Promise<void>;
+}
+
+const THEN_RUN_UNCHANGED = "target content changed after the fused mutation; the command was not run.";
+const DEFAULT_THEN_RUN_TIMEOUT_MS = 120_000;
+const DEFAULT_THEN_RUN_OUTPUT = 4000;
+
+function concurrentHash(filePath: string): string | undefined {
+  try {
+    return createHash("sha256").update(fs.readFileSync(filePath)).digest("hex");
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Run the fused follow-up command for a completed mutation.
+ *
+ * Ordering: queue slot -> hash(before) -> yield -> hash(after) -> command.
+ * A skipped command never runs; a failing command still reports its output.
+ */
+export async function runThenRun(opts: ThenRunOptions): Promise<ThenRunResult> {
+  const { spec } = opts;
+  const timeoutMs = Math.min(
+    Math.max(1, spec.timeout ? spec.timeout * 1000 : DEFAULT_THEN_RUN_TIMEOUT_MS),
+    Math.max(1, opts.timeoutMs ?? DEFAULT_THEN_RUN_TIMEOUT_MS),
+  );
+  const maxChars = opts.maxOutputChars ?? DEFAULT_THEN_RUN_OUTPUT;
+  return withFusedFileQueue(opts.filePath, async () => {
+    const before = concurrentHash(opts.filePath);
+    await (opts.beforeCommand ?? (() => new Promise<void>((r) => setImmediate(r))))();
+    const after = concurrentHash(opts.filePath);
+    if (before !== undefined && after !== undefined && before !== after) {
+      return { status: "skipped", marker: THEN_RUN_SKIPPED, output: THEN_RUN_UNCHANGED };
+    }
+    const r = await runChild(["/bin/sh", "-c", spec.command], opts.cwd, timeoutMs);
+    const raw = `${r.stdout}${r.stderr}`.replace(/\s+$/, "");
+    const output = raw.length > maxChars ? `${raw.slice(0, maxChars)}\n… (truncated ${raw.length - maxChars} chars)` : raw;
+    if (r.spawnError) return { status: "failed", marker: THEN_RUN_FAILED, output: output || r.spawnError.message };
+    if (r.timedOut) return { status: "failed", marker: THEN_RUN_FAILED, output: `${output}\n(command timed out after ${timeoutMs}ms)`, timedOut: true };
+    if (r.status !== 0) return { status: "failed", marker: THEN_RUN_FAILED, output, exitCode: r.status ?? undefined };
+    return { status: "succeeded", marker: THEN_RUN_SUCCEEDED, output, exitCode: 0 };
+  });
+}
+
 /** Anti-pattern: an edit immediately followed by a separate bash call. */
 export function detectEditThenBash(recentTools: string[]): boolean {
   const n = recentTools.length;
@@ -677,25 +867,32 @@ export function resolveExitCode(event: { exitCode?: unknown; result?: unknown })
 }
 
 // ---------------------------------------------------------------------------
-// ObservationPack
+// ObservationPack (upstream design: archive once, replay for FULL_SENDS
+// provider requests, then replace the tool result in the *request projection*
+// only — the session history keeps the raw text)
 // ---------------------------------------------------------------------------
-export interface PackedObservation {
-  packed: boolean;
-  text: string;
-  handle?: string;
-  archivePath?: string;
+export interface ObservationRecord {
+  id: string;
+  handle: string;
+  archivePath: string;
   bytes: number;
-  turnIndex: number;
-  compactText?: string;
+  lines: number;
 }
 
-/** Safe archive directory: XDG_RUNTIME_DIR first, else per-uid dir under os.tmpdir(). */
-export function resolveArchiveDir(config: SolPiConfig): string {
+/** `obs_` + 24 lowercase hex (upstream id shape). */
+export const OBSERVATION_ID_RE = /^obs_[0-9a-f]{24}$/;
+
+/**
+ * Safe archive directory. Precedence: an explicit absolute `archiveDir`, then the
+ * per-session directory when the caller knows it, then the runtime dir.
+ */
+export function resolveArchiveDir(config: SolPiConfig, sessionDir?: string): string {
   const configured = config.observationPackConfig.archiveDir;
   if (configured && configured !== LEGACY_ARCHIVE_DIR) {
     if (!path.isAbsolute(configured)) throw new Error(`observationPackConfig.archiveDir must be an absolute path: ${configured}`);
     return configured;
   }
+  if (configured !== LEGACY_ARCHIVE_DIR && sessionDir) return path.join(sessionDir, "sol-pi", "observations");
   const xdg = process.env.XDG_RUNTIME_DIR;
   if (xdg && fs.existsSync(xdg)) return path.join(xdg, "omp-obs-pack");
   return path.join(os.tmpdir(), `omp-obs-pack-${process.getuid?.() ?? 0}`);
@@ -711,7 +908,7 @@ function ensureSafeDir(dir: string): void {
   if ((st.mode & 0o777) !== 0o700) throw new Error(`archive dir mode must be 0700 (is ${(st.mode & 0o777).toString(8)}): ${dir}`);
 }
 
-const ARCHIVE_NAME = /^obs_([0-9a-f]{12})_[0-9a-f]{8}\.txt$/;
+const ARCHIVE_NAME = /^obs_([0-9a-f]{12}|[0-9a-f]{24})_[0-9a-f]{8}\.txt$/;
 
 function isOwnRegular(st: fs.Stats): boolean {
   const uid = process.getuid?.();
@@ -814,10 +1011,11 @@ export function archiveObservation(
   config: SolPiConfig = loadSolPiConfig(),
   /** result of redactSecrets(output) when the caller already computed it (avoids masking twice) */
   premasked?: string,
+  sessionDir?: string,
 ): ArchivedObservation {
   const c = config.observationPackConfig;
   const id = createHash("sha256").update(toolName).update("\0").update(output).digest("hex").slice(0, 12);
-  const dir = resolveArchiveDir(config);
+  const dir = resolveArchiveDir(config, sessionDir);
   ensureSafeDir(dir);
   const masked = premasked ?? redactSecrets(output);
   let archivePath = findExisting(dir, id, byteLen(masked));
@@ -836,8 +1034,76 @@ export function archiveObservation(
   return { handle: `#obs_${id}`, archivePath, masked };
 }
 
-/** Throws if the archive directory is unsafe or unwritable (caller reports it). */
-export function packObservation(toolName: string, output: string, turnIndex: number, config: SolPiConfig = loadSolPiConfig()): PackedObservation {
+function textOfMessageContent(content: unknown): string {
+  if (typeof content === "string") return content;
+  if (!Array.isArray(content)) return "";
+  const parts: string[] = [];
+  for (const p of content as { type?: string; text?: string }[]) {
+    if (p && typeof p === "object" && p.type === "text" && typeof p.text === "string") parts.push(p.text);
+  }
+  return parts.join("\n");
+}
+
+/** Receipt bodies are already compressed; never pack them again (upstream invariant). */
+export function isEvidenceReceiptBody(text: string): boolean {
+  return text.startsWith(RECEIPT_PREFIX) || text.includes(`\n${RECEIPT_PREFIX}\n`);
+}
+
+/** Placeholder marker; also used to make packing idempotent across requests. */
+const OBSERVATION_MARKER = "[large tool result replaced after";
+export function isObservationPlaceholder(text: string): boolean {
+  return text.includes(OBSERVATION_MARKER) && /obs_[0-9a-f]{24}/.test(text);
+}
+
+export function observationIdFor(toolCallId: string, toolName: string, rawText: string): string {
+  const h = createHash("sha256").update(toolCallId).update("\0").update(toolName).update("\0").update(rawText).digest("hex");
+  return `obs_${h.slice(0, 24)}`;
+}
+
+export function formatObservationPlaceholder(o: {
+  id: string;
+  toolName: string;
+  bytes: number;
+  lines: number;
+  archivePath: string;
+  fullReplayRequests: number;
+}): string {
+  return [
+    `${OBSERVATION_MARKER} ${o.fullReplayRequests} provider requests: ${o.toolName} result, ${o.bytes} bytes, ${o.lines} lines]`,
+    `id: ${o.id}`,
+    `archive: ${o.archivePath}`,
+    `The full text (secrets masked) is on disk. To read it back, call the obs_recall tool with id "${o.id}" and optional offset/limit (line numbers, 1-based).`,
+  ].join("\n");
+}
+
+export interface PackedProjection {
+  messages: unknown[];
+  packed: { id: string; archivePath: string; bytes: number; lines: number }[];
+  /** Bytes removed from this request (raw - placeholder). */
+  savedBytes: number;
+}
+
+/** Turn-indexed view of one packed observation (pre-projection API, kept for callers/tests). */
+export interface PackedObservation {
+  packed: boolean;
+  text: string;
+  handle?: string;
+  archivePath?: string;
+  bytes: number;
+  turnIndex: number;
+  compactText?: string;
+}
+
+/**
+ * Archives a large tool output and renders its excerpt. This is the per-result primitive the
+ * request projection (packProjectionMessages) and the legacy turn-indexed replay share.
+ */
+export function packObservation(
+  toolName: string,
+  output: string,
+  turnIndex: number,
+  config: SolPiConfig = loadSolPiConfig(),
+): PackedObservation {
   const c = config.observationPackConfig;
   const bytes = byteLen(output);
   if (!c.enabled || bytes <= c.minBytesThreshold) return { packed: false, text: output, bytes, turnIndex };
@@ -853,9 +1119,219 @@ export function packObservation(toolName: string, output: string, turnIndex: num
 }
 
 /** Full text for `fullReplayTurns` turns after creation, compact handle afterwards. */
-export function selectObservationReplay(obs: PackedObservation, currentTurn: number, config: SolPiConfig = loadSolPiConfig()): string {
+export function selectObservationReplay(
+  obs: PackedObservation,
+  currentTurn: number,
+  config: SolPiConfig = loadSolPiConfig(),
+): string {
   if (!obs.packed || !obs.compactText) return obs.text;
   return currentTurn - obs.turnIndex < config.observationPackConfig.fullReplayTurns ? obs.text : obs.compactText;
+}
+
+/**
+ * Upstream ObservationPack applied to a provider request projection: a tool result at or
+ * above the threshold is archived once and replaced by a placeholder after it has been
+ * sent FULL_SENDS times. "Times sent" is derived from the projection itself (number of
+ * assistant messages after it), so it survives restarts without extra bookkeeping.
+ */
+export function packProjectionMessages(
+  messages: readonly unknown[],
+  opts: {
+    config?: SolPiConfig;
+    archiveDir: string;
+    /** ids already archived in this session (skip the stat/write path again) */
+    archived?: Map<string, ObservationRecord>;
+    sessionDir?: string;
+  },
+): PackedProjection {
+  const config = opts.config ?? loadSolPiConfig();
+  const c = config.observationPackConfig;
+  const out = messages.map((m) => m);
+  const packed: PackedProjection["packed"] = [];
+  let savedBytes = 0;
+  if (!c.enabled) return { messages: out, packed, savedBytes };
+
+  const assistantAfter: number[] = new Array(messages.length).fill(0);
+  for (let i = messages.length - 1; i >= 0; i--) {
+    assistantAfter[i] = (assistantAfter[i + 1] ?? 0) + (isAssistantMessage(messages[i]) ? 1 : 0);
+  }
+
+  for (let i = 0; i < out.length; i++) {
+    if (assistantAfter[i] < c.fullReplayTurns) continue; // still inside the full-replay window
+    const msg = out[i] as { role?: string; toolCallId?: string; toolName?: string; content?: unknown };
+    if (!msg || msg.role !== "toolResult" || !("content" in msg)) continue;
+    const raw = textOfMessageContent(msg.content);
+    if (!raw || byteLen(raw) <= c.minBytesThreshold) continue;
+    if (isObservationPlaceholder(raw) || isEvidenceReceiptBody(raw)) continue;
+    const toolName = typeof msg.toolName === "string" && msg.toolName ? msg.toolName : "tool";
+    const toolCallId = typeof msg.toolCallId === "string" ? msg.toolCallId : "";
+    const id = observationIdFor(toolCallId, toolName, raw);
+    let rec = opts.archived?.get(id);
+    if (!rec) {
+      const masked = redactSecrets(raw);
+      const dir = opts.archiveDir;
+      ensureSafeDir(dir);
+      let archivePath = findExisting(dir, id.slice(4), byteLen(masked));
+      if (!archivePath) archivePath = writeArchive(dir, id.slice(4), masked);
+      pruneArchive(dir, archivePath, c.maxArchiveFiles, c.maxArchiveBytes);
+      rec = { id, handle: id, archivePath, bytes: byteLen(raw), lines: countLines(raw) };
+      opts.archived?.set(id, rec);
+    }
+    const placeholder = formatObservationPlaceholder({
+      id: rec.id,
+      toolName,
+      bytes: rec.bytes,
+      lines: rec.lines,
+      archivePath: rec.archivePath,
+      fullReplayRequests: c.fullReplayTurns,
+    });
+    const images = Array.isArray(msg.content)
+      ? (msg.content as { type?: string }[]).filter((p) => p && p.type !== "text")
+      : [];
+    // Replace the projection entry with a copy: the session history keeps the raw text.
+    out[i] = { ...msg, content: [{ type: "text", text: placeholder }, ...images] };
+    packed.push({ id: rec.id, archivePath: rec.archivePath, bytes: rec.bytes, lines: rec.lines });
+    savedBytes += rec.bytes - byteLen(placeholder);
+  }
+  return { messages: out, packed, savedBytes };
+}
+
+function isAssistantMessage(m: unknown): boolean {
+  return Boolean(m) && typeof m === "object" && (m as { role?: string }).role === "assistant";
+}
+
+function countLines(s: string): number {
+  let n = 0;
+  for (let i = 0; i < s.length; i++) if (s.charCodeAt(i) === 10) n++;
+  return s.endsWith("\n") ? n : n + 1;
+}
+
+// ---------------------------------------------------------------------------
+// obs_recall: bounded, line-paged read of an archived observation
+// ---------------------------------------------------------------------------
+export interface RecallPage {
+  id: string;
+  path: string;
+  startLine: number;
+  endLine: number;
+  totalLines: number;
+  totalBytes: number;
+  /** numbered lines ("   12\ttext") within the requested page */
+  text: string;
+  hasMore: boolean;
+}
+
+const RECALL_CHUNK = 64 * 1024;
+const MAX_QUOTE_LINE_BYTES = 4096;
+
+/** Locate the archive for a validated id; refuses symlinks, foreign files, loose modes. */
+export function findObservationFile(dir: string, id: string): string | null {
+  if (!OBSERVATION_ID_RE.test(id)) return null;
+  let names: string[];
+  try {
+    names = fs.readdirSync(dir);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code === "ENOENT") return null;
+    throw e;
+  }
+  for (const name of names) {
+    const m = ARCHIVE_NAME.exec(name);
+    if (!m || m[1] !== id.slice(4)) continue;
+    const p = path.join(dir, name);
+    const st = lstatOrNull(p);
+    if (st && isOwnRegular(st) && (st.mode & 0o777) === 0o600) return p;
+  }
+  return null;
+}
+
+/**
+ * Reads `limit` lines starting at 1-based `offset` (bytes capped by recallMaxBytes).
+ * Uses O_NOFOLLOW and re-checks ownership/mode after opening.
+ */
+export function readObservationChunk(
+  dir: string,
+  rawId: string,
+  offset = 1,
+  limit?: number,
+  config: SolPiConfig = loadSolPiConfig(),
+): RecallPage {
+  const id = String(rawId).trim();
+  if (!OBSERVATION_ID_RE.test(id)) throw new Error(`invalid observation id (expected obs_ + 24 hex): ${rawId}`);
+  const p = findObservationFile(dir, id);
+  if (!p) throw new Error(`observation not found (pruned or never archived): ${id}`);
+  const c = config.observationPackConfig;
+  const maxBytes = Math.max(1024, Math.min(c.recallMaxBytes, 65536));
+  const maxLines = Math.max(1, Math.min(c.recallMaxLines, 400));
+  const start = Number.isFinite(offset) ? Math.max(1, Math.floor(offset)) : 1;
+  const want = Math.max(1, Math.min(Number.isFinite(limit) && limit ? Math.floor(limit) : 120, maxLines));
+
+  const fd = fs.openSync(p, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+  try {
+    const st = fs.fstatSync(fd);
+    if (!isOwnRegular(st) || (st.mode & 0o777) !== 0o600) throw new Error(`refusing unsafe archive file: ${p}`);
+    const buf = Buffer.alloc(RECALL_CHUNK);
+    let pos = 0;
+    let lineNo = 1;
+    let collected = 0;
+    let usedBytes = 0;
+    const kept: string[] = [];
+    let pending = "";
+    let hasMore = false;
+    let totalLines = 0;
+    let eof = false;
+    while (!eof) {
+      const n = fs.readSync(fd, buf, 0, buf.length, pos);
+      if (n <= 0) break;
+      pos += n;
+      pending += buf.subarray(0, n).toString("utf-8");
+      let nl: number;
+      while ((nl = pending.indexOf("\n")) >= 0) {
+        const rawLine = pending.slice(0, nl);
+        const line = rawLine.endsWith("\r") ? rawLine.slice(0, -1) : rawLine;
+        pending = pending.slice(nl + 1);
+        totalLines = lineNo;
+        if (lineNo >= start && collected < want) {
+          const size = byteLen(line);
+          if (usedBytes + size > maxBytes) {
+            hasMore = true;
+            break;
+          }
+          kept.push(`${String(lineNo).padStart(6, " ")}\t${line}`);
+          usedBytes += size;
+          collected++;
+        } else if (lineNo >= start) {
+          hasMore = true;
+        }
+        lineNo++;
+      }
+      if (hasMore) break;
+      if (n < RECALL_CHUNK) eof = true;
+    }
+    if (!eof && hasMore) {
+      // line/paging budget hit before EOF: report the count so far, not a full-file total
+    } else if (pending.length > 0) {
+      // last line without trailing newline
+      totalLines = lineNo;
+      if (lineNo >= start && collected < want && usedBytes + byteLen(pending) <= maxBytes) {
+        kept.push(`${String(lineNo).padStart(6, " ")}\t${pending.endsWith("\r") ? pending.slice(0, -1) : pending}`);
+        collected++;
+      } else if (lineNo >= start) {
+        hasMore = true;
+      }
+    }
+    return {
+      id,
+      path: p,
+      startLine: start,
+      endLine: start + Math.max(0, collected - 1),
+      totalLines: totalLines || lineNo,
+      totalBytes: st.size,
+      text: kept.join("\n"),
+      hasMore,
+    };
+  } finally {
+    fs.closeSync(fd);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -915,7 +1391,7 @@ export function reduceEvidencePreserving(
   maskedRaw?: string,
 ): ReducedEvidence {
   const c = config.evidencePreservingReducerConfig;
-  const mask = (s: string) => (c.redactSecrets ? redactSecrets(s) : s);
+  const mask = (s: string) => redactSecrets(s);
   /** mask the whole line first, then cut */
   const outLine = (s: string) => truncateBytes(mask(s), MAX_LINE_BYTES);
   const rawBytes = byteLen(rawLog);
@@ -1038,6 +1514,402 @@ export function reduceAndArchive(
   if (!r.reduced) return r;
   const a = archiveObservation("bash", rawLog, config, masked);
   return { ...r, handle: a.handle, archivePath: a.archivePath, text: `${r.text}\n[raw log archived: ${a.handle} → ${a.archivePath}]` };
+}
+
+// ---------------------------------------------------------------------------
+// Evidence-Preserving Reducer — provider path (upstream design)
+//
+// The deterministic excerpt below stays the fail-closed fallback. The provider
+// path turns a large build/test log into a receipt only when every quote it
+// keeps is a verbatim full line of the RAW log; anything else is rejected.
+// ---------------------------------------------------------------------------
+export const RECEIPT_PREFIX = "sol_pi_evidence_receipt_v1";
+
+export interface ReducerQuote {
+  kind: string;
+  quote: string;
+}
+
+export interface ProviderReduction {
+  ok: boolean;
+  /** failure reason: parsable/unparsable, quote-mismatch, no-evidence, receipt-not-smaller, ... */
+  reason?: string;
+  receipt?: string;
+  findings: ReducerQuote[];
+  evidence: ReducerQuote[];
+}
+
+/** Extract the first JSON object from a model reply (code fences tolerated). */
+export function parseReductionJson(text: string): Record<string, unknown> | null {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const body = fenced ? fenced[1] : text;
+  const start = body.indexOf("{");
+  const end = body.lastIndexOf("}");
+  if (start < 0 || end <= start) return null;
+  try {
+    const v: unknown = JSON.parse(body.slice(start, end + 1));
+    return isObj(v) ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+function quoteList(value: unknown, kindDefault: string, max: number): { list: ReducerQuote[]; invalid: number } {
+  const list: ReducerQuote[] = [];
+  let invalid = 0;
+  if (!Array.isArray(value)) return { list, invalid };
+  for (const item of value) {
+    const quote = isObj(item) && typeof item.quote === "string" ? item.quote : typeof item === "string" ? item : "";
+    if (!quote.trim() || byteLen(quote) > MAX_QUOTE_LINE_BYTES) {
+      invalid++;
+      continue;
+    }
+    const kind = isObj(item) && typeof item.kind === "string" && item.kind.trim() ? item.kind.trim().slice(0, 32) : kindDefault;
+    if (list.length < max && !list.some((q) => q.kind === kind && q.quote === quote)) list.push({ kind, quote });
+  }
+  return { list, invalid };
+}
+
+/** True when `quote` is exactly one full line of rawLog (a trailing CR is ignored). */
+function isFullLineOf(quote: string, rawLines: Set<string>): boolean {
+  return rawLines.has(quote);
+}
+
+export function buildEvidenceReceipt(input: {
+  toolName: string;
+  exitCode?: number;
+  rawLog: string;
+  providerText: string;
+  archivePath: string;
+  maxFindings?: number;
+  maxEvidence?: number;
+  /** receiptBytes must be <= archiveBytes * minAcceptedRatio (0 disables the check) */
+  minAcceptedRatio?: number;
+}): ProviderReduction {
+  const parsed = parseReductionJson(input.providerText);
+  if (!parsed) return { ok: false, reason: "unparsable", findings: [], evidence: [] };
+
+  const findings = quoteList(parsed.findings, "finding", input.maxFindings ?? 12);
+  const evidence = quoteList(parsed.evidence, "evidence", input.maxEvidence ?? 12);
+  if (findings.invalid > 0 || evidence.invalid > 0) {
+    return { ok: false, reason: "invalid-quote", findings: findings.list, evidence: evidence.list };
+  }
+  if (findings.list.length === 0 && evidence.list.length === 0) {
+    return { ok: false, reason: "no-evidence", findings: [], evidence: [] };
+  }
+
+  const rawLines = new Set(input.rawLog.split("\n").map((l) => (l.endsWith("\r") ? l.slice(0, -1) : l)));
+  for (const q of [...findings.list, ...evidence.list]) {
+    if (!isFullLineOf(q.quote, rawLines)) {
+      return { ok: false, reason: "quote-mismatch", findings: findings.list, evidence: evidence.list };
+    }
+  }
+
+  const totalLines = rawLines.size;
+  const quotedLines = new Set([...findings.list, ...evidence.list].map((q) => q.quote)).size;
+  const masked = (q: string) => truncateBytes(redactSecrets(q), MAX_QUOTE_LINE_BYTES);
+  const body = [
+    RECEIPT_PREFIX,
+    `${redactSecrets(input.toolName)} | exit ${input.exitCode === undefined ? "unknown" : input.exitCode} | ${byteLen(input.rawLog)} bytes, ${totalLines} lines`,
+    ...(findings.list.length ? ["Failures:"] : []),
+    ...findings.list.map((q) => `- [${masked(q.kind)}] ${masked(q.quote)}`),
+    ...(evidence.list.length ? ["Evidence (verbatim, secrets masked):"] : []),
+    ...evidence.list.map((q) => `- [${masked(q.kind)}] ${masked(q.quote)}`),
+    `Elided: ${Math.max(0, totalLines - quotedLines)} of ${totalLines} lines (${Math.max(0, byteLen(input.rawLog) - [...findings.list, ...evidence.list].reduce((s, q) => s + byteLen(q.quote) + 1, 0))} bytes)`,
+    `Full raw log (secrets masked): ${input.archivePath}`,
+  ].join("\n");
+
+  const ratio = input.minAcceptedRatio ?? 0;
+  const rawBytes = byteLen(input.rawLog);
+  if (byteLen(body) >= (ratio > 0 ? rawBytes * ratio : rawBytes)) {
+    return { ok: false, reason: "receipt-not-smaller", findings: findings.list, evidence: evidence.list };
+  }
+  return { ok: true, receipt: body, findings: findings.list, evidence: evidence.list };
+}
+
+export function buildReducerProviderPrompt(input: {
+  toolName: string;
+  command: string;
+  exitCode?: number;
+  maskedLog: string;
+  maxChars: number;
+}): string {
+  const max = Math.max(1024, input.maxChars);
+  let log = input.maskedLog;
+  if (log.length > max) {
+    const head = Math.floor(max * 0.6);
+    const tail = max - head;
+    log = `${log.slice(0, head)}\n… [${log.length - max} chars elided] …\n${log.slice(-tail)}`;
+  }
+  return [
+    `Compress this ${input.toolName} log (command: ${input.command}, exit code: ${input.exitCode === undefined ? "unknown" : input.exitCode}) into an evidence-preserving receipt.`,
+    "Reply with ONLY a JSON object:",
+    '{"findings":[{"kind":"test-failure|compile-error|warning|other","quote":"<verbatim line>"}],"evidence":[{"kind":"...","quote":"<verbatim line>"}]}',
+    "Rules: every quote MUST be copied character-for-character from a single line of the log; never paraphrase, never invent; at most 12 findings and 12 evidence items; prefer failure, error and location lines.",
+    "LOG:",
+    log,
+  ].join("\n");
+}
+
+export interface ReducerJournalEntry {
+  key: string;
+  status: "applied" | "fallback";
+  reason?: string;
+  receipt?: string;
+  archivePath?: string;
+  receiptBytes?: number;
+  archiveBytes?: number;
+  ts: number;
+}
+
+/**
+ * Append-only receipt journal (JSONL, mode 0600) so a provider reduction is never paid
+ * twice for the same tool result and a restart replays the already-applied receipt.
+ */
+export class ReducerJournal {
+  readonly file: string;
+  readonly maxEntries: number;
+  readonly entries = new Map<string, ReducerJournalEntry>();
+
+  constructor(file: string, maxEntries = 64) {
+    this.file = file;
+    this.maxEntries = maxEntries;
+    this.#load();
+  }
+
+  #load(): void {
+    let text: string;
+    try {
+      text = fs.readFileSync(this.file, "utf-8");
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException).code === "ENOENT") return;
+      throw e;
+    }
+    for (const line of text.split("\n")) {
+      if (!line.trim()) continue;
+      try {
+        const e: unknown = JSON.parse(line);
+        if (!isObj(e) || typeof e.key !== "string" || (e.status !== "applied" && e.status !== "fallback")) continue;
+        this.entries.set(e.key, e as unknown as ReducerJournalEntry);
+      } catch {
+        // a torn last line after a crash is expected; skip it
+      }
+    }
+  }
+
+  record(entry: Omit<ReducerJournalEntry, "ts">): void {
+    const full: ReducerJournalEntry = { ...entry, ts: Date.now() };
+    this.entries.delete(full.key);
+    this.entries.set(full.key, full);
+    while (this.entries.size > this.maxEntries) {
+      const oldest = this.entries.keys().next();
+      if (oldest.done) break;
+      this.entries.delete(oldest.value);
+    }
+    fs.mkdirSync(path.dirname(this.file), { recursive: true, mode: 0o700 });
+    fs.appendFileSync(this.file, `${JSON.stringify(full)}\n`, { mode: 0o600 });
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Plan state + online-compaction economics (upstream online-context-compact)
+// ---------------------------------------------------------------------------
+export const PLAN_STATUSES = ["pending", "in_progress", "completed"] as const;
+export type PlanStatus = (typeof PLAN_STATUSES)[number];
+export interface PlanStep {
+  step: string;
+  status: PlanStatus;
+}
+export const MAX_PLAN_STEPS = 20;
+export const MAX_PLAN_STEP_CHARS = 200;
+
+export interface NormalizedPlan {
+  plan: PlanStep[];
+  diagnostics: string[];
+}
+
+/** Validate a model-supplied plan: trim, de-duplicate, cap, and report problems instead of throwing. */
+export function normalizePlan(input: unknown): NormalizedPlan {
+  const diagnostics: string[] = [];
+  const plan: PlanStep[] = [];
+  if (!Array.isArray(input)) return { plan, diagnostics: ["plan must be an array of {step, status}"] };
+  for (const raw of input) {
+    if (!isObj(raw) || typeof raw.step !== "string") {
+      diagnostics.push("ignored a step without a string `step`");
+      continue;
+    }
+    const step = raw.step.trim();
+    if (!step) {
+      diagnostics.push("ignored an empty step");
+      continue;
+    }
+    if (step.length > MAX_PLAN_STEP_CHARS) {
+      diagnostics.push(`step truncated to ${MAX_PLAN_STEP_CHARS} chars: ${step.slice(0, 40)}…`);
+    }
+    const status = typeof raw.status === "string" && (PLAN_STATUSES as readonly string[]).includes(raw.status) ? (raw.status as PlanStatus) : "pending";
+    if (status !== raw.status) diagnostics.push(`unknown status for "${step.slice(0, 40)}" -> pending`);
+    if (plan.some((p) => p.step === step)) {
+      diagnostics.push(`duplicate step ignored: ${step.slice(0, 40)}`);
+      continue;
+    }
+    if (plan.length >= MAX_PLAN_STEPS) {
+      diagnostics.push(`plan capped at ${MAX_PLAN_STEPS} steps; "${step.slice(0, 40)}" dropped`);
+      continue;
+    }
+    plan.push({ step: step.slice(0, MAX_PLAN_STEP_CHARS), status });
+  }
+  const active = plan.filter((p) => p.status === "in_progress").length;
+  if (active > 1) diagnostics.push(`${active} steps are in_progress; keep exactly one active step`);
+  if (plan.length > 0 && plan.every((p) => p.status === "completed") && active === 0) {
+    diagnostics.push("every step is completed; finish with a short handoff instead of more tool calls");
+  }
+  return { plan, diagnostics };
+}
+
+/** Completed steps are terminal: a later update may add steps, never reopen one. */
+export function applyPlanTransition(previous: readonly PlanStep[], next: readonly PlanStep[]): NormalizedPlan {
+  const diagnostics: string[] = [];
+  const carried = new Map(previous.map((p) => [p.step, p.status]));
+  const plan = next.map((p) => {
+    if (carried.get(p.step) === "completed" && p.status !== "completed") {
+      diagnostics.push(`cannot reopen a completed step (kept completed): ${p.step.slice(0, 60)}`);
+      return { ...p, status: "completed" as PlanStatus };
+    }
+    return p;
+  });
+  const prevCompleted = previous.filter((p) => p.status === "completed").length;
+  const nowCompleted = plan.filter((p) => p.status === "completed").length;
+  if (prevCompleted > 0 && nowCompleted < prevCompleted) {
+    const missing = previous.filter((p) => p.status === "completed" && !plan.some((n) => n.step === p.step));
+    for (const m of missing) diagnostics.push(`completed step removed from the plan: ${m.step.slice(0, 60)}`);
+  }
+  return { plan, diagnostics };
+}
+
+export function formatPlanSnapshot(plan: readonly PlanStep[]): string {
+  if (plan.length === 0) return "Plan: (empty)";
+  const mark = { pending: "[ ]", in_progress: "[>]", completed: "[x]" } as const;
+  return ["Plan:", ...plan.map((p, i) => `${i + 1}. ${mark[p.status]} ${p.step}`)].join("\n");
+}
+
+/** Custom session entry name for the online state. */
+export const ONLINE_STATE_ENTRY = "sol_pi_online_state";
+export interface OnlineState {
+  version: 1;
+  compactions: number;
+  pendingCompaction: boolean;
+  plan: PlanStep[];
+  corrections: number;
+  requestCount: number;
+  outputTokens: number;
+  lastCompactionAt?: number;
+}
+
+export function initialOnlineState(): OnlineState {
+  return { version: 1, compactions: 0, pendingCompaction: false, plan: [], corrections: 0, requestCount: 0, outputTokens: 0 };
+}
+
+const nonNeg = (v: unknown, fallback = 0): number => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? Math.floor(v) : fallback);
+
+export function parseOnlineState(data: unknown): OnlineState {
+  const base = initialOnlineState();
+  if (!isObj(data)) return base;
+  return {
+    version: 1,
+    compactions: nonNeg(data.compactions),
+    pendingCompaction: data.pendingCompaction === true,
+    plan: normalizePlan(data.plan).plan,
+    corrections: nonNeg(data.corrections),
+    requestCount: nonNeg(data.requestCount),
+    outputTokens: nonNeg(data.outputTokens),
+    ...(typeof data.lastCompactionAt === "number" ? { lastCompactionAt: data.lastCompactionAt } : {}),
+  };
+}
+
+/** Requests left before the context window is exhausted, at the observed mean output size. */
+export function estimateRemainingRequests(tokensRemaining: number, meanOutputTokens: number): number | undefined {
+  if (!(meanOutputTokens > 0)) return undefined;
+  if (tokensRemaining <= 0) return 0;
+  return Math.floor(tokensRemaining / meanOutputTokens);
+}
+
+export interface CompactionDecision {
+  compact: boolean;
+  reason: string;
+  estimatedRequests?: number;
+  archiveTokens: number;
+  tokensRemaining?: number;
+}
+
+/**
+ * Upstream online-context-compact policy: compact only when the request budget is nearly
+ * exhausted (fewer than remainingRequestsTrigger requests left at the observed output
+ * rate) and the archive that would be summarized is large enough to pay for itself.
+ */
+export function decideCompaction(input: {
+  usage?: { tokens: number; contextWindow: number };
+  state: OnlineState;
+  archiveTokens: number;
+  config?: SolPiConfig;
+}): CompactionDecision {
+  const c = (input.config ?? DEFAULT_CONFIG).onlineContextCompactConfig;
+  const { state, archiveTokens } = input;
+  if (!c.enabled) return { compact: false, reason: "disabled", archiveTokens };
+  if (!input.usage || input.usage.contextWindow <= 0) return { compact: false, reason: "no-usage", archiveTokens };
+  if (state.pendingCompaction) return { compact: false, reason: "pending", archiveTokens };
+  if (c.maxCompactionsPerSession > 0 && state.compactions >= c.maxCompactionsPerSession) {
+    return { compact: false, reason: "max-compactions", archiveTokens };
+  }
+  const tokensRemaining = input.usage.contextWindow - input.usage.tokens - c.outputReserveTokens;
+  const meanOutput = state.requestCount > 0 ? state.outputTokens / state.requestCount : 0;
+  const estimatedRequests = estimateRemainingRequests(tokensRemaining, meanOutput);
+  if (estimatedRequests === undefined) return { compact: false, reason: "cold-start", archiveTokens, tokensRemaining };
+  if (estimatedRequests >= c.remainingRequestsTrigger) {
+    return { compact: false, reason: "enough-requests", estimatedRequests, archiveTokens, tokensRemaining };
+  }
+  if (archiveTokens < c.minArchiveTokens) {
+    return { compact: false, reason: "small-archive", estimatedRequests, archiveTokens, tokensRemaining };
+  }
+  return { compact: true, reason: "request-budget-low", estimatedRequests, archiveTokens, tokensRemaining };
+}
+
+/** Summarizer guidance that keeps the active plan and evidence handles across a compaction. */
+export function compactionInstructions(state: OnlineState): string {
+  const parts = ["Compact at a subtask boundary; keep decisions, file paths, and verification results."];
+  const active = state.plan.find((p) => p.status === "in_progress");
+  if (active) parts.push(`The active plan step is: ${active.step}`);
+  const done = state.plan.filter((p) => p.status === "completed");
+  if (done.length > 0) parts.push(`Completed steps: ${done.map((p) => p.step).join("; ")}`);
+  parts.push("Keep observation ids (obs_…) and archived log paths verbatim; do not re-derive them.");
+  return parts.join("\n");
+}
+
+/** JSON-string byte estimate of one message (roughly 4 chars per token). */
+export function estimateMessageTokens(message: unknown): number {
+  let chars = 0;
+  try {
+    chars = JSON.stringify(message)?.length ?? 0;
+  } catch {
+    chars = 0;
+  }
+  return Math.ceil(chars / 4);
+}
+
+/**
+ * Tokens that a compaction with `keepRecentTokens` would summarize: walking back from the
+ * newest message, keep the tail until its estimate reaches the budget; everything older is
+ * the archive. Mirrors the native cut-point semantics closely enough for the trigger.
+ */
+export function archiveTokensFor(messages: readonly unknown[], keepRecentTokens: number): number {
+  let kept = 0;
+  let i = messages.length - 1;
+  for (; i >= 0; i--) {
+    if (kept >= keepRecentTokens) break;
+    kept += estimateMessageTokens(messages[i]);
+  }
+  let archive = 0;
+  for (let j = 0; j < i + 1; j++) archive += estimateMessageTokens(messages[j]);
+  return archive;
 }
 
 // ---------------------------------------------------------------------------

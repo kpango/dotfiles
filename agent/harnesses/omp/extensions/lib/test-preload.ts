@@ -84,5 +84,16 @@ plugin({
     });
     build.module("@earendil-works/pi-coding-agent", codingAgentStub);
     build.module("@oh-my-pi/pi-coding-agent", codingAgentStub);
+
+    // @oh-my-pi/pi-ai is imported for its VALUE (`completeSimple`) by sol-pi.ts, so the
+    // export must exist statically. Tests never call it; the real runtime supplies it.
+    build.module("@oh-my-pi/pi-ai", () => ({
+      exports: {
+        completeSimple: makeDeepProxy(),
+        streamSimple: makeDeepProxy(),
+        getModel: makeDeepProxy(),
+      },
+      loader: "object",
+    }));
   },
 });
