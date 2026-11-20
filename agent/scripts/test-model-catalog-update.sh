@@ -26,7 +26,9 @@ echo "=== Model Catalog Updater Verification ==="
 python3 "$UPDATER" --check
 check "live repo --check passes" 1
 
-# 2. Isolated copy for fixture-driven --fetch + --optimize + --sync
+# 2. Isolated copy for fixture-driven --fetch + --optimize + --sync.
+# The fixture "better" models must out-score the incumbents by more than the hysteresis margin for ANY
+# pricing/context the daily live feed may have written into catalog.json (not just the committed values).
 TMP_REPO="$WORK/repo"
 mkdir -p "$TMP_REPO/agent/models" "$TMP_REPO/agent/scripts" \
     "$TMP_REPO/agent/harnesses/omp" "$TMP_REPO/agent/harnesses/claude" \
@@ -52,13 +54,24 @@ FIXTURE_AG="$WORK/antigravity.json"
 cat > "$FIXTURE_LITELLM" <<'JSON'
 {
   "openai/gpt-6.5-astra": {
-    "input_cost_per_token": 1.0e-6,
-    "output_cost_per_token": 4.0e-6,
-    "max_input_tokens": 524288,
+    "input_cost_per_token": 1.0e-7,
+    "output_cost_per_token": 4.0e-7,
+    "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "supports_reasoning": true,
     "eligible_tiers": ["XHigh", "Max"],
-    "scores": {"coding": 99.0, "reasoning": 99.5, "speed": 75.0}
+    "scores": {"coding": 100.0, "reasoning": 100.0, "speed": 90.0}
+  },
+  "openai/sora-2-pro": {
+    "mode": "video_generation",
+    "input_cost_per_token": 0.0,
+    "output_cost_per_token": 0.0
+  },
+  "openai/gpt-unscored-9": {
+    "mode": "chat",
+    "input_cost_per_token": 1.0e-7,
+    "output_cost_per_token": 1.0e-7,
+    "max_input_tokens": 1048576
   },
   "anthropic/claude-opus-5-9": {
     "input_cost_per_token": 1.0e-6,
@@ -122,8 +135,58 @@ assert sol["evidencePreservingReducerModel"] == "deepseek-v4.5-flash", sol
 assert cfg["modelRoles"]["fast"].startswith("opencode-go/deepseek-v4.5-flash:"), cfg["modelRoles"]
 assert cfg["modelRoles"]["review"].startswith("openai/gpt-6.5-astra:"), cfg["modelRoles"]
 assert any(m["id"] == "deepseek-v4.5-flash" for m in mods["providers"]["opencode-go"]["models"]), mods
+
+# Feed ingestion guards: no non-chat models, heuristic-only candidates stay out of every tier pool,
+# and feed-discovered models are never granted the closed Antigravity (agy) harness.
+cat = json.loads((r / "agent/models/catalog.json").read_text())
+assert "openai/sora-2-pro" not in cat["models"], "non-chat LiteLLM model was ingested"
+un = cat["models"]["openai/gpt-unscored-9"]
+assert un["eligible_tiers"] == [] and un["status"] == "candidate", un
+for key in ("openai/gpt-6.5-astra", "anthropic/claude-opus-5-9", "openai/gpt-unscored-9"):
+    assert "agy" not in cat["models"][key]["harness_support"], key
+agy = json.loads((r / "agent/harnesses/agy/model-routing.json").read_text())
+assert "sora" not in json.dumps(agy), "sora leaked into agy routing"
 PY
 check "Pareto optimization promotes better models & preserves cross-family XHigh + syncs all OMP configs" 1
+
+# 2b. Availability guard: a model the harness cannot host must fail validation
+python3 - "$TMP_REPO" <<'PY'
+import importlib.util, json, sys
+from pathlib import Path
+
+r = Path(sys.argv[1])
+spec = importlib.util.spec_from_file_location("upd", r / "agent/scripts/update-model-catalog.py")
+upd = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(upd)
+
+cat = json.loads((r / "agent/models/catalog.json").read_text())
+assert upd.validate_harness_models(cat) == [], upd.validate_harness_models(cat)
+bad = json.loads(json.dumps(cat))
+bad["harnesses"]["agy"]["tiers"]["Low"]["model"] = "sora-2-pro"
+bad["harnesses"]["agy"]["tiers"]["High"]["fallbacks"][0]["model"] = "claude-haiku-5-5"
+bad["models"]["openai/gpt-6.2-astra"]["harness_support"].append("agy")
+errs = "\n".join(upd.validate_harness_models(bad))
+assert "sora-2-pro" in errs and "claude-haiku-5-5" in errs and "gpt-6.2-astra" in errs, errs
+PY
+check "validate_harness_models rejects models a harness cannot host (agy: sora/haiku/openai)" 1
+
+# 2c. agy allowlist matches the real `agy models` listing when the CLI is installed (skipped otherwise)
+if command -v agy &>/dev/null; then
+    if AGY_LIST="$(timeout 30 agy models 2>/dev/null)" && [ -n "$AGY_LIST" ]; then
+        python3 - "$ROOT" "$AGY_LIST" <<'PY'
+import json, re, sys
+from pathlib import Path
+
+cat = json.loads((Path(sys.argv[1]) / "agent/models/catalog.json").read_text())
+live = {re.sub(r"-(low|medium|high|xhigh)$", "", l.split()[0]) for l in sys.argv[2].splitlines() if l.strip() and "\t" in l}
+missing = sorted(set(cat["harness_model_allowlist"]["agy"]) - live)
+assert not missing, f"harness_model_allowlist.agy not offered by `agy models`: {missing}"
+PY
+        check "harness_model_allowlist.agy is a subset of live \`agy models\`" 1
+    else
+        echo "SKIP: agy models unavailable"
+    fi
+fi
 
 # 3. Rollback atomicity test: invalid output injected -> apply_with_rollback restores everything
 python3 - "$TMP_REPO" <<'PY'

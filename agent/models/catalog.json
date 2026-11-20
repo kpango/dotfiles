@@ -199,7 +199,7 @@
       "model_id": "claude-haiku-5-5",
       "family": "anthropic",
       "display_name": "Claude Haiku 5.5",
-      "harness_support": ["omp", "claude", "agy", "hermes"],
+      "harness_support": ["omp", "claude", "hermes"],
       "eligible_tiers": ["Low", "Medium"],
       "reasoning": true,
       "context_window": 200000,
@@ -277,7 +277,7 @@
       "model_id": "claude-fable-5-2",
       "family": "anthropic",
       "display_name": "Claude Fable 5.2",
-      "harness_support": ["omp", "claude", "agy", "hermes"],
+      "harness_support": ["omp", "claude", "hermes"],
       "eligible_tiers": ["Max"],
       "reasoning": true,
       "context_window": 1000000,
@@ -376,12 +376,38 @@
       "status": "active",
       "source": "curated"
     },
+    "antigravity-cli/gpt-oss-120b": {
+      "provider": "antigravity-cli",
+      "model_id": "gpt-oss-120b",
+      "family": "openai",
+      "display_name": "GPT-OSS 120B (Antigravity CLI)",
+      "harness_support": ["agy"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 32768,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 80.0,
+        "reasoning": 80.0,
+        "speed": 70.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
     "openai/gpt-6.2-sol": {
       "provider": "openai",
       "model_id": "gpt-6.2-sol",
       "family": "openai",
       "display_name": "GPT-6.2 Sol",
-      "harness_support": ["omp", "agy", "hermes"],
+      "harness_support": ["omp", "hermes"],
       "eligible_tiers": ["Medium", "High"],
       "reasoning": true,
       "context_window": 400000,
@@ -407,7 +433,7 @@
       "model_id": "gpt-6.2-astra",
       "family": "openai",
       "display_name": "GPT-6.2 Astra",
-      "harness_support": ["omp", "agy", "hermes"],
+      "harness_support": ["omp", "hermes"],
       "eligible_tiers": ["XHigh", "Max"],
       "reasoning": true,
       "context_window": 400000,
@@ -912,18 +938,16 @@
           "description": "Gemini 4 Hydrogen (Low) for rapid exploration and bulk survey",
           "fallbacks": [
             {
-              "model": "claude-haiku-5-5",
+              "model": "claude-sonnet-5-5",
               "effort": "low",
-              "compaction_threshold": 90000,
               "trigger": "rate_limit",
-              "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction limit: 90,000 tokens)"
+              "description": "Claude Sonnet 5.5 cross-provider fallback (Antigravity CLI hosts Opus 5.5 / Sonnet 5.5 only)"
             },
             {
-              "model": "gpt-6.2-sol",
+              "model": "gpt-oss-120b",
               "effort": "low",
-              "compaction_threshold": 250000,
               "trigger": "cost_saver",
-              "description": "GPT-6.2 Sol fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+              "description": "GPT-OSS 120B cost-saving fallback hosted by the Antigravity CLI"
             }
           ]
         },
@@ -933,18 +957,16 @@
           "description": "Gemini 4 Hydrogen (Medium) for fast structured synthesis and triage",
           "fallbacks": [
             {
-              "model": "gpt-6.2-sol",
+              "model": "claude-sonnet-5-5",
               "effort": "medium",
-              "compaction_threshold": 250000,
               "trigger": "rate_limit",
-              "description": "GPT-6.2 Sol structured synthesis fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+              "description": "Claude Sonnet 5.5 structured synthesis fallback"
             },
             {
-              "model": "claude-haiku-5-5",
+              "model": "gpt-oss-120b",
               "effort": "medium",
-              "compaction_threshold": 90000,
               "trigger": "token_exhaustion",
-              "description": "Claude Haiku 5.5 session extension fallback (Pricing Cliff auto-compaction limit: 90,000 tokens)"
+              "description": "GPT-OSS 120B session extension fallback hosted by the Antigravity CLI"
             }
           ]
         },
@@ -960,11 +982,10 @@
               "description": "Google Gemini 4 Argon cross-provider Maker fallback"
             },
             {
-              "model": "gpt-6.2-sol",
+              "model": "claude-opus-5-5",
               "effort": "high",
-              "compaction_threshold": 250000,
               "trigger": "token_exhaustion",
-              "description": "GPT-6.2 Sol cross-provider fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
+              "description": "Claude Opus 5.5 same-provider Maker fallback when Sonnet token budget is strained"
             },
             {
               "model": "gemini-4-hydrogen",
@@ -980,17 +1001,16 @@
           "description": "Gemini 4 Argon (XHigh) for cutting-edge invariant verification and auditing",
           "fallbacks": [
             {
-              "model": "gpt-6.2-astra",
-              "effort": "xhigh",
-              "compaction_threshold": 250000,
-              "trigger": "rate_limit",
-              "description": "Cross-provider independent verification fallback to GPT-6.2 Astra (Pricing Cliff auto-compaction limit: 250,000 tokens)"
-            },
-            {
               "model": "claude-opus-5-5",
               "effort": "xhigh",
+              "trigger": "rate_limit",
+              "description": "Claude Opus 5.5 independent cross-family deep invariant verification fallback"
+            },
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "high",
               "trigger": "token_exhaustion",
-              "description": "Claude Opus 5.5 deep invariant verification fallback"
+              "description": "Claude Sonnet 5.5 verification fallback when Opus/Argon budgets are strained"
             }
           ]
         },
@@ -1000,23 +1020,16 @@
           "description": "Claude Opus 5.5 (Max effort) for spot architectural diagnosis and deadlock breakthroughs",
           "fallbacks": [
             {
-              "model": "claude-fable-5-2",
-              "effort": "xhigh",
-              "trigger": "token_exhaustion",
-              "description": "Claude Fable 5.2 frontier architectural diagnosis fallback"
-            },
-            {
-              "model": "gpt-6.2-astra",
-              "effort": "xhigh",
-              "compaction_threshold": 250000,
-              "trigger": "rate_limit",
-              "description": "GPT-6.2 Astra cross-provider architectural diagnosis fallback (Pricing Cliff auto-compaction limit: 250,000 tokens)"
-            },
-            {
               "model": "gemini-4-argon",
               "effort": "max",
               "trigger": "context_overflow",
               "description": "Gemini 4 Argon large-context architectural diagnosis fallback"
+            },
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Claude Sonnet 5.5 degraded architectural diagnosis fallback"
             }
           ]
         }
@@ -1157,6 +1170,17 @@
         }
       }
     }
+  },
+  "harness_model_allowlist": {
+    "agy": [
+      "gemini-4-neon",
+      "gemini-4-argon",
+      "gemini-4-hydrogen",
+      "gemini-3.8-flash",
+      "claude-opus-5-5",
+      "claude-sonnet-5-5",
+      "gpt-oss-120b"
+    ]
   },
   "harness_native_bonuses": {
     "omp": {},

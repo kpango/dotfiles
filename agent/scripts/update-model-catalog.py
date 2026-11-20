@@ -36,6 +36,34 @@ DERIVED_HARNESSES = ("omp", "claude", "agy", "hermes")
 REQUIRED_TIERS = ("Low", "Medium", "High", "XHigh", "Max")
 BARE_MODEL_HARNESSES = {"claude", "agy"}
 
+# Harnesses that can actually host each provider's models. Feed-discovered models may never be granted
+# harness_support outside this table (e.g. OpenAI models are not served by the Antigravity CLI).
+PROVIDER_HARNESS_HOSTING = {
+    "anthropic": {"omp", "claude", "agy", "hermes"},
+    "openai": {"omp", "hermes"},
+    "antigravity-cli": {"omp", "agy", "hermes"},
+    "opencode-go": {"omp", "hermes"},
+    "ollama": {"omp", "hermes"},
+    "typesafe": {"omp"},
+    "local": {"omp"},
+}
+# Harnesses whose model list is a closed set verified out-of-band (`agy models`): feeds never extend it.
+CLOSED_HARNESSES = ("agy",)
+
+# LiteLLM keys that are not chat/coding models (video, image, audio, embeddings, containers, ...).
+NON_CHAT_ID_RE = re.compile(
+    r"sora|dall-e|gpt-image|image|tts|whisper|transcribe|audio|realtime|embed|moderation|"
+    r"container|search|computer-use|davinci|babbage|^ft:",
+    re.IGNORECASE,
+)
+
+
+def _is_chat_litellm_entry(model_id: str, entry: dict) -> bool:
+    mode = entry.get("mode")
+    if mode is not None and mode not in ("chat", "responses"):
+        return False
+    return NON_CHAT_ID_RE.search(model_id) is None
+
 
 def find_repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
@@ -134,9 +162,17 @@ def _heuristic_scores_from_metadata(model_id: str, ctx: int, inp_1m: float, out_
     }
 
 
+# Providers whose models LiteLLM/OpenRouter list under their own (direct) vendor id. Subscription/local
+# providers (opencode-go, ollama, ...) re-host models with their own limits and pricing, so matching them
+# by bare model id would import another vendor's context window and price.
+DIRECT_FEED_PROVIDERS = ("anthropic", "openai", "antigravity-cli")
+
+
 def _match_litellm_entry(model_key: str, meta: dict, litellm_data: dict):
     mid = meta.get("model_id", "")
     prov = meta.get("provider", "")
+    if prov not in DIRECT_FEED_PROVIDERS:
+        return None
     candidates = [model_key, mid, f"{prov}/{mid}"]
     if prov == "antigravity-cli":
         candidates.append(f"gemini/{mid}")
@@ -144,6 +180,23 @@ def _match_litellm_entry(model_key: str, meta: dict, litellm_data: dict):
         if key in litellm_data and isinstance(litellm_data[key], dict):
             return litellm_data[key]
     return None
+
+
+def _candidate_eligible_tiers(feed_entry: dict, heuristic_tiers: list[str]) -> list[str]:
+    """Heuristic-only scores are guesses: such candidates are recorded but stay out of every tier pool
+    until a curator (or a feed carrying explicit `scores`) promotes them."""
+    if not isinstance(feed_entry.get("scores"), dict):
+        return []
+    tiers = feed_entry.get("eligible_tiers")
+    return list(tiers) if isinstance(tiers, list) else heuristic_tiers
+
+
+def _discovered_harness_support(provider: str, requested) -> list[str]:
+    hosted = PROVIDER_HARNESS_HOSTING.get(provider, set())
+    default = sorted(hosted - set(CLOSED_HARNESSES), key=DERIVED_HARNESSES.index)
+    if isinstance(requested, list) and requested:
+        default = [h for h in requested if h in hosted and h not in CLOSED_HARNESSES]
+    return default
 
 
 def _ensure_omp_provider_model(catalog: dict, provider: str, model_id: str, name: str, ctx: int, max_out: int, reasoning: bool):
@@ -214,20 +267,20 @@ def fetch_and_merge(catalog: dict, timeout: float = 5.0) -> list[str]:
             if key in models:
                 continue
             mid = key.split("/", 1)[1]
+            if not _is_chat_litellm_entry(mid, entry):
+                continue
             inp_1m = round((entry.get("input_cost_per_token") or 0.0) * 1_000_000, 4)
             out_1m = round((entry.get("output_cost_per_token") or 0.0) * 1_000_000, 4)
             ctx = int(entry.get("max_input_tokens") or entry.get("max_tokens") or 200000)
             max_out = int(entry.get("max_output_tokens") or 32768)
             scores = entry.get("scores") if isinstance(entry.get("scores"), dict) else _heuristic_scores_from_metadata(mid, ctx, inp_1m, out_1m, bool(entry.get("supports_reasoning", True)))
-            elig = entry.get("eligible_tiers") if isinstance(entry.get("eligible_tiers"), list) else (
-                ["Low", "Medium"] if out_1m <= 5.5 else ["High", "XHigh"] if out_1m <= 20.0 else ["XHigh", "Max"]
-            )
+            elig = _candidate_eligible_tiers(entry, ["Low", "Medium"] if out_1m <= 5.5 else ["High", "XHigh"] if out_1m <= 20.0 else ["XHigh", "Max"])
             models[key] = {
                 "provider": prov,
                 "model_id": mid,
                 "family": _infer_family(key),
                 "display_name": entry.get("display_name") or mid,
-                "harness_support": entry.get("harness_support") or (["omp", "claude", "agy", "hermes"] if prov == "anthropic" else ["omp", "agy", "hermes"]),
+                "harness_support": _discovered_harness_support(prov, entry.get("harness_support")),
                 "eligible_tiers": elig,
                 "reasoning": bool(entry.get("supports_reasoning", True)),
                 "context_window": ctx,
@@ -262,7 +315,7 @@ def fetch_and_merge(catalog: dict, timeout: float = 5.0) -> list[str]:
             oid = str(item.get("id", ""))
             tail = oid.split("/", 1)[-1]
             target = models.get(oid) or by_tail.get(tail)
-            if not target:
+            if not target or target.get("provider") not in DIRECT_FEED_PROVIDERS:
                 continue
             ctx = item.get("context_length")
             if isinstance(ctx, int) and ctx > 0:
@@ -304,9 +357,7 @@ def fetch_and_merge(catalog: dict, timeout: float = 5.0) -> list[str]:
             reasoning = bool(item.get("reasoning", True))
             if full_id not in models:
                 scores = item.get("scores") if isinstance(item.get("scores"), dict) else _heuristic_scores_from_metadata(raw_mid, ctx, 0.0, 0.0, reasoning)
-                elig = item.get("eligible_tiers") if isinstance(item.get("eligible_tiers"), list) else (
-                    ["Low", "Medium"] if "flash" in raw_mid else ["Medium", "High", "XHigh"]
-                )
+                elig = _candidate_eligible_tiers(item, ["Low", "Medium"] if "flash" in raw_mid else ["Medium", "High", "XHigh"])
                 models[full_id] = {
                     "provider": "opencode-go",
                     "model_id": raw_mid,
@@ -868,10 +919,66 @@ def build_derived_outputs(root: Path, catalog: dict) -> dict[Path, str]:
     return outputs
 
 
+def _strip_effort(ref: str) -> str:
+    base, sep, suffix = ref.rpartition(":")
+    return base if sep and suffix.lower() in ("low", "medium", "high", "xhigh", "max", "minimal", "off") else ref
+
+
+def validate_harness_models(catalog: dict) -> list[str]:
+    """Every model a harness is routed to must really be hostable by that harness."""
+    errors: list[str] = []
+    models = catalog.get("models") or {}
+    allowlist = catalog.get("harness_model_allowlist") or {}
+
+    for key, meta in models.items():
+        hosted = PROVIDER_HARNESS_HOSTING.get(meta.get("provider"))
+        for h in meta.get("harness_support") or []:
+            if hosted is not None and h not in hosted:
+                errors.append(f"models.{key}: provider '{meta.get('provider')}' is not hosted by harness '{h}'")
+            if h in allowlist and meta.get("model_id") not in allowlist[h]:
+                errors.append(f"models.{key}: '{meta.get('model_id')}' is not in harness_model_allowlist.{h}")
+
+    native_aliases = set(catalog.get("legacy_aliases") or {})
+
+    def check(harness: str, ref: str, where: str) -> None:
+        if not isinstance(ref, str) or not ref:
+            return
+        ref = _strip_effort(ref)
+        matches = [k for k, m in models.items() if k == ref or m.get("model_id") == ref]
+        if not matches:
+            if harness == "claude" and ref in native_aliases:
+                return
+            errors.append(f"{where}: '{ref}' is not in the model catalog")
+        elif not any(harness in (models[k].get("harness_support") or []) for k in matches):
+            errors.append(f"{where}: '{ref}' is not available in harness '{harness}'")
+
+    for harness, hcfg in (catalog.get("harnesses") or {}).items():
+        for tname, t in (hcfg.get("tiers") or {}).items():
+            if not isinstance(t, dict):
+                continue
+            check(harness, t.get("model"), f"harnesses.{harness}.{tname}")
+            for fb in t.get("fallbacks") or []:
+                check(harness, fb.get("model"), f"harnesses.{harness}.{tname}.fallback")
+            for cand in t.get("candidates") or []:
+                check(harness, cand.get("model"), f"harnesses.{harness}.{tname}.candidate")
+            for sr, srd in (t.get("sub_routes") or {}).items():
+                check(harness, (srd or {}).get("model"), f"harnesses.{harness}.{tname}.sub_route.{sr}")
+
+    omp_cfg = catalog.get("omp_config") or {}
+    for role, ref in (omp_cfg.get("modelRoles") or {}).items():
+        check("omp", ref, f"omp_config.modelRoles.{role}")
+    for cname, entries in (omp_cfg.get("retry_fallbackChains") or {}).items():
+        for ref in entries or []:
+            check("omp", ref, f"omp_config.retry_fallbackChains.{cname}")
+    return errors
+
+
 def _validate_written_tree(root: Path) -> tuple[bool, str]:
     for h in DERIVED_HARNESSES:
         json.loads((root / "agent" / "harnesses" / h / "model-routing.json").read_text(encoding="utf-8"))
-    json.loads(canonical_catalog_path(root).read_text(encoding="utf-8"))
+    model_errors = validate_harness_models(json.loads(canonical_catalog_path(root).read_text(encoding="utf-8")))
+    if model_errors:
+        return False, "harness model availability:\n" + "\n".join(f"  {e}" for e in model_errors)
     json.loads((root / "agent" / "harnesses" / "omp" / "sol-pi.json").read_text(encoding="utf-8"))
     if yaml is not None:
         yaml.safe_load((root / "agent" / "harnesses" / "omp" / "models.yml").read_text(encoding="utf-8"))
