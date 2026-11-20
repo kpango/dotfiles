@@ -2,7 +2,7 @@
         arch/install arch/p1/install arch/desk/install arch/desk/audit arch/clean \
         mac/install m1/install m1air/install m3/install mac/clean \
         claude/install claude/docker/install \
-        omp/install omp/docker/install omp/models/update omp/models/sync omp/models/timer/install \
+        omp/install omp/docker/install omp/models/update omp/models/sync omp/models/timer/install omp/auth/dedupe \
         agy/install agy/docker/install \
         hermes/install hermes/docker/install hermes/systemd/install hermes/cron/install hermes/cron/check \
         agent-decide/systemd/install \
@@ -695,10 +695,15 @@ omp/install: dotfiles/install
 	@find "$(HOME)/.omp/agent/extensions" -maxdepth 1 -type l ! -exec test -e {} \; -delete
 	@find "$(HOME)/.omp/agent/extensions/lib" -maxdepth 1 -type l ! -exec test -e {} \; -delete
 	@$(call LINK_DIR_FUNC,$(ROOTDIR)/agent/harnesses/omp/themes,$(HOME)/.omp/agent/themes)
+	@python3 "$(ROOTDIR)/agent/scripts/omp-auth-dedupe.py" --apply
 	@echo "Sharing OMP session: $(ROOT_HOME)/.omp -> $(HOME)/.omp"
 	@if ! sudo mountpoint -q $(ROOT_HOME)/.omp 2>/dev/null; then \
 		sudo $(RM) $(ROOT_HOME)/.omp && sudo ln -sfvn "$(HOME)/.omp" $(ROOT_HOME)/.omp; \
 	fi
+
+## disable superseded duplicate OMP api_key logins (backup taken; keeps newest per provider)
+omp/auth/dedupe:
+	python3 "$(ROOTDIR)/agent/scripts/omp-auth-dedupe.py" --apply
 
 ## fetch public/local model feeds and run daily Pareto optimization across tiers
 omp/models/update:
