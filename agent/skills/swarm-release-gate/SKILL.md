@@ -21,7 +21,9 @@ disable-model-invocation: false
    ```
 
    - vald: `make test/pkg` 等の既存 make ターゲットを実行（Makefile 構造には触れない）
-   - dotfiles: 全 JSON validity・全 Dockerfile hadolint（`.hadolint.yaml` 準拠）・zsh 構文検査
+   - dotfiles: 全 JSON validity・全 Dockerfile hadolint（`.hadolint.yaml` 準拠）・zsh 構文検査・
+     swarm 回帰テスト 8 本（`agent/skills`）・`trail check`（Trail 未導入時は SKIP）・Harness²
+     オフライン検証（`agent/scripts/test-harness2-offline.sh`）
    - 詳細ログはスクリプトが `/tmp/${CLAUDE_CODE_SESSION_ID:-manual}/swarm/` に書き、コンテキストへは要約と
      失敗末尾のみ返る
 

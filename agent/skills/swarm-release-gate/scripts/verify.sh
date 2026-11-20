@@ -68,20 +68,39 @@ case "$root" in
     echo "== zsh syntax: done"
 
     # swarm スクリプトの回帰テスト (fable budget/gate・nesting guard・graph compile・
-    # harness guard・self-improve register、計 251 件規模)。
+    # harness guard・self-improve register、計 256 件規模)。
     # 各テストは HOME/registry/fixture を mktemp へ隔離するため実カウンタ・grant・ログを汚さない。
+    # パスは agent/skills（正典）。旧 claude/skills は 2026-09-03 の SSoT 集約で廃止済み。
     for t in \
-      "$root/claude/skills/swarm-implement/scripts/test-fable-guard.sh" \
-      "$root/claude/skills/swarm-implement/scripts/test-fable-gate.sh" \
-      "$root/claude/skills/swarm-loop/scripts/test-nesting-guards.sh" \
-      "$root/claude/skills/swarm-loop/scripts/test-loop-status.sh" \
-      "$root/claude/skills/swarm-loop/scripts/test-self-improve-register.sh" \
-      "$root/claude/skills/swarm-graph/scripts/test-graph-compile.sh" \
-      "$root/claude/skills/swarm-meta/scripts/test-harness-guard.sh" \
-      "$root/claude/skills/swarm-implement/scripts/test-parallel-gate.sh"; do
+      "$root/agent/skills/swarm-implement/scripts/test-fable-guard.sh" \
+      "$root/agent/skills/swarm-implement/scripts/test-fable-gate.sh" \
+      "$root/agent/skills/swarm-loop/scripts/test-nesting-guards.sh" \
+      "$root/agent/skills/swarm-loop/scripts/test-loop-status.sh" \
+      "$root/agent/skills/swarm-loop/scripts/test-self-improve-register.sh" \
+      "$root/agent/skills/swarm-graph/scripts/test-graph-compile.sh" \
+      "$root/agent/skills/swarm-meta/scripts/test-harness-guard.sh" \
+      "$root/agent/skills/swarm-implement/scripts/test-parallel-gate.sh"; do
       [ -f "$t" ] || continue
       run "swarm tests: $(basename "$t")" bash "$t"
     done
+
+    # trail: 変更 diff と .trail/learnings/ の衝突検査（決定論的・$0・LLM 不要）。
+    # Trail 未導入の環境は hook/skill と同じく fail-open とし、SKIP を明示する。
+    if command -v trail >/dev/null 2>&1; then
+      run "trail check (learnings conflict)" trail check
+    else
+      echo "== trail check: SKIP (trail not installed)"
+    fi
+
+    # Harness² (arXiv:2610.14224): 決定論的オフライン検証（Security Monotonicity Gate /
+    # Training+Hold-Out probe / EXPERIENCE 冪等性）。sandbox 不可の環境では fail-closed 経路
+    # 自体を検証するため、スクリプトが rc=2 を返すのは仕様（テスト内で判定される）。
+    h2_test="$root/agent/scripts/test-harness2-offline.sh"
+    if [ -f "$h2_test" ]; then
+      run "harness2 offline (security monotonicity gate)" bash "$h2_test"
+    else
+      echo "== harness2 offline: SKIP (test script missing)"
+    fi
     ;;
   *)
     echo "unknown repo: $root — 検証セットが未定義。人間に確認せよ" >&2
