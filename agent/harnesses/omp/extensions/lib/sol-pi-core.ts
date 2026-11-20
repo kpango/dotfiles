@@ -418,6 +418,105 @@ const MAX_LINE_BYTES = 512;
 const MAX_EXCERPT_BYTES = 8192;
 const MAX_SCAN_LINE_CHARS = 2048;
 
+/** Upstream placeholder excerpt: 1 KiB split evenly between the head and the tail. */
+const PLACEHOLDER_EXCERPT_BYTES = 1024;
+const EXCERPT_READ_BYTES = 8192;
+const MAX_EXCERPT_CACHE = 64;
+const excerptCache = new Map<string, string[]>();
+
+/** Whole lines from the start of `text`, as long as they fit `budget` bytes. */
+function wholeLineHead(text: string, budget: number): string[] {
+  const out: string[] = [];
+  let used = 0;
+  for (const line of text.split("\n")) {
+    const n = byteLen(line) + (out.length > 0 ? 1 : 0);
+    if (used + n > budget) break;
+    out.push(line);
+    used += n;
+  }
+  return out;
+}
+
+/** Whole lines from the END of `text` that fit `budget` bytes, in file order. */
+function wholeLineTail(text: string, budget: number): string[] {
+  const lines = text.split("\n");
+  const picked: string[] = [];
+  let used = 0;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    const n = byteLen(lines[i]) + (picked.length > 0 ? 1 : 0);
+    if (used + n > budget) break;
+    picked.push(lines[i]);
+    used += n;
+  }
+  return picked.reverse();
+}
+
+/** Head/tail excerpt with an omission marker between the two halves. */
+const excerpt = (headSource: string, tailSource: string, totalLines: number): string[] => {
+  const headLines = wholeLineHead(headSource, PLACEHOLDER_EXCERPT_BYTES / 2);
+  const tailLines = wholeLineTail(tailSource, PLACEHOLDER_EXCERPT_BYTES / 2);
+  const omitted = Math.max(0, totalLines - headLines.length - tailLines.length);
+  const out: string[] = [...headLines];
+  if (omitted > 0 && (headLines.length > 0 || tailLines.length > 0)) out.push(`… (${omitted} lines omitted) …`);
+  out.push(...tailLines);
+  return out;
+};
+
+/**
+ * Head/tail excerpt of the ALREADY-MASKED archive, read with positioned reads so a
+ * multi-megabyte result never has to be loaded to render its placeholder. Best-effort:
+ * a pruned (or otherwise unusable) archive yields no excerpt.
+ */
+export function archiveExcerpt(archivePath: string, totalLines: number): string[] {
+  const cached = excerptCache.get(archivePath);
+  if (cached) return cached;
+  let out: string[] = [];
+  try {
+    const st = lstatOrNull(archivePath);
+    if (st && isOwnRegular(st) && (st.mode & 0o777) === 0o600) {
+      const fd = fs.openSync(archivePath, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+      try {
+        const size = st.size;
+        const chunk = Math.min(size, EXCERPT_READ_BYTES);
+        const headBuf = Buffer.alloc(chunk);
+        const headLen = chunk > 0 ? fs.readSync(fd, headBuf, 0, chunk, 0) : 0;
+        const tailStart = Math.max(0, size - EXCERPT_READ_BYTES);
+        const tailBuf = Buffer.alloc(Math.min(size, EXCERPT_READ_BYTES));
+        const tailLen = tailBuf.length > 0 ? fs.readSync(fd, tailBuf, 0, tailBuf.length, tailStart) : 0;
+        let headText = headBuf.subarray(0, headLen).toString("utf8");
+        let tailText = tailBuf.subarray(0, tailLen).toString("utf8");
+        if (size > chunk) {
+          // a truncated read ends mid-line: drop that partial line
+          const cut = headText.lastIndexOf("\n");
+          headText = cut >= 0 ? headText.slice(0, cut) : "";
+        }
+        if (tailStart > 0) {
+          // ... and starts mid-line on the tail side
+          const cut = tailText.indexOf("\n");
+          tailText = cut >= 0 ? tailText.slice(cut + 1) : "";
+        }
+        const perSide = PLACEHOLDER_EXCERPT_BYTES / 2;
+        if (totalLines === 0) {
+          out = [];
+        } else if (tailStart === 0) {
+          // the whole file came back in one read
+          const all = wholeLineHead(tailText, PLACEHOLDER_EXCERPT_BYTES);
+          out = all.length >= totalLines ? all : excerpt(headText || tailText, tailText, totalLines);
+        } else {
+          out = excerpt(headText, tailText, totalLines);
+        }
+      } finally {
+        fs.closeSync(fd);
+      }
+    }
+  } catch {
+    out = [];
+  }
+  if (excerptCache.size >= MAX_EXCERPT_CACHE) excerptCache.delete(excerptCache.keys().next().value as string);
+  excerptCache.set(archivePath, out);
+  return out;
+}
+
 /** head/tail excerpt of ALREADY-MASKED lines: non-overlapping, capped per line and in total. */
 function excerptLines(maskedLines: string[], head: number, tail: number, totalCap: number): string[] {
   const headPart = maskedLines.slice(0, head);
@@ -707,10 +806,12 @@ export async function runActionFusionValidator(
 // ---------------------------------------------------------------------------
 // Action Fusion: then_run (fused follow-up command)
 //
-// Upstream declares `then_run` on its own mutation tools; OMP's edit/write are
-// built in, so the same contract is read from the tool call input. Both the
-// mutation's completion and the command run inside one queue slot per canonical
-// file path, and the file must be untouched between them (hash guard).
+// Upstream declares `then_run` on its own mutation tools and runs mutation and
+// command inside ONE queue slot per canonical file path; OMP's edit/write are
+// built in and run before this extension sees the result, so only the command
+// takes the queue. Concurrency is therefore weaker than upstream: an edit landing
+// between the mutation and the queue acquisition is invisible to the hash guard,
+// which starts its baseline on entry. The guard does close the yield window.
 // ---------------------------------------------------------------------------
 export const THEN_RUN_SUCCEEDED = "[then_run:succeeded]";
 export const THEN_RUN_FAILED = "[then_run:failed]";
@@ -1067,13 +1168,19 @@ export function formatObservationPlaceholder(o: {
   lines: number;
   archivePath: string;
   fullReplayRequests: number;
+  /** Head/tail excerpt of the masked archive (upstream prints one in the placeholder). */
+  excerpt?: string[];
 }): string {
-  return [
+  const body = [
     `${OBSERVATION_MARKER} ${o.fullReplayRequests} provider requests: ${o.toolName} result, ${o.bytes} bytes, ${o.lines} lines]`,
     `id: ${o.id}`,
     `archive: ${o.archivePath}`,
     `The full text (secrets masked) is on disk. To read it back, call the obs_recall tool with id "${o.id}" and optional offset/limit (line numbers, 1-based).`,
-  ].join("\n");
+  ];
+  if (o.excerpt && o.excerpt.length > 0) {
+    body.push("--- excerpt (secrets masked) ---", ...o.excerpt);
+  }
+  return body.join("\n");
 }
 
 export interface PackedProjection {
@@ -1158,8 +1265,10 @@ export function packProjectionMessages(
 
   for (let i = 0; i < out.length; i++) {
     if (assistantAfter[i] < c.fullReplayTurns) continue; // still inside the full-replay window
-    const msg = out[i] as { role?: string; toolCallId?: string; toolName?: string; content?: unknown };
+    const msg = out[i] as { role?: string; toolCallId?: string; toolName?: string; content?: unknown; isError?: boolean };
     if (!msg || msg.role !== "toolResult" || !("content" in msg)) continue;
+    // Upstream packs successful output only: a failed result is evidence and stays verbatim.
+    if (msg.isError === true) continue;
     const raw = textOfMessageContent(msg.content);
     if (!raw || byteLen(raw) <= c.minBytesThreshold) continue;
     if (isObservationPlaceholder(raw) || isEvidenceReceiptBody(raw)) continue;
@@ -1184,6 +1293,7 @@ export function packProjectionMessages(
       lines: rec.lines,
       archivePath: rec.archivePath,
       fullReplayRequests: c.fullReplayTurns,
+      excerpt: archiveExcerpt(rec.archivePath, rec.lines),
     });
     const images = Array.isArray(msg.content)
       ? (msg.content as { type?: string }[]).filter((p) => p && p.type !== "text")
@@ -1842,9 +1952,13 @@ export interface CompactionDecision {
 }
 
 /**
- * Upstream online-context-compact policy: compact only when the request budget is nearly
- * exhausted (fewer than remainingRequestsTrigger requests left at the observed output
- * rate) and the archive that would be summarized is large enough to pay for itself.
+ * OMP adaptation, NOT the upstream policy. Upstream online-context-compact is an
+ * economics model (cost per request + cache debt repayment, a horizon over
+ * remaining requests, cache-ratio cooldown and window protection); this port keeps
+ * a request-budget heuristic instead: compact when fewer than
+ * remainingRequestsTrigger requests remain at the observed output rate and the
+ * archive is at least minArchiveTokens. Porting the upstream economics is tracked
+ * as a remaining fidelity gap in the SoL-Pi audit (2026-11-21).
  */
 export function decideCompaction(input: {
   usage?: { tokens: number; contextWindow: number };

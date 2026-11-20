@@ -1030,6 +1030,26 @@ describe("sol-pi.ts: ObservationPack projection", () => {
     expect(env.messages[0].content[0].text).toBe(raw);
     expect(fs.existsSync(cfg.observationPackConfig.archiveDir)).toBe(false);
   });
+  test("the placeholder carries a head/tail excerpt of the masked archive", async () => {
+    const m = mockPi(extCfg());
+    const raw = bigPlain();
+    const res: any = await m.h.context({ messages: [toolResultMsg(raw), assistantMsg(), assistantMsg()] }, m.ctx(tmp));
+    const text = res.messages[0].content[0].text as string;
+    // first and last source lines are visible without a recall round-trip
+    expect(text).toContain("row 0 ");
+    expect(text).toContain("row 399 ");
+    expect(text).toMatch(/… \(\d+ lines omitted\) …/);
+    // the excerpt is bounded: far smaller than the 10 KiB+ raw result
+    expect(Buffer.byteLength(text)).toBeLessThan(4096);
+  });
+  test("a failed tool result is never packed (it is evidence)", async () => {
+    const m = mockPi(extCfg());
+    const raw = bigPlain();
+    const failed = { ...toolResultMsg(raw), isError: true };
+    const res: any = await m.h.context({ messages: [failed, assistantMsg(), assistantMsg()] }, m.ctx(tmp));
+    expect(res).toBeUndefined();
+    expect(failed.content[0].text).toBe(raw);
+  });
   test("small results and evidence receipts are never packed", async () => {
     const m = mockPi(extCfg());
     const receipt = `sol_pi_evidence_receipt_v1\n${"y".repeat(20000)}`;
@@ -2111,20 +2131,24 @@ describe("sol-pi.ts: then_run wiring", () => {
     const d = fs.mkdtempSync(path.join(tmp, "trw-"));
     const f = writeFile(d, "ok.json");
     const ev: any = editEvent(f, "echo fused-ok", { content: [{ type: "text", text: "edit applied" }] });
-    const res = await m.h.tool_result(ev, m.ctx(d));
+    const res: any = await m.h.tool_result(ev, m.ctx(d));
     const text = merged(res);
     expect(text).toContain("edit applied");
     expect(text).toContain("[then_run:succeeded]");
     expect(text).toContain("fused-ok");
+    expect(res.isError).toBeUndefined();
   });
   test("a failing command keeps the edit result and marks [then_run:failed]", async () => {
     const m = mockPi(extCfg());
     const d = fs.mkdtempSync(path.join(tmp, "trw-"));
     const f = writeFile(d, "fail.json");
     const ev: any = editEvent(f, { command: "echo nope; exit 7" }, { content: [{ type: "text", text: "edit applied" }] });
-    const text = merged(await m.h.tool_result(ev, m.ctx(d)));
+    const res: any = await m.h.tool_result(ev, m.ctx(d));
+    const text = merged(res);
     expect(text).toContain("edit applied");
     expect(text).toContain("[then_run:failed] (exit code 7)");
+    // upstream reports the fused failure as a failed tool result
+    expect(res.isError).toBe(true);
   });
   test("a failed mutation skips the command ([then_run:skipped], nothing runs)", async () => {
     const m = mockPi(extCfg());
@@ -2132,9 +2156,11 @@ describe("sol-pi.ts: then_run wiring", () => {
     const f = writeFile(d, "skip.json");
     const log = path.join(d, "ran.log");
     const ev: any = editEvent(f, `echo ran >> ${JSON.stringify(log)}`, { isError: true, content: [{ type: "text", text: "edit failed" }] });
-    const text = merged(await m.h.tool_result(ev, m.ctx(d)));
+    const res: any = await m.h.tool_result(ev, m.ctx(d));
+    const text = merged(res);
     expect(text).toContain("[then_run:skipped]");
     expect(fs.existsSync(log)).toBe(false);
+    expect(res.isError).toBe(true);
   });
   test("then_run is inert when actionFusion.thenRun.enabled is false", async () => {
     const cfg = extCfg();

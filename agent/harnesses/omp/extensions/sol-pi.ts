@@ -308,15 +308,28 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
 
     // Action Fusion: the edit call may carry a fused follow-up command (`then_run`).
     const thenRun = af.enabled && af.thenRun.enabled ? parseThenRun(event.input?.then_run) : undefined;
-    if (thenRun) extras.push(await fuseThenRun(ctx, cwd, name, thenRun, files, failed));
+    let thenRunFailed = false;
+    if (thenRun) {
+      const fused = await fuseThenRun(ctx, cwd, name, thenRun, files, failed);
+      extras.push(fused.text);
+      thenRunFailed = fused.failed;
+    }
     if (extras.length === 0) return undefined;
-    return { content: [...(Array.isArray(event.content) ? event.content : []), ...extras.map((text) => ({ type: "text", text }))] };
+    const result: { content: { type: string; text: string }[]; isError?: boolean } = {
+      content: [...(Array.isArray(event.content) ? event.content : []), ...extras.map((text) => ({ type: "text", text }))],
+    };
+    // Upstream marks a failed/skipped fused command as a failed tool result, so the model
+    // cannot mistake the mutation's success for the command's outcome.
+    if (thenRunFailed) result.isError = true;
+    return result;
   });
 
   /**
    * Run the edit call's `then_run` in the same observation as the mutation.
    * A failed mutation never reaches the command (`[then_run:skipped]`); the
    * mutation stays applied either way, and the marker is always present.
+   * `failed` mirrors upstream, which reports a failed or skipped fused command as
+   * a failed tool result (`isError`).
    */
   const fuseThenRun = async (
     ctx: Ctx,
@@ -325,9 +338,9 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
     spec: ThenRunSpec,
     files: string[],
     mutationFailed: boolean,
-  ): Promise<string> => {
-    if (mutationFailed) return `${THEN_RUN_SKIPPED} ${toolName} did not complete successfully; the command was not run.`;
-    if (files.length === 0) return `${THEN_RUN_SKIPPED} no edited file was recorded for this call; the command was not run.`;
+  ): Promise<{ text: string; failed: boolean }> => {
+    if (mutationFailed) return { text: `${THEN_RUN_SKIPPED} ${toolName} did not complete successfully; the command was not run.`, failed: true };
+    if (files.length === 0) return { text: `${THEN_RUN_SKIPPED} no edited file was recorded for this call; the command was not run.`, failed: true };
     const target = path.resolve(cwd, files[0]);
     try {
       const r = await runThenRun({
@@ -337,13 +350,15 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
         timeoutMs: config.actionFusionConfig.thenRun.timeoutSec * 1000,
         maxOutputChars: config.actionFusionConfig.thenRun.maxOutputChars,
       });
-      if (r.status === "succeeded") return r.output ? `${r.marker}\n$ ${spec.command}\n${r.output}` : `${r.marker}\n$ ${spec.command}`;
-      if (r.status === "skipped") return `${r.marker} ${r.output}`;
+      if (r.status === "succeeded") {
+        return { text: r.output ? `${r.marker}\n$ ${spec.command}\n${r.output}` : `${r.marker}\n$ ${spec.command}`, failed: false };
+      }
+      if (r.status === "skipped") return { text: `${r.marker} ${r.output}`, failed: true };
       const exit = r.exitCode !== undefined ? ` (exit code ${r.exitCode})` : r.timedOut ? " (timeout)" : "";
-      return `${r.marker}${exit}\n$ ${spec.command}\n${r.output}`;
+      return { text: `${r.marker}${exit}\n$ ${spec.command}\n${r.output}`, failed: true };
     } catch (e) {
       notify(ctx, `[SoL-Pi Action Fusion] then_run error: ${(e as Error).message}`);
-      return `${THEN_RUN_FAILED}\n$ ${spec.command}\n${(e as Error).message}`;
+      return { text: `${THEN_RUN_FAILED}\n$ ${spec.command}\n${(e as Error).message}`, failed: true };
     }
   };
 
