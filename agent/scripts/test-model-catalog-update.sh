@@ -212,7 +212,7 @@ assert (r / "agent/harnesses/omp/model-routing.json").read_text() == orig_omp, "
 PY
 check "Rollback atomicity restores catalog.json and derived files on validation failure" 1
 
-# 3b. sol-pi.json extension keys (*Config) survive render; OMP Lean Profile is rendered
+# 3b. sol-pi.json upstream shape + omp namespace survive render; OMP Lean Profile is rendered
 python3 -I -B - "$TMP_REPO" <<'PYEOF'
 import importlib.util, json, sys
 from pathlib import Path
@@ -224,17 +224,17 @@ spec.loader.exec_module(upd)
 
 catalog = json.loads((r / "agent/models/catalog.json").read_text())
 orig = json.loads((r / "agent/harnesses/omp/sol-pi.json").read_text())
-cfg_keys = [k for k in orig if k.endswith("Config")]
-assert cfg_keys, "fixture sol-pi.json must carry *Config keys"
 bool_keys = [k for k, v in orig.items() if isinstance(v, bool)]
-assert bool_keys, "fixture sol-pi.json must carry top-level booleans"
+assert bool_keys, "fixture sol-pi.json must carry top-level mechanism booleans"
+assert orig.get("version") == 1, "fixture sol-pi.json must be upstream-shaped (version: 1)"
+assert isinstance(orig.get("omp"), dict) and orig["omp"], "fixture sol-pi.json must carry the omp namespace"
 
 out = json.loads(upd.render_sol_pi_json(json.dumps(orig), catalog))
-for k in cfg_keys + bool_keys + ["version", "ref"]:
+for k in bool_keys + ["version", "omp", "cacheWriteReadRatio"]:
     assert out[k] == orig[k], f"render_sol_pi_json lost or changed {k}"
-extra = dict(orig, futureKnobConfig={"enabled": True})
+extra = dict(orig, omp=dict(orig["omp"], futureKnob={"enabled": True}))
 out2 = json.loads(upd.render_sol_pi_json(json.dumps(extra), catalog))
-assert out2["futureKnobConfig"] == {"enabled": True}, "unknown *Config key dropped"
+assert out2["omp"]["futureKnob"] == {"enabled": True}, "unknown omp-namespace key dropped"
 
 import yaml
 bare = "defaultThinkingLevel: high\n\nmodelRoles:\n  default: a/b:high\n\nretry:\n  fallbackChains:\n    default:\n      - a/b:high\n"
@@ -246,7 +246,7 @@ for k in ("todo", "memory", "commit", "disassembler"):
 again = upd.render_omp_config_yml(upd.render_omp_config_yml(bare, catalog), catalog)
 assert again == upd.render_omp_config_yml(bare, catalog), "lean profile render is not idempotent"
 PYEOF
-check "sol-pi.json *Config/boolean keys preserved; OMP Lean Profile rendered idempotently" 1
+check "sol-pi.json upstream shape + omp namespace preserved; OMP Lean Profile rendered idempotently" 1
 
 
 # 4. Bun dynamic catalog loader unit test

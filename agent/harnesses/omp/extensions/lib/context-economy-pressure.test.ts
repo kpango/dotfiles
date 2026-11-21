@@ -46,6 +46,9 @@ function harness(modelProvider: string, modelId: string): Harness {
       // Tool registration is not a side effect (no model/compaction mutation): keep it
       // out of the sideEffects recorder so ob_recall / online_plan registration stays inert.
       registerTool: (_t: any) => void 0,
+      // Session-entry journaling of the online state (upstream appends one entry per
+      // provider request) is bookkeeping, not a model/compaction side effect.
+      appendEntry: () => void 0,
     },
     {
       get(t: any, k: string) {

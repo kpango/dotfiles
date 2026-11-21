@@ -1,71 +1,63 @@
 {
   "version": 1,
-  "ref": "arXiv:2609.20519",
+  "cacheWriteReadRatio": 12.5,
   "actionFusion": true,
   "observationPack": true,
   "evidencePreservingReducer": true,
   "evidencePreservingReducerProvider": "opencode-go",
   "evidencePreservingReducerModel": "deepseek-v4.1-flash",
   "onlineContextCompact": false,
-  "pricingCliffAdvisory": true,
-  "cacheWriteReadRatio": 12.5,
-  "actionFusionConfig": {
-    "enabled": true,
-    "timeoutMs": 15000,
-    "barrier": true,
-    "defaultValidators": {
-      ".go": "go vet ./...",
-      ".rs": "cargo check --quiet",
-      ".nix": "nix-instantiate --parse",
-      ".sh": "bash -n",
-      ".json": "python3 -I -m json.tool",
-      ".py": "python3 -I -m py_compile"
+  "omp": {
+    "ref": "arXiv:2609.20519",
+    "pricingCliffAdvisory": true,
+    "actionFusion": {
+      "timeoutMs": 15000,
+      "barrier": true,
+      "defaultValidators": {
+        ".go": "go vet ./...",
+        ".rs": "cargo check --quiet",
+        ".nix": "nix-instantiate --parse",
+        ".sh": "bash -n",
+        ".json": "python3 -I -m json.tool",
+        ".py": "python3 -I -m py_compile"
+      },
+      "thenRun": {
+        "enabled": true,
+        "timeoutSec": 120,
+        "maxOutputChars": 4000
+      }
     },
-    "thenRun": {
-      "enabled": true,
-      "timeoutSec": 120,
-      "maxOutputChars": 4000
+    "observationPack": {
+      "minBytesThreshold": 10240,
+      "fullReplayTurns": 2,
+      "headLines": 20,
+      "tailLines": 15,
+      "archiveDir": "",
+      "maxArchiveFiles": 200,
+      "maxArchiveBytes": 67108864,
+      "recallMaxBytes": 16384,
+      "recallMaxLines": 200
+    },
+    "evidencePreservingReducer": {
+      "minBytesThreshold": 4096,
+      "maxInputBytes": 600000,
+      "maxProviderChars": 600000,
+      "timeoutMs": 90000,
+      "maxCallsPerSession": 12,
+      "cacheEntries": 64,
+      "minAcceptedRatio": 1,
+      "failClosedOnQuoteMismatch": true,
+      "verifyExitCode": true,
+      "redactSecrets": true
+    },
+    "onlineContextCompact": {
+      "respectPricingCliffs": true,
+      "tokenPressureThreshold": 180000,
+      "warnRatio": 0.85,
+      "keepRecentTokens": 20000,
+      "outputReserveTokens": 8192,
+      "compactOnSubtaskBoundary": true,
+      "maxCompactionsPerSession": 0
     }
-  },
-  "observationPackConfig": {
-    "enabled": true,
-    "minBytesThreshold": 10240,
-    "fullReplayTurns": 2,
-    "headLines": 20,
-    "tailLines": 15,
-    "archiveDir": "/tmp/omp-obs-pack",
-    "maxArchiveFiles": 200,
-    "maxArchiveBytes": 67108864,
-    "recallMaxBytes": 16384,
-    "recallMaxLines": 200
-  },
-  "evidencePreservingReducerConfig": {
-    "enabled": true,
-    "provider": "opencode-go",
-    "model": "deepseek-v4.1-flash",
-    "minBytesThreshold": 4096,
-    "maxInputBytes": 65536,
-    "maxFindings": 12,
-    "maxEvidence": 12,
-    "maxProviderChars": 200000,
-    "timeoutMs": 120000,
-    "maxCallsPerSession": 12,
-    "cacheEntries": 64,
-    "minAcceptedRatio": 0.5,
-    "failClosedOnQuoteMismatch": true,
-    "verifyExitCode": true,
-    "redactSecrets": true
-  },
-  "onlineContextCompactConfig": {
-    "enabled": true,
-    "tokenPressureThreshold": 180000,
-    "respectPricingCliffs": true,
-    "compactOnSubtaskBoundary": true,
-    "warnRatio": 0.85,
-    "remainingRequestsTrigger": 6,
-    "minArchiveTokens": 16384,
-    "keepRecentTokens": 20000,
-    "outputReserveTokens": 8192,
-    "maxCompactionsPerSession": 3
   }
 }

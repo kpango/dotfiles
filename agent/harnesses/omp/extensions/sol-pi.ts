@@ -13,42 +13,69 @@
  *    after the result has been sent `fullReplayTurns` times. History keeps the raw
  *    text; `obs_recall` pages the archive back on demand.
  * 3. Evidence-Preserving Reducer — a cheap side model turns a large build/test log
- *    into a receipt whose every quote is verified against a full raw line; failures
- *    fall back to the deterministic excerpt (never a fabricated receipt). Receipts
- *    are journalled so a restart never pays twice.
- * 4. Online compaction — Estimate the remaining request budget from observed output
- *    tokens; at a settle boundary with fewer than `remainingRequestsTrigger` requests
- *    left, compact once with plan/evidence-preserving instructions. An unneeded
- *    native compaction (usage below window−reserve) is cancelled.
+ *    into an upstream-contract receipt (schema + source hash + status + verified
+ *    evidence) whose every quote must occur byte for byte in the archived log;
+ *    failures fall back to the deterministic excerpt (never a fabricated receipt).
+ *    Receipts are journalled so a restart never pays twice.
+ * 4. Online compaction — Upstream economics (breakeven vs. the plan-boundary request
+ *    horizon, cache-debt repayment, post-compaction cooldown, absolute window
+ *    protection). At a settle boundary the decision is priced; window protection
+ *    stays absolute, everything else is deferred while cooldown/debt forbid it. An
+ *    unneeded native compaction (usage below window−reserve) is cancelled.
  *
  * The `/sol-pi` command reports status; nothing here switches models.
  */
 import { createHash } from "node:crypto";
+import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { completeSimple } from "@oh-my-pi/pi-ai";
 import type { ExtensionAPI } from "@oh-my-pi/pi-coding-agent";
 import {
   ONLINE_STATE_ENTRY,
+  PLAN_STATUSES,
   ReducerJournal,
-  applyPlanTransition,
+  analyzePlanTransition,
   archiveObservation,
   archiveTokensFor,
-  buildEvidenceReceipt,
-  buildReducerProviderPrompt,
+  COMPACTION_FAILED_RESUME_REMINDER,
+  POST_COMPACTION_PLAN_REMINDER,
+  RECOVERABLE_COMPACTION_ERRORS,
+  SKIPPED_COMPACTION_REMINDER,
+  DIAGNOSTIC_COMMAND,
+  estimateMessageTokens,
+  isObj,
+  parsePlanSteps,
+  parseProgressSummary,
+  restoreOnlineState,
+  MAX_PLAN_STEPS,
+  type CompactionDecision,
+  type ProgressSummary,
+  evidenceReceiptText,
+  EXIT_STATUS_LINE,
+  LIKELY_SECRET,
+  reducerInput,
+  reducerInstructions,
+  reducerPromptBody,
+  sha256hex,
+  validateEvidenceReceipt,
+  type ReceiptProvider,
   compactionInstructions,
   decideCompaction,
+  DEFAULT_NATIVE_SUMMARY_TOKEN_ESTIMATE,
   detectEditThenBash,
   parseThenRun,
   runThenRun,
   evaluateOnlineCompaction,
   formatPlanSnapshot,
   initialOnlineState,
-  isBuildOrTestCommand,
   isEditTool,
   loadSolPiConfig,
-  normalizePlan,
-  parseOnlineState,
   packProjectionMessages,
+  recordBoundary,
+  recordCompaction,
+  recordCompletedPlanHandoff,
+  recordCorrection,
+  recordProviderRequest,
   readObservationChunk,
   redactSecrets,
   reduceAndArchive,
@@ -59,6 +86,7 @@ import {
   type OnlineState,
   type PlanStep,
   THEN_RUN_FAILED,
+  THEN_RUN_SUCCEEDED,
   THEN_RUN_SKIPPED,
   type SolPiConfig,
   type ThenRunSpec,
@@ -68,6 +96,11 @@ import { extractWrittenPaths } from "./stop-verify";
 interface TextPart {
   type?: string;
   text?: string;
+}
+interface ToolDetails {
+  exitCode?: number;
+  timedOut?: boolean;
+  meta?: { truncation?: { artifactId?: string } };
 }
 interface ToolEvent {
   toolName?: string;
@@ -79,6 +112,14 @@ interface ToolEvent {
   toolCallId?: string;
   result?: unknown;
   content?: unknown;
+  details?: ToolDetails;
+}
+interface Reducible {
+  command: string;
+  body: string;
+  /** undefined = the result carried no exit signal (never rendered as 0) */
+  exitFailed: boolean | undefined;
+  apply: (receipt: string) => void;
 }
 interface UsageLike {
   // pi-ai style
@@ -99,14 +140,18 @@ interface UsageLike {
 }
 interface Ctx {
   cwd?: string;
-  model?: { id?: string };
+  model?: { id?: string; contextWindow?: number };
   ui?: { notify?: (msg: string, level: "info" | "warning" | "error") => void };
   getContextUsage?: () => { tokens: number; contextWindow: number; percent: number } | undefined;
-  compact?: (opts: { internalGuidance?: string }) => Promise<void>;
+  getSystemPrompt?: () => string[];
+  isIdle?: () => boolean;
+  abort?: () => void;
+  compact?: (opts?: { internalGuidance?: string; customInstructions?: string }) => Promise<void>;
   sessionManager?: {
     getSessionDir?: () => string;
     getSessionId?: () => string;
     getBranch?: () => { type?: string; customType?: string; data?: unknown }[];
+    getArtifactPath?: (id: string) => Promise<string | null>;
   };
   modelRegistry?: {
     find: (provider: string, modelId: string) => unknown;
@@ -114,8 +159,8 @@ interface Ctx {
   };
 }
 interface TurnEvent {
-  message?: { model?: string; usage?: UsageLike };
-  toolResults?: { toolName?: string }[];
+  message?: { model?: string; usage?: UsageLike; role?: string; stopReason?: string };
+  toolResults?: { toolName?: string; toolCallId?: string; isError?: boolean }[];
 }
 interface ContextEvent {
   messages?: unknown[];
@@ -195,9 +240,18 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   let postFailureBash = 0;
   let lastLevel: "ok" | "warn" | "exceeded" = "ok";
   let lastAdvice = "";
-  let lastProjection: unknown[] = [];
   let lastUsage: { tokens: number; contextWindow: number } | undefined;
   let reducerCalls = 0;
+  // Upstream online-context-compact runtime (session-scoped, never persisted).
+  // `pendingBoundary` is armed by update_plan, `selected` holds the priced
+  // boundary compaction that runs once the run settles.
+  let pendingBoundary: { toolCallId: string } | undefined;
+  let selected: { decision: CompactionDecision } | undefined;
+  let activeDebt: { debtTokens: number; repaymentTokens: number } | undefined;
+  let compactionInFlight = false;
+  let requestPending = false;
+  let compactionRefused = false;
+  let observedMessages: unknown[] = [];
   const stats = {
     packed: 0,
     rawBytes: 0,
@@ -209,6 +263,15 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   };
 
   const notify = (ctx: Ctx, m: string, level: "info" | "warning" | "error" = "warning") => ctx.ui?.notify?.(m, level);
+  const resetOnlineRuntime = () => {
+    observedMessages = [];
+    pendingBoundary = undefined;
+    selected = undefined;
+    activeDebt = undefined;
+    compactionInFlight = false;
+    requestPending = false;
+    compactionRefused = false;
+  };
   const persist = () => {
     try {
       pi.appendEntry(ONLINE_STATE_ENTRY, state);
@@ -223,17 +286,14 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
     recentTools.length = 0;
     editedFiles.clear();
     archived.clear();
-    lastProjection = [];
     lastValidatorFailed = false;
     postFailureBash = 0;
     lastLevel = "ok";
     lastAdvice = "";
     stats.packed = stats.rawBytes = stats.savedBytes = stats.reduced = stats.reducedFallback = stats.recalled = stats.compactions = 0;
-    state = initialOnlineState();
+    resetOnlineRuntime();
+    state = restoreOnlineState(ctx.sessionManager?.getBranch?.() ?? []);
     const sessionDir = ctx.sessionManager?.getSessionDir?.() ?? undefined;
-    for (const entry of ctx.sessionManager?.getBranch?.() ?? []) {
-      if (entry.type === "custom" && entry.customType === ONLINE_STATE_ENTRY) state = parseOnlineState(entry.data);
-    }
     archiveDir = resolveArchiveDir(config, sessionDir);
     journal = sessionDir
       ? new ReducerJournal(path.join(sessionDir, "sol-pi", "reducer.jsonl"), config.evidencePreservingReducerConfig.cacheEntries)
@@ -364,112 +424,215 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
 
   // -------------------------------------------------------------------------
   // Evidence-Preserving Reducer: large build/test logs -> verified receipt.
+  //
+  // Candidate = a bash result whose command is a build/test invocation, or an
+  // edit/write result whose fused `then_run` appended a marker. The body is the
+  // exact command output (the session artifact when the tool spilled it), the
+  // receipt follows the upstream contract (schema, source hash, status,
+  // uncertain, verified evidence), and a rejected receipt falls back to the
+  // deterministic excerpt.
   // -------------------------------------------------------------------------
-  pi.on("tool_result", async (event: ToolEvent, ctx: Ctx) => {
+  const exactBody = async (inline: string, details: ToolDetails | undefined, ctx: Ctx): Promise<string> => {
+    const id = details?.meta?.truncation?.artifactId ?? inline.match(/local:\/\/(\d+)\.log/u)?.[1];
+    if (!id || !ctx.sessionManager?.getArtifactPath) return inline;
+    try {
+      const file = await ctx.sessionManager.getArtifactPath(id);
+      return file ? await fs.readFile(file, "utf8") : inline;
+    } catch {
+      return inline;
+    }
+  };
+
+  const inlineExitFailed = (inline: string): boolean | undefined => {
+    const match = inline.match(EXIT_STATUS_LINE);
+    return match ? Number(match[1]) !== 0 : undefined;
+  };
+
+  const reducibleResult = async (event: ToolEvent, details: ToolDetails | undefined, ctx: Ctx): Promise<Reducible | undefined> => {
     const name = String(event.toolName ?? event.tool ?? "tool");
+    if (name === "bash") {
+      const command = typeof event.input?.command === "string" ? event.input.command : "";
+      const slot = textSlots(event)[0];
+      if (!command || !slot) return undefined;
+      const inline = slot.get();
+      const exitCode = typeof details?.exitCode === "number" ? details.exitCode : undefined;
+      return {
+        command,
+        body: await exactBody(inline, details, ctx),
+        exitFailed: exitCode !== undefined ? exitCode !== 0 : inlineExitFailed(inline),
+        apply: (receipt) => slot.set(receipt),
+      };
+    }
+    if (name !== "write" && name !== "edit") return undefined;
+    const spec = parseThenRun(event.input?.then_run);
+    if (!spec?.command) return undefined;
+    for (const slot of textSlots(event)) {
+      const text = slot.get();
+      // The first marker in the block is the one action fusion wrote; the
+      // command's own output may quote either marker later on.
+      const succeeded = text.indexOf(THEN_RUN_SUCCEEDED);
+      const failed = text.indexOf(THEN_RUN_FAILED);
+      const markerIndex = succeeded < 0 ? failed : failed < 0 ? succeeded : Math.min(succeeded, failed);
+      if (markerIndex < 0) continue;
+      const marker = text.startsWith(THEN_RUN_FAILED, markerIndex) ? THEN_RUN_FAILED : THEN_RUN_SUCCEEDED;
+      const suffixStart = markerIndex + marker.length;
+      const suffix = text.slice(suffixStart);
+      const separator = suffix.match(/^(?:\r?\n)+/u)?.[0] ?? "\n";
+      const inline = suffix.slice(separator.length);
+      return {
+        command: spec.command,
+        body: await exactBody(inline, details, ctx),
+        // Fused results carry no structured exit code, so a failed marker or
+        // pi's own status line decides; a passing command whose last line reads
+        // like a status notice is left unreduced (conservative).
+        exitFailed: marker === THEN_RUN_FAILED || inlineExitFailed(inline) === true,
+        apply: (receipt) => slot.set(`${text.slice(0, suffixStart)}${separator}${receipt}`),
+      };
+    }
+    return undefined;
+  };
+
+  pi.on("tool_result", async (event: ToolEvent, ctx: Ctx) => {
     const rc = config.evidencePreservingReducerConfig;
-    const command = typeof event.input?.command === "string" ? event.input.command : "";
-    if (!rc.enabled || name !== "bash" || !isBuildOrTestCommand(command)) return undefined;
-    const slot = textSlots(event).find((s) => Buffer.byteLength(s.get()) >= rc.minBytesThreshold);
-    if (!slot) return undefined;
-    const raw = slot.get();
-    const exitCode = resolveExitCode(event);
-    const key = event.toolCallId || createHash("sha256").update(name).update("\0").update(raw).digest("hex").slice(0, 24);
+    if (!rc.enabled) return undefined;
+    const details = event.details;
+    const reducible = await reducibleResult(event, details, ctx);
+    if (!reducible || !DIAGNOSTIC_COMMAND.test(reducible.command)) return undefined;
+    const { command, body, exitFailed, apply } = reducible;
+    if (Buffer.byteLength(body) < rc.minBytesThreshold) return undefined;
+    const isError = Boolean(event.isError);
+    const key = event.toolCallId || createHash("sha256").update(reducible.command).update("\0").update(body).digest("hex").slice(0, 24);
+    const logFallback = (reason: string, extra: Record<string, unknown> = {}) => journal?.record({ key, status: "fallback", reason, ...extra });
+
+    if (exitFailed !== undefined && exitFailed !== isError) {
+      logFallback("exit-state-mismatch", { isError, exitFailed });
+      return undefined;
+    }
+    if (body.length > rc.maxInputBytes) {
+      logFallback("source-over-max-chars", { sourceChars: body.length, maxChars: rc.maxInputBytes });
+      return undefined;
+    }
+    if (LIKELY_SECRET.test(body)) {
+      logFallback("likely-secret");
+      return undefined;
+    }
 
     const cached = journal?.entries.get(key);
     if (cached?.status === "applied" && cached.receipt) {
-      slot.set(cached.receipt);
+      apply(cached.receipt);
       stats.reduced++;
       return undefined;
     }
-    if (!rc.provider || !rc.model || !ctx.modelRegistry) {
-      return undefined; // nothing to call; leave the raw log intact
-    }
+    if (!rc.provider || !rc.model || !ctx.modelRegistry) return undefined; // nothing to call; leave the raw log intact
     if (reducerCalls >= rc.maxCallsPerSession) {
-      journal?.record({ key, status: "fallback", reason: "call-budget" });
+      logFallback("call-budget");
       return undefined;
     }
     const model = ctx.modelRegistry.find(rc.provider, rc.model);
     if (!model) {
       notify(ctx, `[SoL-Pi Reducer] model ${rc.provider}/${rc.model} is not available; log left unreduced.`);
-      journal?.record({ key, status: "fallback", reason: "no-model" });
+      logFallback("reducer-model-unavailable");
       return undefined;
     }
 
-    reducerCalls++;
+    // The body the model and the receipt both refer to is the masked log.
+    const masked = redactSecrets(body);
+    let archive: { archivePath: string };
     try {
-      const masked = redactSecrets(raw);
-      const sessionDir = ctx.sessionManager?.getSessionDir?.();
-      const archive = archiveObservation(name, raw, config, masked, sessionDir);
-      const prompt = buildReducerProviderPrompt({
-        toolName: name,
-        command,
-        exitCode,
-        maskedLog: masked,
-        maxChars: rc.maxProviderChars,
-      });
-      const signal = AbortSignal.timeout(rc.timeoutMs);
+      archive = archiveObservation(String(event.toolName ?? "bash"), body, config, masked, ctx.sessionManager?.getSessionDir?.());
+    } catch (e) {
+      logFallback("archive-failed", { error: (e as Error).message.slice(0, 120) });
+      notify(ctx, `[SoL-Pi Reducer] reducer could not archive; output left untouched: ${(e as Error).message}`);
+      return undefined;
+    }
+    const source = {
+      hash: sha256hex(masked),
+      bytes: Buffer.byteLength(masked),
+      lines: masked === "" ? 0 : masked.split("\n").length,
+      path: archive.archivePath,
+    };
+    reducerCalls++;
+    let providerText = "";
+    let provider: ReceiptProvider = { provider: rc.provider, model: rc.model, totalTokens: 0 };
+    try {
+      const prompt = reducerInput(command, isError, source, promptBody(masked, rc.maxProviderChars));
       const res = await completeSimple(
         model as Parameters<typeof completeSimple>[0],
-        { systemPrompt: ["You compress logs into evidence-preserving receipts. Reply with JSON only."], messages: [{ role: "user", content: prompt, timestamp: Date.now() }] },
+        { systemPrompt: [reducerInstructions()], messages: [{ role: "user", content: prompt, timestamp: Date.now() }] },
         {
           apiKey: ctx.modelRegistry.resolver(model, ctx.sessionManager?.getSessionId?.()) as string,
           maxTokens: 2048,
           temperature: 0,
           disableReasoning: true,
-          signal,
+          signal: AbortSignal.timeout(rc.timeoutMs),
         },
       );
-      if (res.stopReason === "error" || res.stopReason === "aborted") {
-        throw new Error(res.errorMessage ?? `provider stopped: ${res.stopReason}`);
-      }
-      const providerText = res.content
+      providerText = res.content
         .filter((c: { type: string }) => c.type === "text")
         .map((c: { type: string; text?: string }) => c.text ?? "")
-        .join("\n");
-      const receipt = buildEvidenceReceipt({
-        toolName: name,
-        exitCode,
-        rawLog: raw,
-        providerText,
-        archivePath: archive.archivePath,
-        maxFindings: rc.maxFindings,
-        maxEvidence: rc.maxEvidence,
-        minAcceptedRatio: rc.minAcceptedRatio,
-      });
-      if (!receipt.ok || !receipt.receipt) {
-        journal?.record({ key, status: "fallback", reason: receipt.reason, archivePath: archive.archivePath });
+        .join("");
+      provider = {
+        provider: typeof res.provider === "string" ? res.provider : rc.provider,
+        model: typeof res.model === "string" ? res.model : rc.model,
+        totalTokens: typeof res.usage?.totalTokens === "number" ? res.usage.totalTokens : 0,
+      };
+      if (res.stopReason !== "stop" && res.stopReason !== "length") {
+        logFallback("model-response-error", { stopReason: res.stopReason, errorMessage: res.errorMessage });
         stats.reducedFallback++;
-        notify(ctx, `[SoL-Pi Reducer] provider reduction failed; deterministic fallback used: ${receipt.reason}`);
-        // Fail closed to the deterministic excerpt; it archives the same masked raw log.
-        deterministicFallback(ctx, slot, command, raw, exitCode);
+        deterministicFallback(ctx, apply, command, body, resolveExitCode(event));
         return undefined;
       }
-      journal?.record({
-        key,
-        status: "applied",
-        receipt: receipt.receipt,
-        archivePath: archive.archivePath,
-        receiptBytes: Buffer.byteLength(receipt.receipt),
-        archiveBytes: Buffer.byteLength(raw),
-      });
-      slot.set(receipt.receipt);
-      stats.reduced++;
-      return undefined;
     } catch (e) {
+      const name = (e as Error).name;
+      logFallback(name === "AbortError" || name === "TimeoutError" ? "model-call-timeout" : "model-call-exception", {
+        error: (e as Error).message.slice(0, 120),
+      });
       stats.reducedFallback++;
-      journal?.record({ key, status: "fallback", reason: `error:${(e as Error).message.slice(0, 120)}` });
       notify(ctx, `[SoL-Pi Reducer] provider reduction failed; deterministic fallback used: ${(e as Error).message}`);
-      deterministicFallback(ctx, slot, command, raw, exitCode);
+      deterministicFallback(ctx, apply, command, body, resolveExitCode(event));
       return undefined;
     }
+
+    const checked = validateEvidenceReceipt(providerText, source, masked, isError);
+    if (!checked.ok) {
+      journal(checked.reason, { archivePath: archive.archivePath });
+      stats.reducedFallback++;
+      notify(ctx, `[SoL-Pi Reducer] provider reduction failed; deterministic fallback used: ${checked.reason}`);
+      deterministicFallback(ctx, apply, command, body, resolveExitCode(event));
+      return undefined;
+    }
+    const receipt = evidenceReceiptText(command, source, checked.value, provider);
+    const receiptBytes = Buffer.byteLength(receipt);
+    if (receiptBytes >= source.bytes * (rc.minAcceptedRatio || 1)) {
+      logFallback("receipt-not-smaller", { receiptBytes, archiveBytes: source.bytes });
+      stats.reducedFallback++;
+      deterministicFallback(ctx, apply, command, body, resolveExitCode(event));
+      return undefined;
+    }
+    journal?.record({
+      key,
+      status: "applied",
+      receipt,
+      archivePath: archive.archivePath,
+      receiptBytes,
+      archiveBytes: source.bytes,
+    });
+    apply(receipt);
+    stats.reduced++;
+    return undefined;
   });
 
   /** Deterministic excerpt path; a failure here leaves the raw log in place and is reported. */
-  const deterministicFallback = (ctx: Ctx, slot: Slot, command: string, raw: string, exitCode: number | undefined) => {
+  const deterministicFallback = (
+    ctx: Ctx,
+    apply: (text: string) => void,
+    command: string,
+    raw: string,
+    exitCode: number | undefined,
+  ) => {
     try {
       const det = reduceAndArchive(command, raw, exitCode, config);
-      if (det.reduced) slot.set(det.text);
+      if (det.reduced) apply(det.text);
     } catch (e) {
       notify(ctx, `[SoL-Pi Reducer] reducer could not archive; output left untouched: ${(e as Error).message}`);
     }
@@ -481,7 +644,8 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   pi.on("context", async (event: ContextEvent, ctx: Ctx) => {
     lastUsage = ctx.getContextUsage?.() ?? lastUsage;
     const messages = event.messages ?? [];
-    lastProjection = messages;
+    observedMessages = messages;
+    requestPending = true;
     let packed;
     try {
       packed = packProjectionMessages(messages, {
@@ -495,6 +659,7 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
       return undefined;
     }
     if (packed.packed.length === 0) return undefined;
+    observedMessages = packed.messages;
     stats.packed += packed.packed.length;
     stats.rawBytes += packed.packed.reduce((s, p) => s + p.bytes, 0);
     stats.savedBytes += packed.savedBytes;
@@ -503,64 +668,225 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   });
 
   // -------------------------------------------------------------------------
+  // Provider-request accounting (upstream records one request at every
+  // before_provider_request, with the context size the request actually sent).
+  // -------------------------------------------------------------------------
+  const requestContextTokens = (ctx: Ctx): number => {
+    const system = (ctx.getSystemPrompt?.() ?? []).join("\n");
+    const estimated =
+      observedMessages.reduce((sum, message) => sum + estimateMessageTokens(message), 0) + Math.ceil(system.length / 4);
+    const reported = ctx.getContextUsage?.()?.tokens;
+    if (typeof reported === "number" && Number.isSafeInteger(reported) && reported > 0) return Math.max(reported, estimated);
+    return estimated;
+  };
+
+  pi.on("before_provider_request", async (_event: unknown, ctx: Ctx) => {
+    if (!requestPending) return undefined;
+    requestPending = false;
+    state = recordProviderRequest(state, requestContextTokens(ctx));
+    persist();
+    return undefined;
+  });
+
+  // A completed assistant turn carries the provider usage, so the next request
+  // is not counted again when a retry replays an aborted response.
+  pi.on("message_end", async (event: { message?: { role?: string } }) => {
+    if (event.message?.role === "assistant") requestPending = false;
+    return undefined;
+  });
+
+  // Branch navigation restores that branch's newest state entry; a session
+  // switch or clear starts with nothing carried over.
+  pi.on("session_tree", async (_event: unknown, ctx: Ctx) => {
+    resetOnlineRuntime();
+    state = restoreOnlineState(ctx.sessionManager?.getBranch?.() ?? []);
+    persist();
+    return undefined;
+  });
+
+  pi.on("session_switch", async () => {
+    resetOnlineRuntime();
+    state = initialOnlineState();
+    return undefined;
+  });
+
+  pi.on("session_clear", async () => {
+    resetOnlineRuntime();
+    state = initialOnlineState();
+    return undefined;
+  });
+
+  // -------------------------------------------------------------------------
   // Usage accounting + Pricing Cliff advisory (unchanged).
   // -------------------------------------------------------------------------
   pi.on("turn_end", async (event: TurnEvent, ctx: Ctx) => {
     const usage = event.message?.usage;
     if (usage) {
-      state.requestCount++;
       state.outputTokens += Math.max(0, usage.output ?? usage.outputTokens ?? 0);
       lastUsage = lastUsage ?? (ctx.getContextUsage?.() ?? undefined);
     }
-    if (!usage || !config.pricingCliffAdvisoryConfig.enabled) return;
-    const tokens = usageContextTokens(usage);
-    if (tokens === undefined) return;
-    const modelId = String(event.message?.model ?? ctx.model?.id ?? "");
-    const advice = evaluateOnlineCompaction(tokens, modelId, config.cacheWriteReadRatio, config);
-    lastAdvice = advice.message;
-    if (advice.level !== lastLevel && advice.level !== "ok") notify(ctx, `[SoL-Pi] ${advice.message}`);
-    lastLevel = advice.level;
+    if (usage && config.pricingCliffAdvisoryConfig.enabled) {
+      const tokens = usageContextTokens(usage);
+      if (tokens !== undefined) {
+        const modelId = String(event.message?.model ?? ctx.model?.id ?? "");
+        const advice = evaluateOnlineCompaction(tokens, modelId, config.cacheWriteReadRatio, config);
+        lastAdvice = advice.message;
+        if (advice.level !== lastLevel && advice.level !== "ok") notify(ctx, `[SoL-Pi] ${advice.message}`);
+        lastLevel = advice.level;
+      }
+    }
+
+    // A rejected boundary must not become feasible from plan chatter alone:
+    // require real tool work or new user input before pricing another one.
+    const toolResults = event.toolResults ?? [];
+    if (toolResults.some((result) => result.toolName !== "update_plan" && !result.isError)) compactionRefused = false;
+
+    const subtask = config.onlineContextCompactConfig.compactOnSubtaskBoundary
+      ? toolResults.find((result) => result.toolName === "task" && !result.isError)
+      : undefined;
+    const boundary = pendingBoundary ?? (subtask ? { toolCallId: String(subtask.toolCallId ?? "") } : undefined);
+    pendingBoundary = undefined;
+
+    const oc = config.onlineContextCompactConfig;
+    if (!boundary || selected || compactionRefused || !oc.enabled || !ctx.compact) return;
+    if (oc.maxCompactionsPerSession > 0 && state.nativeCompactionCount >= oc.maxCompactionsPerSession) return;
+    const toolResult = toolResults.find((result) => result.toolCallId === boundary.toolCallId);
+    if (event.message?.stopReason === "error" || event.message?.stopReason === "aborted") return;
+    if (!toolResult || toolResult.isError) return;
+
+    const decision = priceBoundaryCompaction(ctx);
+    if (!decision?.compact) return;
+    // Stop the run at this boundary; the compaction itself runs once the run
+    // settles, so the summary is not written into a live turn.
+    selected = { decision };
+    ctx.abort?.();
   });
 
   // -------------------------------------------------------------------------
-  // Online compaction at settle boundaries.
+  // Boundary compaction (upstream online-context-compact index.ts).
+  //
+  // Price the pending boundary from the request the provider actually served:
+  // its context size is the cache-write cost, and the archive (everything the
+  // keep-tail drops) less the memo is what the compaction repays.
   // -------------------------------------------------------------------------
-  const maybeCompact = async (boundary: "agent_end" | "session_stop", ctx: Ctx): Promise<void> => {
+  const priceBoundaryCompaction = (ctx: Ctx): CompactionDecision | undefined => {
     const oc = config.onlineContextCompactConfig;
-    if (!oc.enabled || !ctx.compact) return;
-    if (boundary === "agent_end" && !oc.compactOnSubtaskBoundary) return;
     const usage = ctx.getContextUsage?.() ?? lastUsage;
-    const archiveTokens = archiveTokensFor(lastProjection, oc.keepRecentTokens);
-    const decision = decideCompaction({ usage, state, archiveTokens, config });
-    if (!decision.compact) return;
-    state.pendingCompaction = true;
-    persist();
+    const contextTokens = usage?.tokens ?? requestContextTokens(ctx);
+    const archiveTokens = archiveTokensFor(observedMessages, oc.keepRecentTokens);
+    const averageContextTokenIncrement =
+      state.positiveContextDeltaCount === 0 ? null : state.positiveContextDeltaTotal / state.positiveContextDeltaCount;
+    const priced = decideCompaction({
+      writeTokens: contextTokens,
+      archiveTokens,
+      memoTokens: DEFAULT_NATIVE_SUMMARY_TOKEN_ESTIMATE,
+      contextTokens,
+      completedBoundaryRequestCounts: state.completedBoundaryRequestCounts,
+      remainingBoundaries: state.plan.filter((step) => step.status !== "completed").length,
+      averageContextTokenIncrement,
+      contextWindowTokens:
+        usage && usage.contextWindow > 0 ? usage.contextWindow : (ctx.model?.contextWindow ?? null),
+      priorCompactionCount: state.nativeCompactionCount,
+      requestsSinceLastCompaction:
+        state.lastCompactionRequestCount === null ? null : state.requestCount - state.lastCompactionRequestCount,
+      carriedDebtTokens: state.cacheDebtTokens,
+      cacheDebtRepaymentTokens: state.cacheDebtRepaymentTokens,
+      cacheWriteReadRatio: config.cacheWriteReadRatio,
+      economics: { ...oc.economics, windowReserveTokens: oc.outputReserveTokens },
+    });
+    // A settled session has nothing to summarize: never compact without an archive.
+    return priced.compact && archiveTokens === 0
+      ? { ...priced, compact: false, reason: "native_not_compactable" as const }
+      : priced;
+  };
+
+  const isUserAbort = (error: Error): boolean =>
+    error.name === "AbortError" || error.name === "CompactionCancelledError" || error.message === "Compaction cancelled";
+  const isRecoverableCompactionError = (error: Error): boolean =>
+    error.name === "ManualCompactionNoOpError" || RECOVERABLE_COMPACTION_ERRORS.has(error.message);
+
+  const continueParentTask = (ctx: Ctx, content: string): void => {
     try {
-      await ctx.compact({ internalGuidance: compactionInstructions(state) });
-      state.compactions++;
-      stats.compactions++;
-      state.lastCompactionAt = Date.now();
+      pi.sendMessage({ customType: "sol-pi-online-context-compact", content, display: false }, { triggerTurn: true });
     } catch (e) {
-      notify(ctx, `[SoL-Pi] boundary compaction did not run: ${(e as Error).message}`, "info");
-    } finally {
-      state.pendingCompaction = false;
-      persist();
+      notify(ctx, `[SoL-Pi] could not resume the parent task: ${(e as Error).message}`);
     }
   };
 
+  /**
+   * Run the selected boundary compaction once the run has settled.
+   *
+   * A successful compaction resumes the parent task with the plan reminder (the
+   * run was stopped at a safe point, so silence would look like a finished task).
+   * A recoverable refusal is reported and the task resumes with the skipped
+   * reminder; any other failure resumes once and is then rethrown so the real
+   * error is not swallowed.
+   */
+  const flushSelectedCompaction = async (ctx: Ctx): Promise<void> => {
+    const pending = selected;
+    if (!pending || compactionInFlight || !ctx.compact) return;
+    if (ctx.isIdle && !ctx.isIdle()) return;
+    selected = undefined;
+    activeDebt = {
+      debtTokens: pending.decision.postCompactionTokens * (pending.decision.incrementalCacheCostRatio ?? 0),
+      repaymentTokens: Math.max(0, pending.decision.archiveTokens - pending.decision.memoTokens),
+    };
+    let compacted = false;
+    let compactionError: Error | undefined;
+    compactionInFlight = true;
+    try {
+      // We dispatch our own resume turn after the compaction; without this the
+      // harness would also auto-continue and double-prompt.
+      await ctx.compact({ internalGuidance: compactionInstructions(state), suppressContinuation: true });
+      compacted = true;
+    } catch (e) {
+      compactionError = e as Error;
+      activeDebt = undefined;
+    } finally {
+      compactionInFlight = false;
+    }
+    const failure = compactionError && !isUserAbort(compactionError) ? compactionError : undefined;
+    const recoverable = failure !== undefined && isRecoverableCompactionError(failure);
+    if (recoverable) {
+      compactionRefused = true;
+      try {
+        pi.appendEntry("sol-pi-online-context-compact-skipped", { reason: failure.message });
+      } catch {
+        // A banner-only session may not accept entries; the notice below still lands.
+      }
+      notify(ctx, `[SoL-Pi] online compaction skipped: ${failure.message}`, "warning");
+    }
+    const resume = compacted
+      ? POST_COMPACTION_PLAN_REMINDER
+      : recoverable
+        ? SKIPPED_COMPACTION_REMINDER
+        : failure
+          ? COMPACTION_FAILED_RESUME_REMINDER
+          : undefined;
+    activeDebt = undefined;
+    if (resume) continueParentTask(ctx, resume);
+    if (failure && !recoverable) throw failure;
+  };
+
+  // `agent_end` is the run's terminal signal in OMP (willContinue covers an
+  // automatic continuation), and `session_stop` catches a settle that skipped it.
   pi.on("agent_end", async (event: AgentEndEvent, ctx: Ctx) => {
     if (event.willContinue || event.awaitingAsyncWork) return;
-    await maybeCompact("agent_end", ctx);
+    await flushSelectedCompaction(ctx);
   });
 
   pi.on("session_stop", async (_event: unknown, ctx: Ctx) => {
-    await maybeCompact("session_stop", ctx);
+    await flushSelectedCompaction(ctx);
     return undefined;
   });
 
-  // An unneeded native compaction (usage below window - reserve) is cancelled.
-  pi.on("session_before_compact", async (_event: unknown, ctx: Ctx) => {
-    if (state.pendingCompaction) return undefined;
+  // A compaction is deferred to the selected boundary: consuming it here would
+  // leave the stopped run with no continuation.
+  pi.on("session_before_compact", async (event: { customInstructions?: string }, ctx: Ctx) => {
+    if (compactionInFlight) return undefined;
+    // An explicit request (user/plan mode) carries instructions and is honored.
+    if (event?.customInstructions) return undefined;
+    if (selected) return { cancel: true };
     const usage = ctx.getContextUsage?.() ?? lastUsage;
     if (!usage || usage.contextWindow <= 0) return undefined;
     const reserve = config.onlineContextCompactConfig.outputReserveTokens;
@@ -571,56 +897,144 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
     return undefined;
   });
 
+  // Every committed compaction advances the epoch (the context representation
+  // changed, so request spacing is measured anew); the debt carried for a
+  // compaction we initiated applies to exactly that one.
+  pi.on("session_compact", async (event: { fromExtension?: boolean }) => {
+    const debt = event?.fromExtension || !activeDebt ? { debtTokens: 0, repaymentTokens: 0 } : activeDebt;
+    state = recordCompaction(state, debt);
+    stats.compactions++;
+    pendingBoundary = undefined;
+    selected = undefined;
+    activeDebt = undefined;
+    requestPending = false;
+    observedMessages = [];
+    persist();
+    return undefined;
+  });
+
+  pi.on("session_before_tree", async () => {
+    if (!compactionInFlight) return undefined;
+    return { cancel: true };
+  });
+
   // -------------------------------------------------------------------------
-  // Correction tracking.
+  // Correction tracking + completed-plan handoff (upstream index.ts).
   // -------------------------------------------------------------------------
   pi.on("input", async (event: InputEvent) => {
-    if (event.source && event.source !== "interactive") return;
-    if (event.text && CORRECTION_RE.test(event.text)) {
-      state.corrections++;
+    // New input is a fresh start: a boundary rejected earlier may be priced again.
+    compactionRefused = false;
+    if (event.source && event.source !== "interactive") return undefined;
+    const text = event.text ?? "";
+    if (CORRECTION_RE.test(text) || text.startsWith("CORRECTION:")) {
+      // A correction invalidates the boundary, its selection, and any debt.
+      pendingBoundary = undefined;
+      selected = undefined;
+      activeDebt = undefined;
+      state = recordCorrection(state);
+      persist();
+      return undefined;
+    }
+    // A new task must not inherit the completed plan's request horizon.
+    const handedOff = recordCompletedPlanHandoff(state);
+    if (handedOff !== state) {
+      state = handedOff;
       persist();
     }
     return undefined;
   });
 
   // -------------------------------------------------------------------------
-  // update_plan tool (upstream online-context-compact plan state).
+  // update_plan tool (upstream online-context-compact plan.ts schema).
+  //
+  // Steps carry a stable id, so a completed step is a boundary the compaction
+  // economics can trust even after the goal text was folded into a summary.
   // -------------------------------------------------------------------------
+  const stringList = (value: unknown): string[] =>
+    Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+
   pi.registerTool({
     name: "update_plan",
     label: "Update Plan",
     loadMode: "essential",
     approval: "read",
     description:
-      "Create or update the session plan. Steps move pending -> in_progress -> completed; completed steps are terminal. Returns the normalized plan plus diagnostics.",
+      "Replace the complete working plan. Steps move pending -> in_progress -> completed; completed steps are terminal, so plan them one at a time and update as you go. Completing a previously registered unfinished step is a safe boundary where SoL-Pi may compact context when that is economical; a newly introduced completed step is recorded as history, not a boundary. Returns the plan snapshot plus diagnostics.",
     parameters: {
       type: "object",
       properties: {
-        plan: {
+        steps: {
           type: "array",
-          description: "The full plan, in order. Replaces the previous plan.",
+          minItems: 1,
+          maxItems: MAX_PLAN_STEPS,
+          description: "The complete plan, in order. Replaces the previous plan.",
           items: {
             type: "object",
             properties: {
-              step: { type: "string", description: "One concrete step (<= 200 chars)." },
-              status: { type: "string", enum: ["pending", "in_progress", "completed"] },
+              id: { type: "string", minLength: 1, description: "Stable step id; reuse it for the same goal." },
+              goal: { type: "string", minLength: 1, description: "One concrete step." },
+              status: { type: "string", enum: [...PLAN_STATUSES] },
             },
-            required: ["step", "status"],
+            required: ["id", "goal", "status"],
+            additionalProperties: false,
           },
         },
+        progress: {
+          type: "object",
+          description: "Evidence for the step completed in this update (files changed, verification, decisions).",
+          properties: {
+            files_changed: { type: "array", items: { type: "string" } },
+            verification: { type: "array", items: { type: "string" } },
+            decisions: { type: "array", items: { type: "string" } },
+          },
+          required: ["files_changed", "verification", "decisions"],
+          additionalProperties: false,
+        },
       },
-      required: ["plan"],
+      required: ["steps"],
+      additionalProperties: false,
     },
-    async execute(_toolCallId: string, params: { plan?: unknown }) {
-      const normalized = normalizePlan(params?.plan);
-      const transition = applyPlanTransition(state.plan, normalized.plan);
-      state.plan = transition.plan;
+    async execute(
+      toolCallId: string,
+      params: { steps?: unknown; progress?: unknown },
+      signal?: InterruptSignal,
+    ) {
+      if (signal?.aborted) throw new Error("Plan update was aborted");
+      const steps = parsePlanSteps(params?.steps);
+      if (!steps || steps.length === 0) throw new Error("Plan must contain at least one valid step");
+      const transition = analyzePlanTransition(state.plan, steps);
+      const completedIds = transition.completedSteps.map((step) => step.id);
+      const rawProgress = isObj(params?.progress) ? params.progress : undefined;
+      const progress: ProgressSummary | undefined =
+        completedIds.length > 0 && rawProgress
+          ? parseProgressSummary({
+              stepId: completedIds[0],
+              goal: transition.completedSteps[0]?.goal ?? "",
+              filesChanged: stringList(rawProgress.files_changed),
+              verification: stringList(rawProgress.verification),
+              decisions: stringList(rawProgress.decisions),
+              nextWork: steps.filter((step) => step.status !== "completed").map((step) => step.goal),
+            })
+          : undefined;
+      if (completedIds.length > 0) {
+        state = recordBoundary(state, steps, progress);
+        // Armed for the turn that carries this result; the run stops there.
+        if (!pendingBoundary) pendingBoundary = { toolCallId };
+      } else {
+        state = { ...state, plan: [...steps] };
+      }
       persist();
-      const diagnostics = [...normalized.diagnostics, ...transition.diagnostics];
-      const text = [formatPlanSnapshot(state.plan), diagnostics.length ? `Diagnostics:\n- ${diagnostics.join("\n- ")}` : ""]
-        .filter(Boolean)
-        .join("\n\n");
-      return { content: [{ type: "text", text }] };
+      const text = [formatPlanSnapshot(steps), ...transition.advice].join("\n");
+      return {
+        content: [{ type: "text", text }],
+        details: {
+          task_status: "active",
+          plan: steps,
+          boundary: completedIds.length > 0,
+          completed_step_ids: completedIds,
+          progress_recorded: progress !== undefined,
+        },
+      };
     },
   });
 
@@ -691,9 +1105,9 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
           `• Action Fusion: ${c.actionFusionConfig.enabled} (barrier ${c.actionFusionConfig.barrier}, timeout ${c.actionFusionConfig.timeoutMs}ms, post-failure bash ${postFailureBash})`,
           `• ObservationPack: ${c.observationPackConfig.enabled} (>${c.observationPackConfig.minBytesThreshold}B, full replay ${c.observationPackConfig.fullReplayTurns} requests, archive ${archiveDir})`,
           `• Reducer: ${c.evidencePreservingReducerConfig.enabled} (${c.evidencePreservingReducerConfig.provider}/${c.evidencePreservingReducerConfig.model}, >${c.evidencePreservingReducerConfig.minBytesThreshold}B, ${reducerCalls}/${c.evidencePreservingReducerConfig.maxCallsPerSession} calls)`,
-          `• Compaction: ${c.onlineContextCompactConfig.enabled} (trigger <${c.onlineContextCompactConfig.remainingRequestsTrigger} req, mean output ${mean}, done ${state.compactions}, pending ${state.pendingCompaction})`,
+          `• Compaction: ${c.onlineContextCompactConfig.enabled} (economics, cooldown ${c.onlineContextCompactConfig.economics.minimumRequestsSinceCompaction} req, mean output ${mean}, committed ${state.nativeCompactionCount}, boundary pending ${selected ? "yes" : "no"})`,
           `• Cliff advisory: level=${lastLevel}${lastAdvice ? ` — ${lastAdvice}` : ""}`,
-          `• Plan: ${state.plan.length} steps, corrections ${state.corrections}`,
+          `• Plan: epoch ${state.epoch}, ${state.plan.length} steps, ${state.pendingProgress.length} pending progress, ${state.completedBoundaryRequestCounts.length} boundary samples`,
         ].join("\n");
       }
       ctx.ui?.notify?.(msg, "info");

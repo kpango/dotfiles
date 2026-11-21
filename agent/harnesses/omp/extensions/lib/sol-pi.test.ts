@@ -15,6 +15,26 @@ import {
   selectObservationReplay,
   reduceEvidencePreserving,
   verifyQuotesInRawLog,
+  DIAGNOSTIC_COMMAND,
+  ONLINE_STATE_ENTRY,
+  RECEIPT_PREFIX,
+  parseOnlineState,
+  parsePlanSteps,
+  restoreOnlineState,
+  initialOnlineState,
+  recordProviderRequest,
+  recordBoundary,
+  recordCompaction,
+  recordCorrection,
+  analyzePlanTransition,
+  ONLINE_STATE_ENTRY as STATE_ENTRY,
+  RECEIPT_SCHEMA,
+  evidenceReceiptText,
+  reducerInput,
+  reducerInstructions,
+  reducerPromptBody,
+  sha256hex,
+  validateEvidenceReceipt,
   redactSecrets,
   evaluateOnlineCompaction,
   pricingCliffFor,
@@ -37,7 +57,7 @@ describe("loadSolPiConfig", () => {
     const c = loadSolPiConfig();
     expect(c.observationPackConfig.minBytesThreshold).toBe(10240);
     expect(c.observationPackConfig.fullReplayTurns).toBe(2);
-    expect(c.observationPackConfig.archiveDir).toBe("/tmp/omp-obs-pack");
+    expect(c.observationPackConfig.archiveDir).toBe("");
     expect(c.evidencePreservingReducerConfig.minBytesThreshold).toBe(4096);
     expect(c.evidencePreservingReducerConfig.failClosedOnQuoteMismatch).toBe(true);
     expect(c.cacheWriteReadRatio).toBe(12.5);
@@ -322,21 +342,17 @@ describe("redactSecrets (extended)", () => {
 });
 
 describe("loadSolPiConfig (hardening)", () => {
-  test("top-level boolean flags disable nested configs", () => {
+  test("the mechanism booleans are the only authority; a nested `enabled` is rejected", () => {
     const f = path.join(tmp, "flags.json");
     fs.writeFileSync(
       f,
       JSON.stringify({
+        version: 1,
         actionFusion: false,
         observationPack: false,
         evidencePreservingReducer: false,
         onlineContextCompact: false,
-        pricingCliffAdvisory: false,
-        pricingCliffAdvisoryConfig: { enabled: true },
-        actionFusionConfig: { enabled: true },
-        observationPackConfig: { enabled: true },
-        evidencePreservingReducerConfig: { enabled: true },
-        onlineContextCompactConfig: { enabled: true },
+        omp: { pricingCliffAdvisory: false },
       }),
     );
     const c = loadSolPiConfig(f);
@@ -346,16 +362,31 @@ describe("loadSolPiConfig (hardening)", () => {
     expect(c.onlineContextCompactConfig.enabled).toBe(false);
     expect(c.pricingCliffAdvisoryConfig.enabled).toBe(false);
     expect(packObservation("bash", "x".repeat(20000), 1, c).packed).toBe(false);
+
+    // A second `enabled` authority inside a section would be ambiguous: rejected.
+    const nested = path.join(tmp, "nested-enabled.json");
+    fs.writeFileSync(nested, JSON.stringify({ version: 1, actionFusion: false, omp: { actionFusion: { enabled: true } } }));
+    const warns: string[] = [];
+    const rejected = loadSolPiConfig(nested, (m) => warns.push(m));
+    expect(warns.join("\n")).toContain("unknown key omp.actionFusion.enabled");
+    expect(rejected.actionFusionConfig.enabled).toBe(true);
   });
-  test("prototype-pollution keys are ignored", () => {
+  test("prototype-pollution keys are rejected (whole file) and never pollute", () => {
     const f = path.join(tmp, "proto.json");
-    fs.writeFileSync(f, '{"__proto__":{"polluted":true},"constructor":{"prototype":{"polluted2":true}},"observationPackConfig":{"__proto__":{"polluted3":true},"headLines":7}}');
-    const c = loadSolPiConfig(f);
+    fs.writeFileSync(
+      f,
+      '{"version":1,"__proto__":{"polluted":true},"constructor":{"prototype":{"polluted2":true}},"omp":{"observationPack":{"__proto__":{"polluted3":true},"headLines":7}}}',
+    );
+    const warns: string[] = [];
+    const c = loadSolPiConfig(f, (m) => warns.push(m));
     expect(({} as any).polluted).toBeUndefined();
     expect(({} as any).polluted2).toBeUndefined();
     expect(({} as any).polluted3).toBeUndefined();
     expect(Object.keys(c)).not.toContain("__proto__");
-    expect(c.observationPackConfig.headLines).toBe(7);
+    expect(warns.join("\n")).toContain("unknown key __proto__");
+    expect(warns.join("\n")).toContain("forbidden key omp.observationPack.__proto__");
+    // the whole file is rejected, not partially applied
+    expect(c.observationPackConfig.headLines).toBe(20);
   });
   test("parse error warns (once per message); missing file is silent", () => {
     const f = path.join(tmp, "broken.json");
@@ -370,7 +401,7 @@ describe("loadSolPiConfig (hardening)", () => {
   });
   test("custom validators can be added; shipped python validators use -I", () => {
     const f = path.join(tmp, "vals.json");
-    fs.writeFileSync(f, '{"actionFusionConfig":{"defaultValidators":{".zz":"true"}}}');
+    fs.writeFileSync(f, '{"version":1,"omp":{"actionFusion":{"defaultValidators":{".zz":"true"}}}}');
     const c = loadSolPiConfig(f);
     expect(c.actionFusionConfig.defaultValidators[".zz"]).toBe("true");
     expect(c.actionFusionConfig.defaultValidators[".json"]).toContain("python3");
@@ -535,6 +566,119 @@ describe("ObservationPack (hardening)", () => {
     } finally {
       if (prev !== undefined) process.env.XDG_RUNTIME_DIR = prev;
     }
+  });
+});
+
+describe("Evidence-Preserving Reducer (upstream receipt contract)", () => {
+  const body = ["$ go test ./...", "running tests", "--- FAIL: TestFoo (0.00s)", "    foo_test.go:12: boom", "FAIL", "exit status 1"].join("\n");
+  const source = { hash: sha256hex(body), bytes: Buffer.byteLength(body), lines: body.split("\n").length, path: "/tmp/archive.txt" };
+  const receipt = (over: Record<string, unknown> = {}) =>
+    JSON.stringify({ schema: RECEIPT_SCHEMA, source_sha256: source.hash, status: "failure", uncertain: false, evidence: [{ kind: "failure", quote: "--- FAIL: TestFoo (0.00s)" }], ...over });
+
+  test("instructions and input follow the upstream schema", () => {
+    const instructions = reducerInstructions();
+    expect(instructions).toContain(`schema must equal ${RECEIPT_SCHEMA}`);
+    expect(instructions).toContain("Allowed evidence kinds: fatal, failure, warning, target, summary.");
+    expect(instructions).toContain("Return at most 12 evidence items");
+    const input = reducerInput("go test", true, source, body);
+    expect(input).toContain(`source_sha256=${source.hash}`);
+    expect(input).toContain("is_error=true");
+    expect(input).toContain("<untrusted_log>\n$ go test ./...");
+    expect(input.endsWith("</untrusted_log>")).toBe(true);
+  });
+
+  test("a verifiable receipt is accepted with line numbers and quote hashes", () => {
+    const r = validateEvidenceReceipt(receipt(), source, body, true);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    expect(r.value.status).toBe("failure");
+    expect(r.value.uncertain).toBe(false);
+    expect(r.value.evidence).toHaveLength(1);
+    expect(r.value.evidence[0].line).toBe(3);
+    expect(r.value.evidence[0].quoteSha256).toBe(sha256hex("--- FAIL: TestFoo (0.00s)"));
+  });
+
+  test("quotes may be substrings, not only whole lines (upstream contract)", () => {
+    const r = validateEvidenceReceipt(receipt({ evidence: [{ kind: "target", quote: "foo_test.go:12" }] }), source, body, true);
+    expect(r.ok).toBe(true);
+  });
+
+  test("schema, hash, status, uncertain and kind mismatches are rejected", () => {
+    const cases: [string, string][] = [
+      [receipt({ schema: "other/1" }), "schema-mismatch"],
+      [receipt({ source_sha256: "0".repeat(64) }), "schema-mismatch"],
+      [receipt({ status: "success" }), "schema-mismatch"],
+      [receipt({ uncertain: "no" }), "schema-mismatch"],
+      [receipt({ evidence: [{ kind: "other", quote: "FAIL" }] }), "unverifiable-quote"],
+      [receipt({ evidence: [{ kind: "failure", quote: "not in the log" }] }), "unverifiable-quote"],
+      ["not json", "invalid-json"],
+    ];
+    for (const [raw, reason] of cases) {
+      const r = validateEvidenceReceipt(raw, source, body, true);
+      expect(r.ok).toBe(false);
+      if (!r.ok) expect(r.reason).toBe(reason);
+    }
+    // FAILURE_SIGNAL is upstream's word list (`FAIL` alone is not a signal); a
+    // failing log that does read as a failure must carry failure evidence.
+    expect(validateEvidenceReceipt(receipt({ evidence: [] }), source, body, true).ok).toBe(true);
+    const errBody = "compile error: undefined symbol";
+    const errSource = { hash: sha256hex(errBody), bytes: Buffer.byteLength(errBody), lines: 1, path: "/tmp/e.txt" };
+    const missing = validateEvidenceReceipt(receipt({ evidence: [], source_sha256: errSource.hash }), errSource, errBody, true);
+    expect(missing.ok).toBe(false);
+    if (!missing.ok) expect(missing.reason).toBe("missing-failure-evidence");
+  });
+
+  test("a successful run needs no failure evidence and deduplicates repeated quotes", () => {
+    const okBody = "PASS\nok  example 0.1s";
+    const okSource = { hash: sha256hex(okBody), bytes: Buffer.byteLength(okBody), lines: 2, path: "/tmp/a.txt" };
+    const dup = (quote: string) => [
+      { kind: "summary", quote },
+      { kind: "summary", quote },
+    ];
+    const r = validateEvidenceReceipt(
+      JSON.stringify({ schema: RECEIPT_SCHEMA, source_sha256: okSource.hash, status: "success", uncertain: true, evidence: dup("PASS") }),
+      okSource,
+      okBody,
+      false,
+    );
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.value.uncertain).toBe(true);
+      expect(r.value.evidence).toHaveLength(1);
+    }
+  });
+
+  test("the printed receipt carries the upstream fields", () => {
+    const r = validateEvidenceReceipt(receipt(), source, body, true);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const text = evidenceReceiptText("go test", source, r.value, { provider: "anthropic", model: "claude-sonnet-5-5", totalTokens: 321 });
+    const lines = text.split("\n");
+    expect(lines[0]).toBe(RECEIPT_PREFIX);
+    expect(text).toContain("status=failure");
+    expect(text).toContain("uncertain=false");
+    expect(text).toContain(`source_sha256=${source.hash}`);
+    expect(text).toContain(`source_artifact=${source.path}`);
+    expect(text).toContain("reducer_total_tokens=321");
+    expect(text).toContain(`- kind=failure line=3 quote_sha256=${sha256hex("--- FAIL: TestFoo (0.00s)")} quote="--- FAIL: TestFoo (0.00s)"`);
+    expect(text).toContain("authority=Sol retains diagnosis, repair, rerun, and pass/fail adjudication");
+  });
+
+  test("only build/test invocations are candidates (upstream DIAGNOSTIC_COMMAND)", () => {
+    for (const c of ["go test ./...", "cd x && make", "cargo build", "npm test", "pytest -q", "cmake --build out", "bazel test //..."])
+      expect(DIAGNOSTIC_COMMAND.test(c)).toBe(true);
+    // bare `cargo`/`make`/`pytest` are candidates upstream too; a log file is not.
+    for (const c of ["cat make.log", "git log", "ls", "vim tests"]) expect(DIAGNOSTIC_COMMAND.test(c)).toBe(false);
+  });
+
+  test("the prompt body is elided head+tail above the char cap", () => {
+    const big = "h".repeat(60) + "m".repeat(80) + "t".repeat(60);
+    const out = reducerPromptBody(big, 100);
+    expect(out.length).toBeLessThan(big.length + 40);
+    expect(out.startsWith("h")).toBe(true);
+    expect(out.endsWith("t")).toBe(true);
+    expect(out).toContain("chars elided");
+    expect(reducerPromptBody("short", 100)).toBe("short");
   });
 });
 
@@ -924,11 +1068,13 @@ function mockPi(cfg: ReturnType<typeof loadSolPiConfig>) {
   const cmds: Record<string, { handler: (a: string, c: any) => Promise<void> }> = {};
   const tools: Record<string, any> = {};
   const entries: { type: string; customType?: string; data?: unknown }[] = [];
+  const sent: { content: string; options?: unknown }[] = [];
   const pi = {
     on: (n: string, f: Handler) => void (listeners[n] ??= []).push(f),
     registerCommand: (n: string, d: { handler: (a: string, c: any) => Promise<void> }) => void (cmds[n] = d),
     registerTool: (t: any) => void (tools[t.name] = t),
     appendEntry: (customType: string, data: unknown) => void entries.push({ type: "custom", customType, data }),
+    sendMessage: (m: { content: string }, o?: unknown) => void sent.push({ content: m.content, options: o }),
   };
   register(pi as never, () => cfg);
   const h: Record<string, Handler> = {};
@@ -945,6 +1091,7 @@ function mockPi(cfg: ReturnType<typeof loadSolPiConfig>) {
   const notes: string[] = [];
   const sessionDir = fs.mkdtempSync(path.join(tmp, "sess-"));
   const compactCalls: { internalGuidance?: string }[] = [];
+  const aborts: number[] = [];
   const ctx = (
     cwd: string,
     o: { usage?: { tokens: number; contextWindow: number }; branch?: { type: string; customType?: string; data?: unknown }[] } = {},
@@ -958,7 +1105,14 @@ function mockPi(cfg: ReturnType<typeof loadSolPiConfig>) {
         getBranch: () => o.branch ?? entries,
       },
       modelRegistry: { find: () => null, resolver: () => "test-key" },
-      compact: async (opts: { internalGuidance?: string }) => void compactCalls.push(opts),
+      isIdle: () => true,
+      abort: () => void aborts.push(Date.now()),
+      // A committed compaction fires session_compact in the real session; the
+      // mock replays that event so the epoch/debt accounting is exercised.
+      compact: async (opts: { internalGuidance?: string }) => {
+        compactCalls.push(opts);
+        await h.session_compact?.({ fromExtension: false }, base);
+      },
     };
     if (o.usage) {
       const u = o.usage;
@@ -966,7 +1120,7 @@ function mockPi(cfg: ReturnType<typeof loadSolPiConfig>) {
     }
     return base;
   };
-  return { h, cmds, tools, entries, notes, ctx, sessionDir, compactCalls };
+  return { h, cmds, tools, entries, notes, ctx, sessionDir, compactCalls, aborts, sent };
 }
 let extN = 0;
 const extCfg = () => {
@@ -1116,6 +1270,73 @@ describe("sol-pi.ts: Evidence-Preserving Reducer wiring", () => {
     }
     expect(await runCmd(m, "stats", tmp)).toContain("Reducer: 0 applied");
   });
+  test("a result whose text disagrees with its exit state is left unreduced", async () => {
+    const m = mockPi(extCfg());
+    const raw = bigFail();
+    const ev: any = { toolName: "bash", input: { command: "go test ./..." }, isError: true, details: { exitCode: 0 }, result: raw };
+    const c: any = m.ctx(tmp);
+    c.modelRegistry.find = () => ({ id: "fake" });
+    await m.h.tool_result(ev, c);
+    expect(ev.result).toBe(raw);
+  });
+  test("a log that looks like it carries credentials is left unreduced", async () => {
+    const m = mockPi(extCfg());
+    const raw = `${bigFail()}\napi_key=abcdef0123456789`;
+    const ev: any = { toolName: "bash", input: { command: "go test ./..." }, isError: true, details: { exitCode: 1 }, result: raw };
+    const c: any = m.ctx(tmp);
+    c.modelRegistry.find = () => ({ id: "fake" });
+    await m.h.tool_result(ev, c);
+    expect(ev.result).toBe(raw);
+  });
+  test("a log above maxInputBytes is left unreduced (upstream maxChars)", async () => {
+    const cfg = extCfg();
+    cfg.evidencePreservingReducerConfig.maxInputBytes = 1000;
+    const m = mockPi(cfg);
+    const raw = bigFail();
+    const ev: any = { toolName: "bash", input: { command: "go test ./..." }, isError: true, details: { exitCode: 1 }, result: raw };
+    const c: any = m.ctx(tmp);
+    c.modelRegistry.find = () => ({ id: "fake" });
+    await m.h.tool_result(ev, c);
+    expect(ev.result).toBe(raw);
+  });
+  test("the exact body comes from the session artifact, not the truncated inline text", async () => {
+    const m = mockPi(extCfg());
+    const full = bigFail();
+    const artifact = path.join(m.sessionDir, "7.log");
+    fs.writeFileSync(artifact, full);
+    const ev: any = {
+      toolName: "bash",
+      input: { command: "go test ./..." },
+      isError: true,
+      details: { exitCode: 1, meta: { truncation: { artifactId: "7" } } },
+      result: "ok   pkg/p0\t0.01s\n[Showing lines 1-1 of 304]",
+    };
+    const c: any = m.ctx(tmp);
+    c.sessionManager.getArtifactPath = async () => artifact;
+    c.modelRegistry.find = () => ({ id: "fake" });
+    await m.h.tool_result(ev, c);
+    const text = ev.result as string;
+    expect(text).toContain("command: go test ./...");
+    expect(text).toContain("--- FAIL: TestFoo");
+  });
+  test("a fused edit then_run is a candidate and keeps the edit text", async () => {
+    const m = mockPi(extCfg());
+    const report = "Edited foo.go";
+    const ev: any = {
+      toolName: "edit",
+      input: { path: "foo.go", then_run: { command: "go test ./..." } },
+      isError: true,
+      content: [{ type: "text", text: `${report}\n[then_run:failed]\n$ go test ./...\n${bigFail()}` }],
+    };
+    const c: any = m.ctx(tmp);
+    c.modelRegistry.find = () => ({ id: "fake" });
+    await m.h.tool_result(ev, c);
+    const text = ev.content[0].text as string;
+    expect(text.startsWith(`${report}\n[then_run:failed]\n`)).toBe(true);
+    expect(text).toContain("--- FAIL: TestFoo");
+    expect(text).toMatch(/command: go test/);
+    expect(m.notes.join("\n")).toContain("provider reduction failed");
+  });
   test("a failed archive leaves the output untouched and says 'reducer'", async () => {
     const real = fs.mkdtempSync(path.join(tmp, "unsafe-real-"));
     const link = path.join(tmp, `unsafe-link-${extN++}`);
@@ -1159,6 +1380,19 @@ describe("sol-pi.ts: turn_end token accounting / session_start", () => {
     await m.h.turn_end(usage({ input: 200000 }), m.ctx(tmp));
     expect(m.notes.length).toBe(0);
   });
+  test("before_provider_request counts the request; the status mean output is not NaN", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 1000, contextWindow: 200000 } });
+    await m.h.context({ messages: [assistantMsg("hi")] }, c);
+    // A second before_provider_request without a new projection is a replay, not a new request.
+    await m.h.before_provider_request({ payload: null }, c);
+    await m.h.before_provider_request({ payload: null }, c);
+    await m.h.turn_end({ message: { model: "anthropic/claude-haiku-5-5", usage: { output: 400 } } }, c);
+    const st = await runCmd(m, "status", tmp);
+    expect(st).toContain("mean output 400");
+    expect(st).not.toContain("NaN");
+  });
   test("session_start resets counters, stats and the last advice", async () => {
     const m = mockPi(extCfg());
     await m.h.context({ messages: [toolResultMsg(bigPlain()), assistantMsg(), assistantMsg()] }, m.ctx(tmp));
@@ -1169,95 +1403,252 @@ describe("sol-pi.ts: turn_end token accounting / session_start", () => {
     expect(await runCmd(m, "stats", tmp)).toContain("0 packed");
     const st = await runCmd(m, "status", tmp);
     expect(st).not.toContain("Pricing Cliff");
-    expect(st).toContain("Plan: 0 steps");
+    expect(st).toContain("epoch 0, 0 steps");
+  });
+});
+
+describe("sol-pi-core: online state parse/restore", () => {
+  const step = (id: string, goal: string, status: string) => ({ id, goal, status });
+  test("plan ids must be unique and statuses closed", () => {
+    expect(parsePlanSteps([step("a", "one", "pending")])).toEqual([step("a", "one", "pending")]);
+    expect(parsePlanSteps([step("a", "one", "pending"), step("a", "two", "completed")])).toBeUndefined();
+    expect(parsePlanSteps([step("a", "one", "done")])).toBeUndefined();
+    expect(parsePlanSteps([{ id: "a", goal: "x", status: "pending", extra: 1 }])).toBeUndefined();
+    expect(parsePlanSteps([])).toEqual([]);
+  });
+  test("a state round-trips, including the OMP output-token counter", () => {
+    let state = initialOnlineState();
+    state = recordProviderRequest({ ...state, lastContextTokens: 1000 }, 1600);
+    state = recordProviderRequest(state, 1500);
+    state = recordBoundary(state, [step("a", "one", "completed")], {
+      stepId: "a",
+      goal: "one",
+      filesChanged: ["f.ts"],
+      verification: ["bun test"],
+      decisions: [],
+      nextWork: [],
+    });
+    state = { ...state, outputTokens: 4321 };
+    const parsed = parseOnlineState(JSON.parse(JSON.stringify(state)));
+    expect(parsed).toEqual(state);
+    expect(parsed?.requestCount).toBe(2);
+    expect(parsed?.positiveContextDeltaCount).toBe(1);
+    expect(parsed?.completedBoundaryRequestCounts).toEqual([2]);
+  });
+  test("compaction starts a new epoch, folds progress and carries debt", () => {
+    let state = recordBoundary(initialOnlineState(), [step("a", "one", "completed")], undefined);
+    state = recordCompaction(state, { debtTokens: 900, repaymentTokens: 300 });
+    expect(state.epoch).toBe(1);
+    expect(state.nativeCompactionCount).toBe(1);
+    expect(state.pendingProgress).toEqual([]);
+    expect(state.cacheDebtTokens).toBe(900);
+    expect(state.cacheDebtRepaymentTokens).toBe(300);
+    // Each provider request repays the same amount until the debt is gone.
+    state = recordProviderRequest(state, 100);
+    expect(state.cacheDebtTokens).toBe(600);
+    expect(state.cacheDebtRepaymentTokens).toBe(300);
+    state = recordProviderRequest(state, 200);
+    expect(state.cacheDebtTokens).toBe(300);
+    expect(state.cacheDebtRepaymentTokens).toBe(300);
+    state = recordProviderRequest(state, 300);
+    expect(state.cacheDebtTokens).toBe(0);
+    expect(state.cacheDebtRepaymentTokens).toBe(0);
+  });
+  test("a correction clears the plan, horizon and debt but keeps the epoch clock moving", () => {
+    const state = recordCorrection({ ...initialOnlineState(), plan: [step("a", "one", "completed")], cacheDebtTokens: 500 });
+    expect(state.plan).toEqual([]);
+    expect(state.cacheDebtTokens).toBe(0);
+    expect(state.epoch).toBe(1);
+  });
+  test("a malformed entry is rejected; restore takes the newest valid one", () => {
+    const good = { ...initialOnlineState(), requestCount: 7, lastBoundaryRequestCount: 3 };
+    const bad = { ...initialOnlineState(), epoch: -1 };
+    expect(parseOnlineState(bad)).toBeUndefined();
+    expect(parseOnlineState({ ...good, lastBoundaryRequestCount: 9 })).toBeUndefined();
+    expect(parseOnlineState({ ...good, version: 2 })).toBeUndefined();
+    const restored = restoreOnlineState([
+      { type: "custom", customType: STATE_ENTRY, data: good },
+      { type: "custom", customType: STATE_ENTRY, data: bad },
+    ]);
+    expect(restored.requestCount).toBe(7);
+    expect(restoreOnlineState([]).requestCount).toBe(0);
+  });
+  test("a goal rewrite under a reused id becomes advice, not a boundary", () => {
+    const transition = analyzePlanTransition(
+      [step("a", "original", "in_progress")],
+      [step("a", "rewritten", "completed")],
+    );
+    expect(transition.completedSteps.map((s) => s.id)).toEqual(["a"]);
+    expect(transition.advice.join("\n")).toContain("changed goal");
   });
 });
 
 describe("sol-pi.ts: plan state and correction tracking", () => {
-  test("update_plan normalizes, keeps completed steps terminal and returns diagnostics", async () => {
+  const plan = (steps: { id: string; goal: string; status: string }[]) => steps;
+  test("update_plan records a boundary only for a step that transitions to completed", async () => {
     const m = mockPi(extCfg());
     await m.h.session_start({}, m.ctx(tmp));
     const step = m.tools.update_plan;
-    const first: any = await step.execute("c1", { plan: [{ step: "wire the projection", status: "completed" }, { step: "add tests", status: "in_progress" }] }, undefined, undefined, m.ctx(tmp));
-    expect(first.content[0].text).toContain("[x] wire the projection");
-    const second: any = await step.execute("c2", { plan: [{ step: "wire the projection", status: "pending" }, { step: "add tests", status: "completed" }] }, undefined, undefined, m.ctx(tmp));
-    expect(second.content[0].text).toContain("cannot reopen a completed step");
-    expect(second.content[0].text).toContain("[x] wire the projection");
-    expect(m.entries.some((e) => e.customType === "sol_pi_online_state")).toBe(true);
+    // A newly introduced completed step is history, not a boundary.
+    const first: any = await step.execute("c1", { steps: plan([{ id: "s1", goal: "wire the projection", status: "completed" }]) }, undefined, undefined, m.ctx(tmp));
+    expect(first.content[0].text).toContain('<sol-pi-plan task_status="active">');
+    expect(first.content[0].text).toContain('"goal":"wire the projection"');
+    expect(first.details.boundary).toBe(false);
+    const second: any = await step.execute("c2", { steps: plan([{ id: "s1", goal: "wire the projection", status: "completed" }, { id: "s2", goal: "add tests", status: "in_progress" }]) }, undefined, undefined, m.ctx(tmp));
+    expect(second.details.boundary).toBe(false);
+    const third: any = await step.execute("c3", { steps: plan([{ id: "s1", goal: "wire the projection", status: "completed" }, { id: "s2", goal: "add tests", status: "completed" }]), progress: { files_changed: ["sol-pi.ts"], verification: ["bun test"], decisions: ["boundary at settle"] } }, undefined, undefined, m.ctx(tmp));
+    expect(third.details.boundary).toBe(true);
+    expect(third.details.completed_step_ids).toEqual(["s2"]);
+    expect(third.details.progress_recorded).toBe(true);
+    expect(m.entries.some((e) => e.customType === ONLINE_STATE_ENTRY)).toBe(true);
+    const st = await runCmd(m, "status", tmp);
+    expect(st).toContain("1 boundary samples");
+    // Evidence waits for the next compaction to fold it into its summary.
+    expect(st).toContain("1 pending progress");
+  });
+  test("advice: a reused id with a new goal, and more than one in_progress", async () => {
+    const m = mockPi(extCfg());
+    const step = m.tools.update_plan;
+    await step.execute("c1", { steps: plan([{ id: "s1", goal: "original goal", status: "in_progress" }]) }, undefined, undefined, m.ctx(tmp));
+    const res: any = await step.execute("c2", { steps: plan([{ id: "s1", goal: "different goal", status: "in_progress" }, { id: "s2", goal: "second", status: "in_progress" }]) }, undefined, undefined, m.ctx(tmp));
+    expect(res.content[0].text).toContain("changed goal");
+    expect(res.content[0].text).toContain("at most one plan step in_progress");
+  });
+  test("a malformed plan is rejected and leaves the previous plan intact", async () => {
+    const m = mockPi(extCfg());
+    const step = m.tools.update_plan;
+    await step.execute("c1", { steps: plan([{ id: "s1", goal: "kept", status: "in_progress" }]) }, undefined, undefined, m.ctx(tmp));
+    await expect(step.execute("c2", { steps: [{ id: "s1", goal: "x", status: "done" }] }, undefined, undefined, m.ctx(tmp))).rejects.toThrow(/at least one valid step/);
+    expect(await runCmd(m, "status", tmp)).toContain("1 steps");
   });
   test("the active plan is appended to the system prompt; no plan -> no replacement", async () => {
     const m = mockPi(extCfg());
     const empty: any = await m.h.before_agent_start({ systemPrompt: ["base"] }, m.ctx(tmp));
     expect(empty).toBeUndefined();
-    await m.tools.update_plan.execute("c1", { plan: [{ step: "wire the projection", status: "in_progress" }] }, undefined, undefined, m.ctx(tmp));
+    await m.tools.update_plan.execute("c1", { steps: plan([{ id: "s1", goal: "wire the projection", status: "in_progress" }]) }, undefined, undefined, m.ctx(tmp));
     const res: any = await m.h.before_agent_start({ systemPrompt: ["base"] }, m.ctx(tmp));
     expect(res.systemPrompt.length).toBe(2);
     expect(res.systemPrompt[0]).toBe("base");
-    expect(res.systemPrompt[1]).toContain("[>] wire the projection");
+    expect(res.systemPrompt[1]).toContain('<sol-pi-plan task_status="active">');
+    expect(res.systemPrompt[1]).toContain('"goal":"wire the projection"');
   });
   test("plan state survives a session restart (loaded from the branch)", async () => {
     const first = mockPi(extCfg());
     await first.h.session_start({}, first.ctx(tmp));
-    await first.tools.update_plan.execute("c1", { plan: [{ step: "kept across restart", status: "in_progress" }] }, undefined, undefined, first.ctx(tmp));
-    const cfg = extCfg();
-    const second = mockPi(cfg);
-    const branch = first.entries.map((e) => ({ ...e }));
-    await second.h.session_start({}, second.ctx(tmp, { branch }));
-    expect(await runCmd(second, "status", tmp)).toContain("Plan: 1 steps");
+    await first.tools.update_plan.execute("c1", { steps: plan([{ id: "s1", goal: "kept across restart", status: "in_progress" }]) }, undefined, undefined, first.ctx(tmp));
+    const second = mockPi(extCfg());
+    await second.h.session_start({}, second.ctx(tmp, { branch: first.entries.map((e) => ({ ...e })) }));
+    expect(await runCmd(second, "status", tmp)).toContain("1 steps");
   });
-  test("a correction in user input is counted", async () => {
+  test("a malformed state entry is ignored and the session starts clean", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp, { branch: [{ type: "custom", customType: ONLINE_STATE_ENTRY, data: { version: 1, plan: "nope" } }] }));
+    expect(await runCmd(m, "status", tmp)).toContain("epoch 0, 0 steps");
+  });
+  test("a correction advances the epoch and clears the plan and the request horizon", async () => {
     const m = mockPi(extCfg());
     await m.h.session_start({}, m.ctx(tmp));
+    await m.tools.update_plan.execute("c1", { steps: plan([{ id: "s1", goal: "wrong direction", status: "in_progress" }]) }, undefined, undefined, m.ctx(tmp));
     await m.h.input({ text: "違う、そうではなく agent/v1 の方針で", source: "interactive" }, m.ctx(tmp));
-    await m.h.input({ text: "continue", source: "interactive" }, m.ctx(tmp));
     await m.h.input({ text: "that's wrong", source: "rpc" }, m.ctx(tmp));
-    expect(await runCmd(m, "status", tmp)).toContain("corrections 1");
+    const st = await runCmd(m, "status", tmp);
+    expect(st).toContain("epoch 1, 0 steps");
+    expect(st).toContain("0 boundary samples");
   });
 });
 
 describe("sol-pi.ts: boundary compaction", () => {
   const bigMessages = () =>
     Array.from({ length: 100 }, (_, i) => assistantMsg(`step ${i} ${"x".repeat(8000)}`));
-  const usageTurn = (output: number) => ({ message: { model: "anthropic/claude-haiku-5-5", usage: { output, input: 100000 } } });
-  test("compacts once at a terminal agent_end when the request budget is low and the archive is large", async () => {
-    const cfg = extCfg();
-    const m = mockPi(cfg);
-    await m.h.session_start({}, m.ctx(tmp));
-    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
-    await m.h.context({ messages: bigMessages() }, c);
-    await m.h.turn_end(usageTurn(1000), c);
-    await m.h.turn_end(usageTurn(1000), c);
-    await m.h.agent_end({ willContinue: false, awaitingAsyncWork: false }, c);
-    expect(m.compactCalls.length).toBe(1);
-    expect(m.compactCalls[0].internalGuidance).toContain("obs_");
-    expect(await runCmd(m, "status", tmp)).toContain("done 1, pending false");
+  const usageTurn = (output: number, extra: Record<string, unknown> = {}) => ({
+    message: { model: "anthropic/claude-haiku-5-5", usage: { output, input: 100000 } },
+    ...extra,
   });
-  test("a continuing turn (willContinue / awaitingAsyncWork) is never compacted", async () => {
+  const armBoundary = async (m: ReturnType<typeof mockPi>, c: any, progress?: unknown) => {
+    await m.tools.update_plan.execute("t1", { steps: [{ id: "s1", goal: "ship the port", status: "in_progress" }] }, undefined, undefined, c);
+    await m.tools.update_plan.execute("t2", { steps: [{ id: "s1", goal: "ship the port", status: "completed" }], progress }, undefined, undefined, c);
+    return { toolResults: [{ toolCallId: "t2", toolName: "update_plan", isError: false }] };
+  };
+
+  test("a completed plan step stops the run; the compaction runs once it settles and resumes the task", async () => {
     const m = mockPi(extCfg());
     await m.h.session_start({}, m.ctx(tmp));
     const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
     await m.h.context({ messages: bigMessages() }, c);
-    await m.h.turn_end(usageTurn(1000), c);
-    await m.h.turn_end(usageTurn(1000), c);
+    const boundary = await armBoundary(m, c, { files_changed: ["sol-pi.ts"], verification: ["bun test"], decisions: ["boundary at settle"] });
+    await m.h.turn_end(usageTurn(1000, boundary), c);
+    expect(m.compactCalls.length).toBe(0);
+    expect(m.aborts.length).toBe(1);
+    await m.h.agent_end({ willContinue: false, awaitingAsyncWork: false }, c);
+    expect(m.compactCalls.length).toBe(1);
+    expect(m.compactCalls[0].internalGuidance).toContain("ship the port");
+    expect(m.compactCalls[0].internalGuidance).toContain("files: sol-pi.ts");
+    expect(m.compactCalls[0].internalGuidance).toContain("decisions: boundary at settle");
+    expect(m.sent.length).toBe(1);
+    expect(m.sent[0].content).toContain("compaction finished");
+    expect(m.sent[0].options).toEqual({ triggerTurn: true });
+    expect(await runCmd(m, "status", tmp)).toContain("committed 1");
+    expect(await runCmd(m, "status", tmp)).toContain("boundary pending no");
+  });
+  test("a continuing turn (willContinue / awaitingAsyncWork) defers the flush", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    const boundary = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary), c);
     await m.h.agent_end({ willContinue: true }, c);
     await m.h.agent_end({ awaitingAsyncWork: true }, c);
     expect(m.compactCalls.length).toBe(0);
+    await m.h.session_stop({}, c);
+    expect(m.compactCalls.length).toBe(1);
   });
-  test("compactOnSubtaskBoundary=false defers compaction from agent_end", async () => {
+  test("an errored or aborted boundary is never selected", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    const boundary = await armBoundary(m, c);
+    await m.h.turn_end({ ...usageTurn(1000, boundary), message: { stopReason: "error" } }, c);
+    await m.h.turn_end({ ...usageTurn(1000, boundary), message: { stopReason: "aborted" } }, c);
+    await m.h.turn_end(usageTurn(1000, { toolResults: [{ toolCallId: "t2", toolName: "update_plan", isError: true }] }), c);
+    expect(m.aborts.length).toBe(0);
+    expect(m.compactCalls.length).toBe(0);
+  });
+  test("compactOnSubtaskBoundary arms a boundary from a successful task tool result", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    await m.h.turn_end(usageTurn(1000, { toolResults: [{ toolCallId: "a1", toolName: "task", isError: false }] }), c);
+    expect(m.aborts.length).toBe(1);
+    await m.h.agent_end({ willContinue: false }, c);
+    expect(m.compactCalls.length).toBe(1);
+  });
+  test("compactOnSubtaskBoundary=false ignores a task tool result", async () => {
     const cfg = extCfg();
     cfg.onlineContextCompactConfig.compactOnSubtaskBoundary = false;
     const m = mockPi(cfg);
     await m.h.session_start({}, m.ctx(tmp));
     const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
     await m.h.context({ messages: bigMessages() }, c);
-    await m.h.turn_end(usageTurn(1000), c);
-    await m.h.turn_end(usageTurn(1000), c);
+    await m.h.turn_end(usageTurn(1000, { toolResults: [{ toolCallId: "a1", toolName: "task", isError: false }] }), c);
     await m.h.agent_end({ willContinue: false }, c);
+    expect(m.aborts.length).toBe(0);
     expect(m.compactCalls.length).toBe(0);
-    await m.h.session_stop({}, c);
-    expect(m.compactCalls.length).toBe(1);
   });
-  test("an unneeded native compaction is cancelled; the pending one is allowed", async () => {
+  test("a selected boundary cancels a threshold compaction (it would consume the boundary)", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    const boundary = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary), c);
+    expect(await m.h.session_before_compact({}, c)).toEqual({ cancel: true });
+    // An explicit request (custom instructions) is still honored.
+    expect(await m.h.session_before_compact({ customInstructions: "summary please" }, c)).toBeUndefined();
+  });
+  test("room to spare cancels a native compaction; a full window does not", async () => {
     const m = mockPi(extCfg());
     await m.h.session_start({}, m.ctx(tmp));
     const roomy = m.ctx(tmp, { usage: { tokens: 50000, contextWindow: 200000 } });
@@ -1265,16 +1656,69 @@ describe("sol-pi.ts: boundary compaction", () => {
     const full = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
     expect(await m.h.session_before_compact({}, full)).toBeUndefined();
   });
-  test("a disabled policy never compacts", async () => {
+  test("a recoverable refusal is reported and blocks a retry until real tool work", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    c.compact = async () => {
+      throw Object.assign(new Error("Already compacted"), { name: "ManualCompactionNoOpError" });
+    };
+    const boundary = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary), c);
+    await m.h.agent_end({ willContinue: false }, c);
+    expect(m.notes.join("\n")).toContain("online compaction skipped: Already compacted");
+    expect(m.sent[0].content).toContain("skipped");
+    // Plan chatter alone cannot retry; a real tool result clears the refusal.
+    const boundary2 = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary2), c);
+    expect(m.aborts.length).toBe(1);
+    await m.h.turn_end(usageTurn(1000, { toolResults: [{ toolCallId: "b1", toolName: "bash", isError: false }] }), c);
+    const boundary3 = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary3), c);
+    expect(m.aborts.length).toBe(2);
+  });
+  test("a non-recoverable compaction failure resumes once and is rethrown", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    c.compact = async () => {
+      throw new Error("provider exploded");
+    };
+    const boundary = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary), c);
+    await expect(m.h.agent_end({ willContinue: false }, c)).rejects.toThrow("provider exploded");
+    expect(m.sent[0].content).toContain("did not complete");
+  });
+  test("a disabled policy never selects a boundary", async () => {
     const cfg = extCfg();
     cfg.onlineContextCompactConfig.enabled = false;
     const m = mockPi(cfg);
     await m.h.session_start({}, m.ctx(tmp));
     const c = m.ctx(tmp, { usage: { tokens: 199000, contextWindow: 200000 } });
     await m.h.context({ messages: bigMessages() }, c);
-    await m.h.turn_end(usageTurn(1000), c);
+    const boundary = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary), c);
     await m.h.agent_end({ willContinue: false }, c);
+    expect(m.aborts.length).toBe(0);
     expect(m.compactCalls.length).toBe(0);
+  });
+  test("maxCompactionsPerSession caps boundary compactions", async () => {
+    const cfg = extCfg();
+    cfg.onlineContextCompactConfig.maxCompactionsPerSession = 1;
+    const m = mockPi(cfg);
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    const first = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, first), c);
+    await m.h.agent_end({ willContinue: false }, c);
+    expect(m.compactCalls.length).toBe(1);
+    await m.h.context({ messages: bigMessages() }, c);
+    const second = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, second), c);
+    expect(m.aborts.length).toBe(1);
   });
 });
 
@@ -1761,7 +2205,7 @@ describe("archive: short writes are detected", () => {
 describe("Pricing Cliff: single source = catalog.json compaction_threshold", () => {
   test("shipped sol-pi.json has no pricingCliffs list; thresholds come from the catalog", () => {
     const raw = JSON.parse(fs.readFileSync(path.resolve(import.meta.dir, "..", "..", "sol-pi.json"), "utf-8"));
-    expect(raw.onlineContextCompactConfig.pricingCliffs).toBeUndefined();
+    expect(raw.omp.onlineContextCompact.pricingCliffs).toBeUndefined();
     const cat = JSON.parse(fs.readFileSync(path.resolve(import.meta.dir, "..", "..", "..", "..", "models", "catalog.json"), "utf-8"));
     const cfg = loadSolPiConfig();
     for (const [id, m] of Object.entries(cat.models as Record<string, any>)) {
@@ -1773,10 +2217,15 @@ describe("Pricing Cliff: single source = catalog.json compaction_threshold", () 
     expect(pricingCliffFor("anthropic/claude-sonnet-5-5", cfg)).toBe(180000);
     expect(cfg.onlineContextCompactConfig.tokenPressureThreshold).toBe(180000);
   });
-  test("a pinned catalog wins; a legacy pricingCliffs list in a user sol-pi.json is ignored", () => {
+  test("a pinned catalog wins; a legacy pricingCliffs list is rejected by the strict loader", () => {
     const f = path.join(tmp, "legacy-cliffs.json");
-    fs.writeFileSync(f, JSON.stringify({ onlineContextCompactConfig: { pricingCliffs: [{ pattern: "haiku-5[.-]5", tokens: 1 }] } }));
-    const cfg = loadSolPiConfig(f);
+    fs.writeFileSync(
+      f,
+      JSON.stringify({ version: 1, omp: { onlineContextCompact: { pricingCliffs: [{ pattern: "haiku-5[.-]5", tokens: 1 }] } } }),
+    );
+    const warns: string[] = [];
+    const cfg = loadSolPiConfig(f, (m) => warns.push(m));
+    expect(warns.join("\n")).toContain("unknown key omp.onlineContextCompact.pricingCliffs");
     try {
       setPricingCliffCatalog({ models: { "x/foo-1": { model_id: "foo-1", compaction_threshold: 1234 } } });
       expect(pricingCliffFor("x/foo-1", cfg)).toBe(1234);

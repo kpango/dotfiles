@@ -66,15 +66,20 @@ python3 -m json.tool "$SCRIPT_DIR/sol-pi.json" > /dev/null 2>&1 \
     && python3 -c '
 import json, sys
 d = json.load(open(sys.argv[1], encoding="utf-8"))
+# Upstream shape: versioned, mechanism booleans at the top level, OMP-only
+# knobs in the explicit `omp` namespace. Anything else is rejected at runtime.
+assert d.get("version") == 1
 assert d.get("actionFusion") is True
 assert d.get("observationPack") is True
 assert d.get("evidencePreservingReducer") is True
 assert d.get("onlineContextCompact") is False
-assert d.get("pricingCliffAdvisory") is True
-assert "pricingCliffs" not in d.get("onlineContextCompactConfig", {})
+assert d["omp"]["pricingCliffAdvisory"] is True
+assert "pricingCliffs" not in d["omp"]["onlineContextCompact"]
+assert "pricingCliffAdvisoryConfig" not in d
+assert "actionFusionConfig" not in d
 ' "$SCRIPT_DIR/sol-pi.json" 2>/dev/null \
-    && check "sol-pi.json valid JSON & flags" "OK" \
-    || check "sol-pi.json valid JSON & flags" "INVALID"
+    && check "sol-pi.json valid JSON & upstream flags (omp namespace)" "OK" \
+    || check "sol-pi.json valid JSON & upstream flags (omp namespace)" "INVALID"
 
 python3 -m json.tool "$SCRIPT_DIR/model-routing.json" > /dev/null 2>&1 \
     && python3 "$ROOT/agent/scripts/resolve-model-tier.py" --check omp > /dev/null 2>&1 \
