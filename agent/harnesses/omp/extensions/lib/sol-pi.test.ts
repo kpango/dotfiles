@@ -1257,6 +1257,72 @@ describe("sol-pi.ts: Evidence-Preserving Reducer wiring", () => {
     expect(m.notes.join("\n")).toContain("provider reduction failed");
     expect(await runCmd(m, "stats", tmp)).toContain("1 fallbacks");
   });
+  test("a verified receipt replaces the log and is journalled as applied", async () => {
+    const m = mockPi(extCfg());
+    const raw = bigFail();
+    const ev: any = { toolName: "bash", input: { command: "go test ./..." }, isError: true, details: { exitCode: 1 }, result: raw };
+    const c: any = m.ctx(tmp);
+    c.modelRegistry.find = () => ({ id: "fake" });
+    let seenSystemPrompt = "";
+    (globalThis as any).__piAiCompleteSimple = async (_model: unknown, req: any) => {
+      seenSystemPrompt = req.systemPrompt.join("\n");
+      const prompt = req.messages[0].content as string;
+      const sourceSha = /source_sha256=([0-9a-f]{64})/.exec(prompt)![1];
+      const quote = prompt.split("<untrusted_log>\n")[1].split("\n").find((l: string) => l.startsWith("--- FAIL"))!;
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify({
+              schema: "sol-pi-evidence-receipt/1",
+              source_sha256: sourceSha,
+              status: "failure",
+              uncertain: false,
+              evidence: [{ kind: "failure", quote }],
+            }),
+          },
+        ],
+        stopReason: "stop",
+        provider: "test-provider",
+        model: "test-model",
+        usage: { totalTokens: 12 },
+      };
+    };
+    try {
+      await m.h.tool_result(ev, c);
+    } finally {
+      delete (globalThis as any).__piAiCompleteSimple;
+    }
+    expect(seenSystemPrompt).toContain("You are a lossless test/build output reducer.");
+    expect(ev.result).toContain("sol_pi_evidence_receipt_v1");
+    expect(ev.result).toContain("status=failure");
+    expect(ev.result).toContain("reducer_provider=test-provider");
+    expect(ev.result).toContain("verified_evidence:");
+    expect(await runCmd(m, "stats", tmp)).toContain("1 applied");
+  });
+  test("an unverifiable receipt falls back to the excerpt instead of throwing", async () => {
+    const m = mockPi(extCfg());
+    const raw = bigFail();
+    const ev: any = { toolName: "bash", input: { command: "go test ./..." }, isError: true, details: { exitCode: 1 }, result: raw };
+    const c: any = m.ctx(tmp);
+    c.modelRegistry.find = () => ({ id: "fake" });
+    (globalThis as any).__piAiCompleteSimple = async () => ({
+      content: [{ type: "text", text: "not json" }],
+      stopReason: "stop",
+      provider: "p",
+      model: "m",
+      usage: { totalTokens: 1 },
+    });
+    try {
+      await m.h.tool_result(ev, c);
+    } finally {
+      delete (globalThis as any).__piAiCompleteSimple;
+    }
+    expect(ev.result).not.toBe(raw);
+    expect(ev.result).toContain("--- FAIL: TestFoo");
+    expect(m.notes.join("\n")).toContain("invalid-json");
+    expect(await runCmd(m, "stats", tmp)).toContain("1 fallbacks");
+  });
   test("non-build commands and small logs are untouched", async () => {
     const m = mockPi(extCfg());
     for (const ev of [

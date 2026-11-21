@@ -555,7 +555,7 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
     let providerText = "";
     let provider: ReceiptProvider = { provider: rc.provider, model: rc.model, totalTokens: 0 };
     try {
-      const prompt = reducerInput(command, isError, source, promptBody(masked, rc.maxProviderChars));
+      const prompt = reducerInput(command, isError, source, reducerPromptBody(masked, rc.maxProviderChars));
       const res = await completeSimple(
         model as Parameters<typeof completeSimple>[0],
         { systemPrompt: [reducerInstructions()], messages: [{ role: "user", content: prompt, timestamp: Date.now() }] },
@@ -595,7 +595,7 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
 
     const checked = validateEvidenceReceipt(providerText, source, masked, isError);
     if (!checked.ok) {
-      journal(checked.reason, { archivePath: archive.archivePath });
+      logFallback(checked.reason, { archivePath: archive.archivePath });
       stats.reducedFallback++;
       notify(ctx, `[SoL-Pi Reducer] provider reduction failed; deterministic fallback used: ${checked.reason}`);
       deterministicFallback(ctx, apply, command, body, resolveExitCode(event));

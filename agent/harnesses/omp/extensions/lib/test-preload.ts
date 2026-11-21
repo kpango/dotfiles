@@ -86,10 +86,15 @@ plugin({
     build.module("@oh-my-pi/pi-coding-agent", codingAgentStub);
 
     // @oh-my-pi/pi-ai is imported for its VALUE (`completeSimple`) by sol-pi.ts, so the
-    // export must exist statically. Tests never call it; the real runtime supplies it.
+    // export must exist statically. Under `bun test` the default provider call fails (no
+    // runtime to call); a test can install its own provider result through the global seam.
+    const unavailableProvider = () => {
+      throw new Error("completeSimple is not available under bun test");
+    };
     build.module("@oh-my-pi/pi-ai", () => ({
       exports: {
-        completeSimple: makeDeepProxy(),
+        completeSimple: (...args: unknown[]) =>
+          ((globalThis as any).__piAiCompleteSimple ?? unavailableProvider)(...args),
         streamSimple: makeDeepProxy(),
         getModel: makeDeepProxy(),
       },
