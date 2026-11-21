@@ -625,6 +625,11 @@ expect_rc2 "out-dir = repo 直下のサブディレクトリ" "inside" --traces 
     --experience "$EXP" --out-dir "$REPO/sub" --security-cmd "bash $TMP/ok.sh" --json
 expect_rc2 "out-dir に .. を含み repo root に解決される" "inside" --traces "$TMP/tr3.jsonl" --repo-root "$REPO" \
     --experience "$EXP" --out-dir "$REPO/agent/.." --security-cmd "bash $TMP/ok.sh" --json
+expect_rc2 "--compose-out が repo 直下" "inside" --traces "$TMP/tr3.jsonl" --repo-root "$REPO" \
+    --experience "$EXP" --out-dir "$PROP" --compose-out "$REPO/composed.diff" --security-cmd "bash $TMP/ok.sh" --json
+expect_rc2 "--compose-out が repo/agent への symlink 配下" "inside" --traces "$TMP/tr3.jsonl" --repo-root "$REPO" \
+    --experience "$EXP" --out-dir "$PROP" --compose-out "$TMP/lnk/composed.diff" --security-cmd "bash $TMP/ok.sh" --json
+check "compose-out 拒否時に repo 内へ書かれない" "0" "$([[ -e "$REPO/composed.diff" ]] && echo 1 || echo 0)"
 check "実 repo は変更されない" "$before_hash" "$(repo_hash)"
 
 # ---------------------------------------------------------------- 深い入れ子 / 非原子性 / 並行実行
@@ -1426,10 +1431,37 @@ check "census.plugins" "1" "$(jq_out '.tree.census.plugins')"
 check "census.rules" "1" "$(jq_out '.tree.census.rules')"
 check "always_on_chars は数値" "number" "$(jq_out '.tree.always_on_chars|type')"
 ALWAYS_CHARS="$(jq_out '.tree.always_on_chars')"
-check "always_on_chars は実測 (SYSTEM + LF + AGENTS) と一致" \
-    "$(( $(wc -c <"$TREE/agent/harnesses/omp/SYSTEM.md") + 1 + $(wc -c <"$TREE/agent/harnesses/omp/AGENTS.md") ))" \
+check "always_on_chars は実測 (SYSTEM + 空行 + AGENTS, 上流 always_on_text と同じ連結) と一致" \
+    "$(( $(wc -c <"$TREE/agent/harnesses/omp/SYSTEM.md") + 2 + $(wc -c <"$TREE/agent/harnesses/omp/AGENTS.md") ))" \
     "$ALWAYS_CHARS"
 check "cap 既定 (0) は null" "null" "$(jq_out '.tree.always_on_cap')"
+
+section "Harness Tree: --check-tree は root が無い/ディレクトリでない/空を valid にしない"
+run_h2 --check-tree --repo-root "$TMP/no-such-root" --json
+check "存在しない root は rc=2" "2" "$RC"
+check_has "存在しない root のメッセージ" "$(err_all)" "is not a directory"
+mkdir -p "$TMP/empty_root"
+run_h2 --check-tree --repo-root "$TMP/empty_root" --json
+check "空ディレクトリは rc=1" "1" "$RC"
+check_has "always-on 欠落メッセージ" "$(err_all)" "harness tree is missing always-on file(s)"
+check "空なので always_on_chars は区切り 2 文字" "2" "$(jq_out '.tree.always_on_chars')"
+printf 'text\n' >"$TMP/plain_root"
+run_h2 --check-tree --repo-root "$TMP/plain_root" --json
+check "通常ファイル root は rc=2" "2" "$RC"
+mk_tree "$TMP/tree_no_agents"
+command mv "$TMP/tree_no_agents/agent/harnesses/omp/AGENTS.md" "$TMP/moved_agents.md"
+run_tree "$TMP/tree_no_agents"
+check "AGENTS.md 欠落は rc=1" "1" "$RC"
+check_has "AGENTS.md 欠落メッセージ" "$(err_all)" "missing always-on file(s): agent/harnesses/omp/AGENTS.md"
+
+section "Harness Tree: 入れ子の script もコンパイル検証される"
+mk_tree "$TMP/tree_nested"
+mkdir -p "$TMP/tree_nested/agent/scripts/nested"
+printf 'def f(:\n' >"$TMP/tree_nested/agent/scripts/nested/bad.py"
+run_tree "$TMP/tree_nested"
+check "入れ子の壊れた .py は rc=1" "1" "$RC"
+check_has "入れ子のコンパイル不能メッセージ" "$(err_all)" 'agent/scripts/nested/bad.py does not compile: '
+check "census.scripts は入れ子も数える" "4" "$(jq_out '.tree.census.scripts')"
 
 section "Harness Tree: --traces も --check-tree も無ければ rc=2"
 run_h2 --json
@@ -1531,6 +1563,17 @@ check_has "候補の tree_errors" \
     "$(jq_out '.candidates[]|select(.id=="td1")|.tree_errors//[]|join(" | ")')" \
     'agent/agents/builder.md needs a `description:`'
 
+section "Harness Tree: surface 外の target は tree 検証をすり抜けず棄却される"
+printf 'Body.\n' >"$TMP/t_off"
+trace_lines "sig off" docs/agents/x.md 3 3 >"$TMP/tr_off.jsonl"
+cand of1 "sig off" docs/agents/x.md "$TMP/t_off" | jq -s . >"$TMP/c_off.json"
+fresh_state
+run_h2 --traces "$TMP/tr_off.jsonl" --candidates "$TMP/c_off.json" --repo-root "$TREE" --experience "$EXP" \
+    --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --json
+check "surface 外は rc=0 (棄却は結果)" "0" "$RC"
+check "surface 外は off_surface_target で棄却" "off_surface_target" "$(creason of1)"
+check "surface 外の diff は書かれない" "0" "$(find "$PROP" -name '*.diff' | wc -l | tr -d ' ')"
+
 section "Harness Tree: Compose は異なるファイルの受理候補を composed.diff に合成する"
 printf 'print()\n' >"$TMP/t_cok1"
 printf 'print()\n' >"$TMP/t_cok2"
@@ -1544,6 +1587,8 @@ fresh_state
 run_h2 --traces "$TMP/tr_comp.jsonl" --candidates "$TMP/c_comp.json" --repo-root "$TREE" --experience "$EXP" \
     --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --json
 check "2件とも受理" "accepted,accepted" "$(jq_out '[.candidates[].status]|join(",")')"
+check "受理候補は tree_errors キーを持つ (失敗時のみ値)" "true,null" \
+    "$(jq_out '[.candidates[0]|has("tree_errors"), (.candidates[0].tree_errors|tostring)]|join(",")')"
 check "composed.status = written" "written" "$(jq_out '.composed.status')"
 check "composed.diff が存在する" "1" "$([[ -f "$PROP/composed.diff" ]] && echo 1 || echo 0)"
 check_has "composed.diff に ok.py の差分" "$(cat "$PROP/composed.diff")" '+++ b/agent/scripts/ok.py'
@@ -1581,6 +1626,32 @@ check "fallback は composed.diff を書かない" "0" "$([[ -f "$PROP/composed.
 check "conflicts[0].target" "agent/scripts/ok.py" "$(jq_out '.composed.conflicts[0].target')"
 check "conflicts[0].ids" "cf1,cf2" "$(jq_out '.composed.conflicts[0].ids|join(",")')"
 
+section "Harness Tree: Compose は個別には妥当でも合成で壊れるバッチを fallback にする"
+COL_RES="$(python3 -I -B - "$H2" "$TREE" 2>&1 <<'PY'
+import importlib.util, json, pathlib, sys
+spec = importlib.util.spec_from_file_location("h2", sys.argv[1])
+m = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(m)
+root = pathlib.Path(sys.argv[2])
+base = m.read_tree(m.DOTFILES_SURFACE, root)
+cap = m.validate_tree(m.DOTFILES_SURFACE, base)["always_on_chars"] + 10
+system, agents = m.DOTFILES_SURFACE.always_on
+acc = [
+    {"id": "x1", "target": agents, "new_text": base[agents] + "x" * 6},
+    {"id": "x2", "target": system, "new_text": base[system] + "y" * 6},
+]
+out = m.compose(
+    m.DOTFILES_SURFACE, base, acc, root, root / "composed.diff",
+    always_on_max=cap, require_skill_triggers=False, base_errors=frozenset(), dry_run=False,
+)
+print(json.dumps({"status": out["status"], "applied": out["applied"], "reasons": out["reasons"]}))
+PY
+)"
+check "合成での cap 超過は fallback" "fallback" "$(jq -r '.status' <<<"$COL_RES")"
+check "fallback は applied を空にする" "[]" "$(jq -c '.applied' <<<"$COL_RES")"
+check_has "fallback の理由は cap 超過" "$(jq -r '.reasons|join(" | ")' <<<"$COL_RES")" "always-on content is"
+check "合成 fallback は composed.diff を書かない" "0" "$([[ -e "$TREE/composed.diff" ]] && echo 1 || echo 0)"
+
 section "Harness Tree: --dry-run は composed.diff を書かない"
 fresh_state
 run_h2 --traces "$TMP/tr_comp.jsonl" --candidates "$TMP/c_comp.json" --repo-root "$TREE" --experience "$EXP" \
@@ -1588,6 +1659,23 @@ run_h2 --traces "$TMP/tr_comp.jsonl" --candidates "$TMP/c_comp.json" --repo-root
 check "dry-run で rc=0" "0" "$RC"
 check "composed.status = dry-run" "dry-run" "$(jq_out '.composed.status')"
 check "composed.diff は書かれない" "0" "$([[ -f "$PROP/composed.diff" ]] && echo 1 || echo 0)"
+fresh_state
+
+section "Harness Tree: Compose も baseline 既存エラーを減算する (既存欠陥で全バッチを落とさない)"
+printf 'print(0)\n' >"$TMP/tree_untrig/agent/scripts/ok3.py"
+printf 'print()\n' >"$TMP/t_cok3"
+trace_lines "sig base err" agent/scripts/ok3.py 3 3 >"$TMP/tr_baseerr.jsonl"
+cand ce1 "sig base err" agent/scripts/ok3.py "$TMP/t_cok3" | jq -s . >"$TMP/c_baseerr.json"
+fresh_state
+run_h2 --traces "$TMP/tr_baseerr.jsonl" --candidates "$TMP/c_baseerr.json" --repo-root "$TMP/tree_untrig" \
+    --experience "$EXP" --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --require-skill-triggers --json
+check "baseline 欠陥があっても rc=0" "0" "$RC"
+check "候補は受理される" "accepted" "$(cstat ce1)"
+check_has "baseline の欠陥は tree.errors に残る" "$(jq_out '.tree.errors|join(" | ")')" "skill 'gamma' is never named"
+check "合成も成功する (欠陥は減算)" "written" "$(jq_out '.composed.status')"
+check "composed.reasons は空" "array/0" \
+    "$(jq_out '.composed.reasons|type')/$(jq_out '.composed.reasons|length')"
+check "composed.diff が存在する" "1" "$([[ -f "$PROP/composed.diff" ]] && echo 1 || echo 0)"
 fresh_state
 
 echo

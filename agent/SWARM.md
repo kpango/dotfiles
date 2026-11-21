@@ -418,9 +418,8 @@ Multi-Agent System Failure Taxonomy（MAST、150 件超の専門家注釈トレ�
 詳細な参考文献一覧（一次論文・確度別引用・Deep Research 追加分の履歴）は `SWARM_REFERENCES.md` に分離した
 （本ファイルのトークン占有量を抑えるため）。本基盤のアーキテクチャは 3 つの一次論文 —
 **SoL-Pi**（`arXiv:2609.20519`: Action Fusion / ObservationPack / Evidence-Preserving Reducer / Online Context Compact）、
-**Harness²**（`arXiv:2610.14224`: ハーネスを 8 コンポーネント（system prompt / guardrails / memory / tool guidance /
-subagents / skills / scripts / plugins）のツリーとして、タスクレベル（Propose→Probe→Compose）と
-ハーネスレベル（経験リフレクタ）の 2 層で再帰最適化）、
+**Harness²**（`arXiv:2610.14224`: 8 コンポーネントのツリーを 2 層（タスクレベル Propose→Probe→Compose /
+ハーネスレベル）で再帰最適化。コンポーネント一覧は `SWARM_REFERENCES.md`）、
 **RLM**（`arXiv:2512.24601`: 外部 REPL 環境による長文脈検査と再帰的サブクエリ）— を理論・実証基盤とする。
 §0–§7 中の「SWARM_REFERENCES.md 参照」は同ファイルの対応する記述を指す。新しい根拠が反証された場合、または
 追加の Deep Research で確度が上がった場合は `SWARM_REFERENCES.md` の該当セクションを更新すること。

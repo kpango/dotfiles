@@ -5,25 +5,33 @@ Stages (each candidate is rejected at the first stage whose guard fails):
   1. Trace collector: cluster failure traces by root-cause signature; clusters with fewer than
      --min-occurrences (default 3) records are noise and are dropped.
   2. C1-C8 classification and INV (task-invariant, seen in >=2 distinct tasks) vs DOM (single task).
-  3. Net Token Budget: always-loaded components (C1, C2, C4, C6) need delta_tokens <= 0, charged by
-     file size. That is a LOCAL conservative law, stricter than upstream (which caps only the always-on
-     text and never charges a skill body); C6 also reports advertised_delta_tokens, the name+description
-     projection actually injected every turn, for visibility only. C6 additionally needs <= 500 lines
-     and description <= 160 chars.
+  3. Net Token Budget: components budgeted as always-loaded (C1, C2, C4, C6 — a local classification;
+     only SYSTEM/AGENTS sit in the always-on surface) need delta_tokens <= 0, charged by file size. That
+     is a LOCAL conservative law, stricter than upstream (which hard-caps the always-on text and never
+     charges a skill body, only advertising its name+description); C6 reports advertised_delta_tokens,
+     that name+description projection, for visibility only and leaves it null when either side's
+     description does not parse. C6 additionally needs <= 500 lines and description <= 160 chars.
   3.5 Harness tree (upstream harness2/core/tree.py): the candidate is applied to the whole surface tree and
-     validated (frontmatter, name/dir match, always-on cap, script refs, *.py compile). Only errors the
-     candidate INTRODUCES are counted, so a pre-existing baseline defect cannot block every edit.
+     validated (frontmatter, name/dir match, always-on cap, script refs, *.py compile). A target outside
+     the surface is rejected as `off_surface_target` (it could never be validated inside the tree), and a
+     --repo-root that is not a directory is an input error (rc 2) instead of a valid empty tree. Only
+     errors the candidate INTRODUCES are counted, so a pre-existing baseline defect cannot block an edit. The cap is
+     off unless --always-on-cap is given and untriggered skills are warnings unless
+     --require-skill-triggers is given (upstream hard-caps/errors by default).
   4. Contrastive probes split deterministically into Training / Held-Out (no Held-Out regression),
      then the Security Monotonicity Gate (subprocesses; any non-zero exit rejects).
-  5. Experience reflector: append SHA-256-deduplicated entries to EXPERIENCE.md (append only), write
-     accepted candidates as unified diffs, and merge every accepted diff into one composed.diff that is
-     re-validated as a whole (conflicting or collectively broken batches fall back). Proposal targets are
-     NEVER written; applying a diff needs human approval. `--check-tree` validates the surface alone.
+  5. Experience library writer: append SHA-256-deduplicated entries to EXPERIENCE.md (append only),
+     write accepted candidates as unified diffs, and merge every accepted diff into one composed.diff
+     that is re-validated as a whole minus the baseline's own errors (conflicting or collectively broken
+     batches fall back). Proposal targets are NEVER written; applying a diff needs human approval.
+     `--check-tree` validates the surface alone and exits 1 when it is invalid.
 
 Upstream mapping (google-research/harness2 @ 68688175):
   harness2/core/tree.py SurfaceSpec/read_tree/validate/diff_summary/diversity -> SurfaceSpec, read_tree,
-    validate_tree, diff_summary, diversity (the dotfiles OMP surface: flat walk, always-on cap opt-in
-    via --always-on-cap, no hooks schema).
+    validate_tree, tree_diversity (same idea as upstream's diversity, not bit-identical: blank lines are
+    kept and n_distinct is set-based; upstream's diff_summary is NOT ported, kept_base has no local
+    equivalent). The dotfiles OMP surface: recursive scripts/extensions walk, the shared AGENTS/SYSTEM
+    sources included, always-on cap opt-in via --always-on-cap, no hooks schema.
   harness2/core/tree.py is_allowed -> on_surface() (prefix surfaces); absolute paths, `..` and `\\` are rejected
   before it reaches any surface check.
   recursion.py invalid-proposal retry then inherit -> Compose fallback (same-path candidates keep the
@@ -31,7 +39,8 @@ Upstream mapping (google-research/harness2 @ 68688175):
   library.py EXPERIENCE.md chaining -> stage 5 append + SHA-256 dedup (no session ids, no locks).
   NOT PORTED (model-dependent or external runners): recursion.py rollout/improve stages, selection.py
     anonymised pairwise selection, judge.py, spec.py channels, runmark.py, the substrate runners.
-    compose() replaces the human "apply one diff" step deterministically; a human still applies it.
+    upstream applies the accepted tree automatically; compose() only emits one diff over the batch, and a
+    human applies it (that approval gate is this script's own policy).
 
 Input formats
   --traces      JSONL, one object per line (blank lines ignored):
@@ -73,7 +82,8 @@ reject control/C1 characters, U+2028/U+2029, invisible and bidi characters and l
 new_text may contain LF and TAB only. Lines are split on LF everywhere (never str.splitlines).
 
 Fail-Closed: invalid input / unreadable file / schema violation -> message on stderr, exit 2.
-Exit 0 otherwise (candidate rejections are results, not errors).
+Exit 0 otherwise (candidate rejections are results, not errors); --check-tree exits 1 when the surface
+is invalid (input errors are still 2).
 """
 
 from __future__ import annotations
@@ -413,6 +423,7 @@ class SurfaceSpec(NamedTuple):
     rules_dir: str
     script_dirs: tuple[str, ...]
     always_on_cap_reason: str
+    source_files: tuple[str, ...] = ()  # shared sources on the surface; not injected, so not budgeted
 
 
 DOTFILES_SURFACE = SurfaceSpec(
@@ -425,6 +436,13 @@ DOTFILES_SURFACE = SurfaceSpec(
     rules_dir="agent/rules",
     script_dirs=("agent/scripts",),
     always_on_cap_reason="every character here is paid on every turn and competes with the agent's output budget",
+    # gen-tool-{agents,system}.sh omp compose the deployed pair from these; editing them is on the surface
+    source_files=(
+        "agent/AGENTS.md",
+        "agent/AGENTS-omp-supplement.md",
+        "agent/SYSTEM.md",
+        "agent/SYSTEM-omp-supplement.md",
+    ),
 )
 
 # upstream reads exactly these bytes of a frontmatter head
@@ -447,13 +465,17 @@ def surface_files(surface: SurfaceSpec, root: Path) -> list[str]:
     """Every text file of the surface (upstream read_tree), sorted: candidates may only touch these.
     Binary assets (png/svg/xsd/...) and harness-managed `.system/` skills are not editable harness text."""
     out: set[str] = set()
-    for rel in (*surface.always_on, surface.memory):
+    for rel in (*surface.always_on, surface.memory, *surface.source_files):
         if (root / rel).is_file():
             out.add(rel)
     for d in surface.script_dirs:
         base = root / d
         if base.is_dir():
-            out |= {p.relative_to(root).as_posix() for p in base.iterdir() if p.is_file() and p.suffix in (".sh", ".py")}
+            out |= {
+                p.relative_to(root).as_posix()
+                for p in base.rglob("*")
+                if p.is_file() and p.suffix in (".sh", ".py") and "__pycache__" not in p.parts
+            }
     sd = root / surface.skill_dir
     if sd.is_dir():
         for skill in sd.iterdir():
@@ -462,7 +484,11 @@ def surface_files(surface: SurfaceSpec, root: Path) -> list[str]:
     for d, pat in ((surface.agent_dir, "*.md"), (surface.plugin_dir, "*.ts"), (surface.rules_dir, "*.md")):
         base = root / d
         if base.is_dir():
-            out |= {p.relative_to(root).as_posix() for p in base.glob(pat) if p.is_file()}
+            out |= {
+                p.relative_to(root).as_posix()
+                for p in base.rglob(pat)
+                if p.is_file() and "__pycache__" not in p.parts
+            }
     return sorted(out)
 
 
@@ -472,7 +498,7 @@ def read_tree(surface: SurfaceSpec, root: Path) -> dict[str, str]:
 
 def on_surface(surface: SurfaceSpec, rel: str) -> bool:
     """Prefix check is enough: candidate targets already passed check_target() and classify()."""
-    return rel in surface.always_on or rel == surface.memory or any(
+    return rel in surface.always_on or rel == surface.memory or rel in surface.source_files or any(
         rel.startswith(d + "/")
         for d in (*surface.script_dirs, surface.skill_dir, surface.agent_dir, surface.plugin_dir, surface.rules_dir)
     )
@@ -501,7 +527,12 @@ def validate_tree(
     repo's injected budget is model dependent, so the cap is opt-in via --always-on-cap)."""
     errs: list[str] = []
     warns: list[str] = []
-    body = "\n".join(tree.get(rel, "") for rel in surface.always_on)
+    body = "\n\n".join(tree.get(rel, "") for rel in surface.always_on)  # upstream always_on_text()
+    missing = [rel for rel in surface.always_on if rel not in tree]
+    if missing:  # upstream is_tree(): a tree is a directory that has at least one always-on file
+        errs.append(f"harness tree is missing always-on file(s): {' | '.join(missing)}")
+    elif not body.strip():
+        errs.append(f"{surface.always_on[0]} is empty; the harness would silently lose its always-on rules")
     if always_on_max and len(body) > always_on_max:
         errs.append(f"always-on content is {len(body)} chars, over the {always_on_max} cap; {surface.always_on_cap_reason}")
 
@@ -509,7 +540,7 @@ def validate_tree(
     for name in skills:
         rel = f"{surface.skill_dir}/{name}/SKILL.md"
         head = tree.get(rel, "")
-        if not re.search(r"^description:[ \t]*\S", head[:FM_HEAD_CHARS], re.M):
+        if skill_description(head) is None:
             errs.append(f"{rel} needs a `description:` in its frontmatter, or the skill is dropped SILENTLY at load")
         if fm_field(head, "name") != name:
             errs.append(f"{rel} needs frontmatter `name: {name}` matching its directory (a mismatch is dropped SILENTLY at load)")
@@ -523,7 +554,7 @@ def validate_tree(
         head = tree.get(rel, "")
         if fm_field(head, "name") != name:
             errs.append(f"{rel} needs frontmatter `name: {name}`")
-        if not re.search(r"^description:[ \t]*\S", head[:FM_HEAD_CHARS], re.M):
+        if not re.search(r"^description:[ \t]*(?:\S|$)", head[:FM_HEAD_CHARS], re.M):
             errs.append(f"{rel} needs a `description:`")
 
     for rel in sorted(tree):
@@ -546,8 +577,8 @@ def validate_tree(
             if f"{surface.skill_dir}/{skill}/{want}" not in tree:
                 errs.append(f"{rel} invokes `~/.claude/skills/{skill}/{want}` but that file is not in the harness")
 
-    def under(d: str) -> int:
-        return sum(1 for rel in tree if PurePosixPath(rel).parent.as_posix() == d)
+    def under(d: str) -> int:  # prefix, matching on_surface() (agent/scripts/ has nested dirs)
+        return sum(1 for rel in tree if rel.startswith(d + "/"))
 
     return {
         "ok": not errs,
@@ -567,15 +598,16 @@ def validate_tree(
     }
 
 
-def tree_lines(tree: dict[str, str]) -> list[str]:
-    return [f"{rel}\n{ln}" for rel in sorted(tree) for ln in split_lines(tree[rel])]
+def tree_lines(tree: dict[str, str]) -> set[str]:
+    return {f"{rel}:{ln}" for rel, c in tree.items() for ln in split_lines(c) if ln.strip()}
 
 
 def tree_diversity(trees: dict[str, dict[str, str]]) -> dict:
-    """Upstream tree.diversity: pairwise line Jaccard over the candidate trees (path names included)."""
-    sets = {cid: set(tree_lines(t)) for cid, t in trees.items()}
+    """Upstream tree.diversity: pairwise line Jaccard over the candidate trees (path names included, blank
+    lines ignored), so collapse to one body is visible."""
+    sets = {cid: tree_lines(t) for cid, t in trees.items()}
     ids = sorted(sets)
-    out = {"n": len(ids), "n_distinct": len({frozenset(s) for s in sets.values()}), "mean_line_jaccard": 1.0}
+    out = {"n": len(ids), "n_distinct": len({tuple(sorted(t.items())) for t in trees.values()}), "mean_line_jaccard": 1.0}
     if len(ids) < 2:
         return out
     vals = []
@@ -583,7 +615,7 @@ def tree_diversity(trees: dict[str, dict[str, str]]) -> dict:
         for b in ids[i + 1 :]:
             union = sets[a] | sets[b]
             vals.append(len(sets[a] & sets[b]) / len(union) if union else 1.0)
-    out["mean_line_jaccard"] = round(sum(vals) / len(vals), 6)
+    out["mean_line_jaccard"] = round(sum(vals) / len(vals), 4)
     return out
 
 
@@ -616,10 +648,12 @@ def compose(
     *,
     always_on_max: int,
     require_skill_triggers: bool,
+    base_errors: frozenset[str],
     dry_run: bool,
 ) -> dict:
-    """Merge every accepted candidate into ONE tree and validate it as a whole (upstream applies one diff
-    by hand, so a batch that is individually fine but collectively broken can never be produced)."""
+    """Merge every accepted candidate into ONE tree and validate it as a whole (a batch that is
+    individually fine but collectively broken can never be produced). Errors already present in the
+    baseline are subtracted, exactly as in stage 3.5, so a pre-existing defect cannot fall back every batch."""
     groups: dict[str, list[dict]] = collections.defaultdict(list)
     for c in accepted:
         groups[c["target"]].append(c)
@@ -631,15 +665,17 @@ def compose(
     if not accepted:
         return res
     if conflicts:
-        return {**res, "status": "fallback", "reasons": [f"conflicting edits for {c['target']}: {', '.join(c['ids'])}" for c in conflicts]}
+        return {**res, "status": "fallback", "applied": [],
+                "reasons": [f"conflicting edits for {c['target']}: {', '.join(c['ids'])}" for c in conflicts]}
     if dry_run:
         return {**res, "status": "dry-run"}
     tree = dict(base_tree)
     for c in merged:
         tree[c["target"]] = c["new_text"]
     v = validate_tree(surface, tree, always_on_max=always_on_max, require_skill_triggers=require_skill_triggers)
-    if not v["ok"]:
-        return {**res, "status": "fallback", "reasons": v["errors"]}
+    new_errs = [e for e in v["errors"] if e not in base_errors]
+    if new_errs:
+        return {**res, "status": "fallback", "applied": [], "reasons": new_errs}
     body = "".join(build_diff(c, root) for c in merged)
     return {**res, "status": "written", "path": write_atomic(out_path, body, "composed diff")}
 
@@ -929,6 +965,8 @@ def evaluate(cand: dict, kept: dict[str, dict], root: Path, seed: str, gate, tre
         "status": "rejected",
         "reasons": [],
         "delta_tokens": None,
+        "advertised_delta_tokens": None,
+        "tree_errors": None,
         "split": None,
         "training_regressions": None,
         "training_fixes": None,
@@ -947,6 +985,10 @@ def evaluate(cand: dict, kept: dict[str, dict], root: Path, seed: str, gate, tre
         res["reasons"].append("unclassified_target")
         return res
     res["component"], res["scope"] = comp, cluster["scope"]
+    if tree_ctx is not None and not on_surface(tree_ctx["surface"], cand["target"]):
+        # upstream can only edit its surface; a target outside it would reach the gate untested
+        res["reasons"].append("off_surface_target")
+        return res
 
     bpath = root / cand["target"]
     baseline = read_text(bpath, "baseline") if bpath.exists() else ""
@@ -956,8 +998,9 @@ def evaluate(cand: dict, kept: dict[str, dict], root: Path, seed: str, gate, tre
         res["reasons"].append("no_change")
         return res
     # The always-on projection (name+description) is what is injected every turn; it is reported for
-    # visibility. The budget guard below keeps charging C6 by file size: that is a LOCAL conservation law
-    # (stricter than upstream, which only caps always-on text and never charges a skill body).
+    # visibility (null when either side's description does not parse). The budget guard below keeps
+    # charging C6 by file size: that is a LOCAL conservation law (stricter than upstream, which hard-caps
+    # the always-on text and never charges a skill body).
     if comp == "C6":
         base_desc, new_desc = skill_description(baseline), skill_description(new)
         if base_desc is not None and new_desc is not None:
@@ -1149,13 +1192,15 @@ def write_proposal(cand_id: str, body: str, out_dir: Path) -> str:
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(
         description="Harness² offline self-evolution pipeline (see module docstring for formats). "
-        "Candidates are only emitted as diffs; nothing under the repo's agent/ tree is ever written."
+        "Candidates are only emitted as diffs; no candidate target is written. EXPERIENCE.md is appended "
+        "unless --dry-run, and --compose-out is repo-guarded like --out-dir."
     )
     ap.add_argument("--traces", type=Path, help="failure traces (JSONL); omit only with --check-tree")
     ap.add_argument(
         "--check-tree",
         action="store_true",
-        help="validate the harness tree at --repo-root and exit (0 valid, 1 invalid, 2 input error); no traces needed",
+        help="validate the harness tree at --repo-root and exit (0 valid, 1 invalid, 2 input error); needs no "
+        "traces and ignores --candidates/--experience/--compose-out",
     )
     ap.add_argument(
         "--always-on-cap",
@@ -1217,6 +1262,8 @@ def run(args: argparse.Namespace) -> dict:
     if args.traces is None and not args.check_tree:
         raise Fail("--traces or --check-tree is required")
     root = args.repo_root.resolve()  # GUARD:root-resolve ({root}, cwd and HARNESS2_REPO_ROOT must agree)
+    if not root.is_dir():  # upstream is_tree(): a mistyped --repo-root must not be reported as valid
+        raise Fail(f"--repo-root {args.repo_root} is not a directory")
     surface = DOTFILES_SURFACE
     tree_ctx: dict = {
         "surface": surface,
@@ -1238,6 +1285,10 @@ def run(args: argparse.Namespace) -> dict:
     od = args.out_dir.resolve()  # symlinks and '..' are resolved before the check
     if od == root_res or root_res in od.parents:  # GUARD:protected-out-dir
         raise Fail(f"--out-dir {args.out_dir} is inside the repository tree {root_res} (proposals go outside the repo)")
+    if args.compose_out is not None:
+        co = args.compose_out.resolve()
+        if co == root_res or root_res in co.parents:  # GUARD:protected-compose-out
+            raise Fail(f"--compose-out {args.compose_out} is inside the repository tree {root_res} (proposals go outside the repo)")
 
     preflight_experience(exp_path, not args.dry_run)
     traces, digest = load_traces(args.traces)
@@ -1301,6 +1352,7 @@ def run(args: argparse.Namespace) -> dict:
         args.compose_out or args.out_dir / "composed.diff",
         always_on_max=args.always_on_cap,
         require_skill_triggers=args.require_skill_triggers,
+        base_errors=tree_ctx["base_errors"],
         dry_run=args.dry_run,
     )
     experience = distill(clusters, exp_path, args.dry_run)
@@ -1337,6 +1389,8 @@ def print_human(rep: dict) -> None:
         print(f"candidate {r['id']}: {r['status']} {','.join(r['reasons'])} {r['proposal'] or ''}".rstrip())
     co = rep["composed"]
     print(f"composed: {co['status']} applied={len(co['applied'])} conflicts={len(co['conflicts'])} {co['path'] or ''}".rstrip())
+    for reason in co["reasons"]:
+        print(f"composed reason: {reason}")
     e = rep["experience"]
     print(f"experience: +{len(e['added'])} new, {len(e['duplicates'])} duplicate{' (dry-run)' if rep['dry_run'] else ''}")
 

@@ -151,22 +151,30 @@ plugins）のツリーとして扱う。本 script が移植するのは決定�
 
 - Propose = Drafter、Probe = `harness2-offline.py`（Training/Held-Out probe + Security Monotonicity Gate）、
   Compose = Checker 合格差分の合成 diff の提示のみ（適用は 5. の grant 経路。同 script は対象を書かない）。
-- **ツリー検証**（`validate_tree`）: always-on cap・skill の `description:` 必須と `name:` のディレクトリ一致・
-  未トリガ skill・subagent の `name:`/`description:`・参照スクリプトの実在・`.py` のコンパイル。エラーは ` | `
+- **ツリー検証**（`validate_tree`）: always-on cap（`--always-on-cap N` 指定時のみ、既定は cap なし）・skill の
+  `description:` 必須と `name:` のディレクトリ一致・未トリガ skill（既定は warning、`--require-skill-triggers`
+  で error 化）・subagent の `name:`/`description:`・参照スクリプトの実在・`.py` のコンパイル。エラーは ` | `
   連結の 1 メッセージで、候補が**新規に導入した**エラーのみ `tree_invalid` として棄却する。
-  候補なしの検証は `--check-tree`（`tree`/`census`/`always_on_chars` を JSON で返す）。
+  候補なしの検証は `--check-tree`（`--json` で `tree`（`census`/`always_on_chars` を含む）/`warnings`/`exit_code`
+  を返し、面が不正なら rc=1。`--repo-root` がディレクトリでなければ rc=2、always-on ファイルが 1 つも無い
+  ツリーは rc=1）。ツリーは `agent/scripts/**` と `extensions/**` を再帰的に含み、面外の target は
+  `off_surface_target` として棄却する。
 - **Compose**: 受理候補を base tree に適用した合成ツリーを再検証し、単一 diff にまとめる。同一パスへの
   競合は `fallback`（現ハーネス維持）として報告し、`diversity`（行 Jaccard 平均）で 1 本への収束を検出する。
-- 常時ロード層（C1/C2/C4/C6）への差分は **Net Token Budget <= 0** を満たすまで Checker へ渡さない（分類・判定は
-  同 script が SoT）。C6 はローカル保守則として**ファイル全体の delta** で課金し、上流の常時ロード面
-  （name + description）の delta は `advertised_delta_tokens` として報告のみ行う（上流は本文を課金しない）。
+  再検証でも baseline 既存エラーは減算する（stage 3.5 と同じ規則。既存欠陥が全バッチを fallback させない）。
+- 常時ロード層として課金する C1/C2/C4/C6（ローカル分類。実体の always-on 面は SYSTEM/AGENTS のみ）への差分は
+  **Net Token Budget <= 0** を満たすまで Checker へ渡さない（分類・判定は同 script が SoT）。C6 はローカル保守則
+  として**ファイル全体の delta** で課金し、skill の広告面（name + description）の delta は
+  `advertised_delta_tokens` として報告のみ行う（両側の description が解釈できなければ null）。上流は skill 本文を
+  課金しないが、always-on テキスト自体は絶対上限（hard cap）で課金する。
 
 ```bash
 collect-evidence.sh <repo-root> 30 --traces <変更対象の repo 相対 path> > traces.jsonl &&
   python3 -I -B <dotfiles>/agent/scripts/evolve/harness2-offline.py --traces traces.jsonl --candidates cand.json --dry-run --json
 ```
 
-`--dry-run` を外すと repo の EXPERIENCE.md へ追記するため、人間承認後にのみ外す。
+`--dry-run` を外すと repo の EXPERIENCE.md へ追記するため、人間承認後にのみ外す（候補の対象ファイル自体は
+決して書き換えない。`--compose-out` も `--out-dir` 同様 repo 内を拒否する）。
 
 ## 定期実行パターン（任意）
 
