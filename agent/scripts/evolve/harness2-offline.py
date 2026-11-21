@@ -10,7 +10,7 @@ Stages (each candidate is rejected at the first stage whose guard fails):
      text and never charges a skill body); C6 also reports advertised_delta_tokens, the name+description
      projection actually injected every turn, for visibility only. C6 additionally needs <= 500 lines
      and description <= 160 chars.
-  3.5 Harness tree (upstream core/tree.py): the candidate is applied to the whole surface tree and
+  3.5 Harness tree (upstream harness2/core/tree.py): the candidate is applied to the whole surface tree and
      validated (frontmatter, name/dir match, always-on cap, script refs, *.py compile). Only errors the
      candidate INTRODUCES are counted, so a pre-existing baseline defect cannot block every edit.
   4. Contrastive probes split deterministically into Training / Held-Out (no Held-Out regression),
@@ -21,10 +21,10 @@ Stages (each candidate is rejected at the first stage whose guard fails):
      NEVER written; applying a diff needs human approval. `--check-tree` validates the surface alone.
 
 Upstream mapping (google-research/harness2 @ 68688175):
-  core/tree.py SurfaceSpec/read_tree/validate/diff_summary/diversity -> SurfaceSpec, read_tree,
+  harness2/core/tree.py SurfaceSpec/read_tree/validate/diff_summary/diversity -> SurfaceSpec, read_tree,
     validate_tree, diff_summary, diversity (the dotfiles OMP surface: flat walk, always-on cap opt-in
     via --always-on-cap, no hooks schema).
-  core/tree.py is_allowed -> on_surface() (prefix surfaces); absolute paths, `..` and `\\` are rejected
+  harness2/core/tree.py is_allowed -> on_surface() (prefix surfaces); absolute paths, `..` and `\\` are rejected
   before it reaches any surface check.
   recursion.py invalid-proposal retry then inherit -> Compose fallback (same-path candidates keep the
     current harness) and whole-batch re-validation.
@@ -394,8 +394,8 @@ def cluster_traces(traces: list[dict], min_occ: int) -> list[dict]:
     return clusters
 
 
-# ------------------------------------------------------------------ harness tree (upstream core/tree.py)
-# Deterministic half of google-research/harness2 core/tree.py (commit 68688175): the harness is ONE
+# ------------------------------------------------------------------ harness tree (upstream harness2/core/tree.py)
+# Deterministic half of google-research/harness2 (harness2/core/tree.py, commit 68688175): the harness is ONE
 # editable surface of known files, and every candidate edit is validated inside that whole tree before
 # it is proposed. The stochastic half (LLM proposer, anonymised pairwise selection, alpha-beta judge)
 # has no offline equivalent; compose() below replaces the human "apply one diff" step deterministically.
