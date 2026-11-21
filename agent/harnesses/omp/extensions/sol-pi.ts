@@ -20,8 +20,8 @@
  * 4. Online compaction — Upstream economics (breakeven vs. the plan-boundary request
  *    horizon, cache-debt repayment, post-compaction cooldown, absolute window
  *    protection). At a settle boundary the decision is priced; window protection
- *    stays absolute, everything else is deferred while cooldown/debt forbid it. An
- *    unneeded native compaction (usage below window−reserve) is cancelled.
+ *    stays absolute, everything else is deferred while cooldown/debt forbid it. A
+ *    native compaction that would consume a selected boundary is cancelled.
  *
  * The `/sol-pi` command reports status; nothing here switches models.
  */
@@ -772,7 +772,9 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   const priceBoundaryCompaction = (ctx: Ctx): CompactionDecision | undefined => {
     const oc = config.onlineContextCompactConfig;
     const usage = ctx.getContextUsage?.() ?? lastUsage;
-    const contextTokens = usage?.tokens ?? requestContextTokens(ctx);
+    // Price the write at max(reported, projected estimate), like upstream: the
+    // provider count can lag the projection this extension actually sends.
+    const contextTokens = requestContextTokens(ctx);
     const archiveTokens = archiveTokensFor(observedMessages, oc.keepRecentTokens);
     const averageContextTokenIncrement =
       state.positiveContextDeltaCount === 0 ? null : state.positiveContextDeltaTotal / state.positiveContextDeltaCount;
@@ -882,18 +884,15 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
 
   // A compaction is deferred to the selected boundary: consuming it here would
   // leave the stopped run with no continuation.
-  pi.on("session_before_compact", async (event: { customInstructions?: string }, ctx: Ctx) => {
+  pi.on("session_before_compact", async (event: { customInstructions?: string }) => {
     if (compactionInFlight) return undefined;
-    // An explicit request (user/plan mode) carries instructions and is honored.
+    // An explicit request (user/plan mode) carries instructions and is honored;
+    // the commit clears the selection, so it cannot run twice.
     if (event?.customInstructions) return undefined;
+    // OMP's event has no trigger reason, so a selected boundary is the only
+    // compaction this extension may suppress: consuming it would leave the
+    // stopped run with no continuation. Everything else stays the host's call.
     if (selected) return { cancel: true };
-    const usage = ctx.getContextUsage?.() ?? lastUsage;
-    if (!usage || usage.contextWindow <= 0) return undefined;
-    const reserve = config.onlineContextCompactConfig.outputReserveTokens;
-    if (usage.tokens < usage.contextWindow - reserve) {
-      notify(ctx, "[SoL-Pi] skipped a compaction: context is below window - reserve.", "info");
-      return { cancel: true };
-    }
     return undefined;
   });
 
@@ -901,6 +900,8 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   // changed, so request spacing is measured anew); the debt carried for a
   // compaction we initiated applies to exactly that one.
   pi.on("session_compact", async (event: { fromExtension?: boolean }) => {
+    // A committed compaction settles the refusal; the context it rejected is gone.
+    compactionRefused = false;
     const debt = event?.fromExtension || !activeDebt ? { debtTokens: 0, repaymentTokens: 0 } : activeDebt;
     state = recordCompaction(state, debt);
     stats.compactions++;
@@ -924,7 +925,9 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   pi.on("input", async (event: InputEvent) => {
     // New input is a fresh start: a boundary rejected earlier may be priced again.
     compactionRefused = false;
-    if (event.source && event.source !== "interactive") return undefined;
+    // Operator input arrives as interactive or rpc; an extension-injected
+    // prompt is not a task change.
+    if (event.source === "extension") return undefined;
     const text = event.text ?? "";
     if (CORRECTION_RE.test(text) || text.startsWith("CORRECTION:")) {
       // A correction invalidates the boundary, its selection, and any debt.

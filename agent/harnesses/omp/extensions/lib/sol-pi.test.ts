@@ -1611,15 +1611,19 @@ describe("sol-pi.ts: plan state and correction tracking", () => {
     await m.h.session_start({}, m.ctx(tmp, { branch: [{ type: "custom", customType: ONLINE_STATE_ENTRY, data: { version: 1, plan: "nope" } }] }));
     expect(await runCmd(m, "status", tmp)).toContain("epoch 0, 0 steps");
   });
-  test("a correction advances the epoch and clears the plan and the request horizon", async () => {
+  test("a correction advances the epoch on interactive and rpc input, but not on extension input", async () => {
     const m = mockPi(extCfg());
     await m.h.session_start({}, m.ctx(tmp));
     await m.tools.update_plan.execute("c1", { steps: plan([{ id: "s1", goal: "wrong direction", status: "in_progress" }]) }, undefined, undefined, m.ctx(tmp));
     await m.h.input({ text: "違う、そうではなく agent/v1 の方針で", source: "interactive" }, m.ctx(tmp));
+    expect(await runCmd(m, "status", tmp)).toContain("epoch 1, 0 steps");
     await m.h.input({ text: "that's wrong", source: "rpc" }, m.ctx(tmp));
     const st = await runCmd(m, "status", tmp);
-    expect(st).toContain("epoch 1, 0 steps");
+    expect(st).toContain("epoch 2, 0 steps");
     expect(st).toContain("0 boundary samples");
+    // An extension-injected prompt is not operator input.
+    await m.h.input({ text: "CORRECTION: internal nudge", source: "extension" }, m.ctx(tmp));
+    expect(await runCmd(m, "status", tmp)).toContain("epoch 2, 0 steps");
   });
 });
 
@@ -1714,13 +1718,14 @@ describe("sol-pi.ts: boundary compaction", () => {
     // An explicit request (custom instructions) is still honored.
     expect(await m.h.session_before_compact({ customInstructions: "summary please" }, c)).toBeUndefined();
   });
-  test("room to spare cancels a native compaction; a full window does not", async () => {
+  test("an unselected native compaction is the host's call, even with room to spare", async () => {
     const m = mockPi(extCfg());
     await m.h.session_start({}, m.ctx(tmp));
     const roomy = m.ctx(tmp, { usage: { tokens: 50000, contextWindow: 200000 } });
-    expect(await m.h.session_before_compact({}, roomy)).toEqual({ cancel: true });
+    expect(await m.h.session_before_compact({}, roomy)).toBeUndefined();
     const full = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
     expect(await m.h.session_before_compact({}, full)).toBeUndefined();
+    expect(m.notes.join("\n")).not.toContain("skipped a compaction");
   });
   test("a recoverable refusal is reported and blocks a retry until real tool work", async () => {
     const m = mockPi(extCfg());
@@ -1742,6 +1747,26 @@ describe("sol-pi.ts: boundary compaction", () => {
     await m.h.turn_end(usageTurn(1000, { toolResults: [{ toolCallId: "b1", toolName: "bash", isError: false }] }), c);
     const boundary3 = await armBoundary(m, c);
     await m.h.turn_end(usageTurn(1000, boundary3), c);
+    expect(m.aborts.length).toBe(2);
+  });
+  test("a committed compaction clears the refusal latch", async () => {
+    const m = mockPi(extCfg());
+    await m.h.session_start({}, m.ctx(tmp));
+    const c = m.ctx(tmp, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: bigMessages() }, c);
+    c.compact = async () => {
+      throw Object.assign(new Error("Already compacted"), { name: "ManualCompactionNoOpError" });
+    };
+    const boundary = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary), c);
+    await m.h.agent_end({ willContinue: false }, c);
+    expect(m.notes.join("\n")).toContain("online compaction skipped: Already compacted");
+    // Any committed compaction replaces the rejected context; the next request
+    // re-projects it, so the following boundary is priced again.
+    await m.h.session_compact({ fromExtension: true });
+    await m.h.context({ messages: bigMessages() }, c);
+    const boundary2 = await armBoundary(m, c);
+    await m.h.turn_end(usageTurn(1000, boundary2), c);
     expect(m.aborts.length).toBe(2);
   });
   test("a non-recoverable compaction failure resumes once and is rethrown", async () => {
