@@ -9,7 +9,9 @@
 
 - **SoL-Pi** (`arXiv:2609.20519`): Action Fusion（編集直後に検証を融合）・ObservationPack・Evidence-Preserving
   Reducer・Online Context Compact。
-- **Harness²** (`arXiv:2610.14224`): モデル重みを変えず Skill / Knowledge / Context / Memory の 4 軸でハーネスを再帰最適化。
+- **Harness²** (`arXiv:2610.14224`): モデル重みを変えず、ハーネスを 8 コンポーネント（system prompt / guardrails /
+  memory / tool guidance / subagents / skills / scripts / plugins）のツリーとしてタスクレベル・ハーネスレベルの
+  2 層で再帰最適化する。
 - **RLM** (`arXiv:2512.24601`): 長文脈を外部 REPL の変数として操作し、再帰的サブクエリで分解する。
 
 ## 確定

@@ -145,9 +145,21 @@ Edit の old_string 不一致等で再試行する場合も都度 grant を再�
 
 ## Harness² オフライン検証（任意、arXiv:2610.14224）
 
-Propose-Probe-Compose: Propose = Drafter、Probe = `harness2-offline.py`（Training/Held-Out probe + Security
-Monotonicity Gate）、Compose = Checker 合格差分の提示のみ（適用は 5. の grant 経路。同 script は対象を書かない）。
-常時ロード層（C1/C2/C4/C6）への差分は **Net Token Budget <= 0** を満たすまで Checker へ渡さない（分類・判定は同 script が SoT）。
+上流は 2 層: **タスクレベル再帰**（Propose→Probe→Compose）と**ハーネスレベル再帰**（経験リフレクタ）。
+ハーネスは 8 コンポーネント（system prompt / guardrails / memory / tool guidance / subagents / skills / scripts /
+plugins）のツリーとして扱う。本 script が移植するのは決定論部分のみ:
+
+- Propose = Drafter、Probe = `harness2-offline.py`（Training/Held-Out probe + Security Monotonicity Gate）、
+  Compose = Checker 合格差分の合成 diff の提示のみ（適用は 5. の grant 経路。同 script は対象を書かない）。
+- **ツリー検証**（`validate_tree`）: always-on cap・skill の `description:` 必須と `name:` のディレクトリ一致・
+  未トリガ skill・subagent の `name:`/`description:`・参照スクリプトの実在・`.py` のコンパイル。エラーは ` | `
+  連結の 1 メッセージで、候補が**新規に導入した**エラーのみ `tree_invalid` として棄却する。
+  候補なしの検証は `--check-tree`（`tree`/`census`/`always_on_chars` を JSON で返す）。
+- **Compose**: 受理候補を base tree に適用した合成ツリーを再検証し、単一 diff にまとめる。同一パスへの
+  競合は `fallback`（現ハーネス維持）として報告し、`diversity`（行 Jaccard 平均）で 1 本への収束を検出する。
+- 常時ロード層（C1/C2/C4/C6）への差分は **Net Token Budget <= 0** を満たすまで Checker へ渡さない（分類・判定は
+  同 script が SoT）。C6 はローカル保守則として**ファイル全体の delta** で課金し、上流の常時ロード面
+  （name + description）の delta は `advertised_delta_tokens` として報告のみ行う（上流は本文を課金しない）。
 
 ```bash
 collect-evidence.sh <repo-root> 30 --traces <変更対象の repo 相対 path> > traces.jsonl &&

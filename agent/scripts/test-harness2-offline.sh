@@ -1375,6 +1375,211 @@ check "C1 を含む message でも rc=0" "0" "$RC"
 check "C1 (CSI) が EXPERIENCE.md に入らない" "0" "$(grep -c $'\xc2\x9b' "$EXP")"
 check "C1 を含む message のエントリは追加される" "5" "$(grep -c '^### [0-9a-f]\{16\}$' "$EXP")"
 
+# ================================================================ Harness Tree
+# 上流 Harness² (core/tree.py) 準拠のツリー検証・Compose stage。
+# ミニチュアのハーネスツリーを $TMP 配下に作り、単体 (--check-tree) とパイプラインの両面を検証する。
+run_tree() { # tree-root [extra...]
+    local t="$1"
+    shift
+    python3 -I -B "$H2" --check-tree --repo-root "$t" --json "$@" >"$TMP/out.txt" 2>"$TMP/err.txt"
+    RC=$?
+}
+err_all() { cat "$TMP/out.txt" "$TMP/err.txt"; }
+mk_tree() { # dir: 妥当なミニチュアハーネスツリーを作る
+    local d="$1"
+    rm -rf "$d"
+    mkdir -p "$d/agent/harnesses/omp/extensions" "$d/agent/rules" "$d/agent/skills/alpha/scripts" \
+        "$d/agent/skills/beta" "$d/agent/agents" "$d/agent/scripts"
+    printf '# AGENTS\nAlways-on rules. Skills: alpha and beta.\nRun scripts/ok.sh before edits\n' \
+        >"$d/agent/harnesses/omp/AGENTS.md"
+    printf '# SYSTEM\nSYSTEM text. alpha and beta are on demand.\n' >"$d/agent/harnesses/omp/SYSTEM.md"
+    printf 'export const ext = 1;\n' >"$d/agent/harnesses/omp/extensions/e.ts"
+    printf -- '---\nname: alpha\ndescription: Alpha skill for the tree fixture\n---\n\nRun scripts/h.sh\n' \
+        >"$d/agent/skills/alpha/SKILL.md"
+    printf -- '---\nname: beta\ndescription: Beta skill for the tree fixture\n---\n\nBody.\n' \
+        >"$d/agent/skills/beta/SKILL.md"
+    printf '#!/usr/bin/env bash\necho ok\n' >"$d/agent/scripts/ok.sh"
+    printf 'print("ok")\n' >"$d/agent/scripts/ok.py"
+    printf 'print("ok2")\n' >"$d/agent/scripts/ok2.py"
+    printf '#!/usr/bin/env bash\necho h\n' >"$d/agent/skills/alpha/scripts/h.sh"
+    printf -- '---\nname: builder\ndescription: Builds things for the tree fixture\n---\n\nBody.\n' \
+        >"$d/agent/agents/builder.md"
+    printf '# rule one\n' >"$d/agent/rules/r1.md"
+}
+TREE="$TMP/tree"
+mk_tree "$TREE"
+
+section "Harness Tree: --check-tree は妥当なツリーで rc=0 と tree/census を返す"
+run_tree "$TREE"
+check "--check-tree だけで rc=0" "0" "$RC"
+check "tree.ok" "true" "$(jq_out '.tree.ok')"
+check "tree.errors は空" "0" "$(jq_out '.tree.errors|length')"
+check "census のキー" "n_files,plugins,rules,scripts,skills,sub_agents" "$(jq_out '.tree.census|keys|join(",")')"
+check "census はすべて数値" "number" "$(jq_out '[.tree.census[]|type]|unique|join(",")')"
+check "census.skills" "2" "$(jq_out '.tree.census.skills')"
+check "census.sub_agents" "1" "$(jq_out '.tree.census.sub_agents')"
+check "census.plugins" "1" "$(jq_out '.tree.census.plugins')"
+check "census.rules" "1" "$(jq_out '.tree.census.rules')"
+check "always_on_chars は数値" "number" "$(jq_out '.tree.always_on_chars|type')"
+check "cap 既定 (0) は null" "null" "$(jq_out '.tree.always_on_cap')"
+ALWAYS_CHARS="$(jq_out '.tree.always_on_chars')"
+
+section "Harness Tree: --traces も --check-tree も無ければ rc=2"
+run_h2 --json
+check "rc=2" "2" "$RC"
+check_has "案内メッセージ" "$(cat "$TMP/err.txt")" "--traces or --check-tree is required"
+
+section "Harness Tree: SKILL.md の frontmatter"
+mk_tree "$TMP/tree_nodesc"
+printf -- '---\nname: alpha\n---\n\nBody.\n' >"$TMP/tree_nodesc/agent/skills/alpha/SKILL.md"
+run_tree "$TMP/tree_nodesc"
+check "description 欠落は rc=1" "1" "$RC"
+check_has "description 欠落メッセージ" "$(err_all)" 'agent/skills/alpha/SKILL.md needs a `description:` in its frontmatter'
+mk_tree "$TMP/tree_badname"
+printf -- '---\nname: alpha2\ndescription: Alpha skill for the tree fixture\n---\n\nBody.\n' \
+    >"$TMP/tree_badname/agent/skills/alpha/SKILL.md"
+run_tree "$TMP/tree_badname"
+check "name 不一致は rc=1" "1" "$RC"
+check_has "name 不一致メッセージ" "$(err_all)" 'agent/skills/alpha/SKILL.md needs frontmatter `name: alpha` matching its directory'
+
+section "Harness Tree: 未トリガ skill は warning、--require-skill-triggers で error"
+mk_tree "$TMP/tree_untrig"
+mkdir -p "$TMP/tree_untrig/agent/skills/gamma"
+printf -- '---\nname: gamma\ndescription: Gamma skill nobody mentions\n---\n\nBody.\n' \
+    >"$TMP/tree_untrig/agent/skills/gamma/SKILL.md"
+run_tree "$TMP/tree_untrig"
+check "既定は rc=0" "0" "$RC"
+check "tree.ok" "true" "$(jq_out '.tree.ok')"
+check_has "warnings に gamma" "$(jq_out '.tree.warnings|join(" | ")')" "gamma"
+run_tree "$TMP/tree_untrig" --require-skill-triggers
+check "error 昇格は rc=1" "1" "$RC"
+check_has "untriggered メッセージ" "$(err_all)" "skill 'gamma' is never named in the always-on text"
+
+section "Harness Tree: --always-on-cap"
+CAP=$((ALWAYS_CHARS - 1))
+run_tree "$TREE" --always-on-cap "$CAP"
+check "cap 超過は rc=1" "1" "$RC"
+check_has "cap 超過メッセージ" "$(err_all)" "always-on content is $ALWAYS_CHARS chars, over the $CAP cap"
+run_tree "$TREE" --always-on-cap 100000
+check "cap 内なら rc=0" "0" "$RC"
+check "指定 cap を報告する" "100000" "$(jq_out '.tree.always_on_cap')"
+
+section "Harness Tree: subagent の frontmatter"
+mk_tree "$TMP/tree_ano_desc"
+printf -- '---\nname: builder\n---\n\nBody.\n' >"$TMP/tree_ano_desc/agent/agents/builder.md"
+run_tree "$TMP/tree_ano_desc"
+check "agent description 欠落は rc=1" "1" "$RC"
+check_has "agent description 欠落メッセージ" "$(err_all)" 'agent/agents/builder.md needs a `description:`'
+mk_tree "$TMP/tree_ano_name"
+printf -- '---\nname: builder2\ndescription: Builds things for the tree fixture\n---\n\nBody.\n' \
+    >"$TMP/tree_ano_name/agent/agents/builder.md"
+run_tree "$TMP/tree_ano_name"
+check "agent name 不一致は rc=1" "1" "$RC"
+check_has "agent name 不一致メッセージ" "$(err_all)" 'agent/agents/builder.md needs frontmatter `name: builder`'
+
+section "Harness Tree: 参照スクリプトの解決"
+mk_tree "$TMP/tree_ref_ok"
+cat >>"$TMP/tree_ref_ok/agent/harnesses/omp/AGENTS.md" <<'EOF'
+Helpers resolve:\nscripts/ok.sh\nscripts/h.sh\n~/.claude/skills/alpha/scripts/h.sh
+EOF
+run_tree "$TMP/tree_ref_ok"
+check "解決できる参照は rc=0" "0" "$RC"
+check "解決できる参照で errors は空" "0" "$(jq_out '.tree.errors|length')"
+mk_tree "$TMP/tree_ref_bad"
+cat >>"$TMP/tree_ref_bad/agent/harnesses/omp/AGENTS.md" <<'EOF'
+Broken: scripts/nope.sh
+EOF
+run_tree "$TMP/tree_ref_bad"
+check "裸 scripts/ の欠落は rc=1" "1" "$RC"
+check_has "裸 scripts/ の欠落メッセージ" "$(err_all)" 'invokes `scripts/nope.sh` but that file is not in the harness'
+mk_tree "$TMP/tree_ref_claude"
+cat >>"$TMP/tree_ref_claude/agent/harnesses/omp/AGENTS.md" <<'EOF'
+Broken: ~/.claude/skills/alpha/scripts/nope.sh
+EOF
+run_tree "$TMP/tree_ref_claude"
+check "~/.claude/skills の欠落は rc=1" "1" "$RC"
+check_has "~/.claude/skills の欠落メッセージ" "$(err_all)" 'invokes `~/.claude/skills/alpha/scripts/nope.sh` but that file is not in the harness'
+
+section "Harness Tree: .py はコンパイルできること"
+mk_tree "$TMP/tree_badpy"
+printf 'def f(:\n' >"$TMP/tree_badpy/agent/scripts/bad.py"
+run_tree "$TMP/tree_badpy"
+check "コンパイル不能な .py は rc=1" "1" "$RC"
+check_has "コンパイル不能メッセージ" "$(err_all)" 'agent/scripts/bad.py does not compile: '
+
+section "Harness Tree: 本物のリポジトリは rc=0"
+run_tree "$ROOT"
+check "本物のリポジトリは rc=0" "0" "$RC"
+check "本物のリポジトリで tree.ok" "true" "$(jq_out '.tree.ok')"
+
+section "Harness Tree: pipeline はツリー不正な候補を tree_invalid で棄却する"
+printf -- '---\nname: builder\n---\n\nBody.\n' >"$TMP/t_node_desc"
+trace_lines "sig tree" agent/agents/builder.md 3 3 >"$TMP/tr_tree.jsonl"
+cand td1 "sig tree" agent/agents/builder.md "$TMP/t_node_desc" | jq -s . >"$TMP/c_tree.json"
+fresh_state
+run_h2 --traces "$TMP/tr_tree.jsonl" --candidates "$TMP/c_tree.json" --repo-root "$TREE" --experience "$EXP" \
+    --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --json
+check "pipeline は rc=0" "0" "$RC"
+check "tree_invalid で棄却" "tree_invalid" "$(creason td1)"
+check_has "候補の tree_errors" \
+    "$(jq_out '.candidates[]|select(.id=="td1")|.tree_errors//[]|join(" | ")')" \
+    'agent/agents/builder.md needs a `description:`'
+
+section "Harness Tree: Compose は異なるファイルの受理候補を composed.diff に合成する"
+printf 'print()\n' >"$TMP/t_cok1"
+printf 'print()\n' >"$TMP/t_cok2"
+{ trace_lines "sig comp a" agent/scripts/ok.py 3 3; trace_lines "sig comp b" agent/scripts/ok2.py 3 3; } \
+    >"$TMP/tr_comp.jsonl"
+{
+    cand cp1 "sig comp a" agent/scripts/ok.py "$TMP/t_cok1"
+    cand cp2 "sig comp b" agent/scripts/ok2.py "$TMP/t_cok2"
+} | jq -s . >"$TMP/c_comp.json"
+fresh_state
+run_h2 --traces "$TMP/tr_comp.jsonl" --candidates "$TMP/c_comp.json" --repo-root "$TREE" --experience "$EXP" \
+    --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --json
+check "2件とも受理" "accepted,accepted" "$(jq_out '[.candidates[].status]|join(",")')"
+check "composed.status = written" "written" "$(jq_out '.composed.status')"
+check "composed.diff が存在する" "1" "$([[ -f "$PROP/composed.diff" ]] && echo 1 || echo 0)"
+check "composed.applied" "cp1,cp2" "$(jq_out '.composed.applied|join(",")')"
+check "composed.conflicts は空配列" "array/0" \
+    "$(jq_out '.composed.conflicts|type')/$(jq_out '.composed.conflicts|length')"
+check "diversity.n" "2" "$(jq_out '.diversity.n')"
+check "diversity.n_distinct" "2" "$(jq_out '.diversity.n_distinct')"
+check "mean_line_jaccard は数値" "number" "$(jq_out '.diversity.mean_line_jaccard|type')"
+fresh_state
+run_h2 --traces "$TMP/tr_comp.jsonl" --candidates "$TMP/c_comp.json" --repo-root "$TREE" --experience "$EXP" \
+    --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --compose-out "$TMP/custom_composed.diff" --json
+check "--compose-out で rc=0" "0" "$RC"
+check_has "--compose-out を尊重する" "$(jq_out '.composed.path')" "custom_composed.diff"
+check "--compose-out のファイルが存在する" "1" "$([[ -f "$TMP/custom_composed.diff" ]] && echo 1 || echo 0)"
+
+section "Harness Tree: Compose は同一ファイルへの候補で fallback になる"
+printf 'print(1)\n' >"$TMP/t_cc1"
+printf 'print(2)\n' >"$TMP/t_cc2"
+{ trace_lines "sig conf a" agent/scripts/ok.py 3 3; trace_lines "sig conf b" agent/scripts/ok.py 3 3; } \
+    >"$TMP/tr_conf.jsonl"
+{
+    cand cf1 "sig conf a" agent/scripts/ok.py "$TMP/t_cc1"
+    cand cf2 "sig conf b" agent/scripts/ok.py "$TMP/t_cc2"
+} | jq -s . >"$TMP/c_conf.json"
+fresh_state
+run_h2 --traces "$TMP/tr_conf.jsonl" --candidates "$TMP/c_conf.json" --repo-root "$TREE" --experience "$EXP" \
+    --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --json
+check "競合候補も2件とも受理" "accepted,accepted" "$(jq_out '[.candidates[].status]|join(",")')"
+check "composed.status = fallback" "fallback" "$(jq_out '.composed.status')"
+check "conflicts[0].target" "agent/scripts/ok.py" "$(jq_out '.composed.conflicts[0].target')"
+check_has "conflicts[0].ids に cf1" "$(jq_out '.composed.conflicts[0].ids|join(",")')" "cf1"
+check_has "conflicts[0].ids に cf2" "$(jq_out '.composed.conflicts[0].ids|join(",")')" "cf2"
+
+section "Harness Tree: --dry-run は composed.diff を書かない"
+fresh_state
+run_h2 --traces "$TMP/tr_comp.jsonl" --candidates "$TMP/c_comp.json" --repo-root "$TREE" --experience "$EXP" \
+    --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --dry-run --json
+check "dry-run で rc=0" "0" "$RC"
+check "composed.status = dry-run" "dry-run" "$(jq_out '.composed.status')"
+check "composed.diff は書かれない" "0" "$([[ -f "$PROP/composed.diff" ]] && echo 1 || echo 0)"
+fresh_state
+
 echo
 echo "---"
 if [[ "$total_fail" -gt 0 ]]; then
