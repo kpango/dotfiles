@@ -20,6 +20,19 @@ Stages (each candidate is rejected at the first stage whose guard fails):
      re-validated as a whole (conflicting or collectively broken batches fall back). Proposal targets are
      NEVER written; applying a diff needs human approval. `--check-tree` validates the surface alone.
 
+Upstream mapping (google-research/harness2 @ 68688175):
+  core/tree.py SurfaceSpec/read_tree/validate/diff_summary/diversity -> SurfaceSpec, read_tree,
+    validate_tree, diff_summary, diversity (the dotfiles OMP surface: flat walk, always-on cap opt-in
+    via --always-on-cap, no hooks schema).
+  core/tree.py is_allowed -> on_surface() (prefix surfaces); absolute paths, `..` and `\\` are rejected
+  before it reaches any surface check.
+  recursion.py invalid-proposal retry then inherit -> Compose fallback (same-path candidates keep the
+    current harness) and whole-batch re-validation.
+  library.py EXPERIENCE.md chaining -> stage 5 append + SHA-256 dedup (no session ids, no locks).
+  NOT PORTED (model-dependent or external runners): recursion.py rollout/improve stages, selection.py
+    anonymised pairwise selection, judge.py, spec.py channels, runmark.py, the substrate runners.
+    compose() replaces the human "apply one diff" step deterministically; a human still applies it.
+
 Input formats
   --traces      JSONL, one object per line (blank lines ignored):
                 {"signature": str, "task": str, "target": repo-relative path, "message"?: str}
