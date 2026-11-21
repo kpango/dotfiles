@@ -234,6 +234,10 @@ done
 check "SKILL.md 501行は棄却 (トークンは減少)" "skill_lines" "$(creason bl)"
 check "description 161文字は棄却" "skill_description" "$(creason bd)"
 check "description 160文字は採用" "accepted" "$(cstat bo)"
+check "advertised_delta_tokens を報告 (bo)" "number" \
+    "$(jq_out '.candidates[]|select(.id=="bo")|.advertised_delta_tokens|type')"
+check "広告面 delta は正でもファイル delta<=0 なら採用 (bo)" "true" \
+    "$(jq_out '(.candidates[]|select(.id=="bo")|.advertised_delta_tokens) > 0')"
 check "無変更は棄却" "no_change" "$(creason bn)"
 
 # ================================================================ Stage 4: Held-Out
@@ -1421,8 +1425,11 @@ check "census.sub_agents" "1" "$(jq_out '.tree.census.sub_agents')"
 check "census.plugins" "1" "$(jq_out '.tree.census.plugins')"
 check "census.rules" "1" "$(jq_out '.tree.census.rules')"
 check "always_on_chars は数値" "number" "$(jq_out '.tree.always_on_chars|type')"
-check "cap 既定 (0) は null" "null" "$(jq_out '.tree.always_on_cap')"
 ALWAYS_CHARS="$(jq_out '.tree.always_on_chars')"
+check "always_on_chars は実測 (SYSTEM + LF + AGENTS) と一致" \
+    "$(( $(wc -c <"$TREE/agent/harnesses/omp/SYSTEM.md") + 1 + $(wc -c <"$TREE/agent/harnesses/omp/AGENTS.md") ))" \
+    "$ALWAYS_CHARS"
+check "cap 既定 (0) は null" "null" "$(jq_out '.tree.always_on_cap')"
 
 section "Harness Tree: --traces も --check-tree も無ければ rc=2"
 run_h2 --json
@@ -1479,9 +1486,8 @@ check_has "agent name 不一致メッセージ" "$(err_all)" 'agent/agents/build
 
 section "Harness Tree: 参照スクリプトの解決"
 mk_tree "$TMP/tree_ref_ok"
-cat >>"$TMP/tree_ref_ok/agent/harnesses/omp/AGENTS.md" <<'EOF'
-Helpers resolve:\nscripts/ok.sh\nscripts/h.sh\n~/.claude/skills/alpha/scripts/h.sh
-EOF
+printf 'Helpers resolve:\nscripts/ok.sh\nscripts/h.sh\n~/.claude/skills/alpha/scripts/h.sh\n' \
+    >>"$TMP/tree_ref_ok/agent/harnesses/omp/AGENTS.md"
 run_tree "$TMP/tree_ref_ok"
 check "解決できる参照は rc=0" "0" "$RC"
 check "解決できる参照で errors は空" "0" "$(jq_out '.tree.errors|length')"
@@ -1540,12 +1546,15 @@ run_h2 --traces "$TMP/tr_comp.jsonl" --candidates "$TMP/c_comp.json" --repo-root
 check "2件とも受理" "accepted,accepted" "$(jq_out '[.candidates[].status]|join(",")')"
 check "composed.status = written" "written" "$(jq_out '.composed.status')"
 check "composed.diff が存在する" "1" "$([[ -f "$PROP/composed.diff" ]] && echo 1 || echo 0)"
+check_has "composed.diff に ok.py の差分" "$(cat "$PROP/composed.diff")" '+++ b/agent/scripts/ok.py'
+check_has "composed.diff に ok2.py の差分" "$(cat "$PROP/composed.diff")" '+++ b/agent/scripts/ok2.py'
 check "composed.applied" "cp1,cp2" "$(jq_out '.composed.applied|join(",")')"
 check "composed.conflicts は空配列" "array/0" \
     "$(jq_out '.composed.conflicts|type')/$(jq_out '.composed.conflicts|length')"
 check "diversity.n" "2" "$(jq_out '.diversity.n')"
 check "diversity.n_distinct" "2" "$(jq_out '.diversity.n_distinct')"
 check "mean_line_jaccard は数値" "number" "$(jq_out '.diversity.mean_line_jaccard|type')"
+check "mean_line_jaccard は 1 未満 (2 ツリーは同一でない)" "true" "$(jq_out '.diversity.mean_line_jaccard < 1')"
 fresh_state
 run_h2 --traces "$TMP/tr_comp.jsonl" --candidates "$TMP/c_comp.json" --repo-root "$TREE" --experience "$EXP" \
     --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --compose-out "$TMP/custom_composed.diff" --json
@@ -1567,9 +1576,10 @@ run_h2 --traces "$TMP/tr_conf.jsonl" --candidates "$TMP/c_conf.json" --repo-root
     --out-dir "$PROP" --security-cmd "bash $TMP/ok.sh" --json
 check "競合候補も2件とも受理" "accepted,accepted" "$(jq_out '[.candidates[].status]|join(",")')"
 check "composed.status = fallback" "fallback" "$(jq_out '.composed.status')"
+check "fallback の path は null" "null" "$(jq_out '.composed.path')"
+check "fallback は composed.diff を書かない" "0" "$([[ -f "$PROP/composed.diff" ]] && echo 1 || echo 0)"
 check "conflicts[0].target" "agent/scripts/ok.py" "$(jq_out '.composed.conflicts[0].target')"
-check_has "conflicts[0].ids に cf1" "$(jq_out '.composed.conflicts[0].ids|join(",")')" "cf1"
-check_has "conflicts[0].ids に cf2" "$(jq_out '.composed.conflicts[0].ids|join(",")')" "cf2"
+check "conflicts[0].ids" "cf1,cf2" "$(jq_out '.composed.conflicts[0].ids|join(",")')"
 
 section "Harness Tree: --dry-run は composed.diff を書かない"
 fresh_state
