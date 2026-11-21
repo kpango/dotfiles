@@ -113,7 +113,9 @@ directory. Edit this file, never the symlinks; the same Tier B write-scope rule 
 - **Action Fusion**: after editing a file, run its verification command (test/build/lint) before
   the next edit — don't stack unverified edits. Sourced from SoL-Pi (arXiv:2609.20519) with
   `agent/harnesses/omp/sol-pi.json` tracking OMP feature flags (`actionFusion`, `observationPack`,
-  `evidencePreservingReducer`).
+  `evidencePreservingReducer`, `missionBridge`). `missionBridge` makes the mission's
+  `@fix_plan.md` authoritative in the request prompt and compaction summary, records
+  deterministic failures as Harness² traces, and surfaces `.trail/learnings/`.
 
 ## Common Tasks
 

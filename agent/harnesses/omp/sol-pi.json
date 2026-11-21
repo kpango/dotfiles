@@ -58,6 +58,14 @@
       "outputReserveTokens": 8192,
       "compactOnSubtaskBoundary": true,
       "maxCompactionsPerSession": 0
+    },
+    "missionBridge": {
+      "enabled": true,
+      "fixPlanMaxBytes": 262144,
+      "traces": true,
+      "traceMaxBytes": 2097152,
+      "traceDir": "",
+      "trail": true
     }
   }
 }

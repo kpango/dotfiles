@@ -23,6 +23,10 @@
  *    stays absolute, everything else is deferred while cooldown/debt forbid it. A
  *    native compaction that would consume a selected boundary is cancelled.
  *
+ * 5. Bridges — the mission's @fix_plan.md is injected as authoritative progress,
+ *    Action Fusion failures are recorded as Harness² evolution traces, and Trail
+ *    learnings are surfaced on the compaction path (all OMP-only, bounded).
+ *
  * The `/sol-pi` command reports status; nothing here switches models.
  */
 import { createHash } from "node:crypto";
@@ -91,6 +95,24 @@ import {
   type SolPiConfig,
   type ThenRunSpec,
 } from "./lib/sol-pi-core";
+import {
+  appendEvolutionTrace,
+  detectMission,
+  evolutionTracePath,
+  findRepoRoot,
+  formatMissionSnapshot,
+  isValidTraceTarget,
+  missionCompactionGuidance,
+  missionResumeReminder,
+  normalizeFailureSignature,
+  readTrailIndex,
+  sanitizeTraceText,
+  trailCompactionHint,
+  type EvolutionTrace,
+  type MissionCacheEntry,
+  type MissionSnapshot,
+  type TrailIndex,
+} from "./lib/mission-bridge";
 import { extractWrittenPaths } from "./stop-verify";
 
 interface TextPart {
@@ -252,6 +274,14 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   let requestPending = false;
   let compactionRefused = false;
   let observedMessages: unknown[] = [];
+  // Bridges to the surrounding systems (mission snapshot, Harness² traces, Trail).
+  const missionCache = new Map<string, MissionCacheEntry>();
+  const traceKeys = new Set<string>();
+  let mission: MissionSnapshot | null = null;
+  let repoRoot: string | null = null;
+  let trailIndex: TrailIndex | undefined;
+  let tracesWritten = 0;
+  let lastTraceFile: string | undefined;
   const stats = {
     packed: 0,
     rawBytes: 0,
@@ -280,6 +310,59 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
     }
   };
 
+  const refreshMission = async (cwd: string): Promise<void> => {
+    if (!config.missionBridgeConfig.enabled) {
+      mission = null;
+      return;
+    }
+    try {
+      mission = await detectMission(cwd, { maxBytes: config.missionBridgeConfig.fixPlanMaxBytes, cache: missionCache });
+      repoRoot = await findRepoRoot(cwd);
+    } catch (e) {
+      notify({}, `[SoL-Pi] mission snapshot skipped: ${(e as Error).message}`);
+    }
+  };
+
+  const refreshTrail = async (root: string | null): Promise<void> => {
+    trailIndex =
+      config.missionBridgeConfig.enabled && config.missionBridgeConfig.trail && root
+        ? await readTrailIndex(root).catch(() => undefined)
+        : undefined;
+  };
+
+  /**
+   * Record a deterministic failure in harness2-offline.py's trace shape so the
+   * offline evolution pipeline can cluster repeated root causes. Bounded,
+   * de-duplicated per (signature, task, target), and never throws.
+   */
+  const recordTrace = async (cwd: string, kind: string, target: string, output: string, exitCode?: number): Promise<void> => {
+    const mb = config.missionBridgeConfig;
+    if (!mb.enabled || !mb.traces) return;
+    try {
+      const root = repoRoot ?? (await findRepoRoot(cwd));
+      const rel = path.relative(root, path.resolve(cwd, target));
+      if (!rel || !isValidTraceTarget(rel)) return;
+      const task = sanitizeTraceText(mission?.slug || path.basename(root) || "session", 200) || "session";
+      const signature = normalizeFailureSignature(
+        exitCode !== undefined ? `${kind}:exit-${exitCode}` : kind,
+        output,
+        "failed",
+      );
+      const key = `${signature}\u0000${task}\u0000${rel}`;
+      if (traceKeys.has(key)) return;
+      const defaultFile = evolutionTracePath(root);
+      const file = mb.traceDir ? path.join(path.resolve(cwd, mb.traceDir), path.basename(defaultFile)) : defaultFile;
+      const message = sanitizeTraceText(output, 400);
+      const trace: EvolutionTrace = { signature, task, target: rel, ...(message ? { message } : {}) };
+      if (!(await appendEvolutionTrace(file, trace, mb.traceMaxBytes))) return;
+      traceKeys.add(key);
+      tracesWritten++;
+      lastTraceFile = file;
+    } catch {
+      // tracing is advisory; never disturb the tool result
+    }
+  };
+
   pi.on("session_start", async (_event: unknown, ctx: Ctx) => {
     config = loadConfig();
     reducerCalls = 0;
@@ -292,6 +375,15 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
     lastAdvice = "";
     stats.packed = stats.rawBytes = stats.savedBytes = stats.reduced = stats.reducedFallback = stats.recalled = stats.compactions = 0;
     resetOnlineRuntime();
+    missionCache.clear();
+    traceKeys.clear();
+    tracesWritten = 0;
+    lastTraceFile = undefined;
+    mission = null;
+    repoRoot = null;
+    trailIndex = undefined;
+    await refreshMission(ctx.cwd || process.cwd());
+    await refreshTrail(repoRoot);
     state = restoreOnlineState(ctx.sessionManager?.getBranch?.() ?? []);
     const sessionDir = ctx.sessionManager?.getSessionDir?.() ?? undefined;
     archiveDir = resolveArchiveDir(config, sessionDir);
@@ -303,10 +395,17 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   // -------------------------------------------------------------------------
   // Plan reminder: append the active plan to the system prompt for this request.
   // -------------------------------------------------------------------------
-  pi.on("before_agent_start", async (event: BeforeAgentStartEvent) => {
-    if (state.plan.length === 0) return;
-    const base = event.systemPrompt ?? [];
-    return { systemPrompt: [...base, `SoL-Pi session plan (authoritative):\n${formatPlanSnapshot(state.plan)}`] };
+  pi.on("before_agent_start", async (event: BeforeAgentStartEvent, ctx: Ctx) => {
+    await refreshMission(ctx?.cwd || process.cwd());
+    const parts: string[] = [];
+    if (state.plan.length > 0) parts.push(`SoL-Pi session plan (authoritative):\n${formatPlanSnapshot(state.plan)}`);
+    if (mission) {
+      parts.push(
+        `SoL-Pi mission (@fix_plan.md is authoritative):\n${formatMissionSnapshot(mission)}\nRe-read @fix_plan.md before deciding the next step.`,
+      );
+    }
+    if (parts.length === 0) return;
+    return { systemPrompt: [...(event.systemPrompt ?? []), ...parts] };
   });
 
   // -------------------------------------------------------------------------
@@ -348,6 +447,7 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
             if (!r.timedOut) failedAny = true;
             notify(ctx, `[SoL-Pi Action Fusion] validator ${r.timedOut ? "timed out" : "failed"} for ${file}:\n${r.output.slice(0, 1500)}`);
             reports.push(`### ${file}: ${r.timedOut ? "timeout" : "FAILED"}\n${r.output.slice(0, 4000)}`);
+            if (!r.timedOut) await recordTrace(cwd, `af:${path.extname(file) || "file"}`, file, r.output);
           }
         } catch (e) {
           notify(ctx, `[SoL-Pi Action Fusion] validator error for ${file}: ${(e as Error).message}`);
@@ -415,9 +515,11 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
       }
       if (r.status === "skipped") return { text: `${r.marker} ${r.output}`, failed: true };
       const exit = r.exitCode !== undefined ? ` (exit code ${r.exitCode})` : r.timedOut ? " (timeout)" : "";
+      await recordTrace(cwd, `then-run:${spec.command.trim().split(/\s+/u)[0] || "cmd"}`, files[0], r.output, r.exitCode);
       return { text: `${r.marker}${exit}\n$ ${spec.command}\n${r.output}`, failed: true };
     } catch (e) {
       notify(ctx, `[SoL-Pi Action Fusion] then_run error: ${(e as Error).message}`);
+      await recordTrace(cwd, `then-run:${spec.command.trim().split(/\s+/u)[0] || "cmd"}`, files[0], (e as Error).message);
       return { text: `${THEN_RUN_FAILED}\n$ ${spec.command}\n${(e as Error).message}`, failed: true };
     }
   };
@@ -699,6 +801,8 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   // switch or clear starts with nothing carried over.
   pi.on("session_tree", async (_event: unknown, ctx: Ctx) => {
     resetOnlineRuntime();
+    await refreshMission(ctx.cwd || process.cwd());
+    await refreshTrail(repoRoot);
     state = restoreOnlineState(ctx.sessionManager?.getBranch?.() ?? []);
     persist();
     return undefined;
@@ -706,12 +810,20 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
 
   pi.on("session_switch", async () => {
     resetOnlineRuntime();
+    missionCache.clear();
+    mission = null;
+    repoRoot = null;
+    trailIndex = undefined;
     state = initialOnlineState();
     return undefined;
   });
 
   pi.on("session_clear", async () => {
     resetOnlineRuntime();
+    missionCache.clear();
+    mission = null;
+    repoRoot = null;
+    trailIndex = undefined;
     state = initialOnlineState();
     return undefined;
   });
@@ -837,9 +949,20 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
     let compactionError: Error | undefined;
     compactionInFlight = true;
     try {
+      // The summary must keep the mission's authoritative progress and the
+      // trail hint, so refresh both against the current worktree.
+      await refreshMission(ctx.cwd || process.cwd());
+      await refreshTrail(repoRoot);
+      const guidance = [
+        compactionInstructions(state),
+        missionCompactionGuidance(mission),
+        config.missionBridgeConfig.enabled && config.missionBridgeConfig.trail ? trailCompactionHint(trailIndex) : "",
+      ]
+        .filter(Boolean)
+        .join("\n\n");
       // We dispatch our own resume turn after the compaction; without this the
       // harness would also auto-continue and double-prompt.
-      await ctx.compact({ internalGuidance: compactionInstructions(state), suppressContinuation: true });
+      await ctx.compact({ internalGuidance: guidance, suppressContinuation: true });
       compacted = true;
     } catch (e) {
       compactionError = e as Error;
@@ -866,7 +989,8 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
           ? COMPACTION_FAILED_RESUME_REMINDER
           : undefined;
     activeDebt = undefined;
-    if (resume) continueParentTask(ctx, resume);
+    const resumeText = resume ? [resume, missionResumeReminder(mission)].filter(Boolean).join("\n\n") : undefined;
+    if (resumeText) continueParentTask(ctx, resumeText);
     if (failure && !recoverable) throw failure;
   };
 
@@ -1079,7 +1203,7 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
   // /sol-pi status command
   // -------------------------------------------------------------------------
   pi.registerCommand("sol-pi", {
-    description: "SoL-Pi enforcement: /sol-pi [status|verify|stats]",
+    description: "SoL-Pi enforcement: /sol-pi [status|verify|stats|mission|evolve]",
     handler: async (args: string, ctx: Ctx) => {
       const action = (args || "status").trim().toLowerCase();
       const cwd = ctx.cwd || process.cwd();
@@ -1100,7 +1224,28 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
       } else if (action === "stats") {
         msg =
           `ObservationPack: ${stats.packed} packed, saved ${stats.savedBytes} bytes in requests, ${stats.recalled} recalls; ` +
-          `Reducer: ${stats.reduced} applied (${stats.reducedFallback} fallbacks); Compactions: ${stats.compactions}`;
+          `Reducer: ${stats.reduced} applied (${stats.reducedFallback} fallbacks); Compactions: ${stats.compactions}; ` +
+          `Evolution traces: ${tracesWritten}`;
+      } else if (action === "mission") {
+        await refreshMission(cwd);
+        msg = mission
+          ? `${formatMissionSnapshot(mission)}\nfile: ${mission.path}`
+          : "No @fix_plan.md found above the current directory.";
+      } else if (action === "evolve") {
+        await refreshMission(cwd);
+        await refreshTrail(repoRoot);
+        const root = repoRoot ?? (await findRepoRoot(cwd));
+        const mb = c.missionBridgeConfig;
+        const defaultFile = evolutionTracePath(root);
+        const file = lastTraceFile ?? (mb.traceDir ? path.join(path.resolve(cwd, mb.traceDir), path.basename(defaultFile)) : defaultFile);
+        const raw = await fs.readFile(file, "utf8").catch(() => "");
+        const count = raw.split("\n").filter(Boolean).length;
+        msg = [
+          `Harness² traces: ${file} (${count} record(s), ${tracesWritten} written this session)`,
+          "Offline pipeline: agent/scripts/evolve/harness2-offline.py (Stage 1 clusters need >= 3 occurrences)",
+          `  python3 agent/scripts/evolve/harness2-offline.py --repo-root ${root} --traces ${file} --candidates <candidates.json>`,
+          "Candidates are proposals only; SoL-Pi supplies the traces and a human approves any self-modification.",
+        ].join("\n");
       } else {
         const mean = state.requestCount > 0 ? (state.outputTokens / state.requestCount).toFixed(0) : "n/a";
         msg = [
@@ -1110,7 +1255,10 @@ export function register(pi: ExtensionAPI, loadConfig: () => SolPiConfig = loadS
           `• Reducer: ${c.evidencePreservingReducerConfig.enabled} (${c.evidencePreservingReducerConfig.provider}/${c.evidencePreservingReducerConfig.model}, >${c.evidencePreservingReducerConfig.minBytesThreshold}B, ${reducerCalls}/${c.evidencePreservingReducerConfig.maxCallsPerSession} calls)`,
           `• Compaction: ${c.onlineContextCompactConfig.enabled} (economics, cooldown ${c.onlineContextCompactConfig.economics.minimumRequestsSinceCompaction} req, mean output ${mean}, committed ${state.nativeCompactionCount}, boundary pending ${selected ? "yes" : "no"})`,
           `• Cliff advisory: level=${lastLevel}${lastAdvice ? ` — ${lastAdvice}` : ""}`,
-          `• Plan: epoch ${state.epoch}, ${state.plan.length} steps, ${state.pendingProgress.length} pending progress, ${state.completedBoundaryRequestCounts.length} boundary samples`,
+          `• Plan: epoch ${state.epoch}, ${state.plan.length} steps, ${state.pendingProgress.length} pending progress, ${state.completedBoundaryRequestCounts.length} boundary samples, ${state.correctionCount} correction(s)`,
+          `• Mission: ${mission ? `${formatMissionSnapshot(mission).replace(/\n/gu, "; ")}${mission.gateReady ? " [gate-ready]" : ""} (${mission.path})` : c.missionBridgeConfig.enabled ? "none (no @fix_plan.md above cwd)" : "disabled"}`,
+          `• Evolution: ${c.missionBridgeConfig.traces ? `${tracesWritten} trace(s) this session${lastTraceFile ? ` → ${lastTraceFile}` : ""}` : "disabled"}`,
+          `• Trail: ${!c.missionBridgeConfig.trail ? "disabled" : trailIndex ? `${trailIndex.count} learning(s)${trailIndex.newest[0] ? `, newest "${trailIndex.newest[0].title}"` : ""}` : "none"}`,
         ].join("\n");
       }
       ctx.ui?.notify?.(msg, "info");

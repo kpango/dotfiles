@@ -104,6 +104,20 @@ export interface SolPiConfig {
     /** OMP safety cap; 0 = unlimited (upstream has no per-session cap). */
     maxCompactionsPerSession: number;
   };
+  /** OMP-only bridge to the surrounding swarm mission / Harness² / Trail systems. */
+  missionBridgeConfig: {
+    enabled: boolean;
+    /** @fix_plan.md read cap (a larger file disables the mission bridge). */
+    fixPlanMaxBytes: number;
+    /** Append Action Fusion failures as Harness²-compatible JSONL traces. */
+    traces: boolean;
+    /** Trace file cap; appends beyond it are skipped. */
+    traceMaxBytes: number;
+    /** "" = per-repo file under ~/.claude/session-data/swarm/evolve-traces. */
+    traceDir: string;
+    /** Include the .trail/learnings summary in compaction guidance. */
+    trail: boolean;
+  };
 }
 
 export interface CompactionEconomics {
@@ -185,6 +199,14 @@ export const DEFAULT_CONFIG: SolPiConfig = {
     compactOnSubtaskBoundary: true,
     maxCompactionsPerSession: 0,
   },
+  missionBridgeConfig: {
+    enabled: true,
+    fixPlanMaxBytes: 262144,
+    traces: true,
+    traceMaxBytes: 2097152,
+    traceDir: "",
+    trail: true,
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -241,6 +263,7 @@ const OMP_KEYS = [
   "observationPack",
   "evidencePreservingReducer",
   "onlineContextCompact",
+  "missionBridge",
 ] as const;
 
 interface Field {
@@ -307,6 +330,15 @@ const ONLINE_COMPACT_SPEC: SectionSpec = {
   outputReserveTokens: { kind: "num", int: true, min: 0 },
   compactOnSubtaskBoundary: { kind: "bool" },
   maxCompactionsPerSession: { kind: "num", int: true, min: 0 },
+};
+
+const MISSION_BRIDGE_SPEC: SectionSpec = {
+  enabled: { kind: "bool" },
+  fixPlanMaxBytes: { kind: "num", int: true, min: 1024 },
+  traces: { kind: "bool" },
+  traceMaxBytes: { kind: "num", int: true, min: 4096 },
+  traceDir: { kind: "str" },
+  trail: { kind: "bool" },
 };
 
 function checkKeys(obj: Record<string, unknown>, allowed: readonly string[], where: string, errors: string[]): void {
@@ -467,6 +499,9 @@ export function parseSolPiConfig(raw: unknown, file = "sol-pi.json"): { config: 
             applyObjectSection(ECONOMICS_SPEC, economics, cfg.onlineContextCompactConfig.economics as unknown as Record<string, unknown>, "omp.onlineContextCompact.economics", errors);
           }
         }
+      }
+      if (omp.missionBridge !== undefined) {
+        applyObjectSection(MISSION_BRIDGE_SPEC, omp.missionBridge, cfg.missionBridgeConfig as unknown as Record<string, unknown>, "omp.missionBridge", errors);
       }
     }
   }
@@ -2262,6 +2297,8 @@ export interface OnlineState {
   /** Cache-write cost a compaction incurred and has not yet repaid. */
   cacheDebtTokens: number;
   cacheDebtRepaymentTokens: number;
+  /** User corrections in this epoch (each one resets the plan). */
+  correctionCount: number;
 }
 
 export function initialOnlineState(): OnlineState {
@@ -2281,6 +2318,7 @@ export function initialOnlineState(): OnlineState {
     outputTokens: 0,
     cacheDebtTokens: 0,
     cacheDebtRepaymentTokens: 0,
+    correctionCount: 0,
   };
 }
 
@@ -2336,7 +2374,8 @@ export function parseOnlineState(value: unknown): OnlineState | undefined {
     !nonNegativeInteger(value.nativeCompactionCount) ||
     !nonNegativeInteger(value.outputTokens ?? 0) ||
     !finiteNonNegative(value.cacheDebtTokens) ||
-    !finiteNonNegative(value.cacheDebtRepaymentTokens)
+    !finiteNonNegative(value.cacheDebtRepaymentTokens) ||
+    !nonNegativeInteger(value.correctionCount ?? 0)
   ) {
     return;
   }
@@ -2356,6 +2395,7 @@ export function parseOnlineState(value: unknown): OnlineState | undefined {
     outputTokens: value.outputTokens ?? 0,
     cacheDebtTokens: value.cacheDebtTokens,
     cacheDebtRepaymentTokens: value.cacheDebtRepaymentTokens,
+    correctionCount: value.correctionCount ?? 0,
   };
 }
 
@@ -2435,6 +2475,7 @@ export function recordCorrection(state: OnlineState): OnlineState {
     positiveContextDeltaCount: 0,
     cacheDebtTokens: 0,
     cacheDebtRepaymentTokens: 0,
+    correctionCount: state.correctionCount + 1,
   };
 }
 

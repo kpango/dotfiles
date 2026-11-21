@@ -75,6 +75,9 @@ assert d.get("evidencePreservingReducer") is True
 assert d.get("onlineContextCompact") is False
 assert d["omp"]["pricingCliffAdvisory"] is True
 assert "pricingCliffs" not in d["omp"]["onlineContextCompact"]
+assert d["omp"]["missionBridge"]["enabled"] is True
+assert d["omp"]["missionBridge"]["traces"] is True
+assert "missionBridge" not in d
 assert "pricingCliffAdvisoryConfig" not in d
 assert "actionFusionConfig" not in d
 ' "$SCRIPT_DIR/sol-pi.json" 2>/dev/null \

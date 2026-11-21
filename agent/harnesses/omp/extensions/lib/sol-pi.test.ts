@@ -43,6 +43,21 @@ import {
   resolveArchiveDir,
   goValidatorEnv,
 } from "./sol-pi-core";
+import {
+  appendEvolutionTrace,
+  detectMission,
+  evolutionTracePath,
+  findRepoRoot,
+  formatMissionSnapshot,
+  isValidTraceTarget,
+  missionCompactionGuidance,
+  missionResumeReminder,
+  normalizeFailureSignature,
+  parseFixPlan,
+  readTrailIndex,
+  sanitizeTraceText,
+  trailCompactionHint,
+} from "./mission-bridge";
 
 let tmp: string;
 beforeAll(() => {
@@ -1126,6 +1141,8 @@ let extN = 0;
 const extCfg = () => {
   const c = loadSolPiConfig();
   c.observationPackConfig.archiveDir = path.join(tmp, `ext-${extN++}`);
+  // Never write evolution traces into the developer's real home during tests.
+  c.missionBridgeConfig.traceDir = path.join(tmp, `traces-${extN}`);
   // Boundary compaction is opt-in (shipped flag is false); these tests exercise it.
   c.onlineContextCompactConfig.enabled = true;
   return c;
@@ -2710,5 +2727,293 @@ describe("sol-pi.ts: then_run wiring", () => {
     const f = writeFile(d, "off.json");
     const text = merged(await m.h.tool_result(editEvent(f, "echo fused-ok", { content: [{ type: "text", text: "edit applied" }] }), m.ctx(d)));
     expect(text).not.toContain("[then_run:");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Bridges: @fix_plan.md mission state, Harness² traces, Trail learnings
+// ---------------------------------------------------------------------------
+const missionFixture = (dir: string, opts: { gateReady?: boolean; slug?: string } = {}) => {
+  const slug = opts.slug ?? "demo";
+  const done = opts.gateReady ? "x" : " ";
+  fs.mkdirSync(path.join(dir, ".git"), { recursive: true });
+  fs.writeFileSync(
+    path.join(dir, "@fix_plan.md"),
+    [
+      `# @fix_plan.md — mission: ${slug}`,
+      "",
+      "- goal: ship the runtime bridge",
+      "- scale: mission",
+      "",
+      "## Definition of Done",
+      "- [x] core port",
+      `- [${done}] gate`,
+      "",
+      "## Tasks",
+      "| task-id | pointer | status | files |",
+      "|---|---|---|---|",
+      `| T1 | a | done | x |`,
+      `| T2 | b | ${opts.gateReady ? "done" : "in_progress"} | y |`,
+      `| T3 | c | ${opts.gateReady ? "done" : "blocked"} | z |`,
+      "",
+    ].join("\n"),
+  );
+  return dir;
+};
+
+describe("mission-bridge: @fix_plan.md", () => {
+  test("parses the mission header, DoD checklist and task table", () => {
+    const m = parseFixPlan(
+      [
+        "# @fix_plan.md — mission: demo",
+        "- goal: ship it",
+        "- scale: mission",
+        "## Definition of Done",
+        "- [x] one",
+        "- [ ] two",
+        "## Tasks",
+        "| task-id | status |",
+        "|---|---|",
+        "| T1 | done |",
+        "| T2 | in_progress |",
+        "| T3 | blocked |",
+      ].join("\n"),
+    )!;
+    expect(m.slug).toBe("demo");
+    expect(m.goal).toBe("ship it");
+    expect(m.scale).toBe("mission");
+    expect(m.definitionOfDone).toEqual({ total: 2, done: 1, remaining: ["two"] });
+    expect(m.tasks.total).toBe(3);
+    expect(m.tasks.done).toBe(1);
+    expect(m.tasks.inProgress).toBe(1);
+    expect(m.tasks.blocked).toBe(1);
+    expect(m.tasks.next).toEqual(["T2", "T3"]);
+    expect(m.tasks.blockedIds).toEqual(["T3"]);
+    expect(m.gateReady).toBe(false);
+  });
+
+  test("a fully checked plan is gate-ready; unrelated text is not a mission", () => {
+    const text = [
+      "# @fix_plan.md — mission: demo",
+      "## Definition of Done",
+      "- [x] one",
+      "## Tasks",
+      "| task-id | status |",
+      "|---|---|",
+      "| T1 | done |",
+    ].join("\n");
+    expect(parseFixPlan(text)!.gateReady).toBe(true);
+    expect(parseFixPlan("# notes\nnothing here")).toBeNull();
+  });
+
+  test("detectMission walks up to the mission worktree and caches by mtime", async () => {
+    const root = missionFixture(fs.mkdtempSync(path.join(tmp, "mroot-")));
+    const nested = path.join(root, "a", "b");
+    fs.mkdirSync(nested, { recursive: true });
+    const cache = new Map();
+    const first = await detectMission(nested, { cache });
+    expect(first?.path).toBe(path.join(root, "@fix_plan.md"));
+    expect(first?.slug).toBe("demo");
+    const second = await detectMission(nested, { cache });
+    expect(second).toBe(first); // cached snapshot, not re-parsed
+  });
+
+  test("compaction guidance and resume reminders carry the mission state", () => {
+    const open = parseFixPlan(
+      ["# @fix_plan.md — mission: demo", "## Definition of Done", "- [ ] gate", "## Tasks", "| task-id | status |", "|---|---|", "| T1 | blocked |"].join("\n"),
+    );
+    expect(missionCompactionGuidance(open)).toContain('Mission "demo"');
+    expect(missionCompactionGuidance(open)).toContain("@fix_plan.md is authoritative");
+    expect(missionCompactionGuidance(open)).not.toContain("gate-ready");
+    expect(missionResumeReminder(open)).toContain('Mission "demo" has 1 blocked task(s): T1');
+    const ready = parseFixPlan(
+      ["# @fix_plan.md — mission: demo", "## Definition of Done", "- [x] gate", "## Tasks", "| task-id | status |", "|---|---|", "| T1 | done |"].join("\n"),
+    );
+    expect(missionCompactionGuidance(ready)).toContain("All Definition-of-Done items and tasks are complete");
+    expect(missionResumeReminder(ready)).toContain("run verify.sh");
+    expect(missionResumeReminder(null)).toBe("");
+  });
+
+  test("formatMissionSnapshot is compact and mentions next/blocked ids", () => {
+    const m = parseFixPlan(
+      ["# @fix_plan.md — mission: demo", "- goal: g", "## Tasks", "| task-id | status |", "|---|---|", "| T1 | done |", "| T2 | pending |"].join("\n"),
+    )!;
+    const text = formatMissionSnapshot(m);
+    expect(text).toContain('Mission "demo"');
+    expect(text).toContain("DoD 0/0");
+    expect(text).toContain("next: T2");
+  });
+});
+
+describe("mission-bridge: Harness² traces", () => {
+  test("normalizeFailureSignature is stable, single-line, and path/number normalized", () => {
+    const a = normalizeFailureSignature("af:.go", "/home/u/repo/pkg/x.go:12: undefined: Foo");
+    const b = normalizeFailureSignature("af:.go", "/tmp/repo2/pkg/x.go:99: undefined: Foo");
+    expect(a).toBe(b);
+    expect(a).toContain("<path>");
+    expect(a).not.toContain("12");
+    expect(a).not.toMatch(/[\n\t]/u);
+  });
+
+  test("targets must be relative, POSIX, and shell-neutral", () => {
+    expect(isValidTraceTarget("pkg/x.go")).toBe(true);
+    expect(isValidTraceTarget("Dockerfile")).toBe(true);
+    expect(isValidTraceTarget("/abs/x")).toBe(false);
+    expect(isValidTraceTarget("../x")).toBe(false);
+    expect(isValidTraceTarget("a b")).toBe(false);
+    expect(isValidTraceTarget("a\\b")).toBe(false);
+  });
+
+  test("sanitizeTraceText strips controls/line separators and bounds the length", () => {
+    expect(sanitizeTraceText("a\tb\nc\u2028d\u200be", 200)).toBe("a b c d e");
+    expect(sanitizeTraceText("x".repeat(50), 10)).toBe("x".repeat(10));
+  });
+
+  test("appendEvolutionTrace appends JSONL and honors the byte cap", async () => {
+    const dir = fs.mkdtempSync(path.join(tmp, "trace-"));
+    const file = path.join(dir, "t.jsonl");
+    expect(await appendEvolutionTrace(file, { signature: "s:1", task: "demo", target: "a.go", message: "boom" }, 4096)).toBe(true);
+    expect(await appendEvolutionTrace(file, { signature: "s:2", task: "demo", target: "a.go" }, 4096)).toBe(true);
+    const lines = fs.readFileSync(file, "utf8").trim().split("\n");
+    expect(lines.length).toBe(2);
+    expect(JSON.parse(lines[0])).toEqual({ signature: "s:1", task: "demo", target: "a.go", message: "boom" });
+    const capped = path.join(dir, "cap.jsonl");
+    fs.writeFileSync(capped, "x".repeat(5000));
+    expect(await appendEvolutionTrace(capped, { signature: "s", task: "t", target: "x" }, 4096)).toBe(false);
+  });
+
+  test("evolutionTracePath is deterministic and per-root", () => {
+    const a = evolutionTracePath("/x/repo", tmp);
+    expect(a).toBe(evolutionTracePath("/x/repo", tmp));
+    expect(a).not.toBe(evolutionTracePath("/x/other", tmp));
+    expect(a.startsWith(path.join(tmp, ".claude"))).toBe(true);
+  });
+
+  test("findRepoRoot stops at a .git entry", async () => {
+    const root = fs.mkdtempSync(path.join(tmp, "proot-"));
+    fs.mkdirSync(path.join(root, ".git"));
+    const nested = path.join(root, "x", "y");
+    fs.mkdirSync(nested, { recursive: true });
+    expect(await findRepoRoot(nested)).toBe(root);
+  });
+});
+
+describe("mission-bridge: Trail learnings", () => {
+  test("readTrailIndex returns the count and newest titled learnings", async () => {
+    const root = fs.mkdtempSync(path.join(tmp, "trail-"));
+    const dir = path.join(root, ".trail", "learnings");
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, "old.md"), "# Old decision\nbody\n");
+    fs.writeFileSync(path.join(dir, "new.md"), "# New decision\nbody\n");
+    fs.utimesSync(path.join(dir, "old.md"), new Date(1000), new Date(1000));
+    fs.utimesSync(path.join(dir, "new.md"), new Date(2000), new Date(2000));
+    const index = await readTrailIndex(root);
+    expect(index.count).toBe(2);
+    expect(index.newest[0].title).toBe("New decision");
+    const hint = trailCompactionHint(index);
+    expect(hint).toContain("2 learnings");
+    expect(hint).toContain("trail ask");
+    expect(trailCompactionHint(undefined)).toBe("");
+  });
+});
+
+describe("sol-pi.ts: mission / evolution wiring", () => {
+  test("the mission snapshot reaches the system prompt next to the plan", async () => {
+    const m = mockPi(extCfg());
+    const dir = missionFixture(fs.mkdtempSync(path.join(tmp, "mw-")));
+    await m.h.session_start({}, m.ctx(dir));
+    await m.tools.update_plan.execute("p1", { steps: [{ id: "s1", goal: "port", status: "in_progress" }] }, undefined, undefined, m.ctx(dir));
+    const res: any = await m.h.before_agent_start({ systemPrompt: ["base prompt"] }, m.ctx(dir));
+    expect(res.systemPrompt[0]).toBe("base prompt");
+    const injected = res.systemPrompt.join("\n");
+    expect(injected).toContain("SoL-Pi session plan");
+    expect(injected).toContain('Mission "demo"');
+    expect(injected).toContain("@fix_plan.md is authoritative");
+  });
+
+  test("boundary compaction guidance and the resume turn carry the mission", async () => {
+    const m = mockPi(extCfg());
+    const dir = missionFixture(fs.mkdtempSync(path.join(tmp, "mc-")));
+    await m.h.session_start({}, m.ctx(dir));
+    const c = m.ctx(dir, { usage: { tokens: 195000, contextWindow: 200000 } });
+    await m.h.context({ messages: Array.from({ length: 100 }, (_, i) => asMsg("assistant", `step ${i} ${"x".repeat(8000)}`)) }, c);
+    await m.tools.update_plan.execute("t1", { steps: [{ id: "s1", goal: "ship", status: "in_progress" }] }, undefined, undefined, c);
+    await m.tools.update_plan.execute("t2", { steps: [{ id: "s1", goal: "ship", status: "completed" }] }, undefined, undefined, c);
+    await m.h.turn_end({ message: { usage: { output: 1000, input: 100000 } }, toolResults: [{ toolCallId: "t2", toolName: "update_plan", isError: false }] }, c);
+    await m.h.agent_end({ willContinue: false, awaitingAsyncWork: false }, c);
+    expect(m.compactCalls.length).toBe(1);
+    expect(m.compactCalls[0].internalGuidance).toContain("@fix_plan.md is authoritative");
+    expect(m.compactCalls[0].internalGuidance).toContain('Mission "demo"');
+    expect(m.sent.length).toBe(1);
+    expect(m.sent[0].content).toContain("compaction finished");
+    expect(m.sent[0].content).toContain('Mission "demo"');
+    expect(m.sent[0].content).toContain("escalate");
+  });
+
+  test("a validator failure is recorded once as a Harness² trace", async () => {
+    const cfg = extCfg();
+    const m = mockPi(cfg);
+    const dir = fs.mkdtempSync(path.join(tmp, "mtrace-"));
+    const bad = path.join(dir, "bad.json");
+    fs.writeFileSync(bad, "{ not json");
+    const ev = { toolName: "edit", input: { path: bad }, content: [{ type: "text", text: "ok" }] };
+    await m.h.tool_result(ev, m.ctx(dir));
+    await m.h.tool_result(ev, m.ctx(dir)); // identical failure: deduplicated
+    const files = fs.readdirSync(cfg.missionBridgeConfig.traceDir);
+    expect(files.length).toBe(1);
+    const lines = fs.readFileSync(path.join(cfg.missionBridgeConfig.traceDir, files[0]), "utf8").trim().split("\n");
+    expect(lines.length).toBe(1);
+    const trace = JSON.parse(lines[0]);
+    expect(trace.signature.startsWith("af:.json:")).toBe(true);
+    expect(trace.target).toBe("bad.json");
+    expect(trace.task).toBe(path.basename(dir));
+    expect(typeof trace.message).toBe("string");
+  });
+
+  test("a failed fused then_run is recorded with its exit code and command", async () => {
+    const cfg = extCfg();
+    const m = mockPi(cfg);
+    const dir = fs.mkdtempSync(path.join(tmp, "mtrace2-"));
+    const file = path.join(dir, "ok.json");
+    fs.writeFileSync(file, '{"name":"x"}\n');
+    await m.h.tool_result(
+      { toolName: "edit", input: { path: file, then_run: { command: "echo boom; exit 7" } }, content: [{ type: "text", text: "ok" }] },
+      m.ctx(dir),
+    );
+    const files = fs.readdirSync(cfg.missionBridgeConfig.traceDir);
+    expect(files.length).toBe(1);
+    const raw = fs.readFileSync(path.join(cfg.missionBridgeConfig.traceDir, files[0]), "utf8").trim();
+    expect(raw.split("\n").length).toBe(1);
+    const trace = JSON.parse(raw);
+    expect(trace.signature.startsWith("then-run:echo:exit-#:")).toBe(true);
+    expect(trace.target).toBe("ok.json");
+  });
+
+  test("/sol-pi status|mission|evolve report the bridges", async () => {
+    const m = mockPi(extCfg());
+    const dir = missionFixture(fs.mkdtempSync(path.join(tmp, "mcmd-")));
+    await m.h.session_start({}, m.ctx(dir));
+    const status = await runCmd(m, "status", dir);
+    expect(status).toContain('Mission "demo"');
+    expect(status).toContain("Evolution:");
+    const missionOut = await runCmd(m, "mission", dir);
+    expect(missionOut).toContain(path.join(dir, "@fix_plan.md"));
+    const evolve = await runCmd(m, "evolve", dir);
+    expect(evolve).toContain("harness2-offline.py");
+    expect(evolve).toContain("--repo-root");
+  });
+
+  test("global correctionCount increments on a correction and survives a restart", async () => {
+    let s = initialOnlineState();
+    s = recordCorrection(s);
+    s = recordCorrection(s);
+    expect(s.correctionCount).toBe(2);
+    expect(s.epoch).toBe(2);
+    const restored = parseOnlineState(JSON.parse(JSON.stringify(s)))!;
+    expect(restored.correctionCount).toBe(2);
+    // A state entry written before this field existed still parses.
+    const legacy = { ...s } as Record<string, unknown>;
+    delete legacy.correctionCount;
+    expect(parseOnlineState(legacy)!.correctionCount).toBe(0);
   });
 });
