@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: Free Disk Space (Ubuntu)
         if: ${{ inputs.image_name == 'go' || inputs.image_name == 'rust' || inputs.image_name == 'env' || inputs.image_name == 'nix' || inputs.image_name == 'tools' || inputs.image_name == 'vald' || inputs.image_name == 'dev' }}
-        uses: endersonmenezes/free-disk-space@7901478139cff6e9d44df5972fd8ab8fcade4db1 # v3.2.2
+        uses: endersonmenezes/free-disk-space@24d3e2af1fe79ccdde8844605337a8835e20d012 # v4.1.0
         with:
           remove_android: true
           remove_dotnet: true
