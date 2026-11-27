@@ -1,0 +1,10 @@
+[Unit]
+Description=Run nextdns-healthcheck every 5 minutes
+
+[Timer]
+OnBootSec=2m
+OnUnitActiveSec=5m
+AccuracySec=15s
+
+[Install]
+WantedBy=timers.target

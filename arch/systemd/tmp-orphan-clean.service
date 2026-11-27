@@ -1,0 +1,11 @@
+[Unit]
+Description=Remove empty orphaned auth-agent dirs and .hm files from /tmp
+# /tmp/auth-agentNNNN (root, os.MkdirTemp from Tailscale SSH agent forwarding,
+# tailscale/setup.sh --ssh=true) and /tmp/.<hex>-N.hm (empty, origin not yet
+# identified) are left behind empty and pile up between the daily 10d /tmp
+# aging. Only empty entries older than an hour are removed, so a live agent
+# socket dir is never touched; -print logs what was removed to the journal.
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/find /tmp -regextype posix-extended -mindepth 1 -maxdepth 1 -mmin +60 ( -type d -empty -regex /tmp/auth-agent[0-9]+ -o -type f -empty -regex /tmp/\\.[0-9a-f]{12,16}-[0-9]+\\.hm ) -print -delete

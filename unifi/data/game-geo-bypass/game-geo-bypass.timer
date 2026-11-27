@@ -1,0 +1,10 @@
+[Unit]
+Description=Re-apply Region Block exception every 5m alongside .path
+
+[Timer]
+OnBootSec=30
+OnUnitActiveSec=5m
+RandomizedDelaySec=10s
+
+[Install]
+WantedBy=timers.target

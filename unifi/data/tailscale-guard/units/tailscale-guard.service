@@ -1,0 +1,9 @@
+[Unit]
+Description=Isolate IoT VLAN (br2) from Tailscale (tailscale0)
+Documentation=file:/data/tailscale-guard/apply.sh
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/data/tailscale-guard/apply.sh

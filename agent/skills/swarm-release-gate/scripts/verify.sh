@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# リリース前の強制検証。詳細ログはセッションスコープの一時ディレクトリに書き、標準出力には要約のみ返す。
+# usage: verify.sh [repo-root]  (省略時はカレントの git root)
+set -uo pipefail
+
+# shellcheck disable=SC1090
+. "$(dirname "${BASH_SOURCE[0]}")/../../swarm-implement/scripts/swarm-common-lib.sh"
+
+root="${1:-$(swarm_repo_root)}"
+tmpdir="/tmp/${CLAUDE_CODE_SESSION_ID:-manual}/swarm"
+mkdir -p "$tmpdir"
+log=$(mktemp "$tmpdir/swarm-verify.XXXXXX.log")
+fail=0
+
+run() {
+  local desc="$1"; shift
+  echo "== $desc"
+  if (cd "$root" && timeout 1800 "$@") >>"$log" 2>&1; then
+    echo "   OK"
+  else
+    echo "   FAIL: $* (log: $log)"
+    echo "---- last 40 lines ----"
+    tail -40 "$log"
+    fail=1
+  fi
+}
+
+case "$root" in
+  */vdaas/vald*)
+    # Makefile 構造は不可侵 — 既存ターゲットのみ使用
+    run "make test/pkg"      make test/pkg
+    run "make test/internal" make test/internal
+    ;;
+  */Atrae/wevox-common-backends-prototype*)
+    # 既存 make 構造を尊重する(vald ケースと同方針)。
+    # lint.mk の `ci: format/go/check vet lint proto/lint test` がリポジトリ正準のマージ前検証セット
+    # (Makefile.d/format.mk 新設に伴い fmt/check → format/go/check へ統合、2026-08-13)。
+    run "make format/go/check" make format/go/check
+    run "make vet"        make vet
+    run "make proto/lint" make proto/lint
+    run "make test"       make test
+    run "make lint"       make lint
+    ;;
+  */kpango/dotfiles*)
+    while IFS= read -r f; do
+      python3 -m json.tool "$f" >/dev/null 2>>"$log" || { echo "   FAIL: JSON invalid: $f"; fail=1; }
+    done < <(find "$root" -name '*.json' -not -path '*/.git/*' -not -path '*/node_modules/*')
+    echo "== JSON validity: done"
+
+    if command -v hadolint >/dev/null 2>&1; then
+      cfg=()
+      [ -f "$root/.hadolint.yaml" ] && cfg=(--config "$root/.hadolint.yaml")
+      while IFS= read -r f; do
+        hadolint "${cfg[@]}" "$f" >>"$log" 2>&1 || { echo "   FAIL: hadolint: $f"; tail -20 "$log"; fail=1; }
+      done < <(find "$root" \( -name '*.Dockerfile' -o -name 'Dockerfile' \) -not -path '*/.git/*')
+      echo "== hadolint (.hadolint.yaml respected): done"
+    fi
+
+    for f in "$root/zshrc" "$root/zshenv"; do
+      [ -f "$f" ] || continue
+      zsh -n "$f" 2>>"$log" || { echo "   FAIL: zsh -n: $f"; fail=1; }
+    done
+    while IFS= read -r f; do
+      zsh -n "$f" 2>>"$log" || { echo "   FAIL: zsh -n: $f"; fail=1; }
+    done < <(find "$root/zsh" -type f -not -name '*.zwc' 2>/dev/null)
+    # *.zwc は zcompile 済みバイトコードで zsh -n では構文解析できない (偽陽性)。
+    # ソースの *.zsh は引き続き全件検査対象。
+    echo "== zsh syntax: done"
+
+    # OMP ホスト能力表明 (hashline / session_before_branch / eval / RLM / ObservationPack) と
+    # リポジトリ設定・拡張の一致を検証する。ホスト未導入時はスクリプト自身が SKIP で exit 0。
+    host_test="$root/agent/scripts/test-host-capabilities.sh"
+    if [ -f "$host_test" ]; then
+      run "host capabilities (OMP)" bash "$host_test"
+    else
+      echo "== host capabilities: SKIP (test script missing)"
+    fi
+
+    # swarm スクリプトの回帰テスト (fable budget/gate・nesting guard・graph compile・
+    # harness guard・self-improve register、計 256 件規模)。
+    # 各テストは HOME/registry/fixture を mktemp へ隔離するため実カウンタ・grant・ログを汚さない。
+    # パスは agent/skills（正典）。旧 claude/skills は 2026-09-03 の SSoT 集約で廃止済み。
+    for t in \
+      "$root/agent/skills/swarm-implement/scripts/test-fable-guard.sh" \
+      "$root/agent/skills/swarm-implement/scripts/test-fable-gate.sh" \
+      "$root/agent/skills/swarm-loop/scripts/test-nesting-guards.sh" \
+      "$root/agent/skills/swarm-loop/scripts/test-loop-status.sh" \
+      "$root/agent/skills/swarm-loop/scripts/test-self-improve-register.sh" \
+      "$root/agent/skills/swarm-graph/scripts/test-graph-compile.sh" \
+      "$root/agent/skills/swarm-meta/scripts/test-harness-guard.sh" \
+      "$root/agent/skills/swarm-implement/scripts/test-parallel-gate.sh"; do
+      [ -f "$t" ] || continue
+      run "swarm tests: $(basename "$t")" bash "$t"
+    done
+
+    # trail: 変更 diff と .trail/learnings/ の衝突検査（決定論的・$0・LLM 不要）。
+    # Trail 未導入の環境は hook/skill と同じく fail-open とし、SKIP を明示する。
+    if command -v trail >/dev/null 2>&1; then
+      run "trail check (learnings conflict)" trail check
+    else
+      echo "== trail check: SKIP (trail not installed)"
+    fi
+
+    # Harness² (arXiv:2610.14224): 決定論的オフライン検証（Security Monotonicity Gate /
+    # Training+Hold-Out probe / EXPERIENCE 冪等性）。sandbox 不可の環境では fail-closed 経路
+    # 自体を検証するため、スクリプトが rc=2 を返すのは仕様（テスト内で判定される）。
+    h2_test="$root/agent/scripts/test-harness2-offline.sh"
+    if [ -f "$h2_test" ]; then
+      run "harness2 offline (security monotonicity gate)" bash "$h2_test"
+    else
+      echo "== harness2 offline: SKIP (test script missing)"
+    fi
+    ;;
+  *)
+    echo "unknown repo: $root — 検証セットが未定義。人間に確認せよ" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$fail" -ne 0 ]; then
+  echo "VERIFY FAILED (log: $log)"
+  exit 1
+fi
+echo "ALL CHECKS PASSED (log: $log)"

@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch udapi-net-cfg.json for NURO v6 PBR reconcile
+
+[Path]
+PathChanged=/data/udapi-config/udapi-net-cfg.json
+Unit=udm-nuro-v6-pbr.service
+
+[Install]
+WantedBy=multi-user.target

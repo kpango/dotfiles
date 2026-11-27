@@ -1,0 +1,210 @@
+name: "Verify agent/ config sync & security rules"
+
+# 4ハーネス体制 (claude / omp / agy / hermes) の generator freshness (--check 系) と
+# $HOME 非依存のリポジトリ統合テスト (agent/scripts/test-*.sh + hermes/validate-harness.sh) を検証する。
+# claude|omp|agy/validate-harness.sh は実際にデプロイ済みの $HOME 側を検査する箇所があるため、
+# 本ワークフローでは $HOME 非依存のスイートのみを実行する。
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "agent/**"
+      - ".claude/settings.json"
+      - ".claude/settings.local.json"
+      - ".gemini/settings.json"
+      - ".mcp.json"
+      - "opencode.json"
+      - "systemd/user/hermes-gateway.service"
+      - "systemd/user/agent-decide.service"
+      - "systemd/user/omp-model-catalog-update.service"
+      - "systemd/user/omp-model-catalog-update.timer"
+      - ".github/workflows/agent-sync-verify.yaml"
+  pull_request:
+    paths:
+      - "agent/**"
+      - ".claude/settings.json"
+      - ".claude/settings.local.json"
+      - ".gemini/settings.json"
+      - ".mcp.json"
+      - "opencode.json"
+      - "systemd/user/hermes-gateway.service"
+      - "systemd/user/agent-decide.service"
+      - "systemd/user/omp-model-catalog-update.service"
+      - "systemd/user/omp-model-catalog-update.timer"
+      - ".github/workflows/agent-sync-verify.yaml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Generator freshness ──────────────────────────────────────────────────
+  generator-freshness:
+    name: "Generator freshness (--check)"
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Ensure python3 and PyYAML are available
+        run: |
+          if ! command -v python3 >/dev/null 2>&1 || ! python3 -c "import yaml" >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y python3 python3-yaml
+          fi
+          python3 --version
+
+      - name: gen-agents-md-for-omp.sh --check (-> agent/harnesses/omp/AGENTS.md)
+        run: bash agent/scripts/gen-agents-md-for-omp.sh --check
+
+      - name: gen-system-md-for-omp.sh --check (-> agent/harnesses/omp/SYSTEM.md)
+        run: bash agent/scripts/gen-system-md-for-omp.sh --check
+
+      - name: gen-agents-md-for-agy.sh --check (-> agent/harnesses/agy/AGENTS.md)
+        run: bash agent/scripts/gen-agents-md-for-agy.sh --check
+
+      - name: gen-system-md-for-agy.sh --check (-> agent/harnesses/agy/SYSTEM.md)
+        run: bash agent/scripts/gen-system-md-for-agy.sh --check
+
+      - name: update-model-catalog.py --check (-> agent/models/catalog.json & 7 derived configs)
+        run: python3 agent/scripts/update-model-catalog.py --check
+
+  # ── agent/scripts/test-*.sh integration suite ────────────────────────────
+  test-suite:
+    name: "agent/scripts/test-*.sh"
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Ensure jq, python3, and PyYAML are available
+        run: |
+          if ! command -v jq >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1 || ! python3 -c "import yaml" >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y jq python3 python3-yaml
+          fi
+          jq --version
+          python3 --version
+
+      - name: test-security-rules.sh
+        run: bash agent/scripts/test-security-rules.sh
+
+      - name: test-vald-law-rules.sh
+        run: bash agent/scripts/test-vald-law-rules.sh
+
+      - name: test-merged-dir-root-resolution.sh
+        run: bash agent/scripts/test-merged-dir-root-resolution.sh
+
+      - name: test-settings-common.sh
+        run: bash agent/scripts/test-settings-common.sh
+
+      - name: test-harness-parity.sh
+        run: bash agent/scripts/test-harness-parity.sh
+
+      - name: test-gen-tool-md.sh
+        run: bash agent/scripts/test-gen-tool-md.sh
+
+      - name: test-model-routing.sh
+        run: bash agent/scripts/test-model-routing.sh
+
+      - name: test-model-catalog-update.sh
+        run: bash agent/scripts/test-model-catalog-update.sh
+
+      - name: test-fetch-harness-models.sh
+        run: bash agent/scripts/test-fetch-harness-models.sh
+
+      - name: test-catalog-health.sh
+        run: bash agent/scripts/test-catalog-health.sh
+
+      - name: test-sync-verify-live-root.sh
+        run: bash agent/scripts/test-sync-verify-live-root.sh
+
+      - name: test-sync-verify-dir-modes.sh
+        run: bash agent/scripts/test-sync-verify-dir-modes.sh
+
+      - name: test-write-scope-parity.sh
+        run: bash agent/scripts/test-write-scope-parity.sh
+
+      - name: test-hook-session-id.sh
+        run: bash agent/scripts/test-hook-session-id.sh
+
+      - name: test-swarm-branch-worktree-audit.sh
+        run: bash agent/scripts/test-swarm-branch-worktree-audit.sh
+
+      - name: verify-cache-alignment.sh
+        run: bash agent/scripts/verify-cache-alignment.sh
+
+      - name: test-omp-extensions.sh
+        run: bash agent/scripts/test-omp-extensions.sh
+
+      - name: hermes/validate-harness.sh
+        run: bash agent/harnesses/hermes/validate-harness.sh
+
+  # ── fix-plan.md work areas (SoL-Pi / Harness² / RLM / hook daemon / bench / sandbox precheck) ──
+  # Separate job so a failure here is attributable and cannot mask the suite above. Each script is
+  # $HOME-independent (verified locally with `env -i HOME=<tmp> LANG=C.UTF-8 PATH=/usr/bin:/bin`).
+  # test-rlm-bounded.sh passes its non-UTF-8 argv via python subprocess (run_raw), not coreutils `timeout`:
+  # ubuntu-26.04 ships uutils coreutils, whose argv handling for non-UTF-8 differs from GNU.
+  test-suite-fix-plan:
+    name: "fix-plan work areas (harness2 / rlm / decide daemon / bench / sandbox)"
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Ensure jq, python3, and PyYAML are available
+        run: |
+          if ! command -v jq >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1 || ! python3 -c "import yaml" >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y jq python3 python3-yaml
+          fi
+          jq --version
+          python3 --version
+
+      - name: test-harness2-offline.sh
+        run: bash agent/scripts/test-harness2-offline.sh
+
+      - name: test-rlm-bounded.sh
+        run: bash agent/scripts/test-rlm-bounded.sh
+
+      - name: test-decide-daemon.sh
+        run: bash agent/scripts/test-decide-daemon.sh
+
+      - name: test-hook-jq-consolidation.sh
+        run: bash agent/scripts/test-hook-jq-consolidation.sh
+
+      - name: test-hermes-cron.sh
+        run: bash agent/scripts/test-hermes-cron.sh
+
+      - name: test-sandbox-precheck.sh
+        run: bash agent/scripts/test-sandbox-precheck.sh
+
+      - name: test-agent-bench.sh
+        run: bash agent/scripts/test-agent-bench.sh
+
+      - name: bench --hooks --quick
+        run: bash agent/scripts/bench/run-agent-bench.sh --hooks --quick
+
+      # bun is not preinstalled on every runner image; like test-omp-extensions.sh this step is skipped when it is missing.
+      - name: sol-pi / continual-harness / repl-context unit tests (bun test)
+        run: |
+          if ! command -v bun >/dev/null 2>&1; then
+            echo "[SKIP] bun not found"
+            exit 0
+          fi
+          cd agent/harnesses/omp/extensions
+          bun test lib/sol-pi.test.ts lib/repl-context.test.ts

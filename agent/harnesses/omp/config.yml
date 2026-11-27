@@ -1,0 +1,109 @@
+# ~/.omp/agent/config.yml (Canonical SSoT in agent/harnesses/omp/config.yml)
+defaultThinkingLevel: high
+
+disabledProviders:
+  - lm-studio
+  - llama.cpp
+  - vllm
+providers:
+  autoThinkingMaxEffort: xhigh
+  openaiResponsesWebsockets: true
+
+modelRoles:
+  default: anthropic/claude-opus-5-5:high
+  slow: anthropic/claude-opus-5-5:xhigh
+  plan: anthropic/claude-opus-5-5:high
+  good: anthropic/claude-sonnet-5-5:high
+  smol: opencode-go/deepseek-v4.1-flash:medium
+  fast: opencode-go/deepseek-v4.1-flash:low
+  review: openai/gpt-6.2-astra:xhigh
+  judge: typesafe/jev
+  tiny: local/lfm2-1.2b
+  memory: local/lfm2-1.2b
+
+retry:
+  modelFallback: true
+  rateLimitWalksChain: true
+  fallbackChains:
+    default:
+      - anthropic/claude-sonnet-5-5:high
+      - antigravity-cli/claude-sonnet-5-5:high
+      - openai/gpt-6.2-sol:high
+      - opencode-go/qwen4-max:high
+    smol:
+      - anthropic/claude-haiku-5-5:medium
+      - antigravity-cli/gemini-4-hydrogen:medium
+      - ollama/gpt-oss-20b
+    review:
+      - opencode-go/kimi-k3.1-pro:max
+      - antigravity-cli/gemini-4-argon:xhigh
+      - anthropic/claude-fable-5-2:xhigh
+
+edit:
+  mode: hashline
+  fuzzyMatch: true
+  fuzzyThreshold: 0.92
+
+lsp:
+  enabled: true
+  lazy: true
+
+ttsr:
+  enabled: true
+  builtinRules: true
+  judge: auto
+
+prewalk:
+  enabled: false
+  auto: on
+  from: "@slow"
+  into: "@good"
+  autoTarget: "@good"
+
+task:
+  batch: true
+  speculativeLaunch: true
+  enableEffort: true
+  maxEffort: xhigh
+  maxRecursionDepth: 2
+  workerThreads: 4
+  isolation:
+    enabled: true
+    merge: patch
+    apply: false
+
+isolation:
+  backend: auto
+
+advisor:
+  continueSeverity: concern
+  maxNotesPerUpdate: 4
+
+compaction:
+  keepRecentTokens: 20000
+  reserveTokens: 16384
+
+# Lean Engineering Profile (Wayland/Sway; SoT also in update-model-catalog.py OMP_LEAN_PROFILE_YML)
+tui:
+  renderEmbeds: false
+
+todo:
+  enabled: true
+
+memory:
+  backend: local
+
+commit:
+  enabled: true
+
+disassembler:
+  backend: none
+
+speechgen:
+  enabled: false
+
+generate_image:
+  enabled: false
+
+computer:
+  enabled: false

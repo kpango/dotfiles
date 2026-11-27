@@ -1,0 +1,24 @@
+# Resident ghostty: `ghostty` invocations (gtk-single-instance = true) open windows in this process
+# instead of paying the ~0.5s GTK/GL start-up each time. Same name as the vendor unit so the vendor
+# D-Bus service file (SystemdService=app-com.mitchellh.ghostty.service) activates this one.
+# Type=dbus, not the vendor's notify-reload: systemd 262 refuses ghostty 1.3.1 there
+# ("lacks handler for reload signal USR2").
+[Unit]
+Description=Ghostty (resident)
+PartOf=graphical-session.target
+After=graphical-session.target dbus.socket
+Requires=dbus.socket
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=dbus
+BusName=com.mitchellh.ghostty
+# Empty GTK_IM_MODULE: GTK uses Wayland text-input (fcitx5 via input-method-v2), not the fcitx GTK module.
+Environment=GTK_IM_MODULE=
+ExecStart=/usr/bin/ghostty --gtk-single-instance=true --initial-window=false --quit-after-last-window-closed=false
+ExecReload=/bin/kill -USR2 $MAINPID
+Restart=on-failure
+RestartSec=2s
+
+[Install]
+WantedBy=graphical-session.target

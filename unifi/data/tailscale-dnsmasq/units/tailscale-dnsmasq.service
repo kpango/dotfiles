@@ -1,0 +1,10 @@
+[Unit]
+Description=Ensure dnsmasq binds tailscale0 for Tailscale Split DNS
+Documentation=file:/data/tailscale-dnsmasq/ensure.sh
+After=network-online.target udapi-server.service tailscaled.service
+Wants=network-online.target tailscaled.service
+RequiresMountsFor=/data
+
+[Service]
+Type=oneshot
+ExecStart=/data/tailscale-dnsmasq/ensure.sh

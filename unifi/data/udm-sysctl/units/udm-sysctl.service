@@ -1,0 +1,14 @@
+[Unit]
+Description=Apply UDM Pro performance and WAN sysctl tuning
+Documentation=file:/data/udm-sysctl/apply.sh
+After=network-online.target udapi-server.service
+Wants=network-online.target
+RequiresMountsFor=/data
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/data/udm-sysctl/apply.sh
+
+[Install]
+WantedBy=multi-user.target

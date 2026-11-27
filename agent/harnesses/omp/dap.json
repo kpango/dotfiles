@@ -1,0 +1,29 @@
+{
+  "adapters": {
+    "dlv": {
+      "command": "dlv",
+      "args": ["dap"],
+      "languages": ["go"],
+      "fileTypes": [".go"],
+      "rootMarkers": ["go.mod", "go.work"],
+      "connectMode": "socket",
+      "acceptsDirectoryProgram": true,
+      "launchDefaults": {
+        "request": "launch",
+        "mode": "test"
+      },
+      "attachDefaults": {
+        "request": "attach",
+        "mode": "local"
+      }
+    },
+    "lldb-dap": {
+      "command": "lldb-dap",
+      "args": [],
+      "languages": ["cpp", "c", "rust"],
+      "fileTypes": [".cpp", ".cc", ".c", ".rs"],
+      "rootMarkers": ["Cargo.toml", "CMakeLists.txt"],
+      "connectMode": "stdio"
+    }
+  }
+}

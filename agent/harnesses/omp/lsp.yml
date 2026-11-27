@@ -1,0 +1,35 @@
+servers:
+  gopls:
+    command: gopls
+    args: ["serve"]
+    fileTypes: [".go", "go.mod", "go.work"]
+    rootMarkers: ["go.work", "go.mod"]
+    settings:
+      gopls:
+        staticcheck: true
+        analyses:
+          unusedparams: true
+          shadow: true
+  rust-analyzer:
+    command: rust-analyzer
+    fileTypes: [".rs"]
+    rootMarkers: ["Cargo.toml"]
+    capabilities:
+      flycheck: true
+      expandMacro: true
+  clangd:
+    command: clangd
+    args: ["--background-index", "--clang-tidy"]
+    fileTypes: [".c", ".cc", ".cpp", ".h", ".hpp"]
+    rootMarkers: ["compile_commands.json", "CMakeLists.txt"]
+  # `.nix` has no override here: OMP's built-in defaults already list nixd
+  # (used when installed) and nil (fallback) for .nix with the same root
+  # markers plus shell.nix. Naming nixd here pinned a binary the host does not
+  # ship, so the host silently used nil; the dev container installs nixd
+  # (dockers/nix.Dockerfile) and picks it up through the same defaults.
+  bashls:
+    command: bash-language-server
+    args: ["start"]
+    fileTypes: [".sh", ".bash", ".zsh"]
+    rootMarkers: [".git", "Makefile"]
+idleTimeoutMs: 300000

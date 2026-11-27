@@ -1,0 +1,2 @@
+# Managed by dotfiles /data/udm-zram-tune — applied on next boot by ubnt-zram-swap.service (no live swapoff)
+COMP_ALGORITHM=zstd

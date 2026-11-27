@@ -1,0 +1,3 @@
+# Managed by dotfiles /data/udm-log-tune — keep --dryrun and --avoid identical to /etc/default/earlyoom,
+# relaxing only the periodic memory-report interval from 60s to 3600s.
+EARLYOOM_ARGS="-n -r 3600 -M 256000 -s 10 -p --dryrun --avoid '(^|/)(ubios-udapi-ser|systemd-network|unifi-core)$'"

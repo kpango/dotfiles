@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "cacheWriteReadRatio": 12.5,
+  "actionFusion": true,
+  "observationPack": true,
+  "evidencePreservingReducer": true,
+  "evidencePreservingReducerProvider": "opencode-go",
+  "evidencePreservingReducerModel": "deepseek-v4.1-flash",
+  "onlineContextCompact": false,
+  "omp": {
+    "ref": "arXiv:2609.20519",
+    "pricingCliffAdvisory": true,
+    "actionFusion": {
+      "timeoutMs": 15000,
+      "barrier": true,
+      "defaultValidators": {
+        ".go": "go vet ./...",
+        ".rs": "cargo check --quiet",
+        ".nix": "nix-instantiate --parse",
+        ".sh": "bash -n",
+        ".json": "python3 -I -m json.tool",
+        ".py": "python3 -I -m py_compile"
+      },
+      "thenRun": {
+        "enabled": true,
+        "timeoutSec": 120,
+        "maxOutputChars": 4000
+      }
+    },
+    "observationPack": {
+      "minBytesThreshold": 10240,
+      "fullReplayTurns": 2,
+      "headLines": 20,
+      "tailLines": 15,
+      "archiveDir": "",
+      "maxArchiveFiles": 200,
+      "maxArchiveBytes": 67108864,
+      "recallMaxBytes": 16384,
+      "recallMaxLines": 200
+    },
+    "evidencePreservingReducer": {
+      "minBytesThreshold": 4096,
+      "maxInputBytes": 600000,
+      "maxProviderChars": 600000,
+      "timeoutMs": 90000,
+      "maxCallsPerSession": 12,
+      "cacheEntries": 64,
+      "minAcceptedRatio": 1,
+      "failClosedOnQuoteMismatch": true,
+      "verifyExitCode": true,
+      "redactSecrets": true
+    },
+    "onlineContextCompact": {
+      "respectPricingCliffs": true,
+      "tokenPressureThreshold": 180000,
+      "warnRatio": 0.85,
+      "keepRecentTokens": 20000,
+      "outputReserveTokens": 8192,
+      "compactOnSubtaskBoundary": true,
+      "maxCompactionsPerSession": 0
+    },
+    "missionBridge": {
+      "enabled": true,
+      "fixPlanMaxBytes": 262144,
+      "traces": true,
+      "traceMaxBytes": 983040,
+      "traceDir": "",
+      "trail": true
+    }
+  }
+}

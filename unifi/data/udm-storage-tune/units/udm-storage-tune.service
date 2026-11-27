@@ -1,0 +1,13 @@
+[Unit]
+Description=Apply UDM Pro flash storage queue tuning (/dev/boot)
+Documentation=file:/data/udm-storage-tune/apply.sh
+After=local-fs.target
+RequiresMountsFor=/data
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/data/udm-storage-tune/apply.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Timer for SSoT Model Catalog Update
+
+[Timer]
+OnCalendar=*-*-* 04:15:00
+RandomizedDelaySec=15m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,124 @@
+# W1..W10 再現可能ワークロード定義 (Plan A §16.2 / Plan B §11.1)。
+# 読み手: agent/scripts/bench/run-agent-bench.sh --suite (python3 標準ライブラリのみの厳格な最小リーダー)。
+#
+# 対応する YAML のサブセット(これ以外の構文は読み込みエラー = 実行しない):
+#   - '#' 行コメント / 空行 / スペース2文字刻みのインデント
+#   - トップ: `version: 1` と `workloads:`(リスト)
+#   - workload: `- id:` `title:` `quick:`(true|false) `needs:`(インライン配列) `timeout:`(秒, 任意) `checks:`(リスト)
+#   - check: `- name:` `cmd:`(JSON 形式のダブルクォート文字列)
+#   - needs の要素: `bin:<command>` / `dir:<path>` / `file:<path>` / `gopkg:<module dir>|<pkg pattern>`(オフラインで依存解決可能か)。`$ROOT` `$VALD_DIR` は展開される
+#     (ROOT = dotfiles リポジトリ根、VALD_DIR 既定 = ~/go/src/github.com/vdaas/vald)。
+#
+# 規約: 全 check はオフライン・LLM 不使用・決定論的。cmd は `bash -c` で ROOT を cwd に実行され、
+# 終了コード 0 のみ PASS。needs が一つでも欠落した workload は SKIP(理由付き)であり PASS ではない。
+version: 1
+workloads:
+  - id: W1
+    title: "Vald Go unit fix + Vald Laws 1-5 (law rules + internal/errors build, offline)"
+    quick: false
+    needs:
+      [
+        bin:go,
+        dir:$VALD_DIR/internal/errors,
+        gopkg:$VALD_DIR|./internal/errors/...,
+      ]
+    timeout: 600
+    checks:
+      - name: vald-law-rules
+        cmd: "bash agent/scripts/test-vald-law-rules.sh"
+      - name: vald-internal-errors-build
+        cmd: 'GOFLAGS=-mod=mod GOPROXY=off go -C "$VALD_DIR" build ./internal/errors/...'
+  - id: W2
+    title: "NGT C++/CGO boundary (go vet of the ngt cgo package)"
+    quick: false
+    needs:
+      [
+        bin:go,
+        bin:g++,
+        dir:$VALD_DIR/internal/core/algorithm/ngt,
+        file:/usr/local/include/NGT/Capi.h,
+        gopkg:$VALD_DIR|./internal/core/algorithm/ngt/...,
+      ]
+    timeout: 900
+    checks:
+      - name: ngt-cgo-vet
+        cmd: 'CGO_ENABLED=1 GOFLAGS=-mod=mod GOPROXY=off go -C "$VALD_DIR" vet ./internal/core/algorithm/ngt/...'
+  - id: W3
+    title: "Protobuf make proto/all (dry-run: target graph resolves, no generation)"
+    quick: false
+    needs: [bin:make, dir:$VALD_DIR/apis/proto]
+    timeout: 300
+    checks:
+      - name: make-proto-all-dry-run
+        cmd: 'make -C "$VALD_DIR" -n proto/all'
+  - id: W4
+    title: "K8s Helm chart / manifest (helm lint + template)"
+    quick: false
+    needs: [bin:helm, file:$VALD_DIR/charts/vald/Chart.yaml]
+    timeout: 300
+    checks:
+      - name: helm-lint
+        cmd: 'helm lint "$VALD_DIR/charts/vald"'
+      - name: helm-template
+        cmd: 'helm template bench "$VALD_DIR/charts/vald" >/dev/null'
+  - id: W5
+    title: "Dotfiles 4-harness sync (sync-verify dir modes + merged-dir root resolution)"
+    quick: true
+    needs: [bin:bash, file:$ROOT/agent/scripts/sync-verify.sh]
+    timeout: 300
+    checks:
+      - name: sync-verify-dir-modes
+        cmd: "bash agent/scripts/test-sync-verify-dir-modes.sh"
+      - name: merged-dir-root-resolution
+        cmd: "bash agent/scripts/test-merged-dir-root-resolution.sh"
+  - id: W6
+    title: "Model routing & Pricing Cliff (routing test + catalog consistency)"
+    quick: true
+    needs: [bin:python3]
+    timeout: 300
+    checks:
+      - name: model-routing
+        cmd: "bash agent/scripts/test-model-routing.sh"
+      - name: model-catalog-check
+        cmd: "python3 -I -B agent/scripts/update-model-catalog.py --check"
+  - id: W7
+    title: "100K+ RLM / ObservationPack analysis (rlm-bounded + repl-context)"
+    quick: true
+    needs: [bin:python3, bin:bun]
+    timeout: 600
+    checks:
+      - name: rlm-bounded
+        cmd: "bash agent/scripts/test-rlm-bounded.sh"
+      - name: repl-context
+        cmd: "bun run agent/harnesses/omp/extensions/lib/repl-context.test.ts"
+  - id: W8
+    title: "SoL-Pi Evidence-Preserving Reducer 4KiB+ (needs sol-pi.test.ts)"
+    quick: true
+    needs:
+      [bin:bun, file:$ROOT/agent/harnesses/omp/extensions/lib/sol-pi.test.ts]
+    timeout: 300
+    checks:
+      - name: sol-pi-test
+        cmd: "cd agent/harnesses/omp/extensions && bun test lib/sol-pi.test.ts"
+  - id: W9
+    title: "Security / Vald-Law adversarial input rejection"
+    quick: true
+    needs: [bin:python3, bin:bash]
+    timeout: 300
+    checks:
+      - name: security-rules
+        cmd: "bash agent/scripts/test-security-rules.sh"
+      - name: vald-law-rules
+        cmd: "bash agent/scripts/test-vald-law-rules.sh"
+      - name: write-scope-parity
+        cmd: "bash agent/scripts/test-write-scope-parity.sh"
+  - id: W10
+    title: "Harness2 offline evolution: Net Token Budget & security monotonicity"
+    quick: true
+    needs: [bin:bash, bin:bun]
+    timeout: 600
+    checks:
+      - name: harness2-offline
+        cmd: "bash agent/scripts/test-harness2-offline.sh"
+      - name: continual-harness
+        cmd: "bun run agent/harnesses/omp/extensions/lib/continual-harness.test.ts"

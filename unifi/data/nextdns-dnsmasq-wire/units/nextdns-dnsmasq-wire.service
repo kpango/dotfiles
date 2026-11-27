@@ -1,0 +1,9 @@
+[Unit]
+Description=Restart NextDNS CLI if its dnsmasq forwarder conf (server=127.0.0.1#5342) is gone
+After=nextdns.service
+
+[Service]
+Type=oneshot
+ExecStart=/data/nextdns-dnsmasq-wire/check.sh
+# 2 = 配線を戻した (正常系)
+SuccessExitStatus=2

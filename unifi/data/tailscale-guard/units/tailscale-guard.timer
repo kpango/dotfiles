@@ -1,0 +1,11 @@
+[Unit]
+Description=Re-apply IoT/Tailscale isolation chain every 60s
+
+[Timer]
+OnBootSec=45s
+OnUnitActiveSec=60s
+RandomizedDelaySec=10s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

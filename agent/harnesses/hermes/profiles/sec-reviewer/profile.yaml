@@ -1,0 +1,24 @@
+name: sec-reviewer
+role: Adversarial Security & Invariant Reviewer
+tier: XHigh
+description: Cross-family adversarial security reviewer auditing Hard Floor rules, write-scope gates, credentials, and unsafe command boundaries.
+model:
+  provider: openai
+  default: gpt-6.2-astra
+  aliases:
+    ultrabrain: anthropic/claude-opus-5-5
+    deep: openai/gpt-6.2-astra
+    quick: anthropic/claude-haiku-5-5
+    local: ollama/gpt-oss-20b
+toolsets:
+  - file
+  - web
+  - skills
+  - memory
+omh:
+  home: ~/.omh/profiles/sec-reviewer
+  lsp_tools: true
+  dreaming_mode: off
+delegation:
+  - omp
+  - claude-code

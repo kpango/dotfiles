@@ -1,0 +1,383 @@
+{
+  "$comment": "4ハーネス(claude/omp/agy/hermes)共通設定の SSoT 同期マニフェスト。agent/scripts/sync-verify.sh がこれを読み、各entryのmodeに応じた検証を行う。2026-09-03にリポジトリ内中間symlinkを全廃し、Makefile.d/install.mkがagent/から直接$HOME側へsymlinkする設計へ一本化。2026-10-17に `live-symlink-dir` と `live-regular-file` の2modeを追加。2026-11-18にpi/codex/dsh/primeagentを撤去し、claude/omp/agy/hermesの4ハーネス体制+共通pa-sandboxへ移行した。",
+  "entries": [
+    {
+      "name": "rules",
+      "canonical": "agent/rules",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/rules", "mode": "live-symlink" },
+        "omp": { "path": "$HOME/.omp/agent/rules", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/rules", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/rules", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "agents",
+      "canonical": "agent/agents",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/agents", "mode": "live-symlink" },
+        "omp": { "path": "$HOME/.omp/agent/agents", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/agents", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/agents", "mode": "live-symlink" }
+      },
+      "note": "agent/agents/*.md を単一正典とし、omp/extensions/subagents.ts の実行時変換(mapToolNames)を含め全ハーネスへ直接 live-symlink する。"
+    },
+    {
+      "name": "skills",
+      "canonical": "agent/skills",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/skills", "mode": "live-symlink" },
+        "omp": { "path": "$HOME/.omp/agent/skills", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/skills", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/skills", "mode": "live-symlink" },
+        "hermes": { "path": "$HOME/.hermes/skills", "mode": "live-symlink" }
+      },
+      "note": "全ハーネスの skills ディレクトリは正典 agent/skills へ直接 live-symlink する。"
+    },
+    {
+      "name": "RTK.md",
+      "canonical": "agent/RTK.md",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/RTK.md", "mode": "live-symlink" },
+        "omp": { "path": "$HOME/.omp/agent/RTK.md", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/RTK.md", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/RTK.md", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "SWARM.md",
+      "canonical": "agent/SWARM.md",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/SWARM.md", "mode": "live-symlink" },
+        "omp": { "path": "$HOME/.omp/agent/SWARM.md", "mode": "live-symlink" },
+        "agy": { "path": "$HOME/.agy/SWARM.md", "mode": "live-symlink" },
+        "gemini": { "path": "$HOME/.gemini/SWARM.md", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "AGENTS.md",
+      "canonical": "agent/AGENTS.md",
+      "note": "claude は CLAUDE.md の @AGENTS.md インポート構文で動的合成。omp/agy は gen-tool-agents.sh (gen-agents-md-for-{omp,agy}.sh ラッパー経由) で AGENTS.md を生成し live-symlink する。",
+      "targets": {
+        "claude": { "path": "$HOME/.claude/AGENTS.md", "mode": "live-symlink" },
+        "omp": {
+          "path": "agent/harnesses/omp/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-agents-md-for-omp.sh",
+          "live_path": "$HOME/.omp/agent/AGENTS.md"
+        },
+        "agy": {
+          "path": "agent/harnesses/agy/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-agents-md-for-agy.sh",
+          "live_path": "$HOME/.agy/AGENTS.md"
+        },
+        "gemini": {
+          "path": "agent/harnesses/agy/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-agents-md-for-agy.sh",
+          "live_path": "$HOME/.gemini/AGENTS.md"
+        },
+        "gemini-md": {
+          "path": "agent/harnesses/agy/AGENTS.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-agents-md-for-agy.sh",
+          "live_path": "$HOME/.gemini/GEMINI.md"
+        }
+      }
+    },
+    {
+      "name": "AGENTS-supplement.md",
+      "canonical": "agent/AGENTS-claude-supplement.md",
+      "note": "claude/CLAUDE.md の 2行目 `@AGENTS-supplement.md` が指す claude 固有補完。omp/agy の補完は AGENTS.md の generate モードが gen-tool-agents.sh 経由で消費する。",
+      "targets": {
+        "claude": {
+          "path": "$HOME/.claude/AGENTS-supplement.md",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "SYSTEM.md",
+      "canonical": "agent/SYSTEM.md",
+      "note": "gen-tool-system.sh (gen-system-md-for-{omp,agy}.sh ラッパー経由) で supplement+core を生成。claude は --append-system-prompt、hermes は SOUL.md を用いるため omp/agy のみが対象。",
+      "targets": {
+        "omp": {
+          "path": "agent/harnesses/omp/SYSTEM.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-system-md-for-omp.sh",
+          "live_path": "$HOME/.omp/agent/SYSTEM.md"
+        },
+        "agy": {
+          "path": "agent/harnesses/agy/SYSTEM.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-system-md-for-agy.sh",
+          "live_path": "$HOME/.agy/SYSTEM.md"
+        },
+        "gemini": {
+          "path": "agent/harnesses/agy/SYSTEM.md",
+          "mode": "generate",
+          "script": "agent/scripts/gen-system-md-for-agy.sh",
+          "live_path": "$HOME/.gemini/SYSTEM.md"
+        }
+      }
+    },
+    {
+      "name": "SWARM_REFERENCES.md",
+      "canonical": "agent/SWARM_REFERENCES.md",
+      "targets": {
+        "claude": {
+          "path": "$HOME/.claude/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
+        },
+        "omp": {
+          "path": "$HOME/.omp/agent/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
+        },
+        "agy": {
+          "path": "$HOME/.agy/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
+        },
+        "gemini": {
+          "path": "$HOME/.gemini/SWARM_REFERENCES.md",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "agy/settings.json",
+      "canonical": "agent/harnesses/agy/settings.json",
+      "note": "Antigravity CLI (cli_setting_manager.go) が ~/.gemini/antigravity-cli/settings.json を 0600 通常ファイルとして原子置換するため、install.sh でマージし live-regular-file で検証する。",
+      "targets": {
+        "agy": { "path": "$HOME/.agy/settings.json", "mode": "live-symlink" },
+        "gemini": {
+          "path": "$HOME/.gemini/settings.json",
+          "mode": "live-symlink"
+        },
+        "agy-cli": {
+          "path": "$HOME/.gemini/antigravity-cli/settings.json",
+          "mode": "live-regular-file",
+          "perm": "600"
+        }
+      }
+    },
+    {
+      "name": "agy/mcp_config.json",
+      "canonical": "agent/harnesses/agy/mcp_config.json",
+      "targets": {
+        "agy": { "path": "$HOME/.agy/mcp_config.json", "mode": "live-symlink" },
+        "gemini": {
+          "path": "$HOME/.gemini/config/mcp_config.json",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "omp/config.yml",
+      "canonical": "agent/harnesses/omp/config.yml",
+      "note": "OMP 設定は YAML 形式で管理し、settings.json は絶対に使用しない。OMP は起動のたびに読み込んだ設定を正規化して書き戻す(modelRoles.default を実行モデルへ、コメント削除、setupVersion 付与)ため、symlink だとリポジトリが dirty になる。よって通常ファイル(perm 600)として配布し、repo 側は正典のまま保つ。",
+      "targets": {
+        "omp": {
+          "path": "$HOME/.omp/agent/config.yml",
+          "mode": "live-regular-file",
+          "perm": "600"
+        }
+      }
+    },
+    {
+      "name": "omp/models.yml",
+      "canonical": "agent/harnesses/omp/models.yml",
+      "targets": {
+        "omp": { "path": "$HOME/.omp/agent/models.yml", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "omp/lsp.yml",
+      "canonical": "agent/harnesses/omp/lsp.yml",
+      "targets": {
+        "omp": { "path": "$HOME/.omp/agent/lsp.yml", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "omp/dap.json",
+      "canonical": "agent/harnesses/omp/dap.json",
+      "targets": {
+        "omp": { "path": "$HOME/.omp/agent/dap.json", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "omp/sol-pi.json",
+      "canonical": "agent/harnesses/omp/sol-pi.json",
+      "targets": {
+        "omp": {
+          "path": "$HOME/.omp/agent/sol-pi.json",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "omp/model-routing.json",
+      "canonical": "agent/harnesses/omp/model-routing.json",
+      "targets": {
+        "omp": {
+          "path": "$HOME/.omp/agent/model-routing.json",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "omp/keybindings.json",
+      "canonical": "agent/harnesses/omp/keybindings.json",
+      "targets": {
+        "omp": {
+          "path": "$HOME/.omp/agent/keybindings.json",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "omp/prompts",
+      "canonical": "agent/harnesses/omp/prompts",
+      "targets": {
+        "omp": { "path": "$HOME/.omp/agent/prompts", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "omp/themes",
+      "canonical": "agent/harnesses/omp/themes",
+      "targets": {
+        "omp": { "path": "$HOME/.omp/agent/themes", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "hermes/config.yaml",
+      "canonical": "agent/harnesses/hermes/config.yaml",
+      "targets": {
+        "hermes": {
+          "path": "$HOME/.hermes/config.yaml",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "hermes/SOUL.md",
+      "canonical": "agent/harnesses/hermes/SOUL.md",
+      "targets": {
+        "hermes": { "path": "$HOME/.hermes/SOUL.md", "mode": "live-symlink" }
+      }
+    },
+    {
+      "name": "hermes/model-routing.json",
+      "canonical": "agent/harnesses/hermes/model-routing.json",
+      "targets": {
+        "hermes": {
+          "path": "$HOME/.hermes/model-routing.json",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "hermes/omh/category-maestro.json",
+      "canonical": "agent/harnesses/hermes/omh/category-maestro.json",
+      "targets": {
+        "hermes": {
+          "path": "$HOME/.omh/routing/category-maestro.json",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "hermes/profiles",
+      "targets": {
+        "hermes": {
+          "path": "$HOME/.hermes/profiles",
+          "mode": "live-symlink-dir",
+          "sources": [
+            {
+              "dir": "agent/harnesses/hermes/profiles",
+              "marker": "profile.yaml"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "agent-decide.service",
+      "canonical": "systemd/user/agent-decide.service",
+      "targets": {
+        "omp": {
+          "path": "$HOME/.config/systemd/user/agent-decide.service",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "hermes-gateway.service",
+      "canonical": "systemd/user/hermes-gateway.service",
+      "targets": {
+        "hermes": {
+          "path": "$HOME/.config/systemd/user/hermes-gateway.service",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "omp-model-catalog-update.service",
+      "canonical": "systemd/user/omp-model-catalog-update.service",
+      "targets": {
+        "omp": {
+          "path": "$HOME/.config/systemd/user/omp-model-catalog-update.service",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "omp-model-catalog-update.timer",
+      "canonical": "systemd/user/omp-model-catalog-update.timer",
+      "targets": {
+        "omp": {
+          "path": "$HOME/.config/systemd/user/omp-model-catalog-update.timer",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "pa-sandbox",
+      "canonical": "agent/scripts/sandbox/pa-sandbox",
+      "targets": {
+        "shared": {
+          "path": "$HOME/.local/bin/pa-sandbox",
+          "mode": "live-symlink"
+        }
+      }
+    },
+    {
+      "name": "trail-guard",
+      "canonical": "agent/scripts/trail-guard.sh",
+      "targets": {
+        "shared": {
+          "path": "$HOME/.local/bin/trail",
+          "mode": "live-symlink"
+        }
+      }
+    }
+  ],
+  "not_shareable": [
+    {
+      "pattern": "settings.json|config.yml|config.yaml",
+      "reason": "キー体系がハーネスごとに別物(claude/agy は独自JSON、omp は config.yml / models.yml / lsp.yml 等のYAML+専用JSONで settings.json 禁止、hermes は config.yaml)であるため、ファイル全体の統合は対象外。claude/agy の一部共有キーのみ agent/settings-common.json で検証する。"
+    },
+    {
+      "pattern": "hooks/*.sh",
+      "reason": "hook I/Oプロトコルがハーネスごとに別物(claude: stdin JSON+bash、agy: 別スキーマ、omp: TypeScript extension)であるためI/O層は対象外。判定データは agent/security-rules.json・agent/write-scope-rules.json・agent/vald-law-rules.json へ統合し、test-*.sh でクロス実装一致を検証する。"
+    },
+    {
+      "pattern": "validate-harness.sh",
+      "reason": "検証先スキーマがハーネスごとに異なるため個別スクリプトを残し、共通集計/共有テスト呼び出しロジックを agent/scripts/harness-check-lib.sh に集約している。"
+    },
+    {
+      "pattern": "keybindings.json",
+      "reason": "claude/omp でスキーマが異なる(claude: bindings配列、omp: フラットマップ)。agy/hermes には存在しない。"
+    }
+  ]
+}

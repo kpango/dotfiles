@@ -1,0 +1,31 @@
+* {
+	background-color: transparent;
+}
+
+window {
+    opacity: 0.8;
+    background-color: #101010;
+}
+
+#input {
+    color: #EEEEEE;
+}
+
+#inner-box {
+    margin: 5px;
+}
+
+#outer-box {
+    margin: 5px;
+}
+
+#scroll {
+}
+
+#entry {
+}
+
+#text {
+    margin: 4px;
+    color: #E0E0E0;
+}

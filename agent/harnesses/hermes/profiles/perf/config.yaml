@@ -1,0 +1,39 @@
+model:
+  provider: openai
+  default: gpt-6.2-astra
+  aliases:
+    ultrabrain: openai/gpt-6.2-astra
+    deep: anthropic/claude-opus-5-5
+    quick: opencode-go/deepseek-v4.1-flash
+    local: ollama/qwen2.5-coder:32b
+
+terminal:
+  backend: local
+  cwd: "."
+
+approvals:
+  mode: smart
+  timeout: 300
+
+skills:
+  creation_nudge_interval: 15
+  external_dirs:
+    - ~/.hermes/skills
+    - ~/.omh/skills
+
+platform_toolsets:
+  acp:
+    - file
+    - terminal
+    - web
+    - skills
+    - memory
+
+plugins:
+  entries:
+    omh:
+      enabled: true
+      settings:
+        omh_home: ~/.omh/profiles/perf
+        lsp_tools: true
+        dreaming_mode: off

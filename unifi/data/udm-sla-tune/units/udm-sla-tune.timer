@@ -1,0 +1,11 @@
+[Unit]
+Description=Re-apply WAN2 SLA monitor tune every 5m alongside .path (udapi-server rewrites its state file)
+
+[Timer]
+OnBootSec=30s
+OnUnitActiveSec=5m
+RandomizedDelaySec=10s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target
