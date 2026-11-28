@@ -1,0 +1,11 @@
+[Unit]
+Description=Periodic verification of dnsmasq tailscale0 binding
+
+[Timer]
+OnBootSec=90s
+OnUnitActiveSec=5m
+AccuracySec=10s
+Unit=tailscale-dnsmasq.service
+
+[Install]
+WantedBy=timers.target

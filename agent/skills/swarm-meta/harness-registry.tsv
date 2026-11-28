@@ -1,0 +1,103 @@
+# date	mission	harness	profile	model-version	outcome
+2026-07-30	swarm-cross-pollination	swarm-graph	parallel	claude-fable-5	done=8 blocked=0 attempts=11 replans=0
+2026-07-31	swarm-dr-optimize	swarm-graph	parallel	claude-fable-5	done=5 blocked=0 attempts=6 replans=0
+2026-08-01	swarm-skills-trim-harden	swarm-graph	parallel	claude-sonnet-5	done=16 blocked=0 attempts=4 replans=0
+2026-08-12	swarm-relay	swarm-graph	parallel	claude-sonnet-5	done=5 blocked=0 attempts=6 replans=0
+2026-08-13	dto-consolidation-followup	swarm-graph	parallel	claude-sonnet-5	done=10 blocked=0 attempts=10 replans=0
+2026-08-20	swarm-skills-research-optimize	swarm-graph	parallel	claude-sonnet-5	done=10 blocked=1 attempts=3 replans=0
+2026-08-27	swarm-workflow-optimization-20260826-203025	swarm-graph	sequential	claude-sonnet-5	done=1 blocked=0 attempts=2 replans=0
+2026-09-02	pi-agent-config-consolidation	swarm-graph	parallel	claude-sonnet-5	done=6 blocked=0 attempts=1 replans=0
+2026-09-03	ai-config-further-consolidation	swarm-graph	parallel	claude-sonnet-5	done=6 blocked=0 attempts=9 replans=2
+2026-09-05	pi-agent-skills-research-optimize	swarm-graph	parallel	pi-session	done=6 blocked=1 attempts=20 replans=1
+2026-09-06	pi-meta-5lens-integration	swarm-graph	parallel	pi-session	done=6 blocked=0 attempts=3 replans=0
+2026-09-06	pi-harness-5p-improvement	swarm-graph	parallel	pi-session	done=7 blocked=0 attempts=0 replans=0
+2026-09-06	pi-meta-continuous-refine	swarm-graph	parallel	pi-session	done=7 blocked=0 attempts=1 replans=0
+2026-09-06	pi-config-adaptive-refine	swarm-graph	parallel	pi-session	done=6 blocked=0 attempts=6 replans=0
+2026-09-06	pi-runtime-resilience	swarm-graph	parallel	pi-session	done=4 blocked=0 attempts=4 replans=0
+2026-09-06	pi-state-integrity	swarm-graph	parallel	pi-session	done=4 blocked=0 attempts=4 replans=0
+2026-09-06	pi-logic-correctness	swarm-graph	parallel	pi-session	done=4 blocked=0 attempts=4 replans=0
+2026-09-06	pi-parser-failsafe	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-06	pi-orchestration-flow	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-06	pi-guard-validation	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-06	pi-bridge-toolmap	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-lsp-extraction	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-git-integration	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-workflow-dag	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-parse-truncate	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-blackboard-locking	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-toolstate-agentresolve	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-stall-relay-adr	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-failover-consensus-skill	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-loop-daemon-reason	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-config-consistency	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-config-dataquality	swarm-graph	parallel	pi-session	done=2 blocked=0 attempts=2 replans=0
+2026-09-07	pi-numeric-thresholds	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-string-unicode	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-regex-safety	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-recursion-memory	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-async-concurrency	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-time-clock	swarm-graph	parallel	pi-session	done=2 blocked=0 attempts=2 replans=0
+2026-09-07	pi-falsy-defaults	swarm-graph	parallel	pi-session	done=1 blocked=0 attempts=0 replans=0
+2026-09-07	pi-sort-comparator	swarm-graph	parallel	pi-session	done=2 blocked=0 attempts=2 replans=0
+2026-09-07	pi-lowaudit-render	swarm-graph	parallel	pi-session	done=2 blocked=0 attempts=2 replans=0
+2026-09-07	pi-injection-sweep	swarm-graph	parallel	pi-session	done=2 blocked=0 attempts=2 replans=0
+2026-09-07	pi-fs-durability	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-iteration-safety	swarm-graph	parallel	pi-session	done=1 blocked=0 attempts=0 replans=0
+2026-09-07	pi-mcp-protocol	swarm-graph	parallel	pi-session	done=3 blocked=0 attempts=3 replans=0
+2026-09-07	pi-plan-mode-safety	swarm-graph	parallel	pi-session	done=2 blocked=0 attempts=2 replans=0
+2026-09-07	pi-bridge-env	swarm-graph	parallel	pi-session	done=1 blocked=0 attempts=0 replans=0
+2026-09-07	pi-handoff-format	swarm-graph	parallel	pi-session	done=2 blocked=0 attempts=2 replans=0
+2026-09-09	supermemory-migration-t5-incident-resolved-20260910	swarm-loop	neutral	claude-sonnet-5	done=1(T5-refs SKILL.md+memory-guard.sh merged@c6711c04 via sanctioned write-scope-grant, security-audit+architecture round1-FAIL/round2-PASS) blocked=1(T3 drain in-progress background, T6 full-8-agent-gate + T7 cutover still open) attempts=1 replans=0
+2026-09-09	supermemory-migration-t6-round2-20260910	swarm-loop	neutral	claude-sonnet-5	done=1(T6 round-2 fixes merged@5ec42318: SSRF hardening cross-validated by 2 reviewers, systemd sandboxing, DOTFILES_MAP wiring, doc self-contradiction fixes; 4/4 dimensions re-reviewed PASS) blocked=1(T3 drain paused on external quota wall, reset~22:17Z; T7 cutover deferred pending human decision on legacy-data deletion)
+2026-09-10	supermemory-migration-t3-true-result-20260910	swarm-loop	neutral	claude-sonnet-5	done=1(sm_document bug fixed+merged@5ec71cd6, real T3 status now visible) blocked=1(T3 true result 24/234 done 210/234 failed ~10%pct success, T7 legacy-deletion NOT authorized to proceed on this outcome, awaiting human decision)
+2026-09-10	supermemory-migration-decidepy-cleanup-t3-batch2-20260910	swarm-loop	parallel	claude-sonnet-5	done=3(decide.py memory_context family removed+verified; fix_plan.md staleness corrected against git reflog; SWARM.md sec5 swarm-memory-sync doc drift fixed via write-scope-grant) partial=1(T3 batch2 retry: 20 submitted, final 8 done/1 failed/11 pending before quota wall, poller self-stopped) attempts=1 replans=0
+2026-09-12	agent-memory-solution-reevaluation-20260912	swarm-graph	parallel	claude-sonnet-5	done=6 blocked=0 attempts=1 replans=0
+2026-09-13	codegraph-tooling-refinement	swarm-loop	codegraph-tooling	claude-sonnet-5	done=5 blocked=0 attempts=15 replans=0
+2026-09-14	game-acecombat7-proton	swarm-loop	neutral	gemini-3.8-flash	done=5 blocked=0 attempts=5 replans=0
+2026-09-19	codegraph-tooling-consolidation	swarm-loop	parallel	claude-sonnet-5	done=1(design+execute+review, 54 files) blocked=0 attempts=1 replans=0 gate=approved(human,local-merge) verify=ALL-CHECKS-PASSED note=trail-hook-trim+graphify-full-retirement-3-tiers
+2026-09-19	jev-swarm-integration	swarm-loop	parallel	claude-sonnet-5	done=1(design-only, 2 files) blocked=0 attempts=1 replans=0 gate=approved(human,local-merge) verify=ALL-CHECKS-PASSED note=ADR-0003-implementation-deferred-no-api-key
+2026-09-19	executor-sh-effectiveness	swarm-loop	neutral	claude-sonnet-5	quick=1 note=IPv4-IPv6-bind-mismatch-fixed-127.0.0.1-to-localhost gate=approved(human,local-merge)
+2026-09-19	swarm-cleanup-mechanization	swarm-loop	neutral	claude-sonnet-5	quick=1 note=mechanized-merged-branch-worktree-cleanup-into-swarm-loop-phase5 gate=approved(human,local-merge)
+2026-09-19	ai-config-optimization	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0 review-rounds=3
+2026-09-20	devrun-container-launch	swarm-loop	container-ops	claude-sonnet-4-6	done=3 blocked=0 attempts=1 replans=0
+2026-09-23	permission-update-git-repo	swarm-loop	neutral	claude-sonnet-4-6	quick=1 note=update_git_repo+update_multiple_git_repos+kpangoup permission added to agent/harnesses/claude/settings.local.json via write-scope-grant
+2026-09-23	update-git-repo-stash-flow	swarm-loop	neutral	claude-sonnet-4-6	done=1 blocked=0 attempts=1 replans=0 note=update_git_repo-else-branch-replaced-with-stash+gfrs+stash-pop-flow zsh-n-PASS
+2026-09-23	unifi-controller-config-integrity	swarm-loop	neutral	claude-sonnet-5	network-ops-only no-code-diff enabled-field-fixed inform-6of8-recovered geoip-verified gatewayconfigerror-fixed
+2026-09-23	unifi-expert-agent-creation	swarm-loop	neutral	claude-sonnet-5	done=1 blocked=0 attempts=1 replans=0 adversarial_review=3agent-2rounds(round1_all-FAIL,round2_2PASS-1FAIL-then-fixed) merged_to_main=yes(@5fd787d1)
+2026-09-24	udm-app-blocker-taobao	swarm-loop	neutral	claude-opus-5-5	quick=1 note=diagnostic-only read-only; cause=blocked-attempts-logged-via-NFLOG(high) orchestrator-ssh-reverify-denied; side-effect=/tmp/dpi_stats_dump.json left on device
+2026-09-25	ai-env-deepresearch-overhaul	swarm-graph	parallel	claude-opus-5-5	done=21 blocked=0 attempts=23 replans=1
+2026-09-25	ai-env-followup-refactor	swarm-loop	neutral	claude-opus-5-5	done=4 blocked=0 dropped=1 attempts=26 replans=0
+2026-10-13	unifi-refactor-20261014	swarm-loop	neutral	claude-opus-4-7	done=9 blocked=0 attempts=9 replans=0 scale=interactive merged_to_main=yes(@45c1a0c)
+2026-10-13	unifi-refactor-v2-20261014	swarm-loop	parallel	claude-opus-4-7	done=4 blocked=0 attempts=4 replans=0 scale=mission override=swarm-graph->swarm-loop deepresearch=4websearches lenses=5 merged_to_main=yes(@8a509cb)
+2026-10-16	unifi-ips-docfix	swarm-loop	sequential	claude-opus-5-5	done=1 blocked=2 attempts=1 replans=0 escalation=tier-b-write-scope(T1,T2 drafted to swarm-evolve) device_changes=0
+2026-10-18	wan-slow-diag	swarm-loop	neutral	claude-opus-4-7	quick=1 note=diagnostic-only read-only dual-agent(arch-ops+unifi-expert) causes=WAN1-1GbE+eth4-dup-port-suspect+IPS-inline hostside-clean(bond0-10G-LACP-both-slaves-up)
+2026-10-18	wan-slow-diag-execute	swarm-loop	neutral	claude-opus-4-7	done=2 blocked=1(wan-failover-mode-ui-manual) attempts=5 replans=0 note=IPS-35to25cats+weight-1:99-pseudo-failover effect=410→570-660Mbps(1.4x) root-cause=WAN1-BB-GE-1Gbps-physical ssh-permission-added fast-cli-installed ips-via-pcap-not-suricata memory-pressure-84pct
+2026-10-19	wan-slow-diag-execute-phase1	swarm-loop	neutral	claude-opus-4-7	done=1(IPS-cats+WAN-weight+U-R4-DPI-fingerprinting+Host-tune-XPS-coalesce-NAPI-TCPout) blocked=3(UDM-sysctl-U-R1-U-R2-hook-block, UDM-SSH-read-hook-block, settings-permission-reverted) attempts=10 replans=0 note=410→570-660-sustained+Upload-740peak(DPI-fingerprintingOFF) mitigations-off-pending-user-reboot(approved)
+2026-10-19	wan-slow-diag-complete	swarm-loop	neutral	claude-opus-4-7	done=9(WAN-weight-1:99+IPS-25cats+U-R1-tcp_mem+U-R2-swappiness+U-R4-DPI-fingerprintingOFF+H-R1-XPS+H-R2-coalesce50us+H-R3-tcp_output8M+H-R4-NAPI) blocked=0 attempts=5 replans=0 result=410→1100-1500Mbps-2.7-3.7x-improvement pending=persistence+mitigations=off-reboot
+2026-10-19	wan-10g-80pct-A-prime	swarm-loop	neutral	claude-opus-4-7	done=1(Default-LAN-IPS-除外+host-sysctl.d-persist+network-tune.service+UDM-on_boot.d-persist+memory-updated) attempts=5 result=1.1→1.4-2.5Gbps-C-実測+1.7-2.2Gbps-最終永続化後 persist=yes pending=mitigations-off-reboot(hook-block-user-manual)
+2026-10-19	wan-10g-80pct-complete	swarm-loop	neutral	claude-opus-4-7	done=all(mitigations-off-reboot+persist+Default-LAN-IPS-除外+UDM-sysctl-persist+Host-sysctl-persist+network-tune.service) result=410→1.9-3.0Gbps-DL+2.5Gbps-UL-peak attempts=6 UDM-Pro-ceiling-approached(~3.5Gbps-public-bench) persist=yes(dotfiles+on_boot.d+sysctl.d+systemd-unit) hw-upgrade-required-for-8Gbps-target
+2026-10-19	linux-tune-xtreme	swarm-loop	neutral	claude-opus-4-7	done=all(NIC-queue128+TCP-TSO-batch+netdev_budget+dev_weight+tcp_limit_output+THP-always+XPS-cache-local-merged-into-dotfiles-99-coalesce-x710) attempts=5 result=UL-3.1Gbps-new-peak+DL-2.5-stable persist=yes-dotfiles(network/sysctl.conf+99-coalesce-x710+arch/tmpfiles.d/thp.conf) drift-check=OK
+2026-10-20	net-speed-keep-security	swarm-loop	neutral	claude-opus-5-5	done=3 blocked=0 attempts=3 replans=0 scale=interactive adversarial_rounds=3(r1:3FAIL,r2:1FAIL,r3:8PASS) result=DL1585->2426+UL5827->6902(QoS-off,Ookla) merged=bee0bc7 note=supermemory-down-memory-sync-deferred
+2026-10-21	unifi-ap-xg-flap	swarm-loop	neutral	claude-opus-5-5	quick=1
+2026-10-21	login-startup-optimize	swarm-loop	parallel	claude-opus-5-5	done=4 blocked=0 review_rounds=4 escalate=1 post_gate_fixes=1
+2026-10-21	sway-reload-kanshi	swarm-loop	neutral	claude-opus-5-5	quick=1 checker=PASS merged=54fca38 pushed=yes
+2026-10-21	zsh-startup-4x	swarm-loop	neutral	claude-opus-5-5	done=6 blocked=0 attempts=6 replans=0 scale=interactive adversarial_rounds=2(8/8PASS,8/8PASS) result=ready118.6->28.9ms(4.1x) zsh-c9.6->2.2ms(4.36x) merged=a99b0be
+2026-11-08	pr3520-integrate	swarm-loop	neutral	claude-opus-5-5	done=1 blocked=0 attempts=2 replans=0 scale=interactive review=vald-reviewer(PASS,7findings-fixed) committed=4709e7205 pushed=no
+2026-11-09	gache-critical-path-slim	swarm-loop	sequential	claude-opus-5-5	done=9 held=1 rejected=1 pending=1 tasks=12 replans=0 note=t6-done-via-b6ada79,t3-pending,t8-held,t10-no-commit pushed=perf/hash-reuse(d789f3b,PR#207)
+2026-11-10	gache-test-consolidation	swarm-loop	parallel	claude-opus-5-5	done=9 blocked=0 attempts=9 replans=0 scale=interactive(promoted-by-filecount) adversarial_rounds=3(r1 5/8,r2 7/8,r3 8/8) mutation_kill=47->56/60 cov=99.1->99.3 files=41->14 lines=13338->12064 gate=approved(ff+push@78e4ef8) ci=green note=verify.sh-unknown-repo->make-test;unreproduced-lazyHookChan-deadlock-detector-trip-once
+2026-11-13	pr3639-fullreview	swarm-loop	review	claude-sonnet-5-5	done=14 blocked=0 attempts=3 replans=0 review_rounds=3
+2026-11-13	makefile-shell-options	swarm-loop	neutral	deepseek-v4.1-flash	done=7 blocked=0 attempts=1 replans=0 checker=unavailable(anthropic-oauth-expired,agy-ENOENT,codex-401)_orchestrator-substituted-deterministic-lenses gate=approved(human,local-merge) merged=bcd60efe4 into=swarm-mission/vald-go-refactor-20261104-215648 pushed=no
+2026-11-13	shell-opts-spread	swarm-loop	parallel	deepseek-v4.1-flash	done=5 blocked=0 attempts=1 replans=0 checker=unavailable(anthropic-oauth,agy-ENOENT,codex-401)_deterministic-substitute gate=approved(human,local-merge) merged=c7d84f26a into=swarm-mission/vald-go-refactor-20261104-215648 pushed=no worktree=deleted
+2026-11-13	shell-opts-residual-risk	quick	neutral	deepseek-v4.1-flash	gate=approved(human,local-merge) merged=cacfbf01d into=swarm-mission/vald-go-refactor-20261104-215648 pushed=no worktree=deleted review=external-claude-3rounds(round1-FAIL-critical-local-composite,round2-FAIL-gitfiles,round3-PASS)
+2026-11-15	macos-claude-devcontainer-network	swarm-loop	neutral	pi-session	done=1(investigation; no repository fix justified) blocked=2 attempts=0 replans=0
+2026-11-17	pr3646-completion	swarm-loop	neutral	gpt-6.1-sol	done=6 blocked=1 pending=1 attempts=20 replans=0 phase=ESCALATE scope=adoption-perf-followup adoption=user-design-integrated-not-released micro=36/36nominalwins,allocparity rpc_primary=15wins/10regressions/11uncertain rpc_cyclic=8wins/8regressions/20uncertain P99=increases_observed memory=workload_tradeoff requested_race=PASS worker_stress=PASS new_lint=0 full_lint=28existingdocs eight_semantic=8PASS release_verify=FAIL_native_libz_permission publication=NOT_AUTHORIZED
+2026-11-17	pr3646-e2ev2-threeway	swarm-loop	neutral	gpt-6.1-sol	done=4 blocked=0 attempts=7 replans=0 scope=USER_REQUEST_E2Ev2Bench_measurement_and_readonly_analysis old_implementation_budget20/20_UNCHANGED scenarios=3PASS benchmark_leaves=38/variant QPS_records=52/variant server_binaries=12Go1.27.4nonrace same_runtime_race_client_SHA=875b428a restore=PASS10Ready0restarts performance_vs_original=MIXED_n1_NOT_universal_gain search_quality_v181=8000duplicate_responses/16000 ByID_logged_recall=INVALID_test_GT loadavg1_v181=21.71875_vs_original1.50098 final_sources_WIP=UNCHANGED report_review=corrected_then_scopedPASS no_product_edit_commit_push_PR_or_production gate=not_release_qualification
+2026-11-17	ci-red-docker-verify-20261117	swarm-loop	sequential	claude-sonnet-5-5	quick=1 fixes=4 local_verified=settings-common+gen-check+test-suite(11/11)+cprm-lint+actionlint docker_fix=unverified-until-CI override=swarm-graph->swarm-loop delivery=uncommitted
+2026-11-17	pr3646-workerpool-uplift	swarm-loop	neutral	gpt-6.1-sol	done=2 blocked=4 attempts=15 replans=0 goal_met=0 security_fail=1 unreviewed_lenses=7 u4_exhausted=1 release_gate_not_run=1
+2026-11-19	omp-model-catalog-daily	swarm-loop	sequential	antigravity-session	done=7 blocked=0 attempts=1 replans=0
+2026-11-20	fixplan-7-work-areas	swarm-loop	hooks-bench	claude-sonnet-5-5	done=17 blocked=0 attempts=55 replans=0
+2026-11-22	pi-techniques-30	swarm-graph	neutral	deepseek-v4.1-flash	done=9 blocked=0 attempts=1 replans=0 goal_met=1
+2026-11-22	harness2-upstream-parity	manual	neutral	deepseek-v4.1-flash	done=3 blocked=0 attempts=1 replans=0 goal_met=1
+2026-11-22	workerpool-fastpath	swarm-loop	neutral	antigravity-session	done=4 blocked=0 attempts=5 replans=3 adversarial=8/8-PASS gate=approved(human,option1-local-ff-merge) merged=3e711e716 into=perf/gateway-grpc-aggregation pushed=no
+2026-11-22	pi30-fidelity-reaudit	swarm-graph	parallel	deepseek-v4.1-flash	done=8 blocked=0 attempts=6 replans=0
+2026-11-28	pi-sota-30	swarm-loop	neutral	claude-opus-5-5	done=7 blocked=0 attempts=1 replans=0

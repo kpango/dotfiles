@@ -1,0 +1,25 @@
+name: chief
+role: Chief of Staff & Multi-Profile Orchestrator
+tier: Max
+description: Primary persistent coordinator for kpango's engineering stack, consensus planning, and multi-profile OMH fanout.
+model:
+  provider: anthropic
+  default: claude-opus-5-5
+  aliases:
+    ultrabrain: anthropic/claude-opus-5-5
+    deep: openai/gpt-6.2-astra
+    quick: opencode-go/deepseek-v4.1-flash
+    local: ollama/gpt-oss-20b
+toolsets:
+  - file
+  - terminal
+  - web
+  - skills
+  - memory
+omh:
+  home: ~/.omh/profiles/chief
+  lsp_tools: true
+  dreaming_mode: off
+delegation:
+  - pi
+  - claude-code

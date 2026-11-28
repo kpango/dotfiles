@@ -1,0 +1,193 @@
+/**
+ * Session History Search & Context Recall Extension for Pi Coding Agent
+ *
+ * Provides fast case-insensitive text search across historical sessions in
+ * ~/.pi/agent/sessions/ (substring matching, newest-first ordering) to
+ * quickly recall previous solutions, commands, and architectural decisions.
+ */
+
+import * as fs from "node:fs";
+import * as os from "node:os";
+import * as path from "node:path";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { Type } from "typebox";
+import { pruneSessions, resolveRetentionDays, sessionProjectDirName } from "./lib/session-retention";
+
+export interface SessionSearchResult {
+  sessionFile: string;
+  matchedText: string;
+  timestamp?: string;
+  score?: number;
+}
+
+export function getSessionsDir(): string {
+  return path.join(os.homedir(), ".pi", "agent", "sessions");
+}
+
+export function searchSessionFiles(
+  sessionsDir: string,
+  query: string,
+  maxResults = 10
+): SessionSearchResult[] {
+  if (!fs.existsSync(sessionsDir)) return [];
+  const results: SessionSearchResult[] = [];
+  const q = query.toLowerCase();
+
+  try {
+    const entries: { name: string; mtimeMs: number }[] = [];
+    for (const e of fs.readdirSync(sessionsDir, { withFileTypes: true })) {
+      if (e.isFile() && (e.name.endsWith(".json") || e.name.endsWith(".jsonl"))) {
+        try {
+          const stat = fs.statSync(path.join(sessionsDir, e.name));
+          entries.push({ name: e.name, mtimeMs: stat.mtimeMs });
+        } catch {
+          // skip files that disappear between readdir and stat
+        }
+      }
+    }
+
+    // Prefer the most recent sessions first: readdirSync orders by name
+    // (ascending), which for timestamped session files means oldest first.
+    // Truncating at maxResults from that order would drop the newest matches.
+    entries.sort((a, b) => b.mtimeMs - a.mtimeMs);
+
+    for (const e of entries) {
+      const fullPath = path.join(sessionsDir, e.name);
+      try {
+        const content = fs.readFileSync(fullPath, "utf-8");
+        const lower = content.toLowerCase();
+
+        const matchIdx = lower.indexOf(q);
+        if (matchIdx !== -1) {
+          // Extract snippet around match (80 chars before, 120 after
+          // query end) so the surrounding context is visible in the result.
+          const start = Math.max(0, matchIdx - 80);
+          const end = Math.min(content.length, matchIdx + query.length + 120);
+          const snippet = content.slice(start, end).replace(/\r?\n/g, " ").trim();
+
+          results.push({
+            sessionFile: e.name,
+            matchedText: `...${snippet}...`,
+            timestamp: new Date(e.mtimeMs).toISOString(),
+          });
+
+          if (results.length >= maxResults) break;
+        }
+      } catch {
+        // skip unreadable session file
+      }
+    }
+  } catch {
+    // return whatever found
+  }
+
+  return results;
+}
+
+export function formatSessionSearchResults(results: SessionSearchResult[], query: string): string {
+  if (results.length === 0) {
+    return `No historical sessions matched query: '${query}'.`;
+  }
+
+  let out = `🔍 **Found ${results.length} historical session match(es) for '${query}'**:\n\n`;
+  for (const r of results) {
+    out += `- **Session**: \`${r.sessionFile}\`\n`;
+    out += `  \`${r.matchedText}\`\n\n`;
+  }
+  return out.trim();
+}
+
+export default function (pi: ExtensionAPI) {
+  // Register Tool
+  pi.registerTool({
+    name: "search_sessions",
+    exposure: "deferred",
+    description: "Search historical OMP agent conversation sessions (~/.pi/agent/sessions/) for past solutions, commands, and code discussions.",
+    parameters: Type.Object({
+      query: Type.String({ description: "Keyword or topic to search for across past sessions." }),
+      limit: Type.Optional(Type.Integer({ description: "Max results to return (default 5)." })),
+    }),
+    async execute(_toolCallId, params, _signal, _onUpdate, _ctx) {
+      const dir = getSessionsDir();
+      const results = searchSessionFiles(dir, params.query, params.limit || 5);
+      const text = formatSessionSearchResults(results, params.query);
+      return {
+        content: [{ type: "text", text }],
+      };
+    },
+    handler: async (args, ctx) => {
+      const dir = getSessionsDir();
+      const results = searchSessionFiles(dir, args.query, args.limit || 5);
+      const text = formatSessionSearchResults(results, args.query);
+      return {
+        content: [{ type: "text", text }],
+      };
+    },
+  });
+
+  // Register Command: /sessions
+  pi.registerCommand("sessions", {
+    description: "Search historical sessions (/sessions <query>) or prune old ones (/sessions prune <days>)",
+    handler: async (args, ctx) => {
+      const q = (args || "").trim();
+      if (!q) {
+        ctx.ui.notify(
+          "Usage: /sessions <search query> | /sessions prune <days> [--apply] [--all] " +
+            "(startup auto-prune follows PI_SESSION_RETENTION_DAYS, default 30, 0=off)",
+          "warning"
+        );
+        return;
+      }
+
+      if (q.split(/\s+/)[0] === "prune") {
+        const parts = q.split(/\s+/).slice(1);
+        const days = Number(parts.find((p) => /^\d+$/.test(p)));
+        if (!Number.isFinite(days) || days < 1) {
+          ctx.ui.notify("Usage: /sessions prune <days> [--apply] [--all] (default is dry-run)", "warning");
+          return;
+        }
+        const result = pruneSessions(getSessionsDir(), {
+          olderThanMs: days * 24 * 60 * 60 * 1000,
+          projectDir: parts.includes("--all") ? undefined : sessionProjectDirName(ctx.cwd ?? process.cwd()),
+          apply: parts.includes("--apply"),
+        });
+        const mb = (result.freedBytes / 1048576).toFixed(1);
+        const verb = result.applied ? "removed" : "would remove";
+        ctx.ui.notify(
+          `[sessions] ${verb} ${result.targets.length} session(s) older than ${days}d (${mb} MB). ` +
+            (result.applied ? "" : "Re-run with --apply to delete."),
+          "info"
+        );
+        return;
+      }
+
+      const dir = getSessionsDir();
+      const results = searchSessionFiles(dir, q, 5);
+      const text = formatSessionSearchResults(results, q);
+      ctx.ui.notify(text, "info");
+    },
+  });
+
+  // Auto-retention: OMP v19 has no session-retention setting, so apply it at start.
+  // Default 30 days; PI_SESSION_RETENTION_DAYS=0|off disables it (dry-run only).
+  pi.on("session_start", async (_event, ctx) => {
+    const days = resolveRetentionDays(process.env.PI_SESSION_RETENTION_DAYS);
+    if (days < 1) return;
+    try {
+      const result = pruneSessions(getSessionsDir(), {
+        olderThanMs: days * 24 * 60 * 60 * 1000,
+        apply: true,
+      });
+      if (result.targets.length > 0) {
+        const mb = (result.freedBytes / 1048576).toFixed(1);
+        ctx.ui.notify(
+          `[sessions] auto-pruned ${result.targets.length} session(s) older than ${days}d (${mb} MB). ` +
+            "Set PI_SESSION_RETENTION_DAYS=0 to disable automatic retention.",
+          "info"
+        );
+      }
+    } catch {
+      // Retention is best-effort; a failed cleanup must never block session start.
+    }
+  });
+}

@@ -1,0 +1,28 @@
+// zed_kpango theme for gitui
+// Palette: bg=#282c33 text=#c8ccd4 blue=#73ade9 green=#a1c181
+//          cyan=#6eb4bf yellow=#dfc184 red=#d07277 purple=#b477cf
+(
+    selected_tab:        Some("#b477cf"),
+    command_fg:          Some("#c8ccd4"),
+    selection_bg:        Some("#293b5b"),
+    selection_fg:        Some("#c8ccd4"),
+    use_selection_fg:    Some(true),
+    cmdbar_bg:           Some("#2f343e"),
+    disabled_fg:         Some("#5d636f"),
+    diff_line_add:       Some("#a1c181"),
+    diff_line_delete:    Some("#d07277"),
+    diff_file_added:     Some("#a1c181"),
+    diff_file_removed:   Some("#d07277"),
+    diff_file_moved:     Some("#6eb4bf"),
+    diff_file_modified:  Some("#dfc184"),
+    commit_hash:         Some("#b477cf"),
+    commit_time:         Some("#6eb4bf"),
+    commit_author:       Some("#a1c181"),
+    danger_fg:           Some("#d07277"),
+    push_gauge_bg:       Some("#73ade9"),
+    push_gauge_fg:       Some("#c8ccd4"),
+    tag_fg:              Some("#b477cf"),
+    branch_fg:           Some("#dfc184"),
+    block_title_focused: Some("#73ade9"),
+    syntax:              Some("base16-eighties.dark"),
+)

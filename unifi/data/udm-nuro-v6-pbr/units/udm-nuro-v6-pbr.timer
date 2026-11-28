@@ -1,0 +1,11 @@
+[Unit]
+Description=Re-check NURO v6 PBR rules every 2m alongside .path (udapi-server flushes ip rules on reconcile)
+
+[Timer]
+OnBootSec=20s
+OnUnitActiveSec=2m
+RandomizedDelaySec=10s
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

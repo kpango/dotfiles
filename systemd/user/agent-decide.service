@@ -1,0 +1,25 @@
+[Unit]
+Description=Agent hook decision daemon (Unix socket fast path for decide.py)
+Documentation=file://%h/go/src/github.com/kpango/dotfiles/agent/scripts/hooks/decide_daemon.py
+# opt-in: このデーモンは既定では動かない。`make agent-decide/systemd/install` を実行した host でのみ
+# enable される。未起動なら decide.py は in-process 評価へフォールバックする(判定結果は同一)。
+# クライアント側(decide.py)も opt-in: hook の環境に AGENT_DECIDE_DAEMON=1 を渡したときだけこのデーモンへ接続する
+# (実測で CLI 直呼びより速くならなかったため既定 off)。AGENT_DECIDE_NO_DAEMON=1 はそれより優先する。
+
+[Service]
+Type=simple
+# -I(isolated): PYTHONPATH / sitecustomize / usercustomize / user site を無効化する。
+# decide.py の身元検査(_cmdline_is_daemon)は argv に -I が含まれることを必須とする。
+# 変更する場合は decide.py と agent/scripts/test-decide-daemon.sh も同時に更新すること。
+ExecStart=/usr/bin/python3 -I -B %h/go/src/github.com/kpango/dotfiles/agent/scripts/hooks/decide_daemon.py --daemon
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=yes
+Environment="PATH=%h/.local/bin:/usr/local/bin:/usr/bin"
+# user manager の環境(import-environment 等)や drop-in の Environment= から PYTHON* / LD_* が
+# 入っても、起動時に必ず除去する(UnsetEnvironment= は Environment= より後に評価される)。
+# decide.py は /proc/<pid>/environ にこれらが残るデーモンを棄却する。
+UnsetEnvironment=PYTHONPATH PYTHONHOME PYTHONSTARTUP PYTHONUSERBASE PYTHONINSPECT PYTHONEXECUTABLE PYTHONSAFEPATH PYTHONPLATLIBDIR PYTHONPYCACHEPREFIX PYTHONBREAKPOINT PYTHONWARNINGS PYTHONDEVMODE PYTHONHASHSEED PYTHONIOENCODING PYTHONUTF8 PYTHON_CONFIGURE_OPTS LD_PRELOAD LD_LIBRARY_PATH LD_AUDIT LD_DEBUG LD_BIND_NOW LD_PROFILE
+
+[Install]
+WantedBy=default.target

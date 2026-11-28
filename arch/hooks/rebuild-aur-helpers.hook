@@ -1,0 +1,10 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = pacman
+
+[Action]
+Description = Rebuilding AUR helpers after pacman/libalpm upgrade...
+When = PostTransaction
+Exec = /usr/local/bin/rebuild-aur-helpers.sh
+NeedsTargets

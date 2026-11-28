@@ -1,0 +1,49 @@
+{
+  "idleTimeoutMs": 300000,
+  "servers": {
+    "gopls": {
+      "command": "gopls",
+      "args": ["serve"],
+      "fileTypes": [".go", "go.mod", "go.work"],
+      "rootMarkers": ["go.work", "go.mod"],
+      "settings": {
+        "gopls": {
+          "staticcheck": true,
+          "analyses": {
+            "unusedparams": true,
+            "shadow": true
+          }
+        }
+      }
+    },
+    "rust-analyzer": {
+      "command": "rust-analyzer",
+      "args": [],
+      "fileTypes": [".rs"],
+      "rootMarkers": ["Cargo.toml"],
+      "capabilities": {
+        "flycheck": true,
+        "expandMacro": true
+      }
+    },
+    "clangd": {
+      "command": "clangd",
+      "args": ["--background-index", "--clang-tidy"],
+      "fileTypes": [".c", ".cc", ".cpp", ".h", ".hpp"],
+      "rootMarkers": ["compile_commands.json", "CMakeLists.txt"]
+    },
+    "bashls": {
+      "command": "bash-language-server",
+      "args": ["start"],
+      "fileTypes": [".sh", ".bash", ".zsh"],
+      "rootMarkers": [".git", "Makefile"]
+    },
+    "nix": {
+      "command": "nixd",
+      "fallbackCommand": "nil",
+      "args": [],
+      "fileTypes": [".nix"],
+      "rootMarkers": ["flake.nix", "default.nix", "shell.nix"]
+    }
+  }
+}

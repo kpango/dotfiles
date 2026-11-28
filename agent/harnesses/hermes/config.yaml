@@ -1,0 +1,39 @@
+model:
+  provider: anthropic
+  default: claude-sonnet-5-5
+  aliases:
+    ultrabrain: anthropic/claude-opus-5-5
+    deep: openai/gpt-6.2-astra
+    quick: opencode-go/deepseek-v4.1-flash
+    local: ollama/gpt-oss-20b
+
+terminal:
+  backend: local
+  cwd: "."
+
+approvals:
+  mode: smart
+  timeout: 300
+
+skills:
+  creation_nudge_interval: 15
+  external_dirs:
+    - ~/.hermes/skills
+    - ~/.omh/skills
+
+platform_toolsets:
+  acp:
+    - file
+    - terminal
+    - web
+    - skills
+    - memory
+
+plugins:
+  entries:
+    omh:
+      enabled: true
+      settings:
+        omh_home: ~/.omh
+        lsp_tools: true
+        dreaming_mode: off

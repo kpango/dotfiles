@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch /run/dnsmasq.dhcp.conf.d for udapi-server overwrites
+
+[Path]
+PathChanged=/run/dnsmasq.dhcp.conf.d
+Unit=tailscale-dnsmasq.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+[
+  {
+    "name": "IoT",
+    "networks": ["IoT"]
+  },
+  {
+    "name": "Media",
+    "networks": ["Media"]
+  }
+]

@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch udapi-net-cfg.json for udm-dpinger-hijack reconcile
+
+[Path]
+PathChanged=/data/udapi-config/udapi-net-cfg.json
+Unit=udm-dpinger-hijack.service
+
+[Install]
+WantedBy=multi-user.target

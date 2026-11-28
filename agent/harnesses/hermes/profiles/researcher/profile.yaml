@@ -1,0 +1,24 @@
+name: researcher
+role: Literature, Documentation & Codebase Explorer
+tier: Medium
+description: Read-only primary-source research, arXiv/specification synthesis, and cross-repo discovery specialist.
+model:
+  provider: opencode-go
+  default: kimi-k3.1-pro
+  aliases:
+    ultrabrain: anthropic/claude-opus-5-5
+    deep: antigravity-cli/gemini-4-argon
+    quick: opencode-go/deepseek-v4.1-flash
+    web: antigravity-cli/gemini-4-hydrogen
+    local: ollama/gpt-oss-20b
+toolsets:
+  - file
+  - web
+  - skills
+  - memory
+omh:
+  home: ~/.omh/profiles/researcher
+  lsp_tools: false
+  dreaming_mode: off
+delegation:
+  - pi

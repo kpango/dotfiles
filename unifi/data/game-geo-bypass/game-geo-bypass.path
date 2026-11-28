@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch udapi-net-cfg.json for game-geo-bypass reconcile
+
+[Path]
+PathChanged=/data/udapi-config/udapi-net-cfg.json
+Unit=game-geo-bypass.service
+
+[Install]
+WantedBy=multi-user.target

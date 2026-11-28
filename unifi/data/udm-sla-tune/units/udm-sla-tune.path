@@ -1,0 +1,10 @@
+[Unit]
+Description=Watch ip6tnl2 resolv & udapi-net-cfg.json for udm-sla-tune
+
+[Path]
+PathChanged=/run/resolv.conf.d/ip6tnl2
+PathChanged=/data/udapi-config/udapi-net-cfg.json
+Unit=udm-sla-tune.service
+
+[Install]
+WantedBy=multi-user.target

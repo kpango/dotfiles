@@ -1,0 +1,75 @@
+{
+  "mcpServers": {
+    "trail": {
+      "command": "trail",
+      "args": ["mcp"],
+      "description": "Trail-Code repository context graph and past session learnings"
+    },
+    "k8s-native": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 256 --read-only --network host --user 1000:1000 --tmpfs /tmp:rw,noexec,nosuid,nodev -v \"$HOME/.kube:/home/user/.kube:ro\" -e KUBECONFIG=/home/user/.kube/config quay.io/manusa/kubernetes_mcp_server:latest"
+      ],
+      "timeout": 60,
+      "exposure": "codemode",
+      "enabled": false,
+      "description": "Read-only Kubernetes cluster & manifest inspection via kubernetes-mcp-server (Docker)"
+    },
+    "k8s-cli": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 256 --read-only --network host --user 1000:1000 --tmpfs /tmp:rw,noexec,nosuid,nodev -v \"$HOME/.kube:/home/user/.kube:ro\" -e KUBECONFIG=/home/user/.kube/config -e MASK_SECRETS=true mcp/kubernetes:latest"
+      ],
+      "timeout": 60,
+      "exposure": "codemode",
+      "enabled": false,
+      "description": "Kubernetes kubectl MCP wrapper with secret masking (Docker)"
+    },
+    "serena": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 256 --read-only --network host --user 1000:1000 --tmpfs /tmp:rw,noexec,nosuid,nodev -v \"$PWD:/workspace:ro\" -v \"$HOME/.serena:/home/user/.serena:rw\" -p 9121:9121 -p 24282:24282 -e SERENA_DOCKER=1 ghcr.io/oraios/serena:latest serena start-mcp-server --transport stdio"
+      ],
+      "timeout": 60,
+      "exposure": "codemode",
+      "enabled": false,
+      "description": "Serena semantic code analysis & project memory MCP server (Docker)"
+    },
+    "cipher": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 512 --read-only --network host --user 1000:1000 --tmpfs /tmp:rw,noexec,nosuid,nodev -v \"$PWD:/workspace:ro\" -v \"$HOME/.local/share/cipher:/data:rw\" -e AGY_API_KEY -e OPENAI_API_KEY -e ANTHROPIC_API_KEY ghcr.io/campfirein/cipher:latest cipher --mode mcp --transport stdio"
+      ],
+      "timeout": 90,
+      "exposure": "codemode",
+      "enabled": false,
+      "description": "Cipher cross-session vector/reasoning memory MCP server (Docker)"
+    },
+    "github": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 128 --read-only --network host --user 1000:1000 --tmpfs /tmp:rw,noexec,nosuid,nodev -e GITHUB_PERSONAL_ACCESS_TOKEN ghcr.io/github/github-mcp-server:latest"
+      ],
+      "timeout": 60,
+      "exposure": "codemode",
+      "enabled": false,
+      "description": "GitHub repositories, issues, PRs, and code search MCP server (Docker)"
+    },
+    "slack": {
+      "command": "sh",
+      "args": [
+        "-c",
+        "exec docker run --rm -i --pull=missing --cap-drop=ALL --security-opt no-new-privileges --pids-limit 128 --read-only --network host --user 1000:1000 --tmpfs /tmp:rw,noexec,nosuid,nodev -e SLACK_BOT_TOKEN -e SLACK_TEAM_ID -e SLACK_CHANNEL_IDS mcp/slack:latest"
+      ],
+      "timeout": 60,
+      "exposure": "codemode",
+      "enabled": false,
+      "description": "Slack channels, threads, and messages MCP server (Docker)"
+    }
+  }
+}

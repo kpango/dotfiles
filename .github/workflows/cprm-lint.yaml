@@ -1,0 +1,48 @@
+name: "Check cp/rm prefer cpz/rmz"
+
+# zsh / Makefile / Nix / Docker config must route cp/rm through cpz/rmz with a
+# fallback (CONTEXT.md "cpz-rmz-preference"). This fails on a newly added bare
+# cp/rm. Pure bash + git + grep, so it runs on a plain runner in seconds.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Makefile"
+      - "Makefile.d/**"
+      - "zsh/**"
+      - "zshrc"
+      - "zshenv"
+      - "nix/**"
+      - "dockers/**"
+      - ".github/workflows/cprm-lint.yaml"
+  pull_request:
+    paths:
+      - "Makefile"
+      - "Makefile.d/**"
+      - "zsh/**"
+      - "zshrc"
+      - "zshenv"
+      - "nix/**"
+      - "dockers/**"
+      - ".github/workflows/cprm-lint.yaml"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: "No bare cp/rm"
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: check-cprm.sh
+        run: bash Makefile.d/scripts/check-cprm.sh "$GITHUB_WORKSPACE"

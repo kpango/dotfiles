@@ -1,0 +1,38 @@
+# _source_deferred <path> <zsh-defer-flags>
+# Centralizes the "if (($+functions[zsh-defer])); then zsh-defer <flags>
+# source <path>; else source <path>; fi" pattern repeated across zshrc and
+# several zsh/*.zsh startup files (6 call sites, confirmed structurally
+# identical 2026-09-03; zsh/20-k8s.zsh and zsh/04-aliases.zsh have their own
+# zsh-defer call sites that defer a compound `-c` command rather than a plain
+# `source`, or (20-k8s.zsh) have no synchronous fallback at all -- those stay
+# as-is, not folded in here, and this function has no parameter for either
+# shape).
+# <zsh-defer-flags> is a single space-separated string (e.g. "-m -p -r",
+# "-mpr -t 0.01") passed through verbatim -- each call site keeps its own
+# existing flags rather than a shared default, since they were never actually
+# identical across sites (some omit -m, one adds -t 0.01) and silently
+# normalizing them would be a behavior change, not a refactor.
+# zshrc calls this before combined.zsh is sourced (for combined.zsh itself,
+# and the os/gui caches), so this lives in zfunc/ (fpath+autoload, available
+# from the earliest point) rather than zsh/*.zsh (only available once bundled
+# into combined.zsh -- see zsh/00-env.zsh's header comment for the same
+# chicken-and-egg reasoning about _apply_base_path/_base_path).
+#
+# Deliberately does NOT start with `emulate -L zsh` (unlike its zfunc/
+# siblings): `-L` implies LOCAL_OPTIONS, which would make any top-level
+# `setopt`/`unsetopt` performed by the synchronously-`source`d file (the
+# `else` branch below -- reached whenever zsh-defer isn't loaded, e.g. no
+# `sheldon` binary) get silently reverted the instant this function returns,
+# instead of persisting for the rest of the session like the original
+# unwrapped `source` calls did. Confirmed via reproduction 2026-09-03
+# (`zsh/03-history.zsh`'s header documents the same LOCAL_OPTIONS/zsh-defer
+# interaction from the other direction, for context). The zsh-defer-available
+# branch is unaffected either way -- zsh-defer's own `_zsh-defer-apply` runs
+# the deferred `source` later, inside its own separate `emulate -L zsh` scope
+# in zsh-defer.plugin.zsh, well after this function has already returned.
+local _sd_path="$1" _sd_flags="$2"
+if (($+functions[zsh-defer])); then
+	zsh-defer ${=_sd_flags} source "$_sd_path"
+else
+	source "$_sd_path"
+fi

@@ -1,0 +1,41 @@
+# Generated on 2021-03-16 at 21:24
+# Responded in 257ms
+Server = https://mirrors.cat.net/archlinux/$repo/os/$arch
+# Responded in 307ms
+Server = https://ftp.jaist.ac.jp/pub/Linux/ArchLinux/$repo/os/$arch
+# Responded in 740ms
+Server = https://free.nchc.org.tw/arch/$repo/os/$arch
+# Responded in 762ms
+Server = https://mirrors.bfsu.edu.cn/archlinux/$repo/os/$arch
+# Responded in 924ms
+Server = https://mirrors.hit.edu.cn/archlinux/$repo/os/$arch
+# Responded in 940ms
+Server = https://mirrors.neusoft.edu.cn/archlinux/$repo/os/$arch
+# Responded in 1000ms
+Server = https://appuals.com/archlinux/$repo/os/$arch
+# Responded in 1036ms
+Server = https://mirrors.sjtug.sjtu.edu.cn/archlinux/$repo/os/$arch
+# Responded in 1066ms
+Server = https://shadow.ind.ntou.edu.tw/archlinux/$repo/os/$arch
+# Responded in 1254ms
+Server = https://archlinux.mirror.digitalpacific.com.au/$repo/os/$arch
+# Responded in 1647ms
+Server = https://mirror.launtel.net.au/repo/arch/$repo/os/$arch
+# Responded in 1654ms
+Server = https://ftp.fau.de/archlinux/$repo/os/$arch
+# Responded in 1658ms
+Server = https://mirror.f4st.host/archlinux/$repo/os/$arch
+# Responded in 1759ms
+Server = https://arch.hu.fo/archlinux/$repo/os/$arch
+# Responded in 1789ms
+Server = https://arch.mirror.constant.com/$repo/os/$arch
+# Responded in 1857ms
+Server = https://mirror.23media.com/archlinux/$repo/os/$arch
+# Responded in 1904ms
+Server = https://mirror.checkdomain.de/archlinux/$repo/os/$arch
+# Responded in 1943ms
+Server = https://mirror.bethselamin.de/$repo/os/$arch
+# Responded in 1986ms
+Server = https://mirror.dogado.de/archlinux/$repo/os/$arch
+# Responded in 1998ms
+Server = https://syd.mirror.rackspace.com/archlinux/$repo/os/$arch

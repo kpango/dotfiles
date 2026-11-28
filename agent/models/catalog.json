@@ -1,0 +1,2375 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-24T19:37:22Z",
+  "routing_policy": {
+    "openCodeGoQuotaGuard": {
+      "enabled": true,
+      "fiveHourMaxPct": 20,
+      "weeklyMaxPct": 50,
+      "highVolumeSubagentDefault": "opencode-go/deepseek-v4.1-flash"
+    }
+  },
+  "update_sources": {
+    "litellm_url": "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json",
+    "openrouter_url": "https://openrouter.ai/api/v1/models",
+    "opencode_go_models_url": "https://opencode.ai/zen/go/v1/models",
+    "ollama_tags_url": "http://127.0.0.1:11434/api/tags",
+    "local_catalog_paths": ["~/.pi/agent/antigravity-model-catalog.json"],
+    "cache_dir": "~/.cache/pi/model-catalog",
+    "hysteresis_margin": 0.02
+  },
+  "tier_optimization_profiles": {
+    "Low": {
+      "effort": "low",
+      "min_context_tokens": 65536,
+      "weights": {
+        "quality_coding": 0.2,
+        "quality_reasoning": 0.1,
+        "cost_efficiency": 0.35,
+        "speed": 0.25,
+        "context_score": 0.1
+      }
+    },
+    "Medium": {
+      "effort": "medium",
+      "min_context_tokens": 131072,
+      "weights": {
+        "quality_coding": 0.35,
+        "quality_reasoning": 0.2,
+        "cost_efficiency": 0.25,
+        "speed": 0.1,
+        "context_score": 0.1
+      }
+    },
+    "High": {
+      "effort": "high",
+      "min_context_tokens": 200000,
+      "weights": {
+        "quality_coding": 0.45,
+        "quality_reasoning": 0.3,
+        "cost_efficiency": 0.1,
+        "speed": 0.05,
+        "context_score": 0.1
+      }
+    },
+    "XHigh": {
+      "effort": "xhigh",
+      "min_context_tokens": 200000,
+      "cross_family_from_tier": "High",
+      "weights": {
+        "quality_coding": 0.35,
+        "quality_reasoning": 0.45,
+        "cost_efficiency": 0.05,
+        "speed": 0.05,
+        "context_score": 0.1
+      }
+    },
+    "Max": {
+      "effort": "xhigh",
+      "min_context_tokens": 200000,
+      "weights": {
+        "quality_coding": 0.3,
+        "quality_reasoning": 0.55,
+        "cost_efficiency": 0.05,
+        "speed": 0.0,
+        "context_score": 0.1
+      }
+    }
+  },
+  "role_aliases": {
+    "@smol": "Low",
+    "@fast": "Low",
+    "@good": "High",
+    "@review": "XHigh",
+    "@slow": "Max",
+    "@plan": "Max"
+  },
+  "legacy_aliases": {
+    "haiku": "Low",
+    "sonnet": "High",
+    "opus": "XHigh",
+    "fable": "Max",
+    "opusplan": "Medium",
+    "quick": "Low",
+    "deep": "XHigh",
+    "ultrabrain": "Max",
+    "local": "Low"
+  },
+  "consensus_models": [
+    {
+      "id": "anthropic/claude-sonnet-5-5",
+      "label": "Claude Sonnet 5.5 (Anthropic)",
+      "tier": "High"
+    },
+    {
+      "id": "antigravity-cli/gemini-4-argon",
+      "label": "Gemini 4 Argon (Google DeepMind)",
+      "tier": "XHigh"
+    },
+    {
+      "id": "openai/gpt-6.2-astra",
+      "label": "GPT-6.2 Astra (OpenAI)",
+      "tier": "XHigh"
+    }
+  ],
+  "models": {
+    "opencode-go/deepseek-v4.1-flash": {
+      "provider": "opencode-go",
+      "model_id": "deepseek-v4.1-flash",
+      "family": "deepseek",
+      "display_name": "DeepSeek V4.1 Flash (OpenCode Go)",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": ["Low", "Medium"],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.14,
+        "output_per_1m": 0.28,
+        "cache_read_per_1m": 0.014,
+        "cache_write_per_1m": 0.14,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 86.0,
+        "reasoning": 81.0,
+        "speed": 95.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "opencode-go/kimi-k3.1-pro": {
+      "provider": "opencode-go",
+      "model_id": "kimi-k3.1-pro",
+      "family": "moonshot",
+      "display_name": "Kimi K3.1 Pro (OpenCode Go)",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": ["Medium", "High", "XHigh"],
+      "reasoning": true,
+      "context_window": 262144,
+      "max_output_tokens": 32768,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.5,
+        "output_per_1m": 2.0,
+        "cache_read_per_1m": 0.1,
+        "cache_write_per_1m": 0.5,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 90.0,
+        "reasoning": 88.0,
+        "speed": 78.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "opencode-go/qwen4-max": {
+      "provider": "opencode-go",
+      "model_id": "qwen4-max",
+      "family": "qwen",
+      "display_name": "Qwen4 Max (OpenCode Go)",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": ["Medium", "High"],
+      "reasoning": true,
+      "context_window": 262144,
+      "max_output_tokens": 32768,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.4,
+        "output_per_1m": 1.6,
+        "cache_read_per_1m": 0.08,
+        "cache_write_per_1m": 0.4,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 88.0,
+        "reasoning": 85.0,
+        "speed": 80.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "anthropic/claude-haiku-5-5": {
+      "provider": "anthropic",
+      "model_id": "claude-haiku-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Haiku 5.5",
+      "harness_support": ["pi", "claude", "hermes"],
+      "eligible_tiers": ["Low", "Medium"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 16384,
+      "compaction_threshold": 90000,
+      "pricing": {
+        "input_per_1m": 0.1,
+        "output_per_1m": 0.5,
+        "cache_read_per_1m": 0.01,
+        "cache_write_per_1m": 0.125,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 79.0,
+        "speed": 92.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "anthropic/claude-sonnet-5-5": {
+      "provider": "anthropic",
+      "model_id": "claude-sonnet-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Sonnet 5.5",
+      "harness_support": ["pi", "claude", "agy", "hermes"],
+      "eligible_tiers": ["Medium", "High"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 2.0,
+        "output_per_1m": 10.0,
+        "cache_read_per_1m": 0.1,
+        "cache_write_per_1m": 2.5,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 97.0,
+        "reasoning": 93.0,
+        "speed": 74.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "anthropic/claude-opus-5-5": {
+      "provider": "anthropic",
+      "model_id": "claude-opus-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Opus 5.5",
+      "harness_support": ["pi", "claude", "agy", "hermes"],
+      "eligible_tiers": ["XHigh", "Max"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 4.0,
+        "output_per_1m": 20.0,
+        "cache_read_per_1m": 0.2,
+        "cache_write_per_1m": 5.0,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 97.0,
+        "reasoning": 98.0,
+        "speed": 52.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "anthropic/claude-fable-5-2": {
+      "provider": "anthropic",
+      "model_id": "claude-fable-5-2",
+      "family": "anthropic",
+      "display_name": "Claude Fable 5.2",
+      "harness_support": ["pi", "claude", "hermes"],
+      "eligible_tiers": ["Max"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 8.0,
+        "output_per_1m": 40.0,
+        "cache_read_per_1m": 0.2,
+        "cache_write_per_1m": 10.0,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 96.0,
+        "reasoning": 99.0,
+        "speed": 38.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "antigravity-cli/claude-sonnet-5-5": {
+      "provider": "antigravity-cli",
+      "model_id": "claude-sonnet-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Sonnet 5.5 (Antigravity CLI)",
+      "harness_support": ["pi"],
+      "eligible_tiers": ["High"],
+      "reasoning": true,
+      "context_window": 1000000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 2.0,
+        "output_per_1m": 10.0,
+        "cache_read_per_1m": 0.1,
+        "cache_write_per_1m": 2.5,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 95.0,
+        "reasoning": 93.0,
+        "speed": 70.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "antigravity-cli/gemini-4-hydrogen": {
+      "provider": "antigravity-cli",
+      "model_id": "gemini-4-hydrogen",
+      "family": "google",
+      "display_name": "Gemini 4 Hydrogen",
+      "harness_support": ["pi", "agy", "hermes"],
+      "eligible_tiers": ["Low", "Medium"],
+      "reasoning": true,
+      "context_window": 1048576,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 1.5,
+        "output_per_1m": 7.5,
+        "cache_read_per_1m": 0.075,
+        "cache_write_per_1m": 0.15,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 83.0,
+        "reasoning": 82.0,
+        "speed": 95.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "antigravity-cli/gemini-4-argon": {
+      "provider": "antigravity-cli",
+      "model_id": "gemini-4-argon",
+      "family": "google",
+      "display_name": "Gemini 4 Argon",
+      "harness_support": ["pi", "agy", "hermes"],
+      "eligible_tiers": ["High", "XHigh", "Max"],
+      "reasoning": true,
+      "context_window": 1048576,
+      "max_output_tokens": 65536,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 2.0,
+        "output_per_1m": 10.0,
+        "cache_read_per_1m": 0.1,
+        "cache_write_per_1m": 1.25,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 90.0,
+        "reasoning": 93.0,
+        "speed": 68.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "antigravity-cli/gpt-oss-120b": {
+      "provider": "antigravity-cli",
+      "model_id": "gpt-oss-120b",
+      "family": "openai",
+      "display_name": "GPT-OSS 120B (Antigravity CLI)",
+      "harness_support": ["agy"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 32768,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.05,
+        "output_per_1m": 0.25,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 80.0,
+        "reasoning": 80.0,
+        "speed": 70.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "openai/gpt-6.2-sol": {
+      "provider": "openai",
+      "model_id": "gpt-6.2-sol",
+      "family": "openai",
+      "display_name": "GPT-6.2 Sol",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": ["Medium", "High"],
+      "reasoning": true,
+      "context_window": 1050000,
+      "max_output_tokens": 32768,
+      "compaction_threshold": 250000,
+      "pricing": {
+        "input_per_1m": 2.0,
+        "output_per_1m": 10.0,
+        "cache_read_per_1m": 0.1,
+        "cache_write_per_1m": 2.5,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 92.0,
+        "reasoning": 90.0,
+        "speed": 80.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "openai/gpt-6.2-astra": {
+      "provider": "openai",
+      "model_id": "gpt-6.2-astra",
+      "family": "openai",
+      "display_name": "GPT-6.2 Astra",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": ["XHigh", "Max"],
+      "reasoning": true,
+      "context_window": 1050000,
+      "max_output_tokens": 65536,
+      "compaction_threshold": 250000,
+      "pricing": {
+        "input_per_1m": 8.0,
+        "output_per_1m": 40.0,
+        "cache_read_per_1m": 0.4,
+        "cache_write_per_1m": 10.0,
+        "subscription_included": false
+      },
+      "scores": {
+        "coding": 96.0,
+        "reasoning": 98.0,
+        "speed": 64.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "ollama/gpt-oss-20b": {
+      "provider": "ollama",
+      "model_id": "gpt-oss-20b",
+      "family": "local",
+      "display_name": "GPT-OSS 20B (Local Ollama)",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": ["Low"],
+      "local_fallback_only": true,
+      "reasoning": false,
+      "context_window": 65536,
+      "max_output_tokens": 8192,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 62.0,
+        "reasoning": 58.0,
+        "speed": 75.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "ollama/qwen2.5-coder:32b": {
+      "provider": "ollama",
+      "model_id": "qwen2.5-coder:32b",
+      "family": "local",
+      "display_name": "Qwen 2.5 Coder 32B (Local Ollama)",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": ["Medium"],
+      "local_fallback_only": true,
+      "reasoning": false,
+      "context_window": 65536,
+      "max_output_tokens": 8192,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 72.0,
+        "reasoning": 64.0,
+        "speed": 65.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "typesafe/jev": {
+      "provider": "typesafe",
+      "model_id": "jev",
+      "family": "typesafe",
+      "display_name": "Jev (TTSR Judge)",
+      "harness_support": ["pi"],
+      "eligible_tiers": [],
+      "auxiliary_role_only": true,
+      "reasoning": false,
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 50.0,
+        "reasoning": 60.0,
+        "speed": 98.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "local/lfm2-1.2b": {
+      "provider": "local",
+      "model_id": "lfm2-1.2b",
+      "family": "local",
+      "display_name": "LFM2 1.2B (Local Tiny/Memory)",
+      "harness_support": ["pi"],
+      "eligible_tiers": [],
+      "auxiliary_role_only": true,
+      "local_fallback_only": true,
+      "reasoning": false,
+      "context_window": 32768,
+      "max_output_tokens": 4096,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 40.0,
+        "reasoning": 40.0,
+        "speed": 99.0
+      },
+      "status": "active",
+      "source": "curated"
+    },
+    "opencode-go/deepseek-v4-pro": {
+      "provider": "opencode-go",
+      "model_id": "deepseek-v4-pro",
+      "family": "deepseek",
+      "display_name": "DeepSeek V4 Pro",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 93.0,
+        "reasoning": 97.0,
+        "speed": 58.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/glm-5.3": {
+      "provider": "opencode-go",
+      "model_id": "glm-5.3",
+      "family": "opencode-go",
+      "display_name": "GLM-5.3",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/grok-4.7": {
+      "provider": "opencode-go",
+      "model_id": "grok-4.7",
+      "family": "opencode-go",
+      "display_name": "Grok 4.7",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/muse-spark-1.2-contributor": {
+      "provider": "opencode-go",
+      "model_id": "muse-spark-1.2-contributor",
+      "family": "opencode-go",
+      "display_name": "Muse Spark 1.2 Contributor",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/muse-spark-1.3-contributor": {
+      "provider": "opencode-go",
+      "model_id": "muse-spark-1.3-contributor",
+      "family": "opencode-go",
+      "display_name": "Muse Spark 1.3 Contributor",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/glm-5.3-flash": {
+      "provider": "opencode-go",
+      "model_id": "glm-5.3-flash",
+      "family": "opencode-go",
+      "display_name": "GLM-5.3-Flash",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 82.0,
+        "speed": 93.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/gpt-5.6-luna": {
+      "provider": "opencode-go",
+      "model_id": "gpt-5.6-luna",
+      "family": "openai",
+      "display_name": "GPT-5.6 Luna",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/gpt-6-luna": {
+      "provider": "opencode-go",
+      "model_id": "gpt-6-luna",
+      "family": "openai",
+      "display_name": "GPT-6 Luna",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/claude-haiku-5-5": {
+      "provider": "opencode-go",
+      "model_id": "claude-haiku-5-5",
+      "family": "anthropic",
+      "display_name": "Claude Haiku 5.5",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 82.0,
+        "speed": 93.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/hy3": {
+      "provider": "opencode-go",
+      "model_id": "hy3",
+      "family": "opencode-go",
+      "display_name": "Hy3",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/hy4-preview": {
+      "provider": "opencode-go",
+      "model_id": "hy4-preview",
+      "family": "opencode-go",
+      "display_name": "Hy4 preview",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/kimi-k2.7-code": {
+      "provider": "opencode-go",
+      "model_id": "kimi-k2.7-code",
+      "family": "moonshot",
+      "display_name": "Kimi K2.7 Code",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/kimi-k3": {
+      "provider": "opencode-go",
+      "model_id": "kimi-k3",
+      "family": "moonshot",
+      "display_name": "Kimi K3",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/mimo-v2.6-flash": {
+      "provider": "opencode-go",
+      "model_id": "mimo-v2.6-flash",
+      "family": "opencode-go",
+      "display_name": "MiMo-V2.6-Flash",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 82.0,
+        "speed": 93.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/mimo-v2.6-pro": {
+      "provider": "opencode-go",
+      "model_id": "mimo-v2.6-pro",
+      "family": "opencode-go",
+      "display_name": "MiMo-V2.6-Pro",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 93.0,
+        "reasoning": 97.0,
+        "speed": 58.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/minimax-m3": {
+      "provider": "opencode-go",
+      "model_id": "minimax-m3",
+      "family": "opencode-go",
+      "display_name": "MiniMax-M3",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 91.0,
+        "reasoning": 91.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/minimax-m3.1-flash": {
+      "provider": "opencode-go",
+      "model_id": "minimax-m3.1-flash",
+      "family": "opencode-go",
+      "display_name": "MiniMax M3.1 Flash",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 91.0,
+        "reasoning": 91.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/longcat-2.0": {
+      "provider": "opencode-go",
+      "model_id": "longcat-2.0",
+      "family": "opencode-go",
+      "display_name": "LongCat-2.0",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/step-5-preview": {
+      "provider": "opencode-go",
+      "model_id": "step-5-preview",
+      "family": "opencode-go",
+      "display_name": "Step 5 Preview",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/beam-free": {
+      "provider": "opencode-go",
+      "model_id": "beam-free",
+      "family": "opencode-go",
+      "display_name": "Beam Free",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/qwen3.8-max": {
+      "provider": "opencode-go",
+      "model_id": "qwen3.8-max",
+      "family": "qwen",
+      "display_name": "Qwen3.8 Max",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 91.0,
+        "reasoning": 91.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/qwen3.8-flash": {
+      "provider": "opencode-go",
+      "model_id": "qwen3.8-flash",
+      "family": "qwen",
+      "display_name": "Qwen3.8 Flash",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 82.0,
+        "speed": 93.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/qwen3.7-plus": {
+      "provider": "opencode-go",
+      "model_id": "qwen3.7-plus",
+      "family": "qwen",
+      "display_name": "Qwen3.7 Plus",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/iceman-contributor-free": {
+      "provider": "opencode-go",
+      "model_id": "iceman-contributor-free",
+      "family": "opencode-go",
+      "display_name": "Iceman Contributor Free",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/gemini-4-argon": {
+      "provider": "opencode-go",
+      "model_id": "gemini-4-argon",
+      "family": "google",
+      "display_name": "Gemini 4 Argon",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 91.0,
+        "reasoning": 91.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/hy4": {
+      "provider": "opencode-go",
+      "model_id": "hy4",
+      "family": "opencode-go",
+      "display_name": "Hy4",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/longcat-2.5-free": {
+      "provider": "opencode-go",
+      "model_id": "longcat-2.5-free",
+      "family": "opencode-go",
+      "display_name": "LongCat 2.5 Free",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/hy4-flash-free": {
+      "provider": "opencode-go",
+      "model_id": "hy4-flash-free",
+      "family": "opencode-go",
+      "display_name": "Hy4 flash Free",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 82.0,
+        "speed": 93.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/longcat-2.5": {
+      "provider": "opencode-go",
+      "model_id": "longcat-2.5",
+      "family": "opencode-go",
+      "display_name": "LongCat-2.5",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/jev-1.14": {
+      "provider": "opencode-go",
+      "model_id": "jev-1.14",
+      "family": "opencode-go",
+      "display_name": "Jev 1.14",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/gemini-decision-1": {
+      "provider": "opencode-go",
+      "model_id": "gemini-decision-1",
+      "family": "google",
+      "display_name": "Gemini Decision 1",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 82.0,
+        "speed": 93.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/gpt-6-luna-decision": {
+      "provider": "opencode-go",
+      "model_id": "gpt-6-luna-decision",
+      "family": "openai",
+      "display_name": "GPT-6 Luna Decision",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/text-embedding-3-small": {
+      "provider": "opencode-go",
+      "model_id": "text-embedding-3-small",
+      "family": "opencode-go",
+      "display_name": "text-embedding-3-small",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/qwen3-embedding-8b": {
+      "provider": "opencode-go",
+      "model_id": "qwen3-embedding-8b",
+      "family": "qwen",
+      "display_name": "Qwen3 Embedding 8B",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/gemini-embedding-2": {
+      "provider": "opencode-go",
+      "model_id": "gemini-embedding-2",
+      "family": "google",
+      "display_name": "Gemini Embedding 2",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 82.0,
+        "reasoning": 82.0,
+        "speed": 93.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    },
+    "opencode-go/hungerg-free": {
+      "provider": "opencode-go",
+      "model_id": "hungerg-free",
+      "family": "opencode-go",
+      "display_name": "HungerG Free",
+      "harness_support": ["pi", "hermes"],
+      "eligible_tiers": [],
+      "reasoning": true,
+      "context_window": 131072,
+      "max_output_tokens": 16384,
+      "compaction_threshold": null,
+      "pricing": {
+        "input_per_1m": 0.0,
+        "output_per_1m": 0.0,
+        "cache_read_per_1m": 0.0,
+        "cache_write_per_1m": 0.0,
+        "subscription_included": true
+      },
+      "scores": {
+        "coding": 78.0,
+        "reasoning": 78.0,
+        "speed": 75.0
+      },
+      "status": "candidate",
+      "source": "opencode-go"
+    }
+  },
+  "harnesses": {
+    "claude": {
+      "default_tier": "High",
+      "tiers": {
+        "Low": {
+          "model": "claude-haiku-5-5",
+          "effort": "low",
+          "compaction_threshold": 90000,
+          "description": "Claude Haiku 5.5 for fast & cost-efficient exploration and bulk survey (Pricing Cliff auto-compaction at 90,000 tokens)",
+          "fallbacks": [
+            {
+              "model": "haiku",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "rate_limit",
+              "description": "Claude Code native haiku alias fallback"
+            }
+          ]
+        },
+        "Medium": {
+          "model": "opusplan",
+          "effort": "medium",
+          "description": "Hybrid planning: Opus 5.5 in Plan mode, Sonnet 5.5 in execution mode",
+          "fallbacks": [
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "medium",
+              "trigger": "token_exhaustion",
+              "description": "Degrade to pure Claude Sonnet 5.5 planning when Opus token budget is strained"
+            },
+            {
+              "model": "claude-haiku-5-5",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "cost_saver",
+              "description": "Budget session survival fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+            }
+          ]
+        },
+        "High": {
+          "model": "claude-sonnet-5-5",
+          "effort": "high",
+          "description": "Claude Sonnet 5.5 for high-capability Maker implementation and reviews",
+          "fallbacks": [
+            {
+              "model": "sonnet",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Default sonnet alias fallback during version-specific spikes"
+            },
+            {
+              "model": "claude-haiku-5-5",
+              "effort": "medium",
+              "compaction_threshold": 90000,
+              "trigger": "token_exhaustion",
+              "description": "Emergency Haiku 5.5 session lifetime extension fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+            }
+          ]
+        },
+        "XHigh": {
+          "model": "claude-opus-5-5",
+          "effort": "xhigh",
+          "description": "Claude Opus 5.5 for independent refutational checking and deep invariant verification",
+          "fallbacks": [
+            {
+              "model": "opus",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Default opus alias fallback during version-specific spikes"
+            },
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "token_exhaustion",
+              "description": "Degrade to top-tier Claude Sonnet 5.5 verification when Opus quota is tight"
+            }
+          ]
+        },
+        "Max": {
+          "model": "claude-fable-5-2",
+          "effort": "xhigh",
+          "description": "Claude Fable 5.2 for frontier spot architectural diagnosis and breakthroughs",
+          "fallbacks": [
+            {
+              "model": "claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "rate_limit",
+              "description": "Degrade to Opus 5.5 frontier reasoning when Fable 5.2 limits are reached"
+            },
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "cost_saver",
+              "description": "Sonnet 5.5 fallback when Fable and Opus quotas are strained"
+            }
+          ]
+        }
+      }
+    },
+    "agy": {
+      "default_tier": "High",
+      "tiers": {
+        "Low": {
+          "model": "gemini-4-hydrogen",
+          "effort": "low",
+          "description": "Gemini 4 Hydrogen (Low) for rapid exploration and bulk survey",
+          "fallbacks": [
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "low",
+              "trigger": "rate_limit",
+              "description": "Claude Sonnet 5.5 cross-provider fallback (Antigravity CLI hosts Opus 5.5 / Sonnet 5.5 only)"
+            },
+            {
+              "model": "gpt-oss-120b",
+              "effort": "low",
+              "trigger": "cost_saver",
+              "description": "GPT-OSS 120B cost-saving fallback hosted by the Antigravity CLI"
+            }
+          ]
+        },
+        "Medium": {
+          "model": "gemini-4-hydrogen",
+          "effort": "medium",
+          "description": "Gemini 4 Hydrogen (Medium) for fast structured synthesis and triage",
+          "fallbacks": [
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "medium",
+              "trigger": "rate_limit",
+              "description": "Claude Sonnet 5.5 structured synthesis fallback"
+            },
+            {
+              "model": "gpt-oss-120b",
+              "effort": "medium",
+              "trigger": "token_exhaustion",
+              "description": "GPT-OSS 120B session extension fallback hosted by the Antigravity CLI"
+            }
+          ]
+        },
+        "High": {
+          "model": "claude-sonnet-5-5",
+          "effort": "high",
+          "description": "Claude Sonnet 5.5 for robust, high-performance Maker implementation in AGY",
+          "fallbacks": [
+            {
+              "model": "gemini-4-argon",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Google Gemini 4 Argon cross-provider Maker fallback"
+            },
+            {
+              "model": "claude-opus-5-5",
+              "effort": "high",
+              "trigger": "token_exhaustion",
+              "description": "Claude Opus 5.5 same-provider Maker fallback when Sonnet token budget is strained"
+            },
+            {
+              "model": "gemini-4-hydrogen",
+              "effort": "high",
+              "trigger": "cost_saver",
+              "description": "Gemini 4 Hydrogen cost-saving Maker fallback"
+            }
+          ]
+        },
+        "XHigh": {
+          "model": "gemini-4-argon",
+          "effort": "xhigh",
+          "description": "Gemini 4 Argon (XHigh) for cutting-edge invariant verification and auditing",
+          "fallbacks": [
+            {
+              "model": "claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "rate_limit",
+              "description": "Claude Opus 5.5 independent cross-family deep invariant verification fallback"
+            },
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "token_exhaustion",
+              "description": "Claude Sonnet 5.5 verification fallback when Opus/Argon budgets are strained"
+            }
+          ]
+        },
+        "Max": {
+          "model": "claude-opus-5-5",
+          "effort": "max",
+          "description": "Claude Opus 5.5 (Max effort) for spot architectural diagnosis and deadlock breakthroughs",
+          "fallbacks": [
+            {
+              "model": "gemini-4-argon",
+              "effort": "max",
+              "trigger": "context_overflow",
+              "description": "Gemini 4 Argon large-context architectural diagnosis fallback"
+            },
+            {
+              "model": "claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Claude Sonnet 5.5 degraded architectural diagnosis fallback"
+            }
+          ]
+        }
+      }
+    },
+    "hermes": {
+      "default_tier": "High",
+      "tiers": {
+        "Low": {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4.1-flash",
+          "effort": "low",
+          "description": "DeepSeek V4.1 Flash (quick alias) for fast Hermes research, memory recall, and triage",
+          "sub_routes": {
+            "web_research": {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-hydrogen",
+              "effort": "low",
+              "description": "Gemini 4 Hydrogen for web and documentation research"
+            },
+            "code_research": {
+              "provider": "opencode-go",
+              "model": "opencode-go/deepseek-v4.1-flash",
+              "effort": "low",
+              "description": "DeepSeek V4.1 Flash for fast code scanning"
+            }
+          },
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-haiku-5-5",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "rate_limit",
+              "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+            },
+            {
+              "provider": "ollama",
+              "model": "ollama/gpt-oss-20b",
+              "effort": "low",
+              "max_context_tokens": 65536,
+              "trigger": "cost_saver",
+              "description": "Local Ollama GPT-OSS 20B (local alias) offline fallback"
+            }
+          ]
+        },
+        "Medium": {
+          "provider": "opencode-go",
+          "model": "opencode-go/kimi-k3.1-pro",
+          "effort": "medium",
+          "description": "OpenCode Go Kimi K3.1 Pro for Hermes structured synthesis and planning",
+          "fallbacks": [
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/qwen4-max",
+              "effort": "medium",
+              "trigger": "rate_limit",
+              "description": "OpenCode Go Qwen4 Max structured synthesis fallback"
+            },
+            {
+              "provider": "ollama",
+              "model": "ollama/qwen2.5-coder:32b",
+              "effort": "medium",
+              "max_context_tokens": 65536,
+              "trigger": "cost_saver",
+              "description": "Local Ollama Qwen 2.5 Coder 32B offline coding fallback"
+            }
+          ]
+        },
+        "High": {
+          "provider": "anthropic",
+          "model": "anthropic/claude-sonnet-5-5",
+          "effort": "high",
+          "description": "Claude Sonnet 5.5 (Hermes default / OMH deep) for implementation and orchestration",
+          "fallbacks": [
+            {
+              "provider": "openai",
+              "model": "openai/gpt-6.2-sol",
+              "effort": "high",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "OpenAI GPT-6.2 Sol fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+            },
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/qwen4-max",
+              "effort": "high",
+              "trigger": "token_exhaustion",
+              "description": "OpenCode Go Qwen4 Max zero-marginal-cost fallback"
+            }
+          ]
+        },
+        "XHigh": {
+          "provider": "openai",
+          "model": "openai/gpt-6.2-astra",
+          "effort": "xhigh",
+          "compaction_threshold": 250000,
+          "description": "OpenAI GPT-6.2 Astra (deep alias) for independent cross-family verification (Pricing Cliff auto-compaction at 250,000 tokens)",
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "rate_limit",
+              "description": "Claude Opus 5.5 (ultrabrain alias) invariant verification fallback"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-argon",
+              "effort": "xhigh",
+              "trigger": "token_exhaustion",
+              "description": "Gemini 4 Argon cross-provider verification fallback"
+            }
+          ]
+        },
+        "Max": {
+          "provider": "anthropic",
+          "model": "anthropic/claude-opus-5-5",
+          "effort": "max",
+          "description": "Claude Opus 5.5 (ultrabrain alias) for Hermes chief architectural reasoning",
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-fable-5-2",
+              "effort": "xhigh",
+              "trigger": "unavailability",
+              "description": "Claude Fable 5.2 frontier escalation fallback"
+            },
+            {
+              "provider": "openai",
+              "model": "openai/gpt-6.2-astra",
+              "effort": "xhigh",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "OpenAI GPT-6.2 Astra cross-provider frontier fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+            }
+          ]
+        }
+      }
+    },
+    "pi": {
+      "default_tier": "High",
+      "tiers": {
+        "Low": {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4.1-flash",
+          "effort": "low",
+          "max_context_tokens": 131072,
+          "description": "OpenCode Go DeepSeek V4.1 Flash (Low) for rapid exploration, repository survey, and semantic search",
+          "sub_routes": {
+            "web_research": {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-hydrogen",
+              "effort": "low",
+              "description": "Antigravity CLI Gemini 4 Hydrogen (Low) for web/docs research, RFCs, and semantic search"
+            },
+            "code_research": {
+              "provider": "opencode-go",
+              "model": "opencode-go/deepseek-v4.1-flash",
+              "effort": "low",
+              "max_context_tokens": 131072,
+              "description": "OpenCode Go DeepSeek V4.1 Flash for high-throughput repository code scanning"
+            }
+          },
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-haiku-5-5",
+              "effort": "low",
+              "compaction_threshold": 90000,
+              "trigger": "rate_limit",
+              "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-hydrogen",
+              "effort": "low",
+              "trigger": "cost_saver",
+              "description": "Antigravity CLI Gemini 4 Hydrogen fast research fallback"
+            },
+            {
+              "provider": "ollama",
+              "model": "ollama/gpt-oss-20b",
+              "effort": "low",
+              "max_context_tokens": 65536,
+              "trigger": "token_exhaustion",
+              "description": "Local Ollama GPT-OSS 20B zero-cost offline fallback"
+            }
+          ]
+        },
+        "Medium": {
+          "provider": "opencode-go",
+          "model": "opencode-go/kimi-k3.1-pro",
+          "effort": "medium",
+          "max_context_tokens": 262144,
+          "description": "OpenCode Go Kimi K3.1 Pro for high-completion coding, AST synthesis, and multi-step planning",
+          "fallbacks": [
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/qwen4-max",
+              "effort": "medium",
+              "max_context_tokens": 262144,
+              "trigger": "rate_limit",
+              "description": "OpenCode Go Qwen4 Max structured synthesis fallback"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-hydrogen",
+              "effort": "medium",
+              "trigger": "token_exhaustion",
+              "description": "Antigravity CLI Gemini 4 Hydrogen structured synthesis fallback"
+            },
+            {
+              "provider": "ollama",
+              "model": "ollama/qwen2.5-coder:32b",
+              "effort": "medium",
+              "max_context_tokens": 65536,
+              "trigger": "cost_saver",
+              "description": "Local Ollama Qwen 2.5 Coder 32B offline coding fallback"
+            }
+          ]
+        },
+        "High": {
+          "provider": "anthropic",
+          "model": "anthropic/claude-sonnet-5-5",
+          "effort": "high",
+          "description": "Claude Sonnet 5.5 for top-tier Maker code implementation",
+          "fallbacks": [
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/claude-sonnet-5-5",
+              "effort": "high",
+              "trigger": "rate_limit",
+              "description": "Antigravity CLI Claude Sonnet 5.5 mirror fallback when direct Anthropic rate limits are reached"
+            },
+            {
+              "provider": "openai",
+              "model": "openai/gpt-6.2-sol",
+              "effort": "high",
+              "compaction_threshold": 250000,
+              "trigger": "token_exhaustion",
+              "description": "OpenAI GPT-6.2 Sol fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+            },
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/qwen4-max",
+              "effort": "high",
+              "max_context_tokens": 262144,
+              "trigger": "cost_saver",
+              "description": "OpenCode Go Qwen4 Max zero-marginal-cost coding fallback"
+            }
+          ]
+        },
+        "XHigh": {
+          "provider": "openai",
+          "model": "openai/gpt-6.2-astra",
+          "effort": "xhigh",
+          "compaction_threshold": 250000,
+          "description": "OpenAI GPT-6.2 Astra for independent cross-family Checker verification (Pricing Cliff auto-compaction at 250,000 tokens)",
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "rate_limit",
+              "description": "Claude Opus 5.5 deep invariant verifier fallback"
+            },
+            {
+              "provider": "opencode-go",
+              "model": "opencode-go/kimi-k3.1-pro",
+              "effort": "max",
+              "max_context_tokens": 262144,
+              "trigger": "token_exhaustion",
+              "description": "OpenCode Go Kimi K3.1 Pro reasoning verifier fallback"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-argon",
+              "effort": "xhigh",
+              "trigger": "cost_saver",
+              "description": "Antigravity CLI Gemini 4 Argon independent verifier fallback"
+            }
+          ]
+        },
+        "Max": {
+          "provider": "anthropic",
+          "model": "anthropic/claude-fable-5-2",
+          "effort": "xhigh",
+          "description": "Claude Fable 5.2 for frontier spot architectural diagnosis",
+          "fallbacks": [
+            {
+              "provider": "anthropic",
+              "model": "anthropic/claude-opus-5-5",
+              "effort": "xhigh",
+              "trigger": "token_exhaustion",
+              "description": "Claude Opus 5.5 fallback when Fable 5.2 quota is strained"
+            },
+            {
+              "provider": "openai",
+              "model": "openai/gpt-6.2-astra",
+              "effort": "xhigh",
+              "compaction_threshold": 250000,
+              "trigger": "rate_limit",
+              "description": "OpenAI GPT-6.2 Astra cross-provider frontier architectural diagnosis fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+            },
+            {
+              "provider": "antigravity-cli",
+              "model": "antigravity-cli/gemini-4-argon",
+              "effort": "xhigh",
+              "trigger": "cost_saver",
+              "description": "Antigravity CLI Gemini 4 Argon architectural diagnosis fallback"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "harness_model_allowlist": {
+    "agy": [
+      "gemini-4-neon",
+      "gemini-4-argon",
+      "gemini-4-hydrogen",
+      "gemini-3.8-flash",
+      "claude-opus-5-5",
+      "claude-sonnet-5-5",
+      "gpt-oss-120b"
+    ]
+  },
+  "harness_native_bonuses": {
+    "claude": {
+      "anthropic": 0.02
+    },
+    "agy": {
+      "antigravity-cli": 0.03
+    },
+    "hermes": {},
+    "pi": {}
+  },
+  "pi_providers": {
+    "opencode-go": {
+      "baseUrl": "https://opencode.ai/zen/go/v1",
+      "api": "openai-completions",
+      "models": [
+        {
+          "id": "deepseek-v4.1-flash",
+          "name": "DeepSeek V4.1 Flash (OpenCode Go)",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen4-max",
+          "name": "Qwen4 Max (OpenCode Go)",
+          "reasoning": true,
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        },
+        {
+          "id": "kimi-k3.1-pro",
+          "name": "Kimi K3.1 Pro (OpenCode Go)",
+          "reasoning": true,
+          "contextWindow": 262144,
+          "maxTokens": 32768
+        },
+        {
+          "id": "deepseek-v4-pro",
+          "name": "DeepSeek V4 Pro",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "glm-5.3",
+          "name": "GLM-5.3",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "grok-4.7",
+          "name": "Grok 4.7",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "muse-spark-1.2-contributor",
+          "name": "Muse Spark 1.2 Contributor",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "muse-spark-1.3-contributor",
+          "name": "Muse Spark 1.3 Contributor",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "glm-5.3-flash",
+          "name": "GLM-5.3-Flash",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "name": "GPT-5.6 Luna",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gpt-6-luna",
+          "name": "GPT-6 Luna",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "claude-haiku-5-5",
+          "name": "Claude Haiku 5.5",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "hy3",
+          "name": "Hy3",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "hy4-preview",
+          "name": "Hy4 preview",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "kimi-k2.7-code",
+          "name": "Kimi K2.7 Code",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "kimi-k3",
+          "name": "Kimi K3",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "mimo-v2.6-flash",
+          "name": "MiMo-V2.6-Flash",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "mimo-v2.6-pro",
+          "name": "MiMo-V2.6-Pro",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "minimax-m3",
+          "name": "MiniMax-M3",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "minimax-m3.1-flash",
+          "name": "MiniMax M3.1 Flash",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "longcat-2.0",
+          "name": "LongCat-2.0",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "step-5-preview",
+          "name": "Step 5 Preview",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "beam-free",
+          "name": "Beam Free",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen3.8-max",
+          "name": "Qwen3.8 Max",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen3.8-flash",
+          "name": "Qwen3.8 Flash",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen3.7-plus",
+          "name": "Qwen3.7 Plus",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "iceman-contributor-free",
+          "name": "Iceman Contributor Free",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gemini-4-argon",
+          "name": "Gemini 4 Argon",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "hy4",
+          "name": "Hy4",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "longcat-2.5-free",
+          "name": "LongCat 2.5 Free",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "hy4-flash-free",
+          "name": "Hy4 flash Free",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "longcat-2.5",
+          "name": "LongCat-2.5",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "jev-1.14",
+          "name": "Jev 1.14",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gemini-decision-1",
+          "name": "Gemini Decision 1",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gpt-6-luna-decision",
+          "name": "GPT-6 Luna Decision",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "text-embedding-3-small",
+          "name": "text-embedding-3-small",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "qwen3-embedding-8b",
+          "name": "Qwen3 Embedding 8B",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "gemini-embedding-2",
+          "name": "Gemini Embedding 2",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        },
+        {
+          "id": "hungerg-free",
+          "name": "HungerG Free",
+          "reasoning": true,
+          "contextWindow": 131072,
+          "maxTokens": 16384
+        }
+      ]
+    },
+    "ollama": {
+      "baseUrl": "http://127.0.0.1:11434/v1",
+      "api": "openai-completions",
+      "apiKey": "ollama",
+      "models": [
+        {
+          "id": "gpt-oss-20b",
+          "name": "GPT-OSS 20B (Local Ollama)",
+          "contextWindow": 65536,
+          "maxTokens": 8192
+        },
+        {
+          "id": "qwen2.5-coder:32b",
+          "name": "Qwen 2.5 Coder 32B (Local Ollama)",
+          "contextWindow": 65536,
+          "maxTokens": 8192
+        }
+      ]
+    }
+  },
+  "pi_config": {
+    "defaultThinkingLevel": "high",
+    "modelRoles": {
+      "default": "anthropic/claude-opus-5-5:high",
+      "slow": "anthropic/claude-opus-5-5:xhigh",
+      "plan": "anthropic/claude-opus-5-5:high",
+      "good": "anthropic/claude-sonnet-5-5:high",
+      "smol": "opencode-go/deepseek-v4.1-flash:medium",
+      "fast": "opencode-go/deepseek-v4.1-flash:low",
+      "review": "openai/gpt-6.2-astra:xhigh",
+      "judge": "typesafe/jev",
+      "tiny": "local/lfm2-1.2b",
+      "memory": "local/lfm2-1.2b"
+    },
+    "retry_fallbackChains": {
+      "default": [
+        "anthropic/claude-sonnet-5-5:high",
+        "antigravity-cli/claude-sonnet-5-5:high",
+        "openai/gpt-6.2-sol:high",
+        "opencode-go/qwen4-max:high"
+      ],
+      "smol": [
+        "anthropic/claude-haiku-5-5:medium",
+        "antigravity-cli/gemini-4-hydrogen:medium",
+        "ollama/gpt-oss-20b"
+      ],
+      "review": [
+        "opencode-go/kimi-k3.1-pro:max",
+        "antigravity-cli/gemini-4-argon:xhigh",
+        "anthropic/claude-fable-5-2:xhigh"
+      ]
+    },
+    "sol_pi": {
+      "evidencePreservingReducerProvider": "opencode-go",
+      "evidencePreservingReducerModel": "deepseek-v4.1-flash"
+    }
+  }
+}

@@ -1,0 +1,305 @@
+/**
+ * Session Tree & Checkpoint Branching Extension for Pi Coding Agent
+ *
+ * Provides tree-based checkpointing and rewind capabilities:
+ * - /checkpoint [name]: Capture current git head, timestamp, and step notes.
+ * - /cptree: Display checkpoint lineage tree.
+ * - /cp-rewind <name>: Rewind working tree or branch to a previous checkpoint.
+ */
+
+import { execSync } from "node:child_process";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { writeFileAtomic } from "./lib/fs-atomic";
+
+export interface SessionCheckpoint {
+  id: string;
+  name: string;
+  timestamp: string;
+  gitSha: string;
+  branch: string;
+  notes?: string;
+  parentId?: string;
+}
+
+export interface CheckpointStore {
+  activeId: string | null;
+  checkpoints: SessionCheckpoint[];
+}
+
+export function addCheckpoint(
+  store: CheckpointStore,
+  name: string,
+  gitSha: string,
+  branch: string,
+  notes?: string
+): SessionCheckpoint {
+  const id = `cp-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+  const cp: SessionCheckpoint = {
+    id,
+    name,
+    timestamp: new Date().toISOString(),
+    gitSha,
+    branch,
+    notes,
+    parentId: store.activeId || undefined,
+  };
+  store.checkpoints.push(cp);
+  store.activeId = id;
+  return cp;
+}
+
+export function findCheckpoint(store: CheckpointStore, identifier: string): SessionCheckpoint | null {
+  const norm = identifier.toLowerCase();
+  return (
+    store.checkpoints.find(c => c.id.toLowerCase() === norm || c.name.toLowerCase() === norm) || null
+  );
+}
+
+export function renderCheckpointTree(store: CheckpointStore): string {
+  if (store.checkpoints.length === 0) {
+    return "No checkpoints recorded yet. Use `/checkpoint <name>` to record one.";
+  }
+
+  let out = "🌲 **Session Checkpoint Tree**:\n\n";
+  for (const cp of store.checkpoints) {
+    const isCurrent = cp.id === store.activeId;
+    const marker = isCurrent ? "📍 (current)" : "  ";
+    out += `${marker} **${cp.name}** (\`${cp.id}\` | \`${cp.gitSha.slice(0, 7)}\`)\n`;
+    out += `     Time: ${cp.timestamp.split("T")[1]?.slice(0, 8) || cp.timestamp} | Branch: \`${cp.branch}\`\n`;
+    if (cp.notes) {
+      out += `     Note: ${cp.notes}\n`;
+    }
+  }
+  return out.trim();
+}
+
+function getStorePath(cwd: string): string {
+  return path.join(cwd, ".git", "pi-checkpoints.json");
+}
+
+/**
+ * Resolve the git directory for a worktree, falling back to the plain
+ * `cwd/.git/pi-checkpoints.json` layout for the main checkout.
+ *
+ * In a linked worktree `.git` is a regular file (not a directory), so
+ * `writeFileSync(cwd/.git/pi-checkpoints.json)` fails with ENOTDIR.
+ * `git rev-parse --git-dir` returns the actual git dir for both layouts.
+ */
+export function resolveGitDir(cwd: string): string | null {
+  try {
+    const out = execSync("git rev-parse --git-dir", {
+      cwd,
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .trim()
+      // `--git-dir` may return a relative path (e.g. ".git" or
+      // "/abs/path/.git/worktrees/xyz"); make it absolute against cwd.
+      ;
+    return path.isAbsolute(out) ? out : path.resolve(cwd, out);
+  } catch {
+    return null;
+  }
+}
+
+export function getWorktreeStorePath(cwd: string): string {
+  const gitDir = resolveGitDir(cwd);
+  if (gitDir) {
+    return path.join(gitDir, "pi-checkpoints.json");
+  }
+  return getStorePath(cwd);
+}
+
+export function loadStore(cwd: string): CheckpointStore {
+  const p = getWorktreeStorePath(cwd);
+  if (fs.existsSync(p)) {
+    try {
+      return JSON.parse(fs.readFileSync(p, "utf-8"));
+    } catch {
+      // return default
+    }
+  }
+  return { activeId: null, checkpoints: [] };
+}
+
+export function saveStore(cwd: string, store: CheckpointStore): void {
+  const p = getWorktreeStorePath(cwd);
+  const dir = path.dirname(p);
+  if (!fs.existsSync(dir)) return;
+  // Atomic write: a torn/interrupted plain writeFileSync leaves the checkpoint
+  // store truncated, and loadStore's parse-error fallback then returns an EMPTY
+  // store — silently wiping ALL checkpoint history (and under concurrent Pi
+  // sessions sharing one worktree, one session's write clobbers another's).
+  // temp-file + rename(2) is atomic on the same filesystem, so a reader always
+  // sees either the complete old file or the complete new file. Consolidated onto
+  // the shared writeFileAtomic helper (single durable-write implementation across
+  // the Pi extensions).
+  writeFileAtomic(p, JSON.stringify(store, null, 2));
+}
+
+export const BRANCH_REVIEW_HANDOFF_INSTRUCTIONS = `Summarize this branch-isolated code review into 4 terse sections ONLY:
+1. Verdict (PASS / FAIL)
+2. Findings (P0/P1/P2 with file:line)
+3. Fix Queue (ordered concrete edits)
+4. Human Reviewer Callouts (decisions only a human should make)
+Drop raw diff hunks and verbose file excerpts.`;
+
+export function buildBranchReviewPrompt(targetLabel: string, diffStat: string, diffExcerpt: string): string {
+  const MAX_DIFF_BYTES = 32_768;
+  const trimmedDiff =
+    Buffer.byteLength(diffExcerpt, "utf-8") > MAX_DIFF_BYTES
+      ? Buffer.from(diffExcerpt, "utf-8").subarray(0, MAX_DIFF_BYTES).toString("utf-8") + "\n... [diff truncated at 32KB]"
+      : diffExcerpt;
+
+  return `[Branch-Isolated Code Review: ${targetLabel}]
+Inspect the diff using clean-code, fail-fast, and security invariants.
+Separate objective P0/P1/P2 findings from "Human Reviewer Callouts" (irreversible decisions, API/UX choices).
+When done reviewing, tell the user they can run \`/branch-review return\` to summarize & hand off back to the pre-review node.
+
+Diff Stat:
+\`\`\`
+${diffStat.trim() || "(empty)"}
+\`\`\`
+
+Diff Excerpt:
+\`\`\`diff
+${trimmedDiff.trim() || "(no diff content)"}
+\`\`\``;
+}
+
+export default function (pi: ExtensionAPI) {
+  let originLeafId: string | null = null;
+  // Command: /checkpoint
+  pi.registerCommand("checkpoint", {
+    description: "Create a session checkpoint (/checkpoint <name> [notes])",
+    handler: async (args, ctx) => {
+      const parts = (args || "").trim().split(/\s+/);
+      const name = parts[0] || `checkpoint-${Date.now()}`;
+      const notes = parts.slice(1).join(" ") || undefined;
+
+      try {
+        const sha = execSync("git rev-parse HEAD", { cwd: ctx.cwd, encoding: "utf-8" }).trim();
+        const branch = execSync("git rev-parse --abbrev-ref HEAD", { cwd: ctx.cwd, encoding: "utf-8" }).trim();
+        const store = loadStore(ctx.cwd);
+        const cp = addCheckpoint(store, name, sha, branch, notes);
+        saveStore(ctx.cwd, store);
+        ctx.ui.notify(`Saved checkpoint '${cp.name}' (${cp.gitSha.slice(0, 7)})`, "info");
+      } catch (e: any) {
+        ctx.ui.notify(`Failed to create checkpoint: ${e.message}`, "error");
+      }
+    },
+  });
+
+  // Command: /cptree ("tree" collides with the built-in interactive command)
+  pi.registerCommand("cptree", {
+    description: "View session checkpoint tree and rewind history",
+    handler: async (_args, ctx) => {
+      const store = loadStore(ctx.cwd);
+      const tree = renderCheckpointTree(store);
+      ctx.ui.notify(tree, "info");
+    },
+  });
+
+  // Command: /cp-rewind
+  pi.registerCommand("cp-rewind", {
+    description: "Rewind session to a named checkpoint (/cp-rewind <name-or-id>)",
+    handler: async (args, ctx) => {
+      const target = (args || "").trim();
+      if (!target) {
+        ctx.ui.notify("Usage: /cp-rewind <checkpoint-name-or-id>", "warning");
+        return;
+      }
+
+      const store = loadStore(ctx.cwd);
+      const cp = findCheckpoint(store, target);
+      if (!cp) {
+        ctx.ui.notify(`Checkpoint '${target}' not found. Run /cptree to view available checkpoints.`, "error");
+        return;
+      }
+
+      try {
+        store.activeId = cp.id;
+        saveStore(ctx.cwd, store);
+      } catch (e: any) {
+        ctx.ui.notify(`Failed to persist rewind state: ${e.message}`, "error");
+        return;
+      }
+      ctx.ui.notify(`Rewound active checkpoint pointer to '${cp.name}' (${cp.gitSha.slice(0, 7)}). To restore git state: \`git reset --soft ${cp.gitSha}\``, "info");
+    },
+  });
+
+  // Command: /branch-review (pi-agent-improvement.pdf #13: tree-isolated review + navigateTree handoff)
+  pi.registerCommand("branch-review", {
+    description: "Run tree-isolated code review (/branch-review [uncommitted|branch:<base>|return])",
+    handler: async (args, ctx) => {
+      const arg = (args || "").trim() || "uncommitted";
+      const uiCtx = ctx as unknown as {
+        cwd: string;
+        ui: { notify: (msg: string, level?: string) => void };
+        sessionManager?: { getLeafId?: () => string | null };
+        navigateTree?: (
+          targetId: string,
+          opts?: { summarize?: boolean; customInstructions?: string; label?: string },
+        ) => Promise<{ cancelled: boolean }>;
+      };
+
+      if (arg === "return") {
+        if (!originLeafId) {
+          ctx.ui.notify("No pre-review branch point saved. Run `/branch-review` first.", "warning");
+          return;
+        }
+        if (typeof uiCtx.navigateTree !== "function") {
+          ctx.ui.notify(`Tree navigation unavailable in this runtime (saved origin leaf: ${originLeafId}).`, "warning");
+          return;
+        }
+        const target = originLeafId;
+        originLeafId = null;
+        const res = await uiCtx.navigateTree(target, {
+          summarize: true,
+          customInstructions: BRANCH_REVIEW_HANDOFF_INSTRUCTIONS,
+          label: "review-handoff",
+        });
+        ctx.ui.notify(res?.cancelled ? "Branch review return cancelled." : "Returned & handed off review summary to pre-review node.", "info");
+        return;
+      }
+
+      originLeafId = uiCtx.sessionManager?.getLeafId?.() ?? originLeafId;
+      let diffCmd = "git diff HEAD";
+      let statCmd = "git diff --stat HEAD";
+      if (arg.startsWith("branch:")) {
+        const base = arg.slice("branch:".length).trim() || "main";
+        if (!/^[A-Za-z0-9._\/-]+$/.test(base)) {
+          ctx.ui.notify(`Invalid base ref: ${base}`, "error");
+          return;
+        }
+        diffCmd = `git diff ${base}...HEAD`;
+        statCmd = `git diff --stat ${base}...HEAD`;
+      }
+
+      try {
+        const diffStat = execSync(statCmd, { cwd: ctx.cwd, encoding: "utf-8" });
+        const diffExcerpt = execSync(diffCmd, { cwd: ctx.cwd, encoding: "utf-8", maxBuffer: 2 * 1024 * 1024 });
+        if (!diffExcerpt.trim()) {
+          ctx.ui.notify(`No changes for /branch-review (${arg}).`, "info");
+          return;
+        }
+        const prompt = buildBranchReviewPrompt(arg, diffStat, diffExcerpt);
+        const sender = pi as unknown as {
+          sendMessage?: (msg: { customType: string; content: string; display: boolean }, opts?: { triggerTurn?: boolean }) => void;
+        };
+        if (typeof sender.sendMessage === "function") {
+          sender.sendMessage(
+            { customType: "branch-review-request", content: prompt, display: true },
+            { triggerTurn: true },
+          );
+        } else {
+          ctx.ui.notify(prompt, "info");
+        }
+      } catch (e: any) {
+        ctx.ui.notify(`Branch review failed: ${e.message}`, "error");
+      }
+    },
+  });
+}

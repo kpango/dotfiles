@@ -1,0 +1,10 @@
+[Unit]
+Description=Probe NextDNS CLI local resolver and dnsmasq wiring
+Documentation=file:/data/nextdns-healthcheck/nextdns-healthcheck.sh
+After=network-online.target nextdns.service
+Wants=network-online.target nextdns.service
+RequiresMountsFor=/data
+
+[Service]
+Type=oneshot
+ExecStart=/data/nextdns-healthcheck/nextdns-healthcheck.sh

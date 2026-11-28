@@ -1,0 +1,94 @@
+name: Update SSoT model catalog
+
+# Fetches latest model metadata/pricing from public APIs (LiteLLM, OpenRouter,
+# OpenCode Go) daily, evaluates tier-specific multi-objective Pareto rankings,
+# syncs catalog.json and all 7 derived harness configs, validates routing/tiers,
+# and pushes updates directly to main on green gate.
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily at 04:35 JST (offset from update-actions 18:00 UTC, update-nix-lock 20 */6, docker-matrix 23:00 UTC)
+    - cron: "35 19 * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: update-model-catalog
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  update:
+    name: "Update SSoT model catalog"
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Ensure jq, python3, and PyYAML are available
+        run: |
+          if ! command -v jq >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1 || ! python3 -c "import yaml" >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y jq python3 python3-yaml
+          fi
+          jq --version
+          python3 --version
+
+      - name: Fetch and Pareto-optimize SSoT model catalog
+        run: python3 agent/scripts/update-model-catalog.py --fetch --optimize --report
+
+      - name: Check for changes
+        id: check_diff
+        run: |
+          if git diff --quiet --exit-code -- agent/models/catalog.json agent/harnesses/; then
+            echo "Model catalog and derived harness configs are already optimal — nothing to do."
+          else
+            git --no-pager diff --stat -- agent/models/catalog.json agent/harnesses/
+            echo "HAS_GIT_DIFF=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Model catalog & routing verification gate
+        if: steps.check_diff.outputs.HAS_GIT_DIFF == 'true'
+        run: |
+          python3 agent/scripts/update-model-catalog.py --check
+          bash agent/scripts/test-model-routing.sh
+          bash agent/scripts/test-model-catalog-update.sh
+          bash agent/scripts/test-catalog-health.sh
+
+      - name: Push updated catalog to main
+        if: steps.check_diff.outputs.HAS_GIT_DIFF == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- \
+            agent/models/catalog.json \
+            agent/harnesses/pi/model-routing.json \
+            agent/harnesses/claude/model-routing.json \
+            agent/harnesses/agy/model-routing.json \
+            agent/harnesses/hermes/model-routing.json \
+            agent/harnesses/pi/models.json \
+            agent/harnesses/pi/settings.json \
+            agent/harnesses/pi/sol-pi.json
+          git commit -m "chore(agent): daily SSoT model catalog Pareto update"
+          REMOTE="https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          git fetch --no-tags "$REMOTE" main
+          if ! git rebase FETCH_HEAD; then
+            git rebase --abort
+            echo "::error::model catalog conflicts with main — skipping this run." >&2
+            exit 1
+          fi
+          git push "$REMOTE" HEAD:main

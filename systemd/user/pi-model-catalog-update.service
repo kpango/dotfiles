@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily SSoT Model Catalog Fetch & Pareto Optimization (Pi/Claude/AGY/Hermes)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/go/src/github.com/kpango/dotfiles
+ExecStart=/usr/bin/python3 %h/go/src/github.com/kpango/dotfiles/agent/scripts/update-model-catalog.py --fetch --optimize --report
+StandardOutput=journal
+StandardError=journal

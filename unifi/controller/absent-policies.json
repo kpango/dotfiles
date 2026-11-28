@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Allow ICMPv6",
+    "source": {
+      "zone": "External"
+    },
+    "destination": {
+      "zone": "Internal"
+    }
+  },
+  {
+    "name": "Allow ICMPv6",
+    "source": {
+      "zone": "External"
+    },
+    "destination": {
+      "zone": "Vpn"
+    }
+  },
+  {
+    "name": "Allow ICMPv6",
+    "source": {
+      "zone": "External"
+    },
+    "destination": {
+      "zone": "Hotspot"
+    }
+  },
+  {
+    "name": "Allow ICMPv6",
+    "source": {
+      "zone": "External"
+    },
+    "destination": {
+      "zone": "Dmz"
+    }
+  },
+  {
+    "name": "Media -> Nanoleaf 4D (TCP 16021,6517,12566)",
+    "source": {
+      "zone": "Internal"
+    },
+    "destination": {
+      "zone": "Internal"
+    }
+  },
+  {
+    "name": "IoT lockdown: block DNS TCP:53 to external",
+    "source": {
+      "zone": "Internal"
+    },
+    "destination": {
+      "zone": "External"
+    }
+  },
+  {
+    "name": "IoT lockdown: block DNS UDP:53 to external",
+    "source": {
+      "zone": "Internal"
+    },
+    "destination": {
+      "zone": "External"
+    }
+  }
+]

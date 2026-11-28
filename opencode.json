@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "trail": {
+      "type": "local",
+      "command": ["trail", "mcp"],
+      "enabled": true
+    }
+  }
+}

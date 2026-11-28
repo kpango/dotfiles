@@ -1,0 +1,14 @@
+[Unit]
+Description=Reconcile UDM Pro /etc systemd units from /data SSoT at boot
+Documentation=file:/data/udm-post-install/post-install.sh
+After=network-online.target udapi-server.service
+Wants=network-online.target
+RequiresMountsFor=/data
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/data/udm-post-install/post-install.sh
+
+[Install]
+WantedBy=multi-user.target

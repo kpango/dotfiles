@@ -1,0 +1,186 @@
+{
+  "$schema": "../../models/schema.json",
+  "harness": "pi",
+  "default_tier": "High",
+  "tiers": {
+    "Low": {
+      "provider": "opencode-go",
+      "model": "opencode-go/deepseek-v4.1-flash",
+      "effort": "low",
+      "max_context_tokens": 131072,
+      "description": "OpenCode Go DeepSeek V4.1 Flash (Low) for rapid exploration, repository survey, and semantic search",
+      "sub_routes": {
+        "web_research": {
+          "provider": "antigravity-cli",
+          "model": "antigravity-cli/gemini-4-hydrogen",
+          "effort": "low",
+          "description": "Antigravity CLI Gemini 4 Hydrogen (Low) for web/docs research, RFCs, and semantic search"
+        },
+        "code_research": {
+          "provider": "opencode-go",
+          "model": "opencode-go/deepseek-v4.1-flash",
+          "effort": "low",
+          "max_context_tokens": 131072,
+          "description": "OpenCode Go DeepSeek V4.1 Flash for high-throughput repository code scanning"
+        }
+      },
+      "fallbacks": [
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-haiku-5-5",
+          "effort": "low",
+          "compaction_threshold": 90000,
+          "trigger": "rate_limit",
+          "description": "Claude Haiku 5.5 fallback (Pricing Cliff auto-compaction at 90,000 tokens)"
+        },
+        {
+          "provider": "antigravity-cli",
+          "model": "antigravity-cli/gemini-4-hydrogen",
+          "effort": "low",
+          "trigger": "cost_saver",
+          "description": "Antigravity CLI Gemini 4 Hydrogen fast research fallback"
+        },
+        {
+          "provider": "ollama",
+          "model": "ollama/gpt-oss-20b",
+          "effort": "low",
+          "max_context_tokens": 65536,
+          "trigger": "token_exhaustion",
+          "description": "Local Ollama GPT-OSS 20B zero-cost offline fallback"
+        }
+      ]
+    },
+    "Medium": {
+      "provider": "opencode-go",
+      "model": "opencode-go/kimi-k3.1-pro",
+      "effort": "medium",
+      "max_context_tokens": 262144,
+      "description": "OpenCode Go Kimi K3.1 Pro for high-completion coding, AST synthesis, and multi-step planning",
+      "fallbacks": [
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/qwen4-max",
+          "effort": "medium",
+          "max_context_tokens": 262144,
+          "trigger": "rate_limit",
+          "description": "OpenCode Go Qwen4 Max structured synthesis fallback"
+        },
+        {
+          "provider": "antigravity-cli",
+          "model": "antigravity-cli/gemini-4-hydrogen",
+          "effort": "medium",
+          "trigger": "token_exhaustion",
+          "description": "Antigravity CLI Gemini 4 Hydrogen structured synthesis fallback"
+        },
+        {
+          "provider": "ollama",
+          "model": "ollama/qwen2.5-coder:32b",
+          "effort": "medium",
+          "max_context_tokens": 65536,
+          "trigger": "cost_saver",
+          "description": "Local Ollama Qwen 2.5 Coder 32B offline coding fallback"
+        }
+      ]
+    },
+    "High": {
+      "provider": "anthropic",
+      "model": "anthropic/claude-sonnet-5-5",
+      "effort": "high",
+      "description": "Claude Sonnet 5.5 for top-tier Maker code implementation",
+      "fallbacks": [
+        {
+          "provider": "antigravity-cli",
+          "model": "antigravity-cli/claude-sonnet-5-5",
+          "effort": "high",
+          "trigger": "rate_limit",
+          "description": "Antigravity CLI Claude Sonnet 5.5 mirror fallback when direct Anthropic rate limits are reached"
+        },
+        {
+          "provider": "openai",
+          "model": "openai/gpt-6.2-sol",
+          "effort": "high",
+          "compaction_threshold": 250000,
+          "trigger": "token_exhaustion",
+          "description": "OpenAI GPT-6.2 Sol fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+        },
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/qwen4-max",
+          "effort": "high",
+          "max_context_tokens": 262144,
+          "trigger": "cost_saver",
+          "description": "OpenCode Go Qwen4 Max zero-marginal-cost coding fallback"
+        }
+      ]
+    },
+    "XHigh": {
+      "provider": "openai",
+      "model": "openai/gpt-6.2-astra",
+      "effort": "xhigh",
+      "compaction_threshold": 250000,
+      "description": "OpenAI GPT-6.2 Astra for independent cross-family Checker verification (Pricing Cliff auto-compaction at 250,000 tokens)",
+      "fallbacks": [
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-opus-5-5",
+          "effort": "xhigh",
+          "trigger": "rate_limit",
+          "description": "Claude Opus 5.5 deep invariant verifier fallback"
+        },
+        {
+          "provider": "opencode-go",
+          "model": "opencode-go/kimi-k3.1-pro",
+          "effort": "max",
+          "max_context_tokens": 262144,
+          "trigger": "token_exhaustion",
+          "description": "OpenCode Go Kimi K3.1 Pro reasoning verifier fallback"
+        },
+        {
+          "provider": "antigravity-cli",
+          "model": "antigravity-cli/gemini-4-argon",
+          "effort": "xhigh",
+          "trigger": "cost_saver",
+          "description": "Antigravity CLI Gemini 4 Argon independent verifier fallback"
+        }
+      ]
+    },
+    "Max": {
+      "provider": "anthropic",
+      "model": "anthropic/claude-fable-5-2",
+      "effort": "xhigh",
+      "description": "Claude Fable 5.2 for frontier spot architectural diagnosis",
+      "fallbacks": [
+        {
+          "provider": "anthropic",
+          "model": "anthropic/claude-opus-5-5",
+          "effort": "xhigh",
+          "trigger": "token_exhaustion",
+          "description": "Claude Opus 5.5 fallback when Fable 5.2 quota is strained"
+        },
+        {
+          "provider": "openai",
+          "model": "openai/gpt-6.2-astra",
+          "effort": "xhigh",
+          "compaction_threshold": 250000,
+          "trigger": "rate_limit",
+          "description": "OpenAI GPT-6.2 Astra cross-provider frontier architectural diagnosis fallback (Pricing Cliff auto-compaction at 250,000 tokens)"
+        },
+        {
+          "provider": "antigravity-cli",
+          "model": "antigravity-cli/gemini-4-argon",
+          "effort": "xhigh",
+          "trigger": "cost_saver",
+          "description": "Antigravity CLI Gemini 4 Argon architectural diagnosis fallback"
+        }
+      ]
+    }
+  },
+  "routingPolicy": {
+    "openCodeGoQuotaGuard": {
+      "enabled": true,
+      "fiveHourMaxPct": 20,
+      "weeklyMaxPct": 50,
+      "highVolumeSubagentDefault": "opencode-go/deepseek-v4.1-flash"
+    }
+  }
+}

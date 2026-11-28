@@ -1,0 +1,44 @@
+{
+  "$schema": "https://pi.dev/schemas/settings.schema.json",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-5-5",
+  "defaultThinkingLevel": "high",
+  "transport": "auto",
+  "cacheWarming": "idle",
+  "theme": "kpango-dark",
+  "enableAnalytics": false,
+  "enableSkillCommands": true,
+  "defaultTools": [
+    "read",
+    "bash",
+    "edit",
+    "write",
+    "grep",
+    "find",
+    "ls",
+    "codemode",
+    "tool_search"
+  ],
+  "codemode": {
+    "mode": "on",
+    "inlineBudget": 3000
+  },
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 16384,
+    "keepRecentTokens": 20000
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3,
+    "baseDelayMs": 2000,
+    "maxAgentDelayMs": 60000
+  },
+  "notices": {
+    "cacheMisses": true,
+    "cacheWarming": false,
+    "compactionCosts": false,
+    "reasoningDrops": true
+  },
+  "packages": ["npm:@estebanforge/pi-antigravity-bridge@1.16.0"]
+}

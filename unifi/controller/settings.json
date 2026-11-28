@@ -1,0 +1,168 @@
+{
+  "settings": {
+    "usg": {
+      "echo_server": "45.90.28.0",
+      "dns_verification": {
+        "domain": "ui.com",
+        "primary_dns_server": "45.90.28.0",
+        "secondary_dns_server": "45.90.30.0",
+        "setting_preference": "manual"
+      },
+      "ftp_module": false,
+      "gre_module": false,
+      "h323_module": false,
+      "pptp_module": false,
+      "sip_module": false,
+      "tftp_module": false,
+      "send_redirects": false
+    },
+    "traffic_flow": {
+      "enabled_allowed_traffic": false
+    },
+    "global_switch": {
+      "flowctrl_enabled": false
+    },
+    "magic_site_to_site_vpn": {
+      "enabled": false
+    },
+    "mgmt": {
+      "direct_connect_enabled": false
+    },
+    "auto_speedtest": {
+      "cron_expr": "0 3 * * *"
+    },
+    "igmp_snooping": {
+      "networks": ["Default", "Media", "IoT"],
+      "fastleave_networks": ["Default", "Media", "IoT"],
+      "primary_querier_device": "UniFi Switch 16XG 01",
+      "failover_querier_device": "Unifi Switch Pro XG 10 PoE"
+    },
+    "radius": {
+      "enabled": false
+    },
+    "snmp": {
+      "enabled": false,
+      "enabledV3": false
+    },
+    "doh": {
+      "state": "off"
+    }
+  },
+  "networks": {
+    "Default": {
+      "domain_name": "kpango.local",
+      "dhcpguard_enabled": true,
+      "dhcpd_ip_1": "10.0.0.1",
+      "igmp_snooping": true,
+      "dhcpdv6_dns_auto": true
+    },
+    "Media": {
+      "igmp_snooping": true,
+      "dhcpd_leasetime": 86400,
+      "dhcpdv6_dns_auto": true
+    },
+    "IoT": {
+      "igmp_snooping": true,
+      "dhcpdv6_dns_auto": true
+    }
+  },
+  "wlans": {
+    "kpango-home": {
+      "fast_roaming_enabled": false,
+      "wpa3_fast_roaming": false,
+      "rrm_enabled": true,
+      "bss_transition": true,
+      "roaming_assistant_na_enabled": true,
+      "roaming_assistant_na_rssi": -68,
+      "minrate_na_advertising_rates": true,
+      "uapsd_enabled": true,
+      "dns_assistance_mode": "off",
+      "group_rekey": 3600
+    },
+    "kpango-game": {
+      "group_rekey": 3600,
+      "roaming_assistant_na_enabled": true,
+      "roaming_assistant_na_rssi": -68,
+      "rrm_enabled": true,
+      "fast_roaming_enabled": false,
+      "dns_assistance_mode": "off"
+    },
+    "kpango-iot": {
+      "dns_assistance_mode": "off"
+    }
+  },
+  "devices": {
+    "UniFi Switch 8 POE-150W 01": {
+      "flowctrl_enabled": false,
+      "port_overrides": [
+        {
+          "port_idx": 1,
+          "name": "Dream Machine Pro",
+          "autoneg": true,
+          "unset": ["speed", "full_duplex"]
+        }
+      ]
+    },
+    "Unifi Switch Pro XG 10 PoE": {
+      "config_network": {
+        "dns1": "10.0.0.1"
+      }
+    },
+    "Unifi AP XG 01": {
+      "bandsteering_mode": "off",
+      "radio_overrides": [
+        {
+          "radio": "na",
+          "min_rssi_enabled": true,
+          "min_rssi": -72
+        },
+        {
+          "radio": "ng",
+          "min_rssi_enabled": true,
+          "min_rssi": -75
+        }
+      ]
+    },
+    "Unifi AP XG 02": {
+      "bandsteering_mode": "off",
+      "atf_enabled": false,
+      "radio_overrides": [
+        {
+          "radio": "na",
+          "min_rssi_enabled": true,
+          "min_rssi": -72
+        },
+        {
+          "radio": "ng",
+          "min_rssi_enabled": true,
+          "min_rssi": -75
+        }
+      ]
+    },
+    "Unifi AP U6 Pro 01": {
+      "bandsteering_mode": "off",
+      "radio_overrides": [
+        {
+          "radio": "na",
+          "min_rssi_enabled": true,
+          "min_rssi": -72
+        }
+      ]
+    },
+    "Unifi AP U6 Pro 02": {
+      "bandsteering_mode": "off",
+      "radio_overrides": [
+        {
+          "radio": "na",
+          "min_rssi_enabled": true,
+          "min_rssi": -72
+        },
+        {
+          "radio": "ng",
+          "min_rssi_enabled": true,
+          "min_rssi": -75
+        }
+      ]
+    }
+  }
+}

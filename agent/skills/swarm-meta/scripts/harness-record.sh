@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# ミッション終了後の実績記録。registry へ TSV 追記/置換する。
+# usage: harness-record.sh <mission-slug> <harness> <profile-primary> <model-version> "<outcome>"
+#   outcome 例: "done=4 blocked=1 attempts=7 replans=1"
+#
+# flock は read+modify+write の全体を 1 クリティカルセクションで囲む
+# (budget-guard.sh の flock -x 番号付き fd パターン準拠)。
+# 冪等: 同一 mission-slug の既存行があれば置換 (重複行を作らない)。置換も flock 内で行う。
+# 入力の TAB/改行 (CR/LF) は空白に正規化 (TSV 破壊防止)。
+# 仕様: /tmp/a970d944-5c72-44e0-bf62-429e73ed60c4/swarm/specs/sm-spec.md
+set -euo pipefail
+
+
+mission="${1:?usage: harness-record.sh <mission-slug> <harness> <profile-primary> <model-version> \"<outcome>\"}"
+harness="${2:?usage: harness-record.sh <mission-slug> <harness> <profile-primary> <model-version> \"<outcome>\"}"
+profile="${3:?usage: harness-record.sh <mission-slug> <harness> <profile-primary> <model-version> \"<outcome>\"}"
+model_version="${4:?usage: harness-record.sh <mission-slug> <harness> <profile-primary> <model-version> \"<outcome>\"}"
+outcome="${5:?usage: harness-record.sh <mission-slug> <harness> <profile-primary> <model-version> \"<outcome>\"}"
+
+# 追記(2026-09-04、設計変更): 旧コメント(pi-agent-consolidation-phase2 直後)は「logical cd
+# (symlinkを辿らない)でclaude/skills/swarm-meta/等、呼び出し元のエコシステムディレクトリを
+# 意図的に保つ」設計を説明していたが、claude/pi/agy個別のharness-registry.tsvをagent/skills/
+# swarm-meta/harness-registry.tsvへ統合したことに伴い、この意図は逆転した——今後は常に単一の
+# 正典を指すことが正しい挙動になったため、`readlink -f`でファイル自身のsymlinkを解決してから
+# `dirname`する物理解決方式へ変更する(bash側CRITICAL修正〈agent/hooks/{claude,agy,pi}/〉と
+# 同じ順序の考え方)。旧設計が「意図的に物理解決を避けていた」経緯を知らずに読むと今回の変更が
+# バグに見えるため、この節はあえて削除せず経緯として残す。readlinkを`dirname`へ直接ネストさせず
+# 独立したstatementにする理由はself-improve-check.shと同じ(ネストするとreadlink失敗をset -eが
+# 検知できず、無言でcwd依存の誤ったパスへフォールバックしてしまう)。
+resolved_self="$(readlink -f "${BASH_SOURCE[0]}")"
+registry_dir="$(dirname "$(dirname "$resolved_self")")"
+registry="${HARNESS_REGISTRY:-$registry_dir/harness-registry.tsv}"
+lockfile="$registry.lock"
+
+# TSV 破壊防止: 各フィールドの TAB/CR/LF を空白へ正規化する。mission-slug も同様に正規化する
+# (呼び出し側が汚染された値を渡しても TSV の列数が壊れないよう全フィールドに一様適用する)。
+normalize() {
+  local s="$1"
+  s="${s//$'\t'/ }"
+  s="${s//$'\r'/ }"
+  s="${s//$'\n'/ }"
+  printf '%s' "$s"
+}
+
+mission="$(normalize "$mission")"
+harness="$(normalize "$harness")"
+profile="$(normalize "$profile")"
+model_version="$(normalize "$model_version")"
+outcome="$(normalize "$outcome")"
+
+date_str="$(date +%Y-%m-%d)"
+new_row="$date_str	$mission	$harness	$profile	$model_version	$outcome"
+
+# flock (util-linux) が PATH に無い環境 (例: Homebrew 未導入の macOS) では `flock -x 200` が
+# exit 127 でクラッシュしうる。書き込み (mv による registry 置換) の前に fail-closed で検出する
+# (flock 存在時の挙動はここでは変更しない)。ガード本体は budget-guard.sh / self-improve-register.sh
+# と共有する (write-scope-lib.sh と同じソースパターン)。
+flock_guard_lib="$(dirname "${BASH_SOURCE[0]}")/../../swarm-implement/scripts/flock-guard-lib.sh"
+# shellcheck disable=SC1090
+. "$flock_guard_lib"
+require_flock "registry writes"
+
+{
+  flock -x 200
+
+  [ -f "$registry" ] || printf '# date\tmission\tharness\tprofile\tmodel-version\toutcome\n' >"$registry"
+
+  tmp="$registry.tmp.$$"
+  replaced=false
+  while IFS= read -r line || [ -n "$line" ]; do
+    if [ -z "$line" ]; then
+      continue
+    fi
+    case "$line" in
+      \#*)
+        printf '%s\n' "$line" >>"$tmp"
+        continue
+        ;;
+    esac
+    row_mission="$(printf '%s' "$line" | cut -f2)"
+    if [ "$row_mission" = "$mission" ]; then
+      printf '%s\n' "$new_row" >>"$tmp"
+      replaced=true
+    else
+      printf '%s\n' "$line" >>"$tmp"
+    fi
+  done <"$registry"
+
+  if ! $replaced; then
+    printf '%s\n' "$new_row" >>"$tmp"
+  fi
+
+  # 保持上限 (registry を有界に保つ): (C) registry 降格判定が読む swarm-graph 行は直近
+  # HARNESS_REGISTRY_KEEP_GRAPH 件 (既定 100)、それ以外 (表示用の harness-status 集計のみに使われる) は
+  # 直近 HARNESS_REGISTRY_KEEP_OTHER 件 (既定 50)。行は追記順 = 時系列。ヘッダ・列数不正の行は常に保持する。
+  keep_graph="${HARNESS_REGISTRY_KEEP_GRAPH:-100}"
+  keep_other="${HARNESS_REGISTRY_KEEP_OTHER:-50}"
+  if [[ "$keep_graph" =~ ^[0-9]+$ && "$keep_other" =~ ^[0-9]+$ ]]; then
+    awk -F'\t' -v g="$keep_graph" -v o="$keep_other" '
+      { line[NR] = $0 }
+      /^#/ || NF < 6 { always[NR] = 1; next }
+      { isg[NR] = ($3 == "swarm-graph") }
+      END {
+        gc = 0; oc = 0
+        for (i = NR; i >= 1; i--) {
+          if (always[i]) continue
+          if (isg[i]) { if (++gc <= g) keep[i] = 1 } else { if (++oc <= o) keep[i] = 1 }
+        }
+        for (i = 1; i <= NR; i++) if (always[i] || keep[i]) print line[i]
+      }' "$tmp" >"$tmp.pruned" && mv "$tmp.pruned" "$tmp"
+  fi
+
+  mv "$tmp" "$registry"
+} 200>"$lockfile"
+
+echo "recorded: mission=$mission harness=$harness"

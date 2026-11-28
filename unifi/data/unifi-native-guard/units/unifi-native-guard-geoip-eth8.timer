@@ -1,0 +1,10 @@
+[Unit]
+Description=Re-check eth8 Region Blocking rules every 5m as safety net alongside .path
+
+[Timer]
+OnBootSec=45s
+OnUnitActiveSec=5m
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target
